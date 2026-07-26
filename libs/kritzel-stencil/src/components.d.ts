@@ -30,9 +30,14 @@ import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
+import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelNotification } from "./interfaces/notification.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
+import { KritzelImage } from "./classes/objects/image.class";
+import { KritzelText } from "./classes/objects/text.class";
+import { KritzelGroup } from "./classes/objects/group.class";
+import { KritzelLine } from "./classes/objects/line.class";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
@@ -375,6 +380,7 @@ export namespace Components {
          */
         "cursorTarget"?: HTMLElement;
         /**
+          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via controls[].config.availableFonts.
           * @default {}
          */
         "customFonts": KritzelFontMap;
@@ -504,6 +510,7 @@ export namespace Components {
         /**
           * Registers custom fonts for the editor runtime.
           * @param fonts - Mapping from font keys to family names or font definitions.
+          * @remarks This no longer controls the text-tool config tooltip font options. Configure tooltip fonts via controls[].config.availableFonts.
          */
         "registerFonts": (fonts: KritzelFontMap) => Promise<void>;
         /**
@@ -1141,7 +1148,10 @@ export namespace Components {
         "size": number;
     }
     interface KritzelFontFamily {
-        "fontOptions"?: FontOption[];
+        /**
+          * @default []
+         */
+        "fontOptions": FontOption[];
         "selectedFontFamily": string;
     }
     interface KritzelFontSize {
@@ -2896,6 +2906,7 @@ declare namespace LocalJSX {
          */
         "cursorTarget"?: HTMLElement;
         /**
+          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via controls[].config.availableFonts.
           * @default {}
          */
         "customFonts"?: KritzelFontMap;
@@ -3253,6 +3264,9 @@ declare namespace LocalJSX {
         "size"?: number;
     }
     interface KritzelFontFamily {
+        /**
+          * @default []
+         */
         "fontOptions"?: FontOption[];
         "onFontFamilyChange"?: (event: KritzelFontFamilyCustomEvent<string>) => void;
         "selectedFontFamily"?: string;

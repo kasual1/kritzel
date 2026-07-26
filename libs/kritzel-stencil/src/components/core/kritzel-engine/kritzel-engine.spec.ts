@@ -65,6 +65,7 @@ import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
+import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '../../../constants/text-tool-fonts.constants';
 
 describe('KritzelEngine', () => {
   let engine: KritzelEngine;
@@ -1904,6 +1905,41 @@ describe('KritzelEngine', () => {
       await engine.registerTool('text', FakeTextTool, config);
 
       expect(newTool.sizes).toEqual(customSizes);
+    });
+
+    it('applies default availableFonts for text tool config when availableFonts is missing', async () => {
+      const newTool: any = { name: 'text' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeTextTool {}
+      const config = {
+        color: { light: '#000', dark: '#fff' },
+        size: 16,
+        fontFamily: 'Arial',
+        palette: [],
+      } as any;
+      await engine.registerTool('text', FakeTextTool, config);
+
+      expect(newTool.availableFonts).toEqual(DEFAULT_TEXT_TOOL_AVAILABLE_FONTS);
+    });
+
+    it('preserves explicit availableFonts for text tool config', async () => {
+      const newTool: any = { name: 'text' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
+
+      class FakeTextTool {}
+      const config = {
+        color: { light: '#000', dark: '#fff' },
+        size: 16,
+        fontFamily: 'Lora',
+        availableFonts: [{ family: 'Lora', cssFontFamily: "'Lora', serif" }],
+        palette: [],
+      } as any;
+      await engine.registerTool('text', FakeTextTool, config);
+
+      expect(newTool.availableFonts).toEqual([{ family: 'Lora', cssFontFamily: "'Lora', serif" }]);
     });
   });
 

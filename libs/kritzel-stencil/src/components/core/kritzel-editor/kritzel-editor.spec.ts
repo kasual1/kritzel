@@ -1,6 +1,7 @@
 import { KritzelEditor } from './kritzel-editor';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
+import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '../../../constants/text-tool-fonts.constants';
 
 // Simple mock for decorators
 jest.mock('@stencil/core', () => ({
@@ -21,6 +22,11 @@ describe('KritzelEditor', () => {
 
   beforeEach(() => {
     component = new KritzelEditor();
+    component.host = {
+      style: {
+        setProperty: jest.fn(),
+      },
+    } as any;
     
     // Mock the engine ref
     mockEngine = {
@@ -309,6 +315,57 @@ describe('KritzelEditor', () => {
       await component.registerFonts(runtimeFonts);
 
       expect(spy).toHaveBeenCalledWith(runtimeFonts);
+    });
+
+    it('should normalize controls with default text fonts when availableFonts is missing', () => {
+      component.controls = [
+        {
+          name: 'text',
+          type: 'tool',
+          config: {
+            color: { light: '#000', dark: '#fff' },
+            size: 16,
+            fontFamily: 'Arial',
+            palette: [],
+          } as any,
+        } as any,
+      ];
+
+      component.onControlsChange(component.controls);
+
+      const normalizedConfig = (component as any).normalizedControls[0].config;
+      expect(normalizedConfig.availableFonts).toEqual(DEFAULT_TEXT_TOOL_AVAILABLE_FONTS);
+    });
+
+    it('should preserve explicitly configured text fonts in controls', () => {
+      component.controls = [
+        {
+          name: 'text',
+          type: 'tool',
+          config: {
+            color: { light: '#000', dark: '#fff' },
+            size: 16,
+            fontFamily: 'Lora',
+            availableFonts: [
+              {
+                family: 'Lora',
+                cssFontFamily: "'Lora', serif",
+              },
+            ],
+            palette: [],
+          } as any,
+        } as any,
+      ];
+
+      component.onControlsChange(component.controls);
+
+      const normalizedConfig = (component as any).normalizedControls[0].config;
+      expect(normalizedConfig.availableFonts).toEqual([
+        {
+          family: 'Lora',
+          cssFontFamily: "'Lora', serif",
+        },
+      ]);
     });
   });
 });

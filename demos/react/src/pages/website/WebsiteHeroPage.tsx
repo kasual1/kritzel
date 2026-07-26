@@ -1,5 +1,19 @@
 import { CSSProperties, useEffect, useRef } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement } from "kritzel-react";
+import {
+  DEFAULT_BRUSH_CONFIG,
+  DEFAULT_TEXT_CONFIG,
+  KritzelBrushTool,
+  KritzelEditor,
+  KritzelEraserTool,
+  KritzelImageTool,
+  KritzelLineTool,
+  KritzelSelectionTool,
+  KritzelShapeTool,
+  ShapeType,
+  KritzelTextTool,
+  type HTMLKritzelEditorElement,
+  type KritzelToolbarControl,
+} from "kritzel-react";
 import {
   setupImageStackRenderer,
 } from "./custom-elements/imageStackCustomElement";
@@ -18,6 +32,76 @@ const WEBSITE_HERO_CUSTOM_FONTS = {
     source: RACING_SANS_ONE_STYLESHEET_URL,
   },
 };
+
+const WEBSITE_HERO_TEXT_TOOL_CONFIG = {
+  ...DEFAULT_TEXT_CONFIG,
+  availableFonts: [
+    ...(DEFAULT_TEXT_CONFIG.availableFonts ?? []),
+    {
+      family: "Racing Sans One",
+      label: "Racing Sans One",
+      cssFontFamily: "'Racing Sans One', sans-serif",
+      source: RACING_SANS_ONE_STYLESHEET_URL,
+    },
+  ],
+};
+
+const WEBSITE_HERO_CONTROLS: KritzelToolbarControl[] = [
+  {
+    name: "selection",
+    type: "tool",
+    isDefault: true,
+    tool: KritzelSelectionTool,
+    icon: "cursor",
+  },
+  {
+    name: "brush",
+    type: "tool",
+    tool: KritzelBrushTool,
+    icon: "pen",
+    config: DEFAULT_BRUSH_CONFIG,
+  },
+  {
+    name: "eraser",
+    type: "tool",
+    tool: KritzelEraserTool,
+    icon: "eraser",
+  },
+  {
+    name: "line",
+    type: "tool",
+    tool: KritzelLineTool,
+    icon: "arrow",
+  },
+  {
+    name: "shape",
+    type: "tool",
+    tool: KritzelShapeTool,
+    icon: "shape-rectangle",
+    subOptions: [
+      { id: "rectangle", icon: "shape-rectangle", label: "Rectangle", value: ShapeType.Rectangle, toolProperty: "shapeType" },
+      { id: "ellipse", icon: "shape-ellipse", label: "Ellipse", value: ShapeType.Ellipse, toolProperty: "shapeType" },
+      { id: "triangle", icon: "shape-triangle", label: "Triangle", value: ShapeType.Triangle, toolProperty: "shapeType" },
+    ],
+  },
+  {
+    name: "text",
+    type: "tool",
+    tool: KritzelTextTool,
+    icon: "type",
+    config: WEBSITE_HERO_TEXT_TOOL_CONFIG,
+  },
+  {
+    name: "image",
+    type: "tool",
+    tool: KritzelImageTool,
+    icon: "image",
+  },
+  {
+    name: "config",
+    type: "config",
+  },
+];
 
 const hostStyle: CSSProperties = {
   display: "block",
@@ -94,6 +178,7 @@ export function WebsiteHeroPage() {
         ref={editorRef}
         editorId="website-hero"
         customFonts={WEBSITE_HERO_CUSTOM_FONTS}
+        controls={WEBSITE_HERO_CONTROLS}
         isPanningEnabled={true}
         isZoomingEnabled={true}
         isMoreMenuVisible={true}
