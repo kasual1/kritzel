@@ -90,6 +90,7 @@ describe('KritzelAwarenessCursors', () => {
   });
 
   afterEach(() => {
+    component.disconnectedCallback();
     jest.clearAllMocks();
     jest.useRealTimers();
   });
