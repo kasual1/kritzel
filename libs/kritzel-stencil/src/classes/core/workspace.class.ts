@@ -2,7 +2,7 @@ import { KritzelSerializable } from "../../interfaces/serializable.interface";
 import type { KritzelCore } from "./core.class";
 
 /** Current version of the workspace export format */
-export const WORKSPACE_EXPORT_VERSION = '1.2.0';
+export const WORKSPACE_EXPORT_VERSION = '1.3.0';
 
 /**
  * Represents a workspace in the Kritzel canvas.
