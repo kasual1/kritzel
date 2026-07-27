@@ -352,6 +352,7 @@ Type: `Promise<void>`
 
 Exports the current workspace and all its objects as a JSON string.
 The exported data includes workspace metadata (id, name, viewport) and all canvas objects.
+Export mode is selected automatically: when at least one remote asset provider is configured the export is lightweight (asset references only), otherwise image bytes are embedded for portable re-import.
 
 #### Returns
 
@@ -675,6 +676,7 @@ A promise that resolves when the import is complete or rejects on error/cancel.
 
 Imports a workspace from a JSON string into a new workspace.
 Creates a new workspace with the imported data and automatically switches to it.
+When the JSON contains embedded portable assets, they are restored into asset storage before objects are revived.
 
 #### Parameters
 
