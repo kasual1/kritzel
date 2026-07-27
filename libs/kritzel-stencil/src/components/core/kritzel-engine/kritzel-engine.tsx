@@ -1749,18 +1749,23 @@ export class KritzelEngine {
 
     const serialized = workspace.serialize({ includeObjects: true }) as WorkspaceJsonExportPayload;
     const exportMode = this.getWorkspaceExportMode();
-    serialized.exportMode = exportMode;
+    const { objects, ...workspaceWithoutObjects } = serialized;
+    const payload: WorkspaceJsonExportPayload = {
+      ...workspaceWithoutObjects,
+      exportMode,
+      ...(objects !== undefined ? { objects } : {}),
+    };
 
     if (exportMode === 'portable') {
-      const portableAssets = await this.collectPortableAssets(serialized.objects);
+      const portableAssets = await this.collectPortableAssets(payload.objects);
       if (Object.keys(portableAssets).length > 0) {
-        serialized.assets = portableAssets;
+        payload.assets = portableAssets;
       }
     } else {
-      delete serialized.assets;
+      delete payload.assets;
     }
 
-    return JSON.stringify(serialized, null, 2);
+    return JSON.stringify(payload, null, 2);
   }
 
   /**
