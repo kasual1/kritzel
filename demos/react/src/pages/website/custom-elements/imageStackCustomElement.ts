@@ -4,6 +4,13 @@ import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
 export const IMAGE_STACK_RENDERER_KEY = "website-hero-image-stack";
 export const IMAGE_STACK_OBJECT_SIZE = 364;
 const IMAGE_STACK_Z_INDEX = 13;
+const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+
+function withBaseUrl(assetPath: string): string {
+  return `${normalizedBaseUrl}${assetPath.replace(/^\/+/, "")}`;
+}
 
 type PlaceholderImage = {
   id: string;
@@ -22,10 +29,10 @@ type MountedImageStack = {
 };
 
 const IMAGE_POOL: PlaceholderImage[] = [
-  { id: "img-3", label: "Mars", url: "/image_stack_1.png" },
-  { id: "img-2", label: "Moon", url: "/image_stack_2.png" },
-  { id: "img-1", label: "ISS", url: "/image_stack_3.png" },
-  { id: "img-4", label: "Uranus", url: "/image_stack_4.png" },
+  { id: "img-3", label: "Mars", url: withBaseUrl("image_stack_1.png") },
+  { id: "img-2", label: "Moon", url: withBaseUrl("image_stack_2.png") },
+  { id: "img-1", label: "ISS", url: withBaseUrl("image_stack_3.png") },
+  { id: "img-4", label: "Uranus", url: withBaseUrl("image_stack_4.png") },
 ];
 
 export function createImageStackInitialState(): ImageStackState {
