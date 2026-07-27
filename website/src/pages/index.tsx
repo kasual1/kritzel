@@ -17,7 +17,7 @@ import React from "react";
 function HomepageEditorEmbed() {
   return (
     <iframe
-      src="https://kasual1.github.io/kritzel-demos/react/#/getting-started"
+      src="https://kasual1.github.io/kritzel-demos/react/#/website/hero"
       title="Kritzel React Getting Started Demo"
       style={{ width: "100%", height: "100%", border: 0 }}
       loading="lazy"
