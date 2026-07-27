@@ -21,7 +21,10 @@ import {
   setupRocketTodoRenderer,
 } from "./custom-elements/rocketTodoCustomElement";
 
-const INITIAL_WORKSPACE_EXPORT_URL = encodeURI("/hero_workspace.json");
+const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const INITIAL_WORKSPACE_EXPORT_URL = `${normalizedBaseUrl}hero_workspace.json`;
 const RACING_SANS_ONE_STYLESHEET_URL = "https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap";
 
 const WEBSITE_HERO_CUSTOM_FONTS = {
