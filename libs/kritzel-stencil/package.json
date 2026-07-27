@@ -45,7 +45,7 @@
   "scripts": {
     "build": "stencil build",
     "start": "stencil build --dev --watch --serve",
-    "test": "stencil test --spec",
+    "test": "stencil test --spec --maxWorkers=2",
     "generate": "stencil generate",
     "clean": "rimraf dist .stencil loader node_modules",
     "bump": "npm version patch",
