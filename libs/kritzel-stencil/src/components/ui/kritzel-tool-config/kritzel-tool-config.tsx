@@ -2,13 +2,16 @@ import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@st
 import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '../../../interfaces/tool-config.interface';
 import { KritzelToolConfigHelper } from '../../../helpers/tool-config.helper';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
-import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { ShapeFillType } from '../../shared/kritzel-shape-fill/kritzel-shape-fill';
 import { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
 import { ThemeAwareColor } from '../../../constants/color-palette.constants';
 import { ThemeName } from '../../../interfaces/theme.interface';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
+import { KritzelFontRegistration } from '../../../interfaces/font.interface';
+import { FontOption } from '../../shared/kritzel-font-family/kritzel-font-family';
+import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
+import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
 
 @Component({
   tag: 'kritzel-tool-config',
@@ -84,8 +87,49 @@ export class KritzelToolConfig {
   @State() currentOpacity: number = 1;
   @State() private updateTrigger: number = 0;
 
+  private getFontOptionsFromTool(): FontOption[] | undefined {
+    const configuredFonts = resolveTextToolAvailableFonts((this.tool as { availableFonts?: KritzelFontRegistration[] }).availableFonts).map(font => {
+      const registeredFont = typeof font === 'string'
+        ? {
+            family: font,
+            label: font,
+            cssFontFamily: font,
+          }
+        : {
+            family: font.family,
+            label: font.label ?? font.family,
+            cssFontFamily: font.cssFontFamily ?? font.family,
+          };
+
+      return {
+        value: registeredFont.family,
+        label: registeredFont.label,
+        cssFontFamily: registeredFont.cssFontFamily,
+      };
+    });
+
+    const mergedFonts = [...configuredFonts];
+    const seenFonts = new Set(mergedFonts.map(font => font.value.trim().toLocaleLowerCase()));
+
+    for (const font of KritzelFontRegistry.list()) {
+      const normalizedValue = font.family.trim().toLocaleLowerCase();
+      if (seenFonts.has(normalizedValue)) {
+        continue;
+      }
+
+      seenFonts.add(normalizedValue);
+      mergedFonts.push({
+        value: font.family,
+        label: font.label,
+        cssFontFamily: font.cssFontFamily,
+      });
+    }
+
+    return mergedFonts;
+  }
+
   handleSelectionChange() {
-    if (this.tool instanceof KritzelSelectionTool) {
+    if (this.tool?.toolType === 'selection') {
       this.config = KritzelToolConfigHelper.getToolConfig(this.tool);
       if (this.config) {
         this.updatePalette();
@@ -127,8 +171,8 @@ export class KritzelToolConfig {
       size,
     };
 
-    if (this.tool instanceof KritzelTextTool) {
-      displayValues.fontFamily = this.tool.fontFamily;
+    if (this.tool.toolType === 'text') {
+      displayValues.fontFamily = (this.tool as KritzelTextTool).fontFamily;
     }
 
     this.displayValuesChange.emit(displayValues);
@@ -268,6 +312,7 @@ export class KritzelToolConfig {
         return (
           <kritzel-font-family
             key={control.type}
+            fontOptions={this.getFontOptionsFromTool()}
             selectedFontFamily={value}
             onFontFamilyChange={(event: CustomEvent<string>) =>
               this.handlePropertyChange(control.propertyName, event.detail)

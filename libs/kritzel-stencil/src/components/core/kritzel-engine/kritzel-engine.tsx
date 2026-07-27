@@ -5,6 +5,9 @@ import { KritzelLine } from '../../../classes/objects/line.class';
 import { KritzelSelectionTool } from '../../../classes/tools/selection-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
 import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
+import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
+import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
+import { KritzelImageTool } from '../../../classes/tools/image-tool.class';
 import { KritzelImage } from '../../../classes/objects/image.class';
 import { KritzelText } from '../../../classes/objects/text.class';
 import { KritzelShape } from '../../../classes/objects/shape.class';
@@ -13,6 +16,7 @@ import { KritzelGroup } from '../../../classes/objects/group.class';
 import { KritzelSelectionBox } from '../../../classes/objects/selection-box.class';
 import { KritzelKeyHandler } from '../../../classes/handlers/key.handler';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
+import { KritzelToolType } from '../../../interfaces/tool-type.interface';
 import { ContextMenuItem } from '../../../interfaces/context-menu-item.interface';
 import { KritzelEraserTool } from '../../../classes/tools/eraser-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
@@ -47,6 +51,7 @@ import { KritzelWheelHelper } from '../../../helpers/wheel.helper';
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
+import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
 
 @Component({
   tag: 'kritzel-engine',
@@ -742,7 +747,7 @@ export class KritzelEngine {
       return existingTool;
     }
 
-    const registeredTool = this.core.toolRegistry.registerTool(toolName, toolClass);
+    const registeredTool = this.core.toolRegistry.registerTool(toolName, this.resolveToolClass(toolClass));
 
     if (toolConfig) {
       this.applyToolConfig(registeredTool, toolConfig);
@@ -2182,13 +2187,15 @@ export class KritzelEngine {
   }
 
   private applyToolConfig(tool: KritzelBaseTool, toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): void {
-    Object.entries(toolConfig).forEach(([key, value]) => {
+    const normalizedToolConfig = this.normalizeToolConfig(toolConfig);
+
+    Object.entries(normalizedToolConfig).forEach(([key, value]) => {
       (tool as unknown as Record<string, unknown>)[key] = value;
     });
 
     // Resolve palettes map into the flat palette array the UI reads
-    if ('palettes' in toolConfig && 'type' in toolConfig) {
-      const brushConfig = toolConfig as KritzelBrushToolConfig;
+    if ('palettes' in normalizedToolConfig && 'type' in normalizedToolConfig) {
+      const brushConfig = normalizedToolConfig as KritzelBrushToolConfig;
       const resolvedPalette = brushConfig.palettes[brushConfig.type];
       if (resolvedPalette) {
         (tool as unknown as Record<string, unknown>)['palette'] = resolvedPalette;
@@ -2196,8 +2203,8 @@ export class KritzelEngine {
     }
 
     // Resolve sizes map into the flat sizes array the UI reads (brush tool uses a map keyed by type)
-    if ('sizes' in toolConfig && toolConfig.sizes != null && 'type' in toolConfig) {
-      const brushConfig = toolConfig as KritzelBrushToolConfig;
+    if ('sizes' in normalizedToolConfig && normalizedToolConfig.sizes != null && 'type' in normalizedToolConfig) {
+      const brushConfig = normalizedToolConfig as KritzelBrushToolConfig;
       const resolvedSizes = brushConfig.sizes?.[brushConfig.type];
       if (resolvedSizes) {
         (tool as unknown as Record<string, unknown>)['sizes'] = resolvedSizes;
@@ -2205,12 +2212,60 @@ export class KritzelEngine {
     }
   }
 
+  private normalizeToolConfig(
+    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig {
+    if (!this.isTextToolConfig(toolConfig)) {
+      return toolConfig;
+    }
+
+    return {
+      ...toolConfig,
+      availableFonts: resolveTextToolAvailableFonts(toolConfig.availableFonts),
+    };
+  }
+
+  private isTextToolConfig(
+    toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
+  ): toolConfig is KritzelTextToolConfig {
+    return 'fontFamily' in toolConfig && 'size' in toolConfig && 'color' in toolConfig;
+  }
+
+  /** Built-in tool classes of this bundle keyed by their tool type. */
+  private static readonly BUILT_IN_TOOL_CLASSES: Partial<Record<KritzelToolType, new (core: KritzelCore) => KritzelBaseTool>> = {
+    selection: KritzelSelectionTool,
+    brush: KritzelBrushTool,
+    eraser: KritzelEraserTool,
+    line: KritzelLineTool,
+    shape: KritzelShapeTool,
+    text: KritzelTextTool,
+    image: KritzelImageTool,
+  };
+
+  /**
+   * Resolves a tool class to the internal built-in class when a foreign copy is passed.
+   * Classes from another compiled copy of the library (dual-package hazard, e.g. built-ins
+   * re-exported by a framework wrapper) would otherwise break `instanceof` checks.
+   */
+  private resolveToolClass(toolClass: new (core: KritzelCore) => KritzelBaseTool): new (core: KritzelCore) => KritzelBaseTool {
+    if (toolClass.prototype instanceof KritzelBaseTool) {
+      return toolClass;
+    }
+
+    try {
+      const probe = new toolClass(this.core);
+      return KritzelEngine.BUILT_IN_TOOL_CLASSES[probe.toolType] ?? toolClass;
+    } catch {
+      return toolClass;
+    }
+  }
+
   get isSelecting() {
-    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.state.isSelecting;
+    return this.core.store.state.activeTool?.toolType === 'selection' && this.core.store.state.isSelecting;
   }
 
   get isSelectionActive() {
-    return this.core.store.state.activeTool instanceof KritzelSelectionTool && this.core.store.selectionGroup !== null;
+    return this.core.store.state.activeTool?.toolType === 'selection' && this.core.store.selectionGroup !== null;
   }
 
   constructor() {
@@ -2574,7 +2629,7 @@ export class KritzelEngine {
   }
 
   private _handleActiveToolChange(activeTool: KritzelBaseTool | null) {
-    if (!(activeTool instanceof KritzelSelectionTool)) {
+    if (activeTool?.toolType !== 'selection') {
       this.core.clearSelection();
       this.core.store.objects?.remove(o => o instanceof KritzelSelectionBox);
       this.core.store.setSelectionBox(null);
@@ -2584,11 +2639,11 @@ export class KritzelEngine {
       this.core.store.state.isRotationHandleSelected = false;
     }
 
-    if (!(activeTool instanceof KritzelTextTool)) {
+    if (activeTool?.toolType !== 'text') {
       this.core.resetActiveText();
     }
 
-    if (!(activeTool instanceof KritzelShapeTool)) {
+    if (activeTool?.toolType !== 'shape') {
       this.core.resetActiveShape();
     }
 
@@ -3032,7 +3087,7 @@ export class KritzelEngine {
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
-                      overflow: 'hidden',
+                      overflow: 'visible',
                       display: 'block',
                     }}
                   ></div>
@@ -3828,7 +3883,7 @@ export class KritzelEngine {
 
         {this.core.store.objects?.hasAwareness && <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>}
 
-        {this.core.store.state?.activeTool instanceof KritzelEraserTool && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
+        {this.core.store.state?.activeTool?.toolType === 'eraser' && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
 
         {!this.core.licenseManager.isLicensed && <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>}
       </Host>

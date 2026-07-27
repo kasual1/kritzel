@@ -54,6 +54,11 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "e2e": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": false
             }
           },
           "defaultConfiguration": "production"
@@ -66,6 +71,9 @@
             },
             "development": {
               "buildTarget": "angular:build:development"
+            },
+            "e2e": {
+              "buildTarget": "angular:build:e2e"
             }
           },
           "defaultConfiguration": "development"

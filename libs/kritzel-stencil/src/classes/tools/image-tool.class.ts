@@ -2,13 +2,15 @@ import { KritzelImage } from '../objects/image.class';
 import { KritzelBaseTool } from './base-tool.class';
 import imageCompression from 'browser-image-compression';
 import { KritzelCore } from '../core/core.class';
+import { KritzelImageFileHelper } from '../../helpers/image-file.helper';
 
 /**
  * Image tool for importing and placing images on the canvas.
  *
  * Flow:
  *   1. User picks a file.
- *   2. Image is compressed via `browser-image-compression` (bandwidth win).
+ *   2. Static images are compressed via `browser-image-compression` (bandwidth win).
+ *      GIF files retain their original bytes so animation is preserved.
  *   3. Intrinsic dimensions are measured from a temporary object URL.
  *   4. Bytes are uploaded through the asset resolver (write-through:
  *      local IndexedDB immediately, remote providers in the background).
@@ -76,7 +78,7 @@ export class KritzelImageTool extends KritzelBaseTool {
 
   /**
    * Handles the file selection event from the file input.
-   * Compresses each selected image and places them as a batch on the canvas.
+   * Compresses each selected image if necessaryand places them as a batch on the canvas.
    * Resets the file input value after processing.
    * @param event - The change event from the file input element
    */
@@ -93,9 +95,10 @@ export class KritzelImageTool extends KritzelBaseTool {
       return;
     }
 
-    const prepared = files.map(file =>
-      imageCompression(file, { maxWidthOrHeight: this.maxCompressionSize }).then(compressedFile => KritzelImage.fromBlob(this._core, compressedFile))
-    );
+    const prepared = files.map(async file => {
+      const preparedFile = await this.prepareImageFile(file);
+      return KritzelImage.fromBlob(this._core, preparedFile);
+    });
 
     Promise.allSettled(prepared)
       .then(results => {
@@ -119,6 +122,19 @@ export class KritzelImageTool extends KritzelBaseTool {
     if (input) {
       input.value = '';
     }
+  }
+
+  /**
+   * Prepares an image file for insertion by compressing it if necessary.
+   * @param file 
+   * @returns 
+   */
+  private async prepareImageFile(file: File): Promise<File> {
+    if (KritzelImageFileHelper.isGifFile(file)) {
+      return file;
+    }
+
+    return imageCompression(file, { maxWidthOrHeight: this.maxCompressionSize });
   }
 
   /**

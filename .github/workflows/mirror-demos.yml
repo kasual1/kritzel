@@ -19,6 +19,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.18.0"
+
       - name: Get version
         id: version
         run: echo "version=$(node -p 'require("./libs/kritzel-stencil/package.json").version')" >> "$GITHUB_OUTPUT"

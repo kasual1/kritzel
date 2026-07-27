@@ -24,27 +24,43 @@ export class KritzelAwarenessCursors {
 
   private cleanupIntervalId: ReturnType<typeof setInterval> | undefined;
   private objectChangeRafId: ReturnType<typeof requestAnimationFrame> | null = null;
+  private removeAwarenessChangeListener: (() => void) | undefined;
+  private removeObjectsChangeListener: (() => void) | undefined;
 
   componentDidLoad() {
-    this.core.store.objects?.onAwarenessChange(states => {
+    this.removeAwarenessChangeListener = this.core.store.objects?.onAwarenessChange(states => {
       this.handleAwarenessChange(states);
     });
 
-    this.core.store.objects?.onObjectsChange(() => {
+    this.removeObjectsChangeListener = this.core.store.objects?.onObjectsChange(() => {
       this.handleRemoteObjectChange();
     });
 
     this.cleanupIntervalId = setInterval(() => {
       this.cleanupStaleCursors();
     }, CLEANUP_INTERVAL_MS);
+
+    if (this.cleanupIntervalId && typeof this.cleanupIntervalId.unref === 'function') {
+      this.cleanupIntervalId.unref();
+    }
   }
 
   disconnectedCallback() {
-    if (this.cleanupIntervalId) {
-      clearInterval(this.cleanupIntervalId);
+    if (this.removeAwarenessChangeListener) {
+      this.removeAwarenessChangeListener();
+      this.removeAwarenessChangeListener = undefined;
     }
-    if (this.objectChangeRafId !== null) {
-      cancelAnimationFrame(this.objectChangeRafId);
+    if (this.removeObjectsChangeListener) {
+      this.removeObjectsChangeListener();
+      this.removeObjectsChangeListener = undefined;
+    }
+    if (this.cleanupIntervalId && typeof globalThis.clearInterval === 'function') {
+      globalThis.clearInterval(this.cleanupIntervalId);
+      this.cleanupIntervalId = undefined;
+    }
+    if (this.objectChangeRafId !== null && typeof globalThis.cancelAnimationFrame === 'function') {
+      globalThis.cancelAnimationFrame(this.objectChangeRafId);
+      this.objectChangeRafId = null;
     }
   }
 
