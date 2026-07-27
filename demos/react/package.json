@@ -7,7 +7,9 @@
   "scripts": {
     "start": "vite",
     "clean": "rimraf dist node_modules",
-    "build-app": "vite build"
+    "build-app": "vite build",
+    "build:e2e:prod": "vite build",
+    "start:e2e:prod": "npm run build:e2e:prod && vite preview --port 5173 --strictPort"
   },
   "dependencies": {
     "kritzel-react": "file:../../libs/kritzel-react/dist",
