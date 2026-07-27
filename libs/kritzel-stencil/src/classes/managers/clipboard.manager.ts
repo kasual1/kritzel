@@ -13,6 +13,7 @@ import { KritzelNavigatorPasteIntentProvider } from '../providers/paste-intent/n
 import { KritzelIosPasteIntentProvider } from '../providers/paste-intent/ios-paste-intent.provider';
 import { KritzelClipboardPayload, PasteIntent, SerializedClipboardObject, CLIPBOARD_PAYLOAD_PREFIX } from './clipboard.types';
 import imageCompression from 'browser-image-compression';
+import { KritzelImageFileHelper } from '../../helpers/image-file.helper';
 
 export type { PasteIntent } from './clipboard.types';
 
@@ -222,9 +223,8 @@ export class KritzelClipboardManager {
       const scale = this._core.store.state.scale;
       const offset = 25 / scale;
       const preparePromises = intent.files.map(async (file, index) => {
-        // Use the default image compression size of 1200
-        const compressed = await imageCompression(file, { maxWidthOrHeight: 1200 });
-        return KritzelImage.fromBlob(this._core, compressed, {
+        const preparedFile = await this.prepareImageFile(file);
+        return KritzelImage.fromBlob(this._core, preparedFile, {
           translateX: index * offset,
           translateY: index * offset,
         });
@@ -235,6 +235,14 @@ export class KritzelClipboardManager {
       console.error('Failed to import pasted image files:', err);
       return null;
     }
+  }
+
+  private async prepareImageFile(file: File): Promise<File> {
+    if (KritzelImageFileHelper.isGifFile(file)) {
+      return file;
+    }
+
+    return imageCompression(file, { maxWidthOrHeight: 1200 });
   }
 
   private async materializePlainText(intent: Extract<PasteIntent, { type: 'plain_text' }>): Promise<KritzelBaseObject<any>[] | null> {

@@ -232,8 +232,12 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    * Registers a callback to be invoked when the awareness state changes.
    * The callback receives the full awareness states map.
    */
-  onAwarenessChange(callback: (states: Map<number, Record<string, any>>) => void): void {
+  onAwarenessChange(callback: (states: Map<number, Record<string, any>>) => void): () => void {
     this._awarenessChangeCallbacks.push(callback);
+
+    return () => {
+      this._awarenessChangeCallbacks = this._awarenessChangeCallbacks.filter(existingCallback => existingCallback !== callback);
+    };
   }
 
   /**
@@ -241,8 +245,12 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    * Used by the awareness cursors component to re-derive cursor positions
    * from the latest object data when a remote user is actively drawing.
    */
-  onObjectsChange(callback: () => void): void {
+  onObjectsChange(callback: () => void): () => void {
     this._objectsChangeCallbacks.push(callback);
+
+    return () => {
+      this._objectsChangeCallbacks = this._objectsChangeCallbacks.filter(existingCallback => existingCallback !== callback);
+    };
   }
 
   /**
@@ -468,6 +476,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
               callback(states);
             }
           }, delayMs);
+          if (typeof this._awarenessEmitTimeout.unref === 'function') {
+            this._awarenessEmitTimeout.unref();
+          }
         }
       };
       this._awareness.on('change', this._awarenessChangeHandler);

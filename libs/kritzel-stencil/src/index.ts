@@ -52,6 +52,7 @@ export * from './classes/managers/localization.manager';
 export * from './classes/managers/license.manager';
 
 export * from './classes/registries/custom-element-renderer.registry';
+export * from './classes/registries/font-registry.class';
 
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';
@@ -76,6 +77,7 @@ export * from './interfaces/engine-state.interface';
 export * from './interfaces/debug-info.interface';
 export * from './interfaces/bounding-box.interface';
 export * from './interfaces/polygon.interface';
+export * from './interfaces/font.interface';
 
 export * from './configs/default-brush-tool.config';
 export * from './configs/default-text-tool.config';

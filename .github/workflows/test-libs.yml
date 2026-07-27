@@ -10,7 +10,7 @@ jobs:
   # --- Build Stencil Library ---
   build-stencil:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -18,10 +18,12 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "22.14.0"
+          node-version: "24.18.0"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci --no-audit --no-fund
 
       - name: Build Kritzel Stencil components
         run: npm run build -w libs/kritzel-stencil
@@ -42,7 +44,7 @@ jobs:
   test-unit:
     runs-on: ubuntu-latest
     needs: build-stencil
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
@@ -51,6 +53,8 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "22.14.0"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Download Stencil dist
         uses: actions/download-artifact@v6
@@ -59,7 +63,7 @@ jobs:
           path: libs
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci --no-audit --no-fund
 
       - name: Run unit tests
         run: npm run test
@@ -68,7 +72,7 @@ jobs:
   test-e2e:
     runs-on: ubuntu-latest
     needs: build-stencil
-    timeout-minutes: 12
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -80,7 +84,9 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "22.14.0"
+          node-version: "24.18.0"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Download Stencil dist
         uses: actions/download-artifact@v6
@@ -89,7 +95,7 @@ jobs:
           path: libs
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci --no-audit --no-fund
 
       - name: Build Kritzel React library
         if: matrix.project == 'react'

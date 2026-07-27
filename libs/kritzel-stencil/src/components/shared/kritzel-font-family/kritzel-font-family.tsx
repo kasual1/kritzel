@@ -1,8 +1,9 @@
-import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter, Watch } from '@stencil/core';
 
 export interface FontOption {
   value: string;
   label: string;
+  cssFontFamily?: string;
 }
 
 @Component({
@@ -11,41 +12,51 @@ export interface FontOption {
   shadow: true,
 })
 export class KritzelFontFamily {
-  @Prop() fontOptions: FontOption[] = [
-    { value: 'arial', label: 'Arial' },
-    { value: 'verdana', label: 'Verdana' },
-    { value: 'helvetica', label: 'Helvetica' },
-    { value: 'tahoma', label: 'Tahoma' },
-    { value: 'trebuchet ms', label: 'Trebuchet MS' },
-    { value: 'times new roman', label: 'Times New Roman' },
-    { value: 'georgia', label: 'Georgia' },
-    { value: 'garamond', label: 'Garamond' },
-    { value: 'courier new', label: 'Courier New' },
-    { value: 'brush script mt', label: 'Brush Script MT' },
-  ];
+  @Prop() fontOptions: FontOption[] = [];
 
   @Prop({ mutable: true }) selectedFontFamily: string;
 
   @Event() fontFamilyChange: EventEmitter<string>;
 
+  @Watch('fontOptions')
+  handleFontOptionsChange() {
+    this.ensureValidSelectedFont(this.resolveFontOptions());
+  }
+
   componentWillLoad() {
-    if (this.fontOptions && this.fontOptions.length > 0) {
-      const isValidCurrentFont = this.fontOptions.some(opt => opt.value === this.selectedFontFamily);
-      if (!this.selectedFontFamily || !isValidCurrentFont) {
-        this.selectedFontFamily = this.fontOptions[0].value;
-      }
-    }
+    this.ensureValidSelectedFont(this.resolveFontOptions());
   }
 
   private handleDropdownValueChange = (event: CustomEvent<string>) => {
     this.fontFamilyChange.emit(event.detail);
   };
 
+  private ensureValidSelectedFont(options: FontOption[]): void {
+    if (options.length === 0) {
+      return;
+    }
+
+    const normalizedSelected = this.selectedFontFamily?.trim().toLocaleLowerCase();
+    const isValidCurrentFont = options.some(opt => opt.value.trim().toLocaleLowerCase() === normalizedSelected);
+
+    if (!normalizedSelected || !isValidCurrentFont) {
+      this.selectedFontFamily = options[0].value;
+    }
+  }
+
+  private resolveFontOptions(): FontOption[] {
+    return this.fontOptions;
+  }
+
   render() {
-    const dropdownOptions = this.fontOptions.map(option => ({
+    const fontOptions = this.resolveFontOptions();
+    const selectedOption = fontOptions.find(option => option.value === this.selectedFontFamily);
+    const selectedFontFamily = selectedOption?.cssFontFamily ?? this.selectedFontFamily;
+
+    const dropdownOptions = fontOptions.map(option => ({
       value: option.value,
       label: option.label,
-      style: { fontFamily: option.value },
+      style: { fontFamily: option.cssFontFamily ?? option.value },
     }));
 
     return (
@@ -54,7 +65,7 @@ export class KritzelFontFamily {
           options={dropdownOptions}
           value={this.selectedFontFamily}
           onValueChanged={this.handleDropdownValueChange}
-          selectStyles={{ fontFamily: this.selectedFontFamily }}
+          selectStyles={{ fontFamily: selectedFontFamily }}
         >
         </kritzel-dropdown>
       </Host>

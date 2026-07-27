@@ -74,7 +74,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
    * @returns void - This method does not return a value; it updates state and triggers a rerender.
    */
   handleContextMenu(event: PointerEvent): void {
-    if (!(this._core.store.state.activeTool instanceof KritzelSelectionTool)) {
+    if (this._core.store.state.activeTool?.toolType !== 'selection') {
       return;
     }
 
@@ -153,7 +153,7 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   open(options: { x: number; y: number; objectId?: string }): void {
     const { x, y, objectId } = options;
 
-    if (this._core.store.state.activeTool instanceof KritzelSelectionTool) {
+    if (this._core.store.state.activeTool?.toolType === 'selection') {
       const selectionTool = this._core.store.state.activeTool as KritzelSelectionTool;
       selectionTool?.moveHandler?.cancelPendingDrag();
     }

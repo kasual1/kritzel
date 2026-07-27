@@ -37,7 +37,7 @@ import { KritzelZoomPanel as KritzelZoomPanelElement, defineCustomElement as def
 
 export type KritzelAwarenessCursorsEvents = NonNullable<unknown>;
 
-export const KritzelAwarenessCursors: StencilReactComponent<KritzelAwarenessCursorsElement, KritzelAwarenessCursorsEvents, Components.KritzelAwarenessCursors> = /*@__PURE__*/ createComponent<KritzelAwarenessCursorsElement, KritzelAwarenessCursorsEvents, Components.KritzelAwarenessCursors>({
+export const KritzelAwarenessCursors: StencilReactComponent<KritzelAwarenessCursorsElement, KritzelAwarenessCursorsEvents, Components.KritzelAwarenessCursors, 'core'> = /*@__PURE__*/ createComponent<KritzelAwarenessCursorsElement, KritzelAwarenessCursorsEvents, Components.KritzelAwarenessCursors, 'core'>({
     tagName: 'kritzel-awareness-cursors',
     elementClass: KritzelAwarenessCursorsElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
@@ -338,7 +338,7 @@ export const KritzelSyncIndicator: StencilReactComponent<KritzelSyncIndicatorEle
 
 export type KritzelWatermarkEvents = NonNullable<unknown>;
 
-export const KritzelWatermark: StencilReactComponent<KritzelWatermarkElement, KritzelWatermarkEvents, Components.KritzelWatermark> = /*@__PURE__*/ createComponent<KritzelWatermarkElement, KritzelWatermarkEvents, Components.KritzelWatermark>({
+export const KritzelWatermark: StencilReactComponent<KritzelWatermarkElement, KritzelWatermarkEvents, Components.KritzelWatermark, 'core'> = /*@__PURE__*/ createComponent<KritzelWatermarkElement, KritzelWatermarkEvents, Components.KritzelWatermark, 'core'>({
     tagName: 'kritzel-watermark',
     elementClass: KritzelWatermarkElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.

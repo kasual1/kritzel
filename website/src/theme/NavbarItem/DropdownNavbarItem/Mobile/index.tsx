@@ -10,6 +10,7 @@ import {translate} from '@docusaurus/Translate';
 import NavbarNavLink from '@theme/NavbarItem/NavbarNavLink';
 import NavbarItem, {type LinkLikeNavbarItemProps} from '@theme/NavbarItem';
 import type {Props} from '@theme/NavbarItem/DropdownNavbarItem/Mobile';
+import {ChevronDown, ChevronRight} from 'lucide-react';
 import styles from './styles.module.css';
 import { setPreferredFramework, getFrameworkFromPath, getPreferredFramework } from '@site/src/utils/frameworkPreference';
 
@@ -48,14 +49,6 @@ function isFrameworkPicker(items: readonly LinkLikeNavbarItemProps[]): boolean {
   );
 }
 
-function isFeaturesDropdown(items: readonly LinkLikeNavbarItemProps[]): boolean {
-  // Check if items point to feature pages
-  const featurePaths = ['/features/infinite-canvas', '/features/framework-agnostic', '/features/real-time-collaboration', '/features/drawing-tools'];
-  return items.some((item) => 
-    featurePaths.some((path) => item.to?.includes(path))
-  );
-}
-
 function CollapseButton({
   collapsed,
   onClick,
@@ -84,7 +77,9 @@ function CollapseButton({
       type="button"
       className="clean-btn menu__caret"
       onClick={onClick}
-    />
+    >
+      {collapsed ? <ChevronRight size={24} aria-hidden="true" /> : <ChevronDown size={24} aria-hidden="true" />}
+    </button>
   );
 }
 
@@ -134,13 +129,7 @@ export default function DropdownNavbarItemMobile({
   const href = props.to ? undefined : '#';
 
   // Never render the framework picker in the mobile sidebar — it lives in the top navbar instead.
-  const isOnDocsPage = localPathname.includes('/docs');
   if (isFrameworkPicker(items)) {
-    return null;
-  }
-
-  // Hide Features dropdown when on docs pages
-  if (isFeaturesDropdown(items) && isOnDocsPage) {
     return null;
   }
 

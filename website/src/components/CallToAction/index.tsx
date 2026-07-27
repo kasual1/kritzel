@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import React from "react";
 import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
-import ArrowRight from "@site/static/img/arrow_right.svg";
+import { ArrowRight } from "lucide-react";
 import { getPreferredFramework, frameworkPaths, subscribeToPreferredFramework } from "@site/src/utils/frameworkPreference";
 
 import styles from "./styles.module.css";
@@ -51,7 +51,7 @@ export default function CallToAction({
             {primaryButton.label}
             {primaryButton.showArrow && (
               <span className="buttonIcon">
-                <ArrowRight style={{ width: "24px", height: "24px" }} />
+                <ArrowRight size={24} aria-hidden="true" />
               </span>
             )}
           </Link>

@@ -58,7 +58,7 @@ export default defineConfig({
   webServer: [
     {
       project: 'angular',
-      command: 'npm run demo:angular',
+      command: 'npm run start:e2e:prod -w demos/angular',
       port: ANGULAR_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
