@@ -65,14 +65,14 @@ export default defineConfig({
     },
     {
       project: 'react',
-      command: 'npm run demo:react',
+      command: 'npm run start:e2e:prod -w demos/react',
       port: REACT_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
       project: 'vue',
-      command: 'npm run demo:vue',
+      command: 'npm run start:e2e:prod -w demos/vue',
       port: VUE_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
