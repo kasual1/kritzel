@@ -155,7 +155,9 @@ const hostStyle: CSSProperties = {
 
 export function WebsiteHeroPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const hostRef = useRef<HTMLDivElement | null>(null);
   const hasImportedInitialWorkspace = useRef(false);
+  const isEditorReady = useRef(false);
 
   useEffect(() => {
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
@@ -164,6 +166,56 @@ export function WebsiteHeroPage() {
     return () => {
       cleanupRocketTodoRenderer();
       cleanupImageStackRenderer();
+    };
+  }, []);
+
+  useEffect(() => {
+    let animationFrameId: number | null = null;
+
+    const fitAllObjects = () => {
+      if (!isEditorReady.current) {
+        return;
+      }
+
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
+
+      animationFrameId = requestAnimationFrame(() => {
+        animationFrameId = null;
+        void editorRef.current?.centerAllObjects(false);
+      });
+    };
+
+    const hostElement = hostRef.current;
+    if (hostElement && typeof ResizeObserver !== "undefined") {
+      const resizeObserver = new ResizeObserver(() => {
+        fitAllObjects();
+      });
+
+      resizeObserver.observe(hostElement);
+
+      return () => {
+        if (animationFrameId !== null) {
+          cancelAnimationFrame(animationFrameId);
+        }
+
+        resizeObserver.disconnect();
+      };
+    }
+
+    const onWindowResize = () => {
+      fitAllObjects();
+    };
+
+    window.addEventListener("resize", onWindowResize);
+
+    return () => {
+      if (animationFrameId !== null) {
+        cancelAnimationFrame(animationFrameId);
+      }
+
+      window.removeEventListener("resize", onWindowResize);
     };
   }, []);
 
@@ -202,10 +254,11 @@ export function WebsiteHeroPage() {
     }
 
     hasImportedInitialWorkspace.current = true;
+    isEditorReady.current = true;
   }
 
   return (
-    <div style={hostStyle}>
+    <div ref={hostRef} style={hostStyle}>
       <KritzelEditor
         ref={editorRef}
         editorId="website-hero"
