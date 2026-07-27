@@ -120,6 +120,7 @@ describe('KritzelEngine', () => {
     getObjectFromPointerEvent: jest.fn().mockReturnValue(null),
     beforeWorkspaceChange: jest.fn(),
     initializeWorkspace: jest.fn().mockResolvedValue(undefined),
+    initializeAssetStorage: jest.fn().mockResolvedValue(undefined),
     createWorkspace: jest.fn().mockResolvedValue(undefined),
     updateWorkspace: jest.fn().mockResolvedValue(undefined),
     deleteWorkspace: jest.fn().mockResolvedValue(undefined),
@@ -204,6 +205,11 @@ describe('KritzelEngine', () => {
       getTool: jest.fn(),
       hasTool: jest.fn(),
       registerTool: jest.fn(),
+    },
+    assetResolver: {
+      hasRemoteProvider: false,
+      fetchBlob: jest.fn(),
+      put: jest.fn().mockResolvedValue({ id: 'asset-1' }),
     },
   });
 
@@ -1573,6 +1579,30 @@ describe('KritzelEngine', () => {
         /Invalid workspace data/,
       );
     });
+
+    it('restores embedded portable assets before importing', async () => {
+      const payload = {
+        __class__: 'KritzelWorkspace',
+        name: 'Imported Workspace',
+        viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 },
+        objects: [],
+        assets: {
+          'asset-1': 'data:image/png;base64,AA==',
+        },
+      };
+
+      jest
+        .spyOn(engine as any, 'dataUrlToBlob')
+        .mockResolvedValue(new Blob(['png-bytes'], { type: 'image/png' }));
+
+      await engine.importFromJson(JSON.stringify(payload));
+
+      expect(core.initializeAssetStorage).toHaveBeenCalled();
+      expect(core.assetResolver.put).toHaveBeenCalledWith(
+        expect.any(Blob),
+        expect.objectContaining({ id: 'asset-1', mimeType: 'image/png', kind: 'image' }),
+      );
+    });
   });
 
   describe('loadObjectsFromJson validation', () => {
@@ -1619,8 +1649,59 @@ describe('KritzelEngine', () => {
 
       const json = await engine.exportAsJson();
 
-      expect(JSON.parse(json)).toEqual(serialized);
+      expect(JSON.parse(json)).toEqual({
+        ...serialized,
+        exportMode: 'portable',
+      });
+      expect(core.initializeAssetStorage).toHaveBeenCalled();
       expect((core.store.state.activeWorkspace as any).serialize).toHaveBeenCalledWith({ includeObjects: true });
+    });
+
+    it('uses lightweight export mode when a remote asset provider exists', async () => {
+      const serialized = { __class__: 'KritzelWorkspace', id: 'w1', objects: [] };
+      core.assetResolver.hasRemoteProvider = true;
+      core.store.state.activeWorkspace = {
+        serialize: jest.fn().mockReturnValue(serialized),
+      } as unknown as KritzelWorkspace;
+
+      const json = await engine.exportAsJson();
+
+      expect(JSON.parse(json)).toEqual({
+        ...serialized,
+        exportMode: 'lightweight',
+      });
+      expect(core.assetResolver.fetchBlob).not.toHaveBeenCalled();
+    });
+
+    it('embeds image assets for portable exports when no remote provider exists', async () => {
+      const serialized = {
+        __class__: 'KritzelWorkspace',
+        id: 'w1',
+        objects: [
+          { __class__: 'KritzelImage', assetId: 'asset-1' },
+          { __class__: 'KritzelImage', assetId: 'asset-1' },
+        ],
+      };
+      core.assetResolver.hasRemoteProvider = false;
+      core.assetResolver.fetchBlob.mockResolvedValue(new Blob(['png-bytes'], { type: 'image/png' }));
+      jest
+        .spyOn(engine as any, 'blobToDataUrl')
+        .mockResolvedValue('data:image/png;base64,cG5nLWJ5dGVz');
+      core.store.state.activeWorkspace = {
+        serialize: jest.fn().mockReturnValue(serialized),
+      } as unknown as KritzelWorkspace;
+
+      const json = await engine.exportAsJson();
+
+      expect(JSON.parse(json)).toEqual({
+        ...serialized,
+        exportMode: 'portable',
+        assets: {
+          'asset-1': 'data:image/png;base64,cG5nLWJ5dGVz',
+        },
+      });
+      expect(core.assetResolver.fetchBlob).toHaveBeenCalledTimes(1);
+      expect(core.assetResolver.fetchBlob).toHaveBeenCalledWith('asset-1');
     });
   });
 

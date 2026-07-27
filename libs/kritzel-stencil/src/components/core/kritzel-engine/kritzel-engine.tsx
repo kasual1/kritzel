@@ -53,6 +53,16 @@ import { IKritzelUser } from '../../../interfaces/user.interface';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
 import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
 
+type WorkspaceExportMode = 'lightweight' | 'portable';
+
+interface WorkspaceJsonExportPayload extends Record<string, unknown> {
+  __class__?: string;
+  version?: string;
+  objects?: unknown[];
+  exportMode?: WorkspaceExportMode;
+  assets?: Record<string, string>;
+}
+
 @Component({
   tag: 'kritzel-engine',
   styleUrl: 'kritzel-engine.css',
@@ -1735,8 +1745,27 @@ export class KritzelEngine {
       throw new Error('Cannot export workspace: no active workspace is loaded');
     }
 
-    const serialized = workspace.serialize({ includeObjects: true });
-    return JSON.stringify(serialized, null, 2);
+    await this.core.initializeAssetStorage();
+
+    const serialized = workspace.serialize({ includeObjects: true }) as WorkspaceJsonExportPayload;
+    const exportMode = this.getWorkspaceExportMode();
+    const { objects, ...workspaceWithoutObjects } = serialized;
+    const payload: WorkspaceJsonExportPayload = {
+      ...workspaceWithoutObjects,
+      exportMode,
+      ...(objects !== undefined ? { objects } : {}),
+    };
+
+    if (exportMode === 'portable') {
+      const portableAssets = await this.collectPortableAssets(payload.objects);
+      if (Object.keys(portableAssets).length > 0) {
+        payload.assets = portableAssets;
+      }
+    } else {
+      delete payload.assets;
+    }
+
+    return JSON.stringify(payload, null, 2);
   }
 
   /**
@@ -1747,12 +1776,15 @@ export class KritzelEngine {
    */
   @Method()
   async importFromJson(json: string): Promise<void> {
-    const data = JSON.parse(json);
+    const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
     if (!data.__class__ || data.__class__ !== 'KritzelWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
+
+    await this.core.initializeAssetStorage();
+    await this.restorePortableAssets(data);
 
     if (data.version && data.version !== WORKSPACE_EXPORT_VERSION) {
       console.warn(`Workspace version mismatch: expected ${WORKSPACE_EXPORT_VERSION}, got ${data.version}`);
@@ -1760,18 +1792,8 @@ export class KritzelEngine {
 
     // Create a new workspace with a fresh ID but use the imported name
     const newWorkspaceId = ObjectHelper.generateUUID();
-    const importedName = data.name || 'Imported Workspace';
-    let importedViewport = data.viewport || { centerWorldX: 0, centerWorldY: 0, scale: 1 };
-
-    // Backward compatibility: convert legacy translateX/translateY to centerWorldX/centerWorldY
-    if ('translateX' in importedViewport && !('centerWorldX' in importedViewport)) {
-      const scale = importedViewport.scale ?? 1;
-      importedViewport = {
-        centerWorldX: -(importedViewport.translateX ?? 0) / scale,
-        centerWorldY: -(importedViewport.translateY ?? 0) / scale,
-        scale,
-      };
-    }
+    const importedName = this.getImportedWorkspaceName(data.name);
+    const importedViewport = this.getImportedWorkspaceViewport(data.viewport);
 
     const newWorkspace = new KritzelWorkspace(newWorkspaceId, importedName, importedViewport);
 
@@ -1813,12 +1835,15 @@ export class KritzelEngine {
    */
   @Method()
   async loadObjectsFromJson(json: string): Promise<number> {
-    const data = JSON.parse(json);
+    const data = JSON.parse(json) as WorkspaceJsonExportPayload;
 
     // Validate the import data
     if (!data.__class__ || data.__class__ !== 'KritzelWorkspace') {
       throw new Error('Invalid workspace data: missing or incorrect __class__ identifier');
     }
+
+    await this.core.initializeAssetStorage();
+    await this.restorePortableAssets(data);
 
     if (data.version && data.version !== WORKSPACE_EXPORT_VERSION) {
       console.warn(`Workspace version mismatch: expected ${WORKSPACE_EXPORT_VERSION}, got ${data.version}`);
@@ -1850,6 +1875,119 @@ export class KritzelEngine {
     this.core.rerender();
 
     return loadedCount;
+  }
+
+  private getWorkspaceExportMode(): WorkspaceExportMode {
+    return this.core.assetResolver.hasRemoteProvider ? 'lightweight' : 'portable';
+  }
+
+  private async collectPortableAssets(serializedObjects?: unknown[]): Promise<Record<string, string>> {
+    if (!Array.isArray(serializedObjects) || serializedObjects.length === 0) {
+      return {};
+    }
+
+    const assetIds = new Set<string>();
+    for (const serializedObject of serializedObjects) {
+      if (!serializedObject || typeof serializedObject !== 'object') {
+        continue;
+      }
+
+      const maybeImage = serializedObject as { __class__?: string; assetId?: unknown };
+      if (maybeImage.__class__ === 'KritzelImage' && typeof maybeImage.assetId === 'string' && maybeImage.assetId.length > 0) {
+        assetIds.add(maybeImage.assetId);
+      }
+    }
+
+    const assets: Record<string, string> = {};
+    for (const assetId of assetIds) {
+      try {
+        const blob = await this.core.assetResolver.fetchBlob(assetId);
+        assets[assetId] = await this.blobToDataUrl(blob);
+      } catch (error) {
+        console.warn(`[Kritzel] Failed to embed asset ${assetId} in portable workspace export:`, error);
+      }
+    }
+
+    return assets;
+  }
+
+  private async restorePortableAssets(data: WorkspaceJsonExportPayload): Promise<void> {
+    const assets = data.assets;
+    if (!assets || typeof assets !== 'object') {
+      return;
+    }
+
+    for (const [assetId, dataUrl] of Object.entries(assets)) {
+      if (!assetId || typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) {
+        continue;
+      }
+
+      try {
+        const blob = await this.dataUrlToBlob(dataUrl);
+        await this.core.assetResolver.put(blob, {
+          id: assetId,
+          mimeType: blob.type || 'application/octet-stream',
+          kind: 'image',
+        });
+      } catch (error) {
+        console.warn(`[Kritzel] Failed to restore embedded asset ${assetId} from portable workspace import:`, error);
+      }
+    }
+  }
+
+  private blobToDataUrl(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(reader.error ?? new Error('Failed to read blob as data URL'));
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  private async dataUrlToBlob(dataUrl: string): Promise<Blob> {
+    const response = await fetch(dataUrl);
+    return response.blob();
+  }
+
+  private getImportedWorkspaceName(rawName: unknown): string {
+    if (typeof rawName === 'string' && rawName.trim().length > 0) {
+      return rawName;
+    }
+    return 'Imported Workspace';
+  }
+
+  private getImportedWorkspaceViewport(rawViewport: unknown): { centerWorldX: number; centerWorldY: number; scale: number } {
+    if (!rawViewport || typeof rawViewport !== 'object') {
+      return { centerWorldX: 0, centerWorldY: 0, scale: 1 };
+    }
+
+    const viewport = rawViewport as {
+      centerWorldX?: unknown;
+      centerWorldY?: unknown;
+      scale?: unknown;
+      translateX?: unknown;
+      translateY?: unknown;
+    };
+
+    if (typeof viewport.centerWorldX === 'number' && typeof viewport.centerWorldY === 'number') {
+      const scale = typeof viewport.scale === 'number' && viewport.scale > 0 ? viewport.scale : 1;
+      return {
+        centerWorldX: viewport.centerWorldX,
+        centerWorldY: viewport.centerWorldY,
+        scale,
+      };
+    }
+
+    if (typeof viewport.translateX === 'number' || typeof viewport.translateY === 'number') {
+      const scale = typeof viewport.scale === 'number' && viewport.scale > 0 ? viewport.scale : 1;
+      return {
+        centerWorldX: -(typeof viewport.translateX === 'number' ? viewport.translateX : 0) / scale,
+        centerWorldY: -(typeof viewport.translateY === 'number' ? viewport.translateY : 0) / scale,
+        scale,
+      };
+    }
+
+    return { centerWorldX: 0, centerWorldY: 0, scale: 1 };
   }
 
   /**
