@@ -16,15 +16,6 @@
   color: var(--ifm-color-content);
 }
 
-.featureTitle {
-  display: block;
-  font-size: 30px;
-  line-height: 1.2;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
 
 @media (max-width: 996px) {
   .features {
@@ -32,6 +23,6 @@
   }
 
   .features :global(.row) {
-    row-gap: 2rem;
+    row-gap: 3rem;
   }
 }

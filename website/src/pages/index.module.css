@@ -181,7 +181,7 @@
 
 .faqTitle {
   text-align: center;
-  font-size: 30px;
+  font-size: 2rem;
   margin: 0;
   letter-spacing: -0.02em;
 }
@@ -206,7 +206,7 @@
   }
 
   .faqTitle {
-    font-size: 30px;
+    font-size: 1.65rem;
   }
 
   .faqSubtitle {
