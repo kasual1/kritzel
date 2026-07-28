@@ -248,7 +248,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Kritzel. All rights reserved.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Kritzel`,
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
