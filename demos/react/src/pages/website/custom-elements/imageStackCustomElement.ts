@@ -2,7 +2,7 @@ import { KritzelCustomElement } from "kritzel-react";
 import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
 
 export const IMAGE_STACK_RENDERER_KEY = "website-hero-image-stack";
-export const IMAGE_STACK_OBJECT_SIZE = 364;
+export const IMAGE_STACK_OBJECT_SIZE = 255;
 const IMAGE_STACK_Z_INDEX = 13;
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -88,57 +88,57 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
     "position:relative",
     "width:100%",
     "height:100%",
-    "border-radius:clamp(20px, 10%, 44px)",
+    "border-radius:clamp(14px, 10%, 31px)",
     "background:#f4f7fb",
     "overflow:hidden",
-    "box-shadow:0 14px 30px rgba(20, 29, 46, 0.2)",
+    "box-shadow:0 10px 21px rgba(20, 29, 46, 0.2)",
   ].join(";");
 
   const indexBadge = document.createElement("div");
   indexBadge.style.cssText =
-    "position:absolute; right:18px; bottom:18px; z-index:3; background:rgba(19, 29, 45, 0.58); color:#fff; font-size:12px; font-weight:600; border-radius:999px; padding:4px 9px;";
+    "position:absolute; right:13px; bottom:13px; z-index:3; background:rgba(19, 29, 45, 0.58); color:#fff; font-size:8.4px; font-weight:600; border-radius:999px; padding:2.8px 6.3px;";
 
   const titleBadge = document.createElement("div");
   titleBadge.style.cssText =
-    "position:absolute; left:18px; right:18px; bottom:18px; z-index:2; color:#ffffff; font-size:13px; font-weight:600; letter-spacing:0.01em; text-shadow:0 2px 8px rgba(10, 15, 24, 0.45); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; padding-right:72px;";
+    "position:absolute; left:13px; right:13px; bottom:13px; z-index:2; color:#ffffff; font-size:9.1px; font-weight:600; letter-spacing:0.01em; text-shadow:0 1.4px 5.6px rgba(10, 15, 24, 0.45); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; padding-right:50.4px;";
 
   const buttonBaseStyle = [
     "position:absolute",
     "top:50%",
     "z-index:10",
-    "width:34px",
-    "height:34px",
+    "width:23.8px",
+    "height:23.8px",
     "transform:translateY(-50%)",
-    "border:1px solid rgba(255, 255, 255, 0.45)",
+    "border:0.7px solid rgba(255, 255, 255, 0.45)",
     "border-radius:999px",
     "background:rgba(12, 18, 28, 0.5)",
     "color:#ffffff",
     "cursor:pointer",
     "font-family:Georgia, serif",
-    "font-size:24px",
+    "font-size:16.8px",
     "font-weight:400",
     "line-height:1",
     "display:grid",
     "place-items:center",
-    "padding:0 0 3px",
+    "padding:0 0 2.1px",
     "backdrop-filter:blur(10px)",
     "touch-action:manipulation",
     "user-select:none",
     "-webkit-tap-highlight-color:transparent",
-    "box-shadow:0 6px 18px rgba(4, 8, 15, 0.25)",
+    "box-shadow:0 4.2px 12.6px rgba(4, 8, 15, 0.25)",
   ].join(";");
 
   const prevButton = document.createElement("button");
   prevButton.type = "button";
   prevButton.textContent = "‹";
   prevButton.setAttribute("aria-label", "Show previous image");
-  prevButton.style.cssText = `${buttonBaseStyle}; left:18px;`;
+  prevButton.style.cssText = `${buttonBaseStyle}; left:13px;`;
 
   const nextButton = document.createElement("button");
   nextButton.type = "button";
   nextButton.textContent = "›";
   nextButton.setAttribute("aria-label", "Show next image");
-  nextButton.style.cssText = `${buttonBaseStyle}; right:18px;`;
+  nextButton.style.cssText = `${buttonBaseStyle}; right:13px;`;
 
   const cleanupListeners: Array<() => void> = [];
   let previousIndex: number | null = null;
@@ -190,7 +190,7 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
     if (IMAGE_POOL.length === 0) {
       const empty = document.createElement("div");
       empty.textContent = "No images configured";
-      empty.style.cssText = "height:100%; display:grid; place-items:center; color:#7a8294; font-size:14px;";
+      empty.style.cssText = "height:100%; display:grid; place-items:center; color:#7a8294; font-size:9.8px;";
       stage.appendChild(empty);
       indexBadge.textContent = "0 / 0";
       titleBadge.textContent = "";
