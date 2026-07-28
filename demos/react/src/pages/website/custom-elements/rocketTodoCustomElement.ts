@@ -76,8 +76,8 @@ function mountRocketTodoWidget(initialState: RocketTodoState): MountedRocketTodo
   root.style.cssText = [
     "height:100%",
     "box-sizing:border-box",
-    "border-radius:14px",
-    "border:12px solid #e4e7eb",
+    "border-radius:8px",
+    "border:7px solid #e4e7eb",
     "background:#ffffff",
     "font-family:'Segoe UI', Tahoma, sans-serif",
     "display:flex",
@@ -87,32 +87,32 @@ function mountRocketTodoWidget(initialState: RocketTodoState): MountedRocketTodo
   ].join(";");
 
   const header = document.createElement("div");
-  header.style.cssText = "padding:16px 16px 12px; border-bottom:1px solid #efeff0;";
+  header.style.cssText = "padding:9px 9px 7px; border-bottom:1px solid #efeff0;";
 
   const heading = document.createElement("h2");
   heading.textContent = "Today";
-  heading.style.cssText = "margin:0; font-size:38px; line-height:1; font-weight:700; letter-spacing:-0.03em;";
+  heading.style.cssText = "margin:0; font-size:21px; line-height:1; font-weight:700; letter-spacing:-0.03em;";
 
   const subheading = document.createElement("p");
   subheading.textContent = "Rocket Launch Tasks 5";
-  subheading.style.cssText = "margin:10px 0 0; color:#5f646d; font-size:14px; font-weight:600;";
+  subheading.style.cssText = "margin:5px 0 0; color:#5f646d; font-size:8px; font-weight:600;";
 
   const list = document.createElement("ul");
-  list.style.cssText = "margin:0; padding:0; list-style:none; overflow:auto; border-radius:14px;";
+  list.style.cssText = "margin:0; padding:0; list-style:none; overflow:auto; border-radius:8px;";
 
   const listeners: Array<() => void> = [];
 
   state.items.forEach((item) => {
     const row = document.createElement("li");
     row.style.cssText =
-      "display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:10px; padding:13px 16px; border-bottom:1px solid #efeff0; background:#ffffff;";
+      "display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:6px; padding:8px 9px; border-bottom:1px solid #efeff0; background:#ffffff;";
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
     checkbox.checked = item.isChecked;
     checkbox.style.cssText = [
-      "inline-size:22px",
-      "block-size:22px",
+      "inline-size:12px",
+      "block-size:12px",
       "margin:0",
       "cursor:pointer",
       "appearance:none",
@@ -130,15 +130,15 @@ function mountRocketTodoWidget(initialState: RocketTodoState): MountedRocketTodo
 
     const label = document.createElement("span");
     label.textContent = item.title;
-    label.style.cssText = "display:block; font-size:16px; line-height:1.3; color:#262a33;";
+    label.style.cssText = "display:block; font-size:9px; line-height:1.3; color:#262a33;";
 
     const meta = document.createElement("span");
     meta.textContent = "Required before launch";
-    meta.style.cssText = "display:block; margin-top:3px; color:#66a443; font-size:13px;";
+    meta.style.cssText = "display:block; margin-top:2px; color:#66a443; font-size:8px;";
 
     const category = document.createElement("span");
     category.textContent = CATEGORY_LABEL_BY_ID[item.id] ?? "Launch #";
-    category.style.cssText = "font-size:13px; color:#80858f; white-space:nowrap;";
+    category.style.cssText = "font-size:8px; color:#80858f; white-space:nowrap;";
 
     const applyCheckedStyle = () => {
       checkbox.style.backgroundColor = checkbox.checked ? "#007AFF" : "#ffffff";
@@ -148,7 +148,7 @@ function mountRocketTodoWidget(initialState: RocketTodoState): MountedRocketTodo
         : "none";
       checkbox.style.backgroundRepeat = "no-repeat";
       checkbox.style.backgroundPosition = "center";
-      checkbox.style.backgroundSize = "15px 15px";
+      checkbox.style.backgroundSize = "9px 9px";
       label.style.textDecoration = checkbox.checked ? "line-through" : "none";
       label.style.color = checkbox.checked ? "#878d98" : "#262a33";
       meta.style.color = checkbox.checked ? "#9aa29f" : "#66a443";
@@ -248,8 +248,8 @@ export function createRocketTodoCustomElement() {
     rendererData: createRocketTodoInitialState(),
     translateX: -1225,
     translateY: -482,
-    width: 440,
-    height: 563
+    width: 339,
+    height: 433
   });
 
   customElement.isRotatable = false;
