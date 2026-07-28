@@ -264,10 +264,10 @@ export function WebsiteHeroPage() {
         editorId="website-hero"
         customFonts={WEBSITE_HERO_CUSTOM_FONTS}
         controls={WEBSITE_HERO_CONTROLS}
-        isPanningEnabled={false}
+        isPanningEnabled={true}
         isZoomingEnabled={true}
-        isMoreMenuVisible={false}
-        isWorkspaceManagerVisible={false}
+        isMoreMenuVisible={true}
+        isWorkspaceManagerVisible={true}
         onIsReady={() => {
           void onReady();
         }}
