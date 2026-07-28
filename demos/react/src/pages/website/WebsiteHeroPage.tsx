@@ -267,7 +267,7 @@ export function WebsiteHeroPage() {
         isPanningEnabled={true}
         isZoomingEnabled={true}
         isMoreMenuVisible={true}
-        isWorkspaceManagerVisible={false}
+        isWorkspaceManagerVisible={true}
         onIsReady={() => {
           void onReady();
         }}
