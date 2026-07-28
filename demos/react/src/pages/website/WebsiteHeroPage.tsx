@@ -266,8 +266,8 @@ export function WebsiteHeroPage() {
         controls={WEBSITE_HERO_CONTROLS}
         isPanningEnabled={false}
         isZoomingEnabled={true}
-        isMoreMenuVisible={false}
-        isWorkspaceManagerVisible={false}
+        isMoreMenuVisible={true}
+        isWorkspaceManagerVisible={true}
         onIsReady={() => {
           void onReady();
         }}
