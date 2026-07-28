@@ -11,7 +11,7 @@
 }
 
 .ctaTitle {
-  font-size: 1.8rem;
+  font-size: 30px;
   font-weight: bold;
   color: white;
   margin-bottom: 1.5rem;
@@ -59,7 +59,7 @@
   }
 
   .ctaTitle {
-    font-size: 2rem;
+    font-size: 30px;
   }
 
   .ctaDescription {

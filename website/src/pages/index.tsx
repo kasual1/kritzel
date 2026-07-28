@@ -14,6 +14,12 @@ import { getPreferredFramework, frameworkPaths, subscribeToPreferredFramework } 
 import styles from "./index.module.css";
 import React from "react";
 
+const quickStartPaths: Record<keyof typeof frameworkPaths, string> = {
+  angular: "/docs/angular/quick-start",
+  react: "/docs/react/quick-start",
+  vue: "/docs/vue/quick-start",
+};
+
 function HomepageEditorEmbed() {
   return (
     <iframe
@@ -28,13 +34,13 @@ function HomepageEditorEmbed() {
 }
 
 function HomepageHeader() {
-  const [targetPath, setTargetPath] = React.useState('/docs/react/overview');
+  const [targetPath, setTargetPath] = React.useState('/docs/react/quick-start');
 
   React.useEffect(() => {
     const preferred = getPreferredFramework();
-    setTargetPath(frameworkPaths[preferred]);
+    setTargetPath(quickStartPaths[preferred]);
     return subscribeToPreferredFramework((framework) => {
-      setTargetPath(frameworkPaths[framework]);
+      setTargetPath(quickStartPaths[framework]);
     });
   }, []);
   
@@ -47,9 +53,7 @@ function HomepageHeader() {
           Experiences in Minutes.
         </Heading>
         <p className={clsx("hero__subtitle", styles.heroSubtitle)}>
-          Kritzel is a framework-agnostic, infinite canvas library 
-          <br />
-          with easy integration for React, Vue, and Angular.
+          Kritzel is a framework-agnostic, infinite canvas library with easy integration for React, Vue, and Angular.
         </p>
         <div className={styles.editorContainer}>
           <HomepageEditorEmbed />
@@ -60,7 +64,7 @@ function HomepageHeader() {
             className="button button--primary button--lg"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >
-            Try the Demo
+            Demo
             <span className="buttonIcon">
               <ArrowRight size={24} aria-hidden="true" />
             </span>
@@ -70,7 +74,7 @@ function HomepageHeader() {
             className="button button--secondary button--lg"
             style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
           >
-            Read the Docs
+            Get started
             <span className="buttonIcon">
               <ArrowRight size={24} aria-hidden="true" />
             </span>
@@ -88,14 +92,14 @@ const faqItems = [
       "Kritzel works seamlessly with React, Vue, Angular, and Vanilla JavaScript. Built on native Web Components with first-class TypeScript support, it provides dedicated framework wrappers so you can use native props and event handlers in your stack.",
   },
   {
-    question: "Can Kritzel handle large boards with thousands of elements?",
+    question: "Can Kritzel handle large, complex boards?",
     answer:
-      "Yes. Kritzel is engineered specifically for scale. Using spatial indexing and viewport optimizations under the hood, it maintains smooth 60 FPS panning and zooming even as your canvas grows to thousands of elements.",
+      "Yes. Kritzel is designed to handle large, complex boards. Using spatial indexing and viewport optimizations under the hood, it keeps panning and zooming responsive as your canvas grows.",
   },
   {
-    question: "Is Kritzel a rigid whiteboard app or a flexible library?",
+    question: "Is Kritzel an alternative to tldraw or Excalidraw?",
     answer:
-      "Kritzel is an unstyled, flexible canvas engine—not a restrictive UI kit. It handles the hard math of panning, zooming, and spatial management, leaving you with 100% control over your app’s UI, toolbar design, and styling.",
+      "Yes. Kritzel is a lightweight alternative to tldraw and Excalidraw, giving you a core canvas experience without the bloat of heavier engines.",
   },
   {
     question: "Does Kritzel support mobile devices, tablets, and trackpads?",

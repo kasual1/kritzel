@@ -27,3 +27,18 @@ To support the development workflow of "Kritzel" the following commands may be u
 	-  `npm run start-demo-vue`
 5. Publish the libraries to npm `npm run publish`
 6. Sometimes it's necessary to remove all node_modules and dist folders. Run `npm run clean`
+
+## ngrok for Remote Preview
+You can expose local dev servers through ngrok to test on mobile devices or share previews.
+
+1. Start the local server you want to share:
+	- Stencil library preview: `npm run start`
+	- Documentation website: `npm run docs:start`
+2. In a second terminal, start ngrok for the same target:
+	- Stencil library preview: `npm run ngrok:stencil` (or `npm run ngrok`)
+	- Documentation website: `npm run ngrok:website`
+
+Notes:
+- `ngrok:stencil` tunnels `http://localhost:3333`
+- `ngrok:website` tunnels `http://localhost:3000`
+- You can override the target port with `NGROK_PORT`, e.g. `NGROK_PORT=4000 npm run ngrok:website`

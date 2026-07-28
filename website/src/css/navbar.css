@@ -63,7 +63,6 @@ body:has(.theme-doc-markdown) .navbar--fixed-top {
 }
 
 .navbar__brand {
-  gap: 0.5rem;
   margin-right: 1.1rem;
 }
 
