@@ -24,10 +24,10 @@ import {
   setupCoreStageDashboardRenderer,
 } from "./custom-elements/coreStageDashboardCustomElement";
 import {
-  ARTEMIS_BOOSTER_SEPARATION_VIDEO_RENDERER_KEY,
-  createArtemisBoosterSeparationVideoCustomElement,
-  setupArtemisBoosterSeparationVideoRenderer,
-} from "./custom-elements/artemisBoosterSeparationVideoCustomElement";
+  VIDEO_RENDERER_KEY,
+  createVideoCustomElement,
+  setupVideoRenderer,
+} from "./custom-elements/videoCustomElement";
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -165,20 +165,20 @@ export function WebsiteHeroPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const hasImportedInitialWorkspace = useRef(false);
-  const hasAddedBoosterSeparationVideo = useRef(false);
+  const hasAddedVideoCustomElement = useRef(false);
   const isEditorReady = useRef(false);
 
   useEffect(() => {
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
     const cleanupImageStackRenderer = setupImageStackRenderer();
     const cleanupCoreStageDashboardRenderer = setupCoreStageDashboardRenderer();
-    const cleanupBoosterSeparationVideoRenderer = setupArtemisBoosterSeparationVideoRenderer();
+    const cleanupVideoRenderer = setupVideoRenderer();
 
     return () => {
       cleanupRocketTodoRenderer();
       cleanupImageStackRenderer();
       cleanupCoreStageDashboardRenderer();
-      cleanupBoosterSeparationVideoRenderer();
+      cleanupVideoRenderer();
     };
   }, []);
 
@@ -238,8 +238,8 @@ export function WebsiteHeroPage() {
       return;
     }
 
-    async function ensureBoosterSeparationVideoObject(editorElement: HTMLKritzelEditorElement) {
-      if (hasAddedBoosterSeparationVideo.current) {
+    async function ensureVideoCustomElementObject(editorElement: HTMLKritzelEditorElement) {
+      if (hasAddedVideoCustomElement.current) {
         return;
       }
 
@@ -252,28 +252,28 @@ export function WebsiteHeroPage() {
         const candidate = object as { __class__?: string; rendererKey?: string };
         return (
           candidate.__class__ === "KritzelCustomElement" &&
-          candidate.rendererKey === ARTEMIS_BOOSTER_SEPARATION_VIDEO_RENDERER_KEY
+          candidate.rendererKey === VIDEO_RENDERER_KEY
         );
       });
 
       if (hasExistingVideo) {
-        hasAddedBoosterSeparationVideo.current = true;
+        hasAddedVideoCustomElement.current = true;
         return;
       }
 
-      await editorElement.addObject(createArtemisBoosterSeparationVideoCustomElement());
-      hasAddedBoosterSeparationVideo.current = true;
+      await editorElement.addObject(createVideoCustomElement());
+      hasAddedVideoCustomElement.current = true;
     }
 
     if (hasImportedInitialWorkspace.current) {
-      await ensureBoosterSeparationVideoObject(editor);
+      await ensureVideoCustomElementObject(editor);
       isEditorReady.current = true;
       return;
     }
 
     const objectCount = await editor.getObjectsTotalCount();
     if ((objectCount ?? 0) > 0) {
-      await ensureBoosterSeparationVideoObject(editor);
+      await ensureVideoCustomElementObject(editor);
       hasImportedInitialWorkspace.current = true;
       isEditorReady.current = true;
       return;
@@ -303,7 +303,7 @@ export function WebsiteHeroPage() {
       );
     }
 
-    await ensureBoosterSeparationVideoObject(editor);
+    await ensureVideoCustomElementObject(editor);
 
     hasImportedInitialWorkspace.current = true;
     isEditorReady.current = true;

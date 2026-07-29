@@ -1,10 +1,11 @@
 import { KritzelCustomElement } from "kritzel-react";
 import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
 
-export const ARTEMIS_BOOSTER_SEPARATION_VIDEO_RENDERER_KEY = "website-hero-artemis-booster-separation-video";
-const ARTEMIS_BOOSTER_SEPARATION_VIDEO_Z_INDEX = 12;
-const ARTEMIS_BOOSTER_SEPARATION_VIDEO_WIDTH = 420;
-const ARTEMIS_BOOSTER_SEPARATION_VIDEO_HEIGHT = 236;
+export const VIDEO_RENDERER_KEY = "website-hero-video";
+const VIDEO_Z_INDEX = 12;
+const VIDEO_WIDTH = 420;
+const VIDEO_HEIGHT = 236;
+const VIDEO_SOURCE_PATH = "artemis_booster_separation.mp4";
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -14,16 +15,16 @@ function withBaseUrl(assetPath: string): string {
   return `${normalizedBaseUrl}${assetPath.replace(/^\/+/, "")}`;
 }
 
-type ArtemisBoosterSeparationVideoState = {
+type VideoState = {
   schemaVersion: 1;
   currentTimeSec: number;
   volume: number;
   isMuted: boolean;
 };
 
-type MountedArtemisBoosterSeparationVideo = {
+type MountedVideoWidget = {
   root: HTMLElement;
-  getState: () => ArtemisBoosterSeparationVideoState;
+  getState: () => VideoState;
   destroy: () => void;
 };
 
@@ -31,7 +32,7 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
 
-export function createArtemisBoosterSeparationVideoInitialState(): ArtemisBoosterSeparationVideoState {
+export function createVideoInitialState(): VideoState {
   return {
     schemaVersion: 1,
     currentTimeSec: 0,
@@ -40,13 +41,13 @@ export function createArtemisBoosterSeparationVideoInitialState(): ArtemisBooste
   };
 }
 
-function normalizeArtemisBoosterSeparationVideoState(data: unknown): ArtemisBoosterSeparationVideoState {
-  const fallback = createArtemisBoosterSeparationVideoInitialState();
+function normalizeVideoState(data: unknown): VideoState {
+  const fallback = createVideoInitialState();
   if (!data || typeof data !== "object") {
     return fallback;
   }
 
-  const candidate = data as Partial<ArtemisBoosterSeparationVideoState>;
+  const candidate = data as Partial<VideoState>;
   if (candidate.schemaVersion !== 1) {
     return fallback;
   }
@@ -65,9 +66,7 @@ function normalizeArtemisBoosterSeparationVideoState(data: unknown): ArtemisBoos
   };
 }
 
-function cloneArtemisBoosterSeparationVideoState(
-  state: ArtemisBoosterSeparationVideoState,
-): ArtemisBoosterSeparationVideoState {
+function cloneVideoState(state: VideoState): VideoState {
   return {
     schemaVersion: state.schemaVersion,
     currentTimeSec: state.currentTimeSec,
@@ -76,13 +75,11 @@ function cloneArtemisBoosterSeparationVideoState(
   };
 }
 
-function mountArtemisBoosterSeparationVideoWidget(
-  initialState: ArtemisBoosterSeparationVideoState,
-): MountedArtemisBoosterSeparationVideo {
-  const state = cloneArtemisBoosterSeparationVideoState(initialState);
+function mountVideoWidget(initialState: VideoState): MountedVideoWidget {
+  const state = cloneVideoState(initialState);
   const listeners: Array<() => void> = [];
   let isHoveringStage = false;
-  const videoUrl = withBaseUrl("artemis_booster_separation.mp4");
+  const videoUrl = withBaseUrl(VIDEO_SOURCE_PATH);
 
   const root = document.createElement("section");
   root.style.cssText = [
@@ -194,11 +191,9 @@ function mountArtemisBoosterSeparationVideoWidget(
     updatePlaybackButton();
   };
 
-  [playbackButton].forEach((element) => {
-    element.addEventListener("pointerdown", stopPointerPropagation);
-    element.addEventListener("pointerup", stopPointerPropagation);
-    element.addEventListener("pointermove", stopPointerPropagation);
-  });
+  playbackButton.addEventListener("pointerdown", stopPointerPropagation);
+  playbackButton.addEventListener("pointerup", stopPointerPropagation);
+  playbackButton.addEventListener("pointermove", stopPointerPropagation);
 
   video.addEventListener("loadedmetadata", onLoadedMetadata);
   video.addEventListener("timeupdate", onTimeUpdate);
@@ -218,14 +213,12 @@ function mountArtemisBoosterSeparationVideoWidget(
   listeners.push(() => stage.removeEventListener("mouseenter", onStageMouseEnter));
   listeners.push(() => stage.removeEventListener("mouseleave", onStageMouseLeave));
 
-  [playbackButton].forEach((element) => {
-    listeners.push(() => element.removeEventListener("pointerdown", stopPointerPropagation));
-    listeners.push(() => element.removeEventListener("pointerup", stopPointerPropagation));
-    listeners.push(() => element.removeEventListener("pointermove", stopPointerPropagation));
-  });
+  listeners.push(() => playbackButton.removeEventListener("pointerdown", stopPointerPropagation));
+  listeners.push(() => playbackButton.removeEventListener("pointerup", stopPointerPropagation));
+  listeners.push(() => playbackButton.removeEventListener("pointermove", stopPointerPropagation));
 
   root.tabIndex = 0;
-  root.setAttribute("aria-label", "Artemis booster separation video");
+  root.setAttribute("aria-label", "Video custom element");
   stage.appendChild(video);
   stage.appendChild(playbackButton);
   root.appendChild(stage);
@@ -233,7 +226,7 @@ function mountArtemisBoosterSeparationVideoWidget(
 
   return {
     root,
-    getState: () => cloneArtemisBoosterSeparationVideoState(state),
+    getState: () => cloneVideoState(state),
     destroy: () => {
       listeners.forEach((cleanup) => cleanup());
       video.pause();
@@ -241,10 +234,10 @@ function mountArtemisBoosterSeparationVideoWidget(
   };
 }
 
-export function setupArtemisBoosterSeparationVideoRenderer() {
-  const mountedWidgets = new Map<string, MountedArtemisBoosterSeparationVideo>();
+export function setupVideoRenderer() {
+  const mountedWidgets = new Map<string, MountedVideoWidget>();
 
-  KritzelCustomElementRendererRegistry.register(ARTEMIS_BOOSTER_SEPARATION_VIDEO_RENDERER_KEY, {
+  KritzelCustomElementRendererRegistry.register(VIDEO_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) {
         return;
@@ -252,7 +245,7 @@ export function setupArtemisBoosterSeparationVideoRenderer() {
 
       object.isResizable = true;
       object.isRotatable = false;
-      object.zIndex = ARTEMIS_BOOSTER_SEPARATION_VIDEO_Z_INDEX;
+      object.zIndex = VIDEO_Z_INDEX;
 
       const previousWidget = mountedWidgets.get(object.id);
       if (previousWidget) {
@@ -261,15 +254,13 @@ export function setupArtemisBoosterSeparationVideoRenderer() {
         mountedWidgets.delete(object.id);
       }
 
-      const mountedWidget = mountArtemisBoosterSeparationVideoWidget(
-        normalizeArtemisBoosterSeparationVideoState(data),
-      );
+      const mountedWidget = mountVideoWidget(normalizeVideoState(data));
       container.innerHTML = "";
       container.appendChild(mountedWidget.root);
       requestAnimationFrame(() => {
         const objectElement = container.closest<HTMLElement>(".object");
         if (objectElement) {
-          objectElement.style.zIndex = `${ARTEMIS_BOOSTER_SEPARATION_VIDEO_Z_INDEX}`;
+          objectElement.style.zIndex = `${VIDEO_Z_INDEX}`;
         }
       });
 
@@ -301,27 +292,27 @@ export function setupArtemisBoosterSeparationVideoRenderer() {
       widget.root.remove();
     });
     mountedWidgets.clear();
-    KritzelCustomElementRendererRegistry.unregister(ARTEMIS_BOOSTER_SEPARATION_VIDEO_RENDERER_KEY);
+    KritzelCustomElementRendererRegistry.unregister(VIDEO_RENDERER_KEY);
   };
 }
 
-export function createArtemisBoosterSeparationVideoCustomElement() {
+export function createVideoCustomElement() {
   const placeholder = document.createElement("div");
-  placeholder.textContent = "Loading Artemis Booster Separation Video...";
+  placeholder.textContent = "Loading Video...";
 
   const customElement = new KritzelCustomElement({
     element: placeholder,
-    rendererKey: ARTEMIS_BOOSTER_SEPARATION_VIDEO_RENDERER_KEY,
-    rendererData: createArtemisBoosterSeparationVideoInitialState(),
+    rendererKey: VIDEO_RENDERER_KEY,
+    rendererData: createVideoInitialState(),
     translateX: 645,
     translateY: 141,
-    width: ARTEMIS_BOOSTER_SEPARATION_VIDEO_WIDTH,
-    height: ARTEMIS_BOOSTER_SEPARATION_VIDEO_HEIGHT,
+    width: VIDEO_WIDTH,
+    height: VIDEO_HEIGHT,
   });
 
   customElement.isRotatable = false;
   customElement.isResizable = true;
-  customElement.zIndex = ARTEMIS_BOOSTER_SEPARATION_VIDEO_Z_INDEX;
+  customElement.zIndex = VIDEO_Z_INDEX;
 
   return customElement;
 }

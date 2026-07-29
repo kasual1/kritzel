@@ -1,13 +1,13 @@
 {
   "__class__": "KritzelWorkspace",
   "version": "1.3.0",
-  "id": "4abE7IxRkr34rpNW",
+  "id": "GoOT4CyOjsSR8TsW",
   "name": "New Workspace",
-  "createdAt": "2026-07-29T22:59:10.343Z",
-  "updatedAt": "2026-07-29T23:02:59.923Z",
+  "createdAt": "2026-07-29T23:32:33.048Z",
+  "updatedAt": "2026-07-29T23:33:09.772Z",
   "viewport": {
-    "centerWorldX": 78.40020751953239,
-    "centerWorldY": 57.69986877441289,
+    "centerWorldX": 70.40020751953227,
+    "centerWorldY": 61.69986877441278,
     "scale": 1
   },
   "isPublic": false,
@@ -16,7 +16,7 @@
     {
       "__class__": "KritzelImage",
       "id": "nO68qSWiZi51bQTw",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "x": 0,
       "y": 0,
       "translateX": -30.17609293558899,
@@ -44,7 +44,7 @@
     {
       "__class__": "KritzelImage",
       "id": "vmZtnxF92DRmW4y4",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "x": 0,
       "y": 0,
       "translateX": -244.27212228830484,
@@ -72,7 +72,7 @@
     {
       "__class__": "KritzelText",
       "id": "Eo1Grx54pt24qhbN",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": -238.27301997089936,
       "translateY": -277.14008234764447,
       "height": 30.290813388563684,
@@ -129,7 +129,7 @@
     {
       "__class__": "KritzelText",
       "id": "XNmfjDeGtpgJsM9N",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": -247.32420251561723,
       "translateY": -269.24434404704954,
       "height": 130.1843274384098,
@@ -148,7 +148,7 @@
       "zIndex": 2,
       "isVisible": true,
       "isSelected": false,
-      "isHovered": true,
+      "isHovered": false,
       "isMounted": true,
       "isEditable": true,
       "isInteractive": false,
@@ -186,7 +186,7 @@
     {
       "__class__": "KritzelLine",
       "id": "xZ63WVSw2zDjYJnJ",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "x": 725.2000122070312,
       "y": 203.79989235170484,
       "translateX": 62.799865722655454,
@@ -244,7 +244,7 @@
     {
       "__class__": "KritzelLine",
       "id": "q0TT2T7ZNtdVdEXy",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "x": 500.3999786376953,
       "y": 301.8000183105469,
       "translateX": -271.60008239746094,
@@ -302,7 +302,7 @@
     {
       "__class__": "KritzelLine",
       "id": "f7c3mSuXcamf8eEM",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "x": 770.7999877929688,
       "y": 506.5999450683594,
       "translateX": 93.9999999999992,
@@ -360,7 +360,7 @@
     {
       "__class__": "KritzelText",
       "id": "SlpsxX8ard5pjccv",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": 431.9999877929683,
       "translateY": -104.49998474121014,
       "height": 48.02482022041593,
@@ -426,7 +426,7 @@
     {
       "__class__": "KritzelText",
       "id": "wZJ2HlJDpk3ThMoI",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": 432.79991455078084,
       "translateY": -47.88838250716586,
       "height": 88.72885787949018,
@@ -483,7 +483,7 @@
     {
       "__class__": "KritzelText",
       "id": "a65uzg77VUWKp7kj",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": -597.6000461578369,
       "translateY": -164.10008239746014,
       "height": 26.36955496033552,
@@ -540,7 +540,7 @@
     {
       "__class__": "KritzelCustomElement",
       "id": "v8Tq2Nj4mJ1uKfLp",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": -597.6000461578369,
       "translateY": -129.40005493164062,
       "height": 274.4001159667969,
@@ -568,7 +568,7 @@
     {
       "__class__": "KritzelText",
       "id": "yHGbvdIamCeAD5HZ",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": 430.40001220703084,
       "translateY": 298.7116235963498,
       "height": 38.25882542412009,
@@ -625,7 +625,7 @@
     {
       "__class__": "KritzelText",
       "id": "TBFYVg5vzC65sUNm",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": 430.40001220703084,
       "translateY": 266.09996032714923,
       "height": 26.36955496033552,
@@ -681,12 +681,12 @@
     },
     {
       "__class__": "KritzelCustomElement",
-      "id": "h6BBZR42W3D9YKRN",
-      "workspaceId": "4abE7IxRkr34rpNW",
+      "id": "At0YkOt6IizliP4O",
+      "workspaceId": "GoOT4CyOjsSR8TsW",
       "translateX": 430.40001220703084,
-      "translateY": 101.00003051757812,
-      "height": 159.19998168945312,
-      "width": 271.199951171875,
+      "translateY": 84.19998168945312,
+      "height": 171.20004272460938,
+      "width": 251.20001220703122,
       "borderWidth": 0,
       "opacity": 1,
       "padding": 0,
@@ -696,16 +696,16 @@
       "isEditable": false,
       "isResizable": true,
       "isRotatable": false,
-      "rendererKey": "website-hero-artemis-booster-separation-video",
+      "rendererKey": "website-hero-video",
       "rendererData": {
         "schemaVersion": 1,
         "currentTimeSec": 0,
         "volume": 1,
         "isMuted": false
       },
-      "htmlString": "<div style=\"pointer-events: none; width: 271.2px; height: 159.2px;\">Loading Artemis Booster Separation Video...</div>",
-      "serializedWidth": 271.199951171875,
-      "serializedHeight": 159.19998168945312
+      "htmlString": "<div style=\"pointer-events: auto; width: 251.2px; height: 171.2px; cursor: auto;\">Loading Video...</div>",
+      "serializedWidth": 251.20001220703122,
+      "serializedHeight": 171.20004272460938
     }
   ],
   "assets": {
