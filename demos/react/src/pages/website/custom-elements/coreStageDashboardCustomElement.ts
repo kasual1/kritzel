@@ -7,10 +7,8 @@ const CORE_STAGE_DASHBOARD_WIDTH = 332;
 const CORE_STAGE_DASHBOARD_HEIGHT = 224;
 
 type CoreStageDashboardState = {
+  schemaVersion: 2;
   missionTimeSec: number;
-  throttlePercent: number;
-  rs25BoostMode: boolean;
-  aerodynamicProfile: "nominal" | "delayed" | "flattened";
 };
 
 type MountedCoreStageDashboard = {
@@ -21,19 +19,15 @@ type MountedCoreStageDashboard = {
 
 export function createCoreStageDashboardInitialState(): CoreStageDashboardState {
   return {
-    missionTimeSec: 72,
-    throttlePercent: 96,
-    rs25BoostMode: false,
-    aerodynamicProfile: "nominal",
+    schemaVersion: 2,
+    missionTimeSec: 76,
   };
 }
 
 function cloneCoreStageDashboardState(state: CoreStageDashboardState): CoreStageDashboardState {
   return {
+    schemaVersion: state.schemaVersion,
     missionTimeSec: state.missionTimeSec,
-    throttlePercent: state.throttlePercent,
-    rs25BoostMode: state.rs25BoostMode,
-    aerodynamicProfile: state.aerodynamicProfile,
   };
 }
 
@@ -48,68 +42,32 @@ function normalizeCoreStageDashboardState(data: unknown): CoreStageDashboardStat
   }
 
   const candidate = data as Partial<CoreStageDashboardState>;
+  if (candidate.schemaVersion !== 2) {
+    return fallback;
+  }
+
   return {
+    schemaVersion: 2,
     missionTimeSec:
       typeof candidate.missionTimeSec === "number"
         ? clamp(Math.round(candidate.missionTimeSec), 0, 480)
         : fallback.missionTimeSec,
-    throttlePercent:
-      typeof candidate.throttlePercent === "number"
-        ? clamp(Math.round(candidate.throttlePercent), 67, 109)
-        : fallback.throttlePercent,
-    rs25BoostMode:
-      typeof candidate.rs25BoostMode === "boolean"
-        ? candidate.rs25BoostMode
-        : fallback.rs25BoostMode,
-    aerodynamicProfile:
-      candidate.aerodynamicProfile === "delayed" ||
-      candidate.aerodynamicProfile === "flattened" ||
-      candidate.aerodynamicProfile === "nominal"
-        ? candidate.aerodynamicProfile
-        : fallback.aerodynamicProfile,
   };
 }
 
-function getMaxQScale(state: CoreStageDashboardState): number {
-  const throttleFactor = (state.throttlePercent - 67) / 42;
-  const profileScale =
-    state.aerodynamicProfile === "flattened" ? 0.83 : state.aerodynamicProfile === "delayed" ? 0.96 : 1;
+const THROTTLE_PERCENT = 96;
+const THROTTLE_FACTOR = (THROTTLE_PERCENT - 67) / 42;
+const MAX_Q_SCALE = 0.9 + THROTTLE_FACTOR * 0.23;
+const MAX_Q_ZONE = {
+  peakTime: 108,
+  zoneDuration: 62,
+};
 
-  return (0.9 + throttleFactor * 0.23 + (state.rs25BoostMode ? 0.1 : 0)) * profileScale;
-}
-
-function getAerodynamicProfileParameters(profile: CoreStageDashboardState["aerodynamicProfile"]) {
-  if (profile === "delayed") {
-    return {
-      peakTime: 148,
-      peakWidth: 54,
-      peakAmplitude: 1,
-      tailSlope: 0.2,
-      zoneDuration: 72,
-    };
-  }
-
-  if (profile === "flattened") {
-    return {
-      peakTime: 108,
-      peakWidth: 68,
-      peakAmplitude: 0.68,
-      tailSlope: 0.12,
-      zoneDuration: 96,
-    };
-  }
-
-  return {
-    peakTime: 108,
-    peakWidth: 42,
-    peakAmplitude: 1,
-    tailSlope: 0.2,
-    zoneDuration: 62,
-  };
-}
-
-function getBaseDynamicPressure(time: number, profile: CoreStageDashboardState["aerodynamicProfile"]): number {
-  const { peakTime, peakWidth, peakAmplitude, tailSlope } = getAerodynamicProfileParameters(profile);
+function getBaseDynamicPressure(time: number): number {
+  const peakTime = 108;
+  const peakWidth = 42;
+  const peakAmplitude = 1;
+  const tailSlope = 0.2;
 
   return (
     110 +
@@ -118,24 +76,21 @@ function getBaseDynamicPressure(time: number, profile: CoreStageDashboardState["
   );
 }
 
-function getDynamicPressureValue(state: CoreStageDashboardState, time: number): number {
-  return clamp(getBaseDynamicPressure(time, state.aerodynamicProfile) * getMaxQScale(state), 80, 900);
+function getDynamicPressureValue(time: number): number {
+  return clamp(getBaseDynamicPressure(time) * MAX_Q_SCALE, 80, 900);
 }
 
 function computeMetrics(state: CoreStageDashboardState) {
   const time = state.missionTimeSec;
-  const throttleFactor = (state.throttlePercent - 67) / 42;
-  const boostMultiplier = state.rs25BoostMode ? 1.18 : 1;
-  const loxFill = clamp(100 - time * (0.18 + throttleFactor * 0.07) * boostMultiplier, 4, 100);
-  const lh2Fill = clamp(100 - time * (0.145 + throttleFactor * 0.06) * boostMultiplier, 7, 100);
-  const thermalDelta = clamp(time * 0.22 + (state.rs25BoostMode ? 12 : 0) + throttleFactor * 8, 0, 132);
+  const loxFill = clamp(100 - time * (0.18 + THROTTLE_FACTOR * 0.07), 4, 100);
+  const lh2Fill = clamp(100 - time * (0.145 + THROTTLE_FACTOR * 0.06), 7, 100);
+  const thermalDelta = clamp(time * 0.22 + THROTTLE_FACTOR * 8, 0, 132);
   const loxTempF = -297 + thermalDelta;
   const lh2TempF = -423 + thermalDelta * 1.08;
 
-  const gForce = 0.95 + throttleFactor * 2.4 + (time / 480) * 1.6 + (state.rs25BoostMode ? 0.42 : 0);
+  const gForce = 0.95 + THROTTLE_FACTOR * 2.4 + (time / 480) * 1.6;
 
-  const maxQScale = getMaxQScale(state);
-  const maxQpsf = getDynamicPressureValue(state, time);
+  const maxQpsf = getDynamicPressureValue(time);
 
   return {
     loxFill,
@@ -144,7 +99,6 @@ function computeMetrics(state: CoreStageDashboardState) {
     lh2TempF,
     gForce,
     maxQpsf,
-    maxQScale,
   };
 }
 
@@ -207,6 +161,9 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
   const state = cloneCoreStageDashboardState(initialState);
   const listeners: Array<() => void> = [];
   const maxQSeries = createTelemetrySeries();
+  const resizeObserver = new ResizeObserver(() => {
+    updateChart();
+  });
 
   const root = document.createElement("section");
   root.style.cssText = [
@@ -268,26 +225,19 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
   const gForceLabel = document.createElement("div");
   gForceLabel.style.cssText = "font-size:10px; color:#2f3a52;";
 
-  const rs25ModeButton = document.createElement("button");
-  rs25ModeButton.type = "button";
-  rs25ModeButton.style.cssText =
-    "border:1px solid #c8dcff; border-radius:9px; background:#edf4ff; color:#007AFF; font-size:10px; font-weight:700; padding:6px; cursor:pointer;";
-
-  const aerodynamicProfileButton = document.createElement("button");
-  aerodynamicProfileButton.type = "button";
-  aerodynamicProfileButton.style.cssText =
-    "border:1px solid #d1d5db; border-radius:9px; background:#f9fafb; color:#374151; font-size:10px; font-weight:700; padding:6px; cursor:pointer; margin-top:0;";
-
-  const profileColumn = document.createElement("div");
-  profileColumn.style.cssText = "display:flex; flex-direction:column; gap:6px; width:80px; flex:0 0 auto;";
-
   const chartCard = document.createElement("div");
   chartCard.style.cssText =
     `${panelStyle}; grid-column:1 / span 2; padding:6px; display:flex; flex-direction:column; gap:5px;`;
 
   const chartTitle = document.createElement("div");
-  chartTitle.textContent = "Dynamic pressure (Max-Q)";
+  chartTitle.textContent = "Dynamic pressure";
   chartTitle.style.cssText = "font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:#1f2a44;";
+
+  const chartHeader = document.createElement("div");
+  chartHeader.style.cssText = "display:flex; align-items:flex-start; justify-content:space-between; gap:8px;";
+
+  const chartMetrics = document.createElement("div");
+  chartMetrics.style.cssText = "display:flex; flex-direction:column; align-items:flex-end; gap:2px;";
 
   const chartWrap = document.createElement("div");
   chartWrap.style.cssText = "height:64px; width:100%;";
@@ -296,12 +246,9 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
   chartSvg.setAttribute("viewBox", "0 0 200 74");
   chartSvg.setAttribute("width", "100%");
   chartSvg.setAttribute("height", "100%");
+  chartSvg.setAttribute("preserveAspectRatio", "xMinYMin meet");
 
   const maxQZone = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  maxQZone.setAttribute("x", "33");
-  maxQZone.setAttribute("y", "8");
-  maxQZone.setAttribute("width", "26");
-  maxQZone.setAttribute("height", "58");
   maxQZone.setAttribute("fill", "#007AFF1f");
 
   const chartPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -314,15 +261,11 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
   currentDot.setAttribute("fill", "#007AFF");
 
   const chartBottomAxis = document.createElementNS("http://www.w3.org/2000/svg", "line");
-  chartBottomAxis.setAttribute("x1", "0");
-  chartBottomAxis.setAttribute("y1", "66");
-  chartBottomAxis.setAttribute("x2", "200");
-  chartBottomAxis.setAttribute("y2", "66");
   chartBottomAxis.setAttribute("stroke", "#d0d7e2");
   chartBottomAxis.setAttribute("stroke-width", "1");
 
   const chartLabel = document.createElement("div");
-  chartLabel.style.cssText = "font-size:10px; color:#2f3a52;";
+  chartLabel.style.cssText = "font-size:10px; color:#2f3a52; text-align:right;";
 
   const timelineCard = document.createElement("div");
   timelineCard.style.cssText =
@@ -363,18 +306,16 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
   chartWrap.appendChild(chartSvg);
   const chartMain = document.createElement("div");
   chartMain.style.cssText = "flex:1; min-width:0; display:flex; flex-direction:column; gap:5px;";
-  chartMain.appendChild(chartTitle);
+  chartMetrics.appendChild(chartLabel);
+  chartMetrics.appendChild(gForceLabel);
+  chartHeader.appendChild(chartTitle);
+  chartHeader.appendChild(chartMetrics);
+  chartMain.appendChild(chartHeader);
   chartMain.appendChild(chartWrap);
-  chartMain.appendChild(chartLabel);
-
-  profileColumn.appendChild(rs25ModeButton);
-  profileColumn.appendChild(aerodynamicProfileButton);
-  profileColumn.appendChild(gForceLabel);
 
   const chartContent = document.createElement("div");
   chartContent.style.cssText = "display:flex; gap:8px; align-items:stretch; min-width:0;";
   chartContent.appendChild(chartMain);
-  chartContent.appendChild(profileColumn);
 
   chartCard.appendChild(chartContent);
 
@@ -396,23 +337,33 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
   function updateChart() {
     const maxValue = 900;
     const minValue = 80;
-    const chartHeight = 58;
     const chartTopPadding = 8;
     const maxTime = 480;
+    const chartWidth = Math.max(1, chartWrap.clientWidth);
+    const chartHeightPx = Math.max(1, chartWrap.clientHeight);
+    const axisY = Math.max(chartTopPadding + 1, chartHeightPx - 8);
+    const drawableHeight = Math.max(1, axisY - chartTopPadding);
 
-    const profileParameters = getAerodynamicProfileParameters(state.aerodynamicProfile);
-    const zoneStartTime = clamp(profileParameters.peakTime - profileParameters.zoneDuration / 2, 0, maxTime);
-    const zoneEndTime = clamp(profileParameters.peakTime + profileParameters.zoneDuration / 2, 0, maxTime);
-    const zoneX = (zoneStartTime / maxTime) * 200;
-    const zoneWidth = ((zoneEndTime - zoneStartTime) / maxTime) * 200;
+    chartSvg.setAttribute("viewBox", `0 0 ${chartWidth.toFixed(2)} ${chartHeightPx.toFixed(2)}`);
+    chartBottomAxis.setAttribute("x1", "0");
+    chartBottomAxis.setAttribute("y1", `${axisY.toFixed(2)}`);
+    chartBottomAxis.setAttribute("x2", `${chartWidth.toFixed(2)}`);
+    chartBottomAxis.setAttribute("y2", `${axisY.toFixed(2)}`);
+
+    const zoneStartTime = clamp(MAX_Q_ZONE.peakTime - MAX_Q_ZONE.zoneDuration / 2, 0, maxTime);
+    const zoneEndTime = clamp(MAX_Q_ZONE.peakTime + MAX_Q_ZONE.zoneDuration / 2, 0, maxTime);
+    const zoneX = (zoneStartTime / maxTime) * chartWidth;
+    const zoneWidth = ((zoneEndTime - zoneStartTime) / maxTime) * chartWidth;
     maxQZone.setAttribute("x", `${zoneX.toFixed(2)}`);
+    maxQZone.setAttribute("y", `${chartTopPadding.toFixed(2)}`);
     maxQZone.setAttribute("width", `${zoneWidth.toFixed(2)}`);
+    maxQZone.setAttribute("height", `${drawableHeight.toFixed(2)}`);
 
     const chartPoints = maxQSeries.map((entry) => {
-        const x = entry.x * 200;
-        const currentValue = getDynamicPressureValue(state, entry.time);
+        const x = entry.x * chartWidth;
+      const currentValue = getDynamicPressureValue(entry.time);
         const normalized = clamp((currentValue - minValue) / (maxValue - minValue), 0, 1);
-        const y = chartTopPadding + (1 - normalized) * chartHeight;
+        const y = chartTopPadding + (1 - normalized) * drawableHeight;
         return { x, y };
       });
 
@@ -420,10 +371,10 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
 
     chartPath.setAttribute("d", path);
 
-    const currentX = (state.missionTimeSec / 480) * 200;
-    const currentValue = getDynamicPressureValue(state, state.missionTimeSec);
+    const currentX = (state.missionTimeSec / 480) * chartWidth;
+    const currentValue = getDynamicPressureValue(state.missionTimeSec);
     const currentNormalized = clamp((currentValue - minValue) / (maxValue - minValue), 0, 1);
-    const currentY = chartTopPadding + (1 - currentNormalized) * chartHeight;
+    const currentY = chartTopPadding + (1 - currentNormalized) * drawableHeight;
 
     currentDot.setAttribute("cx", `${currentX}`);
     currentDot.setAttribute("cy", `${currentY}`);
@@ -442,41 +393,16 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
     lh2FillBar.fill.style.width = `${metrics.lh2Fill}%`;
     lh2TempLabel.textContent = `Temp ${metrics.lh2TempF.toFixed(0)} deg F`;
 
-    gForceLabel.textContent = `${metrics.gForce.toFixed(2)} g longitudinal acceleration`;
+    gForceLabel.textContent = `Long. g ${metrics.gForce.toFixed(2)}`;
 
-    rs25ModeButton.textContent = state.rs25BoostMode
-      ? "RS-25 profile: BOOST"
-      : "RS-25 profile: NOMINAL";
-    rs25ModeButton.style.background = state.rs25BoostMode ? "#007AFF" : "#edf4ff";
-    rs25ModeButton.style.borderColor = state.rs25BoostMode ? "#007AFF" : "#c8dcff";
-    rs25ModeButton.style.color = state.rs25BoostMode ? "#ffffff" : "#007AFF";
-
-    aerodynamicProfileButton.textContent =
-      state.aerodynamicProfile === "delayed"
-        ? "Aero profile: DELAYED PEAK"
-        : state.aerodynamicProfile === "flattened"
-          ? "Aero profile: FLATTENED"
-          : "Aero profile: NOMINAL";
-    aerodynamicProfileButton.style.background =
-      state.aerodynamicProfile === "nominal" ? "#f9fafb" : "#eef2ff";
-    aerodynamicProfileButton.style.borderColor =
-      state.aerodynamicProfile === "nominal" ? "#d1d5db" : "#c7d2fe";
-    aerodynamicProfileButton.style.color =
-      state.aerodynamicProfile === "nominal" ? "#374151" : "#3730a3";
-
-    chartLabel.textContent =
-      state.aerodynamicProfile === "nominal"
-        ? `Max-Q ${metrics.maxQpsf.toFixed(0)} psf`
-        : state.aerodynamicProfile === "delayed"
-          ? `Max-Q ${metrics.maxQpsf.toFixed(0)} psf (delayed)`
-          : `Max-Q ${metrics.maxQpsf.toFixed(0)} psf (flattened)`;
+    chartLabel.textContent = `Max-Q ${metrics.maxQpsf.toFixed(0)} psf`;
 
     missionTimeSlider.value = `${state.missionTimeSec}`;
 
     updateChart();
   }
 
-  const stopPointerPropagation = (event: PointerEvent) => {
+  const stopPointerPropagation = (event: Event) => {
     event.stopPropagation();
   };
 
@@ -486,40 +412,16 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
     render();
   };
 
-  const onToggleRs25Mode = () => {
-    state.rs25BoostMode = !state.rs25BoostMode;
-    if (state.rs25BoostMode) {
-      state.throttlePercent = Math.max(state.throttlePercent, 102);
-    }
-    render();
-  };
-
-  const onToggleAerodynamicProfile = () => {
-    if (state.aerodynamicProfile === "nominal") {
-      state.aerodynamicProfile = "delayed";
-    } else if (state.aerodynamicProfile === "delayed") {
-      state.aerodynamicProfile = "flattened";
-    } else {
-      state.aerodynamicProfile = "nominal";
-    }
-
-    render();
-  };
-
-  [missionTimeSlider, rs25ModeButton, aerodynamicProfileButton].forEach((element) => {
+  [missionTimeSlider].forEach((element) => {
     element.addEventListener("pointerdown", stopPointerPropagation);
     element.addEventListener("pointerup", stopPointerPropagation);
   });
 
   missionTimeSlider.addEventListener("input", onMissionTimeInput);
-  rs25ModeButton.addEventListener("click", onToggleRs25Mode);
-  aerodynamicProfileButton.addEventListener("click", onToggleAerodynamicProfile);
 
   listeners.push(() => missionTimeSlider.removeEventListener("input", onMissionTimeInput));
-  listeners.push(() => rs25ModeButton.removeEventListener("click", onToggleRs25Mode));
-  listeners.push(() => aerodynamicProfileButton.removeEventListener("click", onToggleAerodynamicProfile));
 
-  [missionTimeSlider, rs25ModeButton, aerodynamicProfileButton].forEach((element) => {
+  [missionTimeSlider].forEach((element) => {
     listeners.push(() => element.removeEventListener("pointerdown", stopPointerPropagation));
     listeners.push(() => element.removeEventListener("pointerup", stopPointerPropagation));
   });
@@ -528,6 +430,11 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
   root.setAttribute("aria-label", "Artemis core stage dashboard");
 
   render();
+  requestAnimationFrame(() => {
+    updateChart();
+  });
+  resizeObserver.observe(chartWrap);
+  listeners.push(() => resizeObserver.disconnect());
 
   return {
     root,
