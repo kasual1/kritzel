@@ -20,6 +20,9 @@ import {
 import {
   setupRocketTodoRenderer,
 } from "./custom-elements/rocketTodoCustomElement";
+import {
+  setupCoreStageDashboardRenderer,
+} from "./custom-elements/coreStageDashboardCustomElement";
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -162,10 +165,12 @@ export function WebsiteHeroPage() {
   useEffect(() => {
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
     const cleanupImageStackRenderer = setupImageStackRenderer();
+    const cleanupCoreStageDashboardRenderer = setupCoreStageDashboardRenderer();
 
     return () => {
       cleanupRocketTodoRenderer();
       cleanupImageStackRenderer();
+      cleanupCoreStageDashboardRenderer();
     };
   }, []);
 
@@ -264,9 +269,9 @@ export function WebsiteHeroPage() {
         editorId="website-hero"
         customFonts={WEBSITE_HERO_CUSTOM_FONTS}
         controls={WEBSITE_HERO_CONTROLS}
-        isPanningEnabled={false}
+        isPanningEnabled={true}
         isZoomingEnabled={true}
-        isMoreMenuVisible={false}
+        isMoreMenuVisible={true}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {
           void onReady();
