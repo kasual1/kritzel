@@ -21,7 +21,6 @@
 		"pretty": true,
 		"removeComments": false,
 		"strictPropertyInitialization": false,
-		"baseUrl": ".",
 		"paths": {
 			"@kritzel/stencil": [
 				"./libs/kritzel-stencil"
