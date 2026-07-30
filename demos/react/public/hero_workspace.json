@@ -1,14 +1,14 @@
 {
   "__class__": "KritzelWorkspace",
   "version": "1.3.0",
-  "id": "GoOT4CyOjsSR8TsW",
+  "id": "62qCys5y44f6co03",
   "name": "New Workspace",
-  "createdAt": "2026-07-29T23:32:33.048Z",
-  "updatedAt": "2026-07-29T23:33:09.772Z",
+  "createdAt": "2026-07-30T08:24:41.200Z",
+  "updatedAt": "2026-07-30T08:25:55.025Z",
   "viewport": {
-    "centerWorldX": 70.40020751953227,
-    "centerWorldY": 61.69986877441278,
-    "scale": 1
+    "centerWorldX": 170.67624063036385,
+    "centerWorldY": 75.37313914017142,
+    "scale": 0.7642973347929555
   },
   "isPublic": false,
   "exportMode": "portable",
@@ -16,7 +16,7 @@
     {
       "__class__": "KritzelImage",
       "id": "nO68qSWiZi51bQTw",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "x": 0,
       "y": 0,
       "translateX": -30.17609293558899,
@@ -44,7 +44,7 @@
     {
       "__class__": "KritzelImage",
       "id": "vmZtnxF92DRmW4y4",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "x": 0,
       "y": 0,
       "translateX": -244.27212228830484,
@@ -72,7 +72,7 @@
     {
       "__class__": "KritzelText",
       "id": "Eo1Grx54pt24qhbN",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "translateX": -238.27301997089936,
       "translateY": -277.14008234764447,
       "height": 30.290813388563684,
@@ -129,7 +129,7 @@
     {
       "__class__": "KritzelText",
       "id": "XNmfjDeGtpgJsM9N",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "translateX": -247.32420251561723,
       "translateY": -269.24434404704954,
       "height": 130.1843274384098,
@@ -186,7 +186,7 @@
     {
       "__class__": "KritzelLine",
       "id": "xZ63WVSw2zDjYJnJ",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "x": 725.2000122070312,
       "y": 203.79989235170484,
       "translateX": 62.799865722655454,
@@ -244,7 +244,7 @@
     {
       "__class__": "KritzelLine",
       "id": "q0TT2T7ZNtdVdEXy",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "x": 500.3999786376953,
       "y": 301.8000183105469,
       "translateX": -271.60008239746094,
@@ -302,7 +302,7 @@
     {
       "__class__": "KritzelLine",
       "id": "f7c3mSuXcamf8eEM",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "x": 770.7999877929688,
       "y": 506.5999450683594,
       "translateX": 93.9999999999992,
@@ -359,131 +359,8 @@
     },
     {
       "__class__": "KritzelText",
-      "id": "SlpsxX8ard5pjccv",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
-      "translateX": 431.9999877929683,
-      "translateY": -104.49998474121014,
-      "height": 48.02482022041593,
-      "width": 294.1520238500476,
-      "backgroundColor": {
-        "light": "transparent",
-        "dark": "transparent"
-      },
-      "borderWidth": 0,
-      "opacity": 1,
-      "padding": 0,
-      "scale": 1,
-      "resizing": false,
-      "rotation": 0,
-      "markedForRemoval": false,
-      "zIndex": 19,
-      "isVisible": true,
-      "isSelected": false,
-      "isHovered": true,
-      "isMounted": true,
-      "isEditable": true,
-      "isInteractive": false,
-      "isResizable": true,
-      "isRotatable": true,
-      "fontFamily": "Courier New",
-      "fontSize": 16,
-      "fontColor": {
-        "light": "#000000",
-        "dark": "#ffffff",
-        "label": "Primary"
-      },
-      "initialWidth": 1,
-      "initialHeight": 19.2,
-      "scaleFactor": 1.000517087925332,
-      "isDebugInfoVisible": true,
-      "isEditing": false,
-      "isNewlyCreated": false,
-      "content": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Crew Capsule and Launch"
-              }
-            ]
-          },
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Abort System"
-              }
-            ]
-          }
-        ]
-      },
-      "rows": 1
-    },
-    {
-      "__class__": "KritzelText",
-      "id": "wZJ2HlJDpk3ThMoI",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
-      "translateX": 432.79991455078084,
-      "translateY": -47.88838250716586,
-      "height": 88.72885787949018,
-      "width": 308.0863120815631,
-      "backgroundColor": {
-        "light": "transparent",
-        "dark": "transparent"
-      },
-      "borderWidth": 0,
-      "opacity": 1,
-      "padding": 0,
-      "scale": 1,
-      "resizing": false,
-      "rotation": 0,
-      "markedForRemoval": false,
-      "zIndex": 18,
-      "isVisible": true,
-      "isSelected": false,
-      "isHovered": true,
-      "isMounted": true,
-      "isEditable": true,
-      "isInteractive": false,
-      "isResizable": true,
-      "isRotatable": true,
-      "fontFamily": "Courier New",
-      "fontSize": 16,
-      "fontColor": {
-        "light": "#000000",
-        "dark": "#ffffff",
-        "label": "Primary"
-      },
-      "initialWidth": 1,
-      "initialHeight": 19.2,
-      "scaleFactor": 0.6161726241631262,
-      "isDebugInfoVisible": true,
-      "isEditing": false,
-      "isNewlyCreated": false,
-      "content": {
-        "type": "doc",
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "The Orion Capsule safely houses four astronauts during their lunar mission, protected by a top-mounted Launch Abort System designed to instantly pull them away from the rocket during a launch emergency."
-              }
-            ]
-          }
-        ]
-      },
-      "rows": 1
-    },
-    {
-      "__class__": "KritzelText",
       "id": "a65uzg77VUWKp7kj",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "translateX": -597.6000461578369,
       "translateY": -164.10008239746014,
       "height": 26.36955496033552,
@@ -540,7 +417,7 @@
     {
       "__class__": "KritzelCustomElement",
       "id": "v8Tq2Nj4mJ1uKfLp",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "translateX": -597.6000461578369,
       "translateY": -129.40005493164062,
       "height": 274.4001159667969,
@@ -556,10 +433,8 @@
       "isRotatable": false,
       "rendererKey": "website-hero-core-stage-dashboard",
       "rendererData": {
-        "missionTimeSec": 27,
-        "throttlePercent": 73,
-        "rs25BoostMode": false,
-        "aerodynamicProfile": "delayed"
+        "schemaVersion": 2,
+        "missionTimeSec": 76
       },
       "htmlString": "<div style=\"pointer-events: auto; width: 316px; height: 274.4px; cursor: auto;\">Loading Core Stage Dashboard...</div>",
       "serializedWidth": 315.99997901916504,
@@ -568,7 +443,7 @@
     {
       "__class__": "KritzelText",
       "id": "yHGbvdIamCeAD5HZ",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "translateX": 430.40001220703084,
       "translateY": 298.7116235963498,
       "height": 38.25882542412009,
@@ -587,7 +462,7 @@
       "zIndex": 21,
       "isVisible": true,
       "isSelected": false,
-      "isHovered": true,
+      "isHovered": false,
       "isMounted": true,
       "isEditable": true,
       "isInteractive": false,
@@ -625,7 +500,7 @@
     {
       "__class__": "KritzelText",
       "id": "TBFYVg5vzC65sUNm",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "translateX": 430.40001220703084,
       "translateY": 266.09996032714923,
       "height": 26.36955496033552,
@@ -644,7 +519,7 @@
       "zIndex": 20,
       "isVisible": true,
       "isSelected": false,
-      "isHovered": true,
+      "isHovered": false,
       "isMounted": true,
       "isEditable": true,
       "isInteractive": false,
@@ -682,7 +557,7 @@
     {
       "__class__": "KritzelCustomElement",
       "id": "At0YkOt6IizliP4O",
-      "workspaceId": "GoOT4CyOjsSR8TsW",
+      "workspaceId": "62qCys5y44f6co03",
       "translateX": 430.40001220703084,
       "translateY": 84.19998168945312,
       "height": 171.20004272460938,
@@ -706,6 +581,154 @@
       "htmlString": "<div style=\"pointer-events: auto; width: 251.2px; height: 171.2px; cursor: auto;\">Loading Video...</div>",
       "serializedWidth": 251.20001220703122,
       "serializedHeight": 171.20004272460938
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "SlpsxX8ard5pjccv",
+      "workspaceId": "62qCys5y44f6co03",
+      "translateX": 429.99112752014787,
+      "translateY": -104.49998474121014,
+      "height": 48.02482022041593,
+      "width": 294.1520238500476,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 19,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": false,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Courier New",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 1.000517087925332,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Crew Capsule and Launch"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Abort System"
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "KritzelText",
+      "id": "wZJ2HlJDpk3ThMoI",
+      "workspaceId": "62qCys5y44f6co03",
+      "translateX": 429.99112752014787,
+      "translateY": -47.88838250716586,
+      "height": 88.72885787949018,
+      "width": 308.0863120815631,
+      "backgroundColor": {
+        "light": "transparent",
+        "dark": "transparent"
+      },
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "resizing": false,
+      "rotation": 0,
+      "markedForRemoval": false,
+      "zIndex": 18,
+      "isVisible": true,
+      "isSelected": false,
+      "isHovered": true,
+      "isMounted": true,
+      "isEditable": true,
+      "isInteractive": false,
+      "isResizable": true,
+      "isRotatable": true,
+      "fontFamily": "Courier New",
+      "fontSize": 16,
+      "fontColor": {
+        "light": "#000000",
+        "dark": "#ffffff",
+        "label": "Primary"
+      },
+      "initialWidth": 1,
+      "initialHeight": 19.2,
+      "scaleFactor": 0.6161726241631262,
+      "isDebugInfoVisible": true,
+      "isEditing": false,
+      "isNewlyCreated": false,
+      "content": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Orion Capsule safely houses four astronauts during their lunar mission, protected by a top-mounted Launch Abort System designed to instantly pull them away from the rocket during a launch emergency."
+              }
+            ]
+          }
+        ]
+      },
+      "rows": 1
+    },
+    {
+      "__class__": "KritzelCustomElement",
+      "id": "J99j8vX7jhQcD6Tb",
+      "workspaceId": "62qCys5y44f6co03",
+      "translateX": 429.99112752014787,
+      "translateY": -286.8771558070168,
+      "height": 168.93591609874176,
+      "width": 251.14190592537722,
+      "borderWidth": 0,
+      "opacity": 1,
+      "padding": 0,
+      "scale": 1,
+      "rotation": 0,
+      "zIndex": 11,
+      "isEditable": false,
+      "isResizable": true,
+      "isRotatable": false,
+      "rendererKey": "website-hero-3d-model-viewer",
+      "rendererData": {
+        "schemaVersion": 1
+      },
+      "htmlString": "<div style=\"pointer-events: none; width: 251.142px; height: 168.936px;\">Loading 3D model...</div>",
+      "serializedWidth": 251.14190592537722,
+      "serializedHeight": 168.93591609874176
     }
   ],
   "assets": {
