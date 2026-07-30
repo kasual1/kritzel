@@ -13,6 +13,7 @@ import {
   KritzelTextTool,
   type HTMLKritzelEditorElement,
   type KritzelToolbarControl,
+  type KritzelViewportState,
 } from "kritzel-react";
 import {
   setupImageStackRenderer,
@@ -168,11 +169,12 @@ const hostStyle: CSSProperties = {
 
 export function WebsiteHeroPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const hostRef = useRef<HTMLDivElement | null>(null);
   const hasImportedInitialWorkspace = useRef(false);
   const hasAddedVideoCustomElement = useRef(false);
   const hasAddedThreeDModelViewerCustomElement = useRef(false);
   const isEditorReady = useRef(false);
+  const lastViewportSize = useRef<{ width: number; height: number } | null>(null);
+  const fitAnimationFrameId = useRef<number | null>(null);
 
   useEffect(() => {
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
@@ -191,54 +193,36 @@ export function WebsiteHeroPage() {
   }, []);
 
   useEffect(() => {
-    let animationFrameId: number | null = null;
-
-    const fitAllObjects = () => {
-      if (!isEditorReady.current) {
-        return;
-      }
-
-      if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
-      }
-
-      animationFrameId = requestAnimationFrame(() => {
-        animationFrameId = null;
-        void editorRef.current?.centerAllObjects(false);
-      });
-    };
-
-    const hostElement = hostRef.current;
-    if (hostElement && typeof ResizeObserver !== "undefined") {
-      const resizeObserver = new ResizeObserver(() => {
-        fitAllObjects();
-      });
-
-      resizeObserver.observe(hostElement);
-
-      return () => {
-        if (animationFrameId !== null) {
-          cancelAnimationFrame(animationFrameId);
-        }
-
-        resizeObserver.disconnect();
-      };
-    }
-
-    const onWindowResize = () => {
-      fitAllObjects();
-    };
-
-    window.addEventListener("resize", onWindowResize);
-
     return () => {
-      if (animationFrameId !== null) {
-        cancelAnimationFrame(animationFrameId);
+      if (fitAnimationFrameId.current !== null) {
+        cancelAnimationFrame(fitAnimationFrameId.current);
+        fitAnimationFrameId.current = null;
       }
-
-      window.removeEventListener("resize", onWindowResize);
     };
   }, []);
+
+  function onViewportChange(viewport: KritzelViewportState) {
+    const previousSize = lastViewportSize.current;
+    lastViewportSize.current = { width: viewport.width, height: viewport.height };
+
+    if (!isEditorReady.current || !previousSize) {
+      return;
+    }
+
+    // Only refit on actual size changes to avoid loops from pan/zoom events.
+    if (previousSize.width === viewport.width && previousSize.height === viewport.height) {
+      return;
+    }
+
+    if (fitAnimationFrameId.current !== null) {
+      cancelAnimationFrame(fitAnimationFrameId.current);
+    }
+
+    fitAnimationFrameId.current = requestAnimationFrame(() => {
+      fitAnimationFrameId.current = null;
+      void editorRef.current?.centerAllObjects(false);
+    });
+  }
 
   async function onReady() {
     const editor = editorRef.current;
@@ -348,7 +332,7 @@ export function WebsiteHeroPage() {
   }
 
   return (
-    <div ref={hostRef} style={hostStyle}>
+    <div style={hostStyle}>
       <KritzelEditor
         ref={editorRef}
         editorId="website-hero"
@@ -360,6 +344,9 @@ export function WebsiteHeroPage() {
         isWorkspaceManagerVisible={true}
         onIsReady={() => {
           void onReady();
+        }}
+        onViewportChange={(event) => {
+          onViewportChange((event as CustomEvent<KritzelViewportState>).detail);
         }}
       />
     </div>

@@ -755,6 +755,19 @@ export class KritzelViewport {
     // Cancel any existing animation
     this.cancelViewportAnimation();
 
+    if (duration <= 0) {
+      // Apply immediately; interpolating with duration 0 divides by zero
+      // (rAF timestamps can precede performance.now()), producing NaN state.
+      this._core.store.state.scale = targetScale;
+      const clamped = this.clampTranslate(targetTranslateX, targetTranslateY);
+      this._core.store.state.translateX = clamped.translateX;
+      this._core.store.state.translateY = clamped.translateY;
+      this._core.store.state.hasViewportChanged = true;
+      this._core.rerender();
+      this._debounceUpdate();
+      return;
+    }
+
     const startTranslateX = this._core.store.state.translateX;
     const startTranslateY = this._core.store.state.translateY;
     const startScale = this._core.store.state.scale;
@@ -764,7 +777,8 @@ export class KritzelViewport {
 
     const animate = (currentTime: number): void => {
       const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
+      // Clamp to [0, 1]; rAF timestamps can precede startTime, yielding negative progress
+      const progress = Math.min(Math.max(elapsed, 0) / duration, 1);
       // easeOutCubic easing function
       const eased = 1 - Math.pow(1 - progress, 3);
 
