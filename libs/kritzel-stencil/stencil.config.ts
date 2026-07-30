@@ -38,6 +38,9 @@ const isDev = process.argv.includes('--dev') || process.argv.includes('--serve')
 
 export const config: Config = {
   namespace: 'stencil',
+  // Ship non-minified ESM: pre-minified dist/components (adjacent top-level classes) breaks
+  // @angular/build >= 22.1.0 advancedOptimizations (angular-cli#33699); consumers minify anyway
+  minifyJs: false,
   // Exclude yjs and its dependencies from the bundle, as they will be loaded separately in the consuming application
   // Otherwise yjs will throw mulitple import error
   ...(isDev ? {} : {
