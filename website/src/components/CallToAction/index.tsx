@@ -3,9 +3,15 @@ import React from "react";
 import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
 import { ArrowRight } from "lucide-react";
-import { getPreferredFramework, frameworkPaths, subscribeToPreferredFramework } from "@site/src/utils/frameworkPreference";
+import { getPreferredFramework, subscribeToPreferredFramework, type Framework } from "@site/src/utils/frameworkPreference";
 
 import styles from "./styles.module.css";
+
+const quickStartPaths: Record<Framework, string> = {
+  angular: "/docs/angular/quick-start",
+  react: "/docs/react/quick-start",
+  vue: "/docs/vue/quick-start",
+};
 
 interface CallToActionButton {
   label: string;
@@ -20,16 +26,16 @@ interface CallToActionProps {
 }
 
 export default function CallToAction({
-  title = "Ready to create something amazing?",
-  description = "Start building your infinite canvas experience today. It's ready to use with your favorite framework.",
+  title = "Ready to create your infinite canvas?",
+  description = "Start building with Kritzel today. It's ready to use with your favorite framework.",
   primaryButton = { label: "Get Started", showArrow: true },
 }: CallToActionProps): ReactNode {
-  const [docsPath, setDocsPath] = React.useState(() => frameworkPaths[getPreferredFramework()]);
+  const [docsPath, setDocsPath] = React.useState(() => quickStartPaths[getPreferredFramework()]);
 
   React.useEffect(() => {
-    setDocsPath(frameworkPaths[getPreferredFramework()]);
+    setDocsPath(quickStartPaths[getPreferredFramework()]);
     return subscribeToPreferredFramework((framework) => {
-      setDocsPath(frameworkPaths[framework]);
+      setDocsPath(quickStartPaths[framework]);
     });
   }, []);
 
