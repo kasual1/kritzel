@@ -2,6 +2,12 @@ header.hero.hero--primary {
   padding: 6rem 0;
 }
 
+@media (max-width: 996px) {
+  header.hero.hero--primary {
+    padding: 3rem 0;
+  }
+}
+
 .hero {
   align-items: center;
   background-color: var(--ifm-background-color);
