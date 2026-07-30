@@ -1,11 +1,18 @@
-import "@google/model-viewer";
+import { ModelViewerElement } from "@google/model-viewer";
 import { KritzelCustomElement } from "kritzel-react";
 import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
 
+// <model-viewer> throttles its render resolution down to 50% whenever the page drops
+// frames, and the auto-rotating scene never goes idle, so it never recovers full
+// resolution. minimumRenderScale is a static class property on ModelViewerElement
+// (a per-element `minimum-render-scale` attribute does not exist); pin it to 1 so the
+// shared renderer always draws at full device-pixel resolution.
+ModelViewerElement.minimumRenderScale = 1;
+
 export const THREE_D_MODEL_VIEWER_RENDERER_KEY = "website-hero-3d-model-viewer";
 const THREE_D_MODEL_VIEWER_Z_INDEX = 11;
-const THREE_D_MODEL_VIEWER_WIDTH = 360;
-const THREE_D_MODEL_VIEWER_HEIGHT = 260;
+const THREE_D_MODEL_VIEWER_WIDTH = 900;
+const THREE_D_MODEL_VIEWER_HEIGHT = 650;
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -57,11 +64,10 @@ function mountThreeDModelViewerWidget(
     "height:100%",
     "width:100%",
     "box-sizing:border-box",
-    "border:4.4px solid #e4e7eb",
-    "border-radius:5.5px",
-    "background:#06080c",
+    "background:transparent",
     "display:block",
-    "overflow:hidden",
+    "position:relative",
+    "overflow:visible",
   ].join(";");
 
   const modelViewer = document.createElement("model-viewer");
@@ -73,11 +79,29 @@ function mountThreeDModelViewerWidget(
   modelViewer.setAttribute("auto-rotate", "");
   modelViewer.setAttribute("auto-rotate-delay", "0");
   modelViewer.setAttribute("rotation-per-second", "8deg");
+  modelViewer.setAttribute("camera-orbit", "0deg 65deg 128%");
+  // Euler angles roll(z) pitch(x) yaw(y): roll tilts the visual spin axis.
+  modelViewer.setAttribute("orientation", "12deg 0deg 0deg");
   modelViewer.setAttribute("shadow-intensity", "1");
   modelViewer.setAttribute("exposure", "1");
-  modelViewer.style.cssText = "display:block; width:100%; height:100%; pointer-events:none;";
+  modelViewer.style.cssText = [
+    "display:block",
+    // Oversize the render surface so the model can visually spill past the object bounds.
+    "position:absolute",
+    "left:-60%",
+    "top:-60%",
+    "width:220%",
+    "height:220%",
+    "pointer-events:none",
+    "transform:none",
+  ].join(";");
 
   root.appendChild(modelViewer);
+
+  // Suppress the default loading progress bar (dark edge at the top).
+  const emptyProgressBar = document.createElement("div");
+  emptyProgressBar.setAttribute("slot", "progress-bar");
+  modelViewer.appendChild(emptyProgressBar);
 
   return {
     root,
@@ -98,7 +122,7 @@ export function setupThreeDModelViewerRenderer() {
       }
 
       object.isResizable = true;
-      object.isRotatable = false;
+      object.isRotatable = true;
       object.zIndex = THREE_D_MODEL_VIEWER_Z_INDEX;
 
       const previousWidget = mountedWidgets.get(object.id);
@@ -110,11 +134,13 @@ export function setupThreeDModelViewerRenderer() {
 
       const mountedWidget = mountThreeDModelViewerWidget(normalizeThreeDModelViewerState(data));
       container.innerHTML = "";
+      container.style.overflow = "visible";
       container.appendChild(mountedWidget.root);
       requestAnimationFrame(() => {
         const objectElement = container.closest<HTMLElement>(".object");
         if (objectElement) {
           objectElement.style.zIndex = `${THREE_D_MODEL_VIEWER_Z_INDEX}`;
+          objectElement.style.overflow = "visible";
         }
       });
 
@@ -164,7 +190,7 @@ export function createThreeDModelViewerCustomElement() {
     height: THREE_D_MODEL_VIEWER_HEIGHT,
   });
 
-  customElement.isRotatable = false;
+  customElement.isRotatable = true;
   customElement.isResizable = true;
   customElement.zIndex = THREE_D_MODEL_VIEWER_Z_INDEX;
 
