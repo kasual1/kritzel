@@ -28,6 +28,11 @@ import {
   createVideoCustomElement,
   setupVideoRenderer,
 } from "./custom-elements/videoCustomElement";
+import {
+  THREE_D_MODEL_VIEWER_RENDERER_KEY,
+  createThreeDModelViewerCustomElement,
+  setupThreeDModelViewerRenderer,
+} from "./custom-elements/threeDModelViewerCustomElement";
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -166,6 +171,7 @@ export function WebsiteHeroPage() {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const hasImportedInitialWorkspace = useRef(false);
   const hasAddedVideoCustomElement = useRef(false);
+  const hasAddedThreeDModelViewerCustomElement = useRef(false);
   const isEditorReady = useRef(false);
 
   useEffect(() => {
@@ -173,12 +179,14 @@ export function WebsiteHeroPage() {
     const cleanupImageStackRenderer = setupImageStackRenderer();
     const cleanupCoreStageDashboardRenderer = setupCoreStageDashboardRenderer();
     const cleanupVideoRenderer = setupVideoRenderer();
+    const cleanupThreeDModelViewerRenderer = setupThreeDModelViewerRenderer();
 
     return () => {
       cleanupRocketTodoRenderer();
       cleanupImageStackRenderer();
       cleanupCoreStageDashboardRenderer();
       cleanupVideoRenderer();
+      cleanupThreeDModelViewerRenderer();
     };
   }, []);
 
@@ -265,8 +273,36 @@ export function WebsiteHeroPage() {
       hasAddedVideoCustomElement.current = true;
     }
 
+    async function ensureThreeDModelViewerCustomElementObject(editorElement: HTMLKritzelEditorElement) {
+      if (hasAddedThreeDModelViewerCustomElement.current) {
+        return;
+      }
+
+      const objects = await editorElement.getAllObjects();
+      const hasExistingModelViewer = objects.some((object) => {
+        if (!object || typeof object !== "object") {
+          return false;
+        }
+
+        const candidate = object as { __class__?: string; rendererKey?: string };
+        return (
+          candidate.__class__ === "KritzelCustomElement" &&
+          candidate.rendererKey === THREE_D_MODEL_VIEWER_RENDERER_KEY
+        );
+      });
+
+      if (hasExistingModelViewer) {
+        hasAddedThreeDModelViewerCustomElement.current = true;
+        return;
+      }
+
+      await editorElement.addObject(createThreeDModelViewerCustomElement());
+      hasAddedThreeDModelViewerCustomElement.current = true;
+    }
+
     if (hasImportedInitialWorkspace.current) {
       await ensureVideoCustomElementObject(editor);
+      await ensureThreeDModelViewerCustomElementObject(editor);
       isEditorReady.current = true;
       return;
     }
@@ -274,6 +310,7 @@ export function WebsiteHeroPage() {
     const objectCount = await editor.getObjectsTotalCount();
     if ((objectCount ?? 0) > 0) {
       await ensureVideoCustomElementObject(editor);
+      await ensureThreeDModelViewerCustomElementObject(editor);
       hasImportedInitialWorkspace.current = true;
       isEditorReady.current = true;
       return;
@@ -304,6 +341,7 @@ export function WebsiteHeroPage() {
     }
 
     await ensureVideoCustomElementObject(editor);
+    await ensureThreeDModelViewerCustomElementObject(editor);
 
     hasImportedInitialWorkspace.current = true;
     isEditorReady.current = true;
