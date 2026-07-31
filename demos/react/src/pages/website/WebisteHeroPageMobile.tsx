@@ -177,6 +177,7 @@ export function WebisteHeroPageMobile() {
   const lastViewportSize = useRef<{ width: number; height: number } | null>(null);
   const fitAnimationFrameId = useRef<number | null>(null);
   const isAutoCentering = useRef(false);
+  const hasPendingAutoCenter = useRef(false);
 
   useEffect(() => {
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
@@ -243,6 +244,11 @@ export function WebisteHeroPageMobile() {
       return;
     }
 
+    if (isAutoCentering.current) {
+      hasPendingAutoCenter.current = true;
+      return;
+    }
+
     if (fitAnimationFrameId.current !== null) {
       cancelAnimationFrame(fitAnimationFrameId.current);
     }
@@ -257,6 +263,10 @@ export function WebisteHeroPageMobile() {
       isAutoCentering.current = true;
       void editor.centerAllObjects(false).finally(() => {
         isAutoCentering.current = false;
+        if (hasPendingAutoCenter.current) {
+          hasPendingAutoCenter.current = false;
+          scheduleCenterAllObjects();
+        }
       });
     });
   }
@@ -265,7 +275,7 @@ export function WebisteHeroPageMobile() {
     const previousSize = lastViewportSize.current;
     lastViewportSize.current = { width: viewport.width, height: viewport.height };
 
-    if (!isEditorReady.current || !previousSize || isAutoCentering.current) {
+    if (!isEditorReady.current || !previousSize) {
       return;
     }
 
