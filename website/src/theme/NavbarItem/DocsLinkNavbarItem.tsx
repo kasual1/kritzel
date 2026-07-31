@@ -18,7 +18,7 @@ export default function DocsLinkNavbarItem({
 }: DocsLinkNavbarItemProps): React.ReactNode {
   const localPathname = useLocalPathname();
   const isOnDocsPage = localPathname.includes('/docs');
-  const [targetPath, setTargetPath] = useState('/docs/react/overview');
+  const [targetPath, setTargetPath] = useState(() => frameworkPaths[getPreferredFramework()]);
 
   useEffect(() => {
     // If we are navigating to a docs page via direct URL, persist the framework preference
