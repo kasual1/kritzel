@@ -4,3 +4,7 @@
   align-items: center;
   --button-icon-color: #ffffff;
 }
+
+.button {
+  border-radius: 0.6rem;
+}

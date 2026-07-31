@@ -12,7 +12,7 @@
   width: 100%;
   max-width: 640px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 0.8rem;
+  border-radius: 0.95rem;
   background: #ffffff;
   padding: 1.6rem;
   box-shadow: 0 18px 50px rgba(8, 12, 18, 0.08);
@@ -62,7 +62,7 @@
 .textarea {
   width: 100%;
   border: 1px solid #d8dadd;
-  border-radius: 0.5rem;
+  border-radius: 0.6rem;
   padding: 0.66rem 0.72rem;
   font: inherit;
   font-size: 0.8rem;
@@ -93,7 +93,7 @@
   justify-self: start;
   margin-top: 0.1rem;
   border: 1px solid #000;
-  border-radius: 0.45rem;
+  border-radius: 0.6rem;
   background: #000;
   color: #fff;
   font: inherit;

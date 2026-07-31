@@ -38,7 +38,7 @@ article a[aria-label^="Read more about "] {
 
 .doc-card {
   border: 1px solid var(--ifm-color-emphasis-300);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0;
   display: flex;
   flex-direction: column;
