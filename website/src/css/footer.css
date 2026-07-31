@@ -11,10 +11,30 @@
   color: #aaaaaa !important;
 }
 
+.footer__links {
+  margin-bottom: 6rem;
+}
+
 .footer__copyright {
   font-size: 0.72rem;
   margin-top: 2rem;
   text-align: left;
+}
+
+.footer__meta {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer__meta-item {
+  font-size: inherit;
+}
+
+.footer__meta-item + .footer__meta-item::before {
+  content: none;
 }
 
 .footer .footer__links > .theme-layout-footer-column:first-child {
@@ -62,5 +82,17 @@
   .kritzel-footer-brand {
     max-width: 100%;
     margin-bottom: 0.75rem;
+  }
+
+  .footer__meta {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .footer__meta-item + .footer__meta-item::before {
+    content: none;
+    margin-right: 0;
   }
 }
