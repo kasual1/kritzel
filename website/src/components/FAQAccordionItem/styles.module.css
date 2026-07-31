@@ -1,6 +1,6 @@
 .item {
   border: 1px solid var(--ifm-color-emphasis-200);
-  border-radius: 14px;
+  border-radius: 16px;
   background: var(--ifm-background-surface-color);
   box-shadow: 0 10px 22px rgba(8, 12, 18, 0.05);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
@@ -28,7 +28,7 @@
 .trigger:focus-visible {
   outline: 2px solid var(--ifm-color-primary);
   outline-offset: 2px;
-  border-radius: 12px;
+  border-radius: 14px;
 }
 
 .question {
