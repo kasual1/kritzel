@@ -21,15 +21,112 @@ const quickStartPaths: Record<keyof typeof frameworkPaths, string> = {
 };
 
 function HomepageEditorEmbed() {
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const [isMobileViewport, setIsMobileViewport] = React.useState(false);
+  const isMobileViewportRef = React.useRef(isMobileViewport);
+  const pendingSwitchTimeoutRef = React.useRef<number | null>(null);
+
+  React.useEffect(() => {
+    isMobileViewportRef.current = isMobileViewport;
+  }, [isMobileViewport]);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const determineViewportMode = (containerWidth: number, containerHeight: number, currentMode: boolean) => {
+      const aspectThreshold = 24;
+
+      if (containerHeight > containerWidth + aspectThreshold) {
+        return true;
+      }
+
+      if (containerWidth > containerHeight + aspectThreshold) {
+        return false;
+      }
+
+      return currentMode;
+    };
+
+    const measureAndSwitchViewportMode = (confirmChange: boolean) => {
+      const containerElement = containerRef.current;
+      if (!containerElement) {
+        return;
+      }
+
+      const nextMode = determineViewportMode(
+        containerElement.clientWidth,
+        containerElement.clientHeight,
+        isMobileViewportRef.current,
+      );
+
+      if (nextMode === isMobileViewportRef.current) {
+        if (pendingSwitchTimeoutRef.current !== null) {
+          window.clearTimeout(pendingSwitchTimeoutRef.current);
+          pendingSwitchTimeoutRef.current = null;
+        }
+        return;
+      }
+
+      if (!confirmChange) {
+        if (pendingSwitchTimeoutRef.current !== null) {
+          window.clearTimeout(pendingSwitchTimeoutRef.current);
+        }
+
+        pendingSwitchTimeoutRef.current = window.setTimeout(() => {
+          pendingSwitchTimeoutRef.current = null;
+          measureAndSwitchViewportMode(true);
+        }, 140);
+        return;
+      }
+
+      isMobileViewportRef.current = nextMode;
+      setIsMobileViewport(nextMode);
+    };
+
+    const containerElement = containerRef.current;
+    if (!containerElement) {
+      return;
+    }
+
+    measureAndSwitchViewportMode(true);
+
+    const resizeObserver = new ResizeObserver(() => {
+      measureAndSwitchViewportMode(false);
+    });
+    resizeObserver.observe(containerElement);
+
+    const onWindowResize = () => {
+      measureAndSwitchViewportMode(false);
+    };
+
+    window.addEventListener("resize", onWindowResize);
+
+    return () => {
+      if (pendingSwitchTimeoutRef.current !== null) {
+        window.clearTimeout(pendingSwitchTimeoutRef.current);
+        pendingSwitchTimeoutRef.current = null;
+      }
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", onWindowResize);
+    };
+  }, []);
+
   return (
-    <iframe
-      src="https://kasual1.github.io/kritzel-demos/react/#/website/hero"
-      title="Kritzel React Getting Started Demo"
-      style={{ width: "100%", height: "100%", border: 0 }}
-      loading="lazy"
-      referrerPolicy="strict-origin-when-cross-origin"
-      allow="clipboard-read; clipboard-write"
-    />
+    <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
+      <iframe
+        key={isMobileViewport ? "hero-mobile" : "hero-desktop"}
+        src={isMobileViewport
+          ? "https://kasual1.github.io/kritzel-demos/react/#/website/hero-mobile"
+          : "https://kasual1.github.io/kritzel-demos/react/#/website/hero"}
+        title={isMobileViewport ? "Kritzel React Hero Mobile Demo" : "Kritzel React Hero Demo"}
+        style={{ width: "100%", height: "100%", border: 0 }}
+        loading="lazy"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allow="clipboard-read; clipboard-write"
+      />
+    </div>
   );
 }
 

@@ -123,13 +123,13 @@
 
 @media screen and (max-width: 996px) {
   .editorContainer {
-    height: 450px;
+    height: 600px;
     max-width: 100%;
     border-radius: 8px;
   }
 
   .editorPlaceholder {
-    height: 450px;
+    height: 600px;
   }
 }
 
