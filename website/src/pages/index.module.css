@@ -56,7 +56,9 @@
   }
 
   .heroTitle {
-    font-size: 2.5rem;
+    font-size: clamp(1.75rem, 7vw, 2.1rem);
+    line-height: 1.1;
+    white-space: nowrap;
     /* Adjust for smaller screens */
   }
 
@@ -101,9 +103,13 @@
   height: 650px;
   margin-left: auto;
   margin-right: auto;
-  border-radius: 12px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+
+.editorContainer iframe {
+  border-radius: inherit;
 }
 
 .editorContainer kritzel-engine {
@@ -125,7 +131,7 @@
   .editorContainer {
     height: 600px;
     max-width: 100%;
-    border-radius: 8px;
+    border-radius: 12px;
   }
 
   .editorPlaceholder {
