@@ -248,7 +248,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Kritzel`,
+      copyright: `<span class="footer__meta"><span class="footer__meta-item">Copyright © ${new Date().getFullYear()} Kritzel</span><span class="footer__meta-item">Made with &#10084;&#65039; in Cologne</span></span>`,
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
