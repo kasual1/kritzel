@@ -27,7 +27,7 @@ export default function LinksWrapper(props: Props): ReactNode {
     title: '',
     items: [
       {
-        html: `<div class="kritzel-footer-brand"><div class="kritzel-footer-brand__logo-badge"><img src="${logoUrl}" alt="Kritzel logo" class="kritzel-footer-brand__logo" /></div><p class="kritzel-footer-brand__description">A framework-agnostic canvas library for drawing, real-time collaboration, and AI-powered creative tools.</p></div>`,
+        html: `<div class="kritzel-footer-brand"><div class="kritzel-footer-brand__logo-badge"><img src="${logoUrl}" alt="Kritzel logo" class="kritzel-footer-brand__logo" /></div><p class="kritzel-footer-brand__description">Build infinite canvas experiences in minutes.</p></div>`,
       },
     ],
   };
