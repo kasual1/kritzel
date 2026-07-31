@@ -150,7 +150,7 @@ function HomepageHeader() {
           Development Kit
         </Heading>
         <p className={clsx("hero__subtitle", styles.heroSubtitle)}>
-          Kritzel is a framework-agnostic infinite canvas library that helps you build whiteboards for React, Vuew and Angular.
+          Kritzel is a framework-agnostic infinite canvas library that helps you build custom whiteboard experiences with React, Vue and Angular.
         </p>
         <div className={styles.editorContainer}>
           <HomepageEditorEmbed />

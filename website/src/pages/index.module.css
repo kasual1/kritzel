@@ -45,7 +45,7 @@
   margin-bottom: 2rem;
   margin-left: auto;
   margin-right: auto;
-  max-width: 42ch;
+  max-width: 58ch;
   text-wrap: balance;
   color: var(--ifm-color-content);
 }
@@ -63,7 +63,7 @@
   .heroSubtitle {
     font-size: 1rem;
     /* Adjust for smaller screens */
-    max-width: 34ch;
+    max-width: 40ch;
   }
 
   .buttons {
