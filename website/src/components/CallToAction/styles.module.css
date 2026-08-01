@@ -1,8 +1,13 @@
 /* Call to Action Section */
 .ctaSection {
+  --cta-pad-y: 6rem;
+  --cta-pad-x: 2rem;
   background-color: #1a1a2e;
-  padding: 6rem 2rem;
+  background-image: linear-gradient(to bottom, #1a1a2e 0%, #262642 100%);
+  padding: var(--cta-pad-y) var(--cta-pad-x);
   text-align: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .ctaSection ::selection {
@@ -13,6 +18,39 @@
 .ctaContent {
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.ctaOrionCapsule {
+  position: absolute;
+  top: calc(0.9rem + 40px);
+  left: calc(1.4rem + 40px);
+  width: 180px;
+  height: auto;
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ctaMoon {
+  position: absolute;
+  right: calc(-0.8rem - 600px);
+  bottom: calc((var(--cta-pad-y) * -1));
+  width: 680px;
+  height: auto;
+  opacity: 0.92;
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 48%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 48%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.ctaContent > *:not(.ctaMoon) {
+  position: relative;
+  z-index: 1;
 }
 
 .ctaTitle {
@@ -60,7 +98,8 @@
 
 @media screen and (max-width: 768px) {
   .ctaSection {
-    padding: 4rem 1.5rem;
+    --cta-pad-y: 4rem;
+    --cta-pad-x: 1.5rem;
   }
 
   .ctaTitle {
@@ -69,5 +108,17 @@
 
   .ctaDescription {
     font-size: 1.1rem;
+  }
+
+  .ctaMoon {
+    right: calc(-0.2rem - 150px);
+    bottom: calc((var(--cta-pad-y) * -1) + 0.5rem);
+    width: 120px;
+  }
+
+  .ctaOrionCapsule {
+    top: calc(0.6rem + 100px);
+    left: calc(1rem + 100px);
+    width: 96px;
   }
 }
