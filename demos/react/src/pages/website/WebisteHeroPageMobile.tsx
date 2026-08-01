@@ -3,7 +3,6 @@ import {
   DEFAULT_BRUSH_CONFIG,
   DEFAULT_TEXT_CONFIG,
   KritzelBrushTool,
-  KritzelBaseTool,
   KritzelEditor,
   KritzelEraserTool,
   KritzelImageTool,
@@ -41,7 +40,6 @@ const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   : `${import.meta.env.BASE_URL}/`;
 const INITIAL_WORKSPACE_EXPORT_URL = `${normalizedBaseUrl}hero_workspace_mobile.json`;
 const RACING_SANS_ONE_STYLESHEET_URL = "https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap";
-const WEBSITE_HERO_IDLE_TOOL_NAME = "website-hero-mobile-idle-tool";
 
 const WEBSITE_HERO_CUSTOM_FONTS = {
   "website-hero-racing-sans-one": {
@@ -109,6 +107,7 @@ const WEBSITE_HERO_CONTROLS: KritzelToolbarControl[] = [
   {
     name: "selection",
     type: "tool",
+    isDefault: true,
     tool: KritzelSelectionTool,
     icon: "cursor",
   },
@@ -179,7 +178,6 @@ export function WebisteHeroPageMobile() {
   const fitAnimationFrameId = useRef<number | null>(null);
   const isAutoCentering = useRef(false);
   const hasPendingAutoCenter = useRef(false);
-  const hasActivatedIdleTool = useRef(false);
 
   useEffect(() => {
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
@@ -295,21 +293,6 @@ export function WebisteHeroPageMobile() {
       return;
     }
 
-    async function ensureIdleToolIsActive(editorElement: HTMLKritzelEditorElement) {
-      if (hasActivatedIdleTool.current) {
-        return;
-      }
-
-      const registeredIdleTool = await editorElement.registerTool(WEBSITE_HERO_IDLE_TOOL_NAME, KritzelBaseTool);
-      if (registeredIdleTool) {
-        await editorElement.changeActiveTool(registeredIdleTool);
-      } else {
-        await editorElement.changeActiveToolByName(WEBSITE_HERO_IDLE_TOOL_NAME);
-      }
-
-      hasActivatedIdleTool.current = true;
-    }
-
     async function ensureVideoCustomElementObject(editorElement: HTMLKritzelEditorElement) {
       if (hasAddedVideoCustomElement.current) {
         return;
@@ -367,7 +350,6 @@ export function WebisteHeroPageMobile() {
     if (hasImportedInitialWorkspace.current) {
       await ensureVideoCustomElementObject(editor);
       await ensureThreeDModelViewerCustomElementObject(editor);
-      await ensureIdleToolIsActive(editor);
       const currentViewport = await editor.getViewport();
       lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
       isEditorReady.current = true;
@@ -379,7 +361,6 @@ export function WebisteHeroPageMobile() {
     if ((objectCount ?? 0) > 0) {
       await ensureVideoCustomElementObject(editor);
       await ensureThreeDModelViewerCustomElementObject(editor);
-      await ensureIdleToolIsActive(editor);
       hasImportedInitialWorkspace.current = true;
       const currentViewport = await editor.getViewport();
       lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
@@ -414,7 +395,6 @@ export function WebisteHeroPageMobile() {
 
     await ensureVideoCustomElementObject(editor);
     await ensureThreeDModelViewerCustomElementObject(editor);
-    await ensureIdleToolIsActive(editor);
 
     hasImportedInitialWorkspace.current = true;
     const currentViewport = await editor.getViewport();
