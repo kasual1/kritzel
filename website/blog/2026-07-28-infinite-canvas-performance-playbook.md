@@ -4,6 +4,7 @@ description: A practical guide to building fast infinite canvas experiences with
 date: 2026-07-28
 tags: [kritzel, infinite-canvas, spatial-ui, performance]
 slug: /infinite-canvas-performance-playbook
+hide_table_of_contents: true
 ---
 
 ## Editorial Plan

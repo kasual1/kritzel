@@ -3,6 +3,7 @@ title: Coming Soon
 description: Kritzel is almost ready. Stay tuned for the official launch.
 date: 2026-05-15
 tags: [announcement]
+hide_table_of_contents: true
 ---
 
 We are putting the finishing touches on Kritzel — an infinite canvas library for React, Vue, and Angular.
