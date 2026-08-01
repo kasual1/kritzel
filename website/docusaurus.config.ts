@@ -134,6 +134,11 @@ const config: Config = {
   ],
 
   themeConfig: {
+    blog: {
+      sidebar: {
+        groupByYear: false,
+      },
+    },
     image: "img/docusaurus-social-card.jpg",
     navbar: {
       title: "Kritzel",
