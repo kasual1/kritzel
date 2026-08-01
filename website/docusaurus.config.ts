@@ -249,7 +249,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `<span class="footer__meta"><span class="footer__meta-item">Copyright © ${new Date().getFullYear()} Kritzel</span><span class="footer__meta-item">Made with &#10084;&#65039; in Cologne</span></span>`,
+      copyright: `<span class="footer__meta"><span class="footer__meta-item">Copyright © ${new Date().getFullYear()} Kritzel</span>`,
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
