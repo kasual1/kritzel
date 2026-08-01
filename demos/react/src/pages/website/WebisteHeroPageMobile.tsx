@@ -410,8 +410,8 @@ export function WebisteHeroPageMobile() {
         editorId="website-hero-mobile"
         customFonts={WEBSITE_HERO_CUSTOM_FONTS}
         controls={WEBSITE_HERO_CONTROLS}
-        isPanningEnabled={true}
-        isZoomingEnabled={true}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={true}
         isWorkspaceManagerVisible={true}
         onIsReady={() => {

@@ -410,8 +410,8 @@ export function WebsiteHeroPage() {
         editorId="website-hero"
         customFonts={WEBSITE_HERO_CUSTOM_FONTS}
         controls={WEBSITE_HERO_CONTROLS}
-        isPanningEnabled={true}
-        isZoomingEnabled={true}
+        isPanningEnabled={false}
+        isZoomingEnabled={false}
         isMoreMenuVisible={true}
         isWorkspaceManagerVisible={true}
         onIsReady={() => {
