@@ -2,6 +2,11 @@
   background-color: #000 !important;
 }
 
+.footer ::selection {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #111111;
+}
+
 .footer__link-item {
   font-size: 0.93rem;
   line-height: 1.5;
