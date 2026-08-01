@@ -209,12 +209,8 @@ const config: Config = {
               to: '/docs/react/overview',
             },
             {
-              label: 'API Reference',
-              to: '/docs/react/api-reference',
-            },
-            {
               label: 'Examples',
-              to: '/docs/react/example-custom-toolbar',
+              to: '/docs/react/example-object-explorer',
             },
           ],
         },
@@ -223,15 +219,15 @@ const config: Config = {
           items: [
             {
               label: 'Angular',
-              to: '/docs/angular/overview',
+              to: '/docs/angular/quick-start',
             },
             {
               label: 'React',
-              to: '/docs/react/overview',
+              to: '/docs/react/quick-start',
             },
             {
               label: 'Vue',
-              to: '/docs/vue/overview',
+              to: '/docs/vue/quick-start',
             },
           ],
         },
