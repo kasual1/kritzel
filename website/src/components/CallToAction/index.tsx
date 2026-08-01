@@ -3,6 +3,7 @@ import React from "react";
 import Link from "@docusaurus/Link";
 import Heading from "@theme/Heading";
 import { ArrowRight } from "lucide-react";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import { getPreferredFramework, subscribeToPreferredFramework, type Framework } from "@site/src/utils/frameworkPreference";
 
 import styles from "./styles.module.css";
@@ -31,6 +32,8 @@ export default function CallToAction({
   primaryButton = { label: "Get Started", showArrow: true },
 }: CallToActionProps): ReactNode {
   const [docsPath, setDocsPath] = React.useState(() => quickStartPaths[getPreferredFramework()]);
+  const moonImageUrl = useBaseUrl("/img/moon.png");
+  const orionCapsuleImageUrl = useBaseUrl("/img/orion_capsule.png");
 
   React.useEffect(() => {
     setDocsPath(quickStartPaths[getPreferredFramework()]);
@@ -43,7 +46,9 @@ export default function CallToAction({
 
   return (
     <section className={styles.ctaSection}>
+      <img src={orionCapsuleImageUrl} alt="" className={styles.ctaOrionCapsule} aria-hidden="true" />
       <div className={styles.ctaContent}>
+        <img src={moonImageUrl} alt="" className={styles.ctaMoon} aria-hidden="true" />
         <Heading as="h2" className={styles.ctaTitle}>
           {title}
         </Heading>
