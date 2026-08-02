@@ -92,9 +92,19 @@ function mountThreeDModelViewerWidget(
     "top:-60%",
     "width:220%",
     "height:220%",
+    "opacity:0",
+    "transition:opacity 320ms ease-out",
     "pointer-events:none",
     "transform:none",
   ].join(";");
+
+  const handleLoad = () => {
+    requestAnimationFrame(() => {
+      modelViewer.style.opacity = "1";
+    });
+  };
+
+  modelViewer.addEventListener("load", handleLoad);
 
   root.appendChild(modelViewer);
 
@@ -107,6 +117,7 @@ function mountThreeDModelViewerWidget(
     root,
     getState: () => ({ schemaVersion: state.schemaVersion }),
     destroy: () => {
+      modelViewer.removeEventListener("load", handleLoad);
       // No subscriptions are attached for this static viewer.
     },
   };
