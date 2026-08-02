@@ -40,8 +40,8 @@
   width: 680px;
   height: auto;
   opacity: 0.92;
-  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 48%, rgba(0, 0, 0, 0) 100%);
-  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 48%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 38%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 38%, rgba(0, 0, 0, 0) 100%);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   pointer-events: none;
@@ -111,14 +111,10 @@
   }
 
   .ctaMoon {
-    right: calc(-0.2rem - 150px);
-    bottom: calc((var(--cta-pad-y) * -1) + 0.5rem);
-    width: 120px;
+    display: none;
   }
 
   .ctaOrionCapsule {
-    top: calc(0.6rem + 100px - 50px);
-    left: calc(1rem + 100px - 150px);
-    width: 96px;
+    display: none;
   }
 }
