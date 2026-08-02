@@ -1,0 +1,10 @@
+{
+  "theme.docs.paginator.previous": {
+    "message": "Previous",
+    "description": "The label used to navigate to the previous doc"
+  },
+  "theme.docs.paginator.next": {
+    "message": "Next up",
+    "description": "The label used to navigate to the next doc"
+  }
+}
