@@ -2,6 +2,22 @@
   display: none !important;
 }
 
+/* Global page transition: fades in the main content on every navigation */
+@media (prefers-reduced-motion: no-preference) {
+  .page-fade-in {
+    animation: page-fade-in 0.35s ease-out both;
+  }
+
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
 .markdown a {
   text-decoration: underline;
 }
