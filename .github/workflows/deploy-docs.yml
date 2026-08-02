@@ -5,37 +5,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  # --- Build Stencil Library ---
-  build-stencil:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: "24.18.0"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build Kritzel Stencil components
-        run: npm run build -w libs/kritzel-stencil
-
-      - name: Upload Stencil dist
-        uses: actions/upload-artifact@v6
-        with:
-          name: stencil-dist
-          path: |
-            libs/kritzel-stencil/dist
-            libs/kritzel-stencil/loader
-
-  # --- Build Docusaurus (after Stencil build, needs kritzel-react) ---
+  # --- Build Docusaurus ---
   build-docs:
     runs-on: ubuntu-latest
-    needs: build-stencil
     timeout-minutes: 10
     steps:
       - name: Checkout repository
@@ -46,17 +18,8 @@ jobs:
         with:
           node-version: "24.18.0"
 
-      - name: Download Stencil dist
-        uses: actions/download-artifact@v6
-        with:
-          name: stencil-dist
-          path: libs/kritzel-stencil
-
       - name: Install dependencies
         run: npm install
-
-      - name: Build Kritzel React library
-        run: npm run build -w libs/kritzel-react
 
       - name: Install Docusaurus dependencies
         run: |

@@ -157,7 +157,7 @@ const config: Config = {
         {
           type: 'custom-docsLink',
           label: 'Documentation',
-          to: '/docs/react/overview',
+          to: '/docs/react/quick-start',
           position: 'right',
         },
         {
@@ -167,17 +167,17 @@ const config: Config = {
           items: [
             {
               label: 'React',
-              to: '/docs/react/overview',
+              to: '/docs/react/quick-start',
               activeBasePath: 'docs/react'
             },
             {
               label: 'Vue',
-              to: '/docs/vue/overview',
+              to: '/docs/vue/quick-start',
               activeBasePath: 'docs/vue'
             },
             {
               label: 'Angular',
-              to: '/docs/angular/overview',
+              to: '/docs/angular/quick-start',
               activeBasePath: 'docs/angular'
             },
           ],
@@ -206,7 +206,7 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/react/overview',
+              to: '/docs/react/quick-start',
             },
             {
               label: 'Examples',
@@ -307,7 +307,7 @@ const config: Config = {
             position: 1,
             name: "Documentation",
             description: "Guides, concepts, and API reference for the Kritzel infinite canvas library.",
-            url: ABSOLUTE_URL("/docs/react/overview"),
+            url: ABSOLUTE_URL("/docs/react/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
@@ -328,21 +328,21 @@ const config: Config = {
             position: 4,
             name: "Angular",
             description: "Use Kritzel in Angular applications.",
-            url: ABSOLUTE_URL("/docs/angular/overview"),
+            url: ABSOLUTE_URL("/docs/angular/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 5,
             name: "React",
             description: "Use Kritzel in React applications.",
-            url: ABSOLUTE_URL("/docs/react/overview"),
+            url: ABSOLUTE_URL("/docs/react/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 6,
             name: "Vue",
             description: "Use Kritzel in Vue applications.",
-            url: ABSOLUTE_URL("/docs/vue/overview"),
+            url: ABSOLUTE_URL("/docs/vue/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
