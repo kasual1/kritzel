@@ -25,8 +25,8 @@
 .ctaOrionCapsule {
   position: absolute;
   top: calc(0.9rem  - 80px);
-  left: calc(1.4rem - 340px);
-  width: 140px;
+  left: calc(1.4rem - 440px);
+  width: 440px;
   height: auto;
   opacity: 0.9;
   pointer-events: none;
