@@ -23,6 +23,6 @@
   }
 
   .features :global(.row) {
-    row-gap: 3rem;
+    row-gap: 1rem;
   }
 }
