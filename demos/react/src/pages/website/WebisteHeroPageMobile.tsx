@@ -35,6 +35,7 @@ import {
   createThreeDModelViewerCustomElement,
   setupThreeDModelViewerRenderer,
 } from "./custom-elements/threeDModelViewerCustomElement";
+import { registerHeroServiceWorker } from "./registerHeroServiceWorker";
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -237,6 +238,7 @@ export function WebisteHeroPageMobile() {
   }
 
   useEffect(() => {
+    registerHeroServiceWorker();
     void preloadThreeDModelViewerAssets();
 
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
