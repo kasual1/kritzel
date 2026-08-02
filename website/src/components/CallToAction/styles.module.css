@@ -24,8 +24,8 @@
 
 .ctaOrionCapsule {
   position: absolute;
-  top: calc(0.9rem + 40px);
-  left: calc(1.4rem + 40px);
+  top: calc(0.9rem  - 80px);
+  left: calc(1.4rem - 340px);
   width: 140px;
   height: auto;
   opacity: 0.9;
@@ -48,7 +48,7 @@
   z-index: 0;
 }
 
-.ctaContent > *:not(.ctaMoon) {
+.ctaContent > *:not(.ctaMoon):not(.ctaOrionCapsule) {
   position: relative;
   z-index: 1;
 }
@@ -117,8 +117,8 @@
   }
 
   .ctaOrionCapsule {
-    top: calc(0.6rem + 100px);
-    left: calc(1rem + 100px);
+    top: calc(0.6rem + 100px - 50px);
+    left: calc(1rem + 100px - 150px);
     width: 96px;
   }
 }

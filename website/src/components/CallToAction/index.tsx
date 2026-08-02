@@ -46,8 +46,8 @@ export default function CallToAction({
 
   return (
     <section className={styles.ctaSection}>
-      <img src={orionCapsuleImageUrl} alt="" className={styles.ctaOrionCapsule} aria-hidden="true" />
       <div className={styles.ctaContent}>
+        <img src={orionCapsuleImageUrl} alt="" className={styles.ctaOrionCapsule} aria-hidden="true" />
         <img src={moonImageUrl} alt="" className={styles.ctaMoon} aria-hidden="true" />
         <Heading as="h2" className={styles.ctaTitle}>
           {title}
