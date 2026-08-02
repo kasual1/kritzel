@@ -17,6 +17,7 @@ function replaceFrameworkInPath(path: string, framework: Framework): string {
 
 export default function LinksWrapper(props: Props): ReactNode {
   const [framework, setFramework] = useState<Framework>(getPreferredFramework);
+  const homeUrl = useBaseUrl('/');
   const logoUrl = useBaseUrl('/img/logo.svg');
 
   useEffect(() => {
@@ -27,7 +28,7 @@ export default function LinksWrapper(props: Props): ReactNode {
     title: '',
     items: [
       {
-        html: `<div class="kritzel-footer-brand"><div class="kritzel-footer-brand__logo-badge"><img src="${logoUrl}" alt="Kritzel logo" class="kritzel-footer-brand__logo" /></div><p class="kritzel-footer-brand__description">Build infinite canvas experiences in minutes.</p></div>`,
+        html: `<div class="kritzel-footer-brand"><a href="${homeUrl}" class="kritzel-footer-brand__logo-badge" aria-label="Go to Kritzel home page"><img src="${logoUrl}" alt="Kritzel logo" class="kritzel-footer-brand__logo" /></a><p class="kritzel-footer-brand__description">Build infinite canvas experiences in minutes.</p></div>`,
       },
     ],
   };

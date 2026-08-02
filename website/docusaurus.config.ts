@@ -49,6 +49,7 @@ const config: Config = {
   customFields: {
     demoBaseUrls: DEMO_BASE_URLS,
   },
+  clientModules: [require.resolve("./src/clientModules/pageTransition.ts")],
   themes: ["@docusaurus/theme-mermaid"],
 
   presets: [
