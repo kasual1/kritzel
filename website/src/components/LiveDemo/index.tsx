@@ -65,6 +65,75 @@ function buildRawBaseUrl(repoUrl: string): string | null {
   return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${path}/`;
 }
 
+function getBranchVariants(branch: string): string[] {
+  if (branch === 'main') {
+    return ['main', 'master'];
+  }
+  if (branch === 'master') {
+    return ['master', 'main'];
+  }
+  return [branch];
+}
+
+function buildRawBaseCandidates(repoUrl: string, framework: DemoFramework): string[] {
+  const parsed = parseGitHubUrl(repoUrl);
+  if (!parsed) {
+    return [];
+  }
+
+  const { owner, repo, branch, path } = parsed;
+  const branches = getBranchVariants(branch);
+  const bases: string[] = [];
+
+  for (const currentBranch of branches) {
+    bases.push(`https://raw.githubusercontent.com/${owner}/${repo}/${currentBranch}/${path}/`);
+
+    if (repo === 'kritzel-demos') {
+      bases.push(`https://raw.githubusercontent.com/${owner}/kritzel/${currentBranch}/demos/${framework}/`);
+    }
+  }
+
+  return Array.from(new Set(bases));
+}
+
+function kebabToPascal(input: string): string {
+  return input
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+}
+
+function buildRepoFileCandidates(file: string, framework: DemoFramework): string[] {
+  const normalized = file.replace(/^\/+/, '');
+  const candidates = [normalized];
+
+  if (framework === 'angular') {
+    return candidates;
+  }
+
+  const lastSlashIndex = normalized.lastIndexOf('/');
+  const directory = lastSlashIndex === -1 ? '' : normalized.slice(0, lastSlashIndex);
+  const filename = lastSlashIndex === -1 ? normalized : normalized.slice(lastSlashIndex + 1);
+  const dotIndex = filename.lastIndexOf('.');
+  if (dotIndex <= 0) {
+    return candidates;
+  }
+
+  const basename = filename.slice(0, dotIndex);
+  const extension = filename.slice(dotIndex + 1);
+  const supportsPagePattern = (framework === 'react' && extension === 'tsx') || (framework === 'vue' && extension === 'vue');
+  const isKebabCase = basename.includes('-') && basename === basename.toLowerCase();
+
+  if (supportsPagePattern && isKebabCase) {
+    const pageFilename = `${kebabToPascal(basename)}Page.${extension}`;
+    const pagePath = directory ? `${directory}/${pageFilename}` : pageFilename;
+    candidates.push(pagePath);
+  }
+
+  return candidates;
+}
+
 function buildStackBlitzUrl(repoUrl: string, file?: string): string {
   const parsed = parseGitHubUrl(repoUrl);
   if (!parsed) return repoUrl;
@@ -149,9 +218,10 @@ export default function LiveDemo({
   const [fetchError, setFetchError] = useState<string | null>(null);
   const hasFetched = useRef(false);
 
-  const rawBase = repoUrl ? buildRawBaseUrl(repoUrl) : null;
   const demoBaseUrls = getDemoBaseUrls(siteConfig.customFields);
   const resolvedDemoFramework = demoFramework ?? getFrameworkFromPathname(pathname) ?? 'angular';
+  const rawBase = repoUrl ? buildRawBaseUrl(repoUrl) : null;
+  const rawBaseCandidates = repoUrl ? buildRawBaseCandidates(repoUrl, resolvedDemoFramework) : [];
   const demoBaseUrl = demoBaseUrls[resolvedDemoFramework];
   const resolvedIframeUrl = iframeUrl ?? (demoPath && demoBaseUrl ? buildDemoUrl(demoBaseUrl, demoPath) : undefined);
   const resolvedStackBlitzUrl = stackBlitzUrl
@@ -164,23 +234,34 @@ export default function LiveDemo({
     hasFetched.current = true;
     setIsFetching(true);
     setFetchError(null);
-    Promise.all(
-      repoFiles.map(async (file) => {
-        const res = await fetch(rawBase + file);
-        if (!res.ok) {
-          throw new Error(`${res.status} – ${file}`);
+
+    const fetchCodeFile = async (file: string): Promise<CodeFile> => {
+      const fileCandidates = buildRepoFileCandidates(file, resolvedDemoFramework);
+
+      for (const base of rawBaseCandidates) {
+        for (const candidate of fileCandidates) {
+          const res = await fetch(base + candidate);
+          if (!res.ok) {
+            continue;
+          }
+          return {
+            filename: candidate.split('/').pop() ?? candidate,
+            code: await res.text(),
+            language: langFromFilename(candidate),
+          };
         }
-        return {
-          filename: file.split('/').pop() ?? file,
-          code: await res.text(),
-          language: langFromFilename(file),
-        } as CodeFile;
-      })
+      }
+
+      throw new Error(`404 – ${file}`);
+    };
+
+    Promise.all(
+      repoFiles.map((file) => fetchCodeFile(file))
     )
       .then((files) => { setFetchedFiles(files); setActiveTab(0); })
       .catch((err: Error) => setFetchError(err.message))
       .finally(() => setIsFetching(false));
-  }, [view, rawBase, repoFiles]);
+  }, [view, rawBase, rawBaseCandidates, repoFiles, resolvedDemoFramework]);
 
   const viewToggleRef = useCallback((node: HTMLButtonElement | null) => {
     if (!node) {
