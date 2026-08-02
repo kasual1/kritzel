@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useRef } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import {
   DEFAULT_BRUSH_CONFIG,
   DEFAULT_TEXT_CONFIG,
@@ -33,6 +33,7 @@ import {
   THREE_D_MODEL_VIEWER_RENDERER_KEY,
   createThreeDModelViewerCustomElement,
   setupThreeDModelViewerRenderer,
+  waitForThreeDModelViewerInitialRender,
 } from "./custom-elements/threeDModelViewerCustomElement";
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
@@ -165,11 +166,27 @@ const WEBSITE_HERO_CONTROLS: KritzelToolbarControl[] = [
 const hostStyle: CSSProperties = {
   display: "block",
   height: "100%",
+  position: "relative",
+  overflow: "hidden",
+  backgroundColor: "#ffffff",
+};
+
+const editorWrapperBaseStyle: CSSProperties = {
+  height: "100%",
+  transition: "opacity 320ms ease",
+  willChange: "opacity",
+};
+
+const loadingOverlayStyle: CSSProperties = {
+  position: "absolute",
+  inset: 0,
+  backgroundColor: "#ffffff",
 };
 
 export function WebisteHeroPageMobile() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
+  const [isInitialSceneVisible, setIsInitialSceneVisible] = useState(false);
   const hasImportedInitialWorkspace = useRef(false);
   const hasAddedVideoCustomElement = useRef(false);
   const hasAddedThreeDModelViewerCustomElement = useRef(false);
@@ -178,6 +195,47 @@ export function WebisteHeroPageMobile() {
   const fitAnimationFrameId = useRef<number | null>(null);
   const isAutoCentering = useRef(false);
   const hasPendingAutoCenter = useRef(false);
+
+  async function waitForScenePaint() {
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resolve();
+        });
+      });
+    });
+  }
+
+  async function centerAllObjectsNow() {
+    const editor = editorRef.current;
+    if (!editor) {
+      return;
+    }
+
+    if (isAutoCentering.current) {
+      hasPendingAutoCenter.current = true;
+      return;
+    }
+
+    isAutoCentering.current = true;
+
+    try {
+      await editor.centerAllObjects(false);
+    } finally {
+      isAutoCentering.current = false;
+
+      if (hasPendingAutoCenter.current) {
+        hasPendingAutoCenter.current = false;
+        await centerAllObjectsNow();
+      }
+    }
+  }
+
+  async function revealInitialScene() {
+    await waitForThreeDModelViewerInitialRender();
+    await waitForScenePaint();
+    setIsInitialSceneVisible(true);
+  }
 
   useEffect(() => {
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
@@ -244,11 +302,6 @@ export function WebisteHeroPageMobile() {
       return;
     }
 
-    if (isAutoCentering.current) {
-      hasPendingAutoCenter.current = true;
-      return;
-    }
-
     if (fitAnimationFrameId.current !== null) {
       cancelAnimationFrame(fitAnimationFrameId.current);
     }
@@ -260,14 +313,7 @@ export function WebisteHeroPageMobile() {
         return;
       }
 
-      isAutoCentering.current = true;
-      void editor.centerAllObjects(false).finally(() => {
-        isAutoCentering.current = false;
-        if (hasPendingAutoCenter.current) {
-          hasPendingAutoCenter.current = false;
-          scheduleCenterAllObjects();
-        }
-      });
+      void centerAllObjectsNow();
     });
   }
 
@@ -353,7 +399,8 @@ export function WebisteHeroPageMobile() {
       const currentViewport = await editor.getViewport();
       lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
       isEditorReady.current = true;
-      scheduleCenterAllObjects();
+      await centerAllObjectsNow();
+      await revealInitialScene();
       return;
     }
 
@@ -365,7 +412,8 @@ export function WebisteHeroPageMobile() {
       const currentViewport = await editor.getViewport();
       lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
       isEditorReady.current = true;
-      scheduleCenterAllObjects();
+      await centerAllObjectsNow();
+      await revealInitialScene();
       return;
     }
 
@@ -400,27 +448,36 @@ export function WebisteHeroPageMobile() {
     const currentViewport = await editor.getViewport();
     lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
     isEditorReady.current = true;
-    scheduleCenterAllObjects();
+    await centerAllObjectsNow();
+    await revealInitialScene();
   }
 
   return (
     <div ref={hostRef} style={hostStyle}>
-      <KritzelEditor
-        ref={editorRef}
-        editorId="website-hero-mobile"
-        customFonts={WEBSITE_HERO_CUSTOM_FONTS}
-        controls={WEBSITE_HERO_CONTROLS}
-        isPanningEnabled={false}
-        isZoomingEnabled={false}
-        isMoreMenuVisible={true}
-        isWorkspaceManagerVisible={true}
-        onIsReady={() => {
-          void onReady();
+      <div
+        style={{
+          ...editorWrapperBaseStyle,
+          opacity: isInitialSceneVisible ? 1 : 0,
         }}
-        onViewportChange={(event) => {
-          onViewportChange((event as CustomEvent<KritzelViewportState>).detail);
-        }}
-      />
+      >
+        <KritzelEditor
+          ref={editorRef}
+          editorId="website-hero-mobile"
+          customFonts={WEBSITE_HERO_CUSTOM_FONTS}
+          controls={WEBSITE_HERO_CONTROLS}
+          isPanningEnabled={false}
+          isZoomingEnabled={false}
+          isMoreMenuVisible={true}
+          isWorkspaceManagerVisible={true}
+          onIsReady={() => {
+            void onReady();
+          }}
+          onViewportChange={(event) => {
+            onViewportChange((event as CustomEvent<KritzelViewportState>).detail);
+          }}
+        />
+      </div>
+      {!isInitialSceneVisible ? <div aria-hidden="true" style={loadingOverlayStyle} /> : null}
     </div>
   );
 }

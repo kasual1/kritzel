@@ -29,8 +29,103 @@ type ThreeDModelViewerState = {
 type MountedThreeDModelViewer = {
   root: HTMLElement;
   getState: () => ThreeDModelViewerState;
+  whenReady: Promise<void>;
   destroy: () => void;
 };
+
+type ModelViewerWithReadiness = ModelViewerElement & {
+  readonly updateComplete?: Promise<unknown>;
+};
+
+const mountedThreeDModelViewers = new Map<string, MountedThreeDModelViewer>();
+
+function waitForAnimationFrames(frameCount = 2): Promise<void> {
+  return new Promise((resolve) => {
+    const tick = (remainingFrames: number) => {
+      if (remainingFrames <= 0) {
+        resolve();
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        tick(remainingFrames - 1);
+      });
+    };
+
+    tick(frameCount);
+  });
+}
+
+function waitForModelViewerInitialRender(modelViewer: ModelViewerWithReadiness): Promise<void> {
+  return new Promise((resolve) => {
+    let isSettled = false;
+    let frameRequestId: number | null = null;
+    let timeoutId: number | null = null;
+
+    const cleanup = () => {
+      modelViewer.removeEventListener("load", handleLoad);
+
+      if (frameRequestId !== null) {
+        cancelAnimationFrame(frameRequestId);
+        frameRequestId = null;
+      }
+
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+
+    const settle = () => {
+      if (isSettled) {
+        return;
+      }
+
+      isSettled = true;
+      cleanup();
+
+      void Promise.resolve(modelViewer.updateComplete)
+        .catch(() => undefined)
+        .then(() => waitForAnimationFrames())
+        .finally(() => {
+          resolve();
+        });
+    };
+
+    const checkVisibility = () => {
+      if (modelViewer.loaded && modelViewer.modelIsVisible) {
+        settle();
+        return;
+      }
+
+      frameRequestId = requestAnimationFrame(() => {
+        checkVisibility();
+      });
+    };
+
+    const handleLoad = () => {
+      checkVisibility();
+    };
+
+    modelViewer.addEventListener("load", handleLoad);
+    timeoutId = window.setTimeout(() => {
+      settle();
+    }, 5000);
+
+    checkVisibility();
+  });
+}
+
+export async function waitForThreeDModelViewerInitialRender(): Promise<void> {
+  await waitForAnimationFrames();
+
+  const pendingViewers = Array.from(mountedThreeDModelViewers.values(), (widget) => widget.whenReady);
+  if (pendingViewers.length === 0) {
+    return;
+  }
+
+  await Promise.allSettled(pendingViewers);
+}
 
 export function createThreeDModelViewerInitialState(): ThreeDModelViewerState {
   return {
@@ -105,6 +200,7 @@ function mountThreeDModelViewerWidget(
   };
 
   modelViewer.addEventListener("load", handleLoad);
+  const whenReady = waitForModelViewerInitialRender(modelViewer as ModelViewerWithReadiness);
 
   root.appendChild(modelViewer);
 
@@ -116,6 +212,7 @@ function mountThreeDModelViewerWidget(
   return {
     root,
     getState: () => ({ schemaVersion: state.schemaVersion }),
+    whenReady,
     destroy: () => {
       modelViewer.removeEventListener("load", handleLoad);
       // No subscriptions are attached for this static viewer.
@@ -124,8 +221,6 @@ function mountThreeDModelViewerWidget(
 }
 
 export function setupThreeDModelViewerRenderer() {
-  const mountedWidgets = new Map<string, MountedThreeDModelViewer>();
-
   KritzelCustomElementRendererRegistry.register(THREE_D_MODEL_VIEWER_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) {
@@ -136,11 +231,11 @@ export function setupThreeDModelViewerRenderer() {
       object.isRotatable = true;
       object.zIndex = THREE_D_MODEL_VIEWER_Z_INDEX;
 
-      const previousWidget = mountedWidgets.get(object.id);
+      const previousWidget = mountedThreeDModelViewers.get(object.id);
       if (previousWidget) {
         previousWidget.destroy();
         previousWidget.root.remove();
-        mountedWidgets.delete(object.id);
+        mountedThreeDModelViewers.delete(object.id);
       }
 
       const mountedWidget = mountThreeDModelViewerWidget(normalizeThreeDModelViewerState(data));
@@ -156,10 +251,10 @@ export function setupThreeDModelViewerRenderer() {
       });
 
       object.setIsInteractive(true);
-      mountedWidgets.set(object.id, mountedWidget);
+      mountedThreeDModelViewers.set(object.id, mountedWidget);
     },
     onUnmount: ({ object, container }) => {
-      const mountedWidget = mountedWidgets.get(object.id);
+      const mountedWidget = mountedThreeDModelViewers.get(object.id);
       if (!mountedWidget) {
         return undefined;
       }
@@ -167,7 +262,7 @@ export function setupThreeDModelViewerRenderer() {
       const snapshot = mountedWidget.getState();
       mountedWidget.destroy();
       mountedWidget.root.remove();
-      mountedWidgets.delete(object.id);
+      mountedThreeDModelViewers.delete(object.id);
 
       if (container) {
         container.innerHTML = "";
@@ -178,11 +273,11 @@ export function setupThreeDModelViewerRenderer() {
   });
 
   return () => {
-    mountedWidgets.forEach((widget) => {
+    mountedThreeDModelViewers.forEach((widget) => {
       widget.destroy();
       widget.root.remove();
     });
-    mountedWidgets.clear();
+    mountedThreeDModelViewers.clear();
     KritzelCustomElementRendererRegistry.unregister(THREE_D_MODEL_VIEWER_RENDERER_KEY);
   };
 }
