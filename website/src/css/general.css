@@ -2,6 +2,10 @@
   display: none !important;
 }
 
+.markdown a {
+  text-decoration: underline;
+}
+
 /* Visually hidden breadcrumbs: crawlers can read them, users don't see them */
 nav[aria-label="Breadcrumbs"] {
   position: absolute;
@@ -44,6 +48,12 @@ article a[aria-label^="Read more about "] {
   flex-direction: column;
   transition: border-color 0.2s, box-shadow 0.2s;
   overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+}
+
+.markdown a.doc-card,
+.markdown a.doc-card:hover {
   text-decoration: none;
   color: inherit;
 }

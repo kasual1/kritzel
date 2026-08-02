@@ -1,4 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from "react";
+import { X } from "lucide-react";
 import Layout from "@theme/Layout";
 import Heading from "@theme/Heading";
 
@@ -8,6 +9,7 @@ type SubmissionStatus = "idle" | "submitting" | "success" | "error";
 
 export default function GetLicensePage(): ReactNode {
   const [submissionStatus, setSubmissionStatus] = useState<SubmissionStatus>("idle");
+  const [showBanner, setShowBanner] = useState(true);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
@@ -42,6 +44,25 @@ export default function GetLicensePage(): ReactNode {
       description="Contact us to get a Kritzel license and remove the editor watermark"
     >
       <main className={styles.main}>
+        {showBanner && (
+          <section className={styles.banner} aria-label="Early access note">
+            <div className={styles.bannerHeader}>
+              <p className={styles.bannerTitle}>Early access for early adopters</p>
+              <button
+                type="button"
+                className={styles.bannerClose}
+                aria-label="Close early access notice"
+                onClick={() => setShowBanner(false)}
+              >
+                <X size={16} aria-hidden="true" />
+              </button>
+            </div>
+            <p className={styles.bannerCopy}>
+              Kritzel is still early. If you want to try it in a real project and share feedback, mention that in the form below and we can talk about an early-adopter deal.
+            </p>
+          </section>
+        )}
+
         <section className={styles.card}>
           <header className={styles.header}>
             <Heading as="h1" className={styles.title}>

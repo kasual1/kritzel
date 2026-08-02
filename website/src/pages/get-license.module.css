@@ -1,11 +1,74 @@
 .main {
   display: grid;
+  gap: 1rem;
   place-items: start center;
   min-height: 68vh;
   padding: 4rem 1rem 5rem;
   background:
     radial-gradient(circle at 50% 0%, rgba(0, 0, 0, 0.045), transparent 35rem),
     var(--ifm-background-color);
+}
+
+.banner {
+  width: 100%;
+  max-width: 640px;
+  border: 1px solid rgba(28, 96, 255, 0.18);
+  border-radius: 0.95rem;
+  background: linear-gradient(180deg, rgba(28, 96, 255, 0.08), rgba(255, 255, 255, 0.98));
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 12px 34px rgba(8, 12, 18, 0.06);
+}
+
+.bannerHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.bannerTitle {
+  margin: 0;
+  color: #12307a;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.bannerClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  margin: -0.25rem -0.25rem 0 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #12307a;
+  cursor: pointer;
+  transition: background-color 150ms ease, color 150ms ease, transform 150ms ease;
+}
+
+.bannerClose:hover {
+  background: rgba(18, 48, 122, 0.08);
+}
+
+.bannerClose:active {
+  transform: translateY(1px);
+}
+
+.bannerClose:focus-visible {
+  outline: 3px solid rgba(18, 48, 122, 0.25);
+  outline-offset: 2px;
+}
+
+.bannerCopy {
+  margin: 0.45rem 0 0;
+  color: var(--ifm-color-content-secondary);
+  font-size: 0.85rem;
+  line-height: 1.55;
 }
 
 .card {
