@@ -34,7 +34,6 @@ import {
   THREE_D_MODEL_VIEWER_RENDERER_KEY,
   createThreeDModelViewerCustomElement,
   setupThreeDModelViewerRenderer,
-  waitForThreeDModelViewerInitialRender,
 } from "./custom-elements/threeDModelViewerCustomElement";
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
@@ -233,7 +232,6 @@ export function WebsiteHeroPage() {
   }
 
   async function revealInitialScene() {
-    await waitForThreeDModelViewerInitialRender();
     await waitForScenePaint();
     setIsInitialSceneVisible(true);
   }
