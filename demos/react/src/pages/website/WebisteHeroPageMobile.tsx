@@ -30,6 +30,7 @@ import {
   setupVideoRenderer,
 } from "./custom-elements/videoCustomElement";
 import {
+  preloadThreeDModelViewerAssets,
   THREE_D_MODEL_VIEWER_RENDERER_KEY,
   createThreeDModelViewerCustomElement,
   setupThreeDModelViewerRenderer,
@@ -238,6 +239,8 @@ export function WebisteHeroPageMobile() {
   }
 
   useEffect(() => {
+    void preloadThreeDModelViewerAssets();
+
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
     const cleanupImageStackRenderer = setupImageStackRenderer();
     const cleanupCoreStageDashboardRenderer = setupCoreStageDashboardRenderer();

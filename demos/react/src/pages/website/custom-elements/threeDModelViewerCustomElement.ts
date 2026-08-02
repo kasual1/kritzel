@@ -13,6 +13,9 @@ export const THREE_D_MODEL_VIEWER_RENDERER_KEY = "website-hero-3d-model-viewer";
 const THREE_D_MODEL_VIEWER_Z_INDEX = 11;
 const THREE_D_MODEL_VIEWER_WIDTH = 900;
 const THREE_D_MODEL_VIEWER_HEIGHT = 650;
+const THREE_D_MODEL_VIEWER_ASSET_PATHS = [
+  "orion_capsule.glb",
+] as const;
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -38,6 +41,7 @@ type ModelViewerWithReadiness = ModelViewerElement & {
 };
 
 const mountedThreeDModelViewers = new Map<string, MountedThreeDModelViewer>();
+let threeDModelViewerAssetPreloadPromise: Promise<void> | null = null;
 
 function waitForAnimationFrames(frameCount = 2): Promise<void> {
   return new Promise((resolve) => {
@@ -54,6 +58,69 @@ function waitForAnimationFrames(frameCount = 2): Promise<void> {
 
     tick(frameCount);
   });
+}
+
+function ensureAssetPreloadLink(assetUrl: string, as: "fetch" | "image") {
+  const selector = `link[data-kritzel-preload="${assetUrl}"]`;
+  const existingLink = document.head.querySelector<HTMLLinkElement>(selector);
+  if (existingLink) {
+    return;
+  }
+
+  const link = document.createElement("link");
+  link.rel = "preload";
+  link.as = as;
+  link.href = assetUrl;
+  link.setAttribute("data-kritzel-preload", assetUrl);
+
+  if (as === "fetch") {
+    link.crossOrigin = "anonymous";
+  }
+
+  document.head.appendChild(link);
+}
+
+async function preloadThreeDModelViewerAsset(assetPath: string): Promise<void> {
+  const assetUrl = withBaseUrl(assetPath);
+  const isImageAsset = /\.(png|webp)$/i.test(assetPath);
+
+  ensureAssetPreloadLink(assetUrl, isImageAsset ? "image" : "fetch");
+
+  if (!isImageAsset) {
+    await fetch(assetUrl, { credentials: "same-origin" }).then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to preload 3D asset: ${assetPath}`);
+      }
+
+      await response.blob();
+    });
+    return;
+  }
+
+  await new Promise<void>((resolve) => {
+    const image = new Image();
+
+    const finish = () => {
+      resolve();
+    };
+
+    image.addEventListener("load", finish, { once: true });
+    image.addEventListener("error", finish, { once: true });
+    image.decoding = "async";
+    image.src = assetUrl;
+  });
+}
+
+export function preloadThreeDModelViewerAssets(): Promise<void> {
+  if (threeDModelViewerAssetPreloadPromise) {
+    return threeDModelViewerAssetPreloadPromise;
+  }
+
+  threeDModelViewerAssetPreloadPromise = Promise.allSettled(
+    THREE_D_MODEL_VIEWER_ASSET_PATHS.map((assetPath) => preloadThreeDModelViewerAsset(assetPath)),
+  ).then(() => undefined);
+
+  return threeDModelViewerAssetPreloadPromise;
 }
 
 function waitForModelViewerInitialRender(modelViewer: ModelViewerWithReadiness): Promise<void> {
@@ -152,7 +219,7 @@ function mountThreeDModelViewerWidget(
   initialState: ThreeDModelViewerState,
 ): MountedThreeDModelViewer {
   const state = normalizeThreeDModelViewerState(initialState);
-  const modelUrl = withBaseUrl("orion_capsule.gltf");
+    const modelUrl = withBaseUrl("orion_capsule.glb");
 
   const root = document.createElement("section");
   root.style.cssText = [
@@ -168,6 +235,8 @@ function mountThreeDModelViewerWidget(
   const modelViewer = document.createElement("model-viewer");
   modelViewer.setAttribute("src", modelUrl);
   modelViewer.setAttribute("alt", "Orion spacecraft 3D model");
+  modelViewer.setAttribute("loading", "eager");
+  modelViewer.setAttribute("fetchpriority", "high");
   modelViewer.setAttribute("camera-controls", "");
   modelViewer.setAttribute("disable-zoom", "");
   modelViewer.setAttribute("interaction-prompt", "none");
@@ -221,6 +290,8 @@ function mountThreeDModelViewerWidget(
 }
 
 export function setupThreeDModelViewerRenderer() {
+  void preloadThreeDModelViewerAssets();
+
   KritzelCustomElementRendererRegistry.register(THREE_D_MODEL_VIEWER_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) {
