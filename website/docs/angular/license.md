@@ -1,6 +1,6 @@
 ---
 
-sidebar_label: License
+sidebar_label: License Activation
 displayed_sidebar: tutorialSidebar
 title: "License Activation | Kritzel for Angular"
 description: "Activate Kritzel with a license key for production use in your Angular application."
@@ -12,7 +12,7 @@ Kritzel is a commercial library. To use it in production, you need a valid licen
 
 ## Getting a License
 
-License keys are available at [kritzel.dev/pricing](https://kritzel.dev/pricing). After purchase, your license key will be sent to the email address used at checkout.
+License keys are available [here](/get-license). Contact us and we will provide you with a license key for your project.
 
 ## Activating Your License
 
@@ -32,26 +32,3 @@ function App() {
 ```
 
 The license key is validated at runtime. If the key is missing or invalid, the canvas will render with a watermark.
-
-## License Scope
-
-| Tier | Usage |
-|------|-------|
-| **Developer** | Single developer, unlimited projects |
-| **Team** | Up to 10 developers |
-| **Enterprise** | Unlimited developers, priority support |
-
-## FAQ
-
-**Does the license key get exposed to end users?**
-The license key is embedded in your frontend bundle. We recommend using an environment variable to keep it out of version control:
-
-```tsx
-licenseKey={process.env.NEXT_PUBLIC_KRITZEL_LICENSE}
-```
-
-**What happens if my license expires?**
-The canvas continues to function but displays a watermark until a valid license is provided.
-
-**Can I use Kritzel for open-source projects?**
-Kritzel is free for non-commercial open-source projects. Contact us at [hello@kritzel.dev](mailto:hello@kritzel.dev) to request a free license.
