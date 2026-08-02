@@ -3,7 +3,6 @@ import {
   KritzelEditor,
   KritzelTheme,
   lightTheme,
-  KritzelSyncConfig,
 } from 'kritzel-angular';
 import { createSeedObjects } from '../../const/seed-objects';
 
@@ -234,6 +233,17 @@ const brandedPurpleFlatTheme = {
     ...lightTheme.tooltip,
     backgroundColor: '#f8f2ff',
     borderRadius: '0px',
+  },
+  zoomPanel: {
+    ...lightTheme.zoomPanel,
+    backgroundColor: '#f8f2ff',
+    border: '1px solid #e1d2ff',
+    borderRadius: '0px',
+    buttonActiveBackgroundColor: brandPurpleMedium,
+    buttonBorderRadius: '0px',
+    buttonHoverBackgroundColor: brandPurpleLight,
+    iconColor: brandPurple,
+    padding: '4px',
   },
   utilityPanel: {
     ...lightTheme.utilityPanel,
