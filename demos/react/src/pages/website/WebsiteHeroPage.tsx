@@ -469,7 +469,7 @@ export function WebsiteHeroPage() {
           customFonts={WEBSITE_HERO_CUSTOM_FONTS}
           controls={WEBSITE_HERO_CONTROLS}
           isPanningEnabled={false}
-          isZoomingEnabled={false}
+          isZoomingEnabled={true}
           isMoreMenuVisible={true}
           isWorkspaceManagerVisible={true}
           onIsReady={() => {
