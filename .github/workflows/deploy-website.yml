@@ -1,5 +1,5 @@
-# Deploys the Docusaurus documentation to Cloudflare Pages
-name: Deploy documentation
+# Deploys the Docusaurus website to Cloudflare Pages
+name: Deploy website
 
 on:
   workflow_dispatch:
