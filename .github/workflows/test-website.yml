@@ -1,0 +1,43 @@
+# Runs the website Vitest contract checks when website files change.
+name: Run website tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'website/**'
+      - '.github/workflows/test-website.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'website/**'
+      - '.github/workflows/test-website.yml'
+  workflow_dispatch:
+
+jobs:
+  test-website:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.18.0"
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install website dependencies
+        run: |
+          cd website
+          npm ci --no-audit --no-fund
+
+      - name: Run website tests
+        run: |
+          cd website
+          npm run test

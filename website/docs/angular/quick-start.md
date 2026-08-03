@@ -54,7 +54,7 @@ export class EditorComponent {}
 This renders the editor with the **full default toolbar** — selection, brush, eraser, line, shape, text, and image tools.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/getting-started"
   repoFiles={['src/app/getting-started/quickstart.component.ts']}
 />

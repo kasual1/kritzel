@@ -37,7 +37,7 @@ import { KritzelEditor } from 'kritzel-vue'
 This renders the editor with the **full default toolbar**: selection, brush, eraser, line, shape, text, and image tools.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
   demoPath="/getting-started"
   repoFiles={['src/pages/getting-started/QuickstartPage.vue']}
 />
