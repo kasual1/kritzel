@@ -9,6 +9,7 @@
     "demos/angular",
     "demos/react",
     "demos/vue",
+    "website",
     "websocket"
   ],
   "devDependencies": {
