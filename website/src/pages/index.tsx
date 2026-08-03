@@ -122,7 +122,7 @@ function HomepageEditorEmbed() {
           : "https://kasual1.github.io/kritzel-demos/react/#/website/hero"}
         title={isMobileViewport ? "Kritzel React Hero Mobile Demo" : "Kritzel React Hero Demo"}
         style={{ width: "100%", height: "100%", border: 0 }}
-        loading="lazy"
+        loading="eager"
         referrerPolicy="strict-origin-when-cross-origin"
         allow="clipboard-read; clipboard-write"
       />
