@@ -121,6 +121,7 @@ function HomepageEditorEmbed() {
           ? "https://kasual1.github.io/kritzel-demos/react/#/website/hero-mobile"
           : "https://kasual1.github.io/kritzel-demos/react/#/website/hero"}
         title={isMobileViewport ? "Kritzel React Hero Mobile Demo" : "Kritzel React Hero Demo"}
+        className={styles.editorFrame}
         style={{ width: "100%", height: "100%", border: 0 }}
         loading="eager"
         referrerPolicy="strict-origin-when-cross-origin"
@@ -132,6 +133,22 @@ function HomepageEditorEmbed() {
 
 function HomepageHeader() {
   const [targetPath, setTargetPath] = React.useState('/docs/react/quick-start');
+  const [isEditorCardVisible, setIsEditorCardVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") {
+      setIsEditorCardVisible(true);
+      return;
+    }
+
+    const frameId = window.requestAnimationFrame(() => {
+      setIsEditorCardVisible(true);
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, []);
 
   React.useEffect(() => {
     const preferred = getPreferredFramework();
@@ -152,7 +169,7 @@ function HomepageHeader() {
         <p className={clsx("hero__subtitle", styles.heroSubtitle)}>
           Kritzel is a framework-agnostic infinite canvas library that helps you build custom whiteboard experiences with React, Vue and Angular.
         </p>
-        <div className={styles.editorContainer}>
+        <div className={clsx(styles.editorContainer, isEditorCardVisible && styles.editorContainerVisible)}>
           <HomepageEditorEmbed />
         </div>
         <div className={styles.buttons}>
