@@ -43,6 +43,49 @@ const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
 const INITIAL_WORKSPACE_EXPORT_URL = `${normalizedBaseUrl}hero_workspace_mobile.json`;
 const RACING_SANS_ONE_STYLESHEET_URL = "https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap";
 
+type ImportedWorkspaceViewport = {
+  centerWorldX: number;
+  centerWorldY: number;
+  scale: number;
+};
+
+type InitialWorkspacePayload = {
+  workspaceJson: string;
+  viewport?: ImportedWorkspaceViewport;
+};
+
+let initialWorkspacePayloadPromise: Promise<InitialWorkspacePayload> | null = null;
+
+function loadInitialWorkspacePayload(): Promise<InitialWorkspacePayload> {
+  if (initialWorkspacePayloadPromise) {
+    return initialWorkspacePayloadPromise;
+  }
+
+  initialWorkspacePayloadPromise = fetch(INITIAL_WORKSPACE_EXPORT_URL)
+    .then(async (response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to load initial workspace export: ${response.status} ${response.statusText}`);
+      }
+
+      const workspaceJson = await response.text();
+      const importedWorkspace = JSON.parse(workspaceJson) as {
+        viewport?: ImportedWorkspaceViewport;
+      };
+
+      return {
+        workspaceJson,
+        viewport: importedWorkspace.viewport,
+      };
+    })
+    .catch((error: unknown) => {
+      // Allow retry if the first prefetch fails.
+      initialWorkspacePayloadPromise = null;
+      throw error;
+    });
+
+  return initialWorkspacePayloadPromise;
+}
+
 const WEBSITE_HERO_CUSTOM_FONTS = {
   "website-hero-racing-sans-one": {
     family: "Racing Sans One",
@@ -239,6 +282,7 @@ export function WebisteHeroPageMobile() {
 
   useEffect(() => {
     registerHeroServiceWorker();
+    void loadInitialWorkspacePayload();
     void preloadThreeDModelViewerAssets();
 
     const cleanupRocketTodoRenderer = setupRocketTodoRenderer();
@@ -420,27 +464,15 @@ export function WebisteHeroPageMobile() {
       return;
     }
 
-    const response = await fetch(INITIAL_WORKSPACE_EXPORT_URL);
-    if (!response.ok) {
-      throw new Error(`Failed to load initial workspace export: ${response.status} ${response.statusText}`);
-    }
-
-    const workspaceJson = await response.text();
-    const importedWorkspace = JSON.parse(workspaceJson) as {
-      viewport?: {
-        centerWorldX: number;
-        centerWorldY: number;
-        scale: number;
-      };
-    };
+    const { workspaceJson, viewport } = await loadInitialWorkspacePayload();
 
     await editor.loadObjectsFromJson(workspaceJson);
 
-    if (importedWorkspace.viewport) {
+    if (viewport) {
       await editor.setViewport(
-        importedWorkspace.viewport.centerWorldX,
-        importedWorkspace.viewport.centerWorldY,
-        importedWorkspace.viewport.scale,
+        viewport.centerWorldX,
+        viewport.centerWorldY,
+        viewport.scale,
       );
     }
 
