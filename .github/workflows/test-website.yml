@@ -6,12 +6,16 @@ on:
     branches:
       - main
     paths:
+      - 'package.json'
+      - 'package-lock.json'
       - 'website/**'
       - '.github/workflows/test-website.yml'
   push:
     branches:
       - main
     paths:
+      - 'package.json'
+      - 'package-lock.json'
       - 'website/**'
       - '.github/workflows/test-website.yml'
   workflow_dispatch:
@@ -30,14 +34,10 @@ jobs:
         with:
           node-version: "24.18.0"
           cache: npm
-          cache-dependency-path: website/package-lock.json
+          cache-dependency-path: package-lock.json
 
-      - name: Install website dependencies
-        run: |
-          cd website
-          npm ci --no-audit --no-fund
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
 
       - name: Run website tests
-        run: |
-          cd website
-          npm run test
+        run: npm run test -w website

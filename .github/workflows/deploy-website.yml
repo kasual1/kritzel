@@ -17,19 +17,14 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: "24.18.0"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install
-
-      - name: Install Docusaurus dependencies
-        run: |
-          cd website
-          npm install
+        run: npm ci --no-audit --no-fund
 
       - name: Build Docusaurus documentation
-        run: |
-          cd website
-          npm run build
+        run: npm run build -w website
         env:
           Docusaurus_BASE_URL: /
           DEMO_BASE_URL_ANGULAR: ${{ vars.DEMO_BASE_URL_ANGULAR }}
