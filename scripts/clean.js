@@ -3,16 +3,17 @@ const path = require('path');
 const rimraf = require('rimraf');
 const { execSync } = require('child_process');
 
-// Paths to clean
-const paths = [
-  '../demos/angular',
-  '../demos/react',
-  '../demos/vue',
-  '../libs/kritzel-angular',
-  '../libs/kritzel-react',
-  '../libs/kritzel-stencil',
-  '../libs/kritzel-vue',
-  '../server/websocket-demo',
+// Project paths and generated folders to clean
+const cleanTargets = [
+  { path: '../demos/angular', folders: ['node_modules', 'dist'] },
+  { path: '../demos/react', folders: ['node_modules', 'dist'] },
+  { path: '../demos/vue', folders: ['node_modules', 'dist'] },
+  { path: '../libs/kritzel-angular', folders: ['node_modules', 'dist'] },
+  { path: '../libs/kritzel-react', folders: ['node_modules', 'dist'] },
+  { path: '../libs/kritzel-stencil', folders: ['node_modules', 'dist'] },
+  { path: '../libs/kritzel-vue', folders: ['node_modules', 'dist'] },
+  { path: '../server/websocket-demo', folders: ['node_modules', 'dist'] },
+  { path: '../website', folders: ['node_modules', 'build', '.docusaurus'] },
 ];
 
 // Helper function to delete a folder
@@ -37,10 +38,11 @@ function deleteFile(filePath) {
   }
 }
 
-// Step 1: Delete node_modules and dist in specified paths
-paths.forEach((folderPath) => {
-  deleteFolder(folderPath, 'node_modules');
-  deleteFolder(folderPath, 'dist');
+// Step 1: Delete generated folders in specified paths
+cleanTargets.forEach(({ path: folderPath, folders }) => {
+  folders.forEach((subfolder) => {
+    deleteFolder(folderPath, subfolder);
+  });
 });
 
 // Step 2: Delete node_modules and package-lock.json at the root
