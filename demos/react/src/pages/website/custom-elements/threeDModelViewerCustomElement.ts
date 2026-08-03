@@ -13,8 +13,11 @@ export const THREE_D_MODEL_VIEWER_RENDERER_KEY = "website-hero-3d-model-viewer";
 const THREE_D_MODEL_VIEWER_Z_INDEX = 11;
 const THREE_D_MODEL_VIEWER_WIDTH = 900;
 const THREE_D_MODEL_VIEWER_HEIGHT = 650;
+const THREE_D_MODEL_VIEWER_MODEL_ASSET_PATH = "orion_capsule.glb";
+const THREE_D_MODEL_VIEWER_POSTER_ASSET_PATH = "orion_capsule-poster.webp";
 const THREE_D_MODEL_VIEWER_ASSET_PATHS = [
-  "orion_capsule.glb",
+  THREE_D_MODEL_VIEWER_MODEL_ASSET_PATH,
+  THREE_D_MODEL_VIEWER_POSTER_ASSET_PATH,
 ] as const;
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
@@ -219,7 +222,8 @@ function mountThreeDModelViewerWidget(
   initialState: ThreeDModelViewerState,
 ): MountedThreeDModelViewer {
   const state = normalizeThreeDModelViewerState(initialState);
-    const modelUrl = withBaseUrl("orion_capsule.glb");
+  const modelUrl = withBaseUrl(THREE_D_MODEL_VIEWER_MODEL_ASSET_PATH);
+  const posterUrl = withBaseUrl(THREE_D_MODEL_VIEWER_POSTER_ASSET_PATH);
 
   const root = document.createElement("section");
   root.style.cssText = [
@@ -233,6 +237,7 @@ function mountThreeDModelViewerWidget(
   ].join(";");
 
   const modelViewer = document.createElement("model-viewer");
+  modelViewer.setAttribute("poster", posterUrl);
   modelViewer.setAttribute("src", modelUrl);
   modelViewer.setAttribute("alt", "Orion spacecraft 3D model");
   modelViewer.setAttribute("loading", "eager");
@@ -256,19 +261,10 @@ function mountThreeDModelViewerWidget(
     "top:-60%",
     "width:220%",
     "height:220%",
-    "opacity:0",
-    "transition:opacity 320ms ease-out",
+    "opacity:1",
     "pointer-events:none",
     "transform:none",
   ].join(";");
-
-  const handleLoad = () => {
-    requestAnimationFrame(() => {
-      modelViewer.style.opacity = "1";
-    });
-  };
-
-  modelViewer.addEventListener("load", handleLoad);
   const whenReady = waitForModelViewerInitialRender(modelViewer as ModelViewerWithReadiness);
 
   root.appendChild(modelViewer);
@@ -283,7 +279,6 @@ function mountThreeDModelViewerWidget(
     getState: () => ({ schemaVersion: state.schemaVersion }),
     whenReady,
     destroy: () => {
-      modelViewer.removeEventListener("load", handleLoad);
       // No subscriptions are attached for this static viewer.
     },
   };
