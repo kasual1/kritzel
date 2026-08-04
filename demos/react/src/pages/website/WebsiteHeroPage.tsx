@@ -498,7 +498,6 @@ export function WebsiteHeroPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="website-hero"
-          isLoading={true}
           customFonts={WEBSITE_HERO_CUSTOM_FONTS}
           controls={WEBSITE_HERO_CONTROLS}
           isPanningEnabled={false}
