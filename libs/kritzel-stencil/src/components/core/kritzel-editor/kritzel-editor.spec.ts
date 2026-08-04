@@ -88,6 +88,8 @@ describe('KritzelEditor', () => {
       getObjectsInViewport: jest.fn().mockResolvedValue([]),
       hideContextMenu: jest.fn().mockResolvedValue(undefined),
       triggerSelectionChange: jest.fn().mockResolvedValue(undefined),
+      beginSceneBootstrap: jest.fn().mockResolvedValue(undefined),
+      endSceneBootstrap: jest.fn().mockResolvedValue(undefined),
       getDisplayableShortcuts: jest.fn().mockResolvedValue([]),
       getIsPublic: jest.fn().mockResolvedValue(false),
     };
@@ -105,6 +107,16 @@ describe('KritzelEditor', () => {
     it('should call getObjectById on engine', async () => {
       await component.getObjectById('123');
       expect(mockEngine.getObjectById).toHaveBeenCalledWith('123');
+    });
+
+    it('should call beginSceneBootstrap on engine', async () => {
+      await component.beginSceneBootstrap();
+      expect(mockEngine.beginSceneBootstrap).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call endSceneBootstrap on engine', async () => {
+      await component.endSceneBootstrap();
+      expect(mockEngine.endSceneBootstrap).toHaveBeenCalledTimes(1);
     });
 
     it('should call addObject on engine', async () => {

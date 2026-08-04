@@ -382,6 +382,38 @@ export class KritzelEngine {
     this.objectsSelectionChange.emit();
   }
 
+  /** Starts a scene bootstrap phase by hiding the scene immediately. */
+  @Method()
+  async beginSceneBootstrap(): Promise<void> {
+    if (this._sceneBootstrapTransitionTimer !== null) {
+      clearTimeout(this._sceneBootstrapTransitionTimer);
+      this._sceneBootstrapTransitionTimer = null;
+    }
+
+    this._sceneBootstrapTransitionEnabled = false;
+    this._sceneBootstrapOpacity = 0;
+    this.core.rerender();
+  }
+
+  /** Ends a scene bootstrap phase by fading the scene back in. */
+  @Method()
+  async endSceneBootstrap(): Promise<void> {
+    if (this._sceneBootstrapTransitionTimer !== null) {
+      clearTimeout(this._sceneBootstrapTransitionTimer);
+      this._sceneBootstrapTransitionTimer = null;
+    }
+
+    this._sceneBootstrapTransitionEnabled = true;
+    this._sceneBootstrapOpacity = 1;
+    this.core.rerender();
+
+    this._sceneBootstrapTransitionTimer = setTimeout(() => {
+      this._sceneBootstrapTransitionEnabled = false;
+      this._sceneBootstrapTransitionTimer = null;
+      this.core.rerender();
+    }, 220);
+  }
+
   @Listen('wheel', { passive: true })
   handleWheel(ev: WheelEvent) {
     if (this.core.store.isDisabled) {
@@ -2315,6 +2347,9 @@ export class KritzelEngine {
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
   private _previousVisibleCustomElements: Set<string> = new Set();
   private _revealedImageKeys: Set<string> = new Set();
+  private _sceneBootstrapOpacity: number = 1;
+  private _sceneBootstrapTransitionEnabled: boolean = false;
+  private _sceneBootstrapTransitionTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly _defaultUndoState: KritzelUndoState = {
     canUndo: false,
     canRedo: false,
@@ -2427,6 +2462,11 @@ export class KritzelEngine {
   disconnectedCallback() {
     this.throttledPointerMoveMulti.cancel();
     this._revealedImageKeys.clear();
+
+    if (this._sceneBootstrapTransitionTimer !== null) {
+      clearTimeout(this._sceneBootstrapTransitionTimer);
+      this._sceneBootstrapTransitionTimer = null;
+    }
 
     // Unmount all remaining custom elements
     if (this.core.store.allObjects) {
@@ -3030,6 +3070,9 @@ export class KritzelEngine {
           class="origin"
           style={{
             transform: `matrix(${this.core.store.state?.scale}, 0, 0, ${this.core.store.state?.scale}, ${this.core.store.state?.translateX}, ${this.core.store.state?.translateY})`,
+            opacity: this._sceneBootstrapOpacity.toString(),
+            transition: this._sceneBootstrapTransitionEnabled ? 'opacity 220ms ease-out' : 'none',
+            willChange: this._sceneBootstrapTransitionEnabled ? 'opacity' : undefined,
           }}
         >
           {visibleObjects?.map(object => {

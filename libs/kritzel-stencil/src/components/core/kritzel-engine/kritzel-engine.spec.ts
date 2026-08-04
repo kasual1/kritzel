@@ -808,6 +808,40 @@ describe('KritzelEngine', () => {
     });
   });
 
+  describe('scene bootstrap controls', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('beginSceneBootstrap hides the scene immediately and rerenders', async () => {
+      await engine.beginSceneBootstrap();
+
+      expect((engine as any)._sceneBootstrapOpacity).toBe(0);
+      expect((engine as any)._sceneBootstrapTransitionEnabled).toBe(false);
+      expect(core.rerender).toHaveBeenCalledTimes(1);
+    });
+
+    it('endSceneBootstrap fades the scene back in and clears the transition flag after the timeout', async () => {
+      await engine.beginSceneBootstrap();
+      (core.rerender as jest.Mock).mockClear();
+
+      await engine.endSceneBootstrap();
+
+      expect((engine as any)._sceneBootstrapOpacity).toBe(1);
+      expect((engine as any)._sceneBootstrapTransitionEnabled).toBe(true);
+      expect(core.rerender).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(220);
+
+      expect((engine as any)._sceneBootstrapTransitionEnabled).toBe(false);
+      expect(core.rerender).toHaveBeenCalledTimes(2);
+    });
+  });
+
   describe('wheel interaction gating', () => {
     const createWheelEvent = (overrides: Partial<WheelEvent> = {}): WheelEvent =>
       ({
