@@ -254,6 +254,7 @@ export class KritzelSettings {
                   {this.t('settings.general.theme.description', 'Select a registered color theme for the editor interface.')}
                 </p>
                 <kritzel-dropdown
+                  key="dropdown-theme"
                   options={this.availableThemes.map(t => ({ value: t, label: t }))}
                   value={this.theme}
                   onValueChanged={this.handleThemeChange}
@@ -266,6 +267,7 @@ export class KritzelSettings {
                     {this.t('settings.general.language.description', 'Select the display language for the editor interface.')}
                   </p>
                   <kritzel-dropdown
+                    key="dropdown-locale"
                     options={this.availableLocales.map(l => ({ value: l.code, label: l.label }))}
                     value={this.locale}
                     onValueChanged={this.handleLocaleChange}
@@ -298,6 +300,7 @@ export class KritzelSettings {
                   {this.t('settings.viewport.minZoom.description', 'Sets the minimum zoom level. Lower values allow zooming out further to see more of the canvas.')}
                 </p>
                 <kritzel-numeric-input
+                  key="input-scaleMin"
                   value={this.scaleMin}
                   min={0.0001}
                   max={1}
@@ -311,6 +314,7 @@ export class KritzelSettings {
                   {this.t('settings.viewport.maxZoom.description', 'Sets the maximum zoom level. Higher values allow zooming in closer for detailed work.')}
                 </p>
                 <kritzel-numeric-input
+                  key="input-scaleMax"
                   value={this.scaleMax}
                   min={1}
                   max={1000}
@@ -324,6 +328,7 @@ export class KritzelSettings {
                   {this.t('settings.viewport.boundaryLeft.description', 'Left boundary in world coordinates. Set to limit how far left the viewport can pan.')}
                 </p>
                 <kritzel-numeric-input
+                  key="input-viewportBoundaryLeft"
                   value={this.viewportBoundaryLeft}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -336,6 +341,7 @@ export class KritzelSettings {
                   {this.t('settings.viewport.boundaryRight.description', 'Right boundary in world coordinates. Set to limit how far right the viewport can pan.')}
                 </p>
                 <kritzel-numeric-input
+                  key="input-viewportBoundaryRight"
                   value={this.viewportBoundaryRight}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -348,6 +354,7 @@ export class KritzelSettings {
                   {this.t('settings.viewport.boundaryTop.description', 'Top boundary in world coordinates. Set to limit how far up the viewport can pan.')}
                 </p>
                 <kritzel-numeric-input
+                  key="input-viewportBoundaryTop"
                   value={this.viewportBoundaryTop}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -360,6 +367,7 @@ export class KritzelSettings {
                   {this.t('settings.viewport.boundaryBottom.description', 'Bottom boundary in world coordinates. Set to limit how far down the viewport can pan.')}
                 </p>
                 <kritzel-numeric-input
+                  key="input-viewportBoundaryBottom"
                   value={this.viewportBoundaryBottom}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
