@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { CSSProperties, useEffect, useRef } from "react";
 import {
   DEFAULT_BRUSH_CONFIG,
   DEFAULT_TEXT_CONFIG,
@@ -217,20 +217,11 @@ const hostStyle: CSSProperties = {
 
 const editorWrapperBaseStyle: CSSProperties = {
   height: "100%",
-  transition: "opacity 320ms ease",
-  willChange: "opacity",
-};
-
-const loadingOverlayStyle: CSSProperties = {
-  position: "absolute",
-  inset: 0,
-  backgroundColor: "#ffffff",
 };
 
 export function WebsiteHeroPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
-  const [isInitialSceneVisible, setIsInitialSceneVisible] = useState(false);
   const hasImportedInitialWorkspace = useRef(false);
   const hasAddedVideoCustomElement = useRef(false);
   const hasAddedThreeDModelViewerCustomElement = useRef(false);
@@ -239,16 +230,6 @@ export function WebsiteHeroPage() {
   const fitAnimationFrameId = useRef<number | null>(null);
   const isAutoCentering = useRef(false);
   const hasPendingAutoCenter = useRef(false);
-
-  async function waitForScenePaint() {
-    await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          resolve();
-        });
-      });
-    });
-  }
 
   async function centerAllObjectsNow() {
     const editor = editorRef.current;
@@ -273,11 +254,6 @@ export function WebsiteHeroPage() {
         await centerAllObjectsNow();
       }
     }
-  }
-
-  async function revealInitialScene() {
-    await waitForScenePaint();
-    setIsInitialSceneVisible(true);
   }
 
   useEffect(() => {
@@ -447,7 +423,6 @@ export function WebsiteHeroPage() {
       lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
       isEditorReady.current = true;
       await centerAllObjectsNow();
-      await revealInitialScene();
       return;
     }
 
@@ -460,7 +435,6 @@ export function WebsiteHeroPage() {
       lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
       isEditorReady.current = true;
       await centerAllObjectsNow();
-      await revealInitialScene();
       return;
     }
 
@@ -484,17 +458,11 @@ export function WebsiteHeroPage() {
     lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
     isEditorReady.current = true;
     await centerAllObjectsNow();
-    await revealInitialScene();
   }
 
   return (
     <div ref={hostRef} style={hostStyle}>
-      <div
-        style={{
-          ...editorWrapperBaseStyle,
-          opacity: isInitialSceneVisible ? 1 : 0,
-        }}
-      >
+      <div style={editorWrapperBaseStyle}>
         <KritzelEditor
           ref={editorRef}
           editorId="website-hero"
@@ -512,7 +480,6 @@ export function WebsiteHeroPage() {
           }}
         />
       </div>
-      {!isInitialSceneVisible ? <div aria-hidden="true" style={loadingOverlayStyle} /> : null}
     </div>
   );
 }
