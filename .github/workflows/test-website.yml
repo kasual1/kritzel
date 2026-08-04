@@ -10,14 +10,6 @@ on:
       - 'package-lock.json'
       - 'website/**'
       - '.github/workflows/test-website.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - 'package.json'
-      - 'package-lock.json'
-      - 'website/**'
-      - '.github/workflows/test-website.yml'
   workflow_dispatch:
 
 jobs:
