@@ -229,7 +229,7 @@ const editorWrapperBaseStyle: CSSProperties = {
   height: "100%",
 };
 
-export function WebisteHeroPageMobile() {
+export function WebsiteHeroPageMobile() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const hasImportedInitialWorkspace = useRef(false);
@@ -398,9 +398,18 @@ export function WebisteHeroPageMobile() {
 
     const { workspaceJson } = await loadInitialWorkspacePayload();
 
-    await editor.loadObjectsFromJson(workspaceJson);
-
-    await centerAllObjectsNow();
+    await editor.beginSceneBootstrap();
+    try {
+      await editor.loadObjectsFromJson(workspaceJson);
+      await centerAllObjectsNow();
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve(undefined));
+        });
+      });
+    } finally {
+      await editor.endSceneBootstrap();
+    }
 
     hasImportedInitialWorkspace.current = true;
     const currentViewport = await editor.getViewport();
