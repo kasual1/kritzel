@@ -107,4 +107,107 @@ test.describe('Settings dialog', () => {
     await expect(settingsRoot.locator('label.settings-label').filter({ hasText: 'Sprache' })).toBeVisible();
     await expect(settingsRoot.locator('label.settings-label').filter({ hasText: 'Zeichenskalierung sperren' })).toBeVisible();
   });
+
+  test('renders viewport info in the top-right corner when Show Viewport Info is enabled', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    const settingsRoot = await openSettingsDialog(page);
+    await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /developer/i }).click();
+
+    const viewportInfoToggle = settingsRoot.locator('kritzel-slide-toggle[aria-label="Show Viewport Info"]');
+    await viewportInfoToggle.click();
+
+    const debugPanel = editorPage.engine.locator('.debug-panel');
+    await expect(debugPanel).toBeVisible();
+    await expect(debugPanel).toContainText('ActiveWorkspaceId:');
+
+    const panelBox = await debugPanel.boundingBox();
+    const engineBox = await editorPage.engine.boundingBox();
+    expect(panelBox).not.toBeNull();
+    expect(engineBox).not.toBeNull();
+    expect(panelBox!.x + panelBox!.width).toBeLessThanOrEqual(engineBox!.x + engineBox!.width + 1);
+    expect(panelBox!.x).toBeGreaterThanOrEqual(engineBox!.x + engineBox!.width - panelBox!.width - 20);
+    expect(panelBox!.y).toBeLessThanOrEqual(40);
+  });
+
+  test('shows object info next to each object after enabling Show Object Info', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    await editorPage.prepareWaitForObjectsAdded();
+    await editorPage.addShape({
+      translateX: 30,
+      translateY: 30,
+      width: 80,
+      height: 60,
+      fillColor: { light: '#ff0000', dark: '#ff6666' },
+      strokeColor: { light: '#000000', dark: '#ffffff' },
+      strokeWidth: 2,
+    });
+    await editorPage.waitForObjectsAdded();
+
+    await editorPage.prepareWaitForObjectsAdded();
+    await editorPage.addPath({
+      points: [[0, 0], [40, 40], [80, 0]],
+      translateX: 120,
+      translateY: 70,
+      strokeWidth: 2,
+    });
+    await editorPage.waitForObjectsAdded();
+
+    const settingsRoot = await openSettingsDialog(page);
+    await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /developer/i }).click();
+
+    const objectInfoToggle = settingsRoot.locator('kritzel-slide-toggle[aria-label="Show Object Info"]');
+    await objectInfoToggle.click();
+
+    const objectWrappers = editorPage.engine.locator('.object');
+    await expect(objectWrappers).toHaveCount(2);
+
+    for (let index = 0; index < 2; index += 1) {
+      await expect(objectWrappers.nth(index)).toContainText('Id:');
+    }
+
+    await page.locator('kritzel-settings kritzel-dialog[is-open] button[aria-label="Close dialog"]').click();
+    await expect(editorPage.engine).toHaveScreenshot('Settings-dialog-show-object-info.png', { timeout: 1000 });
+  });
+
+  test('keeps the About settings tab intact with stable aria content', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    const settingsRoot = await openSettingsDialog(page);
+    await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /about/i }).click();
+
+    const aboutPanel = settingsRoot.locator('.settings-tab-panel.is-active');
+    await expect(aboutPanel).toContainText('About');
+    await expect(aboutPanel).toContainText('Kritzel - A drawing application');
+
+    const snapshot = await aboutPanel.locator('p').allTextContents();
+    const snapshotText = snapshot.join('\n');
+    expect(snapshotText).toContain('Kritzel - A drawing application');
+    expect(snapshotText).toContain('Version');
+    expect(snapshotText).toContain('App-State Schema v');
+    expect(snapshotText).toContain('Workspace Schema v');
+  });
+
+  test('keeps the Keyboard Shortcuts settings tab intact', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    const settingsRoot = await openSettingsDialog(page);
+    await settingsRoot.locator('kritzel-master-detail').getByRole('tab', { name: /keyboard shortcuts/i }).click();
+
+    const shortcutsPanel = settingsRoot.locator('.settings-tab-panel.is-active');
+    await expect(shortcutsPanel).toContainText('Keyboard Shortcuts');
+
+    const shortcutLabels = await shortcutsPanel.locator('.shortcut-label').allTextContents();
+    const shortcutKeys = await shortcutsPanel.locator('.shortcut-key').allTextContents();
+
+    expect(shortcutLabels.length).toBeGreaterThan(0);
+    expect(shortcutKeys.length).toBeGreaterThan(0);
+    expect(shortcutLabels.some(label => label.trim().length > 0)).toBe(true);
+    expect(shortcutKeys.some(key => key.trim().length > 0)).toBe(true);
+  });
 });
