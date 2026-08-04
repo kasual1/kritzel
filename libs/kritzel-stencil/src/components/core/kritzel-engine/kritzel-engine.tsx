@@ -1860,14 +1860,28 @@ export class KritzelEngine {
     // Revive and add objects to the current workspace
     if (data.objects && Array.isArray(data.objects)) {
       const reviver = new KritzelReviver(this.core);
-      for (const objData of data.objects) {
-        const revivedObj = reviver.revive<KritzelBaseObject>(objData);
-        if (revivedObj) {
+      const objectsMap = this.core.store.objects;
+
+      const insertRevivedObjects = () => {
+        for (const objData of data.objects!) {
+          const revivedObj = reviver.revive<KritzelBaseObject>(objData);
+          if (!revivedObj) {
+            continue;
+          }
+
           // Update workspaceId to the current workspace's ID
           revivedObj.workspaceId = currentWorkspaceId;
           this.core.addObject(revivedObj);
           loadedCount++;
         }
+      };
+
+      if (objectsMap) {
+        objectsMap.transaction(() => {
+          insertRevivedObjects();
+        });
+      } else {
+        insertRevivedObjects();
       }
     }
 
