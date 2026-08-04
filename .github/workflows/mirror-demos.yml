@@ -6,15 +6,12 @@
 name: Mirror demos
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
   mirror:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timegout-minutes: 10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
