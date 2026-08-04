@@ -91,6 +91,7 @@ After adding new CSS variables:
 - Keep render methods small; extract complex JSX into private render helpers
 - For localization, prefer `@Prop() terms: Partial<Record<KritzelTermKey, string>> = {}` and keep English fallback text inline at the usage site
 - If a UI component owns long-lived collaborators that render text, keep them synchronized with locale prop updates via `@Watch()`
+- **JSX Keys on UI Controls (Crucial for VDOM Isolation):** Always assign unique, explicit `key` attributes to input controls (e.g. `<kritzel-slide-toggle>`, `<kritzel-dropdown>`, `<kritzel-numeric-input>`), especially when rendering conditional or tabbed views (`switch`/`case` or conditional tabs). Without explicit keys, Stencil's VDOM reconciler reuses DOM elements across view switches, retaining dirty internal state or triggering unwanted CSS transitions on reused controls.
 
 ## Reactive Prop Bridging (Important)
 
