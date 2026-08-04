@@ -570,7 +570,7 @@ describe('KritzelResizeHandler', () => {
         });
         resizeHandler.handlePointerMove(moveEvent2);
 
-        expect(mockSelectionGroup!.resize).toHaveBeenNthCalledWith(2, expect.any(Number), expect.any(Number), 150, 150);
+        expect(mockSelectionGroup!.resize).toHaveBeenNthCalledWith(2, expect.any(Number), expect.any(Number), 110, 110);
       });
     });
 

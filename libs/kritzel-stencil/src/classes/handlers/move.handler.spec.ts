@@ -75,6 +75,7 @@ describe('KritzelMoveHandler', () => {
         },
         offsetX: 0,
         offsetY: 0,
+        objects: mockState.objects,
       },
       engine: {
         emitObjectsChange: jest.fn(),
