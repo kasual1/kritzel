@@ -15,24 +15,12 @@ import {
   type KritzelToolbarControl,
   type KritzelViewportState,
 } from "kritzel-react";
-import {
-  setupImageStackRenderer,
-} from "./custom-elements/imageStackCustomElement";
-import {
-  setupRocketTodoRenderer,
-} from "./custom-elements/rocketTodoCustomElement";
-import {
-  setupCoreStageDashboardRenderer,
-} from "./custom-elements/coreStageDashboardCustomElement";
-import {
-  VIDEO_RENDERER_KEY,
-  createVideoCustomElement,
-  setupVideoRenderer,
-} from "./custom-elements/videoCustomElement";
+import { setupImageStackRenderer } from "./custom-elements/imageStackCustomElement";
+import { setupRocketTodoRenderer } from "./custom-elements/rocketTodoCustomElement";
+import { setupCoreStageDashboardRenderer } from "./custom-elements/coreStageDashboardCustomElement";
+import { setupVideoRenderer } from "./custom-elements/videoCustomElement";
 import {
   preloadThreeDModelViewerAssets,
-  THREE_D_MODEL_VIEWER_RENDERER_KEY,
-  createThreeDModelViewerCustomElement,
   setupThreeDModelViewerRenderer,
 } from "./custom-elements/threeDModelViewerCustomElement";
 import { registerHeroServiceWorker } from "./registerHeroServiceWorker";
@@ -41,7 +29,8 @@ const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const INITIAL_WORKSPACE_EXPORT_URL = `${normalizedBaseUrl}hero_workspace_mobile.json`;
-const RACING_SANS_ONE_STYLESHEET_URL = "https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap";
+const RACING_SANS_ONE_STYLESHEET_URL =
+  "https://fonts.googleapis.com/css2?family=Racing+Sans+One&display=swap";
 
 type ImportedWorkspaceViewport = {
   centerWorldX: number;
@@ -54,7 +43,8 @@ type InitialWorkspacePayload = {
   viewport?: ImportedWorkspaceViewport;
 };
 
-let initialWorkspacePayloadPromise: Promise<InitialWorkspacePayload> | null = null;
+let initialWorkspacePayloadPromise: Promise<InitialWorkspacePayload> | null =
+  null;
 
 function loadInitialWorkspacePayload(): Promise<InitialWorkspacePayload> {
   if (initialWorkspacePayloadPromise) {
@@ -64,7 +54,9 @@ function loadInitialWorkspacePayload(): Promise<InitialWorkspacePayload> {
   initialWorkspacePayloadPromise = fetch(INITIAL_WORKSPACE_EXPORT_URL)
     .then(async (response) => {
       if (!response.ok) {
-        throw new Error(`Failed to load initial workspace export: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to load initial workspace export: ${response.status} ${response.statusText}`,
+        );
       }
 
       const workspaceJson = await response.text();
@@ -183,9 +175,27 @@ const WEBSITE_HERO_CONTROLS: KritzelToolbarControl[] = [
     icon: "shape-rectangle",
     config: WEBSITE_HERO_SHAPE_TOOL_CONFIG,
     subOptions: [
-      { id: "rectangle", icon: "shape-rectangle", label: "Rectangle", value: ShapeType.Rectangle, toolProperty: "shapeType" },
-      { id: "ellipse", icon: "shape-ellipse", label: "Ellipse", value: ShapeType.Ellipse, toolProperty: "shapeType" },
-      { id: "triangle", icon: "shape-triangle", label: "Triangle", value: ShapeType.Triangle, toolProperty: "shapeType" },
+      {
+        id: "rectangle",
+        icon: "shape-rectangle",
+        label: "Rectangle",
+        value: ShapeType.Rectangle,
+        toolProperty: "shapeType",
+      },
+      {
+        id: "ellipse",
+        icon: "shape-ellipse",
+        label: "Ellipse",
+        value: ShapeType.Ellipse,
+        toolProperty: "shapeType",
+      },
+      {
+        id: "triangle",
+        icon: "shape-triangle",
+        label: "Triangle",
+        value: ShapeType.Triangle,
+        toolProperty: "shapeType",
+      },
     ],
   },
   {
@@ -223,10 +233,10 @@ export function WebisteHeroPageMobile() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const hostRef = useRef<HTMLDivElement | null>(null);
   const hasImportedInitialWorkspace = useRef(false);
-  const hasAddedVideoCustomElement = useRef(false);
-  const hasAddedThreeDModelViewerCustomElement = useRef(false);
   const isEditorReady = useRef(false);
-  const lastViewportSize = useRef<{ width: number; height: number } | null>(null);
+  const lastViewportSize = useRef<{ width: number; height: number } | null>(
+    null,
+  );
   const fitAnimationFrameId = useRef<number | null>(null);
   const isAutoCentering = useRef(false);
   const hasPendingAutoCenter = useRef(false);
@@ -304,9 +314,16 @@ export function WebisteHeroPageMobile() {
           }
 
           const previousSize = lastViewportSize.current;
-          lastViewportSize.current = { width: viewport.width, height: viewport.height };
+          lastViewportSize.current = {
+            width: viewport.width,
+            height: viewport.height,
+          };
 
-          if (!previousSize || previousSize.width !== viewport.width || previousSize.height !== viewport.height) {
+          if (
+            !previousSize ||
+            previousSize.width !== viewport.width ||
+            previousSize.height !== viewport.height
+          ) {
             scheduleCenterAllObjects();
           }
         });
@@ -342,14 +359,20 @@ export function WebisteHeroPageMobile() {
 
   function onViewportChange(viewport: KritzelViewportState) {
     const previousSize = lastViewportSize.current;
-    lastViewportSize.current = { width: viewport.width, height: viewport.height };
+    lastViewportSize.current = {
+      width: viewport.width,
+      height: viewport.height,
+    };
 
     if (!isEditorReady.current || !previousSize) {
       return;
     }
 
     // Only refit on actual size changes to avoid loops from pan/zoom events.
-    if (previousSize.width === viewport.width && previousSize.height === viewport.height) {
+    if (
+      previousSize.width === viewport.width &&
+      previousSize.height === viewport.height
+    ) {
       return;
     }
 
@@ -362,100 +385,29 @@ export function WebisteHeroPageMobile() {
       return;
     }
 
-    async function ensureVideoCustomElementObject(editorElement: HTMLKritzelEditorElement) {
-      if (hasAddedVideoCustomElement.current) {
-        return;
-      }
-
-      const objects = await editorElement.getAllObjects();
-      const hasExistingVideo = objects.some((object) => {
-        if (!object || typeof object !== "object") {
-          return false;
-        }
-
-        const candidate = object as { __class__?: string; rendererKey?: string };
-        return (
-          candidate.__class__ === "KritzelCustomElement" &&
-          candidate.rendererKey === VIDEO_RENDERER_KEY
-        );
-      });
-
-      if (hasExistingVideo) {
-        hasAddedVideoCustomElement.current = true;
-        return;
-      }
-
-      await editorElement.addObject(createVideoCustomElement());
-      hasAddedVideoCustomElement.current = true;
-    }
-
-    async function ensureThreeDModelViewerCustomElementObject(editorElement: HTMLKritzelEditorElement) {
-      if (hasAddedThreeDModelViewerCustomElement.current) {
-        return;
-      }
-
-      const objects = await editorElement.getAllObjects();
-      const hasExistingModelViewer = objects.some((object) => {
-        if (!object || typeof object !== "object") {
-          return false;
-        }
-
-        const candidate = object as { __class__?: string; rendererKey?: string };
-        return (
-          candidate.__class__ === "KritzelCustomElement" &&
-          candidate.rendererKey === THREE_D_MODEL_VIEWER_RENDERER_KEY
-        );
-      });
-
-      if (hasExistingModelViewer) {
-        hasAddedThreeDModelViewerCustomElement.current = true;
-        return;
-      }
-
-      await editorElement.addObject(createThreeDModelViewerCustomElement());
-      hasAddedThreeDModelViewerCustomElement.current = true;
-    }
-
     if (hasImportedInitialWorkspace.current) {
-      await ensureVideoCustomElementObject(editor);
-      await ensureThreeDModelViewerCustomElementObject(editor);
       const currentViewport = await editor.getViewport();
-      lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
+      lastViewportSize.current = {
+        width: currentViewport.width,
+        height: currentViewport.height,
+      };
       isEditorReady.current = true;
       await centerAllObjectsNow();
       return;
     }
 
-    const objectCount = await editor.getObjectsTotalCount();
-    if ((objectCount ?? 0) > 0) {
-      await ensureVideoCustomElementObject(editor);
-      await ensureThreeDModelViewerCustomElementObject(editor);
-      hasImportedInitialWorkspace.current = true;
-      const currentViewport = await editor.getViewport();
-      lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
-      isEditorReady.current = true;
-      await centerAllObjectsNow();
-      return;
-    }
-
-    const { workspaceJson, viewport } = await loadInitialWorkspacePayload();
+    const { workspaceJson } = await loadInitialWorkspacePayload();
 
     await editor.loadObjectsFromJson(workspaceJson);
 
-    if (viewport) {
-      await editor.setViewport(
-        viewport.centerWorldX,
-        viewport.centerWorldY,
-        viewport.scale,
-      );
-    }
-
-    await ensureVideoCustomElementObject(editor);
-    await ensureThreeDModelViewerCustomElementObject(editor);
+    await centerAllObjectsNow();
 
     hasImportedInitialWorkspace.current = true;
     const currentViewport = await editor.getViewport();
-    lastViewportSize.current = { width: currentViewport.width, height: currentViewport.height };
+    lastViewportSize.current = {
+      width: currentViewport.width,
+      height: currentViewport.height,
+    };
     isEditorReady.current = true;
     await centerAllObjectsNow();
   }
@@ -476,7 +428,9 @@ export function WebisteHeroPageMobile() {
             void onReady();
           }}
           onViewportChange={(event) => {
-            onViewportChange((event as CustomEvent<KritzelViewportState>).detail);
+            onViewportChange(
+              (event as CustomEvent<KritzelViewportState>).detail,
+            );
           }}
         />
       </div>
