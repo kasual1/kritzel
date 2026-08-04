@@ -728,6 +728,16 @@ export class KritzelEditor {
   }
 
   @Method()
+  async beginSceneBootstrap(): Promise<void> {
+    return this.engineRef.beginSceneBootstrap();
+  }
+
+  @Method()
+  async endSceneBootstrap(): Promise<void> {
+    return this.engineRef.endSceneBootstrap();
+  }
+
+  @Method()
   async getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, 'action' | 'condition'>[]> {
     return this.engineRef.getDisplayableShortcuts();
   }

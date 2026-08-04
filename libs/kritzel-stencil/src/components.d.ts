@@ -361,6 +361,7 @@ export namespace Components {
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         "backToContent": () => Promise<boolean>;
+        "beginSceneBootstrap": () => Promise<void>;
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
@@ -402,6 +403,7 @@ export namespace Components {
          */
         "editorId"?: string;
         "enable": () => Promise<void>;
+        "endSceneBootstrap": () => Promise<void>;
         "exportSelectedObjectsAsPng": () => Promise<void>;
         "exportSelectedObjectsAsSvg": () => Promise<void>;
         "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
@@ -621,6 +623,10 @@ export namespace Components {
          */
         "backToContent": () => Promise<boolean>;
         /**
+          * Starts a scene bootstrap phase by hiding the scene immediately.
+         */
+        "beginSceneBootstrap": () => Promise<void>;
+        /**
           * Moves an object one layer forward in the z-order.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
@@ -711,6 +717,10 @@ export namespace Components {
           * Re-enables user interaction after a call to `disable()`.
          */
         "enable": () => Promise<void>;
+        /**
+          * Ends a scene bootstrap phase by fading the scene back in.
+         */
+        "endSceneBootstrap": () => Promise<void>;
         /**
           * Exports the current workspace and all its objects as a JSON string. The exported data includes workspace metadata (id, name, viewport) and all canvas objects.
           * @returns A JSON string representing the complete workspace state.

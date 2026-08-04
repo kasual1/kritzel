@@ -124,6 +124,16 @@ Type: `Promise<boolean>`
 
 
 
+### `beginSceneBootstrap() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `bringForward(object?: KritzelBaseObject<any>) => Promise<void>`
 
 
@@ -336,6 +346,16 @@ Type: `Promise<void>`
 
 
 ### `enable() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `endSceneBootstrap() => Promise<void>`
 
 
 

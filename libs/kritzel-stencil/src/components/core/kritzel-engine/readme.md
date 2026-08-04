@@ -125,6 +125,16 @@ Type: `Promise<boolean>`
 
 `true` if content was found and the viewport was adjusted, `false` otherwise.
 
+### `beginSceneBootstrap() => Promise<void>`
+
+Starts a scene bootstrap phase by hiding the scene immediately.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `bringForward(object?: KritzelBaseObject<any>) => Promise<void>`
 
 Moves an object one layer forward in the z-order.
@@ -341,6 +351,16 @@ Type: `Promise<void>`
 ### `enable() => Promise<void>`
 
 Re-enables user interaction after a call to `disable()`.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `endSceneBootstrap() => Promise<void>`
+
+Ends a scene bootstrap phase by fading the scene back in.
 
 #### Returns
 
