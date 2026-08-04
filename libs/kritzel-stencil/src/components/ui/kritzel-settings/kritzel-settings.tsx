@@ -242,9 +242,9 @@ export class KritzelSettings {
   }
 
   private renderCategoryContent() {
-    switch (this.selectedCategoryId) {
-      case 'general':
-        return (
+    return (
+      <div class="settings-categories-wrapper">
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'general' }}>
           <div class="settings-content">
             <h3>{this.t('settings.general.title', 'General Settings')}</h3>
             <div class="settings-group">
@@ -272,7 +272,7 @@ export class KritzelSettings {
                   ></kritzel-dropdown>
                 </div>
               )}
-               <div class="settings-item">
+              <div class="settings-item">
                 <label class="settings-label">{this.t('settings.general.lockDrawingScale.label', 'Lock Drawing Scale')}</label>
                 <p class="settings-description">
                   {this.t('settings.general.lockDrawingScale.description', 'When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.')}
@@ -285,9 +285,9 @@ export class KritzelSettings {
               </div>
             </div>
           </div>
-        );
-      case 'viewport':
-        return (
+        </div>
+
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'viewport' }}>
           <div class="settings-content">
             <h3>{this.t('settings.viewport.title', 'Viewport Settings')}</h3>
             <div class="settings-group">
@@ -367,9 +367,9 @@ export class KritzelSettings {
               </div>
             </div>
           </div>
-        );
-      case 'shortcuts':
-        return (
+        </div>
+
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'shortcuts' }}>
           <div class="settings-content">
             <h3>{this.t('settings.shortcuts.title', 'Keyboard Shortcuts')}</h3>
             <div class="shortcuts-list">
@@ -388,9 +388,9 @@ export class KritzelSettings {
               ))}
             </div>
           </div>
-        );
-      case 'developer':
-        return (
+        </div>
+
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'developer' }}>
           <div class="settings-content">
             <h3>{this.t('settings.developer.title', 'Developer Options')}</h3>
             <div class="settings-group">
@@ -440,9 +440,9 @@ export class KritzelSettings {
               </div>
             </div>
           </div>
-        );
-      case 'about':
-        return (
+        </div>
+
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'about' }}>
           <div class="settings-content">
             <h3>{this.t('settings.about.title', 'About')}</h3>
             <p>{this.t('settings.about.description', 'Kritzel - A drawing application')}</p>
@@ -450,10 +450,9 @@ export class KritzelSettings {
             <p class="version-info">App-State Schema v{CURRENT_APP_STATE_SCHEMA_VERSION}</p>
             <p class="version-info">Workspace Schema v{CURRENT_WORKSPACE_SCHEMA_VERSION}</p>
           </div>
-        );
-      default:
-        return null;
-    }
+        </div>
+      </div>
+    );
   }
 
   render() {

@@ -91,6 +91,9 @@ After adding new CSS variables:
 - Keep render methods small; extract complex JSX into private render helpers
 - For localization, prefer `@Prop() terms: Partial<Record<KritzelTermKey, string>> = {}` and keep English fallback text inline at the usage site
 - If a UI component owns long-lived collaborators that render text, keep them synchronized with locale prop updates via `@Watch()`
+- **JSX Keys on UI Controls (Crucial for VDOM Isolation):** Always assign unique, explicit `key` attributes to input controls (e.g. `<kritzel-slide-toggle>`, `<kritzel-dropdown>`, `<kritzel-numeric-input>`), especially when rendering conditional or tabbed views (`switch`/`case` or conditional tabs). Without explicit keys, Stencil's VDOM reconciler reuses DOM elements across view switches, retaining dirty internal state or triggering unwanted CSS transitions on reused controls.
+- **Persistent DOM Containers for Complex UI Tab Panels / Hidden Views:** For complex UI views like settings dialogs or tabbed panels containing Web Components (which carry CSS transitions, internal shadow DOM state, or layout hydration overhead), prefer rendering all panels persistently into the DOM and toggling visibility via CSS (`display: none` / `display: block` or active classes) over conditional VDOM unmounting/remounting. This prevents unmount/remount cycles, eliminates hydration layout shifts, and avoids state reset jank during navigation.
+  - **Scope Limit (UI vs Engine Canvas):** This persistent DOM pattern applies strictly to high-level UI container components (dialogs, tabs, sidebars). It must **NOT** be applied to canvas object rendering or core engine rendering pipelines, where dynamic unmounting, lifecycle management, virtualized viewports, and clean disposal of high-frequency objects are required for memory management and performance.
 
 ## Reactive Prop Bridging (Important)
 
