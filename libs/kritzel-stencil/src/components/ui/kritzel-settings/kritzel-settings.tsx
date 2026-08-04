@@ -242,10 +242,10 @@ export class KritzelSettings {
   }
 
   private renderCategoryContent() {
-    switch (this.selectedCategoryId) {
-      case 'general':
-        return (
-          <div class="settings-content" key="general">
+    return (
+      <div class="settings-categories-wrapper">
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'general' }}>
+          <div class="settings-content">
             <h3>{this.t('settings.general.title', 'General Settings')}</h3>
             <div class="settings-group">
               <div class="settings-item">
@@ -254,7 +254,6 @@ export class KritzelSettings {
                   {this.t('settings.general.theme.description', 'Select a registered color theme for the editor interface.')}
                 </p>
                 <kritzel-dropdown
-                  key="dropdown-theme"
                   options={this.availableThemes.map(t => ({ value: t, label: t }))}
                   value={this.theme}
                   onValueChanged={this.handleThemeChange}
@@ -267,20 +266,18 @@ export class KritzelSettings {
                     {this.t('settings.general.language.description', 'Select the display language for the editor interface.')}
                   </p>
                   <kritzel-dropdown
-                    key="dropdown-locale"
                     options={this.availableLocales.map(l => ({ value: l.code, label: l.label }))}
                     value={this.locale}
                     onValueChanged={this.handleLocaleChange}
                   ></kritzel-dropdown>
                 </div>
               )}
-               <div class="settings-item">
+              <div class="settings-item">
                 <label class="settings-label">{this.t('settings.general.lockDrawingScale.label', 'Lock Drawing Scale')}</label>
                 <p class="settings-description">
                   {this.t('settings.general.lockDrawingScale.description', 'When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.')}
                 </p>
                 <kritzel-slide-toggle
-                  key="toggle-lockDrawingScale"
                   checked={this.lockDrawingScale}
                   label={this.t('settings.general.lockDrawingScale.label', 'Lock Drawing Scale')}
                   onCheckedChange={this.handleLockDrawingScaleChange}
@@ -288,10 +285,10 @@ export class KritzelSettings {
               </div>
             </div>
           </div>
-        );
-      case 'viewport':
-        return (
-          <div class="settings-content" key="viewport">
+        </div>
+
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'viewport' }}>
+          <div class="settings-content">
             <h3>{this.t('settings.viewport.title', 'Viewport Settings')}</h3>
             <div class="settings-group">
               <div class="settings-item">
@@ -300,7 +297,6 @@ export class KritzelSettings {
                   {this.t('settings.viewport.minZoom.description', 'Sets the minimum zoom level. Lower values allow zooming out further to see more of the canvas.')}
                 </p>
                 <kritzel-numeric-input
-                  key="input-scaleMin"
                   value={this.scaleMin}
                   min={0.0001}
                   max={1}
@@ -314,7 +310,6 @@ export class KritzelSettings {
                   {this.t('settings.viewport.maxZoom.description', 'Sets the maximum zoom level. Higher values allow zooming in closer for detailed work.')}
                 </p>
                 <kritzel-numeric-input
-                  key="input-scaleMax"
                   value={this.scaleMax}
                   min={1}
                   max={1000}
@@ -328,7 +323,6 @@ export class KritzelSettings {
                   {this.t('settings.viewport.boundaryLeft.description', 'Left boundary in world coordinates. Set to limit how far left the viewport can pan.')}
                 </p>
                 <kritzel-numeric-input
-                  key="input-viewportBoundaryLeft"
                   value={this.viewportBoundaryLeft}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -341,7 +335,6 @@ export class KritzelSettings {
                   {this.t('settings.viewport.boundaryRight.description', 'Right boundary in world coordinates. Set to limit how far right the viewport can pan.')}
                 </p>
                 <kritzel-numeric-input
-                  key="input-viewportBoundaryRight"
                   value={this.viewportBoundaryRight}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -354,7 +347,6 @@ export class KritzelSettings {
                   {this.t('settings.viewport.boundaryTop.description', 'Top boundary in world coordinates. Set to limit how far up the viewport can pan.')}
                 </p>
                 <kritzel-numeric-input
-                  key="input-viewportBoundaryTop"
                   value={this.viewportBoundaryTop}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -367,7 +359,6 @@ export class KritzelSettings {
                   {this.t('settings.viewport.boundaryBottom.description', 'Bottom boundary in world coordinates. Set to limit how far down the viewport can pan.')}
                 </p>
                 <kritzel-numeric-input
-                  key="input-viewportBoundaryBottom"
                   value={this.viewportBoundaryBottom}
                   step={100}
                   placeholder={this.t('settings.viewport.boundaryPlaceholder', 'Infinite')}
@@ -376,10 +367,10 @@ export class KritzelSettings {
               </div>
             </div>
           </div>
-        );
-      case 'shortcuts':
-        return (
-          <div class="settings-content" key="shortcuts">
+        </div>
+
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'shortcuts' }}>
+          <div class="settings-content">
             <h3>{this.t('settings.shortcuts.title', 'Keyboard Shortcuts')}</h3>
             <div class="shortcuts-list">
               {Array.from(this.groupShortcutsByCategory()).map(([category, shortcuts]) => (
@@ -397,10 +388,10 @@ export class KritzelSettings {
               ))}
             </div>
           </div>
-        );
-      case 'developer':
-        return (
-          <div class="settings-content" key="developer">
+        </div>
+
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'developer' }}>
+          <div class="settings-content">
             <h3>{this.t('settings.developer.title', 'Developer Options')}</h3>
             <div class="settings-group">
               <div class="settings-item">
@@ -409,7 +400,6 @@ export class KritzelSettings {
                   {this.t('settings.developer.showViewportInfo.description', 'Display viewport debug information such as position, zoom level, and boundaries.')}
                 </p>
                 <kritzel-slide-toggle
-                  key="toggle-showViewportInfo"
                   checked={this.debugInfo.showViewportInfo}
                   label={this.t('settings.developer.showViewportInfo.label', 'Show Viewport Info')}
                   onCheckedChange={this.handleDebugInfoChange('showViewportInfo')}
@@ -421,7 +411,6 @@ export class KritzelSettings {
                   {this.t('settings.developer.showObjectInfo.description', 'Display debug information about objects on the canvas.')}
                 </p>
                 <kritzel-slide-toggle
-                  key="toggle-showObjectInfo"
                   checked={this.debugInfo.showObjectInfo}
                   label={this.t('settings.developer.showObjectInfo.label', 'Show Object Info')}
                   onCheckedChange={this.handleDebugInfoChange('showObjectInfo')}
@@ -433,7 +422,6 @@ export class KritzelSettings {
                   {this.t('settings.developer.showSyncProviderInfo.description', 'Display debug information about the sync provider connection status.')}
                 </p>
                 <kritzel-slide-toggle
-                  key="toggle-showSyncProviderInfo"
                   checked={this.debugInfo.showSyncProviderInfo}
                   label={this.t('settings.developer.showSyncProviderInfo.label', 'Show Sync Provider Info')}
                   onCheckedChange={this.handleDebugInfoChange('showSyncProviderInfo')}
@@ -445,7 +433,6 @@ export class KritzelSettings {
                   {this.t('settings.developer.showMigrationInfo.description', 'Display debug information about data migrations.')}
                 </p>
                 <kritzel-slide-toggle
-                  key="toggle-showMigrationInfo"
                   checked={this.debugInfo.showMigrationInfo}
                   label={this.t('settings.developer.showMigrationInfo.label', 'Show Migration Info')}
                   onCheckedChange={this.handleDebugInfoChange('showMigrationInfo')}
@@ -453,20 +440,19 @@ export class KritzelSettings {
               </div>
             </div>
           </div>
-        );
-      case 'about':
-        return (
-          <div class="settings-content" key="about">
+        </div>
+
+        <div class={{ 'settings-tab-panel': true, 'is-active': this.selectedCategoryId === 'about' }}>
+          <div class="settings-content">
             <h3>{this.t('settings.about.title', 'About')}</h3>
             <p>{this.t('settings.about.description', 'Kritzel - A drawing application')}</p>
             <p class="version-info">Version {KRITZEL_VERSION}</p>
             <p class="version-info">App-State Schema v{CURRENT_APP_STATE_SCHEMA_VERSION}</p>
             <p class="version-info">Workspace Schema v{CURRENT_WORKSPACE_SCHEMA_VERSION}</p>
           </div>
-        );
-      default:
-        return null;
-    }
+        </div>
+      </div>
+    );
   }
 
   render() {
