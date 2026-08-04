@@ -245,7 +245,7 @@ export class KritzelSettings {
     switch (this.selectedCategoryId) {
       case 'general':
         return (
-          <div class="settings-content">
+          <div class="settings-content" key="general">
             <h3>{this.t('settings.general.title', 'General Settings')}</h3>
             <div class="settings-group">
               <div class="settings-item">
@@ -278,6 +278,7 @@ export class KritzelSettings {
                   {this.t('settings.general.lockDrawingScale.description', 'When enabled, drawn objects maintain a fixed visual size regardless of the current zoom level.')}
                 </p>
                 <kritzel-slide-toggle
+                  key="toggle-lockDrawingScale"
                   checked={this.lockDrawingScale}
                   label={this.t('settings.general.lockDrawingScale.label', 'Lock Drawing Scale')}
                   onCheckedChange={this.handleLockDrawingScaleChange}
@@ -288,7 +289,7 @@ export class KritzelSettings {
         );
       case 'viewport':
         return (
-          <div class="settings-content">
+          <div class="settings-content" key="viewport">
             <h3>{this.t('settings.viewport.title', 'Viewport Settings')}</h3>
             <div class="settings-group">
               <div class="settings-item">
@@ -370,7 +371,7 @@ export class KritzelSettings {
         );
       case 'shortcuts':
         return (
-          <div class="settings-content">
+          <div class="settings-content" key="shortcuts">
             <h3>{this.t('settings.shortcuts.title', 'Keyboard Shortcuts')}</h3>
             <div class="shortcuts-list">
               {Array.from(this.groupShortcutsByCategory()).map(([category, shortcuts]) => (
@@ -391,7 +392,7 @@ export class KritzelSettings {
         );
       case 'developer':
         return (
-          <div class="settings-content">
+          <div class="settings-content" key="developer">
             <h3>{this.t('settings.developer.title', 'Developer Options')}</h3>
             <div class="settings-group">
               <div class="settings-item">
@@ -400,6 +401,7 @@ export class KritzelSettings {
                   {this.t('settings.developer.showViewportInfo.description', 'Display viewport debug information such as position, zoom level, and boundaries.')}
                 </p>
                 <kritzel-slide-toggle
+                  key="toggle-showViewportInfo"
                   checked={this.debugInfo.showViewportInfo}
                   label={this.t('settings.developer.showViewportInfo.label', 'Show Viewport Info')}
                   onCheckedChange={this.handleDebugInfoChange('showViewportInfo')}
@@ -411,6 +413,7 @@ export class KritzelSettings {
                   {this.t('settings.developer.showObjectInfo.description', 'Display debug information about objects on the canvas.')}
                 </p>
                 <kritzel-slide-toggle
+                  key="toggle-showObjectInfo"
                   checked={this.debugInfo.showObjectInfo}
                   label={this.t('settings.developer.showObjectInfo.label', 'Show Object Info')}
                   onCheckedChange={this.handleDebugInfoChange('showObjectInfo')}
@@ -422,6 +425,7 @@ export class KritzelSettings {
                   {this.t('settings.developer.showSyncProviderInfo.description', 'Display debug information about the sync provider connection status.')}
                 </p>
                 <kritzel-slide-toggle
+                  key="toggle-showSyncProviderInfo"
                   checked={this.debugInfo.showSyncProviderInfo}
                   label={this.t('settings.developer.showSyncProviderInfo.label', 'Show Sync Provider Info')}
                   onCheckedChange={this.handleDebugInfoChange('showSyncProviderInfo')}
@@ -433,6 +437,7 @@ export class KritzelSettings {
                   {this.t('settings.developer.showMigrationInfo.description', 'Display debug information about data migrations.')}
                 </p>
                 <kritzel-slide-toggle
+                  key="toggle-showMigrationInfo"
                   checked={this.debugInfo.showMigrationInfo}
                   label={this.t('settings.developer.showMigrationInfo.label', 'Show Migration Info')}
                   onCheckedChange={this.handleDebugInfoChange('showMigrationInfo')}
@@ -443,7 +448,7 @@ export class KritzelSettings {
         );
       case 'about':
         return (
-          <div class="settings-content">
+          <div class="settings-content" key="about">
             <h3>{this.t('settings.about.title', 'About')}</h3>
             <p>{this.t('settings.about.description', 'Kritzel - A drawing application')}</p>
             <p class="version-info">Version {KRITZEL_VERSION}</p>
