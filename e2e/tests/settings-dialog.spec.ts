@@ -91,4 +91,20 @@ test.describe('Settings dialog', () => {
 
     await expect(editorPage.engine).toHaveScreenshot('Settings-dialog-lock-drawing-scale.png', { timeout: 1000 });
   });
+
+  test('switches the general settings view to German and updates the visible labels', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    const settingsRoot = await openSettingsDialog(page);
+
+    const languageDropdown = settingsRoot.locator('kritzel-dropdown').nth(1);
+    await languageDropdown.locator('button').click();
+    await languageDropdown.locator('li', { hasText: 'Deutsch' }).click();
+
+    await expect(settingsRoot.getByRole('heading', { name: 'Allgemeine Einstellungen' })).toBeVisible();
+    await expect(settingsRoot.locator('label.settings-label').filter({ hasText: 'Design' })).toBeVisible();
+    await expect(settingsRoot.locator('label.settings-label').filter({ hasText: 'Sprache' })).toBeVisible();
+    await expect(settingsRoot.locator('label.settings-label').filter({ hasText: 'Zeichenskalierung sperren' })).toBeVisible();
+  });
 });
