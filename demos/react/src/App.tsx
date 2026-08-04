@@ -39,7 +39,7 @@ import { SlideshowPresentationPage } from "./pages/examples/slideshow-presentati
 import { InfiniteCanvasGalleryPage } from "./pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage";
 import { ImageAnnotationStudioPage } from "./pages/examples/image-annotation-studio/ImageAnnotationStudioPage";
 import { WebsiteHeroPage } from "./pages/website/WebsiteHeroPage";
-import { WebisteHeroPageMobile } from "./pages/website/WebisteHeroPageMobile";
+import { WebsiteHeroPageMobile } from "./pages/website/WebsiteHeroPageMobile";
 
 function App() {
   return (
@@ -85,7 +85,7 @@ function App() {
         <Route path="/examples/infinite-canvas-gallery" element={<InfiniteCanvasGalleryPage />} />
         <Route path="/examples/image-annotation-studio" element={<ImageAnnotationStudioPage />} />
         <Route path="/website/hero" element={<WebsiteHeroPage />} />
-        <Route path="/website/hero-mobile" element={<WebisteHeroPageMobile />} />
+        <Route path="/website/hero-mobile" element={<WebsiteHeroPageMobile />} />
         <Route path="*" element={<Navigate to="/e2e/editor" replace />} />
       </Routes>
     </HashRouter>

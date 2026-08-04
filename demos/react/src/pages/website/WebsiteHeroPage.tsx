@@ -398,9 +398,18 @@ export function WebsiteHeroPage() {
 
     const { workspaceJson } = await loadInitialWorkspacePayload();
 
-    await editor.loadObjectsFromJson(workspaceJson);
-
-    await centerAllObjectsNow();
+    await editor.beginSceneBootstrap();
+    try {
+      await editor.loadObjectsFromJson(workspaceJson);
+      await centerAllObjectsNow();
+      await new Promise((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve(undefined));
+        });
+      });
+    } finally {
+      await editor.endSceneBootstrap();
+    }
 
     hasImportedInitialWorkspace.current = true;
     const currentViewport = await editor.getViewport();
