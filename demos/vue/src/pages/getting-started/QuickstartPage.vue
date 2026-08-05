@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getEditorRef, KritzelEditor } from 'kritzel-vue'
-import { customVueTheme } from '../../const/custom-vue-theme'
+import { vueThemeLight } from '../../const/vue-theme-light'
 import { seedEditor } from '../concepts/shared/concept-shared';
 
 const editor = getEditorRef('editor');
@@ -19,7 +19,7 @@ async function onReady() {
             ref="editor"
             editorId="quickstart"
             theme="vue-theme"
-            :themes="[customVueTheme]"
+            :themes="[vueThemeLight]"
             :isPanningEnabled="false"
             :isZoomingEnabled="false"
             :isMoreMenuVisible="false"

@@ -5,7 +5,7 @@ import {
   type HTMLKritzelEditorElement,
   type KritzelViewportState,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 
 const TOTAL_IMAGES = 4000;
 const CLUSTER_RADIUS = 14000;
@@ -294,7 +294,7 @@ export function InfiniteCanvasGalleryPage() {
           ref={editorRef}
           editorId="infinite-canvas-gallery"
           theme="react-theme"
-          themes={[customReactTheme]}
+          themes={[reactThemeLight]}
           isMoreMenuVisible={true}
           isWorkspaceManagerVisible={false}
           isObjectDistanceFadingActive={true}

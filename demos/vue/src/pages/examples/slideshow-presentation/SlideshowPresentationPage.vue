@@ -7,7 +7,7 @@ import {
   KritzelText,
   ShapeType,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 
 interface Slide {
   title: string
@@ -250,7 +250,7 @@ async function navigateToSlide(index: number) {
         ref="editor"
         editorId="slideshow-presentation"
         theme="vue-theme"
-        :themes="[customVueTheme]"
+        :themes="[vueThemeLight]"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :isControlsVisible="false"

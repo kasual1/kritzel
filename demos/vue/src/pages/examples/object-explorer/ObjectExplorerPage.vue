@@ -9,7 +9,7 @@ import {
   type ObjectsUpdatedEvent,
   ShapeType,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../basic-usage/seed-objects'
 
 const editor = getEditorRef('editor')
@@ -366,7 +366,7 @@ async function seedObjects() {
         ref="editor"
         editorId="object-explorer"
         theme="vue-theme"
-        :themes="[customVueTheme]"
+        :themes="[vueThemeLight]"
         :syncConfig="syncConfig"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"

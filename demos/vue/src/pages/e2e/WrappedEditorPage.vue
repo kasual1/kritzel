@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { KritzelEditor } from 'kritzel-vue'
 import { useRoute } from 'vue-router'
-import { customVueTheme } from '../../const/custom-vue-theme'
+import { vueThemeLight } from '../../const/vue-theme-light'
 
 const route = useRoute()
 const width = parseInt((route.query.width as string) || '320', 10)
@@ -25,7 +25,7 @@ const height = parseInt((route.query.height as string) || '600', 10)
     <KritzelEditor
       style="width: 100%; height: 100%"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
     />
   </div>
 </template>

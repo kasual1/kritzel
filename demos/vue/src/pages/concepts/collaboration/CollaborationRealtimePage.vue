@@ -7,7 +7,7 @@ import {
   KritzelEditor,
   type KritzelSyncConfig,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   accentDark,
   editorStyle,
@@ -47,7 +47,7 @@ async function onReady() {
       ref="editor"
       editorId="collaboration-realtime"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :syncConfig="syncConfig"
       :loginConfig="undefined"
       :isPanningEnabled="false"

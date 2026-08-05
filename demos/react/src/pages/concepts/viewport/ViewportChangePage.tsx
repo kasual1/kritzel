@@ -4,7 +4,7 @@ import {
   HTMLKritzelEditorElement,
   type KritzelViewportState,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
   editorStyle,
@@ -41,7 +41,7 @@ export function ViewportChangePage() {
         ref={editorRef}
         editorId="viewport-change"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}

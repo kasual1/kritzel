@@ -7,7 +7,7 @@ import {
   type ActiveWorkspaceChangeEvent,
   type KritzelSyncConfig,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   editorStyle,
   hostStyle,
@@ -119,7 +119,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
       ref="editor"
       editorId="workspaces-crud"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :style="editorStyle"
       :syncConfig="syncConfig"
       :activeWorkspaceId="activeWorkspaceId"

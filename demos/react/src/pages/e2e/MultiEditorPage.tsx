@@ -1,5 +1,5 @@
 import { KritzelEditor } from "kritzel-react";
-import { customReactTheme } from "../../const/custom-react-theme";
+import { reactThemeLight } from "../../const/react-theme-light";
 
 const styles = {
   multiEditorHost: {
@@ -30,10 +30,10 @@ export function MultiEditorPage() {
   return (
     <div style={styles.multiEditorHost}>
       <div style={{ ...styles.editorContainer, ...styles.editorContainerFirst }}>
-        <KritzelEditor id="editor-1" editorId="e2e-editor-1" theme="react-theme" themes={[customReactTheme]} />
+        <KritzelEditor id="editor-1" editorId="e2e-editor-1" theme="react-theme" themes={[reactThemeLight]} />
       </div>
       <div style={{ ...styles.editorContainer, ...styles.editorContainerSecond }}>
-        <KritzelEditor id="editor-2" editorId="e2e-editor-2" theme="react-theme" themes={[customReactTheme]} />
+        <KritzelEditor id="editor-2" editorId="e2e-editor-2" theme="react-theme" themes={[reactThemeLight]} />
       </div>
     </div>
   );

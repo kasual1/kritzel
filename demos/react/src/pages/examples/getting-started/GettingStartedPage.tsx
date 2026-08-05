@@ -1,6 +1,6 @@
 import { CSSProperties } from "react";
 import { KritzelEditor, type KritzelSyncConfig } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 
 const syncConfig: KritzelSyncConfig = {
   providers: [],
@@ -17,7 +17,7 @@ export function GettingStartedPage() {
       <KritzelEditor
         editorId="getting-started"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         syncConfig={syncConfig}
         isPanningEnabled={false}
         isZoomingEnabled={false}

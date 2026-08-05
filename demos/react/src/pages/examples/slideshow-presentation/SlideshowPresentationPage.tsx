@@ -6,7 +6,7 @@ import {
   ShapeType,
   type HTMLKritzelEditorElement,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 
 interface Slide {
   title: string;
@@ -325,7 +325,7 @@ export function SlideshowPresentationPage() {
           ref={editorRef}
           editorId="slideshow-presentation"
           theme="react-theme"
-          themes={[customReactTheme]}
+          themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}
           isControlsVisible={false}

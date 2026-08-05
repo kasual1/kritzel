@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { KritzelEditor } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   buttonStyle,
   editorStyle,
@@ -47,7 +47,7 @@ async function centerOn(index: number) {
       ref="editor"
       editorId="viewport-center"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"

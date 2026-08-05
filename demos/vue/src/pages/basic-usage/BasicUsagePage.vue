@@ -8,7 +8,7 @@ import {
   type KritzelSyncConfig,
   KritzelText,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../const/custom-vue-theme'
+import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from './seed-objects'
 
 type ToolName = 'brush' | 'select'
@@ -112,7 +112,7 @@ async function zoomIn() {
       ref="editor"
       editorId="basic-usage"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :syncConfig="syncConfig"
       :loginConfig="undefined"
       :isPanningEnabled="false"

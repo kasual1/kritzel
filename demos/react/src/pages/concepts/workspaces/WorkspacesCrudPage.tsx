@@ -7,7 +7,7 @@ import {
   HTMLKritzelEditorElement,
   type KritzelSyncConfig,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   editorStyle,
   hostStyle,
@@ -97,7 +97,7 @@ export function WorkspacesCrudPage() {
         ref={editorRef}
         editorId="workspaces-crud"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         syncConfig={syncConfig}
         activeWorkspaceId={activeWorkspaceId}
         isPanningEnabled={false}

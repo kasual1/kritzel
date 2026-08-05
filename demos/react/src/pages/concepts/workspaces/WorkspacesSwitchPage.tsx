@@ -7,7 +7,7 @@ import {
   type KritzelSyncConfig,
   type KritzelWorkspace,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
   editorStyle,
@@ -52,7 +52,7 @@ export function WorkspacesSwitchPage() {
         ref={editorRef}
         editorId="workspaces-switch"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         syncConfig={syncConfig}
         activeWorkspaceId={activeWorkspaceId}
         isPanningEnabled={false}
