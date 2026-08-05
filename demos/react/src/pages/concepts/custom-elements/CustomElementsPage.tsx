@@ -6,7 +6,7 @@ import {
   type HTMLKritzelEditorElement,
 } from "kritzel-react";
 import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../shared/concept-shared";
 import {
   cloneTodoListState,
@@ -121,7 +121,7 @@ export function CustomElementsPage() {
         ref={editorRef}
         editorId="react-custom-elements"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         style={editorStyle}
         onIsReady={() => {
           void onReady();

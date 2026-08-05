@@ -4,7 +4,7 @@ import {
   type ContextMenuItem,
   HTMLKritzelEditorElement,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
 
 export function CustomContextMenuCanvasQuickActionsPage() {
@@ -46,7 +46,7 @@ export function CustomContextMenuCanvasQuickActionsPage() {
         ref={editorRef}
         editorId="custom-context-menu-canvas-quick-actions"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={[]}
         isPanningEnabled={false}

@@ -5,7 +5,7 @@ import {
   type HTMLKritzelEditorElement,
 } from "kritzel-react";
 import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../shared/concept-shared";
 
 const HTML_RENDERER_KEY = "react-interactive-html";
@@ -272,7 +272,7 @@ export function CustomElementsHtmlPage() {
         ref={editorRef}
         editorId="react-custom-elements-html"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         style={editorStyle}
         onIsReady={() => {
           void onReady();

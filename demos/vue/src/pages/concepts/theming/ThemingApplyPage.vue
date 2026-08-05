@@ -2,11 +2,10 @@
 
 import {
   KritzelEditor,
-  darkTheme,
   getEditorRef,
-  type KritzelTheme,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import {
   buttonStyle,
   editorStyle,
@@ -15,11 +14,6 @@ import {
   toolbarStyle,
 } from '../shared/concept-shared'
 import { ref } from 'vue'
-
-const themedDark: KritzelTheme = {
-  ...darkTheme,
-  name: 'vue-theme-dark',
-}
 
 const editor = getEditorRef('editor');
 const activeName = ref('vue-theme')
@@ -41,7 +35,7 @@ async function onReady() {
       ref="editor"
       editorId="theming-apply"
       :theme="activeName"
-      :themes="[customVueTheme, themedDark]"
+      :themes="[vueThemeLight, vueThemeDark]"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="true"

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { KritzelEditor } from 'kritzel-vue'
-import { customVueTheme } from '../../const/custom-vue-theme'
+import { vueThemeLight } from '../../const/vue-theme-light'
 </script>
 
 <template>
   <div class="multi-editor-host">
     <div class="editor-container editor-container-first">
-      <KritzelEditor id="editor-1" editor-id="e2e-editor-1" theme="vue-theme" :themes="[customVueTheme]" />
+      <KritzelEditor id="editor-1" editor-id="e2e-editor-1" theme="vue-theme" :themes="[vueThemeLight]" />
     </div>
     <div class="editor-container editor-container-second">
-      <KritzelEditor id="editor-2" editor-id="e2e-editor-2" theme="vue-theme" :themes="[customVueTheme]" />
+      <KritzelEditor id="editor-2" editor-id="e2e-editor-2" theme="vue-theme" :themes="[vueThemeLight]" />
     </div>
   </div>
 </template>

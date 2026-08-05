@@ -7,7 +7,7 @@ import {
   KritzelShape,
   ShapeType,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 
 type DefectStatus = 'Outstanding' | 'In Progress' | 'Resolved'
 
@@ -362,7 +362,7 @@ function statusClass(status: DefectStatus): string {
         ref="editor"
         editorId="blueprint-defect-mapper"
         theme="vue-theme"
-        :themes="[customVueTheme]"
+        :themes="[vueThemeLight]"
         :isControlsVisible="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"

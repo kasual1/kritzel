@@ -4,7 +4,7 @@ import {
   KritzelEditor,
   type KritzelViewportState,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   buttonStyle,
   editorStyle,
@@ -53,7 +53,7 @@ function onViewportChange(event: CustomEvent<KritzelViewportState>) {
       ref="editor"
       editorId="viewport-change"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"

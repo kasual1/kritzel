@@ -18,7 +18,7 @@ import {
   type ObjectsRemovedEvent,
   type ObjectsUpdatedEvent,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../basic-usage/seed-objects";
 
 type AnyObject = KritzelBaseObject<HTMLElement | SVGElement> & Record<string, any>;
@@ -533,7 +533,7 @@ export function ObjectExplorerPage() {
             ref={editorRef}
             editorId="object-explorer"
             theme="react-theme"
-            themes={[customReactTheme]}
+            themes={[reactThemeLight]}
             syncConfig={syncConfig}
             isPanningEnabled={false}
             isZoomingEnabled={false}
