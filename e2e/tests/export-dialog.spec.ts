@@ -115,6 +115,35 @@ function normalizeExportedViewportSvg(svg: string): string {
     .trim();
 }
 
+interface WorkspaceExportObject {
+  __class__: string;
+  [key: string]: unknown;
+}
+
+interface WorkspaceExportPayload {
+  __class__: string;
+  version: string;
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+  viewport: {
+    centerWorldX: number;
+    centerWorldY: number;
+    scale: number;
+  };
+  isPublic: boolean;
+  exportMode: string;
+  objects?: WorkspaceExportObject[];
+  assets?: Record<string, string>;
+}
+
+function getExportedObjectByClass(objects: WorkspaceExportObject[], className: string): WorkspaceExportObject {
+  const matchingObjects = objects.filter(object => object.__class__ === className);
+  expect(matchingObjects).toHaveLength(1);
+  return matchingObjects[0];
+}
+
 test.describe('Export dialog', () => {
   test('opens export dialog with viewport tab active and preview rendered', async ({ editorPage, page }) => {
     await editorPage.goto();
@@ -183,5 +212,100 @@ test.describe('Export dialog', () => {
     const downloadedSvg = await readFile(downloadPath!, 'utf8');
     const normalizedSvg = normalizeExportedViewportSvg(downloadedSvg);
     expect(normalizedSvg).toMatchSnapshot('export-dialog-viewport-download.svg');
+  });
+
+  test('downloads workspace JSON with the expected serialized content', async ({ editorPage, page }) => {
+    await editorPage.goto();
+    await editorPage.waitForReady();
+
+    await addAllObjectTypesToCanvas(editorPage, page);
+    const exportRoot = await openExportDialog(page);
+
+    const workspaceTab = exportRoot.locator('kritzel-pill-tabs').getByRole('tab', { name: 'Export Workspace' });
+    await workspaceTab.click();
+    await expect(workspaceTab).toHaveAttribute('aria-selected', 'true');
+
+    const exportButton = page.locator('kritzel-export kritzel-dialog[is-open] button.export-primary-button');
+    const downloadPromise = page.waitForEvent('download');
+    await exportButton.click();
+    const download = await downloadPromise;
+
+    expect(download.suggestedFilename()).toMatch(/\.json$/i);
+
+    const downloadPath = await download.path();
+    expect(downloadPath).not.toBeNull();
+
+    const downloadedJson = await readFile(downloadPath!, 'utf8');
+    const payload = JSON.parse(downloadedJson) as WorkspaceExportPayload;
+
+    expect(payload.__class__).toBe('KritzelWorkspace');
+    expect(payload.version).toBe('1.3.0');
+    expect(payload.exportMode).toBe('portable');
+    expect(payload.isPublic).toBe(false);
+    expect(payload.id).toMatch(/\S+/);
+    expect(payload.name).toMatch(/\S+/);
+    expect(payload.createdAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(payload.updatedAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    expect(payload.viewport.scale).toBeGreaterThan(0);
+    expect(Number.isFinite(payload.viewport.centerWorldX)).toBe(true);
+    expect(Number.isFinite(payload.viewport.centerWorldY)).toBe(true);
+
+    const objects = payload.objects ?? [];
+    expect(objects).toHaveLength(6);
+    expect(objects.map(object => object.__class__)).toEqual([
+      'KritzelShape',
+      'KritzelPath',
+      'KritzelText',
+      'KritzelLine',
+      'KritzelImage',
+      'KritzelCustomElement',
+    ]);
+
+    const shape = getExportedObjectByClass(objects, 'KritzelShape');
+    expect(shape.translateX).toBe(-150);
+    expect(shape.translateY).toBe(-100);
+    expect(shape.width).toBe(100);
+    expect(shape.height).toBe(80);
+    expect(shape.fillColor).toEqual({ light: '#ff9999', dark: '#cc3333' });
+    expect(shape.strokeColor).toEqual({ light: '#000000', dark: '#ffffff' });
+
+    const path = getExportedObjectByClass(objects, 'KritzelPath');
+    expect(path.points).toEqual([[0, 0], [30, 30], [60, 0]]);
+    expect(path.strokeWidth).toBe(3);
+    expect(path.width).toBeGreaterThan(0);
+    expect(path.height).toBeGreaterThan(0);
+
+    const text = getExportedObjectByClass(objects, 'KritzelText');
+    expect(text.translateX).toBe(100);
+    expect(text.translateY).toBe(-100);
+    expect(text.fontSize).toBe(20);
+    expect(downloadedJson).toContain('Export Preview Text');
+
+    const line = getExportedObjectByClass(objects, 'KritzelLine');
+    expect(line.startX).toBe(-150);
+    expect(line.startY).toBe(50);
+    expect(line.endX).toBe(-50);
+    expect(line.endY).toBe(100);
+    expect(line.strokeWidth).toBe(2);
+
+    const image = getExportedObjectByClass(objects, 'KritzelImage');
+    expect(image.translateX).toBe(0);
+    expect(image.translateY).toBe(50);
+    expect(typeof image.assetId).toBe('string');
+    expect(image.assetId).toMatch(/\S+/);
+    expect(image.mimeType).toBe('image/png');
+    expect(image.src).toBe('');
+
+    const customElement = getExportedObjectByClass(objects, 'KritzelCustomElement');
+    expect(customElement.translateX).toBe(120);
+    expect(customElement.translateY).toBe(50);
+    expect(customElement.width).toBe(100);
+    expect(customElement.height).toBe(60);
+    expect(typeof customElement.htmlString).toBe('string');
+    expect(customElement.htmlString).toContain('Custom Element');
+
+    expect(payload.assets).toBeDefined();
+    expect(Object.keys(payload.assets ?? {})).toHaveLength(1);
+    expect(payload.assets?.[image.assetId as string]).toMatch(/^data:image\/png;base64,/);
   });
 });
