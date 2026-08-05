@@ -5,6 +5,9 @@ export const angularThemeLight: KritzelTheme = {
   name: 'angular-theme',
   global: {
     ...lightTheme.global,
+    primaryColor: '#dd0031',
+    primaryHoverColor: '#b70028',
+    primaryTextColor: '#ffffff',
     focusRingColor: 'rgba(221, 0, 48, 0.2)',
   },
   selection: {
