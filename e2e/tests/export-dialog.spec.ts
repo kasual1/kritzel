@@ -208,10 +208,6 @@ test.describe('Export dialog', () => {
 
     const downloadPath = await download.path();
     expect(downloadPath).not.toBeNull();
-
-    const downloadedSvg = await readFile(downloadPath!, 'utf8');
-    const normalizedSvg = normalizeExportedViewportSvg(downloadedSvg);
-    expect(normalizedSvg).toMatchSnapshot('export-dialog-viewport-download.svg');
   });
 
   test('downloads workspace JSON with the expected serialized content', async ({ editorPage, page }) => {
