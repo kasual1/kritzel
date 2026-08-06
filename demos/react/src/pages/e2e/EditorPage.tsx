@@ -1,11 +1,12 @@
 import { KritzelEditor } from "kritzel-react";
-import { customReactTheme } from "../../const/custom-react-theme";
+import { reactThemeLight } from "../../const/react-theme-light";
+import { reactThemeDark } from "../../const/react-theme-dark";
 
 export function EditorPage() {
 
   return (
     <div className="app">
-      <KritzelEditor theme="react-theme" themes={[customReactTheme]} />
+      <KritzelEditor theme="react-theme" themes={[reactThemeLight, reactThemeDark]} />
     </div>
   );
 }

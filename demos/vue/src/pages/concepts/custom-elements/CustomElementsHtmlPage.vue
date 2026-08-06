@@ -7,7 +7,7 @@ import {
   type HTMLKritzelEditorElement,
 } from 'kritzel-vue'
 import { KritzelCustomElementRendererRegistry } from 'kritzel-stencil'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle } from '../shared/concept-shared'
 
 const HTML_RENDERER_KEY = 'vue-interactive-html'
@@ -273,7 +273,7 @@ async function onReady() {
       ref="customElementsEditorHtml"
       editorId="vue-custom-elements-html"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :style="editorStyle"
       @isReady="onReady"
     />

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { KritzelEditor, type KritzelBaseObject } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   buttonStyle,
   editorStyle,
@@ -60,7 +60,7 @@ async function onReady() {
         ref="editor"
         editorId="objects-selection"
         theme="vue-theme"
-        :themes="[customVueTheme]"
+        :themes="[vueThemeLight]"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :isMoreMenuVisible="false"

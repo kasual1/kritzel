@@ -6,7 +6,7 @@ import {
   KritzelSyncConfig,
   KritzelText,
 } from "kritzel-react";
-import { customReactTheme } from "../../const/custom-react-theme";
+import { reactThemeLight } from "../../const/react-theme-light";
 import { createSeedObjects } from "./seed-objects";
 
 type ToolName = "brush" | "select";
@@ -155,7 +155,7 @@ export function BasicUsagePage() {
         editorId="basic-usage"
         syncConfig={syncConfig}
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         loginConfig={undefined}
         isPanningEnabled={false}
         isZoomingEnabled={false}
