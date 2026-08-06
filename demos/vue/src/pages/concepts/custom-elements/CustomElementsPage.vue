@@ -7,7 +7,7 @@ import {
   registerVueCustomElementRenderer,
   type HTMLKritzelEditorElement,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light.ts'
 import { editorStyle, hostStyle } from '../shared/concept-shared'
 import TodoListCustomElement from './TodoListCustomElement.ce.vue'
 
@@ -90,7 +90,7 @@ async function onReady() {
       ref="customElementsEditor"
       editorId="vue-custom-elements"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :style="editorStyle"
       @isReady="onReady"
     />

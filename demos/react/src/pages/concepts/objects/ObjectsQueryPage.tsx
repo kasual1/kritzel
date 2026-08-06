@@ -4,7 +4,7 @@ import {
   HTMLKritzelEditorElement,
   type KritzelBaseObject,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
   editorStyle,
@@ -58,7 +58,7 @@ export function ObjectsQueryPage() {
           ref={editorRef}
           editorId="objects-query"
           theme="react-theme"
-          themes={[customReactTheme]}
+          themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}
           isMoreMenuVisible={false}

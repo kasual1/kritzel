@@ -1,6 +1,6 @@
 import { CSSProperties, useCallback, useRef } from "react";
 import { KritzelEditor } from "kritzel-react";
-import { customReactTheme } from "../../const/custom-react-theme";
+import { reactThemeLight } from "../../const/react-theme-light";
 import { seedEditor } from "../concepts/shared/concept-shared";
 
 const hostStyle: CSSProperties = {
@@ -23,7 +23,7 @@ export function QuickstartPage() {
         ref={editorRef}
         editorId="quickstart"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}

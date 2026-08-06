@@ -1,11 +1,10 @@
 import { useRef, useState } from "react";
 import {
   KritzelEditor,
-  darkTheme,
   HTMLKritzelEditorElement,
-  type KritzelTheme,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import {
   buttonStyle,
   editorStyle,
@@ -13,11 +12,6 @@ import {
   seedEditor,
   toolbarStyle,
 } from "../shared/concept-shared";
-
-const themedDark: KritzelTheme = {
-  ...darkTheme,
-  name: "react-theme-dark",
-};
 
 export function ThemingApplyPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -33,7 +27,7 @@ export function ThemingApplyPage() {
         ref={editorRef}
         editorId="theming-apply"
         theme={activeName}
-        themes={[customReactTheme, themedDark]}
+        themes={[reactThemeLight, reactThemeDark]}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={true}

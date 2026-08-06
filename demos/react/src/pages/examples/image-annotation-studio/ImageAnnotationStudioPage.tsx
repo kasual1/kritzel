@@ -8,7 +8,7 @@ import {
   type HTMLKritzelEditorElement,
   type KritzelTheme,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 
 type AnnotationMode = "sketch" | "text";
 
@@ -28,7 +28,7 @@ const annotationThemeDark: KritzelTheme = {
   },
 };
 
-const themes = [annotationThemeDark, customReactTheme, darkTheme];
+const themes = [annotationThemeDark, reactThemeLight, darkTheme];
 
 const colorTools: ColorTool[] = [
   { name: "ink-black", label: "Black", color: "#030712" },

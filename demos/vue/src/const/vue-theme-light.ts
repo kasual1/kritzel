@@ -1,6 +1,6 @@
 import type { KritzelTheme } from "kritzel-vue";
 
-export const customVueTheme: KritzelTheme = {
+export const vueThemeLight: KritzelTheme = {
   name: 'vue-theme',
   global: {
     primaryColor: '#42b883',

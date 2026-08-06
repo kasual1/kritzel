@@ -7,7 +7,7 @@ import {
   KritzelTextTool,
   type KritzelToolbarControl,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
 
 const controls: KritzelToolbarControl[] = [
@@ -71,7 +71,7 @@ async function onReady() {
       ref="editor"
       editorId="tools-controls"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :controls="controls"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
