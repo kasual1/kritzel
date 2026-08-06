@@ -169,6 +169,7 @@ async function ensureSeedImage() {
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :isUtilityPanelVisible="false"
+      :isZoomPanelVisible="false"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :loginConfig="undefined"
