@@ -319,11 +319,12 @@ export function ImageAnnotationStudioPage() {
         scaleMax={10}
         scaleMin={0.1}
         isPanningEnabled={false}
-ssisZoomingEnabled={false}
+        isZoomingEnabled={false}
         isControlsVisible={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         isUtilityPanelVisible={false}
+        isZoomPanelVisible={false}
         onIsReady={() => {
           void onReady();
         }}
