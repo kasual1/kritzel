@@ -5,20 +5,8 @@ import { test, expect } from '../fixtures/editor.fixture';
  * the component's async item-processing to finish, then let the browser paint.
  */
 async function waitForContextMenu(page: import('@playwright/test').Page, timeout = 4_000) {
-  await page.waitForFunction(
-    () => {
-      const engine = document.querySelector('kritzel-engine') as any;
-      if (!engine?.shadowRoot) return false;
-      if (engine?.core?.store?.state?.isContextMenuVisible !== true) return false;
-
-      const menu = engine.shadowRoot.querySelector('kritzel-context-menu');
-      if (!menu) return false;
-
-      const rect = menu.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0;
-    },
-    { timeout },
-  );
+  const menuContainer = page.locator('kritzel-editor kritzel-context-menu >>> .menu-container').first();
+  await menuContainer.waitFor({ state: 'visible', timeout });
   // Allow the component's processItems (async) + adjustPositionToViewport to run
   await page.evaluate(
     () =>
@@ -66,12 +54,7 @@ async function openContextMenuAt(page: import('@playwright/test').Page, x: numbe
       return;
     } catch (error) {
       lastError = error;
-      await page.evaluate(
-        () =>
-          new Promise<void>(resolve => {
-            requestAnimationFrame(() => resolve());
-          }),
-      );
+      await page.waitForTimeout(50);
     }
   }
 
@@ -85,14 +68,18 @@ async function openContextMenuAt(page: import('@playwright/test').Page, x: numbe
 async function getContextMenuRect(
   page: import('@playwright/test').Page,
 ): Promise<{ x: number; y: number; width: number; height: number } | null> {
-  return page.evaluate(() => {
-    const engine = document.querySelector('kritzel-engine');
-    if (!engine?.shadowRoot) return null;
-    const menu = engine.shadowRoot.querySelector('kritzel-context-menu');
-    if (!menu) return null;
-    const rect = menu.getBoundingClientRect();
-    return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-  });
+  const menuContainer = page.locator('kritzel-editor kritzel-context-menu >>> .menu-container').first();
+  const box = await menuContainer.boundingBox();
+  if (!box) {
+    return null;
+  }
+
+  return { x: box.x, y: box.y, width: box.width, height: box.height };
+}
+
+async function clickFirstEnabledContextMenuItem(page: import('@playwright/test').Page): Promise<void> {
+  const enabledItem = page.locator('kritzel-editor kritzel-context-menu >>> .menu-item:not(.disabled)').first();
+  await enabledItem.click();
 }
 
 test.describe('Context Menu', () => {
@@ -118,7 +105,7 @@ test.describe('Context Menu', () => {
       expect(rect!.width).toBeGreaterThan(0);
       expect(rect!.height).toBeGreaterThan(0);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
     });
 
     test('global context menu at center should be positioned near the click point', async ({
@@ -154,7 +141,7 @@ test.describe('Context Menu', () => {
       // The menu must not overflow the bottom of the viewport
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(editorPage.page.viewportSize()!.height + 1);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
     });
 
     test('global context menu should stay within viewport when opened near the right edge', async ({
@@ -172,7 +159,7 @@ test.describe('Context Menu', () => {
       const viewportWidth = editorPage.page.viewportSize()!.width;
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(viewportWidth + 1);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
     });
 
     test('global context menu should stay within viewport when opened at the bottom-right corner', async ({
@@ -191,7 +178,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(vpWidth + 1);
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(vpHeight + 1);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
     });
 
     test('global context menu should stay within viewport when opened near the top-left corner', async ({
@@ -209,7 +196,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x).toBeGreaterThanOrEqual(0);
       expect(rect!.y).toBeGreaterThanOrEqual(0);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
     });
   });
 
@@ -240,7 +227,7 @@ test.describe('Context Menu', () => {
       expect(rect!.width).toBeGreaterThan(0);
       expect(rect!.height).toBeGreaterThan(0);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
     });
 
     test('object context menu should stay within viewport when object is near the right edge', async ({
@@ -349,15 +336,7 @@ test.describe('Context Menu', () => {
       await openContextMenuAt(editorPage.page, box.x + box.width / 2, box.y + box.height / 2);
 
       // Click the "Paste" item (visible because we just copied a shape)
-      await editorPage.page.evaluate(() => {
-        const engine = document.querySelector('kritzel-engine');
-        if (!engine?.shadowRoot) return;
-        const menu = engine.shadowRoot.querySelector('kritzel-context-menu');
-        if (!menu?.shadowRoot) return;
-        // Find the first non-disabled menu item
-        const item = menu.shadowRoot.querySelector<HTMLElement>('.menu-item:not(.disabled)');
-        item?.click();
-      });
+      await clickFirstEnabledContextMenuItem(editorPage.page);
 
       await editorPage.page.evaluate(
         () =>
@@ -402,7 +381,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(vpWidth + 1);
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(vpHeight + 1);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
     });
 
     test('object context menu near bottom edge at 25% zoom should appear near the cursor', async ({
@@ -437,7 +416,7 @@ test.describe('Context Menu', () => {
       expect(rect!.x + rect!.width).toBeLessThanOrEqual(vpWidth + 1);
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(vpHeight + 1);
 
-      await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+      await expect(editorPage.page.locator('kritzel-editor')).toHaveScreenshot();
     });
   });
 });
