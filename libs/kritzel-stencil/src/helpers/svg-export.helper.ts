@@ -455,8 +455,8 @@ export class KritzelSvgExportHelper {
     const svgFontSizePx = (text.fontSize * (4 / 3) * (text.scaleFactor || 1) / scale).toFixed(4);
 
     return `<g transform="${transform}"${opacity}>
-    <foreignObject x="0" y="0" width="${width}" height="${height}">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: ${text.fontFamily}; font-size: ${svgFontSizePx}px; color: ${fontColor}; background-color: ${bgColor || 'transparent'}; white-space: pre-wrap; word-wrap: break-word; overflow: hidden; width: 100%; height: 100%; box-sizing: border-box;">
+    <foreignObject x="0" y="0" width="${width}" height="${height}" overflow="visible">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: ${text.fontFamily}; font-size: ${svgFontSizePx}px; color: ${fontColor}; background-color: ${bgColor || 'transparent'}; white-space: pre-wrap; word-wrap: break-word; width: 100%; box-sizing: border-box;">
         ${htmlContent}
       </div>
     </foreignObject>
