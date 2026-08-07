@@ -49,6 +49,7 @@ import { ObjectHelper } from '../../../helpers/object.helper';
 import { KritzelFontMap } from '../../../interfaces/font.interface';
 import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
 import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
+import { KritzelContextMenuState } from '../../../interfaces/context-menu-state.interface';
 
 @Component({
   tag: 'kritzel-editor',
@@ -283,6 +284,7 @@ export class KritzelEditor {
   @State() isEditorVisible: boolean = false;
   @State() activeNotification?: KritzelNotification;
   @State() isNotificationDismissing: boolean = false;
+  @State() contextMenuState?: KritzelContextMenuState;
   @State() normalizedControls: KritzelToolbarControl[] = [];
 
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
@@ -955,6 +957,29 @@ export class KritzelEditor {
     this.scheduleNotificationDismiss();
   }
 
+  handleContextMenuStateChange(event: CustomEvent<KritzelContextMenuState>) {
+    event.stopPropagation();
+    this.contextMenuState = event.detail.isVisible ? event.detail : undefined;
+  }
+
+  private handleContextMenuActionSelected(event: CustomEvent<ContextMenuItem>): void {
+    const contextMenuState = this.contextMenuState;
+    if (!contextMenuState || !event.detail.action) {
+      void this.hideContextMenu();
+      return;
+    }
+
+    event.detail.action(
+      {
+        x: contextMenuState.worldPosition.x,
+        y: contextMenuState.worldPosition.y,
+      },
+      contextMenuState.objects,
+    );
+
+    void this.hideContextMenu();
+  }
+
   handleNotificationHoverChange(event: CustomEvent<boolean>) {
     event.stopPropagation();
     this.isNotificationHovered = event.detail;
@@ -1343,6 +1368,22 @@ export class KritzelEditor {
           </div>
         )}
 
+        {this.contextMenuState && this.contextMenuState.items.length > 0 && (
+          <kritzel-context-menu
+            class="context-menu"
+            items={this.contextMenuState.items}
+            objects={this.contextMenuState.objects}
+            style={{
+              position: 'absolute',
+              left: `${this.contextMenuState.position.x}px`,
+              top: `${this.contextMenuState.position.y}px`,
+              zIndex: '10002',
+            }}
+            onActionSelected={event => this.handleContextMenuActionSelected(event)}
+            onClose={() => this.hideContextMenu()}
+          ></kritzel-context-menu>
+        )}
+
         <kritzel-engine
           ref={el => {
             if (el) {
@@ -1388,6 +1429,7 @@ export class KritzelEditor {
           onViewportChange={event => this.handleViewportChange(event)}
           onAwarenessChange={event => this.handleAwarenessChange(event)}
           onNotificationsChange={event => this.handleNotificationsChange(event)}
+          onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
         ></kritzel-engine>
 
         <kritzel-controls

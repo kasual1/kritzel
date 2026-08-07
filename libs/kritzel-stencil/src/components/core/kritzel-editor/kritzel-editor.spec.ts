@@ -275,6 +275,79 @@ describe('KritzelEditor', () => {
     });
   });
 
+  describe('Context Menu State Handling', () => {
+    it('stores context menu state when menu is visible', () => {
+      const event = {
+        stopPropagation: jest.fn(),
+        detail: {
+          isVisible: true,
+          isObjectMenu: false,
+          items: [{ label: 'menu.copy', action: jest.fn() }],
+          objects: [],
+          position: { x: 10, y: 20 },
+          worldPosition: { x: 100, y: 200 },
+        },
+      } as any;
+
+      component.handleContextMenuStateChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+      expect(component.contextMenuState).toEqual(event.detail);
+    });
+
+    it('clears context menu state when menu is hidden', () => {
+      (component as any).contextMenuState = {
+        isVisible: true,
+        isObjectMenu: false,
+        items: [],
+        objects: [],
+        position: { x: 10, y: 20 },
+        worldPosition: { x: 100, y: 200 },
+      };
+
+      const event = {
+        stopPropagation: jest.fn(),
+        detail: {
+          isVisible: false,
+          isObjectMenu: false,
+          items: [],
+          objects: [],
+          position: { x: 0, y: 0 },
+          worldPosition: { x: 0, y: 0 },
+        },
+      } as any;
+
+      component.handleContextMenuStateChange(event);
+
+      expect(component.contextMenuState).toBeUndefined();
+    });
+
+    it('executes context menu item action with emitted world coordinates and objects', async () => {
+      const action = jest.fn();
+      const objects = [{ id: 'obj-1' }] as any;
+      (component as any).contextMenuState = {
+        isVisible: true,
+        isObjectMenu: true,
+        items: [{ label: 'menu.delete', action }],
+        objects,
+        position: { x: 8, y: 12 },
+        worldPosition: { x: 80, y: 120 },
+      };
+
+      const hideSpy = jest.spyOn(component, 'hideContextMenu').mockResolvedValue(undefined);
+
+      (component as any).handleContextMenuActionSelected({
+        detail: {
+          label: 'menu.delete',
+          action,
+        },
+      } as any);
+
+      expect(action).toHaveBeenCalledWith({ x: 80, y: 120 }, objects);
+      expect(hideSpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe('Watchers', () => {
     it('should update currentIsPublic when activeWorkspace changes', () => {
       component.isPublicChange = { emit: jest.fn() } as any;

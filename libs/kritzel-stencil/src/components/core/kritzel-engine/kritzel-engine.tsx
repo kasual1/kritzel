@@ -52,6 +52,7 @@ import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInV
 import { IKritzelUser } from '../../../interfaces/user.interface';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
 import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
+import { KritzelContextMenuState } from '../../../interfaces/context-menu-state.interface';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
 
@@ -367,6 +368,9 @@ export class KritzelEngine {
   /** Emitted when notifications change. */
   @Event() notificationsChange!: EventEmitter<KritzelNotification>;
 
+  /** Emitted when context-menu visibility, items, or position changes. */
+  @Event() contextMenuStateChange!: EventEmitter<KritzelContextMenuState>;
+
   /** Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes. */
   @Event() loadingChange!: EventEmitter<boolean>;
 
@@ -622,6 +626,7 @@ export class KritzelEngine {
   @Listen('longpress', { passive: true })
   handleLongPress(ev: CustomEvent<PointerEvent>) {
     this.contextMenuHandler.handleContextMenu(ev.detail);
+    this.emitContextMenuStateChange();
   }
 
   @Listen('contextmenu', { capture: false, passive: false })
@@ -639,6 +644,7 @@ export class KritzelEngine {
     }
 
     this.contextMenuHandler.handleContextMenu(ev);
+    this.emitContextMenuStateChange();
   }
 
   @Listen('resize', { target: 'window' })
@@ -961,6 +967,7 @@ export class KritzelEngine {
     this.core.store.objects?.clearLocalSelectionBox();
     this.core.store.state.isSelecting = false;
     this.core.store.state.isEnabled = true;
+    this.emitContextMenuStateChange();
     this.core.rerender();
   }
 
@@ -976,6 +983,7 @@ export class KritzelEngine {
   @Method()
   async openContextMenu(options: { x: number; y: number; objectId?: string }) {
     this.contextMenuHandler.open(options);
+    this.emitContextMenuStateChange();
   }
 
   /**
@@ -2330,7 +2338,6 @@ export class KritzelEngine {
   viewport!: KritzelViewport;
   contextMenuHandler!: KritzelContextMenuHandler;
   keyHandler!: KritzelKeyHandler;
-  contextMenuElement: HTMLKritzelContextMenuElement | null = null;
 
   private _lastHadSelectionGroup: boolean = false;
   private _isViewportReady: boolean = false;
@@ -2371,6 +2378,23 @@ export class KritzelEngine {
   private syncSyncingState(isSyncing: boolean): void {
     this.isSyncing = isSyncing;
     this.syncingChange.emit(isSyncing);
+  }
+
+  private emitContextMenuStateChange(): void {
+    this.contextMenuStateChange.emit({
+      isVisible: this.core.store.state.isContextMenuVisible,
+      isObjectMenu: !!this.core.store.selectionGroup,
+      items: this.core.store.state.contextMenuItems,
+      objects: this.core.store.selectionGroup?.objects || [],
+      position: {
+        x: this.core.store.state.contextMenuX,
+        y: this.core.store.state.contextMenuY,
+      },
+      worldPosition: {
+        x: this.core.store.state.contextMenuWorldX,
+        y: this.core.store.state.contextMenuWorldY,
+      },
+    });
   }
 
   private applyToolConfig(tool: KritzelBaseTool, toolConfig: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): void {
@@ -4051,34 +4075,6 @@ export class KritzelEngine {
             );
           })()}
         </div>
-
-        {this.core.store.state.isContextMenuVisible && (
-          <kritzel-context-menu
-            class="context-menu"
-            ref={el => (this.contextMenuElement = el ?? null)}
-            items={this.core.store.state.contextMenuItems}
-            objects={this.core.store.selectionGroup?.objects || []}
-            style={{
-              position: 'absolute',
-              left: `${this.core.store.state.contextMenuX}px`,
-              top: `${this.core.store.state.contextMenuY}px`,
-              zIndex: '10002',
-            }}
-            onActionSelected={event => {
-              if (event.detail.action) {
-                event.detail.action(
-                  {
-                    x: this.core.store.state.contextMenuWorldX,
-                    y: this.core.store.state.contextMenuWorldY,
-                  },
-                  this.core.store.selectionGroup?.objects || [],
-                );
-              }
-              this.hideContextMenu();
-            }}
-            onClose={() => this.hideContextMenu()}
-          ></kritzel-context-menu>
-        )}
 
         {this.core.store.objects?.hasAwareness && <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>}
 

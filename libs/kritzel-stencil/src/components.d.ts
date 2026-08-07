@@ -34,6 +34,7 @@ import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelNotification } from "./interfaces/notification.interface";
 import { KritzelEngineState } from "./interfaces/engine-state.interface";
+import { KritzelContextMenuState } from "./interfaces/context-menu-state.interface";
 import { KritzelImage } from "./classes/objects/image.class";
 import { KritzelText } from "./classes/objects/text.class";
 import { KritzelGroup } from "./classes/objects/group.class";
@@ -76,6 +77,7 @@ export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelNotification } from "./interfaces/notification.interface";
 export { KritzelEngineState } from "./interfaces/engine-state.interface";
+export { KritzelContextMenuState } from "./interfaces/context-menu-state.interface";
 export { KritzelImage } from "./classes/objects/image.class";
 export { KritzelText } from "./classes/objects/text.class";
 export { KritzelGroup } from "./classes/objects/group.class";
@@ -2035,6 +2037,7 @@ declare global {
         "viewportChange": KritzelViewportState;
         "awarenessChange": Map<number, Record<string, any>>;
         "notificationsChange": KritzelNotification;
+        "contextMenuStateChange": KritzelContextMenuState;
         "loadingChange": boolean;
         "syncingChange": boolean;
     }
@@ -3136,6 +3139,10 @@ declare namespace LocalJSX {
           * Emitted when the awareness state changes (remote user cursors, presence).
          */
         "onAwarenessChange"?: (event: KritzelEngineCustomEvent<Map<number, Record<string, any>>>) => void;
+        /**
+          * Emitted when context-menu visibility, items, or position changes.
+         */
+        "onContextMenuStateChange"?: (event: KritzelEngineCustomEvent<KritzelContextMenuState>) => void;
         /**
           * Emitted when the engine has fully initialized and is ready for interaction.
          */
