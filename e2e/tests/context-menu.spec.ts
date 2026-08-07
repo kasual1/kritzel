@@ -78,8 +78,16 @@ async function getContextMenuRect(
 }
 
 async function clickFirstEnabledContextMenuItem(page: import('@playwright/test').Page): Promise<void> {
-  const enabledItem = page.locator('kritzel-editor kritzel-context-menu >>> .menu-item:not(.disabled)').first();
+  const enabledItem = page
+    .locator('kritzel-editor kritzel-context-menu')
+    .getByRole('button')
+    .first();
   await enabledItem.click();
+}
+
+async function waitForContextMenuToClose(page: import('@playwright/test').Page, timeout = 4_000): Promise<void> {
+  const menuHost = page.locator('kritzel-editor kritzel-context-menu');
+  await expect(menuHost).toHaveCount(0, { timeout });
 }
 
 test.describe('Context Menu', () => {
@@ -314,9 +322,7 @@ test.describe('Context Menu', () => {
             requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
           ),
       );
-
-      const rect = await getContextMenuRect(editorPage.page);
-      expect(rect).toBeNull();
+      await waitForContextMenuToClose(editorPage.page);
     });
 
     test('context menu should close after an action is selected', async ({ editorPage }) => {
@@ -344,9 +350,7 @@ test.describe('Context Menu', () => {
             requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
           ),
       );
-
-      const rect = await getContextMenuRect(editorPage.page);
-      expect(rect).toBeNull();
+      await waitForContextMenuToClose(editorPage.page);
     });
   });
 
