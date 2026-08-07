@@ -2,6 +2,7 @@ import { KritzelLineHandleHandler } from './line-handle.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelLine } from '../objects/line.class';
+import { KritzelColorHelper } from '../../helpers/color.helper';
 
 jest.mock('../../helpers/event.helper');
 jest.mock('../../helpers/color.helper', () => ({
@@ -125,6 +126,9 @@ describe('KritzelLineHandleHandler', () => {
         },
         offsetX: 0,
         offsetY: 0,
+      },
+      themeManager: {
+        currentTheme: 'light',
       },
       engine: {
         emitObjectsChange: jest.fn(),
@@ -557,6 +561,7 @@ describe('KritzelLineHandleHandler', () => {
           centerX: 150,
           centerY: 150,
         };
+        Object.defineProperty(mockCore.themeManager, 'currentTheme', { value: 'dark', configurable: true });
         (mockCore.anchorManager.findSnapTarget as jest.Mock).mockReturnValue(snapTarget);
 
         const moveEvent = createPointerEvent('pointermove', {
@@ -569,6 +574,7 @@ describe('KritzelLineHandleHandler', () => {
 
         expect(mockCore.anchorManager.setSnapCandidate).toHaveBeenCalled();
         expect(mockCore.anchorManager.setSnapPreviewCandidate).toHaveBeenCalledWith(null);
+        expect(KritzelColorHelper.resolveThemeColor).toHaveBeenCalledWith(mockLine.stroke, 'dark');
       });
 
       it('should set a preview candidate before actual snapping engages', () => {

@@ -563,7 +563,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
       t: clipInfo?.t,
       edgeX: clipInfo?.edgeX,
       edgeY: clipInfo?.edgeY,
-      lineStroke: KritzelColorHelper.resolveThemeColor(line.stroke),
+      lineStroke: KritzelColorHelper.resolveThemeColor(line.stroke, this._core.themeManager.currentTheme),
       lineStrokeWidth: line.strokeWidth / line.scale,
       arrowOffset:
         endpoint === 'start'
