@@ -8,7 +8,7 @@ import {
   KritzelTextTool,
   type KritzelTheme,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 
 type AnnotationMode = 'sketch' | 'text'
 
@@ -21,10 +21,10 @@ type ColorTool = {
 const editor = getEditorRef('editor')
 
 const annotationTheme: KritzelTheme = {
-  ...customVueTheme,
+  ...vueThemeLight,
   name: 'annotation-vue-theme',
   engine: {
-    ...customVueTheme.engine,
+    ...vueThemeLight.engine,
     backgroundColor: '#090f18',
     loadingOverlayBackground: 'rgba(9, 15, 24, 0.72)',
   },
@@ -169,6 +169,7 @@ async function ensureSeedImage() {
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :isUtilityPanelVisible="false"
+      :isZoomPanelVisible="false"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :loginConfig="undefined"

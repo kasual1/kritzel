@@ -1,5 +1,5 @@
 import { KritzelEditor } from "kritzel-react";
-import { customReactTheme } from "../../const/custom-react-theme";
+import { reactThemeLight } from "../../const/react-theme-light";
 import { useSearchParams } from "react-router-dom";
 
 export function WrappedEditorPage() {
@@ -24,7 +24,7 @@ export function WrappedEditorPage() {
       <KritzelEditor
         style={{ width: "100%", height: "100%" }}
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
       />
     </div>
   );

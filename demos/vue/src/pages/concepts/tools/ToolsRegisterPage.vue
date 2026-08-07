@@ -8,7 +8,7 @@ import {
   type KritzelBrushToolConfig,
   type KritzelToolbarControl,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
 
 const highlighterConfig: KritzelBrushToolConfig = {
@@ -105,7 +105,7 @@ async function onReady() {
       ref="editor"
       editorId="tools-register"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :controls="controls"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"

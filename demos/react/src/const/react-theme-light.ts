@@ -1,6 +1,6 @@
 import { KritzelTheme } from "kritzel-react";
 
-export const customReactTheme: KritzelTheme = {
+export const reactThemeLight: KritzelTheme = {
   name: 'react-theme',
   global: {
     primaryColor: '#087ea4',

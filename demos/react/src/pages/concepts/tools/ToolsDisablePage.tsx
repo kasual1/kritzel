@@ -3,7 +3,7 @@ import {
   KritzelEditor,
   HTMLKritzelEditorElement,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
   editorStyle,
@@ -54,7 +54,7 @@ export function ToolsDisablePage() {
         ref={editorRef}
         editorId="tools-disable"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}

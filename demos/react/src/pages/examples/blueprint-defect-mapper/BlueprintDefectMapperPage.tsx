@@ -7,7 +7,7 @@ import {
   type HTMLKritzelEditorElement,
   type ThemeAwareColor,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 
 type DefectStatus = "Outstanding" | "In Progress" | "Resolved";
 
@@ -484,7 +484,7 @@ export function BlueprintDefectMapperPage() {
           ref={editorRef}
           editorId="blueprint-defect-mapper"
           theme="react-theme"
-          themes={[customReactTheme]}
+          themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}
           isControlsVisible={false}

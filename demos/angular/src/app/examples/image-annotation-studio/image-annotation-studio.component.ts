@@ -51,6 +51,7 @@ type ColorTool = {
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         [isUtilityPanelVisible]="false"
+        [isZoomPanelVisible]="false"
         (isReady)="onReady($event)"
       ></kritzel-editor>
 

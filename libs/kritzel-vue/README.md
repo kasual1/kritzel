@@ -6,7 +6,7 @@ Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard eng
 
 Kritzel handles the hard parts of canvas-based applications — infinite pan and zoom, hit-testing, CRDT-based collaboration, undo and redo, and cross-browser rendering — so you can focus on your product's domain logic.
 
-**Full documentation:** [kritzel.io/docs/vue/overview](https://kritzel.io/docs/vue/overview)
+**Full documentation:** [kritzel.io/docs/vue/quick-start](https://kritzel.io/docs/vue/quick-start)
 
 ## Installation
 

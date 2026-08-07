@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { KritzelEditor, HTMLKritzelEditorElement } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
 
 export function ComponentsEditorPage() {
@@ -14,7 +14,7 @@ export function ComponentsEditorPage() {
         isPanningEnabled={false}
         isZoomingEnabled={false}
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         onIsReady={() => {
           if (editorRef.current) {
             void seedEditor(editorRef.current);

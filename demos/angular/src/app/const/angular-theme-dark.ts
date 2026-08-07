@@ -5,6 +5,9 @@ export const angularThemeDark: KritzelTheme = {
   name: 'angular-theme-dark',
   global: {
     ...darkTheme.global,
+    primaryColor: '#ff4081',
+    primaryHoverColor: '#d81b60',
+    primaryTextColor: '#ffffff',
     focusRingColor: 'rgba(255, 64, 129, 0.3)',
   },
   selection: {

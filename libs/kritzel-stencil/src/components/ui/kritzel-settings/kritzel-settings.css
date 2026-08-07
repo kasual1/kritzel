@@ -27,6 +27,14 @@ kritzel-dialog {
 }
 
 /* Settings Content */
+.settings-tab-panel {
+  display: none;
+}
+
+.settings-tab-panel.is-active {
+  display: block;
+}
+
 .settings-content {
   padding: 0;
 }

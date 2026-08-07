@@ -5,7 +5,7 @@ import {
   KritzelImage,
   type KritzelViewportState,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 
 const TOTAL_IMAGES = 4000
 const CLUSTER_RADIUS = 14000
@@ -269,7 +269,7 @@ async function syncVisibleObjects(viewport: KritzelViewportState) {
       ref="editor"
       editorId="infinite-canvas-gallery"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :isMoreMenuVisible="true"
       :isWorkspaceManagerVisible="false"
       :isObjectDistanceFadingActive="true"
