@@ -279,7 +279,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
-  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'loadingChange', 'syncingChange'],
+  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'contextMenuStateChange', 'loadingChange', 'syncingChange'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;
@@ -298,6 +298,7 @@ export class KritzelEngine {
   @Output() viewportChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelViewportState>>();
   @Output() awarenessChange = new EventEmitter<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>();
   @Output() notificationsChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelNotification>>();
+  @Output() contextMenuStateChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelContextMenuState>>();
   @Output() loadingChange = new EventEmitter<KritzelEngineCustomEvent<boolean>>();
   @Output() syncingChange = new EventEmitter<KritzelEngineCustomEvent<boolean>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
@@ -319,6 +320,7 @@ import type { KritzelUndoState as IKritzelEngineKritzelUndoState } from 'kritzel
 import type { ObjectsInViewportChangeEvent as IKritzelEngineObjectsInViewportChangeEvent } from 'kritzel-stencil/dist/components';
 import type { KritzelViewportState as IKritzelEngineKritzelViewportState } from 'kritzel-stencil/dist/components';
 import type { KritzelNotification as IKritzelEngineKritzelNotification } from 'kritzel-stencil/dist/components';
+import type { KritzelContextMenuState as IKritzelEngineKritzelContextMenuState } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelEngine extends Components.KritzelEngine {
   /**
@@ -381,6 +383,10 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
    * Emitted when notifications change.
    */
   notificationsChange: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelNotification>>;
+  /**
+   * Emitted when context-menu visibility, items, or position changes.
+   */
+  contextMenuStateChange: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelContextMenuState>>;
   /**
    * Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes.
    */

@@ -177,6 +177,11 @@ describe('KritzelEngine', () => {
         isEnabled: true,
         isReady: true,
         isContextMenuVisible: false,
+        contextMenuItems: [],
+        contextMenuX: 0,
+        contextMenuY: 0,
+        contextMenuWorldX: 0,
+        contextMenuWorldY: 0,
         isSelecting: false,
         isResizeHandleSelected: false,
         isRotationHandleSelected: false,
@@ -236,6 +241,7 @@ describe('KritzelEngine', () => {
       'viewportChange',
       'awarenessChange',
       'notificationsChange',
+      'contextMenuStateChange',
     ];
     for (const field of emitterFields) {
       (engine as any)[field] = { emit: jest.fn() };
@@ -1359,7 +1365,77 @@ describe('KritzelEngine', () => {
       expect(core.store.objects.remove).toHaveBeenCalled();
       expect(core.store.setSelectionBox).toHaveBeenCalledWith(null);
       expect(core.store.objects.clearLocalSelectionBox).toHaveBeenCalled();
+      expect((engine as any).contextMenuStateChange.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isVisible: false,
+          isObjectMenu: false,
+          position: { x: 0, y: 0 },
+          worldPosition: { x: 0, y: 0 },
+          items: [],
+          objects: [],
+        }),
+      );
       expect(core.rerender).toHaveBeenCalled();
+    });
+  });
+
+  describe('context-menu state event bridge', () => {
+    it('openContextMenu delegates to handler and emits context menu state', async () => {
+      const open = jest.fn().mockImplementation(() => {
+        core.store.state.isContextMenuVisible = true;
+        core.store.state.contextMenuItems = [{ label: 'menu.copy' } as any];
+        core.store.state.contextMenuX = 12;
+        core.store.state.contextMenuY = 24;
+        core.store.state.contextMenuWorldX = 120;
+        core.store.state.contextMenuWorldY = 240;
+        core.store.selectionGroup = { objects: [{ id: 'obj-1' }] };
+      });
+
+      (engine as any).contextMenuHandler = { open };
+
+      await engine.openContextMenu({ x: 120, y: 240 });
+
+      expect(open).toHaveBeenCalledWith({ x: 120, y: 240 });
+      expect((engine as any).contextMenuStateChange.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isVisible: true,
+          isObjectMenu: true,
+          position: { x: 12, y: 24 },
+          worldPosition: { x: 120, y: 240 },
+          objects: [{ id: 'obj-1' }],
+        }),
+      );
+    });
+
+    it('handleContextMenu emits context menu state after handler updates state', () => {
+      const handleContextMenu = jest.fn().mockImplementation(() => {
+        core.store.state.isContextMenuVisible = true;
+        core.store.state.contextMenuItems = [{ label: 'menu.paste' } as any];
+        core.store.state.contextMenuX = 8;
+        core.store.state.contextMenuY = 10;
+        core.store.state.contextMenuWorldX = 80;
+        core.store.state.contextMenuWorldY = 100;
+      });
+
+      (engine as any).contextMenuHandler = { handleContextMenu };
+
+      const event = {
+        cancelable: true,
+        pointerType: 'mouse',
+        preventDefault: jest.fn(),
+      } as unknown as PointerEvent;
+
+      engine.handleContextMenu(event);
+
+      expect(event.preventDefault).toHaveBeenCalledTimes(1);
+      expect(handleContextMenu).toHaveBeenCalledWith(event);
+      expect((engine as any).contextMenuStateChange.emit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          isVisible: true,
+          position: { x: 8, y: 10 },
+          worldPosition: { x: 80, y: 100 },
+        }),
+      );
     });
   });
 
