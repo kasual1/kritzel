@@ -25,7 +25,7 @@
 
 ### Used by
 
- - [kritzel-engine](../../core/kritzel-engine)
+ - [kritzel-editor](../../core/kritzel-editor)
 
 ### Depends on
 
@@ -35,7 +35,7 @@
 ```mermaid
 graph TD;
   kritzel-context-menu --> kritzel-icon
-  kritzel-engine --> kritzel-context-menu
+  kritzel-editor --> kritzel-context-menu
   style kritzel-context-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
