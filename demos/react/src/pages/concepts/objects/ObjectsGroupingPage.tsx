@@ -4,7 +4,7 @@ import {
   HTMLKritzelEditorElement,
   type KritzelBaseObject,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
   editorStyle,
@@ -45,7 +45,7 @@ export function ObjectsGroupingPage() {
           ref={editorRef}
           editorId="objects-grouping"
           theme="react-theme"
-          themes={[customReactTheme]}
+          themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}
           isMoreMenuVisible={false}

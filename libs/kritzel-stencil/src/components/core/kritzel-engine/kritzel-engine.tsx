@@ -2520,6 +2520,10 @@ export class KritzelEngine {
     this.core.store.state.viewportBoundaryRight = this.viewportBoundaryRight;
     this.core.store.state.viewportBoundaryTop = this.viewportBoundaryTop;
     this.core.store.state.viewportBoundaryBottom = this.viewportBoundaryBottom;
+    if (this.debugInfo) {
+      this.core.store.state.debugInfo = this.debugInfo;
+      this.core.assetResolver.setShowInfo(this.debugInfo.showAssetResolverInfo);
+    }
     this._isWorkspaceLoading = true;
     this.syncLoadingState();
   }

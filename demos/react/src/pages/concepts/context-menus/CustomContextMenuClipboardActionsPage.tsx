@@ -4,7 +4,7 @@ import {
   type ContextMenuItem,
   HTMLKritzelEditorElement,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
 
 export function CustomContextMenuClipboardActionsPage() {
@@ -87,7 +87,7 @@ export function CustomContextMenuClipboardActionsPage() {
         ref={editorRef}
         editorId="custom-context-menu-clipboard-actions"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={objectItems}
         isPanningEnabled={false}

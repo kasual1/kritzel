@@ -8,7 +8,7 @@ import {
   type KritzelBrushToolConfig,
   type KritzelToolbarControl,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
 
 const highlighterConfig: KritzelBrushToolConfig = {
@@ -105,7 +105,7 @@ export function ToolsRegisterPage() {
         ref={editorRef}
         editorId="tools-register"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         controls={controls}
         isPanningEnabled={false}
         isZoomingEnabled={false}

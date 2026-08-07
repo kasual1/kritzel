@@ -7,7 +7,7 @@ import {
   HTMLKritzelEditorElement,
   type KritzelToolbarControl,
 } from "kritzel-react";
-import { customReactTheme } from "../../../const/custom-react-theme";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
 
 const controls: KritzelToolbarControl[] = [
@@ -65,7 +65,7 @@ export function ToolsControlsPage() {
         ref={editorRef}
         editorId="tools-controls"
         theme="react-theme"
-        themes={[customReactTheme]}
+        themes={[reactThemeLight]}
         controls={controls}
         isPanningEnabled={false}
         isZoomingEnabled={false}

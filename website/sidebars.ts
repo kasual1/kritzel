@@ -28,12 +28,6 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'AI Integration',
-      collapsed: true,
-      items: ['ai-integration-getting-started', 'ai-integration-skills', 'ai-integration-mcp-server'],
-    },
-    {
-      type: 'category',
       label: 'Api Reference',
       collapsed: true,
       items: ['api-reference-editor', 'api-reference-engine', 'types'],

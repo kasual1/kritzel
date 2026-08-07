@@ -4,7 +4,7 @@ import {
   KritzelEditor,
   type ContextMenuItem,
 } from 'kritzel-vue'
-import { customVueTheme } from '../../../const/custom-vue-theme'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
 
 const editor = getEditorRef('editor');
@@ -96,7 +96,7 @@ async function onReady() {
       ref="editor"
       editorId="custom-context-menu-object-inspector"
       theme="vue-theme"
-      :themes="[customVueTheme]"
+      :themes="[vueThemeLight]"
       :globalContextMenuItems="globalItems"
       :objectContextMenuItems="objectItems"
       :isPanningEnabled="false"
