@@ -6,16 +6,17 @@
  * customer. The customer passes the token to the editor/engine via the
  * `licenseKey` prop to remove the watermark.
  *
- * Only `exp` (expiry) is enforced at runtime. `sub` and `plan` are carried as
- * audit metadata so a leaked token can be traced back to a customer.
+ * Runtime enforces `exp` (when present) and `allowedDomains` (required). The
+ * `plan` claim is used for issuance policy and audit metadata.
  *
  * Usage:
- *   node scripts/license/sign-license.js --sub "Acme Corp" [--plan team] \
- *        [--expires 2027-01-01 | --years 1] [--no-expiry]
+ *   node scripts/license/sign-license.js --sub "Acme Corp" [--plan basic] \
+ *        --allowed-domains "app.acme.com,admin.acme.com" \
+ *        [--allowed-domain portal.acme.com] [--expires 2027-01-01 | --years 1] [--no-expiry]
  *
  * Examples:
- *   node scripts/license/sign-license.js --sub "Acme Corp" --plan team --years 1
- *   node scripts/license/sign-license.js --sub "Acme Corp" --no-expiry
+ *   node scripts/license/sign-license.js --sub "Acme Corp" --plan basic --allowed-domains "app.acme.com"
+ *   node scripts/license/sign-license.js --sub "Acme Corp" --plan enterprise --allowed-domain app.acme.com --allowed-domain admin.acme.com --no-expiry
  */
 
 const crypto = require('crypto');
@@ -26,6 +27,11 @@ const { signToken, verifyToken } = require('./token');
 const KEYS_DIR = path.join(__dirname, 'keys');
 const PRIVATE_KEY_PATH = path.join(KEYS_DIR, 'private.pem');
 const PUBLIC_KEY_PATH = path.join(KEYS_DIR, 'public.b64');
+const PLAN_DOMAIN_CAPS = {
+  basic: 3,
+  pro: 5,
+  enterprise: 15,
+};
 
 /** Minimal `--flag value` / `--bool` parser; no dependencies. */
 function parseArgs(argv) {
@@ -38,11 +44,75 @@ function parseArgs(argv) {
     if (next === undefined || next.startsWith('--')) {
       args[key] = true;
     } else {
-      args[key] = next;
+      if (args[key] === undefined) {
+        args[key] = next;
+      } else if (Array.isArray(args[key])) {
+        args[key].push(next);
+      } else {
+        args[key] = [args[key], next];
+      }
       i++;
     }
   }
   return args;
+}
+
+function normalizeDomain(value) {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim().toLowerCase();
+  if (!trimmed) {
+    return null;
+  }
+
+  const withoutTrailingDot = trimmed.endsWith('.') ? trimmed.slice(0, -1) : trimmed;
+  if (!withoutTrailingDot) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(`https://${withoutTrailingDot}`);
+    if (parsed.hostname !== withoutTrailingDot) {
+      return null;
+    }
+    return parsed.hostname.toLowerCase();
+  } catch {
+    return null;
+  }
+}
+
+function collectListArg(value) {
+  if (value === undefined || value === null || value === true) {
+    return [];
+  }
+  const rawValues = Array.isArray(value) ? value : [value];
+  const items = [];
+  for (const raw of rawValues) {
+    if (typeof raw !== 'string') {
+      continue;
+    }
+    for (const part of raw.split(',')) {
+      const trimmed = part.trim();
+      if (trimmed) {
+        items.push(trimmed);
+      }
+    }
+  }
+  return items;
+}
+
+function normalizeDomainsOrFail(values) {
+  const normalized = new Set();
+  for (const value of values) {
+    const domain = normalizeDomain(value);
+    if (!domain) {
+      fail(`Invalid domain "${value}". Provide exact hostnames like app.acme.com.`);
+    }
+    normalized.add(domain);
+  }
+  return Array.from(normalized);
 }
 
 function fail(message) {
@@ -62,7 +132,23 @@ function main() {
     fail('Missing required --sub "<customer name or id>".');
   }
 
-  const plan = typeof args.plan === 'string' ? args.plan.trim() : 'developer';
+  const plan = typeof args.plan === 'string' ? args.plan.trim().toLowerCase() : 'basic';
+  const domainCap = PLAN_DOMAIN_CAPS[plan];
+  if (!domainCap) {
+    fail(`Unknown --plan "${plan}". Allowed values: ${Object.keys(PLAN_DOMAIN_CAPS).join(', ')}.`);
+  }
+
+  const requestedDomains = [
+    ...collectListArg(args['allowed-domains']),
+    ...collectListArg(args['allowed-domain']),
+  ];
+  const allowedDomains = normalizeDomainsOrFail(requestedDomains);
+  if (allowedDomains.length === 0) {
+    fail('Missing required --allowed-domains/--allowed-domain. Strict mode requires at least one domain.');
+  }
+  if (allowedDomains.length > domainCap) {
+    fail(`Plan "${plan}" allows at most ${domainCap} domains, received ${allowedDomains.length}.`);
+  }
 
   // Resolve expiry: --no-expiry > --expires <date> > --years <n> > default 1 year.
   const nowSeconds = Math.floor(Date.now() / 1000);
@@ -83,7 +169,7 @@ function main() {
     fail('The requested expiry is in the past; refusing to sign an already-expired license.');
   }
 
-  const payload = { sub, plan, iat: nowSeconds };
+  const payload = { sub, plan, iat: nowSeconds, allowedDomains };
   if (exp !== undefined) payload.exp = exp;
 
   const privateKey = crypto.createPrivateKey(fs.readFileSync(PRIVATE_KEY_PATH, 'utf-8'));
@@ -104,6 +190,7 @@ function main() {
   console.log('Claims:');
   console.log(`   sub:  ${payload.sub}`);
   console.log(`   plan: ${payload.plan}`);
+  console.log(`   domains (${allowedDomains.length}/${domainCap}): ${allowedDomains.join(', ')}`);
   console.log(`   iat:  ${new Date(payload.iat * 1000).toISOString()}`);
   console.log(`   exp:  ${exp === undefined ? '(perpetual)' : new Date(exp * 1000).toISOString()}\n`);
   console.log('Send this license key to the customer:\n');

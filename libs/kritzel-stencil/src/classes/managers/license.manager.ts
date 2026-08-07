@@ -7,16 +7,18 @@ const MIN_REVALIDATION_DELAY_MS = 30_000;
 /** Maximum delay (ms) between periodic license re-validations. */
 const MAX_REVALIDATION_DELAY_MS = 60_000;
 
-/** Decoded license claims. Only `exp` is enforced; the rest is audit metadata. */
+/** Decoded license claims. `exp` and `allowedDomains` are enforced at runtime. */
 interface LicenseClaims {
   /** Customer id / name. */
   sub?: string;
-  /** Plan tier (developer | team | enterprise). */
+  /** Plan tier (basic | pro | enterprise). */
   plan?: string;
   /** Issued-at, epoch seconds. */
   iat?: number;
   /** Expiry, epoch seconds. Absent means the license is perpetual. */
   exp?: number;
+  /** Exact hostnames where this license is valid (strict mode, required). */
+  allowedDomains?: string[];
 }
 
 /** Result of the synchronous structural pre-check of a token. */
@@ -273,7 +275,71 @@ export class KritzelLicenseManager {
       return { status: 'rejected' }; // Cleanly expired.
     }
 
+    const allowedDomains = this.normalizeAllowedDomains(claims.allowedDomains);
+    if (allowedDomains === null || allowedDomains.length === 0) {
+      return { status: 'rejected' };
+    }
+
+    const currentHostname = this.getCurrentHostname();
+    if (!currentHostname || !allowedDomains.includes(currentHostname)) {
+      return { status: 'rejected' };
+    }
+
     return { status: 'pass', payloadSegment, signatureSegment, claims };
+  }
+
+  /** Returns the normalized current hostname, or null when unavailable/invalid. */
+  private getCurrentHostname(): string | null {
+    const hostname = globalThis.location?.hostname;
+    if (typeof hostname !== 'string') {
+      return null;
+    }
+    return this.normalizeDomain(hostname);
+  }
+
+  /** Normalizes and validates the allowed domains claim. */
+  private normalizeAllowedDomains(domains: unknown): string[] | null {
+    if (!Array.isArray(domains)) {
+      return null;
+    }
+
+    const normalized = new Set<string>();
+    for (const entry of domains) {
+      if (typeof entry !== 'string') {
+        return null;
+      }
+      const domain = this.normalizeDomain(entry);
+      if (!domain) {
+        return null;
+      }
+      normalized.add(domain);
+    }
+
+    return Array.from(normalized);
+  }
+
+  /** Normalizes a domain and rejects malformed hostnames. */
+  private normalizeDomain(value: string): string | null {
+    const trimmed = value.trim().toLowerCase();
+    if (trimmed.length === 0) {
+      return null;
+    }
+
+    const withoutTrailingDot = trimmed.endsWith('.') ? trimmed.slice(0, -1) : trimmed;
+    if (withoutTrailingDot.length === 0) {
+      return null;
+    }
+
+    try {
+      const parsed = new URL(`https://${withoutTrailingDot}`);
+      const normalizedHostname = parsed.hostname.toLowerCase();
+      if (normalizedHostname !== withoutTrailingDot) {
+        return null;
+      }
+      return normalizedHostname;
+    } catch {
+      return null;
+    }
   }
 
   /**

@@ -44,7 +44,7 @@ function signToken(payload: Record<string, unknown>): string {
 
 /** A structurally valid, signed, perpetual token. */
 function validToken(overrides: Record<string, unknown> = {}): string {
-  return signToken({ sub: 'Acme Corp', plan: 'team', iat: Math.floor(Date.now() / 1000), ...overrides });
+  return signToken({ sub: 'Acme Corp', plan: 'pro', iat: Math.floor(Date.now() / 1000), allowedDomains: ['app.acme.com'], ...overrides });
 }
 
 /**
@@ -65,9 +65,15 @@ async function waitForLicensed(manager: KritzelLicenseManager, expected: boolean
 describe('KritzelLicenseManager', () => {
   let manager: KritzelLicenseManager;
   let mockCore: any;
+  const originalLocation = globalThis.location;
 
   beforeEach(() => {
     jest.clearAllMocks();
+
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: { hostname: 'app.acme.com' },
+    });
 
     mockCore = {
       rerender: jest.fn(),
@@ -78,6 +84,10 @@ describe('KritzelLicenseManager', () => {
 
   afterEach(() => {
     manager.destroy();
+    Object.defineProperty(globalThis, 'location', {
+      configurable: true,
+      value: originalLocation,
+    });
     jest.clearAllMocks();
   });
 
@@ -131,6 +141,34 @@ describe('KritzelLicenseManager', () => {
     it('should remain unlicensed for an expired token without running crypto', () => {
       // exp in the past -> the synchronous pre-check rejects it outright.
       expect(manager.validate(validToken({ exp: Math.floor(Date.now() / 1000) - 60 }))).toBe(false);
+      expect(manager.isLicensed).toBe(false);
+    });
+
+    it('should remain unlicensed when allowedDomains is missing (strict mode)', () => {
+      expect(manager.validate(signToken({ sub: 'Acme Corp', plan: 'pro', iat: Math.floor(Date.now() / 1000) }))).toBe(false);
+      expect(manager.isLicensed).toBe(false);
+    });
+
+    it('should remain unlicensed when allowedDomains is empty (strict mode)', () => {
+      expect(manager.validate(validToken({ allowedDomains: [] }))).toBe(false);
+      expect(manager.isLicensed).toBe(false);
+    });
+
+    it('should remain unlicensed when hostname does not match allowedDomains', () => {
+      expect(manager.validate(validToken({ allowedDomains: ['docs.acme.com'] }))).toBe(false);
+      expect(manager.isLicensed).toBe(false);
+    });
+
+    it('should accept normalized allowedDomains entries', async () => {
+      manager.validate(validToken({ allowedDomains: [' App.Acme.Com. ', 'app.acme.com'] }));
+      await waitForLicensed(manager, true);
+      expect(manager.isLicensed).toBe(true);
+    });
+
+    it('should reject malformed allowedDomains entries', () => {
+      expect(manager.validate(validToken({ allowedDomains: [42] }))).toBe(false);
+      expect(manager.validate(validToken({ allowedDomains: ['app.acme.com:443'] }))).toBe(false);
+      expect(manager.validate(validToken({ allowedDomains: [''] }))).toBe(false);
       expect(manager.isLicensed).toBe(false);
     });
 
