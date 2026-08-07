@@ -397,6 +397,9 @@ describe('KritzelSvgExportHelper', () => {
         // font-size is now in px (pt converted: 16pt * 4/3 / scale=1 ≈ 21.3333px)
         expect(result).toContain('font-size: 21.3333px');
         expect(result).toContain('color: #333333');
+        // margin and padding must be zero so browsers don't add default spacing
+        expect(result).toContain('margin: 0');
+        expect(result).toContain('padding: 0');
         // transform: scale(...) should no longer appear on the inner div
         expect(result).not.toContain('transform: scale(');
         // overflow: hidden must not be present so text is never clipped
