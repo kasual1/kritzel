@@ -67,6 +67,7 @@ export * from './interfaces/login-config.interface';
 export * from './interfaces/document-metadata.interface';
 export * from './interfaces/anchor.interface';
 export * from './interfaces/viewport-state.interface';
+export * from './interfaces/context-menu-state.interface';
 export * from './interfaces/user.interface';
 export * from './interfaces/theme.interface';
 export * from './interfaces/localization.interface';

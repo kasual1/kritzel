@@ -1,5 +1,4 @@
 import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
-import { KritzelContextMenu } from '../../components/ui/kritzel-context-menu/kritzel-context-menu';
 import { DEFAULT_ENGINE_CONFIG } from '../../configs/default-engine-config';
 import { AlignmentHelper } from '../../helpers/alignment.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -1057,13 +1056,13 @@ export class KritzelCore {
 
   /**
    * Selects all objects in the workspace.
-   * Excludes selection-related and context menu objects.
+   * Excludes selection-related objects.
    * Switches to selection tool.
    */
   selectAllObjects() {
     const allObjects = this._store.objects
       .allObjects()
-      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
+      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
 
     if (allObjects.length > 0) {
       const selectionGroup = KritzelSelectionGroup.create(this);
@@ -1089,7 +1088,7 @@ export class KritzelCore {
 
   /**
    * Selects all objects currently visible in the viewport.
-   * Excludes selection-related and context menu objects.
+   * Excludes selection-related objects.
    * Switches to selection tool.
    */
   selectAllObjectsInViewport() {
@@ -1105,7 +1104,7 @@ export class KritzelCore {
     const objectsInViewport = this._store.objects
       .query(viewportBounds)
       .filter(o => o.isInViewport())
-      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox) && !(o instanceof KritzelContextMenu));
+      .filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
 
     if (objectsInViewport.length > 0) {
       const selectionGroup = KritzelSelectionGroup.create(this);
