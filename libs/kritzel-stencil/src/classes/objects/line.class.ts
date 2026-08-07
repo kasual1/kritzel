@@ -919,7 +919,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   getArrowFill(end: 'start' | 'end'): string {
     const config = end === 'start' ? this.arrows?.start : this.arrows?.end;
     const color = config?.fill ?? this.stroke;
-    return KritzelColorHelper.resolveThemeColor(color);
+    return KritzelColorHelper.resolveThemeColor(color, this._core?.themeManager?.currentTheme);
   }
 
   /**
