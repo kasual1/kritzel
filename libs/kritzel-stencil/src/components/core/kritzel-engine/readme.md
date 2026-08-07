@@ -45,6 +45,7 @@
 | `activeToolChange`        | Emitted when the active drawing tool changes.                                                              | `CustomEvent<KritzelBaseTool>`                                |
 | `activeWorkspaceChange`   | Emitted when the active workspace changes (e.g., after import).                                            | `CustomEvent<KritzelWorkspace>`                               |
 | `awarenessChange`         | Emitted when the awareness state changes (remote user cursors, presence).                                  | `CustomEvent<Map<number, Record<string, any>>>`               |
+| `contextMenuStateChange`  | Emitted when context-menu visibility, items, or position changes.                                          | `CustomEvent<KritzelContextMenuState>`                        |
 | `isEngineReady`           | Emitted when the engine has fully initialized and is ready for interaction.                                | `CustomEvent<KritzelEngineState>`                             |
 | `loadingChange`           | Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes. | `CustomEvent<boolean>`                                        |
 | `longpress`               | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                      | `CustomEvent<PointerEvent>`                                   |
@@ -1203,7 +1204,6 @@ Type: `Promise<void>`
 - [kritzel-loading-overlay](../../ui/kritzel-loading-overlay)
 - [kritzel-sync-indicator](../../shared/kritzel-sync-indicator)
 - [kritzel-icon](../../shared/kritzel-icon)
-- [kritzel-context-menu](../../ui/kritzel-context-menu)
 - [kritzel-awareness-cursors](../kritzel-awareness-cursors)
 - [kritzel-cursor-trail](../kritzel-cursor-trail)
 - [kritzel-watermark](../kritzel-watermark)
@@ -1214,11 +1214,9 @@ graph TD;
   kritzel-engine --> kritzel-loading-overlay
   kritzel-engine --> kritzel-sync-indicator
   kritzel-engine --> kritzel-icon
-  kritzel-engine --> kritzel-context-menu
   kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-cursor-trail
   kritzel-engine --> kritzel-watermark
-  kritzel-context-menu --> kritzel-icon
   kritzel-editor --> kritzel-engine
   style kritzel-engine fill:#f9f,stroke:#333,stroke-width:4px
 ```

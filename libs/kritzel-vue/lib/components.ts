@@ -194,6 +194,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'viewportChange',
   'awarenessChange',
   'notificationsChange',
+  'contextMenuStateChange',
   'loadingChange',
   'syncingChange'
 ], [
@@ -212,6 +213,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'viewportChange',
   'awarenessChange',
   'notificationsChange',
+  'contextMenuStateChange',
   'loadingChange',
   'syncingChange'
 ]);
