@@ -45,7 +45,7 @@ export function ToolsChangePage() {
       <KritzelEditor
         ref={editorRef}
         editorId="tools-change"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}

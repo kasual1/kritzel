@@ -16,7 +16,7 @@ import {
 import { ref } from 'vue'
 
 const editor = getEditorRef('editor');
-const activeName = ref('vue-theme')
+const activeName = ref('light')
 
 async function onReady() {
   if (editor.value) {
@@ -28,8 +28,8 @@ async function onReady() {
 <template>
   <div :style="hostStyle">
     <div :style="toolbarStyle">
-      <button :style="buttonStyle(activeName === 'vue-theme')" @click="activeName = 'vue-theme'">Light</button>
-      <button :style="buttonStyle(activeName === 'vue-theme-dark')" @click="activeName = 'vue-theme-dark'">Dark</button>
+      <button :style="buttonStyle(activeName === 'light')" @click="activeName = 'light'">Light</button>
+      <button :style="buttonStyle(activeName === 'dark')" @click="activeName = 'dark'">Dark</button>
     </div>
     <KritzelEditor
       ref="editor"

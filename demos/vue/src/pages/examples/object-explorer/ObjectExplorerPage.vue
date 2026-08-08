@@ -365,7 +365,7 @@ async function seedObjects() {
       <KritzelEditor
         ref="editor"
         editorId="object-explorer"
-        theme="vue-theme"
+        theme="light"
         :themes="[vueThemeLight]"
         :syncConfig="syncConfig"
         :isMoreMenuVisible="false"

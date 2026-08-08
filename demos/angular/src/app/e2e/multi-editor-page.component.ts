@@ -10,11 +10,11 @@ import { angularThemeDark } from '../const/angular-theme-dark';
   template: `
     <div class="multi-editor-host">
       <div class="editor-container editor-container-first">
-        <kritzel-editor id="editor-1" editorId="e2e-editor-1" class="editor" [theme]="'angular-theme'" [themes]="themes"></kritzel-editor>
+        <kritzel-editor id="editor-1" editorId="e2e-editor-1" class="editor" [theme]="'light'" [themes]="themes"></kritzel-editor>
       </div>
 
       <div class="editor-container editor-container-second">
-        <kritzel-editor id="editor-2" editorId="e2e-editor-2" class="editor" [theme]="'angular-theme'" [themes]="themes"></kritzel-editor>
+        <kritzel-editor id="editor-2" editorId="e2e-editor-2" class="editor" [theme]="'light'" [themes]="themes"></kritzel-editor>
       </div>
     </div>
   `,

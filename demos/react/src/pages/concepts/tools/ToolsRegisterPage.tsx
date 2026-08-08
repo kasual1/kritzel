@@ -104,7 +104,7 @@ export function ToolsRegisterPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="tools-register"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         controls={controls}
         isPanningEnabled={false}

@@ -18,7 +18,7 @@ import { angularThemeDark } from '../const/angular-theme-dark';
     >
       <kritzel-editor
         style="width: 100%; height: 100%;"
-        [theme]="'angular-theme'"
+        [theme]="'light'"
         [themes]="themes"
       ></kritzel-editor>
     </div>

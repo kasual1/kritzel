@@ -6,7 +6,7 @@ export function EditorPage() {
 
   return (
     <div className="app">
-      <KritzelEditor theme="react-theme" themes={[reactThemeLight, reactThemeDark]} />
+      <KritzelEditor theme="light" themes={[reactThemeLight, reactThemeDark]} />
     </div>
   );
 }

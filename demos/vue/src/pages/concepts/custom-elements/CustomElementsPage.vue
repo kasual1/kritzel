@@ -89,7 +89,7 @@ async function onReady() {
     <KritzelEditor
       ref="customElementsEditor"
       editorId="vue-custom-elements"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :style="editorStyle"
       @isReady="onReady"

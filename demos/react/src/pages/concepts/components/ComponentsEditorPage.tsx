@@ -13,7 +13,7 @@ export function ComponentsEditorPage() {
         editorId="components-editor"
         isPanningEnabled={false}
         isZoomingEnabled={false}
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         onIsReady={() => {
           if (editorRef.current) {

@@ -53,7 +53,7 @@ interface Slide {
     <div class="editor-container">
       <kritzel-editor
         editorId="slideshow-presentation"
-        [theme]="'angular-theme'"
+        [theme]="'light'"
         [themes]="themes"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"

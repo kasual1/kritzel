@@ -58,7 +58,7 @@ async function onReady() {
     <KritzelEditor
       ref="editor"
       editorId="viewport-coordinates"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"

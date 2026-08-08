@@ -6,7 +6,7 @@ import { vueThemeDark } from '../../const/vue-theme-dark'
 
 <template>
   <main>
-    <KritzelEditor theme="vue-theme" :themes="[vueThemeLight, vueThemeDark]" />
+    <KritzelEditor theme="light" :themes="[vueThemeLight, vueThemeDark]" />
   </main>
 </template>
 

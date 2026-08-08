@@ -44,7 +44,7 @@ import { createSeedObjects } from '../const/seed-objects';
       editorId="basic-usage"
       #editor
       [syncConfig]="syncConfig"
-      [theme]="'angular-theme'"
+      [theme]="'light'"
       [themes]="themes"
       [loginConfig]="undefined"
       [isPanningEnabled]="false"
