@@ -145,6 +145,60 @@ async function waitForTextObjectLayoutToStabilize(
   }, objectId);
 }
 
+async function generateDeterministicImageDataUri(
+  page: import('@playwright/test').Page,
+  width = 160,
+  height = 110,
+): Promise<string> {
+  return page.evaluate(({ w, h }) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Failed to create 2D context');
+    }
+
+    const gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#1e40af');
+    gradient.addColorStop(1, '#22c55e');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('IMG', w / 2, h / 2);
+
+    return canvas.toDataURL('image/png');
+  }, { w: width, h: height });
+}
+
+async function waitForImageObjectToBeReady(
+  page: import('@playwright/test').Page,
+  objectId: string,
+): Promise<void> {
+  await expect.poll(async () => {
+    return page.evaluate(async id => {
+      const editor = document.querySelector('kritzel-editor') as any;
+      if (!editor) {
+        return false;
+      }
+
+      const object = await editor.getObjectById(id);
+      if (!object) {
+        return false;
+      }
+
+      const width = Number(object.width ?? 0);
+      const height = Number(object.height ?? 0);
+      const loadState = String(object.loadState ?? 'idle');
+      return width > 0 && height > 0 && (loadState === 'ready' || loadState === 'idle');
+    }, objectId);
+  }).toBe(true);
+}
+
 async function getRasterSafeSelectedTextLineCount(page: import('@playwright/test').Page): Promise<number> {
   return page.evaluate(async () => {
     const engine = document.querySelector('kritzel-engine') as any;
@@ -465,6 +519,72 @@ test.describe('Context Menu', () => {
 
       const downloadedSvg = await readFile(downloadPath!, 'utf8');
       expect(normalizeExportedSvg(downloadedSvg)).toMatchSnapshot('context-menu-export-single-text-multiline.svg');
+    });
+
+    test('exports a single image object as PNG via context menu and matches baseline snapshot', async ({
+      editorPage,
+    }) => {
+      const imageSrc = await generateDeterministicImageDataUri(editorPage.page);
+
+      await editorPage.prepareWaitForObjectsAdded();
+      const image = await editorPage.addImage({
+        src: imageSrc,
+        translateX: -80,
+        translateY: -60,
+      });
+      await editorPage.waitForObjectsAdded();
+
+      await waitForImageObjectToBeReady(editorPage.page, String(image.id));
+      await expect.poll(async () => editorPage.getObjectsTotalCount()).toBe(1);
+
+      const { pageX: selectX, pageY: selectY } = await editorPage.worldToPage(0, -5);
+      await editorPage.page.mouse.click(selectX, selectY);
+      await expect.poll(async () => (await editorPage.getSelectedObjects()).length).toBe(1);
+
+      const { pageX, pageY } = await editorPage.worldToPage(0, -5);
+      await openContextMenuAt(editorPage.page, pageX, pageY);
+
+      const download = await exportSelectedObjectFromContextMenu(editorPage.page, 'png');
+      expect(download.suggestedFilename()).toMatch(/\.png$/i);
+
+      const downloadPath = await download.path();
+      expect(downloadPath).not.toBeNull();
+
+      const downloadedPng = await readFile(downloadPath!);
+      expect(downloadedPng).toMatchSnapshot('context-menu-export-single-image.png');
+    });
+
+    test('exports a single image object as SVG via context menu and matches baseline snapshot', async ({
+      editorPage,
+    }) => {
+      const imageSrc = await generateDeterministicImageDataUri(editorPage.page);
+
+      await editorPage.prepareWaitForObjectsAdded();
+      const image = await editorPage.addImage({
+        src: imageSrc,
+        translateX: -80,
+        translateY: -60,
+      });
+      await editorPage.waitForObjectsAdded();
+
+      await waitForImageObjectToBeReady(editorPage.page, String(image.id));
+      await expect.poll(async () => editorPage.getObjectsTotalCount()).toBe(1);
+
+      const { pageX: selectX, pageY: selectY } = await editorPage.worldToPage(0, -5);
+      await editorPage.page.mouse.click(selectX, selectY);
+      await expect.poll(async () => (await editorPage.getSelectedObjects()).length).toBe(1);
+
+      const { pageX, pageY } = await editorPage.worldToPage(0, -5);
+      await openContextMenuAt(editorPage.page, pageX, pageY);
+
+      const download = await exportSelectedObjectFromContextMenu(editorPage.page, 'svg');
+      expect(download.suggestedFilename()).toMatch(/\.svg$/i);
+
+      const downloadPath = await download.path();
+      expect(downloadPath).not.toBeNull();
+
+      const downloadedSvg = await readFile(downloadPath!, 'utf8');
+      expect(normalizeExportedSvg(downloadedSvg)).toMatchSnapshot('context-menu-export-single-image.svg');
     });
   });
 
