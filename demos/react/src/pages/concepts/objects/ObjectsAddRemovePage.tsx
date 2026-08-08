@@ -6,6 +6,7 @@ import {
   ShapeType,
   HTMLKritzelEditorElement,
   type KritzelBaseObject,
+  KritzelText,
 } from "kritzel-react";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
@@ -82,6 +83,18 @@ export function ObjectsAddRemovePage() {
     await refreshObjects();
   }
 
+  async function addText() {
+    await editorRef.current?.addObject(
+      new KritzelText({
+        text: 'Line 1\nLine 2\nLine 3',
+        translateX: randomOffset(),
+        translateY: randomOffset(),
+        fontSize: 28,
+      }),
+    );
+    await refreshObjects();
+  }
+
   async function removeLastObject() {
     const all = (await editorRef.current?.getAllObjects()) ?? [];
     if (all.length > 0) {
@@ -103,6 +116,7 @@ export function ObjectsAddRemovePage() {
         <button style={buttonStyle(false)} onClick={() => void addRectangle()}>Add Rectangle</button>
         <button style={buttonStyle(false)} onClick={() => void addEllipse()}>Add Ellipse</button>
         <button style={buttonStyle(false)} onClick={() => void addPath()}>Add Path</button>
+        <button style={buttonStyle(false)} onClick={() => void addText()}>Add Text</button>
         <button style={buttonStyle(false)} onClick={() => void removeLastObject()} disabled={objects.length === 0}>Remove Last</button>
         <span style={{ marginLeft: "auto", fontSize: "13px" }}>Objects: {objects.length}</span>
       </div>
