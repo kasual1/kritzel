@@ -1,4 +1,5 @@
 import { test, expect } from '../fixtures/editor.fixture';
+import { readFile } from 'node:fs/promises';
 
 /**
  * Wait for the context menu to become visible in the engine's shadow DOM and for
@@ -88,6 +89,159 @@ async function clickFirstEnabledContextMenuItem(page: import('@playwright/test')
 async function waitForContextMenuToClose(page: import('@playwright/test').Page, timeout = 4_000): Promise<void> {
   const menuHost = page.locator('kritzel-editor kritzel-context-menu');
   await expect(menuHost).toHaveCount(0, { timeout });
+}
+
+async function waitForTextObjectLayoutToStabilize(
+  page: import('@playwright/test').Page,
+  objectId: string,
+): Promise<void> {
+  await page.evaluate(async id => {
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+
+    const editor = document.querySelector('kritzel-editor') as any;
+    if (!editor) {
+      throw new Error('kritzel-editor not found');
+    }
+
+    const readDimensions = async () => {
+      const obj = await editor.getObjectById(id);
+      if (!obj) {
+        return null;
+      }
+
+      return {
+        width: Number(obj.width ?? 0),
+        height: Number(obj.height ?? 0),
+      };
+    };
+
+    let stableSamples = 0;
+    let last = await readDimensions();
+
+    for (let i = 0; i < 20; i++) {
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      const current = await readDimensions();
+      if (!current || !last) {
+        continue;
+      }
+
+      const widthStable = Math.abs(current.width - last.width) < 0.5;
+      const heightStable = Math.abs(current.height - last.height) < 0.5;
+
+      if (widthStable && heightStable) {
+        stableSamples += 1;
+      } else {
+        stableSamples = 0;
+      }
+
+      last = current;
+
+      if (stableSamples >= 2) {
+        return;
+      }
+    }
+  }, objectId);
+}
+
+async function generateDeterministicImageDataUri(
+  page: import('@playwright/test').Page,
+  width = 160,
+  height = 110,
+): Promise<string> {
+  return page.evaluate(({ w, h }) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Failed to create 2D context');
+    }
+
+    const gradient = ctx.createLinearGradient(0, 0, w, h);
+    gradient.addColorStop(0, '#1e40af');
+    gradient.addColorStop(1, '#22c55e');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, w, h);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 20px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('IMG', w / 2, h / 2);
+
+    return canvas.toDataURL('image/png');
+  }, { w: width, h: height });
+}
+
+async function waitForImageObjectToBeReady(
+  page: import('@playwright/test').Page,
+  objectId: string,
+): Promise<void> {
+  await expect.poll(async () => {
+    return page.evaluate(async id => {
+      const editor = document.querySelector('kritzel-editor') as any;
+      if (!editor) {
+        return false;
+      }
+
+      const object = await editor.getObjectById(id);
+      if (!object) {
+        return false;
+      }
+
+      const width = Number(object.width ?? 0);
+      const height = Number(object.height ?? 0);
+      const loadState = String(object.loadState ?? 'idle');
+      return width > 0 && height > 0 && (loadState === 'ready' || loadState === 'idle');
+    }, objectId);
+  }).toBe(true);
+}
+
+async function getRasterSafeSelectedTextLineCount(page: import('@playwright/test').Page): Promise<number> {
+  return page.evaluate(async () => {
+    const engine = document.querySelector('kritzel-engine') as any;
+    if (!engine || typeof engine.getSelectedObjectsAsSvgString !== 'function') {
+      throw new Error('kritzel-engine export API not available');
+    }
+
+    const svg = await engine.getSelectedObjectsAsSvgString({ rasterSafeForCanvas: true });
+    if (!svg) {
+      return 0;
+    }
+
+    return (svg.match(/<tspan\b/g) ?? []).length;
+  });
+}
+
+async function exportSelectedObjectFromContextMenu(
+  page: import('@playwright/test').Page,
+  format: 'png' | 'svg',
+) {
+  const menuHost = page.locator('kritzel-editor kritzel-context-menu');
+  const exportItem = menuHost.getByRole('button', { name: /^Export$/i });
+  await exportItem.hover();
+
+  const exportOption = menuHost.getByRole('button', {
+    name: format === 'png' ? /^Export as PNG$/i : /^Export as SVG$/i,
+  });
+  await expect(exportOption).toBeVisible({ timeout: 4_000 });
+
+  const downloadPromise = page.waitForEvent('download');
+  await exportOption.click();
+  return downloadPromise;
+}
+
+function normalizeExportedSvg(svg: string): string {
+  return svg
+    .replace(/\r\n/g, '\n')
+    .replace(/\sid="[^"]*"/g, '')
+    .replace(/\sstyle="[^"]*"/g, '')
+    .replace(/\s(?:aria-hidden|contenteditable|spellcheck|dir)="[^"]*"/g, '')
+    .replace(/\s(?:inputmode|enterkeyhint|autocapitalize|autocorrect)="[^"]*"/g, '')
+    .replace(/>\s+</g, '><')
+    .trim();
 }
 
 test.describe('Context Menu', () => {
@@ -299,6 +453,138 @@ test.describe('Context Menu', () => {
       expect(rect!.y + rect!.height).toBeLessThanOrEqual(vpHeight + 1);
 
       await expect(editorPage.page.locator('kritzel-engine')).toHaveScreenshot();
+    });
+
+    test('exports a single multi-line text object as PNG via context menu and matches baseline snapshot', async ({
+      editorPage,
+    }) => {
+      await editorPage.prepareWaitForObjectsAdded();
+      const text = await editorPage.addText({
+        text: 'Line 1\nLine 2\nLine 3',
+        translateX: -120,
+        translateY: -80,
+        fontSize: 28,
+        fontColor: { light: '#1d4ed8', dark: '#93c5fd' },
+      });
+      await editorPage.waitForObjectsAdded();
+      await waitForTextObjectLayoutToStabilize(editorPage.page, String(text.id));
+
+      await expect.poll(async () => editorPage.getObjectsTotalCount()).toBe(1);
+      const { pageX: selectX, pageY: selectY } = await editorPage.worldToPage(-80, -60);
+      await editorPage.page.mouse.click(selectX, selectY);
+      await expect.poll(async () => (await editorPage.getSelectedObjects()).length).toBe(1);
+      await expect.poll(async () => getRasterSafeSelectedTextLineCount(editorPage.page)).toBe(3);
+
+      const { pageX, pageY } = await editorPage.worldToPage(-80, -60);
+      await openContextMenuAt(editorPage.page, pageX, pageY);
+
+      const download = await exportSelectedObjectFromContextMenu(editorPage.page, 'png');
+      expect(download.suggestedFilename()).toMatch(/\.png$/i);
+
+      const downloadPath = await download.path();
+      expect(downloadPath).not.toBeNull();
+
+      const downloadedPng = await readFile(downloadPath!);
+      expect(downloadedPng).toMatchSnapshot('context-menu-export-single-text-multiline.png');
+    });
+
+    test('exports a single multi-line text object as SVG via context menu and matches baseline snapshot', async ({
+      editorPage,
+    }) => {
+      await editorPage.prepareWaitForObjectsAdded();
+      const text = await editorPage.addText({
+        text: 'North\nEast\nSouth\nWest',
+        translateX: -140,
+        translateY: -90,
+        fontSize: 24,
+        fontColor: { light: '#7c2d12', dark: '#fdba74' },
+      });
+      await editorPage.waitForObjectsAdded();
+      await waitForTextObjectLayoutToStabilize(editorPage.page, String(text.id));
+
+      await expect.poll(async () => editorPage.getObjectsTotalCount()).toBe(1);
+      const { pageX: selectX, pageY: selectY } = await editorPage.worldToPage(-90, -70);
+      await editorPage.page.mouse.click(selectX, selectY);
+      await expect.poll(async () => (await editorPage.getSelectedObjects()).length).toBe(1);
+      await expect.poll(async () => getRasterSafeSelectedTextLineCount(editorPage.page)).toBe(4);
+
+      const { pageX, pageY } = await editorPage.worldToPage(-90, -70);
+      await openContextMenuAt(editorPage.page, pageX, pageY);
+
+      const download = await exportSelectedObjectFromContextMenu(editorPage.page, 'svg');
+      expect(download.suggestedFilename()).toMatch(/\.svg$/i);
+
+      const downloadPath = await download.path();
+      expect(downloadPath).not.toBeNull();
+
+      const downloadedSvg = await readFile(downloadPath!, 'utf8');
+      expect(normalizeExportedSvg(downloadedSvg)).toMatchSnapshot('context-menu-export-single-text-multiline.svg');
+    });
+
+    test('exports a single image object as PNG via context menu and matches baseline snapshot', async ({
+      editorPage,
+    }) => {
+      const imageSrc = await generateDeterministicImageDataUri(editorPage.page);
+
+      await editorPage.prepareWaitForObjectsAdded();
+      const image = await editorPage.addImage({
+        src: imageSrc,
+        translateX: -80,
+        translateY: -60,
+      });
+      await editorPage.waitForObjectsAdded();
+
+      await waitForImageObjectToBeReady(editorPage.page, String(image.id));
+      await expect.poll(async () => editorPage.getObjectsTotalCount()).toBe(1);
+
+      const { pageX: selectX, pageY: selectY } = await editorPage.worldToPage(0, -5);
+      await editorPage.page.mouse.click(selectX, selectY);
+      await expect.poll(async () => (await editorPage.getSelectedObjects()).length).toBe(1);
+
+      const { pageX, pageY } = await editorPage.worldToPage(0, -5);
+      await openContextMenuAt(editorPage.page, pageX, pageY);
+
+      const download = await exportSelectedObjectFromContextMenu(editorPage.page, 'png');
+      expect(download.suggestedFilename()).toMatch(/\.png$/i);
+
+      const downloadPath = await download.path();
+      expect(downloadPath).not.toBeNull();
+
+      const downloadedPng = await readFile(downloadPath!);
+      expect(downloadedPng).toMatchSnapshot('context-menu-export-single-image.png');
+    });
+
+    test('exports a single image object as SVG via context menu and matches baseline snapshot', async ({
+      editorPage,
+    }) => {
+      const imageSrc = await generateDeterministicImageDataUri(editorPage.page);
+
+      await editorPage.prepareWaitForObjectsAdded();
+      const image = await editorPage.addImage({
+        src: imageSrc,
+        translateX: -80,
+        translateY: -60,
+      });
+      await editorPage.waitForObjectsAdded();
+
+      await waitForImageObjectToBeReady(editorPage.page, String(image.id));
+      await expect.poll(async () => editorPage.getObjectsTotalCount()).toBe(1);
+
+      const { pageX: selectX, pageY: selectY } = await editorPage.worldToPage(0, -5);
+      await editorPage.page.mouse.click(selectX, selectY);
+      await expect.poll(async () => (await editorPage.getSelectedObjects()).length).toBe(1);
+
+      const { pageX, pageY } = await editorPage.worldToPage(0, -5);
+      await openContextMenuAt(editorPage.page, pageX, pageY);
+
+      const download = await exportSelectedObjectFromContextMenu(editorPage.page, 'svg');
+      expect(download.suggestedFilename()).toMatch(/\.svg$/i);
+
+      const downloadPath = await download.path();
+      expect(downloadPath).not.toBeNull();
+
+      const downloadedSvg = await readFile(downloadPath!, 'utf8');
+      expect(normalizeExportedSvg(downloadedSvg)).toMatchSnapshot('context-menu-export-single-image.svg');
     });
   });
 

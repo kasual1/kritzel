@@ -440,16 +440,23 @@ export class KritzelSvgExportHelper {
 
     // Convert ProseMirror content to HTML
     const htmlContent = this.prosemirrorToHtml(text.content, text, theme);
-    
-    // Calculate dimensions accounting for scale
+
+    // Calculate dimensions in SVG world units (world units = CSS px in a 1:1 SVG).
     const width = text.totalWidth / scale;
     const height = text.totalHeight / scale;
 
+    // Convert the font size from pt to SVG world units (px equivalent).
+    // text.fontSize is stored in CSS pt; 1 pt = 4/3 px at 96 dpi.
+    // We also bake in scaleFactor (user resize) and divide by the object scale so
+    // that the rendered font aligns with the world-unit dimensions above.
+    // The CSS transform: scale(scaleFactor) is removed from the div because the
+    // adjusted font-size already accounts for it – keeping both would double-scale
+    // the content and overflow the foreignObject.
+    const svgFontSizePx = (text.fontSize * (4 / 3) * (text.scaleFactor || 1) / scale).toFixed(4);
+
     return `<g transform="${transform}"${opacity}>
-    <foreignObject x="0" y="0" width="${width}" height="${height}">
-      <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: ${text.fontFamily}; font-size: ${text.fontSize}pt; color: ${fontColor}; background-color: ${bgColor || 'transparent'}; transform: scale(${text.scaleFactor}); transform-origin: top left; white-space: pre-wrap; word-wrap: break-word;">
-        ${htmlContent}
-      </div>
+    <foreignObject x="0" y="0" width="${width}" height="${height}" overflow="visible">
+      <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: ${text.fontFamily}; font-size: ${svgFontSizePx}px; color: ${fontColor}; background-color: ${bgColor || 'transparent'}; white-space: pre-wrap; word-wrap: break-word; width: 100%; margin: 0; padding: 0; box-sizing: border-box;">${htmlContent.trim()}</div>
     </foreignObject>
   </g>`;
   }
@@ -472,9 +479,13 @@ export class KritzelSvgExportHelper {
     const lines = this.prosemirrorToPlainTextLines(text.content);
     const resolvedLines = lines.length > 0 ? lines : [''];
 
-    const resolvedFontSize = Math.max(1, text.fontSize * (text.scaleFactor || 1));
-    const lineHeight = resolvedFontSize * 1.2;
-    const startY = resolvedFontSize;
+    // Convert the font size from pt to SVG world units (px equivalent).
+    // text.fontSize is stored in CSS pt; 1 pt = 4/3 px at 96 dpi.
+    // We also bake in scaleFactor (user resize) and divide by the object scale so
+    // that the rendered lines align with the world-unit bounding box dimensions above.
+    const resolvedFontSizePx = Math.max(1, text.fontSize * (4 / 3) * (text.scaleFactor || 1) / scale);
+    const lineHeight = resolvedFontSizePx * 1.2;
+    const startY = resolvedFontSizePx;
 
     const bgRect = bgColor && bgColor !== 'transparent'
       ? `<rect x="0" y="0" width="${width}" height="${height}" fill="${bgColor}"/>`
@@ -489,7 +500,7 @@ export class KritzelSvgExportHelper {
 
     return `<g transform="${transform}"${opacity}>
     ${bgRect}
-    <text font-family="${this.escapeHtml(text.fontFamily)}" font-size="${resolvedFontSize}" fill="${fontColor}">${tspans}</text>
+    <text font-family="${this.escapeHtml(text.fontFamily)}" font-size="${resolvedFontSizePx}" fill="${fontColor}">${tspans}</text>
   </g>`;
   }
 
