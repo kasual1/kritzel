@@ -41,7 +41,7 @@ async function onReady() {
     <KritzelEditor
       ref="editor"
       editorId="custom-context-menu-canvas-quick-actions"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :globalContextMenuItems="globalItems"
       :objectContextMenuItems="[]"

@@ -17,7 +17,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       <kritzel-editor
         editorId="collaboration-realtime"
         [syncConfig]="syncConfig"
-        [theme]="'angular-theme'"
+        [theme]="'light'"
         [themes]="themes"
         [loginConfig]="undefined"
         [isPanningEnabled]="false"

@@ -24,7 +24,7 @@ const height = parseInt((route.query.height as string) || '600', 10)
   >
     <KritzelEditor
       style="width: 100%; height: 100%"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
     />
   </div>

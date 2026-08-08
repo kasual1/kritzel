@@ -30,7 +30,7 @@ export function CollaborationLocalPage() {
         ref={editorRef}
         editorId="collaboration-local"
         syncConfig={syncConfig}
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         loginConfig={undefined}
         isPanningEnabled={false}

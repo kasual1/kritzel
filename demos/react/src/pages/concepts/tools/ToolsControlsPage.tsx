@@ -64,7 +64,7 @@ export function ToolsControlsPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="tools-controls"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         controls={controls}
         isPanningEnabled={false}

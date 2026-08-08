@@ -17,7 +17,7 @@ import { createSeedObjects } from '../../const/seed-objects';
     <kritzel-editor
       #editor
       editorId="custom-context-menu-clipboard-actions"
-      [theme]="'angular-theme'"
+      [theme]="'light'"
       [themes]="themes"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"

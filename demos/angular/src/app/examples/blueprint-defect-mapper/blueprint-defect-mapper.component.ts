@@ -39,7 +39,7 @@ interface Defect {
           editorId="blueprint-defect-mapper"
           #editorEl
           [themes]="themes"
-          [theme]="'angular-theme'"
+          [theme]="'light'"
           [isControlsVisible]="false"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"

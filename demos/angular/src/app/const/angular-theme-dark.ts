@@ -2,7 +2,7 @@ import { darkTheme, KritzelTheme } from "kritzel-angular";
 
 export const angularThemeDark: KritzelTheme = {
   ...darkTheme,
-  name: 'angular-theme-dark',
+  name: 'dark',
   global: {
     ...darkTheme.global,
     primaryColor: '#ff4081',

@@ -23,7 +23,7 @@ export function WrappedEditorPage() {
     >
       <KritzelEditor
         style={{ width: "100%", height: "100%" }}
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
       />
     </div>

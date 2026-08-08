@@ -8,7 +8,7 @@ import { angularThemeDark } from '../const/angular-theme-dark';
   selector: 'app-editor-page',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<kritzel-editor [theme]="'angular-theme'" [themes]="themes"></kritzel-editor>`,
+  template: `<kritzel-editor [theme]="'light'" [themes]="themes"></kritzel-editor>`,
 })
 export class EditorPageComponent {
   themes = [angularThemeLight, angularThemeDark];

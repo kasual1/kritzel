@@ -31,7 +31,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       <div class="editor-container">
         <kritzel-editor
           editorId="object-explorer"
-          [theme]="'angular-theme'"
+          [theme]="'light'"
           [themes]="themes"
           [syncConfig]="syncConfig"
           [isPanningEnabled]="false"

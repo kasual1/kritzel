@@ -22,7 +22,7 @@ export function QuickstartPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="quickstart"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}

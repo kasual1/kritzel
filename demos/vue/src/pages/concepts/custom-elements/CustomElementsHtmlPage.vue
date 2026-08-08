@@ -272,7 +272,7 @@ async function onReady() {
     <KritzelEditor
       ref="customElementsEditorHtml"
       editorId="vue-custom-elements-html"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :style="editorStyle"
       @isReady="onReady"

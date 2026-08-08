@@ -57,7 +57,7 @@ export function ObjectsQueryPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="objects-query"
-          theme="react-theme"
+          theme="light"
           themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}
