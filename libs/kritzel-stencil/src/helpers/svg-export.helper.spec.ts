@@ -385,14 +385,66 @@ describe('KritzelSvgExportHelper', () => {
         });
         text.width = 100;
         text.height = 24;
+        text.scale = 1;
+        text.scaleFactor = 1;
 
         const result = KritzelSvgExportHelper.objectToSvgElement(text, 'light');
 
         expect(result).toContain('<g transform="translate(50, 100)"');
         expect(result).toContain('<foreignObject');
+        expect(result).toContain('overflow="visible"');
         expect(result).toContain('font-family: Arial');
-        expect(result).toContain('font-size: 16pt');
+        // font-size is now in px (pt converted: 16pt * 4/3 / scale=1 ≈ 21.3333px)
+        expect(result).toContain('font-size: 21.3333px');
         expect(result).toContain('color: #333333');
+        // margin and padding must be zero so browsers don't add default spacing
+        expect(result).toContain('margin: 0');
+        expect(result).toContain('padding: 0');
+        // transform: scale(...) should no longer appear on the inner div
+        expect(result).not.toContain('transform: scale(');
+        // overflow: hidden must not be present so text is never clipped
+        expect(result).not.toContain('overflow: hidden');
+      });
+
+      it('should apply scaleFactor to font-size in foreignObject', () => {
+        const text = new KritzelText({
+          text: 'Hello',
+          translateX: 0,
+          translateY: 0,
+          fontSize: 8,
+          fontFamily: 'Arial',
+          fontColor: { light: '#000000', dark: '#ffffff' },
+        });
+        text.width = 80;
+        text.height = 20;
+        text.scale = 1;
+        text.scaleFactor = 2;
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(text, 'light');
+
+        // font-size = 8 * 4/3 * scaleFactor(2) / scale(1) = 21.3333px
+        expect(result).toContain('font-size: 21.3333px');
+        expect(result).not.toContain('transform: scale(');
+      });
+
+      it('should scale down font-size when object scale (coreScale) > 1', () => {
+        const text = new KritzelText({
+          text: 'Hello',
+          translateX: 0,
+          translateY: 0,
+          fontSize: 8,
+          fontFamily: 'Arial',
+          fontColor: { light: '#000000', dark: '#ffffff' },
+        });
+        text.width = 80;
+        text.height = 20;
+        text.scale = 2;
+        text.scaleFactor = 1;
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(text, 'light');
+
+        // font-size = 8 * 4/3 * scaleFactor(1) / scale(2) = 5.3333px
+        expect(result).toContain('font-size: 5.3333px');
       });
 
       it('should export text without foreignObject in raster-safe mode', () => {
@@ -406,6 +458,8 @@ describe('KritzelSvgExportHelper', () => {
         });
         text.width = 100;
         text.height = 40;
+        text.scale = 1;
+        text.scaleFactor = 1;
 
         const result = KritzelSvgExportHelper.objectToSvgElement(text, 'light', undefined, true);
 
@@ -415,6 +469,28 @@ describe('KritzelSvgExportHelper', () => {
         expect(result).toContain('font-family="Arial"');
         expect(result).toContain('fill="#333333"');
         expect(result).toContain('<tspan');
+        // font-size in raster-safe mode: 16 * 4/3 * scaleFactor(1) / scale(1) ≈ 21.3333
+        expect(result).toContain('font-size="21.3333');
+      });
+
+      it('should scale raster-safe font-size down when object scale (coreScale) > 1', () => {
+        const text = new KritzelText({
+          text: 'Hello',
+          translateX: 0,
+          translateY: 0,
+          fontSize: 8,
+          fontFamily: 'Arial',
+          fontColor: { light: '#000000', dark: '#ffffff' },
+        });
+        text.width = 80;
+        text.height = 20;
+        text.scale = 2;
+        text.scaleFactor = 1;
+
+        const result = KritzelSvgExportHelper.objectToSvgElement(text, 'light', undefined, true);
+
+        // font-size = 8 * 4/3 * scaleFactor(1) / scale(2) ≈ 5.3333
+        expect(result).toContain('font-size="5.3333');
       });
     });
 
