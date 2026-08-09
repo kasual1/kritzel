@@ -154,7 +154,7 @@ export function BasicUsagePage() {
         ref={editorRef}
         editorId="basic-usage"
         syncConfig={syncConfig}
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         loginConfig={undefined}
         isPanningEnabled={false}

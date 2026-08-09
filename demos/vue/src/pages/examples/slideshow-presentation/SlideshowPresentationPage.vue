@@ -249,7 +249,7 @@ async function navigateToSlide(index: number) {
       <KritzelEditor
         ref="editor"
         editorId="slideshow-presentation"
-        theme="vue-theme"
+        theme="light"
         :themes="[vueThemeLight]"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"

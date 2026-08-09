@@ -33,7 +33,7 @@ import { createSeedObjects } from '../../const/seed-objects';
     </div>
     <kritzel-editor
       editorId="workspaces-switch"
-      [theme]="'angular-theme'"
+      [theme]="'light'"
       [themes]="themes"
       [syncConfig]="syncConfig"
       [activeWorkspaceId]="activeWorkspaceId()"

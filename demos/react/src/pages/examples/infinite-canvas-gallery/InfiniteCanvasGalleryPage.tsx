@@ -293,7 +293,7 @@ export function InfiniteCanvasGalleryPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="infinite-canvas-gallery"
-          theme="react-theme"
+          theme="light"
           themes={[reactThemeLight]}
           isMoreMenuVisible={true}
           isWorkspaceManagerVisible={false}

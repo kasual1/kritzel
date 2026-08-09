@@ -90,7 +90,7 @@ async function onReady() {
     <KritzelEditor
       ref="editor"
       editorId="custom-context-menu-smart-conditional"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :globalContextMenuItems="globalItems"
       :objectContextMenuItems="objectItems"

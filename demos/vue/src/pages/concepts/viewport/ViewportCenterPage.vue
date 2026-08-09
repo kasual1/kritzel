@@ -46,7 +46,7 @@ async function centerOn(index: number) {
     <KritzelEditor
       ref="editor"
       editorId="viewport-center"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"

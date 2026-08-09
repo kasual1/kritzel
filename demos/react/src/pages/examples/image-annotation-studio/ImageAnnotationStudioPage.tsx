@@ -8,7 +8,6 @@ import {
   type HTMLKritzelEditorElement,
   type KritzelTheme,
 } from "kritzel-react";
-import { reactThemeLight } from "../../../const/react-theme-light";
 
 type AnnotationMode = "sketch" | "text";
 
@@ -20,7 +19,7 @@ type ColorTool = {
 
 const annotationThemeDark: KritzelTheme = {
   ...darkTheme,
-  name: "annotation-theme-dark",
+  name: "dark",
   engine: {
     ...darkTheme.engine,
     backgroundColor: "#090f18",
@@ -28,7 +27,7 @@ const annotationThemeDark: KritzelTheme = {
   },
 };
 
-const themes = [annotationThemeDark, reactThemeLight, darkTheme];
+const themes = [annotationThemeDark];
 
 const colorTools: ColorTool[] = [
   { name: "ink-black", label: "Black", color: "#030712" },
@@ -314,7 +313,7 @@ export function ImageAnnotationStudioPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="image-annotation-studio"
-        theme="annotation-theme-dark"
+        theme="dark"
         themes={themes}
         scaleMax={10}
         scaleMin={0.1}

@@ -53,7 +53,7 @@ async function toggle() {
     <KritzelEditor
       ref="editor"
       editorId="tools-disable"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"

@@ -1,7 +1,7 @@
 import type { KritzelTheme } from "kritzel-vue";
 
 export const vueThemeLight: KritzelTheme = {
-  name: 'vue-theme',
+  name: 'light',
   global: {
     primaryColor: '#42b883',
     primaryHoverColor: '#369a6e',

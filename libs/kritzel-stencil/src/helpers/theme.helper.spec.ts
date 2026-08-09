@@ -144,12 +144,15 @@ describe('ThemeHelper', () => {
   describe('applyThemeToElement', () => {
     let mockElement: HTMLElement;
     let setPropertyMock: jest.Mock;
+    let removePropertyMock: jest.Mock;
 
     beforeEach(() => {
       setPropertyMock = jest.fn();
+      removePropertyMock = jest.fn();
       mockElement = {
         style: {
           setProperty: setPropertyMock,
+          removeProperty: removePropertyMock,
         },
       } as unknown as HTMLElement;
     });
@@ -180,6 +183,29 @@ describe('ThemeHelper', () => {
       ThemeHelper.applyThemeToElement(mockElement, customTheme);
 
       expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-global-focus-color', '#ff0000');
+    });
+
+    it('should remove variables that are absent from the next theme', () => {
+      const completeTheme = {
+        name: 'complete',
+        global: {
+          focusColor: '#ffffff',
+          dividerColor: '#333333',
+        },
+      } as KritzelTheme;
+      const partialTheme = {
+        name: 'partial',
+        global: {
+          focusColor: '#000000',
+        },
+      } as KritzelTheme;
+
+      ThemeHelper.applyThemeToElement(mockElement, completeTheme);
+      ThemeHelper.applyThemeToElement(mockElement, partialTheme);
+
+      expect(removePropertyMock).toHaveBeenCalledWith('--kritzel-global-divider-color');
+      expect(removePropertyMock).not.toHaveBeenCalledWith('--kritzel-global-focus-color');
+      expect(setPropertyMock).toHaveBeenLastCalledWith('--kritzel-global-focus-color', '#000000');
     });
   });
 });

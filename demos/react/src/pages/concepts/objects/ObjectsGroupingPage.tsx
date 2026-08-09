@@ -44,7 +44,7 @@ export function ObjectsGroupingPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="objects-grouping"
-          theme="react-theme"
+          theme="light"
           themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}

@@ -53,7 +53,7 @@ export function ToolsDisablePage() {
       <KritzelEditor
         ref={editorRef}
         editorId="tools-disable"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}
