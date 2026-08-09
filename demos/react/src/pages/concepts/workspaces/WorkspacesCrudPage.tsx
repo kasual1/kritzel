@@ -96,7 +96,7 @@ export function WorkspacesCrudPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="workspaces-crud"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         syncConfig={syncConfig}
         activeWorkspaceId={activeWorkspaceId}

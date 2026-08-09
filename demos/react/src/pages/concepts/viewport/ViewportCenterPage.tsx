@@ -44,7 +44,7 @@ export function ViewportCenterPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="viewport-center"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}

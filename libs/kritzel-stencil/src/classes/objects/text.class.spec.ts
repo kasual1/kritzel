@@ -158,6 +158,9 @@ describe('KritzelText', () => {
         updateAnchorsForObject: jest.fn(),
       },
       rerender: rerender,
+      themeManager: {
+        currentTheme: 'light',
+      },
       engine: {
         emitObjectsChange: emitObjectsChange,
         emitObjectsAdded: emitObjectsAdded,
@@ -323,6 +326,17 @@ describe('KritzelText', () => {
       expect(mockElement.style.color).toBe('#ff0000');
       expect(mockElement.style.whiteSpace).toBe('pre-wrap');
       expect(mockElement.style.wordWrap).toBe('break-word');
+    });
+
+    it('should resolve font color using the current core theme', () => {
+      const mockElement = document.createElement('div');
+      textObject.fontColor = { light: '#111111', dark: '#eeeeee' };
+      Object.defineProperty(mockCore.themeManager, 'currentTheme', { value: 'dark', configurable: true });
+      jest.spyOn(textObject, 'isInViewport').mockReturnValue(true);
+
+      textObject.mount(mockElement);
+
+      expect(mockElement.style.color).toBe('#eeeeee');
     });
 
     it('should append editor dom to element', () => {

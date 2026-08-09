@@ -2,7 +2,7 @@ import { darkTheme, KritzelTheme } from "kritzel-react";
 
 export const reactThemeDark: KritzelTheme = {
   ...darkTheme,
-  name: 'react-theme-dark',
+  name: 'dark',
   global: {
     ...darkTheme.global,
     focusRingColor: 'rgba(8, 126, 164, 0.3)',
@@ -35,7 +35,10 @@ export const reactThemeDark: KritzelTheme = {
   snap: {
     ...darkTheme.snap,
     indicatorStroke: '#087ea4',
+    indicatorStrokeInactive: 'rgba(255, 255, 255, 0.45)',
     indicatorFill: 'rgba(8, 126, 164, 0.35)',
+    indicatorFillInactive: 'rgba(8, 126, 164, 0.2)',
+    lineStroke: 'rgba(8, 126, 164, 0.28)',
   },
   splitButton: {
     ...darkTheme.splitButton,

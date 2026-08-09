@@ -36,7 +36,7 @@ const highlighterConfig: KritzelBrushToolConfig = {
   template: `
     <kritzel-editor
       editorId="tools-register"
-      [theme]="'angular-theme'"
+      [theme]="'light'"
       [themes]="themes"
       [controls]="controls"
       [isPanningEnabled]="false"

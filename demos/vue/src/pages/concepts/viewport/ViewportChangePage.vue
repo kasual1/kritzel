@@ -52,7 +52,7 @@ function onViewportChange(event: CustomEvent<KritzelViewportState>) {
     <KritzelEditor
       ref="editor"
       editorId="viewport-change"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"

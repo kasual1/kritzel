@@ -11,7 +11,7 @@ export function ComponentsEditorUiPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="components-editor-ui"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}

@@ -268,7 +268,7 @@ async function syncVisibleObjects(viewport: KritzelViewportState) {
     <KritzelEditor
       ref="editor"
       editorId="infinite-canvas-gallery"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :isMoreMenuVisible="true"
       :isWorkspaceManagerVisible="false"

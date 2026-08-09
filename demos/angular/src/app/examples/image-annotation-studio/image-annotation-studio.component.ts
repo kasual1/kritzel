@@ -42,7 +42,7 @@ type ColorTool = {
         #editorHost
         editorId="image-annotation-studio"
         [themes]="themes"
-        [theme]="'annotation-theme-dark'"
+        [theme]="'dark'"
         [scaleMax]="10"
         [scaleMin]="0.1"
         [isPanningEnabled]="false"
@@ -378,7 +378,7 @@ export class ImageAnnotationStudioComponent {
 
   readonly annotationThemeDark: KritzelTheme = {
     ...angularThemeDark,
-    name: 'annotation-theme-dark',
+    name: 'dark',
     engine: {
       ...angularThemeDark.engine,
       backgroundColor: '#090f18',
@@ -388,8 +388,6 @@ export class ImageAnnotationStudioComponent {
 
   readonly themes = [
     this.annotationThemeDark,
-    angularThemeLight,
-    angularThemeDark,
   ];
 
   readonly colorTools: ColorTool[] = [

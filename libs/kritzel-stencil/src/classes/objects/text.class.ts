@@ -193,7 +193,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
     element.style.fontFamily = KritzelFontRegistry.resolveCssFontFamily(this.fontFamily);
     element.style.fontSize = `${this.fontSize}pt`;
-    element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
+    element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
 
     if (this.isMounted && this.elementRef === element && this.editor!.dom.parentElement === element) {
       if (!this._core.store.state.isScaling && !this._core.store.state.isPanning) {

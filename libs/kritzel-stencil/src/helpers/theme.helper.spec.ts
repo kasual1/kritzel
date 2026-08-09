@@ -66,6 +66,14 @@ describe('ThemeHelper', () => {
       expect(variables.get('--kritzel-engine-background-color')).toBe('#ffffff');
     });
 
+    it('should flatten snap indicator styling variables for custom themes', () => {
+      const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
+      expect(variables.get('--kritzel-snap-indicator-fill')).toBe('rgba(59, 130, 246, 0.3)');
+      expect(variables.get('--kritzel-snap-indicator-fill-inactive')).toBe('rgba(59, 130, 246, 0.18)');
+      expect(variables.get('--kritzel-snap-indicator-stroke')).toBe('#007bff');
+      expect(variables.get('--kritzel-snap-indicator-stroke-inactive')).toBe('rgba(59, 130, 246, 0.5)');
+    });
+
     it('should correctly flatten controls variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
       expect(variables.get('--kritzel-controls-background-color')).toBe('#ffffff');
@@ -102,7 +110,7 @@ describe('ThemeHelper', () => {
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.size).toBe(265);
+      expect(variables.size).toBe(267);
     });
   });
 
@@ -144,12 +152,15 @@ describe('ThemeHelper', () => {
   describe('applyThemeToElement', () => {
     let mockElement: HTMLElement;
     let setPropertyMock: jest.Mock;
+    let removePropertyMock: jest.Mock;
 
     beforeEach(() => {
       setPropertyMock = jest.fn();
+      removePropertyMock = jest.fn();
       mockElement = {
         style: {
           setProperty: setPropertyMock,
+          removeProperty: removePropertyMock,
         },
       } as unknown as HTMLElement;
     });
@@ -157,7 +168,7 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      expect(setPropertyMock).toHaveBeenCalledTimes(265);
+      expect(setPropertyMock).toHaveBeenCalledTimes(267);
     });
 
     it('should apply specific theme values correctly', () => {
@@ -180,6 +191,29 @@ describe('ThemeHelper', () => {
       ThemeHelper.applyThemeToElement(mockElement, customTheme);
 
       expect(setPropertyMock).toHaveBeenCalledWith('--kritzel-global-focus-color', '#ff0000');
+    });
+
+    it('should remove variables that are absent from the next theme', () => {
+      const completeTheme = {
+        name: 'complete',
+        global: {
+          focusColor: '#ffffff',
+          dividerColor: '#333333',
+        },
+      } as KritzelTheme;
+      const partialTheme = {
+        name: 'partial',
+        global: {
+          focusColor: '#000000',
+        },
+      } as KritzelTheme;
+
+      ThemeHelper.applyThemeToElement(mockElement, completeTheme);
+      ThemeHelper.applyThemeToElement(mockElement, partialTheme);
+
+      expect(removePropertyMock).toHaveBeenCalledWith('--kritzel-global-divider-color');
+      expect(removePropertyMock).not.toHaveBeenCalledWith('--kritzel-global-focus-color');
+      expect(setPropertyMock).toHaveBeenLastCalledWith('--kritzel-global-focus-color', '#000000');
     });
   });
 });

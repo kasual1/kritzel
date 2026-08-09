@@ -324,7 +324,7 @@ export function SlideshowPresentationPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="slideshow-presentation"
-          theme="react-theme"
+          theme="light"
           themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}

@@ -2,7 +2,7 @@ import { darkTheme, KritzelTheme } from "kritzel-angular";
 
 export const angularThemeDark: KritzelTheme = {
   ...darkTheme,
-  name: 'angular-theme-dark',
+  name: 'dark',
   global: {
     ...darkTheme.global,
     primaryColor: '#ff4081',
@@ -38,7 +38,10 @@ export const angularThemeDark: KritzelTheme = {
   snap: {
     ...darkTheme.snap,
     indicatorStroke: '#ff4081',
+    indicatorStrokeInactive: 'rgba(255, 255, 255, 0.45)',
     indicatorFill: 'rgba(255, 64, 129, 0.35)',
+    indicatorFillInactive: 'rgba(255, 64, 129, 0.2)',
+    lineStroke: 'rgba(255, 64, 129, 0.28)',
   },
   splitButton: {
     ...darkTheme.splitButton,

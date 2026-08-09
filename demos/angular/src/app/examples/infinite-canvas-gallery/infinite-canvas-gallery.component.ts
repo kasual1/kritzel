@@ -73,7 +73,7 @@ const pointInSphere = (index: number, count: number) => {
     <div class="canvas-wrapper">
       <kritzel-editor
         editorId="infinite-canvas-gallery"
-        [theme]="'angular-theme'"
+        [theme]="'light'"
         [themes]="themes"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="false"

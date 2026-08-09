@@ -1,7 +1,7 @@
 import type { KritzelTheme } from "kritzel-vue";
 
 export const vueThemeLight: KritzelTheme = {
-  name: 'vue-theme',
+  name: 'light',
   global: {
     primaryColor: '#42b883',
     primaryHoverColor: '#369a6e',
@@ -77,6 +77,10 @@ export const vueThemeLight: KritzelTheme = {
   },
   snap: {
     indicatorStroke: '#42b883',
+    indicatorStrokeInactive: 'rgba(66, 184, 131, 0.5)',
+    indicatorFill: 'rgba(66, 184, 131, 0.18)',
+    indicatorFillInactive: 'rgba(66, 184, 131, 0.12)',
+    lineStroke: 'rgba(66, 184, 131, 0.24)',
   },
   splitButton: {
     hoverBackgroundColor: 'rgba(66, 184, 131, 0.08)',

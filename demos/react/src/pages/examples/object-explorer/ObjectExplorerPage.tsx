@@ -532,7 +532,7 @@ export function ObjectExplorerPage() {
           <KritzelEditor
             ref={editorRef}
             editorId="object-explorer"
-            theme="react-theme"
+            theme="light"
             themes={[reactThemeLight]}
             syncConfig={syncConfig}
             isPanningEnabled={false}

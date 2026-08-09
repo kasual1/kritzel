@@ -111,7 +111,7 @@ async function zoomIn() {
     <KritzelEditor
       ref="editor"
       editorId="basic-usage"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :syncConfig="syncConfig"
       :loginConfig="undefined"
