@@ -52,6 +52,8 @@ import { IKritzelUser } from '../../../interfaces/user.interface';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
 import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
 import { KritzelContextMenuState } from '../../../interfaces/context-menu-state.interface';
+import { KritzelExportable, KritzelObjectExportContext, KritzelObjectExportFormat } from '../../../interfaces/object-export.interface';
+import { KritzelSvgExportHelper } from '../../../helpers/svg-export.helper';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
 
@@ -1595,10 +1597,7 @@ export class KritzelEngine {
         return;
       }
 
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = dataUrl;
-      link.click();
+      this.triggerDataUrlDownload(dataUrl, filename);
     } catch (error) {
       console.error('Failed to export viewport as PNG:', error);
     }
@@ -1623,12 +1622,66 @@ export class KritzelEngine {
         return;
       }
 
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = dataUrl;
-      link.click();
+      this.triggerDataUrlDownload(dataUrl, filename);
     } catch (error) {
       console.error('Failed to export viewport as SVG:', error);
+    }
+  }
+
+  /**
+   * Returns export formats supported by the currently selected object.
+   * Only returns formats when exactly one object is selected.
+   */
+  @Method()
+  async getSelectedObjectSupportedExportFormats(): Promise<KritzelObjectExportFormat[]> {
+    const selected = this.getSingleSelectedExportableObject();
+    if (!selected) {
+      return [];
+    }
+
+    return selected.getSupportedExportFormats();
+  }
+
+  /**
+   * Checks whether the currently selected object supports a specific export format.
+   * Returns false when none or multiple objects are selected.
+   */
+  @Method()
+  async canExportSelectedObjectAs(format: KritzelObjectExportFormat): Promise<boolean> {
+    const selected = this.getSingleSelectedExportableObject();
+    if (!selected) {
+      return false;
+    }
+
+    return selected.getSupportedExportFormats().includes(format);
+  }
+
+  /**
+   * Exports the currently selected object in the requested format and triggers a file download.
+   * Only supports single selection.
+   */
+  @Method()
+  async exportSelectedObject(format: KritzelObjectExportFormat): Promise<void> {
+    const selected = this.getSingleSelectedExportableObject();
+    if (!selected) {
+      return;
+    }
+
+    try {
+      const dataUrl = await selected.exportAs(format, this.getObjectExportContext());
+      if (!dataUrl) {
+        console.error(`Failed to export selected object as ${format}: export returned no data URL`);
+        return;
+      }
+
+      const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
+      const objectName = selected.__class__.replace(/^Kritzel/, '').toLowerCase() || 'object';
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const filename = `${activeWorkspaceName}-${objectName}-${timestamp}.${format}`;
+
+      this.triggerDataUrlDownload(dataUrl, filename);
+    } catch (error) {
+      console.error(`Failed to export selected object as ${format}:`, error);
     }
   }
 
@@ -1860,6 +1913,86 @@ export class KritzelEngine {
   private async dataUrlToBlob(dataUrl: string): Promise<Blob> {
     const response = await fetch(dataUrl);
     return response.blob();
+  }
+
+  private triggerDataUrlDownload(dataUrl: string, filename: string): void {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataUrl;
+    link.click();
+  }
+
+  private getSingleSelectedExportableObject(): (KritzelBaseObject & KritzelExportable) | null {
+    const selectedObjects = this.core.store.selectionGroup?.objects ?? [];
+    if (selectedObjects.length !== 1) {
+      return null;
+    }
+
+    const [selected] = selectedObjects;
+    if (!ObjectHelper.isKritzelExportable(selected)) {
+      return null;
+    }
+
+    return selected as KritzelBaseObject & KritzelExportable;
+  }
+
+  private getObjectExportContext(): KritzelObjectExportContext {
+    return {
+      getObjectAsSvgDataUrl: async (object, options) => {
+        const svg = await this.getObjectAsSvgMarkup(object, options?.rasterSafeForCanvas ?? false);
+        return svg ? this.svgMarkupToDataUrl(svg) : null;
+      },
+      getObjectAsPngDataUrl: async object => {
+        const svg = await this.getObjectAsSvgMarkup(object, true);
+        return svg ? this.svgMarkupToPngDataUrl(svg) : null;
+      },
+    };
+  }
+
+  private async getObjectAsSvgMarkup(object: KritzelBaseObject, rasterSafeForCanvas: boolean): Promise<string | null> {
+    const imageDataUrls = await KritzelSvgExportHelper.resolveImageDataUrls([object], this.core.assetResolver);
+    const svg = KritzelSvgExportHelper.generateSvg([object], {
+      theme: this.theme,
+      rasterSafeForCanvas,
+      imageDataUrls,
+    });
+
+    return svg || null;
+  }
+
+  private svgMarkupToDataUrl(svgMarkup: string): string {
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgMarkup)}`;
+  }
+
+  private async svgMarkupToPngDataUrl(svgMarkup: string): Promise<string> {
+    const svgBlob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+    const svgBlobUrl = URL.createObjectURL(svgBlob);
+
+    try {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const element = new Image();
+        element.onload = () => resolve(element);
+        element.onerror = err => reject(err);
+        element.src = svgBlobUrl;
+      });
+
+      const width = Math.max(1, Math.ceil(img.naturalWidth || img.width));
+      const height = Math.max(1, Math.ceil(img.naturalHeight || img.height));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext('2d');
+      if (!context) {
+        throw new Error('Could not create 2D canvas context for PNG export');
+      }
+
+      context.drawImage(img, 0, 0, width, height);
+      return canvas.toDataURL('image/png');
+    } finally {
+      URL.revokeObjectURL(svgBlobUrl);
+    }
   }
 
   private getImportedWorkspaceName(rawName: unknown): string {
