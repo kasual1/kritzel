@@ -497,38 +497,6 @@ Exports the current viewport as an SVG file and triggers a browser download.
 exportViewportAsSvg(): Promise<void>
 ```
 
-#### getSelectedObjectsAsSvgString
-
-Generates an SVG string from the currently selected objects.
-
-```ts
-getSelectedObjectsAsSvgString(options?: { theme?: 'light' | 'dark'; padding?: number }): Promise<string | null>
-```
-
-#### exportSelectedObjectsAsSvg
-
-Exports the currently selected objects as an SVG file and triggers a browser download.
-
-```ts
-exportSelectedObjectsAsSvg(options?: { theme?: 'light' | 'dark'; padding?: number }): Promise<void>
-```
-
-#### getSelectedObjectsAsPngDataUrl
-
-Generates a PNG data URL from the currently selected objects.
-
-```ts
-getSelectedObjectsAsPngDataUrl(options?: { theme?: 'light' | 'dark'; padding?: number; scale?: number }): Promise<string | null>
-```
-
-#### exportSelectedObjectsAsPng
-
-Exports the currently selected objects as a PNG file and triggers a browser download.
-
-```ts
-exportSelectedObjectsAsPng(options?: { theme?: 'light' | 'dark'; padding?: number; scale?: number }): Promise<void>
-```
-
 #### exportAsJson
 
 Exports the current workspace and all its objects as a JSON string.

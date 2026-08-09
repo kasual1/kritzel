@@ -101,12 +101,6 @@ await engine.importFromJson(json);                  // import as a NEW workspace
 const dataUrl = await editor.getScreenshot('png', { includeBackground: true }); // data URL or null
 await editor.exportViewportAsPng({ includeBackground: false });  // triggers download
 await editor.exportViewportAsSvg();
-await editor.exportSelectedObjectsAsPng();          // current selection only
-await editor.exportSelectedObjectsAsSvg();
-
-// Engine-only string/dataURL variants for selections:
-const svg = await engine.getSelectedObjectsAsSvgString({ padding: 16 });
-const png = await engine.getSelectedObjectsAsPngDataUrl({ scale: 2 });
 ```
 
 ## Rules
