@@ -104,4 +104,5 @@ Resolved at render time via `KritzelColorHelper.resolveThemeColor(color, current
 - Prefix ALL custom properties with `--kritzel-`
 - Never hardcode colors in components — always use CSS variables
 - Keep light and dark theme presets in sync (same keys)
+- When switching themes, remove variables applied by the previous theme that are absent from the next theme; partial custom themes must not inherit stale values
 - Run the generator after adding/removing variables
