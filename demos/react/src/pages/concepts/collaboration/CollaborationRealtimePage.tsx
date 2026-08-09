@@ -36,7 +36,7 @@ export function CollaborationRealtimePage() {
         ref={editorRef}
         editorId="collaboration-realtime"
         syncConfig={syncConfig}
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         loginConfig={undefined}
         isPanningEnabled={false}

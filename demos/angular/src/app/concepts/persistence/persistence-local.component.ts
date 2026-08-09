@@ -22,7 +22,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       <kritzel-editor
         editorId="persistence-local"
         [syncConfig]="syncConfig"
-        [theme]="'angular-theme'"
+        [theme]="'light'"
         [themes]="themes"
         [loginConfig]="undefined"
         [isPanningEnabled]="false"

@@ -57,7 +57,7 @@ export function ObjectsSelectionPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="objects-selection"
-          theme="react-theme"
+          theme="light"
           themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}

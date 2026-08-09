@@ -2,7 +2,7 @@ import { darkTheme, type KritzelTheme } from "kritzel-vue";
 
 export const vueThemeDark: KritzelTheme = {
   ...darkTheme,
-  name: 'vue-theme-dark',
+  name: 'dark',
   global: {
     ...darkTheme.global,
     focusRingColor: 'rgba(66, 184, 131, 0.3)',

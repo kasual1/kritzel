@@ -6,10 +6,10 @@ import { vueThemeLight } from '../../const/vue-theme-light'
 <template>
   <div class="multi-editor-host">
     <div class="editor-container editor-container-first">
-      <KritzelEditor id="editor-1" editor-id="e2e-editor-1" theme="vue-theme" :themes="[vueThemeLight]" />
+      <KritzelEditor id="editor-1" editor-id="e2e-editor-1" theme="light" :themes="[vueThemeLight]" />
     </div>
     <div class="editor-container editor-container-second">
-      <KritzelEditor id="editor-2" editor-id="e2e-editor-2" theme="vue-theme" :themes="[vueThemeLight]" />
+      <KritzelEditor id="editor-2" editor-id="e2e-editor-2" theme="light" :themes="[vueThemeLight]" />
     </div>
   </div>
 </template>

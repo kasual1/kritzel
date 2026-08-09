@@ -2,7 +2,7 @@ import { lightTheme, KritzelTheme } from "kritzel-angular";
 
 export const angularThemeLight: KritzelTheme = {
   ...lightTheme,
-  name: 'angular-theme',
+  name: 'light',
   global: {
     ...lightTheme.global,
     primaryColor: '#dd0031',

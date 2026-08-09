@@ -15,14 +15,14 @@ import { createSeedObjects } from '../../const/seed-objects';
   template: `
     <div class="toolbar">
       <button
-        [class.active]="activeName === 'angular-theme'"
-        (click)="activeName = 'angular-theme'"
+        [class.active]="activeName === 'light'"
+        (click)="activeName = 'light'"
       >
         Light
       </button>
       <button
-        [class.active]="activeName === 'angular-theme-dark'"
-        (click)="activeName = 'angular-theme-dark'"
+        [class.active]="activeName === 'dark'"
+        (click)="activeName = 'dark'"
       >
         Dark
       </button>
@@ -82,7 +82,7 @@ export class ThemingApplyComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes: KritzelTheme[] = [angularThemeLight, angularThemeDark];
-  activeName: string = 'angular-theme';
+  activeName: string = 'light';
 
   
 

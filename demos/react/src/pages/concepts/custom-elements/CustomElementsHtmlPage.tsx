@@ -271,7 +271,7 @@ export function CustomElementsHtmlPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="react-custom-elements-html"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         style={editorStyle}
         onIsReady={() => {

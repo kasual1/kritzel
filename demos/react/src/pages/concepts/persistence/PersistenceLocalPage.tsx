@@ -30,7 +30,7 @@ export function PersistenceLocalPage() {
         ref={editorRef}
         editorId="persistence-local"
         syncConfig={syncConfig}
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         loginConfig={undefined}
         isPanningEnabled={false}

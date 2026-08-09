@@ -2,7 +2,7 @@ import { darkTheme, KritzelTheme } from "kritzel-react";
 
 export const reactThemeDark: KritzelTheme = {
   ...darkTheme,
-  name: 'react-theme-dark',
+  name: 'dark',
   global: {
     ...darkTheme.global,
     focusRingColor: 'rgba(8, 126, 164, 0.3)',

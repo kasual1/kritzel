@@ -54,7 +54,7 @@ async function onReady() {
     <KritzelEditor
       ref="editor"
       editorId="tools-change"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"

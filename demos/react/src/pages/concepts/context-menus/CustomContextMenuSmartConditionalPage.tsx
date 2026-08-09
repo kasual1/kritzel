@@ -97,7 +97,7 @@ export function CustomContextMenuSmartConditionalPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="custom-context-menu-smart-conditional"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={objectItems}

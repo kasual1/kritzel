@@ -15,13 +15,13 @@ import {
 
 export function ThemingApplyPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const [activeName, setActiveName] = useState("react-theme");
+  const [activeName, setActiveName] = useState("light");
 
   return (
     <div style={hostStyle}>
       <div style={toolbarStyle}>
-        <button style={buttonStyle(activeName === "react-theme")} onClick={() => setActiveName("react-theme")}>Light</button>
-        <button style={buttonStyle(activeName === "react-theme-dark")} onClick={() => setActiveName("react-theme-dark")}>Dark</button>
+        <button style={buttonStyle(activeName === "light")} onClick={() => setActiveName("light")}>Light</button>
+        <button style={buttonStyle(activeName === "dark")} onClick={() => setActiveName("dark")}>Dark</button>
       </div>
       <KritzelEditor
         ref={editorRef}

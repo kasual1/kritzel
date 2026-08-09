@@ -86,7 +86,7 @@ export function CustomContextMenuClipboardActionsPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="custom-context-menu-clipboard-actions"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={objectItems}

@@ -239,7 +239,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
 
     element.style.fontFamily = this.fontFamily;
     element.style.fontSize = `${this.fontSize}pt`;
-    element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
+    element.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
     element.style.whiteSpace = 'pre-wrap';
     element.style.wordWrap = 'break-word';
 
@@ -610,12 +610,12 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.fontColor = KritzelColorHelper.determineTextColor(this.fillColor);
       // Update the editor's text color immediately
       if (this.editor!?.dom?.parentElement) {
-        this.editor!.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
+        this.editor!.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
       }
     } else if (changedProperties.includes('fontColor')) {
       // Also update editor when fontColor changes directly
       if (this.editor!?.dom?.parentElement) {
-        this.editor!.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor);
+        this.editor!.dom.parentElement.style.color = KritzelColorHelper.resolveThemeColor(this.fontColor, this._core?.themeManager?.currentTheme);
       }
     }
   }

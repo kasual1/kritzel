@@ -40,7 +40,7 @@ export function ViewportChangePage() {
       <KritzelEditor
         ref={editorRef}
         editorId="viewport-change"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}

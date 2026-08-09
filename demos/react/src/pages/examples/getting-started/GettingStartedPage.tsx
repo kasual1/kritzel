@@ -16,7 +16,7 @@ export function GettingStartedPage() {
     <div style={hostStyle}>
       <KritzelEditor
         editorId="getting-started"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         syncConfig={syncConfig}
         isPanningEnabled={false}
