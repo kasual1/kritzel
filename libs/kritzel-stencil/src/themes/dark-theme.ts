@@ -148,7 +148,9 @@ export const darkTheme: KritzelTheme = {
 
   snap: {
     indicatorFill: 'rgba(10, 132, 255, 0.35)',
+    indicatorFillInactive: 'rgba(10, 132, 255, 0.2)',
     indicatorStroke: '#0A84FF',
+    indicatorStrokeInactive: 'rgba(255, 255, 255, 0.45)',
     lineStroke: 'rgba(255, 255, 255, 0.35)',
   },
 
