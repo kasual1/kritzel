@@ -168,6 +168,23 @@ Type: `Promise<void>`
 
 
 
+### `canExportSelectedObjectAs(format: KritzelObjectExportFormat) => Promise<boolean>`
+
+Checks whether the currently selected object supports a specific export format.
+Returns false when none or multiple objects are selected.
+
+#### Parameters
+
+| Name     | Type             | Description |
+| -------- | ---------------- | ----------- |
+| `format` | `"svg" \| "png"` |             |
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
 ### `centerAllObjects(animate?: boolean) => Promise<boolean>`
 
 Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered.
@@ -380,6 +397,23 @@ Type: `Promise<string>`
 
 A JSON string representing the complete workspace state.
 
+### `exportSelectedObject(format: KritzelObjectExportFormat) => Promise<void>`
+
+Exports the currently selected object in the requested format and triggers a file download.
+Only supports single selection.
+
+#### Parameters
+
+| Name     | Type             | Description |
+| -------- | ---------------- | ----------- |
+| `format` | `"svg" \| "png"` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `exportViewportAsPng(options?: { includeBackground?: boolean; }) => Promise<void>`
 
 Exports the current viewport as a PNG file and triggers a browser download.
@@ -562,6 +596,17 @@ Captures a screenshot of the current viewport as a data URL.
 Type: `Promise<string>`
 
 A data URL string of the captured image.
+
+### `getSelectedObjectSupportedExportFormats() => Promise<KritzelObjectExportFormat[]>`
+
+Returns export formats supported by the currently selected object.
+Only returns formats when exactly one object is selected.
+
+#### Returns
+
+Type: `Promise<KritzelObjectExportFormat[]>`
+
+
 
 ### `getSelectedObjects() => Promise<KritzelBaseObject<any>[]>`
 

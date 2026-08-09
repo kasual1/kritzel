@@ -50,6 +50,7 @@ import { KritzelFontMap } from '../../../interfaces/font.interface';
 import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
 import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
 import { KritzelContextMenuState } from '../../../interfaces/context-menu-state.interface';
+import { KritzelObjectExportFormat } from '../../../interfaces/object-export.interface';
 
 @Component({
   tag: 'kritzel-editor',
@@ -155,6 +156,20 @@ export class KritzelEditor {
       icon: 'paste',
       group: 'clipboard',
       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),
+    },
+    {
+      label: 'menu.export',
+      icon: 'upload',
+      group: 'clipboard',
+      visible: (_, objects) => this.canExportObjects(objects),
+      action: (_, objects) => {
+        const format = this.getPreferredExportFormat(objects);
+        if (!format) {
+          return;
+        }
+
+        void this.engineRef.exportSelectedObject(format);
+      },
     },
     {
       label: 'menu.order',
@@ -661,6 +676,21 @@ export class KritzelEditor {
   }
 
   @Method()
+  async getSelectedObjectSupportedExportFormats(): Promise<KritzelObjectExportFormat[]> {
+    return this.engineRef.getSelectedObjectSupportedExportFormats();
+  }
+
+  @Method()
+  async canExportSelectedObjectAs(format: KritzelObjectExportFormat): Promise<boolean> {
+    return this.engineRef.canExportSelectedObjectAs(format);
+  }
+
+  @Method()
+  async exportSelectedObject(format: KritzelObjectExportFormat): Promise<void> {
+    return this.engineRef.exportSelectedObject(format);
+  }
+
+  @Method()
   async downloadAsJson(filename?: string): Promise<void> {
     return this.engineRef.downloadAsJson(filename);
   }
@@ -1107,6 +1137,35 @@ export class KritzelEditor {
 
   private get isLoggedIn(): boolean {
     return !!this.user && !this.user.isGuest;
+  }
+
+  private canExportObjectsAs(objects: KritzelBaseObject[], format: KritzelObjectExportFormat): boolean {
+    if (!objects || objects.length !== 1) {
+      return false;
+    }
+
+    const [selected] = objects;
+    if (!ObjectHelper.isKritzelExportable(selected)) {
+      return false;
+    }
+
+    return selected.getSupportedExportFormats().includes(format);
+  }
+
+  private canExportObjects(objects: KritzelBaseObject[]): boolean {
+    return this.canExportObjectsAs(objects, 'png') || this.canExportObjectsAs(objects, 'svg');
+  }
+
+  private getPreferredExportFormat(objects: KritzelBaseObject[]): KritzelObjectExportFormat | null {
+    if (this.canExportObjectsAs(objects, 'png')) {
+      return 'png';
+    }
+
+    if (this.canExportObjectsAs(objects, 'svg')) {
+      return 'svg';
+    }
+
+    return null;
   }
 
   @Method()
