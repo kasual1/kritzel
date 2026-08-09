@@ -361,7 +361,7 @@ function statusClass(status: DefectStatus): string {
       <KritzelEditor
         ref="editor"
         editorId="blueprint-defect-mapper"
-        theme="vue-theme"
+        theme="light"
         :themes="[vueThemeLight]"
         :isControlsVisible="false"
         :isMoreMenuVisible="false"

@@ -34,7 +34,7 @@ type TodoRendererContext = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
-      [theme]="'angular-theme'"
+      [theme]="'light'"
       [themes]="themes"
       (isReady)="onReady($event)"
     ></kritzel-editor>

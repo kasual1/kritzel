@@ -3060,7 +3060,12 @@ export class KritzelEngine {
         <kritzel-sync-indicator visible={this.isSyncing} text="Syncing..."></kritzel-sync-indicator>
 
         {this.core.store.state.debugInfo.showViewportInfo && (
-          <div class="debug-panel">
+          <div
+            class="debug-panel"
+            style={{
+              color: 'var(--kritzel-global-text-primary)',
+            }}
+          >
             <div>ActiveWorkspaceId: {this.core.store.state?.activeWorkspace?.id}</div>
             <div>ActiveWorkspaceName: {this.core.store.state?.activeWorkspace?.name}</div>
             <div>TranslateX: {this.core.store.state?.translateX}</div>
@@ -3463,6 +3468,7 @@ export class KritzelEngine {
                       left: `${object.totalWidth}px`,
                       top: '0',
                       zIndex: (object.zIndex + 2).toString(),
+                      color: 'var(--kritzel-global-text-primary)',
                     }}
                   >
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>Id: {object.id}</div>
@@ -3962,8 +3968,12 @@ export class KritzelEngine {
                     cy={data.centerY}
                     r={data.indicatorRadius}
                     style={{
-                      fill: isActiveSnap ? 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))' : 'rgba(59, 130, 246, 0.18)',
-                      stroke: isActiveSnap ? 'var(--kritzel-snap-indicator-stroke, #007bff)' : 'rgba(59, 130, 246, 0.5)',
+                      fill: isActiveSnap
+                        ? 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))'
+                        : 'var(--kritzel-snap-indicator-fill-inactive, var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.18)))',
+                      stroke: isActiveSnap
+                        ? 'var(--kritzel-snap-indicator-stroke, #007bff)'
+                        : 'var(--kritzel-snap-indicator-stroke-inactive, var(--kritzel-snap-indicator-stroke, rgba(59, 130, 246, 0.5)))',
                       strokeWidth: data.indicatorStrokeWidth,
                     }}
                   />

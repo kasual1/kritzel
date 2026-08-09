@@ -22,7 +22,7 @@ const editor = getEditorRef('editor')
 
 const annotationTheme: KritzelTheme = {
   ...vueThemeLight,
-  name: 'annotation-vue-theme',
+  name: 'dark',
   engine: {
     ...vueThemeLight.engine,
     backgroundColor: '#090f18',
@@ -161,7 +161,7 @@ async function ensureSeedImage() {
     <KritzelEditor
       ref="editor"
       editorId="image-annotation-studio"
-      theme="annotation-vue-theme"
+      theme="dark"
       :themes="themes"
       :scaleMax="10"
       :scaleMin="0.1"

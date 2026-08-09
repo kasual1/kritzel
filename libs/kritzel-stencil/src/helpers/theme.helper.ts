@@ -1,6 +1,8 @@
 import { KritzelTheme } from '../interfaces/theme.interface';
 
 export class ThemeHelper {
+  private static readonly appliedVariableNames = new WeakMap<HTMLElement, Set<string>>();
+
   /**
    * Converts a camelCase string to kebab-case.
    * @example ThemeHelper.camelToKebab('controlHoverBackgroundColor') → 'control-hover-background-color'
@@ -79,6 +81,15 @@ export class ThemeHelper {
    */
   static applyThemeToElement(element: HTMLElement, theme: KritzelTheme): void {
     const variables = ThemeHelper.flattenThemeToVariables(theme);
+    const previousVariableNames = ThemeHelper.appliedVariableNames.get(element);
+
+    for (const name of previousVariableNames ?? []) {
+      if (!variables.has(name)) {
+        element.style.removeProperty(name);
+      }
+    }
+
     ThemeHelper.applyVariablesToElement(element, variables);
+    ThemeHelper.appliedVariableNames.set(element, new Set(variables.keys()));
   }
 }

@@ -28,7 +28,7 @@ test.describe('Settings dialog', () => {
     await themeDropdown.locator('li', { hasText: 'dark' }).click();
 
     const appliedTheme = await editorPage.getProp<string>('theme');
-    expect(appliedTheme).toMatch(/^(angular|react|vue)-theme-dark$/);
+    expect(appliedTheme).toBe('dark');
 
     await expect(editorPage.engine).toHaveScreenshot('Settings-dialog-dark-theme.png', { timeout: 1000 });
   });

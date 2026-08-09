@@ -483,7 +483,7 @@ export function BlueprintDefectMapperPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="blueprint-defect-mapper"
-          theme="react-theme"
+          theme="light"
           themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}

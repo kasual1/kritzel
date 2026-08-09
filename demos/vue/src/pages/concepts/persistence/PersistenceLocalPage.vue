@@ -42,7 +42,7 @@ async function onReady() {
     <KritzelEditor
       ref="editor"
       editorId="persistence-local"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :syncConfig="syncConfig"
       :loginConfig="undefined"

@@ -19,7 +19,7 @@ import { createSeedObjects } from '../../const/seed-objects';
     </div>
     <kritzel-editor
       editorId="viewport-change"
-      [theme]="'angular-theme'"
+      [theme]="'light'"
       [themes]="themes"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"

@@ -51,7 +51,7 @@ export function WorkspacesSwitchPage() {
       <KritzelEditor
         ref={editorRef}
         editorId="workspaces-switch"
-        theme="react-theme"
+        theme="light"
         themes={[reactThemeLight]}
         syncConfig={syncConfig}
         activeWorkspaceId={activeWorkspaceId}

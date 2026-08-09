@@ -56,7 +56,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
     <KritzelEditor
       ref="editor"
       editorId="workspaces-switch"
-      theme="vue-theme"
+      theme="light"
       :themes="[vueThemeLight]"
       :syncConfig="syncConfig"
       :activeWorkspaceId="activeWorkspaceId"

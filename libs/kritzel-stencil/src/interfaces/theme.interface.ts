@@ -492,7 +492,9 @@ export interface KritzelTheme {
   /** Snap variables */
   snap?: {
     indicatorFill?: string;
+    indicatorFillInactive?: string;
     indicatorStroke?: string;
+    indicatorStrokeInactive?: string;
     lineStroke?: string;
   };
 
