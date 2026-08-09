@@ -1,4 +1,4 @@
-import { ProviderConfig } from './sync-provider.interface';
+import { ProviderConfig, ProviderFactory, SyncProviderType } from './sync-provider.interface';
 
 /**
  * Configuration for workspace synchronization providers
@@ -35,4 +35,27 @@ export interface KritzelSyncConfig {
    * which is stable across reloads on the same browser but not shared across devices.
    */
   appStateId?: string;
+}
+
+/**
+ * Returns the provider type (`'local'` or `'network'`) for a given provider config entry.
+ * Works for both class constructors (via a static `providerType` property) and
+ * factory objects (via an optional `type` property on the factory).
+ */
+function getProviderConfigType(config: ProviderConfig): SyncProviderType | undefined {
+  if (typeof config === 'function') {
+    return (config as any).providerType as SyncProviderType | undefined;
+  }
+  return (config as ProviderFactory).type;
+}
+
+/**
+ * Returns `true` when the given sync configuration contains at least one remote
+ * (network) provider, meaning the share option should be available in the UI.
+ */
+export function hasRemoteSyncProvider(syncConfig?: KritzelSyncConfig): boolean {
+  if (!syncConfig?.providers?.length) {
+    return false;
+  }
+  return syncConfig.providers.some(p => getProviderConfigType(p) === 'network');
 }
