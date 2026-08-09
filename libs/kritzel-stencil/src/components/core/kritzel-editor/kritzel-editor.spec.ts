@@ -498,4 +498,38 @@ describe('KritzelEditor', () => {
       keyboardSpy.mockRestore();
     });
   });
+
+  describe('moreMenuItems share item visibility', () => {
+    it('should hide the share item when syncConfig has no providers', () => {
+      component.syncConfig = { providers: [] };
+      const shareItem = (component as any).moreMenuItems.find((item: any) => item.id === 'share');
+      expect(shareItem.isVisible).toBe(false);
+    });
+
+    it('should hide the share item when syncConfig is undefined', () => {
+      component.syncConfig = undefined;
+      const shareItem = (component as any).moreMenuItems.find((item: any) => item.id === 'share');
+      expect(shareItem.isVisible).toBe(false);
+    });
+
+    it('should hide the share item when only local providers are configured', () => {
+      const localFactory = {
+        type: 'local' as const,
+        create: jest.fn(),
+      };
+      component.syncConfig = { providers: [localFactory] };
+      const shareItem = (component as any).moreMenuItems.find((item: any) => item.id === 'share');
+      expect(shareItem.isVisible).toBe(false);
+    });
+
+    it('should show the share item when a network provider factory is configured', () => {
+      const networkFactory = {
+        type: 'network' as const,
+        create: jest.fn(),
+      };
+      component.syncConfig = { providers: [networkFactory] };
+      const shareItem = (component as any).moreMenuItems.find((item: any) => item.id === 'share');
+      expect(shareItem.isVisible).toBe(true);
+    });
+  });
 });
