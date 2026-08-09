@@ -24,4 +24,4 @@ export const KRITZEL_LICENSE_TOKEN_PREFIX = 'KRTZL1.';
  * printed public key here. Replacing this value invalidates every license
  * signed with the previous key.
  */
-export const KRITZEL_LICENSE_PUBLIC_KEY = 'I-pYJlxDEjT94rwSaqhXW5Sv__fMKS-JKKnV3pg0PaM';
+export const KRITZEL_LICENSE_PUBLIC_KEY = '2IwZDin-qV3kOt8SEQCqdaJsGT9S7tAGapUYJVnVGQo';
