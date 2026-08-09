@@ -3968,8 +3968,12 @@ export class KritzelEngine {
                     cy={data.centerY}
                     r={data.indicatorRadius}
                     style={{
-                      fill: isActiveSnap ? 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))' : 'rgba(59, 130, 246, 0.18)',
-                      stroke: isActiveSnap ? 'var(--kritzel-snap-indicator-stroke, #007bff)' : 'rgba(59, 130, 246, 0.5)',
+                      fill: isActiveSnap
+                        ? 'var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.3))'
+                        : 'var(--kritzel-snap-indicator-fill-inactive, var(--kritzel-snap-indicator-fill, rgba(59, 130, 246, 0.18)))',
+                      stroke: isActiveSnap
+                        ? 'var(--kritzel-snap-indicator-stroke, #007bff)'
+                        : 'var(--kritzel-snap-indicator-stroke-inactive, var(--kritzel-snap-indicator-stroke, rgba(59, 130, 246, 0.5)))',
                       strokeWidth: data.indicatorStrokeWidth,
                     }}
                   />

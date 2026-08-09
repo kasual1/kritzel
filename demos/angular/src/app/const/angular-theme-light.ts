@@ -38,6 +38,10 @@ export const angularThemeLight: KritzelTheme = {
   snap: {
     ...lightTheme.snap,
     indicatorStroke: '#dd0031',
+    indicatorStrokeInactive: 'rgba(221, 0, 48, 0.5)',
+    indicatorFill: 'rgba(221, 0, 48, 0.16)',
+    indicatorFillInactive: 'rgba(221, 0, 48, 0.1)',
+    lineStroke: 'rgba(221, 0, 48, 0.24)',
   },
   splitButton: {
     ...lightTheme.splitButton,

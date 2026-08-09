@@ -66,6 +66,14 @@ describe('ThemeHelper', () => {
       expect(variables.get('--kritzel-engine-background-color')).toBe('#ffffff');
     });
 
+    it('should flatten snap indicator styling variables for custom themes', () => {
+      const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
+      expect(variables.get('--kritzel-snap-indicator-fill')).toBe('rgba(59, 130, 246, 0.3)');
+      expect(variables.get('--kritzel-snap-indicator-fill-inactive')).toBe('rgba(59, 130, 246, 0.18)');
+      expect(variables.get('--kritzel-snap-indicator-stroke')).toBe('#007bff');
+      expect(variables.get('--kritzel-snap-indicator-stroke-inactive')).toBe('rgba(59, 130, 246, 0.5)');
+    });
+
     it('should correctly flatten controls variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
       expect(variables.get('--kritzel-controls-background-color')).toBe('#ffffff');
@@ -102,7 +110,7 @@ describe('ThemeHelper', () => {
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.size).toBe(265);
+      expect(variables.size).toBe(267);
     });
   });
 
@@ -160,7 +168,7 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      expect(setPropertyMock).toHaveBeenCalledTimes(265);
+      expect(setPropertyMock).toHaveBeenCalledTimes(267);
     });
 
     it('should apply specific theme values correctly', () => {
