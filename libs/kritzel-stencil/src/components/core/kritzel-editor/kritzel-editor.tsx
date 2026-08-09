@@ -197,15 +197,6 @@ export class KritzelEditor {
         },
       ],
     },
-    {
-      label: 'menu.export',
-      icon: 'download',
-      group: 'export',
-      children: [
-        { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },
-        { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },
-      ],
-    },
     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
@@ -667,16 +658,6 @@ export class KritzelEditor {
   @Method()
   async exportViewportAsSvg(options?: { includeBackground?: boolean }): Promise<void> {
     return this.engineRef.exportViewportAsSvg(options);
-  }
-
-  @Method()
-  async exportSelectedObjectsAsPng(): Promise<void> {
-    return this.engineRef.exportSelectedObjectsAsPng();
-  }
-
-  @Method()
-  async exportSelectedObjectsAsSvg(): Promise<void> {
-    return this.engineRef.exportSelectedObjectsAsSvg();
   }
 
   @Method()

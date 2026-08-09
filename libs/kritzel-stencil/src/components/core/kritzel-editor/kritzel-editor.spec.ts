@@ -77,8 +77,6 @@ describe('KritzelEditor', () => {
       getScreenshot: jest.fn().mockResolvedValue(null),
       exportViewportAsPng: jest.fn().mockResolvedValue(undefined),
       exportViewportAsSvg: jest.fn().mockResolvedValue(undefined),
-      exportSelectedObjectsAsPng: jest.fn().mockResolvedValue(undefined),
-      exportSelectedObjectsAsSvg: jest.fn().mockResolvedValue(undefined),
       downloadAsJson: jest.fn().mockResolvedValue(undefined),
       importFromFile: jest.fn().mockResolvedValue(undefined),
       loadObjectsFromJson: jest.fn().mockResolvedValue(0),

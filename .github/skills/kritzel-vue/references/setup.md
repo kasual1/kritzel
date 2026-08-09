@@ -129,7 +129,7 @@ async function onReady() {
 </template>
 ```
 
-Engine-only extras: it additionally exposes `getSelectedObjectsAsSvgString`, `getSelectedObjectsAsPngDataUrl`, `exportAsJson`, `importFromJson`, `getIsPublic`, `saveSettings`, `loadSettings`, and the `workspace` prop. Editor-only extras: `controls`, `customSvgIcons`, `loginConfig`, UI visibility flags, `openLoginDialog`, `setLoginLoading`.
+Engine-only extras: it additionally exposes `exportAsJson`, `importFromJson`, `getIsPublic`, `saveSettings`, `loadSettings`, and the `workspace` prop. Editor-only extras: `controls`, `customSvgIcons`, `loginConfig`, UI visibility flags, `openLoginDialog`, `setLoginLoading`.
 
 ## Prop stability (the Vue-specific rule)
 
