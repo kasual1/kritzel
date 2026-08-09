@@ -85,11 +85,6 @@ const objectItems: ContextMenuItem[] = [
       { label: 'Send to Back', icon: 'send-to-back', action: async () => { await editor.value?.sendToBack() } },
     ],
   },
-  {
-    label: 'Export as PNG', icon: 'download', group: 'export',
-    visible: async (_menu, objects) => objects.length === 1,
-    action: async () => { await editor.value?.exportSelectedObjectsAsPng() },
-  },
   { label: 'Delete', icon: 'delete', group: 'edit', action: async () => { await editor.value?.delete() } },
 ]
 </script>

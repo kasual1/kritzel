@@ -498,22 +498,6 @@ Exports the current viewport as an SVG file and triggers a browser download.
 exportViewportAsSvg(): Promise<void>
 ```
 
-#### exportSelectedObjectsAsPng
-
-Exports currently selected objects as a PNG file download.
-
-```ts
-exportSelectedObjectsAsPng(): Promise<void>
-```
-
-#### exportSelectedObjectsAsSvg
-
-Exports currently selected objects as an SVG file download.
-
-```ts
-exportSelectedObjectsAsSvg(): Promise<void>
-```
-
 #### downloadAsJson
 
 Downloads the canvas state as a JSON file. Use the optional filename directly.
