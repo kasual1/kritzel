@@ -26,7 +26,7 @@ export interface InMemoryOptions {
  * is not desired.
  */
 export class InMemorySyncProvider implements ISyncProvider {
-  static readonly providerType = 'local' as const;
+  static readonly type = 'local' as const;
   readonly type = 'local';
   private readonly doc: Y.Doc;
   private readonly cacheKey: string;

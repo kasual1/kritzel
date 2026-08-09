@@ -4,10 +4,9 @@ import { BroadcastSyncProvider } from '../classes/providers/sync/broadcast-sync-
 import { InMemorySyncProvider } from '../classes/providers/sync/in-memory-sync-provider.class';
 
 /** Minimal stub mimicking a class-based network provider */
-const NetworkProviderStub = Object.assign(
-  class {},
-  { providerType: 'network' as const },
-) as any;
+class NetworkProviderStub {
+  static readonly type = 'network' as const;
+}
 
 describe('hasRemoteSyncProvider', () => {
   it('returns false when syncConfig is undefined', () => {
@@ -23,7 +22,7 @@ describe('hasRemoteSyncProvider', () => {
   });
 
   it('returns true when a network provider class is configured', () => {
-    expect(hasRemoteSyncProvider({ providers: [NetworkProviderStub] })).toBe(true);
+    expect(hasRemoteSyncProvider({ providers: [NetworkProviderStub as any] })).toBe(true);
   });
 
   it('returns true when a network provider factory (with type: "network") is configured', () => {

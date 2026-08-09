@@ -39,12 +39,12 @@ export interface KritzelSyncConfig {
 
 /**
  * Returns the provider type (`'local'` or `'network'`) for a given provider config entry.
- * Works for both class constructors (via a static `providerType` property) and
+ * Works for both class constructors (via a static `type` property) and
  * factory objects (via an optional `type` property on the factory).
  */
 function getProviderConfigType(config: ProviderConfig): SyncProviderType | undefined {
   if (typeof config === 'function') {
-    return (config as any).providerType as SyncProviderType | undefined;
+    return (config as typeof config & { type?: SyncProviderType }).type;
   }
   return (config as ProviderFactory).type;
 }
