@@ -77,6 +77,10 @@ export const reactThemeLight: KritzelTheme = {
   },
   snap: {
     indicatorStroke: '#087ea4',
+    indicatorStrokeInactive: 'rgba(8, 126, 164, 0.5)',
+    indicatorFill: 'rgba(8, 126, 164, 0.18)',
+    indicatorFillInactive: 'rgba(8, 126, 164, 0.12)',
+    lineStroke: 'rgba(8, 126, 164, 0.24)',
   },
   splitButton: {
     hoverBackgroundColor: 'rgba(8, 126, 164, 0.08)',

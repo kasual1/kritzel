@@ -35,7 +35,10 @@ export const vueThemeDark: KritzelTheme = {
   snap: {
     ...darkTheme.snap,
     indicatorStroke: '#42b883',
+    indicatorStrokeInactive: 'rgba(255, 255, 255, 0.45)',
     indicatorFill: 'rgba(66, 184, 131, 0.35)',
+    indicatorFillInactive: 'rgba(66, 184, 131, 0.2)',
+    lineStroke: 'rgba(66, 184, 131, 0.28)',
   },
   splitButton: {
     ...darkTheme.splitButton,
