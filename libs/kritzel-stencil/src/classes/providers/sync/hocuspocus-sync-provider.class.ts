@@ -138,7 +138,7 @@ export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'sy
  * Supports multiplexing - multiple documents can share the same WebSocket connection
  */
 export class HocuspocusSyncProvider implements ISyncProvider {
-  static readonly providerType = 'network' as const;
+  static readonly type = 'network' as const;
   readonly type = 'network';
   private provider: HocuspocusProvider;
   private isConnected: boolean = false;
