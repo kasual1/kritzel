@@ -16,6 +16,7 @@ export interface IndexedDBOptions {
  * IndexedDB sync provider for local persistence
  */
 export class IndexedDBSyncProvider implements ISyncProvider {
+  static readonly providerType = 'local' as const;
   readonly type = 'local';
   private provider: IndexeddbPersistence;
   private isConnected: boolean = false;
