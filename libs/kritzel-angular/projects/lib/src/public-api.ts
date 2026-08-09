@@ -42,6 +42,7 @@ export {
     hasRemoteSyncProvider,
 } from 'kritzel-stencil';
 
+export type {
     HTMLKritzelEditorElement,
     HTMLKritzelEngineElement,
     KritzelCustomElementRenderer,
