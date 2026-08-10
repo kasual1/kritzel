@@ -96,6 +96,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'controls',
   'globalContextMenuItems',
   'objectContextMenuItems',
+  'moreMenuItems',
   'themes',
   'theme',
   'licenseKey',

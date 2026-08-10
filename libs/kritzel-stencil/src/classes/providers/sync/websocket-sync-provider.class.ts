@@ -52,6 +52,7 @@ export interface WebSocketOptions {
  * WebSocket sync provider for real-time collaboration
  */
 export class WebSocketSyncProvider implements ISyncProvider {
+  static readonly type = 'network' as const;
   readonly type = 'network';
   private provider: WebsocketProvider;
   private isConnected: boolean = false;
@@ -87,6 +88,7 @@ export class WebSocketSyncProvider implements ISyncProvider {
    */
   static with(options?: WebSocketOptions): ProviderFactory {
     return {
+      type: 'network',
       create: (docName: string, doc: Y.Doc, runtimeOptions?: { quiet?: boolean }) => {
         const mergedOptions = runtimeOptions ? { ...options, ...runtimeOptions } : options;
         return new WebSocketSyncProvider(docName, doc, mergedOptions);
