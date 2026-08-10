@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import EditorPage from './pages/e2e/EditorPage.vue'
+import EditorHocuspocusPage from './pages/e2e/EditorHocuspocusPage.vue'
 import MultiEditorPage from './pages/e2e/MultiEditorPage.vue'
 import WrappedEditorPage from './pages/e2e/WrappedEditorPage.vue'
 import BasicUsagePage from './pages/basic-usage/BasicUsagePage.vue'
@@ -46,6 +47,7 @@ export const router = createRouter({
       path: '/e2e',
       children: [
         { path: 'editor', component: EditorPage },
+        { path: 'editor-hocuspocus', component: EditorHocuspocusPage },
         { path: 'multi-editor', component: MultiEditorPage },
         { path: 'wrapped-editor', component: WrappedEditorPage },
       ],
