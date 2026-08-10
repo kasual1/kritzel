@@ -10,7 +10,7 @@ export interface IKritzelMenuItem<T = any> {
   isSelected?: boolean;
   isEditing?: boolean;
   isDisabled?: boolean;
-  isVisible?: boolean;
+  isVisible?: boolean | (() => boolean | Promise<boolean>);
   isChildMenuOpen?: boolean;
   isNewItem?: boolean;
   childMenuAnchor?: HTMLElement;
