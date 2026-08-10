@@ -68,6 +68,7 @@ export class KritzelMoreMenu {
     } else {
       window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
       this.menuAnchor = this.host;
+      void this.resolveVisibleItems();
     }
   };
 
