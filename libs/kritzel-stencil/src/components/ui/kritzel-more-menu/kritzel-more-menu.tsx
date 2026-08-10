@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, State, Element, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, h, Prop, State, Element, Event, EventEmitter, Watch } from '@stencil/core';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
@@ -48,6 +48,18 @@ export class KritzelMoreMenu {
 
   @State() menuAnchor: HTMLElement = null;
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
+  @State() visibleItems: IKritzelMenuItem[] = [];
+
+  private visibilityResolveVersion = 0;
+
+  @Watch('items')
+  onItemsChange() {
+    void this.resolveVisibleItems();
+  }
+
+  componentWillLoad() {
+    void this.resolveVisibleItems();
+  }
 
   private toggleMenu = (event: MouseEvent): void => {
     event.stopPropagation();
@@ -56,6 +68,8 @@ export class KritzelMoreMenu {
     } else {
       window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
       this.menuAnchor = this.host;
+      this.visibleItems = this.filterVisibleItemsSync(this.items ?? []);
+      void this.resolveVisibleItems();
     }
   };
 
@@ -63,8 +77,92 @@ export class KritzelMoreMenu {
     this.menuAnchor = null;
   };
 
-  private get visibleItems(): IKritzelMenuItem[] {
-    return this.items.filter(item => item.isVisible !== false);
+  private async evaluateVisibility(visibility?: boolean | (() => boolean | Promise<boolean>)): Promise<boolean> {
+    if (typeof visibility === 'function') {
+      try {
+        return (await visibility()) !== false;
+      } catch {
+        return false;
+      }
+    }
+
+    return visibility !== false;
+  }
+
+  private evaluateVisibilitySync(visibility?: boolean | (() => boolean | Promise<boolean>)): boolean | null {
+    if (typeof visibility === 'function') {
+      try {
+        const result = visibility();
+        return result instanceof Promise ? null : result !== false;
+      } catch {
+        return false;
+      }
+    }
+
+    return visibility !== false;
+  }
+
+  private filterVisibleItemsSync(items: IKritzelMenuItem[]): IKritzelMenuItem[] {
+    return items.reduce<IKritzelMenuItem[]>((visibleItems, item) => {
+      const isVisible = this.evaluateVisibilitySync(item.isVisible);
+      if (isVisible === null || !isVisible) {
+        return visibleItems;
+      }
+
+      if (!item.children?.length) {
+        visibleItems.push(item);
+        return visibleItems;
+      }
+
+      visibleItems.push({
+        ...item,
+        children: this.filterVisibleItemsSync(item.children),
+      });
+
+      return visibleItems;
+    }, []);
+  }
+
+  private async filterVisibleItems(items: IKritzelMenuItem[]): Promise<IKritzelMenuItem[]> {
+    const resolved = await Promise.all(
+      items.map(async item => {
+        const isVisible = await this.evaluateVisibility(item.isVisible);
+        if (!isVisible) {
+          return null;
+        }
+
+        if (!item.children?.length) {
+          return item;
+        }
+
+        return {
+          ...item,
+          children: await this.filterVisibleItems(item.children),
+        };
+      }),
+    );
+
+    return resolved.filter((item): item is IKritzelMenuItem => !!item);
+  }
+
+  private async resolveVisibleItems(): Promise<void> {
+    const version = ++this.visibilityResolveVersion;
+    const items = this.items ?? [];
+    const resolvedItems = await this.filterVisibleItems(items);
+
+    if (version !== this.visibilityResolveVersion) {
+      return;
+    }
+
+    this.visibleItems = resolvedItems;
+  }
+
+  private resolveMenuLabels(items: IKritzelMenuItem[]): IKritzelMenuItem[] {
+    return items.map(item => ({
+      ...item,
+      label: this.terms[item.label as KritzelTermKey] ?? item.label,
+      children: item.children ? this.resolveMenuLabels(item.children) : undefined,
+    }));
   }
 
   private handleMenuItemSelect = (event: CustomEvent<{ item: IKritzelMenuItem; parent: IKritzelMenuItem }>): void => {
@@ -92,7 +190,7 @@ export class KritzelMoreMenu {
 
           <kritzel-portal anchor={this.menuAnchor} offsetY={this.offsetY} onClose={this.closeMenu}>
             <kritzel-menu
-              items={this.visibleItems}
+              items={this.resolveMenuLabels(this.visibleItems)}
               onItemSelect={this.handleMenuItemSelect}
             ></kritzel-menu>
           </kritzel-portal>

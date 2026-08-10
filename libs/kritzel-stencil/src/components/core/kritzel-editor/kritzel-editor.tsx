@@ -24,7 +24,7 @@ import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
-import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
+import { KritzelSyncConfig, hasRemoteSyncProvider } from '../../../interfaces/sync-config.interface';
 import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
@@ -209,6 +209,43 @@ export class KritzelEditor {
     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
+  @Prop() moreMenuItems?: IKritzelMenuItem[] = [
+    {
+      id: 'share',
+      label: 'menu.share',
+      icon: 'share',
+      isVisible: async () => hasRemoteSyncProvider(this.syncConfig),
+      action: () => {
+        if (!this.isLoggedIn && this.loginConfig) {
+          this.openLoginDialog();
+          return;
+        }
+        this.shareDialogRef.open();
+      },
+    },
+    {
+      id: 'export',
+      label: 'menu.export',
+      icon: 'upload',
+      action: async () => {
+        const preview = await this.engineRef.getScreenshot('png');
+        this.exportRef.open(preview ?? undefined);
+      },
+    },
+    {
+      id: 'import',
+      label: 'menu.import',
+      icon: 'download',
+      action: () => this.engineRef.importFromFile(),
+    },
+    {
+      id: 'settings',
+      label: 'menu.settings',
+      icon: 'settings',
+      action: () => this.settingsRef.open(),
+    },
+  ];
+
   @Prop() themes?: KritzelTheme[];
   @Prop({ mutable: true }) theme: ThemeName = 'light';
   /** License key that, when valid, removes the "Powered by Kritzel" watermark. */
@@ -286,6 +323,7 @@ export class KritzelEditor {
   @State() isNotificationDismissing: boolean = false;
   @State() contextMenuState?: KritzelContextMenuState;
   @State() normalizedControls: KritzelToolbarControl[] = [];
+  @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
 
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
@@ -341,6 +379,26 @@ export class KritzelEditor {
   @Watch('controls')
   onControlsChange(newValue: KritzelToolbarControl[]) {
     this.normalizedControls = this.normalizeControls(newValue);
+  }
+
+  @Watch('moreMenuItems')
+  onMoreMenuItemsChange() {
+    this.recomputeMoreMenuItems();
+  }
+
+  @Watch('syncConfig')
+  onSyncConfigChange() {
+    this.recomputeMoreMenuItems();
+  }
+
+  @Watch('loginConfig')
+  onLoginConfigChange() {
+    this.recomputeMoreMenuItems();
+  }
+
+  @Watch('user')
+  onUserChange() {
+    this.recomputeMoreMenuItems();
   }
 
   @Watch('activeWorkspaceId')
@@ -399,6 +457,7 @@ export class KritzelEditor {
     }
     this.resolvedTerms = await this.engineRef.getResolvedTerms();
     this.availableLocaleOptions = await this.engineRef.getAvailableLocaleOptions();
+    this.recomputeMoreMenuItems();
   }
 
   @Listen('dblclick', { passive: false })
@@ -774,13 +833,12 @@ export class KritzelEditor {
 
   componentWillLoad() {
     this.normalizedControls = this.normalizeControls(this.controls);
+    this.recomputeMoreMenuItems();
     this.loadSettingsFromStorage();
     this.applyTheme();
   }
 
-  private isTextToolConfig(
-    config?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig,
-  ): config is KritzelTextToolConfig {
+  private isTextToolConfig(config?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): config is KritzelTextToolConfig {
     return !!config && 'fontFamily' in config && 'size' in config && 'color' in config;
   }
 
@@ -800,14 +858,20 @@ export class KritzelEditor {
     });
   }
 
+  private recomputeMoreMenuItems(): void {
+    if (this.moreMenuItems) {
+      this.resolvedMoreMenuItems = this.moreMenuItems;
+      return;
+    }
+  }
+
   private applyTheme(): void {
     const themeObj = this.resolveThemeObject();
     ThemeHelper.applyThemeToElement(this.host, themeObj);
   }
 
   private resolveThemeObject(): KritzelTheme {
-    return this.themes?.find(t => t.name === this.theme)
-      ?? (this.theme === 'dark' ? darkTheme : lightTheme);
+    return this.themes?.find(t => t.name === this.theme) ?? (this.theme === 'dark' ? darkTheme : lightTheme);
   }
 
   componentDidLoad() {
@@ -849,9 +913,8 @@ export class KritzelEditor {
       syncConfig: this.syncConfig,
       assetStorageConfig: this.assetStorageConfig,
       loginConfig: this.loginConfig,
-      theme: this.theme
+      theme: this.theme,
     });
-
   }
 
   async onEngineReady(event: CustomEvent<KritzelEngineState>) {
@@ -1046,50 +1109,12 @@ export class KritzelEditor {
     this.viewportBoundaryTop = event.detail.viewportBoundaryTop ?? -Infinity;
     this.viewportBoundaryBottom = event.detail.viewportBoundaryBottom ?? Infinity;
     this.debugInfo = event.detail.debugInfo;
-    
+
     if (this.engineRef) {
       this.engineRef.saveSettings(event.detail);
     }
-    
-    this.themeChange.emit(event.detail.theme);
-  }
 
-  private get moreMenuItems(): IKritzelMenuItem[] {
-    return [
-      {
-        id: 'share',
-        label: this.resolvedTerms['menu.share'] ?? 'Share',
-        icon: 'share',
-        action: () => {
-          if (!this.isLoggedIn && this.loginConfig) {
-            this.openLoginDialog();
-            return;
-          }
-          this.shareDialogRef.open();
-        },
-      },
-      {
-        id: 'export',
-        label: this.resolvedTerms['menu.export'] ?? 'Export',
-        icon: 'upload',
-        action: async () => {
-          const preview = await this.engineRef.getScreenshot('png');
-          this.exportRef.open(preview ?? undefined);
-        },
-      },
-      {
-        id: 'import',
-        label: this.resolvedTerms['menu.import'] ?? 'Import',
-        icon: 'download',
-        action: () => this.engineRef.importFromFile(),
-      },
-      {
-        id: 'settings',
-        label: this.resolvedTerms['menu.settings'] ?? 'Settings',
-        icon: 'settings',
-        action: () => this.settingsRef.open(),
-      }
-    ];
+    this.themeChange.emit(event.detail.theme);
   }
 
   private handleToggleIsPublic = async (event: CustomEvent<boolean>): Promise<void> => {
@@ -1335,7 +1360,7 @@ export class KritzelEditor {
   render() {
     const isLoggedIn = this.isLoggedIn;
     const shouldShowCurrentUser = isLoggedIn;
-    const shouldShowLoginButton = this.isReady &&!!this.loginConfig && !isLoggedIn;
+    const shouldShowLoginButton = this.isReady && !!this.loginConfig && !isLoggedIn;
 
     return (
       <Host>
@@ -1347,201 +1372,202 @@ export class KritzelEditor {
             transition: 'opacity 0.2s ease-in-out, visibility 0.2s ease-in-out',
           }}
         >
-        <div class="top-left-buttons">
-          <kritzel-workspace-manager
-            visible={this.isWorkspaceManagerVisible}
-            workspaces={this.workspaces}
-            activeWorkspace={this.activeWorkspace}
-            terms={this.resolvedTerms}
-            onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
-            onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
-          ></kritzel-workspace-manager>
-
-          <kritzel-back-to-content visible={this.isBackToContentButtonVisible} text={this.resolvedTerms['backToContent.label'] ?? 'Back to content'} onBackToContent={() => this.backToContent()}></kritzel-back-to-content>
-        </div>
-
-        {this.activeNotification && (
-          <div class="top-center-notification-layer" role="presentation">
-            <div class={{ 'top-center-notification-container': true, 'is-dismissing': this.isNotificationDismissing }} role="presentation">
-              <kritzel-notification-card notification={this.activeNotification} locale={this.locale} onDismiss={this.dismissNotification} onHoverChange={event => this.handleNotificationHoverChange(event)}></kritzel-notification-card>
-            </div>
-          </div>
-        )}
-
-        {this.contextMenuState && this.contextMenuState.items.length > 0 && (
-          <kritzel-context-menu
-            class="context-menu"
-            items={this.contextMenuState.items}
-            objects={this.contextMenuState.objects}
-            style={{
-              position: 'absolute',
-              left: `${this.contextMenuState.position.x}px`,
-              top: `${this.contextMenuState.position.y}px`,
-              zIndex: '10002',
-            }}
-            onActionSelected={event => this.handleContextMenuActionSelected(event)}
-            onClose={() => this.hideContextMenu()}
-          ></kritzel-context-menu>
-        )}
-
-        <kritzel-engine
-          ref={el => {
-            if (el) {
-              this.engineRef = el;
-            }
-          }}
-          workspace={this.activeWorkspace}
-          activeWorkspaceId={this.activeWorkspaceId}
-          editorId={this.editorId}
-          syncConfig={this.syncConfig}
-          assetStorageConfig={this.assetStorageConfig}
-          user={this.user}
-          scaleMax={this.scaleMax}
-          lockDrawingScale={this.lockDrawingScale}
-          isObjectDistanceFadingActive={this.isObjectDistanceFadingActive}
-          scaleMin={this.scaleMin}
-          cursorTarget={this.cursorTarget}
-          isLoading={this.isLoading}
-          viewportBoundaryLeft={this.viewportBoundaryLeft}
-          viewportBoundaryRight={this.viewportBoundaryRight}
-          viewportBoundaryTop={this.viewportBoundaryTop}
-          viewportBoundaryBottom={this.viewportBoundaryBottom}
-          isPanningEnabled={this.isPanningEnabled}
-          isZoomingEnabled={this.isZoomingEnabled}
-          theme={this.theme}
-          themes={this.themes}
-          licenseKey={this.licenseKey}
-          locale={this.locale}
-          locales={this.locales}
-          fallbackLocale={this.fallbackLocale}
-          debugInfo={this.debugInfo}
-          globalContextMenuItems={this.globalContextMenuItems}
-          objectContextMenuItems={this.objectContextMenuItems}
-          onIsEngineReady={event => this.onEngineReady(event)}
-          onWorkspacesChange={event => this.handleWorkspacesChange(event)}
-          onActiveWorkspaceChange={event => this.handleActiveWorkspaceChange(event)}
-          onObjectsChange={event => this.handleObjectsChange(event)}
-          onObjectsAdded={event => this.handleObjectsAdded(event)}
-          onObjectsRemoved={event => this.handleObjectsRemoved(event)}
-          onObjectsUpdated={event => this.handleObjectsUpdated(event)}
-          onUndoStateChange={event => this.handleUndoStateChange(event)}
-          onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
-          onViewportChange={event => this.handleViewportChange(event)}
-          onAwarenessChange={event => this.handleAwarenessChange(event)}
-          onNotificationsChange={event => this.handleNotificationsChange(event)}
-          onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
-        ></kritzel-engine>
-
-        <kritzel-controls
-          visible={this.isControlsVisible}
-          class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
-          ref={el => {
-            if (el) {
-              this.controlsRef = el;
-            }
-          }}
-          controls={this.normalizedControls}
-          isUtilityPanelVisible={this.isUtilityPanelVisible}
-          undoState={this.undoState ?? undefined}
-          theme={this.theme}
-          terms={this.resolvedTerms}
-          onIsControlsReady={() => (this.isControlsReady = true)}
-        ></kritzel-controls>
-
-        <div class="bottom-left-buttons">
-          <kritzel-zoom-panel
-            visible={this.isZoomPanelVisible}
-            disabled={!this.isZoomingEnabled}
-            zoomPercent={this.currentZoomPercent}
-            terms={this.resolvedTerms}
-            onZoomIn={() => this.zoomIn()}
-            onZoomOut={() => this.zoomOut()}
-          ></kritzel-zoom-panel>
-        </div>
-
-        <div class="top-right-buttons">
-          <kritzel-settings
-            ref={el => {
-              if (el) {
-                this.settingsRef = el;
-              }
-            }}
-            shortcuts={this.shortcuts}
-            availableThemes={this.themes && this.themes.length > 0 ? this.themes.map(t => t.name) : ['light', 'dark']}
-            availableLocales={this.availableLocaleOptions}
-            settings={this.currentSettingsConfig}
-            terms={this.resolvedTerms}
-            onSettingsChange={event => this.handleSettingsChange(event)}
-          ></kritzel-settings>
-
-          <kritzel-export
-            ref={el => {
-              if (el) {
-                this.exportRef = el;
-              }
-            }}
-            workspaceName={this.activeWorkspace?.name || 'workspace'}
-            terms={this.resolvedTerms}
-            onExportPng={() => this.engineRef.exportViewportAsPng()}
-            onExportSvg={() => this.engineRef.exportViewportAsSvg()}
-            onExportJson={event => this.engineRef.downloadAsJson(event.detail)}
-          ></kritzel-export>
-
-          <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
-
-          {shouldShowCurrentUser && <kritzel-current-user user={this.user} terms={this.resolvedTerms} onClick={() => this.currentUserDialogRef?.open()}></kritzel-current-user>}
-
-          {shouldShowCurrentUser && (
-            <kritzel-current-user-dialog
-              ref={el => {
-                if (el) {
-                  this.currentUserDialogRef = el;
-                  this.currentUserDialogRef.addEventListener('logoutRequest', this.handleCurrentUserLogout);
-                }
-              }}
-              user={this.user}
+          <div class="top-left-buttons">
+            <kritzel-workspace-manager
+              visible={this.isWorkspaceManagerVisible}
+              workspaces={this.workspaces}
+              activeWorkspace={this.activeWorkspace}
               terms={this.resolvedTerms}
-            ></kritzel-current-user-dialog>
+              onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
+              onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
+            ></kritzel-workspace-manager>
+
+            <kritzel-back-to-content
+              visible={this.isBackToContentButtonVisible}
+              text={this.resolvedTerms['backToContent.label'] ?? 'Back to content'}
+              onBackToContent={() => this.backToContent()}
+            ></kritzel-back-to-content>
+          </div>
+
+          {this.activeNotification && (
+            <div class="top-center-notification-layer" role="presentation">
+              <div class={{ 'top-center-notification-container': true, 'is-dismissing': this.isNotificationDismissing }} role="presentation">
+                <kritzel-notification-card
+                  notification={this.activeNotification}
+                  locale={this.locale}
+                  onDismiss={this.dismissNotification}
+                  onHoverChange={event => this.handleNotificationHoverChange(event)}
+                ></kritzel-notification-card>
+              </div>
+            </div>
           )}
 
-          {shouldShowLoginButton && (
-            <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>
-              {this.resolvedTerms['login.dialogTitle'] ?? 'Sign in'}
-            </kritzel-button>
+          {this.contextMenuState && this.contextMenuState.items.length > 0 && (
+            <kritzel-context-menu
+              class="context-menu"
+              items={this.contextMenuState.items}
+              objects={this.contextMenuState.objects}
+              style={{
+                position: 'absolute',
+                left: `${this.contextMenuState.position.x}px`,
+                top: `${this.contextMenuState.position.y}px`,
+                zIndex: '10002',
+              }}
+              onActionSelected={event => this.handleContextMenuActionSelected(event)}
+              onClose={() => this.hideContextMenu()}
+            ></kritzel-context-menu>
           )}
 
-          <kritzel-more-menu
-            items={this.moreMenuItems}
-            visible={this.isMoreMenuVisible}
-            terms={this.resolvedTerms}
-          ></kritzel-more-menu>
-
-          <kritzel-share-dialog
+          <kritzel-engine
             ref={el => {
               if (el) {
-                this.shareDialogRef = el;
+                this.engineRef = el;
               }
             }}
-            isPublic={this.currentIsPublic}
-            workspaceId={this.activeWorkspace?.id}
-            terms={this.resolvedTerms}
-            onToggleIsPublic={this.handleToggleIsPublic}
-          ></kritzel-share-dialog>
+            workspace={this.activeWorkspace}
+            activeWorkspaceId={this.activeWorkspaceId}
+            editorId={this.editorId}
+            syncConfig={this.syncConfig}
+            assetStorageConfig={this.assetStorageConfig}
+            user={this.user}
+            scaleMax={this.scaleMax}
+            lockDrawingScale={this.lockDrawingScale}
+            isObjectDistanceFadingActive={this.isObjectDistanceFadingActive}
+            scaleMin={this.scaleMin}
+            cursorTarget={this.cursorTarget}
+            isLoading={this.isLoading}
+            viewportBoundaryLeft={this.viewportBoundaryLeft}
+            viewportBoundaryRight={this.viewportBoundaryRight}
+            viewportBoundaryTop={this.viewportBoundaryTop}
+            viewportBoundaryBottom={this.viewportBoundaryBottom}
+            isPanningEnabled={this.isPanningEnabled}
+            isZoomingEnabled={this.isZoomingEnabled}
+            theme={this.theme}
+            themes={this.themes}
+            licenseKey={this.licenseKey}
+            locale={this.locale}
+            locales={this.locales}
+            fallbackLocale={this.fallbackLocale}
+            debugInfo={this.debugInfo}
+            globalContextMenuItems={this.globalContextMenuItems}
+            objectContextMenuItems={this.objectContextMenuItems}
+            onIsEngineReady={event => this.onEngineReady(event)}
+            onWorkspacesChange={event => this.handleWorkspacesChange(event)}
+            onActiveWorkspaceChange={event => this.handleActiveWorkspaceChange(event)}
+            onObjectsChange={event => this.handleObjectsChange(event)}
+            onObjectsAdded={event => this.handleObjectsAdded(event)}
+            onObjectsRemoved={event => this.handleObjectsRemoved(event)}
+            onObjectsUpdated={event => this.handleObjectsUpdated(event)}
+            onUndoStateChange={event => this.handleUndoStateChange(event)}
+            onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
+            onViewportChange={event => this.handleViewportChange(event)}
+            onAwarenessChange={event => this.handleAwarenessChange(event)}
+            onNotificationsChange={event => this.handleNotificationsChange(event)}
+            onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
+          ></kritzel-engine>
 
-          {this.loginConfig && (
-            <kritzel-login-dialog
+          <kritzel-controls
+            visible={this.isControlsVisible}
+            class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
+            ref={el => {
+              if (el) {
+                this.controlsRef = el;
+              }
+            }}
+            controls={this.normalizedControls}
+            isUtilityPanelVisible={this.isUtilityPanelVisible}
+            undoState={this.undoState ?? undefined}
+            theme={this.theme}
+            terms={this.resolvedTerms}
+            onIsControlsReady={() => (this.isControlsReady = true)}
+          ></kritzel-controls>
+
+          <div class="bottom-left-buttons">
+            <kritzel-zoom-panel
+              visible={this.isZoomPanelVisible}
+              disabled={!this.isZoomingEnabled}
+              zoomPercent={this.currentZoomPercent}
+              terms={this.resolvedTerms}
+              onZoomIn={() => this.zoomIn()}
+              onZoomOut={() => this.zoomOut()}
+            ></kritzel-zoom-panel>
+          </div>
+
+          <div class="top-right-buttons">
+            <kritzel-settings
               ref={el => {
                 if (el) {
-                  this.loginDialogRef = el;
+                  this.settingsRef = el;
                 }
               }}
-              providers={this.loginConfig.providers}
-              dialogTitle={this.loginConfig.title ?? this.resolvedTerms['login.dialogTitle'] ?? 'Sign in'}
-              subtitle={this.loginConfig.subtitle}
-              onProviderLogin={this.handleProviderLogin}
-            ></kritzel-login-dialog>
-          )}
-        </div>
+              shortcuts={this.shortcuts}
+              availableThemes={this.themes && this.themes.length > 0 ? this.themes.map(t => t.name) : ['light', 'dark']}
+              availableLocales={this.availableLocaleOptions}
+              settings={this.currentSettingsConfig}
+              terms={this.resolvedTerms}
+              onSettingsChange={event => this.handleSettingsChange(event)}
+            ></kritzel-settings>
+
+            <kritzel-export
+              ref={el => {
+                if (el) {
+                  this.exportRef = el;
+                }
+              }}
+              workspaceName={this.activeWorkspace?.name || 'workspace'}
+              terms={this.resolvedTerms}
+              onExportPng={() => this.engineRef.exportViewportAsPng()}
+              onExportSvg={() => this.engineRef.exportViewportAsSvg()}
+              onExportJson={event => this.engineRef.downloadAsJson(event.detail)}
+            ></kritzel-export>
+
+            <kritzel-active-users users={this.activeUsers}></kritzel-active-users>
+
+            {shouldShowCurrentUser && <kritzel-current-user user={this.user} terms={this.resolvedTerms} onClick={() => this.currentUserDialogRef?.open()}></kritzel-current-user>}
+
+            {shouldShowCurrentUser && (
+              <kritzel-current-user-dialog
+                ref={el => {
+                  if (el) {
+                    this.currentUserDialogRef = el;
+                    this.currentUserDialogRef.addEventListener('logoutRequest', this.handleCurrentUserLogout);
+                  }
+                }}
+                user={this.user}
+                terms={this.resolvedTerms}
+              ></kritzel-current-user-dialog>
+            )}
+
+            {shouldShowLoginButton && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>{this.resolvedTerms['login.dialogTitle'] ?? 'Sign in'}</kritzel-button>}
+
+            <kritzel-more-menu items={this.resolvedMoreMenuItems} visible={this.isMoreMenuVisible} terms={this.resolvedTerms}></kritzel-more-menu>
+
+            <kritzel-share-dialog
+              ref={el => {
+                if (el) {
+                  this.shareDialogRef = el;
+                }
+              }}
+              isPublic={this.currentIsPublic}
+              workspaceId={this.activeWorkspace?.id}
+              terms={this.resolvedTerms}
+              onToggleIsPublic={this.handleToggleIsPublic}
+            ></kritzel-share-dialog>
+
+            {this.loginConfig && (
+              <kritzel-login-dialog
+                ref={el => {
+                  if (el) {
+                    this.loginDialogRef = el;
+                  }
+                }}
+                providers={this.loginConfig.providers}
+                dialogTitle={this.loginConfig.title ?? this.resolvedTerms['login.dialogTitle'] ?? 'Sign in'}
+                subtitle={this.loginConfig.subtitle}
+                onProviderLogin={this.handleProviderLogin}
+              ></kritzel-login-dialog>
+            )}
+          </div>
         </div>
       </Host>
     );

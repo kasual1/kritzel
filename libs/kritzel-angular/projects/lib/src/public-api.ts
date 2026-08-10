@@ -39,6 +39,7 @@ export {
     FR_LOCALE,
     DEFAULT_BRUSH_CONFIG,
     DEFAULT_TEXT_CONFIG,
+    hasRemoteSyncProvider,
 } from 'kritzel-stencil';
 
 export type {
