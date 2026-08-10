@@ -68,6 +68,7 @@ export class KritzelMoreMenu {
     } else {
       window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
       this.menuAnchor = this.host;
+      this.visibleItems = this.filterVisibleItemsSync(this.items ?? []);
       void this.resolveVisibleItems();
     }
   };
@@ -86,6 +87,40 @@ export class KritzelMoreMenu {
     }
 
     return visibility !== false;
+  }
+
+  private evaluateVisibilitySync(visibility?: boolean | (() => boolean | Promise<boolean>)): boolean | null {
+    if (typeof visibility === 'function') {
+      try {
+        const result = visibility();
+        return result instanceof Promise ? null : result !== false;
+      } catch {
+        return false;
+      }
+    }
+
+    return visibility !== false;
+  }
+
+  private filterVisibleItemsSync(items: IKritzelMenuItem[]): IKritzelMenuItem[] {
+    return items.reduce<IKritzelMenuItem[]>((visibleItems, item) => {
+      const isVisible = this.evaluateVisibilitySync(item.isVisible);
+      if (isVisible === null || !isVisible) {
+        return visibleItems;
+      }
+
+      if (!item.children?.length) {
+        visibleItems.push(item);
+        return visibleItems;
+      }
+
+      visibleItems.push({
+        ...item,
+        children: this.filterVisibleItemsSync(item.children),
+      });
+
+      return visibleItems;
+    }, []);
   }
 
   private async filterVisibleItems(items: IKritzelMenuItem[]): Promise<IKritzelMenuItem[]> {
