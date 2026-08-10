@@ -52,6 +52,11 @@ export interface ISyncProvider {
  * Factory function type for creating provider instances
  */
 export interface ProviderFactory {
+  /**
+   * Whether this factory creates local or network providers.
+   * Used to determine UI capabilities such as the share option.
+   */
+  readonly type?: SyncProviderType;
   create(docName: string, doc: Y.Doc, options?: { quiet?: boolean }): ISyncProvider;
 }
 
