@@ -8,6 +8,7 @@ import { ISyncProvider } from '../../../interfaces/sync-provider.interface';
  * This is a lightweight alternative to y-webrtc for browser-tab-only sync
  */
 export class BroadcastSyncProvider implements ISyncProvider {
+  static readonly type = 'local' as const;
   readonly type = 'local';
   private readonly doc: Y.Doc;
   private readonly channel: BroadcastChannel;

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { userResolver } from './resolvers/user.resolver';
 import { EditorPageComponent } from './e2e/editor-page.component';
+import { EditorHocuspocusPageComponent } from './e2e/editor-hocuspocus-page.component';
 import { MultiEditorPageComponent } from './e2e/multi-editor-page.component';
 import { WrappedEditorPageComponent } from './e2e/wrapped-editor-page.component';
 import { CustomContextMenuCanvasQuickActionsComponent } from './concepts/context-menus/custom-context-menu-canvas-quick-actions.component';
@@ -45,6 +46,7 @@ export const routes: Routes = [
     path: 'e2e',
     children: [
       { path: 'editor', component: EditorPageComponent },
+      { path: 'editor-hocuspocus', component: EditorHocuspocusPageComponent },
       { path: 'multi-editor', component: MultiEditorPageComponent },
       { path: 'wrapped-editor', component: WrappedEditorPageComponent },
     ],

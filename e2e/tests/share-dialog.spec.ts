@@ -15,26 +15,24 @@ async function closeShareDialog(page: import('@playwright/test').Page) {
   await expect(page.locator('kritzel-share-dialog kritzel-dialog[is-open]')).toHaveCount(0);
 }
 
-async function openWorkspaceMenuForItem(page: import('@playwright/test').Page, workspaceId: string) {
-  const menuItem = page.locator(`[data-testid="menu-item-${workspaceId}"]:visible`).first();
-  if (await menuItem.isVisible()) {
-    return menuItem;
-  }
+async function isWorkspaceMarkedShared(page: import('@playwright/test').Page, workspaceId: string) {
+  return page.evaluate((id: string) => {
+    const manager = document.querySelector('kritzel-workspace-manager') as HTMLElement | null;
+    if (!manager?.shadowRoot) {
+      return false;
+    }
 
-  const menuButton = page.locator('kritzel-workspace-manager button[aria-label="Open menu"]');
-  await menuButton.click();
-  if (await menuItem.isVisible()) {
-    return menuItem;
-  }
+    const splitButton = manager.shadowRoot.querySelector('kritzel-split-button') as (HTMLElement & { items?: Array<{ id: string; icon?: string }> }) | null;
+    const items = Array.isArray(splitButton?.items) ? splitButton.items : [];
+    const workspaceItem = items.find(item => item.id === id);
 
-  await menuButton.click();
-  await expect(menuItem).toBeVisible();
-  return menuItem;
+    return workspaceItem?.icon === 'users-round';
+  }, workspaceId);
 }
 
 test.describe('Share dialog', () => {
   test.beforeEach(async ({ editorPage }) => {
-    await editorPage.goto();
+    await editorPage.goto('/e2e/editor-hocuspocus');
     await editorPage.waitForReady();
   });
 
@@ -94,12 +92,7 @@ test.describe('Share dialog', () => {
 
     await closeShareDialog(page);
 
-    await expect.poll(async () => {
-      const workspaceItemWhenShared = await openWorkspaceMenuForItem(page, activeWorkspace.id);
-      return workspaceItemWhenShared.evaluate(item => {
-        return !!item.shadowRoot?.querySelector('.menu-item-content.left span[title]');
-      });
-    }, { timeout: 10_000 }).toBe(true);
+    await expect.poll(async () => isWorkspaceMarkedShared(page, activeWorkspace.id), { timeout: 10_000 }).toBe(true);
 
     await openShareDialog(page);
 
@@ -119,12 +112,7 @@ test.describe('Share dialog', () => {
 
     await closeShareDialog(page);
 
-    await expect.poll(async () => {
-      const workspaceItemWhenPrivate = await openWorkspaceMenuForItem(page, activeWorkspace.id);
-      return workspaceItemWhenPrivate.evaluate(item => {
-        return !!item.shadowRoot?.querySelector('.menu-item-content.left span[title]');
-      });
-    }).toBe(false);
+    await expect.poll(async () => isWorkspaceMarkedShared(page, activeWorkspace.id)).toBe(false);
   });
 
 });

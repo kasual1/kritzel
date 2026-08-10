@@ -514,4 +514,55 @@ describe('KritzelEditor', () => {
       keyboardSpy.mockRestore();
     });
   });
+
+  describe('moreMenuItems share item visibility', () => {
+    it('should hide the share item when syncConfig has no providers', async () => {
+      component.syncConfig = { providers: [] };
+      (component as any).onSyncConfigChange();
+      const shareItem = (component as any).resolvedMoreMenuItems.find((item: any) => item.id === 'share');
+      expect(typeof shareItem.isVisible).toBe('function');
+      await expect(shareItem.isVisible()).resolves.toBe(false);
+    });
+
+    it('should hide the share item when syncConfig is undefined', async () => {
+      component.syncConfig = undefined;
+      (component as any).onSyncConfigChange();
+      const shareItem = (component as any).resolvedMoreMenuItems.find((item: any) => item.id === 'share');
+      expect(typeof shareItem.isVisible).toBe('function');
+      await expect(shareItem.isVisible()).resolves.toBe(false);
+    });
+
+    it('should hide the share item when only local providers are configured', async () => {
+      const localFactory = {
+        type: 'local' as const,
+        create: jest.fn(),
+      };
+      component.syncConfig = { providers: [localFactory] };
+      (component as any).onSyncConfigChange();
+      const shareItem = (component as any).resolvedMoreMenuItems.find((item: any) => item.id === 'share');
+      expect(typeof shareItem.isVisible).toBe('function');
+      await expect(shareItem.isVisible()).resolves.toBe(false);
+    });
+
+    it('should show the share item when a network provider factory is configured', async () => {
+      const networkFactory = {
+        type: 'network' as const,
+        create: jest.fn(),
+      };
+      component.syncConfig = { providers: [networkFactory] };
+      (component as any).onSyncConfigChange();
+      const shareItem = (component as any).resolvedMoreMenuItems.find((item: any) => item.id === 'share');
+      expect(typeof shareItem.isVisible).toBe('function');
+      await expect(shareItem.isVisible()).resolves.toBe(true);
+    });
+
+    it('should use custom moreMenuItems when provided', () => {
+      const customItems = [{ id: 'custom', label: 'Custom' }];
+      component.moreMenuItems = customItems as any;
+
+      (component as any).onMoreMenuItemsChange();
+
+      expect((component as any).resolvedMoreMenuItems).toStrictEqual(customItems);
+    });
+  });
 });

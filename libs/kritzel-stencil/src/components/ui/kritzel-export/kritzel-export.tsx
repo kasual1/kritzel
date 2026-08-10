@@ -147,7 +147,8 @@ export class KritzelExport {
 
             {this.activeTab === 'viewport' && this.renderViewportExport()}
             {this.activeTab === 'workspace' && this.renderWorkspaceExport()}
-
+          </div>
+          <div slot="footer">
             <button class="export-primary-button" onClick={this.handleExport}>
               {this.terms['export.exportButton'] ?? 'Export'}
             </button>
