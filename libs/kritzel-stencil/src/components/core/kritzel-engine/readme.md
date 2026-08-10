@@ -168,6 +168,23 @@ Type: `Promise<void>`
 
 
 
+### `canExportSelectedObjectAs(format: KritzelObjectExportFormat) => Promise<boolean>`
+
+Checks whether the currently selected object supports a specific export format.
+Returns false when none or multiple objects are selected.
+
+#### Parameters
+
+| Name     | Type             | Description |
+| -------- | ---------------- | ----------- |
+| `format` | `"svg" \| "png"` |             |
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+
+
 ### `centerAllObjects(animate?: boolean) => Promise<boolean>`
 
 Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered.
@@ -380,32 +397,16 @@ Type: `Promise<string>`
 
 A JSON string representing the complete workspace state.
 
-### `exportSelectedObjectsAsPng(options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<void>`
+### `exportSelectedObject(format: KritzelObjectExportFormat) => Promise<void>`
 
-Exports the currently selected objects as a PNG file and triggers a browser download.
-
-#### Parameters
-
-| Name      | Type                                                               | Description                                                        |
-| --------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `options` | `{ theme?: "light" \| "dark"; padding?: number; scale?: number; }` | - Optional export settings (theme, padding, scale for resolution). |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `exportSelectedObjectsAsSvg(options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<void>`
-
-Exports the currently selected objects as an SVG file and triggers a browser download.
-Creates clean, standards-compliant SVG markup suitable for import into vector editors.
+Exports the currently selected object in the requested format and triggers a file download.
+Only supports single selection.
 
 #### Parameters
 
-| Name      | Type                                               | Description                                  |
-| --------- | -------------------------------------------------- | -------------------------------------------- |
-| `options` | `{ theme?: "light" \| "dark"; padding?: number; }` | - Optional export settings (theme, padding). |
+| Name     | Type             | Description |
+| -------- | ---------------- | ----------- |
+| `format` | `"svg" \| "png"` |             |
 
 #### Returns
 
@@ -596,6 +597,17 @@ Type: `Promise<string>`
 
 A data URL string of the captured image.
 
+### `getSelectedObjectSupportedExportFormats() => Promise<KritzelObjectExportFormat[]>`
+
+Returns export formats supported by the currently selected object.
+Only returns formats when exactly one object is selected.
+
+#### Returns
+
+Type: `Promise<KritzelObjectExportFormat[]>`
+
+
+
 ### `getSelectedObjects() => Promise<KritzelBaseObject<any>[]>`
 
 Returns the currently selected objects. Returns an empty array if nothing is selected.
@@ -605,40 +617,6 @@ Returns the currently selected objects. Returns an empty array if nothing is sel
 Type: `Promise<KritzelBaseObject<any>[]>`
 
 
-
-### `getSelectedObjectsAsPngDataUrl(options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<string | null>`
-
-Generates a PNG data URL from the currently selected objects.
-Converts the SVG representation to a rasterized PNG image.
-
-#### Parameters
-
-| Name      | Type                                                               | Description                                                        |
-| --------- | ------------------------------------------------------------------ | ------------------------------------------------------------------ |
-| `options` | `{ theme?: "light" \| "dark"; padding?: number; scale?: number; }` | - Optional export settings (theme, padding, scale for resolution). |
-
-#### Returns
-
-Type: `Promise<string>`
-
-PNG data URL string, or null if no objects are selected.
-
-### `getSelectedObjectsAsSvgString(options?: { theme?: "light" | "dark"; padding?: number; rasterSafeForCanvas?: boolean; }) => Promise<string | null>`
-
-Generates an SVG string from the currently selected objects.
-Creates clean, standards-compliant SVG markup by directly serializing object properties.
-
-#### Parameters
-
-| Name      | Type                                                                              | Description                                                                      |
-| --------- | --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `options` | `{ theme?: "light" \| "dark"; padding?: number; rasterSafeForCanvas?: boolean; }` | - Optional export settings (theme, padding, raster-safe mode for canvas export). |
-
-#### Returns
-
-Type: `Promise<string>`
-
-SVG markup string, or null if no objects are selected.
 
 ### `getViewport() => Promise<KritzelViewportState>`
 

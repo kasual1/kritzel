@@ -77,8 +77,9 @@ describe('KritzelEditor', () => {
       getScreenshot: jest.fn().mockResolvedValue(null),
       exportViewportAsPng: jest.fn().mockResolvedValue(undefined),
       exportViewportAsSvg: jest.fn().mockResolvedValue(undefined),
-      exportSelectedObjectsAsPng: jest.fn().mockResolvedValue(undefined),
-      exportSelectedObjectsAsSvg: jest.fn().mockResolvedValue(undefined),
+      getSelectedObjectSupportedExportFormats: jest.fn().mockResolvedValue([]),
+      canExportSelectedObjectAs: jest.fn().mockResolvedValue(false),
+      exportSelectedObject: jest.fn().mockResolvedValue(undefined),
       downloadAsJson: jest.fn().mockResolvedValue(undefined),
       importFromFile: jest.fn().mockResolvedValue(undefined),
       loadObjectsFromJson: jest.fn().mockResolvedValue(0),
@@ -218,6 +219,21 @@ describe('KritzelEditor', () => {
       const objects = [{ id: 'obj-1' }] as unknown as KritzelBaseObject[];
       await component.centerObjects(objects, false);
       expect(mockEngine.centerObjects).toHaveBeenCalledWith(objects, false);
+    });
+
+    it('should call getSelectedObjectSupportedExportFormats on engine', async () => {
+      await component.getSelectedObjectSupportedExportFormats();
+      expect(mockEngine.getSelectedObjectSupportedExportFormats).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call canExportSelectedObjectAs on engine', async () => {
+      await component.canExportSelectedObjectAs('png');
+      expect(mockEngine.canExportSelectedObjectAs).toHaveBeenCalledWith('png');
+    });
+
+    it('should call exportSelectedObject on engine', async () => {
+      await component.exportSelectedObject('svg');
+      expect(mockEngine.exportSelectedObject).toHaveBeenCalledWith('svg');
     });
   });
 

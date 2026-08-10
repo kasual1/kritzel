@@ -52,15 +52,6 @@ export function CustomContextMenuSmartConditionalPage() {
         },
       },
       {
-        label: "Export as PNG",
-        icon: "download",
-        group: "export",
-        visible: async (_menu, objects) => objects.length === 1,
-        action: async () => {
-          await editorRef.current?.exportSelectedObjectsAsPng();
-        },
-      },
-      {
         label: "Delete",
         icon: "delete",
         group: "destructive",

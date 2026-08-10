@@ -7,6 +7,7 @@ import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelCore } from '../core/core.class';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
+import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
 
 export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelPath';
@@ -665,6 +666,18 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
     }
 
     return null;
+  }
+
+  getSupportedExportFormats(): KritzelObjectExportFormat[] {
+    return ['svg'];
+  }
+
+  async exportAs(format: KritzelObjectExportFormat, context: KritzelObjectExportContext): Promise<string | null> {
+    if (format !== 'svg') {
+      return null;
+    }
+
+    return context.getObjectAsSvgDataUrl(this);
   }
 }
 

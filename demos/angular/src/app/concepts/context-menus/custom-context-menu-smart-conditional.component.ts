@@ -77,15 +77,6 @@ export class CustomContextMenuSmartConditionalComponent {
       group: 'clipboard',
     },
     {
-      label: 'Export as PNG',
-      action: () => {
-        this.editor.exportSelectedObjectsAsPng();
-      },
-      icon: 'download',
-      group: 'export',
-      visible: async (_menu, objects) => objects.length === 1,
-    },
-    {
       label: 'Delete',
       action: () => {
         this.editor.delete();
