@@ -31,6 +31,7 @@ import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
+import { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
 import { Element, Event } from "@stencil/core";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelNotification } from "./interfaces/notification.interface";
@@ -74,6 +75,7 @@ export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
+export { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
 export { Element, Event } from "@stencil/core";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelNotification } from "./interfaces/notification.interface";
@@ -366,6 +368,7 @@ export namespace Components {
         "beginSceneBootstrap": () => Promise<void>;
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "canExportSelectedObjectAs": (format: KritzelObjectExportFormat) => Promise<boolean>;
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
@@ -406,8 +409,7 @@ export namespace Components {
         "editorId"?: string;
         "enable": () => Promise<void>;
         "endSceneBootstrap": () => Promise<void>;
-        "exportSelectedObjectsAsPng": () => Promise<void>;
-        "exportSelectedObjectsAsSvg": () => Promise<void>;
+        "exportSelectedObject": (format: KritzelObjectExportFormat) => Promise<void>;
         "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
         "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
         /**
@@ -431,6 +433,7 @@ export namespace Components {
         "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
         "getObjectsTotalCount": () => Promise<number>;
         "getScreenshot": (format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>;
+        "getSelectedObjectSupportedExportFormats": () => Promise<KritzelObjectExportFormat[]>;
         "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
         "getViewport": () => Promise<KritzelViewportState>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
@@ -506,7 +509,7 @@ export namespace Components {
          */
         "moreMenuItems"?: IKritzelMenuItem[];
         /**
-          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'menu.export',       icon: 'download',       group: 'export',       children: [         { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.export',       icon: 'upload',       group: 'clipboard',       visible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
@@ -643,6 +646,10 @@ export namespace Components {
          */
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
         /**
+          * Checks whether the currently selected object supports a specific export format. Returns false when none or multiple objects are selected.
+         */
+        "canExportSelectedObjectAs": (format: KritzelObjectExportFormat) => Promise<boolean>;
+        /**
           * Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered. Calculates the combined bounding box of all objects and centers the viewport to show them.
           * @param animate - Whether to animate the viewport transition (default: true).
           * @returns `true` if objects were found and the viewport was adjusted, `false` otherwise.
@@ -733,15 +740,9 @@ export namespace Components {
          */
         "exportAsJson": () => Promise<string>;
         /**
-          * Exports the currently selected objects as a PNG file and triggers a browser download.
-          * @param options - Optional export settings (theme, padding, scale for resolution).
+          * Exports the currently selected object in the requested format and triggers a file download. Only supports single selection.
          */
-        "exportSelectedObjectsAsPng": (options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<void>;
-        /**
-          * Exports the currently selected objects as an SVG file and triggers a browser download. Creates clean, standards-compliant SVG markup suitable for import into vector editors.
-          * @param options - Optional export settings (theme, padding).
-         */
-        "exportSelectedObjectsAsSvg": (options?: { theme?: "light" | "dark"; padding?: number; }) => Promise<void>;
+        "exportSelectedObject": (format: KritzelObjectExportFormat) => Promise<void>;
         /**
           * Exports the current viewport as a PNG file and triggers a browser download.
           * @param options - Optional export settings.
@@ -822,21 +823,13 @@ export namespace Components {
          */
         "getScreenshot": (format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>;
         /**
+          * Returns export formats supported by the currently selected object. Only returns formats when exactly one object is selected.
+         */
+        "getSelectedObjectSupportedExportFormats": () => Promise<KritzelObjectExportFormat[]>;
+        /**
           * Returns the currently selected objects. Returns an empty array if nothing is selected.
          */
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
-        /**
-          * Generates a PNG data URL from the currently selected objects. Converts the SVG representation to a rasterized PNG image.
-          * @param options - Optional export settings (theme, padding, scale for resolution).
-          * @returns PNG data URL string, or null if no objects are selected.
-         */
-        "getSelectedObjectsAsPngDataUrl": (options?: { theme?: "light" | "dark"; padding?: number; scale?: number; }) => Promise<string | null>;
-        /**
-          * Generates an SVG string from the currently selected objects. Creates clean, standards-compliant SVG markup by directly serializing object properties.
-          * @param options - Optional export settings (theme, padding, raster-safe mode for canvas export).
-          * @returns SVG markup string, or null if no objects are selected.
-         */
-        "getSelectedObjectsAsSvgString": (options?: { theme?: "light" | "dark"; padding?: number; rasterSafeForCanvas?: boolean; }) => Promise<string | null>;
         /**
           * Returns the current viewport state including position, scale, and dimensions.
           * @returns The current viewport state.
@@ -3011,7 +3004,7 @@ declare namespace LocalJSX {
          */
         "moreMenuItems"?: IKritzelMenuItem[];
         /**
-          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: 'menu.export',       icon: 'download',       group: 'export',       children: [         { label: 'menu.exportAsSvg', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsSvg() },         { label: 'menu.exportAsPng', icon: 'download', action: () => this.engineRef.exportSelectedObjectsAsPng() },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.export',       icon: 'upload',       group: 'clipboard',       visible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;

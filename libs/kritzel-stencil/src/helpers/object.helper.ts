@@ -18,4 +18,22 @@ export class ObjectHelper {
   static isClass<T>(object: unknown, className: string): object is T {
     return !!object && (object as { __class__?: string }).__class__ === className;
   }
+
+  static isKritzelExportable(object: unknown): object is { getSupportedExportFormats(): string[]; exportAs(format: string, context: unknown): Promise<string | null> } {
+    if (!object || typeof object !== 'object') {
+      return false;
+    }
+
+    const candidate = object as {
+      getSupportedExportFormats?: () => unknown;
+      exportAs?: (format: unknown, context: unknown) => unknown;
+    };
+
+    if (typeof candidate.getSupportedExportFormats !== 'function' || typeof candidate.exportAs !== 'function') {
+      return false;
+    }
+
+    const formats = candidate.getSupportedExportFormats();
+    return Array.isArray(formats) && formats.length > 0;
+  }
 }

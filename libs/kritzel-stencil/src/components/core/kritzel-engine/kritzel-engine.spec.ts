@@ -371,6 +371,67 @@ describe('KritzelEngine', () => {
 
       expect(result).toBe(objects);
     });
+
+    it('getSelectedObjectSupportedExportFormats returns empty when selection is not a single exportable object', async () => {
+      core.store.selectionGroup = { objects: [{ id: 'a' }, { id: 'b' }] };
+
+      const formats = await engine.getSelectedObjectSupportedExportFormats();
+
+      expect(formats).toEqual([]);
+    });
+
+    it('canExportSelectedObjectAs checks supported formats for a single exportable object', async () => {
+      const exportableObject = {
+        id: 'a',
+        __class__: 'KritzelPath',
+        getSupportedExportFormats: () => ['svg'],
+        exportAs: jest.fn(),
+      } as any;
+      core.store.selectionGroup = { objects: [exportableObject] };
+
+      await expect(engine.canExportSelectedObjectAs('svg')).resolves.toBe(true);
+      await expect(engine.canExportSelectedObjectAs('png')).resolves.toBe(false);
+    });
+
+    it('exportSelectedObject no-ops when object is not exportable', async () => {
+      core.store.selectionGroup = { objects: [{ id: 'a', __class__: 'KritzelText' }] };
+      const createElementSpy = jest.spyOn(document, 'createElement');
+
+      await engine.exportSelectedObject('png');
+
+      expect(createElementSpy).not.toHaveBeenCalled();
+      createElementSpy.mockRestore();
+    });
+
+    it('exportSelectedObject downloads exported data URL for single exportable object', async () => {
+      const exportAs = jest.fn().mockResolvedValue('data:image/png;base64,abc');
+      const exportableObject = {
+        id: 'a',
+        __class__: 'KritzelImage',
+        getSupportedExportFormats: () => ['png'],
+        exportAs,
+      } as any;
+      core.store.selectionGroup = { objects: [exportableObject] };
+      core.store.state.activeWorkspace = { name: 'Test Workspace' } as any;
+
+      const click = jest.fn();
+      const anchor = { click } as any;
+      const originalCreateElement = document.createElement.bind(document);
+      const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation(((tagName: string) => {
+        if (tagName.toLowerCase() === 'a') {
+          return anchor;
+        }
+        return originalCreateElement(tagName);
+      }) as any);
+
+      await engine.exportSelectedObject('png');
+
+      expect(exportAs).toHaveBeenCalledTimes(1);
+      expect(click).toHaveBeenCalledTimes(1);
+      expect(anchor.href).toBe('data:image/png;base64,abc');
+      expect(anchor.download).toMatch(/^Test Workspace-image-.*\.png$/);
+      createElementSpy.mockRestore();
+    });
   });
 
   describe('clipboard / object lifecycle delegation', () => {

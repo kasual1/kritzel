@@ -64,4 +64,53 @@ describe('ObjectHelper', () => {
       expect(ObjectHelper.isEmpty(instance)).toBe(false);
     });
   });
+
+  describe('isKritzelExportable', () => {
+    it('should return false for null', () => {
+      expect(ObjectHelper.isKritzelExportable(null)).toBe(false);
+    });
+
+    it('should return false when getSupportedExportFormats is missing', () => {
+      const candidate = {
+        exportAs: async () => 'data:image/png;base64,abc',
+      };
+
+      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(false);
+    });
+
+    it('should return false when exportAs is missing', () => {
+      const candidate = {
+        getSupportedExportFormats: () => ['png'],
+      };
+
+      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(false);
+    });
+
+    it('should return false when supported formats are empty', () => {
+      const candidate = {
+        getSupportedExportFormats: () => [],
+        exportAs: async () => 'data:image/png;base64,abc',
+      };
+
+      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(false);
+    });
+
+    it('should return false when supported formats are not an array', () => {
+      const candidate = {
+        getSupportedExportFormats: () => 'png',
+        exportAs: async () => 'data:image/png;base64,abc',
+      };
+
+      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(false);
+    });
+
+    it('should return true for valid exportable objects', () => {
+      const candidate = {
+        getSupportedExportFormats: () => ['png'],
+        exportAs: async () => 'data:image/png;base64,abc',
+      };
+
+      expect(ObjectHelper.isKritzelExportable(candidate)).toBe(true);
+    });
+  });
 });

@@ -56,6 +56,7 @@ export * from './classes/registries/font-registry.class';
 
 export * from './interfaces/toolbar-control.interface';
 export * from './interfaces/menu-item.interface';
+export * from './interfaces/object-export.interface';
 export * from './interfaces/object-change-event.interface';
 export * from './interfaces/custom-element-renderer.interface';
 export * from './interfaces/sync-provider.interface';

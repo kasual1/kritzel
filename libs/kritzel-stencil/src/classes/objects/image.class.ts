@@ -3,6 +3,7 @@ import { KritzelAssetLoadState } from '../../interfaces/asset.interface';
 import { AssetNotFoundError } from '../providers/assets/asset-resolver.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelMathHelper } from '../../helpers/math.helper';
+import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
 
 /**
  * Represents an image object on the canvas.
@@ -534,5 +535,18 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
       scaledHeight = img.height * scaleRatio;
     }
 
-    return { scaledWidth, scaledHeight };  }
+    return { scaledWidth, scaledHeight };
+  }
+
+  getSupportedExportFormats(): KritzelObjectExportFormat[] {
+    return ['png'];
+  }
+
+  async exportAs(format: KritzelObjectExportFormat, context: KritzelObjectExportContext): Promise<string | null> {
+    if (format !== 'png') {
+      return null;
+    }
+
+    return context.getObjectAsPngDataUrl(this);
+  }
 }

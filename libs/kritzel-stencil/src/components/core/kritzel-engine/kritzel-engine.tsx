@@ -38,7 +38,6 @@ import { KritzelSyncConfig } from '../../../interfaces/sync-config.interface';
 import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { throttle } from 'lodash';
 import { KritzelColorHelper } from '../../../helpers/color.helper';
-import { KritzelSvgExportHelper } from '../../../helpers/svg-export.helper';
 import { toPng, toSvg } from 'html-to-image';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 import { KritzelTheme, ThemeName } from '../../../interfaces/theme.interface';
@@ -53,6 +52,8 @@ import { IKritzelUser } from '../../../interfaces/user.interface';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
 import { resolveTextToolAvailableFonts } from '../../../constants/text-tool-fonts.constants';
 import { KritzelContextMenuState } from '../../../interfaces/context-menu-state.interface';
+import { KritzelExportable, KritzelObjectExportContext, KritzelObjectExportFormat } from '../../../interfaces/object-export.interface';
+import { KritzelSvgExportHelper } from '../../../helpers/svg-export.helper';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
 
@@ -1596,10 +1597,7 @@ export class KritzelEngine {
         return;
       }
 
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = dataUrl;
-      link.click();
+      this.triggerDataUrlDownload(dataUrl, filename);
     } catch (error) {
       console.error('Failed to export viewport as PNG:', error);
     }
@@ -1624,152 +1622,66 @@ export class KritzelEngine {
         return;
       }
 
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = dataUrl;
-      link.click();
+      this.triggerDataUrlDownload(dataUrl, filename);
     } catch (error) {
       console.error('Failed to export viewport as SVG:', error);
     }
   }
 
   /**
-   * Generates an SVG string from the currently selected objects.
-   * Creates clean, standards-compliant SVG markup by directly serializing object properties.
-   * @param options - Optional export settings (theme, padding, raster-safe mode for canvas export).
-   * @returns SVG markup string, or null if no objects are selected.
+   * Returns export formats supported by the currently selected object.
+   * Only returns formats when exactly one object is selected.
    */
   @Method()
-  async getSelectedObjectsAsSvgString(options?: { theme?: 'light' | 'dark'; padding?: number; rasterSafeForCanvas?: boolean }): Promise<string | null> {
-    const selectedObjects = await this.getSelectedObjects();
-    if (!selectedObjects || selectedObjects.length === 0) {
-      return null;
+  async getSelectedObjectSupportedExportFormats(): Promise<KritzelObjectExportFormat[]> {
+    const selected = this.getSingleSelectedExportableObject();
+    if (!selected) {
+      return [];
     }
 
-    const theme = options?.theme ?? this.core.themeManager.getStoredTheme();
-
-    // Inline image bytes as data URLs so they survive both standalone SVG
-    // files and rasterization to PNG (a `blob:` href is not loaded when an
-    // SVG is drawn into a canvas, which otherwise yields a broken image).
-    const imageDataUrls = await KritzelSvgExportHelper.resolveImageDataUrls(selectedObjects, this.core.assetResolver);
-
-    return KritzelSvgExportHelper.generateSvg(selectedObjects, {
-      theme,
-      padding: options?.padding ?? 0,
-      includeXmlDeclaration: true,
-      rasterSafeForCanvas: options?.rasterSafeForCanvas ?? false,
-      imageDataUrls,
-    });
+    return selected.getSupportedExportFormats();
   }
 
   /**
-   * Exports the currently selected objects as an SVG file and triggers a browser download.
-   * Creates clean, standards-compliant SVG markup suitable for import into vector editors.
-   * @param options - Optional export settings (theme, padding).
+   * Checks whether the currently selected object supports a specific export format.
+   * Returns false when none or multiple objects are selected.
    */
   @Method()
-  async exportSelectedObjectsAsSvg(options?: { theme?: 'light' | 'dark'; padding?: number }): Promise<void> {
+  async canExportSelectedObjectAs(format: KritzelObjectExportFormat): Promise<boolean> {
+    const selected = this.getSingleSelectedExportableObject();
+    if (!selected) {
+      return false;
+    }
+
+    return selected.getSupportedExportFormats().includes(format);
+  }
+
+  /**
+   * Exports the currently selected object in the requested format and triggers a file download.
+   * Only supports single selection.
+   */
+  @Method()
+  async exportSelectedObject(format: KritzelObjectExportFormat): Promise<void> {
+    const selected = this.getSingleSelectedExportableObject();
+    if (!selected) {
+      return;
+    }
+
     try {
-      const svgString = await this.getSelectedObjectsAsSvgString(options);
-      if (!svgString) {
-        console.warn('No objects selected for SVG export');
-        return;
-      }
-
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `selection-${timestamp}.svg`;
-
-      const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = url;
-      link.click();
-
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Failed to export selected objects as SVG:', error);
-    }
-  }
-
-  /**
-   * Generates a PNG data URL from the currently selected objects.
-   * Converts the SVG representation to a rasterized PNG image.
-   * @param options - Optional export settings (theme, padding, scale for resolution).
-   * @returns PNG data URL string, or null if no objects are selected.
-   */
-  @Method()
-  async getSelectedObjectsAsPngDataUrl(options?: { theme?: 'light' | 'dark'; padding?: number; scale?: number }): Promise<string | null> {
-    const svgString = await this.getSelectedObjectsAsSvgString({
-      theme: options?.theme,
-      padding: options?.padding,
-      // Avoid foreignObject-based text serialization, which taints the
-      // canvas in SVG->PNG conversion paths.
-      rasterSafeForCanvas: true,
-    });
-
-    if (!svgString) {
-      return null;
-    }
-
-    const scale = options?.scale ?? 2; // Default 2x for better quality
-
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
-      const url = URL.createObjectURL(svgBlob);
-
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          URL.revokeObjectURL(url);
-          reject(new Error('Failed to get canvas context'));
-          return;
-        }
-
-        ctx.scale(scale, scale);
-        ctx.drawImage(img, 0, 0);
-
-        URL.revokeObjectURL(url);
-        resolve(canvas.toDataURL('image/png'));
-      };
-
-      img.onerror = () => {
-        URL.revokeObjectURL(url);
-        reject(new Error('Failed to load SVG for PNG conversion'));
-      };
-
-      img.src = url;
-    });
-  }
-
-  /**
-   * Exports the currently selected objects as a PNG file and triggers a browser download.
-   * @param options - Optional export settings (theme, padding, scale for resolution).
-   */
-  @Method()
-  async exportSelectedObjectsAsPng(options?: { theme?: 'light' | 'dark'; padding?: number; scale?: number }): Promise<void> {
-    try {
-      const dataUrl = await this.getSelectedObjectsAsPngDataUrl(options);
+      const dataUrl = await selected.exportAs(format, this.getObjectExportContext());
       if (!dataUrl) {
-        console.warn('No objects selected for PNG export');
+        console.error(`Failed to export selected object as ${format}: export returned no data URL`);
         return;
       }
 
+      const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
+      const objectName = selected.__class__.replace(/^Kritzel/, '').toLowerCase() || 'object';
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const filename = `selection-${timestamp}.png`;
+      const filename = `${activeWorkspaceName}-${objectName}-${timestamp}.${format}`;
 
-      const link = document.createElement('a');
-      link.download = filename;
-      link.href = dataUrl;
-      link.click();
+      this.triggerDataUrlDownload(dataUrl, filename);
     } catch (error) {
-      console.error('Failed to export selected objects as PNG:', error);
+      console.error(`Failed to export selected object as ${format}:`, error);
     }
   }
 
@@ -2001,6 +1913,86 @@ export class KritzelEngine {
   private async dataUrlToBlob(dataUrl: string): Promise<Blob> {
     const response = await fetch(dataUrl);
     return response.blob();
+  }
+
+  private triggerDataUrlDownload(dataUrl: string, filename: string): void {
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = dataUrl;
+    link.click();
+  }
+
+  private getSingleSelectedExportableObject(): (KritzelBaseObject & KritzelExportable) | null {
+    const selectedObjects = this.core.store.selectionGroup?.objects ?? [];
+    if (selectedObjects.length !== 1) {
+      return null;
+    }
+
+    const [selected] = selectedObjects;
+    if (!ObjectHelper.isKritzelExportable(selected)) {
+      return null;
+    }
+
+    return selected as KritzelBaseObject & KritzelExportable;
+  }
+
+  private getObjectExportContext(): KritzelObjectExportContext {
+    return {
+      getObjectAsSvgDataUrl: async (object, options) => {
+        const svg = await this.getObjectAsSvgMarkup(object, options?.rasterSafeForCanvas ?? false);
+        return svg ? this.svgMarkupToDataUrl(svg) : null;
+      },
+      getObjectAsPngDataUrl: async object => {
+        const svg = await this.getObjectAsSvgMarkup(object, true);
+        return svg ? this.svgMarkupToPngDataUrl(svg) : null;
+      },
+    };
+  }
+
+  private async getObjectAsSvgMarkup(object: KritzelBaseObject, rasterSafeForCanvas: boolean): Promise<string | null> {
+    const imageDataUrls = await KritzelSvgExportHelper.resolveImageDataUrls([object], this.core.assetResolver);
+    const svg = KritzelSvgExportHelper.generateSvg([object], {
+      theme: this.theme,
+      rasterSafeForCanvas,
+      imageDataUrls,
+    });
+
+    return svg || null;
+  }
+
+  private svgMarkupToDataUrl(svgMarkup: string): string {
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgMarkup)}`;
+  }
+
+  private async svgMarkupToPngDataUrl(svgMarkup: string): Promise<string> {
+    const svgBlob = new Blob([svgMarkup], { type: 'image/svg+xml;charset=utf-8' });
+    const svgBlobUrl = URL.createObjectURL(svgBlob);
+
+    try {
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const element = new Image();
+        element.onload = () => resolve(element);
+        element.onerror = err => reject(err);
+        element.src = svgBlobUrl;
+      });
+
+      const width = Math.max(1, Math.ceil(img.naturalWidth || img.width));
+      const height = Math.max(1, Math.ceil(img.naturalHeight || img.height));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext('2d');
+      if (!context) {
+        throw new Error('Could not create 2D canvas context for PNG export');
+      }
+
+      context.drawImage(img, 0, 0, width, height);
+      return canvas.toDataURL('image/png');
+    } finally {
+      URL.revokeObjectURL(svgBlobUrl);
+    }
   }
 
   private getImportedWorkspaceName(rawName: unknown): string {

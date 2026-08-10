@@ -15,6 +15,7 @@ import { baseKeymap } from 'prosemirror-commands';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelColorHelper } from '../../helpers/color.helper';
 import { KritzelMathHelper } from '../../helpers/math.helper';
+import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
 
 export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelShape';
@@ -753,5 +754,17 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       default:
         return `M ${this.x} ${this.y} L ${this.x + w} ${this.y} L ${this.x + w} ${this.y + h} L ${this.x} ${this.y + h} Z`;
     }
+  }
+
+  getSupportedExportFormats(): KritzelObjectExportFormat[] {
+    return ['svg'];
+  }
+
+  async exportAs(format: KritzelObjectExportFormat, context: KritzelObjectExportContext): Promise<string | null> {
+    if (format !== 'svg') {
+      return null;
+    }
+
+    return context.getObjectAsSvgDataUrl(this);
   }
 }
