@@ -141,10 +141,18 @@ export const lightTheme: KritzelTheme = {
 
   engine: {
     backgroundColor: '#ffffff',
+  },
+
+  editor: {
     loadingOverlayBackground: 'rgba(255, 255, 255, 0.85)',
     loadingOverlayColor: '#333333',
     loadingOverlaySpinnerActiveColor: '#333333',
     loadingOverlaySpinnerColor: '#cccccc',
+    syncIndicatorBackground: 'rgba(255, 255, 255, 0.92)',
+    syncIndicatorColor: '#334155',
+    syncIndicatorSpinnerColor: '#007AFF',
+    syncIndicatorSpinnerTrack: 'rgba(148, 163, 184, 0.35)',
+    syncIndicatorZIndex: '10001',
   },
 
   snap: {
@@ -351,6 +359,8 @@ export const lightTheme: KritzelTheme = {
     buttonHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
     separatorColor: 'hsl(0, 0%, 0%, 8%)',
   },
+
+
 
   watermark: {
     background: 'rgba(255, 255, 255, 0.6)',

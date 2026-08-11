@@ -209,10 +209,21 @@ export interface KritzelTheme {
     controlsTransform?: string;
     controlsTransition?: string;
     controlsTransitionDuration?: string;
+    loadingOverlayBackground?: string;
+    loadingOverlayColor?: string;
+    loadingOverlayDelay?: string;
+    loadingOverlaySpinnerActiveColor?: string;
+    loadingOverlaySpinnerColor?: string;
+    loadingOverlayZIndex?: string;
     notificationAnimationDuration?: string;
     notificationAnimationEasing?: string;
     notificationDismissAnimationDuration?: string;
     notificationDismissAnimationEasing?: string;
+    syncIndicatorBackground?: string;
+    syncIndicatorColor?: string;
+    syncIndicatorSpinnerColor?: string;
+    syncIndicatorSpinnerTrack?: string;
+    syncIndicatorZIndex?: string;
     topCenterNotificationTop?: string;
     topCenterNotificationZIndex?: string;
     topLeftButtonsLeft?: string;
@@ -224,11 +235,6 @@ export interface KritzelTheme {
   /** Engine variables */
   engine?: {
     backgroundColor?: string;
-    loadingOverlayBackground?: string;
-    loadingOverlayColor?: string;
-    loadingOverlayDelay?: string;
-    loadingOverlaySpinnerActiveColor?: string;
-    loadingOverlaySpinnerColor?: string;
   };
 
   /** Font size variables */
