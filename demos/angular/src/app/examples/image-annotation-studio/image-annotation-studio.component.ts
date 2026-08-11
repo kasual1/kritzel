@@ -382,6 +382,9 @@ export class ImageAnnotationStudioComponent {
     engine: {
       ...angularThemeDark.engine,
       backgroundColor: '#090f18',
+    },
+    editor: {
+      ...angularThemeDark.editor,
       loadingOverlayBackground: 'rgba(9, 15, 24, 0.72)',
     },
   };

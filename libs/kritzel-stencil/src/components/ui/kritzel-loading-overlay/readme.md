@@ -17,12 +17,12 @@
 
 ### Used by
 
- - [kritzel-engine](../../core/kritzel-engine)
+ - [kritzel-editor](../../core/kritzel-editor)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-engine --> kritzel-loading-overlay
+  kritzel-editor --> kritzel-loading-overlay
   style kritzel-loading-overlay fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
