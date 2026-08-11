@@ -331,6 +331,7 @@ export class KritzelEditor {
   @State() normalizedControls: KritzelToolbarControl[] = [];
   @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
   @State() isSyncing: boolean = false;
+  @State() isLoadingOverlayVisible: boolean = false;
 
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
@@ -1460,6 +1461,7 @@ export class KritzelEditor {
           )}
 
           <kritzel-sync-indicator visible={this.isSyncing} text="Syncing..."></kritzel-sync-indicator>
+          <kritzel-loading-overlay visible={this.isLoadingOverlayVisible} text={this.resolvedTerms['editor.loading'] ?? 'Loading...'}></kritzel-loading-overlay>
 
           <kritzel-engine
             ref={el => {
@@ -1508,6 +1510,7 @@ export class KritzelEditor {
             onNotificationsChange={event => this.handleNotificationsChange(event)}
             onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
             onSyncingChange={event => (this.isSyncing = event.detail)}
+            onLoadingChange={event => (this.isLoadingOverlayVisible = event.detail)}
           ></kritzel-engine>
 
           <kritzel-controls

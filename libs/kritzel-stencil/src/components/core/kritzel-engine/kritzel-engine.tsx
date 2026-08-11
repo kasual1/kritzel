@@ -3044,11 +3044,6 @@ export class KritzelEngine {
 
     return (
       <Host>
-        <kritzel-loading-overlay
-          visible={this.core.store.state.isLoading}
-          text={this.core.localizationManager.translate('engine.loading')}
-        ></kritzel-loading-overlay>
-
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div
             class="debug-panel"
