@@ -330,6 +330,7 @@ export class KritzelEditor {
   @State() contextMenuState?: KritzelContextMenuState;
   @State() normalizedControls: KritzelToolbarControl[] = [];
   @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
+  @State() isSyncing: boolean = false;
 
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
@@ -1458,6 +1459,8 @@ export class KritzelEditor {
             ></kritzel-context-menu>
           )}
 
+          <kritzel-sync-indicator visible={this.isSyncing} text="Syncing..."></kritzel-sync-indicator>
+
           <kritzel-engine
             ref={el => {
               if (el) {
@@ -1504,6 +1507,7 @@ export class KritzelEditor {
             onAwarenessChange={event => this.handleAwarenessChange(event)}
             onNotificationsChange={event => this.handleNotificationsChange(event)}
             onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
+            onSyncingChange={event => (this.isSyncing = event.detail)}
           ></kritzel-engine>
 
           <kritzel-controls
