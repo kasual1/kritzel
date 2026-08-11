@@ -1179,8 +1179,6 @@ Type: `Promise<void>`
 
 ### Depends on
 
-- [kritzel-loading-overlay](../../ui/kritzel-loading-overlay)
-- [kritzel-sync-indicator](../../shared/kritzel-sync-indicator)
 - [kritzel-icon](../../shared/kritzel-icon)
 - [kritzel-awareness-cursors](../kritzel-awareness-cursors)
 - [kritzel-cursor-trail](../kritzel-cursor-trail)
@@ -1189,8 +1187,6 @@ Type: `Promise<void>`
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-engine --> kritzel-loading-overlay
-  kritzel-engine --> kritzel-sync-indicator
   kritzel-engine --> kritzel-icon
   kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-cursor-trail
