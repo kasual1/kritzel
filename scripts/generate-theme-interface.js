@@ -55,7 +55,8 @@ const KNOWN_CATEGORIES = [
   'current-user-dialog',
   'awareness',
   'watermark',
-  'zoom-panel'
+  'zoom-panel',
+  'sync-indicator'
 ];
 
 /**

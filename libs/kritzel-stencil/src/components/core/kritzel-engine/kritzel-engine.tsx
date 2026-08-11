@@ -3049,8 +3049,6 @@ export class KritzelEngine {
           text={this.core.localizationManager.translate('engine.loading')}
         ></kritzel-loading-overlay>
 
-        <kritzel-sync-indicator visible={this.isSyncing} text="Syncing..."></kritzel-sync-indicator>
-
         {this.core.store.state.debugInfo.showViewportInfo && (
           <div
             class="debug-panel"
