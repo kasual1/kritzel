@@ -17,12 +17,12 @@
 
 ### Used by
 
- - [kritzel-engine](../../core/kritzel-engine)
+ - [kritzel-editor](../../core/kritzel-editor)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-engine --> kritzel-sync-indicator
+  kritzel-editor --> kritzel-sync-indicator
   style kritzel-sync-indicator fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
