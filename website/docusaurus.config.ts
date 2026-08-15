@@ -257,6 +257,14 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
+    {
+      tagName: "script",
+      attributes: {
+        defer: true,
+        src: "https://cloud.umami.is/script.js",
+        "data-website-id": "f5a72d39-5ee9-4d3d-852c-a0dc99199d9e",
+      },
+    },
     // Structured data: WebSite (enables Sitelinks Searchbox eligibility)
     {
       tagName: "script",
