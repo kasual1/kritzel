@@ -2372,6 +2372,10 @@ export class KritzelEngine {
     this.syncingChange.emit(isSyncing);
   }
 
+  private isNetworkAvailable(): boolean {
+    return typeof navigator !== 'undefined' && navigator.onLine;
+  }
+
   private emitContextMenuStateChange(): void {
     this.contextMenuStateChange.emit({
       isVisible: this.core.store.state.isContextMenuVisible,
@@ -2766,7 +2770,7 @@ export class KritzelEngine {
       const initializedObjects = this.core.store.objects;
       const networkSyncPromise = initializedObjects?.whenNetworkSynced();
 
-      if (networkSyncPromise) {
+      if (networkSyncPromise && this.isNetworkAvailable()) {
         this.syncSyncingState(true);
         void networkSyncPromise.finally(() => {
           // Only clear syncing for the currently active object map.
