@@ -1,6 +1,6 @@
 {
   "name": "kritzel-vue",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite canvas experiences with Vue.",
   "keywords": [
@@ -38,6 +38,6 @@
     "@stencil/vue-output-target": "0.11.8"
   },
   "peerDependencies": {
-    "kritzel-stencil": "^0.4.10"
+    "kritzel-stencil": "^0.4.11"
   }
 }
