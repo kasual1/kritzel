@@ -34,6 +34,7 @@ const config: Config = {
   },
   url: SITE_URL,
   baseUrl: SITE_BASE_URL,
+  trailingSlash: true,
   projectName: "kritzel",
   onBrokenLinks: "warn",
   i18n: {
