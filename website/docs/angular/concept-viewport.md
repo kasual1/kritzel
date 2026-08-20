@@ -51,10 +51,10 @@ Use `screenToWorld` and `worldToScreen` to bridge this gap.
 
 The following methods are available on the Editor and Engine components for managing the viewport:
 
-- State reading (`getViewport()`)
-- Camera control (`setViewport()`, `panTo()`, `zoomTo()`)
-- Content centering (`centerObjectInViewport()`, `backToContent()`)
-- Coordinate mapping (`screenToWorld()`, `worldToScreen()`)
+- State reading ([getViewport](api-reference-editor.md#getviewport))
+- Camera control ([setViewport](api-reference-editor.md#setviewport), [panTo](api-reference-editor.md#panto), [zoomTo](api-reference-editor.md#zoomto))
+- Content centering ([centerObjectInViewport](api-reference-editor.md#centerobjectinviewport), [backToContent](api-reference-editor.md#backtocontent))
+- Coordinate mapping ([screenToWorld](api-reference-editor.md#screentoworld), [worldToScreen](api-reference-editor.md#worldtoscreen))
 
 For a comprehensive view, see the [API Reference](api-reference-editor.md).
 

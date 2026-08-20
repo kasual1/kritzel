@@ -72,9 +72,9 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 ## Related API Methods
 
-- Lifecycle (`addObject()`, `removeObject()`, `updateObject()`, `getObjectById()`)
-- Queries (`getAllObjects()`, `findObjects()`, `getObjectsTotalCount()`, `getObjectsInViewport()`)
-- Manipulation (`group()`, `ungroup()`, `bringToFront()`, `sendBackward()`, `alignObjects()`)
-- Selection (`getSelectedObjects()`, `selectObjects()`, `clearSelection()`)
+- Lifecycle ([addObject](api-reference-editor.md#addobject), [removeObject](api-reference-editor.md#removeobject), [updateObject](api-reference-editor.md#updateobject), [getObjectById](api-reference-editor.md#getobjectbyid))
+- Queries ([getAllObjects](api-reference-editor.md#getallobjects), [findObjects](api-reference-editor.md#findobjects), [getObjectsTotalCount](api-reference-editor.md#getobjectstotalcount), [getObjectsInViewport](api-reference-editor.md#getobjectsinviewport))
+- Manipulation ([group](api-reference-editor.md#group), [ungroup](api-reference-editor.md#ungroup), [bringToFront](api-reference-editor.md#bringtofront), [sendBackward](api-reference-editor.md#sendbackward), [alignObjects](api-reference-editor.md#alignobjects))
+- Selection ([getSelectedObjects](api-reference-editor.md#getselectedobjects), [selectObjects](api-reference-editor.md#selectobjects), [clearSelection](api-reference-editor.md#clearselection))
 
 For a comprehensive view, see the [API Reference](api-reference-editor.md).
