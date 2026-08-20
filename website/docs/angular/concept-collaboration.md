@@ -48,7 +48,8 @@ When your application manages multiple documents simultaneously (e.g. a workspac
 
 ## Related API Methods
 
-- Sync configuration (`syncConfig` prop, provider composition)
+- Sync configuration ([syncConfig](api-reference-editor.md#props) prop, provider composition)
+- Reinitialization ([reinitSync](api-reference-editor.md#reinitsync))
 - Provider factories (`WebSocketSyncProvider.with()`, `HocuspocusSyncProvider.with()`)
 - Multiplexing lifecycle (`HocuspocusSyncProvider.createSharedWebSocket()`, `HocuspocusSyncProvider.destroySharedWebSocket()`)
 - Cross-tab provider (`BroadcastSyncProvider`)

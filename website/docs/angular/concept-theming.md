@@ -37,7 +37,7 @@ This example intentionally applies a strong, light-purple visual language and re
 
 ## Related API Methods
 
-- Applying themes (`[theme]`, `[themes]`)
+- Applying themes ([theme](api-reference-editor.md#props), [themes](api-reference-editor.md#props))
 - Built-in presets (`lightTheme`, `darkTheme`)
 - Theme type (`KritzelTheme`, `ThemeName`)
 
