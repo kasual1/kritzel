@@ -279,11 +279,6 @@ const config: Config = {
         url: ABSOLUTE_URL("/"),
         description:
           "Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard library for Angular, React, and Vue.",
-        potentialAction: {
-          "@type": "SearchAction",
-          target: `${ABSOLUTE_URL("/search")}?q={search_term_string}`,
-          "query-input": "required name=search_term_string",
-        },
       }),
     },
     // Structured data: Organization
