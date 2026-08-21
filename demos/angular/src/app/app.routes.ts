@@ -39,6 +39,9 @@ import { ObjectsOrderingComponent } from './concepts/objects/objects-ordering.co
 import { BasicUsageComponent } from './basic-usage/basic-usage.component';
 import { EditorPageCustomElementComponent } from './concepts/custom-elements/editor-page-custom-element.component';
 import { EditorPageCustomElementHtmlComponent } from './concepts/custom-elements/editor-page-custom-element-html.component';
+import { LocalizationSwitchComponent } from './advanced-concepts/localization/localization-switch.component';
+import { LocalizationCustomComponent } from './advanced-concepts/localization/localization-custom.component';
+import { FontsRegisterComponent } from './advanced-concepts/fonts/fonts-register.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -108,6 +111,14 @@ export const routes: Routes = [
         path: 'context-menus-object-inspector',
         component: CustomContextMenuObjectInspectorComponent,
       },
+    ],
+  },
+  {
+    path: 'advanced-concepts',
+    children: [
+      { path: 'localization-switch', component: LocalizationSwitchComponent },
+      { path: 'localization-custom', component: LocalizationCustomComponent },
+      { path: 'fonts-register', component: FontsRegisterComponent },
     ],
   },
   {
