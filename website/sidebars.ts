@@ -16,6 +16,12 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Advanced Concepts',
+      collapsed: true,
+      items: ['concept-localization', 'concept-fonts'],
+    },
+    {
+      type: 'category',
       label: 'Examples',
       collapsed: true,
       items: ['example-object-explorer', 'example-blueprint-defect-mapper', 'example-slideshow-presentation', 'example-image-annotation-studio'],
