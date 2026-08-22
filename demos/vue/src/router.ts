@@ -42,6 +42,8 @@ import LocalizationSwitchPage from './pages/advanced-concepts/localization/Local
 import LocalizationCustomPage from './pages/advanced-concepts/localization/LocalizationCustomPage.vue'
 import FontsRegisterPage from './pages/advanced-concepts/fonts/FontsRegisterPage.vue'
 import CustomIconsRegisterPage from './pages/advanced-concepts/custom-icons/CustomIconsRegisterPage.vue'
+import LoginDialogProvidersPage from './pages/advanced-concepts/login-dialog/LoginDialogProvidersPage.vue'
+import LoginDialogFlowPage from './pages/advanced-concepts/login-dialog/LoginDialogFlowPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -69,6 +71,8 @@ export const router = createRouter({
         { path: 'localization-custom', component: LocalizationCustomPage },
         { path: 'fonts-register', component: FontsRegisterPage },
         { path: 'custom-icons', component: CustomIconsRegisterPage },
+        { path: 'login-dialog-providers', component: LoginDialogProvidersPage },
+        { path: 'login-dialog-flow', component: LoginDialogFlowPage },
       ],
     },
     {
