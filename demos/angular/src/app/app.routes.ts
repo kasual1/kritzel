@@ -43,6 +43,8 @@ import { LocalizationSwitchComponent } from './advanced-concepts/localization/lo
 import { LocalizationCustomComponent } from './advanced-concepts/localization/localization-custom.component';
 import { FontsRegisterComponent } from './advanced-concepts/fonts/fonts-register.component';
 import { CustomIconsRegisterComponent } from './advanced-concepts/custom-icons/custom-icons-register.component';
+import { LoginDialogProvidersComponent } from './advanced-concepts/login-dialog/login-dialog-providers.component';
+import { LoginDialogFlowComponent } from './advanced-concepts/login-dialog/login-dialog-flow.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -121,6 +123,8 @@ export const routes: Routes = [
       { path: 'localization-custom', component: LocalizationCustomComponent },
       { path: 'fonts-register', component: FontsRegisterComponent },
       { path: 'custom-icons', component: CustomIconsRegisterComponent },
+      { path: 'login-dialog-providers', component: LoginDialogProvidersComponent },
+      { path: 'login-dialog-flow', component: LoginDialogFlowComponent },
     ],
   },
   {
