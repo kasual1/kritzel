@@ -4,46 +4,46 @@ import EditorHocuspocusPage from './pages/e2e/EditorHocuspocusPage.vue'
 import MultiEditorPage from './pages/e2e/MultiEditorPage.vue'
 import WrappedEditorPage from './pages/e2e/WrappedEditorPage.vue'
 import BasicUsagePage from './pages/basic-usage/BasicUsagePage.vue'
-import CollaborationLocalPage from './pages/advanced-concepts/collaboration/CollaborationLocalPage.vue'
-import CollaborationRealtimePage from './pages/advanced-concepts/collaboration/CollaborationRealtimePage.vue'
-import ComponentsEditorPage from './pages/concepts/components/ComponentsEditorPage.vue'
-import ComponentsEditorUiPage from './pages/concepts/components/ComponentsEditorUiPage.vue'
-import ComponentsEnginePage from './pages/concepts/components/ComponentsEnginePage.vue'
-import CustomContextMenuCanvasQuickActionsPage from './pages/advanced-concepts/context-menus/CustomContextMenuCanvasQuickActionsPage.vue'
-import CustomContextMenuClipboardActionsPage from './pages/advanced-concepts/context-menus/CustomContextMenuClipboardActionsPage.vue'
-import CustomContextMenuSmartConditionalPage from './pages/advanced-concepts/context-menus/CustomContextMenuSmartConditionalPage.vue'
-import CustomContextMenuObjectInspectorPage from './pages/advanced-concepts/context-menus/CustomContextMenuObjectInspectorPage.vue'
-import CustomElementsPage from './pages/concepts/custom-elements/CustomElementsPage.vue'
-import CustomElementsHtmlPage from './pages/concepts/custom-elements/CustomElementsHtmlPage.vue'
-import ObjectsAddRemovePage from './pages/concepts/objects/ObjectsAddRemovePage.vue'
-import ObjectsQueryPage from './pages/concepts/objects/ObjectsQueryPage.vue'
-import ObjectsSelectionPage from './pages/concepts/objects/ObjectsSelectionPage.vue'
-import ObjectsGroupingPage from './pages/concepts/objects/ObjectsGroupingPage.vue'
-import ObjectsOrderingPage from './pages/concepts/objects/ObjectsOrderingPage.vue'
-import PersistenceLocalPage from './pages/concepts/persistence/PersistenceLocalPage.vue'
-import ThemingApplyPage from './pages/advanced-concepts/customization/theming/ThemingApplyPage.vue'
-import ThemingCustomPage from './pages/advanced-concepts/customization/theming/ThemingCustomPage.vue'
-import ToolsDisablePage from './pages/concepts/tools/ToolsDisablePage.vue'
-import ToolsControlsPage from './pages/concepts/tools/ToolsControlsPage.vue'
-import ToolsRegisterPage from './pages/concepts/tools/ToolsRegisterPage.vue'
-import ToolsChangePage from './pages/concepts/tools/ToolsChangePage.vue'
-import ViewportChangePage from './pages/concepts/viewport/ViewportChangePage.vue'
-import ViewportCenterPage from './pages/concepts/viewport/ViewportCenterPage.vue'
-import ViewportCoordinatesPage from './pages/concepts/viewport/ViewportCoordinatesPage.vue'
-import WorkspacesSwitchPage from './pages/concepts/workspaces/WorkspacesSwitchPage.vue'
-import WorkspacesCrudPage from './pages/concepts/workspaces/WorkspacesCrudPage.vue'
+import CollaborationLocalPage from './pages/advanced/collaboration/CollaborationLocalPage.vue'
+import CollaborationRealtimePage from './pages/advanced/collaboration/CollaborationRealtimePage.vue'
+import ComponentsEditorPage from './pages/fundamentals/components/ComponentsEditorPage.vue'
+import ComponentsEditorUiPage from './pages/fundamentals/components/ComponentsEditorUiPage.vue'
+import ComponentsEnginePage from './pages/fundamentals/components/ComponentsEnginePage.vue'
+import CustomContextMenuCanvasQuickActionsPage from './pages/advanced/context-menus/CustomContextMenuCanvasQuickActionsPage.vue'
+import CustomContextMenuClipboardActionsPage from './pages/advanced/context-menus/CustomContextMenuClipboardActionsPage.vue'
+import CustomContextMenuSmartConditionalPage from './pages/advanced/context-menus/CustomContextMenuSmartConditionalPage.vue'
+import CustomContextMenuObjectInspectorPage from './pages/advanced/context-menus/CustomContextMenuObjectInspectorPage.vue'
+import CustomElementsPage from './pages/fundamentals/custom-elements/CustomElementsPage.vue'
+import CustomElementsHtmlPage from './pages/fundamentals/custom-elements/CustomElementsHtmlPage.vue'
+import ObjectsAddRemovePage from './pages/fundamentals/objects/ObjectsAddRemovePage.vue'
+import ObjectsQueryPage from './pages/fundamentals/objects/ObjectsQueryPage.vue'
+import ObjectsSelectionPage from './pages/fundamentals/objects/ObjectsSelectionPage.vue'
+import ObjectsGroupingPage from './pages/fundamentals/objects/ObjectsGroupingPage.vue'
+import ObjectsOrderingPage from './pages/fundamentals/objects/ObjectsOrderingPage.vue'
+import PersistenceLocalPage from './pages/fundamentals/persistence/PersistenceLocalPage.vue'
+import ThemingApplyPage from './pages/advanced/customization/theming/ThemingApplyPage.vue'
+import ThemingCustomPage from './pages/advanced/customization/theming/ThemingCustomPage.vue'
+import ToolsDisablePage from './pages/fundamentals/tools/ToolsDisablePage.vue'
+import ToolsControlsPage from './pages/fundamentals/tools/ToolsControlsPage.vue'
+import ToolsRegisterPage from './pages/fundamentals/tools/ToolsRegisterPage.vue'
+import ToolsChangePage from './pages/fundamentals/tools/ToolsChangePage.vue'
+import ViewportChangePage from './pages/fundamentals/viewport/ViewportChangePage.vue'
+import ViewportCenterPage from './pages/fundamentals/viewport/ViewportCenterPage.vue'
+import ViewportCoordinatesPage from './pages/fundamentals/viewport/ViewportCoordinatesPage.vue'
+import WorkspacesSwitchPage from './pages/fundamentals/workspaces/WorkspacesSwitchPage.vue'
+import WorkspacesCrudPage from './pages/fundamentals/workspaces/WorkspacesCrudPage.vue'
 import ObjectExplorerPage from './pages/examples/object-explorer/ObjectExplorerPage.vue'
 import BlueprintDefectMapperPage from './pages/examples/blueprint-defect-mapper/BlueprintDefectMapperPage.vue'
 import SlideshowPresentationPage from './pages/examples/slideshow-presentation/SlideshowPresentationPage.vue'
 import InfiniteCanvasGalleryPage from './pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage.vue'
 import ImageAnnotationStudioPage from './pages/examples/image-annotation-studio/ImageAnnotationStudioPage.vue'
 import QuickstartPage from './pages/getting-started/QuickstartPage.vue'
-import LocalizationSwitchPage from './pages/advanced-concepts/localization/LocalizationSwitchPage.vue'
-import LocalizationCustomPage from './pages/advanced-concepts/localization/LocalizationCustomPage.vue'
-import FontsRegisterPage from './pages/advanced-concepts/customization/fonts/FontsRegisterPage.vue'
-import CustomIconsRegisterPage from './pages/advanced-concepts/customization/custom-icons/CustomIconsRegisterPage.vue'
-import LoginDialogProvidersPage from './pages/advanced-concepts/login-dialog/LoginDialogProvidersPage.vue'
-import LoginDialogFlowPage from './pages/advanced-concepts/login-dialog/LoginDialogFlowPage.vue'
+import LocalizationSwitchPage from './pages/advanced/localization/LocalizationSwitchPage.vue'
+import LocalizationCustomPage from './pages/advanced/localization/LocalizationCustomPage.vue'
+import FontsRegisterPage from './pages/advanced/customization/fonts/FontsRegisterPage.vue'
+import CustomIconsRegisterPage from './pages/advanced/customization/custom-icons/CustomIconsRegisterPage.vue'
+import LoginDialogProvidersPage from './pages/advanced/login-dialog/LoginDialogProvidersPage.vue'
+import LoginDialogFlowPage from './pages/advanced/login-dialog/LoginDialogFlowPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -63,7 +63,7 @@ export const router = createRouter({
       component: BasicUsagePage,
     },
     {
-      path: '/advanced-concepts',
+      path: '/advanced',
       children: [
         {
           path: 'context-menus-canvas-quick-actions',
@@ -99,7 +99,7 @@ export const router = createRouter({
       ],
     },
     {
-      path: '/concepts',
+      path: '/fundamentals',
       children: [
         { path: 'components-editor', component: ComponentsEditorPage },
         { path: 'components-editor-ui', component: ComponentsEditorUiPage },

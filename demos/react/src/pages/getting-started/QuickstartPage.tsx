@@ -1,7 +1,7 @@
 import { CSSProperties, useCallback, useRef } from "react";
 import { KritzelEditor } from "kritzel-react";
 import { reactThemeLight } from "../../const/react-theme-light";
-import { seedEditor } from "../concepts/shared/concept-shared";
+import { seedEditor } from "../fundamentals/shared/concept-shared";
 
 const hostStyle: CSSProperties = {
   display: "block",

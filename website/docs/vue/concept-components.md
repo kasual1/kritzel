@@ -23,8 +23,8 @@ The basic implementation of the Editor requires zero configuration. You simply r
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/concepts/components-editor"
-  repoFiles={['src/pages/concepts/components/components-editor.vue']}
+  demoPath="/fundamentals/components-editor"
+  repoFiles={['src/pages/fundamentals/components/components-editor.vue']}
 />
 
 ### Waiting for Initialization
@@ -54,8 +54,8 @@ You can toggle visibility for built-in UI components using props. For example, s
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/concepts/components-editor-ui"
-  repoFiles={['src/pages/concepts/components/components-editor-ui.vue']}
+  demoPath="/fundamentals/components-editor-ui"
+  repoFiles={['src/pages/fundamentals/components/components-editor-ui.vue']}
 />
 
 ## Using the Engine Component
@@ -66,8 +66,8 @@ Unlike the Editor, the Engine **does not register any drawing tools by default**
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/concepts/components-engine"
-  repoFiles={['src/pages/concepts/components/components-engine.vue']}
+  demoPath="/fundamentals/components-engine"
+  repoFiles={['src/pages/fundamentals/components/components-engine.vue']}
 />
 
 ## Related API Methods

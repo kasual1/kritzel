@@ -23,8 +23,8 @@ The basic implementation of the Editor requires zero configuration. You simply r
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/components-editor"
-  repoFiles={['src/pages/concepts/components/components-editor.tsx']}
+  demoPath="/fundamentals/components-editor"
+  repoFiles={['src/pages/fundamentals/components/components-editor.tsx']}
 />
 
 ### Waiting for Initialization
@@ -52,8 +52,8 @@ You can toggle visibility for built-in UI components using props. For example, s
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/components-editor-ui"
-  repoFiles={['src/pages/concepts/components/components-editor-ui.tsx']}
+  demoPath="/fundamentals/components-editor-ui"
+  repoFiles={['src/pages/fundamentals/components/components-editor-ui.tsx']}
 />
 
 ## Using the Engine Component
@@ -64,8 +64,8 @@ Unlike the Editor, the Engine **does not register any drawing tools by default**
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/components-engine"
-  repoFiles={['src/pages/concepts/components/components-engine.tsx']}
+  demoPath="/fundamentals/components-engine"
+  repoFiles={['src/pages/fundamentals/components/components-engine.tsx']}
 />
 
 ## Related API Methods

@@ -23,8 +23,8 @@ By default, Kritzel provides a built-in UI for managing multiple workspaces. How
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/workspaces-switch"
-  repoFiles={['src/app/concepts/workspaces/workspaces-switch.component.ts']}
+  demoPath="/fundamentals/workspaces-switch"
+  repoFiles={['src/app/fundamentals/workspaces/workspaces-switch.component.ts']}
 />
 
 ## Managing Workspaces (Create, Read, Update, Delete)
@@ -33,8 +33,8 @@ Kritzel allows you to fully manage the lifecycle of workspaces. You can create n
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/workspaces-crud"
-  repoFiles={['src/app/concepts/workspaces/workspaces-crud.component.ts']}
+  demoPath="/fundamentals/workspaces-crud"
+  repoFiles={['src/app/fundamentals/workspaces/workspaces-crud.component.ts']}
 />
 
 ## Related API Methods

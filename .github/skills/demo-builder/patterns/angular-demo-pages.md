@@ -9,7 +9,7 @@ Angular demo pages are standalone Angular components that back demo routes in `d
 | Category | Path template |
 |---|---|
 | Example demos | `demos/angular/src/app/examples/<feature>/<feature>-<example-name>.component.ts` |
-| Concept demos | `demos/angular/src/app/concepts/<concept>/<concept>-<focus>.component.ts` |
+| Concept demos | `demos/angular/src/app/fundamentals/<concept>/<concept>-<focus>.component.ts` |
 | Other guides | Follow existing folder conventions under `demos/angular/src/app/` |
 
 ## Naming Convention

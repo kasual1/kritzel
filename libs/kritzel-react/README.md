@@ -78,7 +78,7 @@ For optimal rendering and responsiveness on mobile devices, add this meta tag wi
 />
 ```
 
-## Core Concepts
+## Fundamentals
 
 Kritzel is composed of a small set of core concepts that work together to power your canvas experience:
 

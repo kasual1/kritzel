@@ -21,8 +21,8 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/tools-disable"
-  repoFiles={['src/pages/concepts/tools/tools-disable.tsx']}
+  demoPath="/fundamentals/tools-disable"
+  repoFiles={['src/pages/fundamentals/tools/tools-disable.tsx']}
 />
 
 ## Customizing the Toolbar
@@ -31,8 +31,8 @@ If you want a focused editing experience, pass a custom `controls` array to `<Kr
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/tools-controls"
-  repoFiles={['src/pages/concepts/tools/tools-controls.tsx']}
+  demoPath="/fundamentals/tools-controls"
+  repoFiles={['src/pages/fundamentals/tools/tools-controls.tsx']}
 />
 
 ## Adding Custom Tools
@@ -41,8 +41,8 @@ You can register a custom tool configuration and then surface it in the controls
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/tools-register"
-  repoFiles={['src/pages/concepts/tools/tools-register.tsx']}
+  demoPath="/fundamentals/tools-register"
+  repoFiles={['src/pages/fundamentals/tools/tools-register.tsx']}
 />
 
 ## Programmatically Changing the Active Tool
@@ -51,8 +51,8 @@ You can programmatically change the currently active tool using the API. This is
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/tools-change"
-  repoFiles={['src/pages/concepts/tools/tools-change.tsx']}
+  demoPath="/fundamentals/tools-change"
+  repoFiles={['src/pages/fundamentals/tools/tools-change.tsx']}
 />
 
 ## Related API Methods
