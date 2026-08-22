@@ -24,7 +24,7 @@ This example makes use of the following core concepts. Click on the links below 
 - [Objects](/docs/vue/concept-objects) - loading images with `KritzelImage.fromUrl()` and placing them at world-space coordinates
 - [Viewport](/docs/vue/concept-viewport) - setting an initial zoomed-out overview with `setViewport()`
 - [Tools](/docs/vue/concept-tools) - reducing the toolbar to a single selection tool for a read-only experience
-- [Components](/docs/vue/concept-components) - configuring the editor for a non-editable presentation mode
+- [Components](/docs/vue/components/concept-editor) - configuring the editor for a non-editable presentation mode
 
 ---
 

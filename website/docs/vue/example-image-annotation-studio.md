@@ -23,7 +23,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 - [Tools](/docs/vue/concept-tools) - registering multiple brush tools with fixed colors and switching between them programmatically
 - [Objects](/docs/vue/concept-objects) - seeding a centered background image as non-interactive scenery
-- [Components](/docs/vue/concept-components) - driving editor behavior from a custom external toolbar via `changeActiveToolByName()`
+- [Components](/docs/vue/components/concept-editor) - driving editor behavior from a custom external toolbar via `changeActiveToolByName()`
 
 ---
 

@@ -23,7 +23,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 - [Tools](/docs/angular/concept-tools) — registering multiple brush tools with fixed colors and switching between them programmatically
 - [Objects](/docs/angular/concept-objects) — seeding a centered background image as non-interactive scenery
-- [Components](/docs/angular/concept-components) — driving editor behavior from a custom external toolbar via `changeActiveToolByName()`
+- [Components](/docs/angular/components/concept-editor) — driving editor behavior from a custom external toolbar via `changeActiveToolByName()`
 
 ---
 

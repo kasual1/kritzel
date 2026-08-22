@@ -12,7 +12,19 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Fundamentals',
       collapsed: true,
-      items: ['concept-components', 'concept-tools', 'concept-objects',  'concept-viewport', 'concept-workspaces', 'concept-persistence'],
+      items: [
+        {
+          type: 'category',
+          label: 'Components',
+          collapsed: true,
+          items: ['components/concept-editor', 'components/concept-engine'],
+        },
+        'concept-tools',
+        'concept-objects',
+        'concept-viewport',
+        'concept-workspaces',
+        'concept-persistence',
+      ],
     },
     {
       type: 'category',

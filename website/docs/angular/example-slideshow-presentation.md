@@ -22,7 +22,7 @@ Complete the [Quick Start](quick-start.md) guide to have a working `<kritzel-edi
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
 - [Viewport](/docs/angular/concept-viewport) — programmatically panning and zooming the camera to center on specific world coordinates
-- [Components](/docs/angular/concept-components) — configuring viewport boundary inputs to lock the camera within slide margins
+- [Components](/docs/angular/components/concept-editor) — configuring viewport boundary inputs to lock the camera within slide margins
 - [Objects](/docs/angular/concept-objects) — seeding shape objects at absolute world-space positions to act as slide templates
 
 ---

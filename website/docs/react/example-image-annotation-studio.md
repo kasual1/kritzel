@@ -23,7 +23,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 - [Tools](/docs/react/concept-tools) - registering multiple brush tools with fixed colors and switching between them programmatically
 - [Objects](/docs/react/concept-objects) - seeding a centered background image as non-interactive scenery
-- [Components](/docs/react/concept-components) - driving editor behavior from a custom external toolbar via `changeActiveToolByName()`
+- [Components](/docs/react/components/concept-editor) - driving editor behavior from a custom external toolbar via `changeActiveToolByName()`
 
 ---
 

@@ -22,7 +22,7 @@ Complete the [Quick Start](./quick-start.md) guide to have a working `<KritzelEd
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
 - [Objects](/docs/vue/concept-objects) - querying, updating, and removing canvas objects programmatically
-- [Components](/docs/vue/concept-components) - listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
+- [Components](/docs/vue/components/concept-editor) - listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
 - [Viewport](/docs/vue/concept-viewport) - panning and zooming to focus on a selected object
 
 ---
