@@ -41,6 +41,7 @@ import QuickstartPage from './pages/getting-started/QuickstartPage.vue'
 import LocalizationSwitchPage from './pages/advanced-concepts/localization/LocalizationSwitchPage.vue'
 import LocalizationCustomPage from './pages/advanced-concepts/localization/LocalizationCustomPage.vue'
 import FontsRegisterPage from './pages/advanced-concepts/fonts/FontsRegisterPage.vue'
+import CustomIconsRegisterPage from './pages/advanced-concepts/custom-icons/CustomIconsRegisterPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -67,6 +68,7 @@ export const router = createRouter({
         { path: 'localization-switch', component: LocalizationSwitchPage },
         { path: 'localization-custom', component: LocalizationCustomPage },
         { path: 'fonts-register', component: FontsRegisterPage },
+        { path: 'custom-icons', component: CustomIconsRegisterPage },
       ],
     },
     {
