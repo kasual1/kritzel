@@ -21,8 +21,8 @@ This focused setup uses a minimal global context menu for quick document command
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/context-menus-canvas-quick-actions"
-  repoFiles={['src/pages/concepts/context-menus/custom-context-menu-canvas-quick-actions.tsx']}
+  demoPath="/advanced-concepts/context-menus-canvas-quick-actions"
+  repoFiles={['src/pages/advanced-concepts/context-menus/CustomContextMenuCanvasQuickActionsPage.tsx']}
 />
 
 ## Object Context Menu
@@ -31,8 +31,8 @@ This example separates global context actions from object-specific actions and a
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/context-menus-clipboard-actions"
-  repoFiles={['src/pages/concepts/context-menus/custom-context-menu-clipboard-actions.tsx']}
+  demoPath="/advanced-concepts/context-menus-clipboard-actions"
+  repoFiles={['src/pages/advanced-concepts/context-menus/CustomContextMenuClipboardActionsPage.tsx']}
 />
 
 ## Conditional Menu State
@@ -41,8 +41,8 @@ This demo shows state-aware menus where items are hidden or disabled until actio
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/context-menus-smart-conditional"
-  repoFiles={['src/pages/concepts/context-menus/custom-context-menu-smart-conditional.tsx']}
+  demoPath="/advanced-concepts/context-menus-smart-conditional"
+  repoFiles={['src/pages/advanced-concepts/context-menus/CustomContextMenuSmartConditionalPage.tsx']}
 />
 
 ## Nested Menu Hierarchies
@@ -51,8 +51,8 @@ This configuration uses `children` to create submenus for grouping related actio
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/context-menus-object-inspector"
-  repoFiles={['src/pages/concepts/context-menus/custom-context-menu-object-inspector.tsx']}
+  demoPath="/advanced-concepts/context-menus-object-inspector"
+  repoFiles={['src/pages/advanced-concepts/context-menus/CustomContextMenuObjectInspectorPage.tsx']}
 />
 
 ## Related API Methods
@@ -63,4 +63,4 @@ This configuration uses `children` to create submenus for grouping related actio
 - Action handlers (`action`)
 - Grouping and hierarchy (`group`, `children`, `icon`)
 
-For a comprehensive view, see the [API Reference](api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../api-reference-editor.md).

@@ -9,10 +9,10 @@ import CollaborationRealtimePage from './pages/advanced-concepts/collaboration/C
 import ComponentsEditorPage from './pages/concepts/components/ComponentsEditorPage.vue'
 import ComponentsEditorUiPage from './pages/concepts/components/ComponentsEditorUiPage.vue'
 import ComponentsEnginePage from './pages/concepts/components/ComponentsEnginePage.vue'
-import CustomContextMenuCanvasQuickActionsPage from './pages/concepts/context-menus/CustomContextMenuCanvasQuickActionsPage.vue'
-import CustomContextMenuClipboardActionsPage from './pages/concepts/context-menus/CustomContextMenuClipboardActionsPage.vue'
-import CustomContextMenuSmartConditionalPage from './pages/concepts/context-menus/CustomContextMenuSmartConditionalPage.vue'
-import CustomContextMenuObjectInspectorPage from './pages/concepts/context-menus/CustomContextMenuObjectInspectorPage.vue'
+import CustomContextMenuCanvasQuickActionsPage from './pages/advanced-concepts/context-menus/CustomContextMenuCanvasQuickActionsPage.vue'
+import CustomContextMenuClipboardActionsPage from './pages/advanced-concepts/context-menus/CustomContextMenuClipboardActionsPage.vue'
+import CustomContextMenuSmartConditionalPage from './pages/advanced-concepts/context-menus/CustomContextMenuSmartConditionalPage.vue'
+import CustomContextMenuObjectInspectorPage from './pages/advanced-concepts/context-menus/CustomContextMenuObjectInspectorPage.vue'
 import CustomElementsPage from './pages/concepts/custom-elements/CustomElementsPage.vue'
 import CustomElementsHtmlPage from './pages/concepts/custom-elements/CustomElementsHtmlPage.vue'
 import ObjectsAddRemovePage from './pages/concepts/objects/ObjectsAddRemovePage.vue'
@@ -65,6 +65,22 @@ export const router = createRouter({
     {
       path: '/advanced-concepts',
       children: [
+        {
+          path: 'context-menus-canvas-quick-actions',
+          component: CustomContextMenuCanvasQuickActionsPage,
+        },
+        {
+          path: 'context-menus-clipboard-actions',
+          component: CustomContextMenuClipboardActionsPage,
+        },
+        {
+          path: 'context-menus-smart-conditional',
+          component: CustomContextMenuSmartConditionalPage,
+        },
+        {
+          path: 'context-menus-object-inspector',
+          component: CustomContextMenuObjectInspectorPage,
+        },
         { path: 'collaboration-local', component: CollaborationLocalPage },
         { path: 'collaboration-realtime', component: CollaborationRealtimePage },
         { path: 'localization-switch', component: LocalizationSwitchPage },
@@ -88,22 +104,6 @@ export const router = createRouter({
         { path: 'components-editor', component: ComponentsEditorPage },
         { path: 'components-editor-ui', component: ComponentsEditorUiPage },
         { path: 'components-engine', component: ComponentsEnginePage },
-        {
-          path: 'context-menus-canvas-quick-actions',
-          component: CustomContextMenuCanvasQuickActionsPage,
-        },
-        {
-          path: 'context-menus-clipboard-actions',
-          component: CustomContextMenuClipboardActionsPage,
-        },
-        {
-          path: 'context-menus-smart-conditional',
-          component: CustomContextMenuSmartConditionalPage,
-        },
-        {
-          path: 'context-menus-object-inspector',
-          component: CustomContextMenuObjectInspectorPage,
-        },
         {
           path: 'custom-elements',
           component: CustomElementsPage,

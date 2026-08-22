@@ -4,10 +4,10 @@ import { EditorPageComponent } from './e2e/editor-page.component';
 import { EditorHocuspocusPageComponent } from './e2e/editor-hocuspocus-page.component';
 import { MultiEditorPageComponent } from './e2e/multi-editor-page.component';
 import { WrappedEditorPageComponent } from './e2e/wrapped-editor-page.component';
-import { CustomContextMenuCanvasQuickActionsComponent } from './concepts/context-menus/custom-context-menu-canvas-quick-actions.component';
-import { CustomContextMenuClipboardActionsComponent } from './concepts/context-menus/custom-context-menu-clipboard-actions.component';
-import { CustomContextMenuSmartConditionalComponent } from './concepts/context-menus/custom-context-menu-smart-conditional.component';
-import { CustomContextMenuObjectInspectorComponent } from './concepts/context-menus/custom-context-menu-object-inspector.component';
+import { CustomContextMenuCanvasQuickActionsComponent } from './advanced-concepts/context-menus/custom-context-menu-canvas-quick-actions.component';
+import { CustomContextMenuClipboardActionsComponent } from './advanced-concepts/context-menus/custom-context-menu-clipboard-actions.component';
+import { CustomContextMenuSmartConditionalComponent } from './advanced-concepts/context-menus/custom-context-menu-smart-conditional.component';
+import { CustomContextMenuObjectInspectorComponent } from './advanced-concepts/context-menus/custom-context-menu-object-inspector.component';
 import { QuickstartComponent } from './getting-started/quickstart.component';
 import { ObjectExplorerComponent } from './examples/object-explorer/object-explorer.component';
 import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapper/blueprint-defect-mapper.component';
@@ -96,6 +96,11 @@ export const routes: Routes = [
         path: 'custom-elements-html',
         component: EditorPageCustomElementHtmlComponent,
       },
+    ],
+  },
+  {
+    path: 'advanced-concepts',
+    children: [
       {
         path: 'context-menus-canvas-quick-actions',
         component: CustomContextMenuCanvasQuickActionsComponent,
@@ -112,11 +117,6 @@ export const routes: Routes = [
         path: 'context-menus-object-inspector',
         component: CustomContextMenuObjectInspectorComponent,
       },
-    ],
-  },
-  {
-    path: 'advanced-concepts',
-    children: [
       {
         path: 'customization',
         children: [

@@ -5,7 +5,7 @@ import {
   type ContextMenuItem,
 } from 'kritzel-vue'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
+import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../../concepts/shared/concept-shared'
 
 const editor = getEditorRef('editor');
 
