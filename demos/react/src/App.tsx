@@ -10,10 +10,10 @@ import { CollaborationRealtimePage } from "./pages/advanced-concepts/collaborati
 import { ComponentsEditorPage } from "./pages/concepts/components/ComponentsEditorPage";
 import { ComponentsEditorUiPage } from "./pages/concepts/components/ComponentsEditorUiPage";
 import { ComponentsEnginePage } from "./pages/concepts/components/ComponentsEnginePage";
-import { CustomContextMenuCanvasQuickActionsPage } from "./pages/concepts/context-menus/CustomContextMenuCanvasQuickActionsPage";
-import { CustomContextMenuClipboardActionsPage } from "./pages/concepts/context-menus/CustomContextMenuClipboardActionsPage";
-import { CustomContextMenuSmartConditionalPage } from "./pages/concepts/context-menus/CustomContextMenuSmartConditionalPage";
-import { CustomContextMenuObjectInspectorPage } from "./pages/concepts/context-menus/CustomContextMenuObjectInspectorPage";
+import { CustomContextMenuCanvasQuickActionsPage } from "./pages/advanced-concepts/context-menus/CustomContextMenuCanvasQuickActionsPage";
+import { CustomContextMenuClipboardActionsPage } from "./pages/advanced-concepts/context-menus/CustomContextMenuClipboardActionsPage";
+import { CustomContextMenuSmartConditionalPage } from "./pages/advanced-concepts/context-menus/CustomContextMenuSmartConditionalPage";
+import { CustomContextMenuObjectInspectorPage } from "./pages/advanced-concepts/context-menus/CustomContextMenuObjectInspectorPage";
 import { CustomElementsPage } from "./pages/concepts/custom-elements/CustomElementsPage";
 import { CustomElementsHtmlPage } from "./pages/concepts/custom-elements/CustomElementsHtmlPage";
 import { ObjectsAddRemovePage } from "./pages/concepts/objects/ObjectsAddRemovePage";
@@ -69,10 +69,10 @@ function App() {
         <Route path="/concepts/components-editor" element={<ComponentsEditorPage />} />
         <Route path="/concepts/components-editor-ui" element={<ComponentsEditorUiPage />} />
         <Route path="/concepts/components-engine" element={<ComponentsEnginePage />} />
-        <Route path="/concepts/context-menus-canvas-quick-actions" element={<CustomContextMenuCanvasQuickActionsPage />} />
-        <Route path="/concepts/context-menus-clipboard-actions" element={<CustomContextMenuClipboardActionsPage />} />
-        <Route path="/concepts/context-menus-smart-conditional" element={<CustomContextMenuSmartConditionalPage />} />
-        <Route path="/concepts/context-menus-object-inspector" element={<CustomContextMenuObjectInspectorPage />} />
+        <Route path="/advanced-concepts/context-menus-canvas-quick-actions" element={<CustomContextMenuCanvasQuickActionsPage />} />
+        <Route path="/advanced-concepts/context-menus-clipboard-actions" element={<CustomContextMenuClipboardActionsPage />} />
+        <Route path="/advanced-concepts/context-menus-smart-conditional" element={<CustomContextMenuSmartConditionalPage />} />
+        <Route path="/advanced-concepts/context-menus-object-inspector" element={<CustomContextMenuObjectInspectorPage />} />
         <Route path="/concepts/custom-elements" element={<CustomElementsPage />} />
         <Route path="/concepts/custom-elements-html" element={<CustomElementsHtmlPage />} />
         <Route path="/concepts/objects-add-remove" element={<ObjectsAddRemovePage />} />

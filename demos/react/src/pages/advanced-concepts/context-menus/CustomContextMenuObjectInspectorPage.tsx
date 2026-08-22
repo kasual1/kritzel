@@ -5,7 +5,7 @@ import {
   HTMLKritzelEditorElement,
 } from "kritzel-react";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
+import { editorStyle, hostStyle, seedEditor } from "../../concepts/shared/concept-shared";
 
 export function CustomContextMenuObjectInspectorPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);

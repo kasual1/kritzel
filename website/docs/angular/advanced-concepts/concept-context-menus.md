@@ -21,8 +21,8 @@ This focused setup uses a minimal global context menu for quick document command
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/context-menus-canvas-quick-actions"
-  repoFiles={['src/app/concepts/context-menus/custom-context-menu-canvas-quick-actions.component.ts']}
+  demoPath="/advanced-concepts/context-menus-canvas-quick-actions"
+  repoFiles={['src/app/advanced-concepts/context-menus/custom-context-menu-canvas-quick-actions.component.ts']}
 />
 
 ## Object Context Menu
@@ -31,8 +31,8 @@ This example separates global context actions from object specific actions and a
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/context-menus-clipboard-actions"
-  repoFiles={['src/app/concepts/context-menus/custom-context-menu-clipboard-actions.component.ts']}
+  demoPath="/advanced-concepts/context-menus-clipboard-actions"
+  repoFiles={['src/app/advanced-concepts/context-menus/custom-context-menu-clipboard-actions.component.ts']}
 />
 
 ## Conditional Menu State
@@ -41,8 +41,8 @@ This demo shows state-aware menus where items are hidden or disabled until actio
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/context-menus-smart-conditional"
-  repoFiles={['src/app/concepts/context-menus/custom-context-menu-smart-conditional.component.ts']}
+  demoPath="/advanced-concepts/context-menus-smart-conditional"
+  repoFiles={['src/app/advanced-concepts/context-menus/custom-context-menu-smart-conditional.component.ts']}
 />
 
 ## Nested Menu Hierarchies
@@ -51,17 +51,17 @@ This configuration uses `children` to create submenus for grouping related actio
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/context-menus-object-inspector"
-  repoFiles={['src/app/concepts/context-menus/custom-context-menu-object-inspector.component.ts']}
+  demoPath="/advanced-concepts/context-menus-object-inspector"
+  repoFiles={['src/app/advanced-concepts/context-menus/custom-context-menu-object-inspector.component.ts']}
 />
 
 ## Related API Methods
 
-- Canvas menu configuration ([globalContextMenuItems](api-reference-editor.md#props))
-- Object menu configuration ([objectContextMenuItems](api-reference-editor.md#props))
-- Programmatic control ([openContextMenu](api-reference-editor.md#opencontextmenu), [hideContextMenu](api-reference-editor.md#hidecontextmenu))
+- Canvas menu configuration ([globalContextMenuItems](../api-reference-editor.md#props))
+- Object menu configuration ([objectContextMenuItems](../api-reference-editor.md#props))
+- Programmatic control ([openContextMenu](../api-reference-editor.md#opencontextmenu), [hideContextMenu](../api-reference-editor.md#hidecontextmenu))
 - Conditional behavior (`visible`, `disabled`)
 - Action handlers (`action`)
 - Grouping and hierarchy (`group`, `children`, `icon`)
 
-For a comprehensive view, see the [API Reference](api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../api-reference-editor.md).

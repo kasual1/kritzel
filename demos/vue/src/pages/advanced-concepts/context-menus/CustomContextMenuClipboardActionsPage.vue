@@ -5,7 +5,7 @@ import {
   type ContextMenuItem,
 } from 'kritzel-vue'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
+import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../../concepts/shared/concept-shared'
 
 const editor = getEditorRef('editor');
 
@@ -22,7 +22,6 @@ const globalItems: ContextMenuItem[] = [
     label: 'Select All',
     icon: 'select-all',
     group: 'clipboard',
-    disabled: async () => ((await editor.value?.getObjectsInViewport()) ?? []).length === 0,
     action: async () => {
       await editor.value?.selectAllObjectsInViewport()
     },
@@ -71,26 +70,24 @@ async function onReady() {
   await editor.value.openContextMenu({
     x: selected[0].translateX + 50,
     y: selected[0].translateY + 50,
-    objectId: selected[0].id,
   })
 }
 </script>
 
 <template>
   <div :style="hostStyle">
-    <KritzelEditor
-      ref="editor"
-      editorId="custom-context-menu-smart-conditional"
-      theme="light"
-      :themes="[vueThemeLight]"
-      :globalContextMenuItems="globalItems"
-      :objectContextMenuItems="objectItems"
-      :isPanningEnabled="false"
-      :isZoomingEnabled="false"
-      :isMoreMenuVisible="false"
-      :isWorkspaceManagerVisible="false"
-      :style="editorStyle"
-      @isReady="onReady"
-    />
+    <KritzelEditor 
+    ref="editor"
+    editorId="custom-context-menu-clipboard-actions"
+    theme="light"
+    :themes="[vueThemeLight]"
+    :globalContextMenuItems="globalItems"
+    :objectContextMenuItems="objectItems"
+    :isPanningEnabled="false"
+    :isZoomingEnabled="false"
+    :isMoreMenuVisible="false"
+    :isWorkspaceManagerVisible="false"
+    :style="editorStyle"
+    @isReady="onReady" />
   </div>
 </template>
