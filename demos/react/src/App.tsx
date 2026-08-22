@@ -45,8 +45,8 @@ import { LocalizationSwitchPage } from "./pages/advanced/localization/Localizati
 import { LocalizationCustomPage } from "./pages/advanced/localization/LocalizationCustomPage";
 import { FontsRegisterPage } from "./pages/advanced/customization/fonts/FontsRegisterPage";
 import { IconsRegisterPage } from "./pages/advanced/customization/icons/IconsRegisterPage";
-import { LoginDialogProvidersPage } from "./pages/advanced/login-dialog/LoginDialogProvidersPage";
-import { LoginDialogFlowPage } from "./pages/advanced/login-dialog/LoginDialogFlowPage";
+import { UserManagementProvidersPage } from "./pages/advanced/user-management/UserManagementProvidersPage";
+import { UserManagementFlowPage } from "./pages/advanced/user-management/UserManagementFlowPage";
 
 function App() {
   return (
@@ -62,8 +62,8 @@ function App() {
         <Route path="/advanced/localization-custom" element={<LocalizationCustomPage />} />
         <Route path="/advanced/customization/fonts-register" element={<FontsRegisterPage />} />
         <Route path="/advanced/customization/icons" element={<IconsRegisterPage />} />
-        <Route path="/advanced/login-dialog-providers" element={<LoginDialogProvidersPage />} />
-        <Route path="/advanced/login-dialog-flow" element={<LoginDialogFlowPage />} />
+        <Route path="/advanced/user-management-providers" element={<UserManagementProvidersPage />} />
+        <Route path="/advanced/user-management-flow" element={<UserManagementFlowPage />} />
         <Route path="/advanced/collaboration-local" element={<CollaborationLocalPage />} />
         <Route path="/advanced/collaboration-realtime" element={<CollaborationRealtimePage />} />
         <Route path="/fundamentals/components-editor" element={<ComponentsEditorPage />} />

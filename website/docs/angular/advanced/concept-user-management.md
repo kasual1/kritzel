@@ -1,13 +1,13 @@
 ---
-sidebar_label: Login Dialog
+sidebar_label: User Management
 displayed_sidebar: tutorialSidebar
-title: "Login Dialog Concept | Kritzel for Angular"
-description: "Understand how to configure the Kritzel login dialog with authentication providers."
+title: "User Management Concept | Kritzel for Angular"
+description: "Understand how to configure Kritzel's user management and login dialog with authentication providers."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# Login Dialog
+# User Management
 
 ## Overview
 
@@ -39,8 +39,8 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/login-dialog-providers"
-  repoFiles={['src/app/advanced/login-dialog/login-dialog-providers.component.ts']}
+  demoPath="/advanced/user-management-providers"
+  repoFiles={['src/app/advanced/user-management/user-management-providers.component.ts']}
 />
 
 ## Handling the Login Flow
@@ -54,8 +54,8 @@ Clicking a provider button puts that button into a loading state and emits the e
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/login-dialog-flow"
-  repoFiles={['src/app/advanced/login-dialog/login-dialog-flow.component.ts']}
+  demoPath="/advanced/user-management-flow"
+  repoFiles={['src/app/advanced/user-management/user-management-flow.component.ts']}
 />
 
 ## Theming the Dialog

@@ -50,7 +50,7 @@ function onLogout() {
       <span>Status: {{ status }}</span>
       <button @click="editor?.openLoginDialog()">Open login dialog</button>
     </div>
-    <KritzelEditor ref="editor" editorId="login-dialog-flow" :loginConfig="loginConfig" :user="user" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @login="onLogin" @logout="onLogout" />
+    <KritzelEditor ref="editor" editorId="user-management-flow" :loginConfig="loginConfig" :user="user" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @login="onLogin" @logout="onLogout" />
   </div>
 </template>
 

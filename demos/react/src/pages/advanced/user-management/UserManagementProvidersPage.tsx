@@ -24,7 +24,7 @@ const loginConfig = {
   ],
 };
 
-export function LoginDialogProvidersPage() {
+export function UserManagementProvidersPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
 
   return (
@@ -34,7 +34,7 @@ export function LoginDialogProvidersPage() {
       </div>
       <KritzelEditor
         ref={editorRef}
-        editorId="login-dialog-providers"
+        editorId="user-management-providers"
         loginConfig={loginConfig}
         customSvgIcons={providerIcons}
         theme="light"
