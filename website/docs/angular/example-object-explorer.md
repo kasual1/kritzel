@@ -22,7 +22,7 @@ Complete the [Quick Start](./quick-start.md) guide to have a working `<kritzel-e
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
 - [Objects](/docs/angular/concept-objects) — querying, updating, and removing canvas objects programmatically
-- [Components](/docs/angular/concept-components) — listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
+- [Components](/docs/angular/components/concept-editor) — listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
 - [Viewport](/docs/angular/concept-viewport) — panning and zooming to focus on a selected object
 
 ---
