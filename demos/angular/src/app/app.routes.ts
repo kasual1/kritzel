@@ -43,8 +43,8 @@ import { LocalizationSwitchComponent } from './advanced/localization/localizatio
 import { LocalizationCustomComponent } from './advanced/localization/localization-custom.component';
 import { FontsRegisterComponent } from './advanced/customization/fonts/fonts-register.component';
 import { IconsRegisterComponent } from './advanced/customization/icons/icons-register.component';
-import { LoginDialogProvidersComponent } from './advanced/login-dialog/login-dialog-providers.component';
-import { LoginDialogFlowComponent } from './advanced/login-dialog/login-dialog-flow.component';
+import { UserManagementProvidersComponent } from './advanced/user-management/user-management-providers.component';
+import { UserManagementFlowComponent } from './advanced/user-management/user-management-flow.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -128,8 +128,8 @@ export const routes: Routes = [
       },
       { path: 'localization-switch', component: LocalizationSwitchComponent },
       { path: 'localization-custom', component: LocalizationCustomComponent },
-      { path: 'login-dialog-providers', component: LoginDialogProvidersComponent },
-      { path: 'login-dialog-flow', component: LoginDialogFlowComponent },
+      { path: 'user-management-providers', component: UserManagementProvidersComponent },
+      { path: 'user-management-flow', component: UserManagementFlowComponent },
     ],
   },
   {

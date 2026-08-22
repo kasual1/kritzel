@@ -42,8 +42,8 @@ import LocalizationSwitchPage from './pages/advanced/localization/LocalizationSw
 import LocalizationCustomPage from './pages/advanced/localization/LocalizationCustomPage.vue'
 import FontsRegisterPage from './pages/advanced/customization/fonts/FontsRegisterPage.vue'
 import IconsRegisterPage from './pages/advanced/customization/icons/IconsRegisterPage.vue'
-import LoginDialogProvidersPage from './pages/advanced/login-dialog/LoginDialogProvidersPage.vue'
-import LoginDialogFlowPage from './pages/advanced/login-dialog/LoginDialogFlowPage.vue'
+import UserManagementProvidersPage from './pages/advanced/user-management/UserManagementProvidersPage.vue'
+import UserManagementFlowPage from './pages/advanced/user-management/UserManagementFlowPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -85,8 +85,8 @@ export const router = createRouter({
         { path: 'collaboration-realtime', component: CollaborationRealtimePage },
         { path: 'localization-switch', component: LocalizationSwitchPage },
         { path: 'localization-custom', component: LocalizationCustomPage },
-        { path: 'login-dialog-providers', component: LoginDialogProvidersPage },
-        { path: 'login-dialog-flow', component: LoginDialogFlowPage },
+        { path: 'user-management-providers', component: UserManagementProvidersPage },
+        { path: 'user-management-flow', component: UserManagementFlowPage },
         {
           path: 'customization',
           children: [

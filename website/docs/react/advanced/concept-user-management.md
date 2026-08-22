@@ -1,13 +1,13 @@
 ---
-sidebar_label: Login Dialog
+sidebar_label: User Management
 displayed_sidebar: tutorialSidebar
-title: "Login Dialog Concept | Kritzel for Vue"
-description: "Understand how to configure the Kritzel login dialog with authentication providers."
+title: "User Management Concept | Kritzel for React"
+description: "Understand how to configure Kritzel's user management and login dialog with authentication providers."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# Login Dialog
+# User Management
 
 ## Overview
 
@@ -38,38 +38,24 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
 `title` and `subtitle` override the localized defaults of the dialog header. When `title` is omitted, the active locale's `login.dialogTitle` term is used.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/login-dialog-providers"
-  repoFiles={['src/pages/advanced/login-dialog/LoginDialogProvidersPage.vue']}
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  demoPath="/advanced/user-management-providers"
+  repoFiles={['src/pages/advanced/user-management/UserManagementProvidersPage.tsx']}
 />
 
 ## Handling the Login Flow
 
-Clicking a provider button puts that button into a loading state and emits the editor's `login` event with a `LoginEvent` containing the provider `name`. Your application performs the sign-in and then reports the result back to the editor:
+Clicking a provider button puts that button into a loading state and fires the editor's `onLogin` handler with a `LoginEvent` containing the provider `name`. Your application performs the sign-in and then reports the result back to the editor:
 
 - Call `setLoginLoading(provider)` while authentication is pending and `setLoginLoading(null)` when it settles.
-- Bind the `user` prop to an `IKritzelUser` once authentication succeeds. A user with `isGuest: false` replaces the Sign in button with the current-user avatar.
-- Handle the `logout` event to clear the user again.
-- Call `openLoginDialog()` to open the dialog from your own UI, for example from an application menu.
-
-Resolve the editor instance with the `getEditorRef` composable from `kritzel-vue`, because a plain template ref points at the component instance rather than the underlying custom element:
-
-```html
-<script setup lang="ts">
-import { getEditorRef, KritzelEditor } from 'kritzel-vue'
-
-const editor = getEditorRef('editor')
-</script>
-
-<template>
-  <KritzelEditor ref="editor" :loginConfig="loginConfig" :user="user" @login="onLogin" @logout="onLogout" />
-</template>
-```
+- Set the `user` prop to an `IKritzelUser` once authentication succeeds. A user with `isGuest: false` replaces the Sign in button with the current-user avatar.
+- Handle `onLogout` to clear the user again.
+- Call `openLoginDialog()` on the editor ref to open the dialog from your own UI, for example from an application menu.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/login-dialog-flow"
-  repoFiles={['src/pages/advanced/login-dialog/LoginDialogFlowPage.vue']}
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  demoPath="/advanced/user-management-flow"
+  repoFiles={['src/pages/advanced/user-management/UserManagementFlowPage.tsx']}
 />
 
 ## Theming the Dialog
@@ -81,7 +67,7 @@ The dialog reads its colors from the `loginDialog` section of a `KritzelTheme`, 
 - Configuration (`loginConfig`, `KritzelLoginConfig`, `KritzelLoginProvider`)
 - Provider icons (`customSvgIcons`, `KritzelIconRegistry`)
 - User state (`user`, `IKritzelUser`)
-- Events (`login`, `logout`, `LoginEvent`)
+- Events (`onLogin`, `onLogout`, `LoginEvent`)
 - Methods (`openLoginDialog`, `setLoginLoading`)
 
 For a comprehensive view, see the [API Reference](../api-reference-editor.md).

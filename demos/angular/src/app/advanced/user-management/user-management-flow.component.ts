@@ -24,7 +24,7 @@ const demoAccounts: Record<string, IKritzelUser> = {
 };
 
 @Component({
-  selector: 'app-login-dialog-flow',
+  selector: 'app-user-management-flow',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -34,7 +34,7 @@ const demoAccounts: Record<string, IKritzelUser> = {
       <button type="button" (click)="openDialog()">Open login dialog</button>
     </div>
     <kritzel-editor
-      editorId="login-dialog-flow"
+      editorId="user-management-flow"
       [loginConfig]="loginConfig"
       [user]="user()"
       [theme]="'light'"
@@ -87,7 +87,7 @@ const demoAccounts: Record<string, IKritzelUser> = {
     `,
   ],
 })
-export class LoginDialogFlowComponent {
+export class UserManagementFlowComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];

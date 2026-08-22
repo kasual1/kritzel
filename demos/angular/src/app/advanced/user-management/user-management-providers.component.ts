@@ -16,7 +16,7 @@ const providerIcons: Record<string, string> = {
 };
 
 @Component({
-  selector: 'app-login-dialog-providers',
+  selector: 'app-user-management-providers',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -25,7 +25,7 @@ const providerIcons: Record<string, string> = {
       <span>Each entry in loginConfig.providers becomes a button in the dialog.</span>
     </div>
     <kritzel-editor
-      editorId="login-dialog-providers"
+      editorId="user-management-providers"
       [loginConfig]="loginConfig"
       [customSvgIcons]="providerIcons"
       [theme]="'light'"
@@ -66,7 +66,7 @@ const providerIcons: Record<string, string> = {
     `,
   ],
 })
-export class LoginDialogProvidersComponent {
+export class UserManagementProvidersComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];

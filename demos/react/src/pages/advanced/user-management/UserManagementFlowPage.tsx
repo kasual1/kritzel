@@ -16,7 +16,7 @@ const loginConfig = {
   ],
 };
 
-export function LoginDialogFlowPage() {
+export function UserManagementFlowPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [user, setUser] = useState<IKritzelUser | undefined>(undefined);
   const [status, setStatus] = useState("Signed out");
@@ -35,7 +35,7 @@ export function LoginDialogFlowPage() {
       </div>
       <KritzelEditor
         ref={editorRef}
-        editorId="login-dialog-flow"
+        editorId="user-management-flow"
         loginConfig={loginConfig}
         user={user}
         theme="light"

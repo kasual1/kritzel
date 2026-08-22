@@ -26,7 +26,7 @@ const loginConfig = {
 <template>
   <div class="page">
     <div class="toolbar"><strong>Login Providers:</strong> each entry in loginConfig.providers becomes a button in the dialog.</div>
-    <KritzelEditor ref="editor" editorId="login-dialog-providers" :loginConfig="loginConfig" :customSvgIcons="providerIcons" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @isReady="() => editor?.openLoginDialog()" />
+    <KritzelEditor ref="editor" editorId="user-management-providers" :loginConfig="loginConfig" :customSvgIcons="providerIcons" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @isReady="() => editor?.openLoginDialog()" />
   </div>
 </template>
 
