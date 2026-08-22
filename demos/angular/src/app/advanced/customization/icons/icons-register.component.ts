@@ -19,7 +19,7 @@ const customSvgIcons: Record<string, string> = {
 };
 
 @Component({
-  selector: 'app-custom-icons-register',
+  selector: 'app-icons-register',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -28,7 +28,7 @@ const customSvgIcons: Record<string, string> = {
       <span>Registered icons are reused by the toolbar and context menu below.</span>
     </div>
     <kritzel-editor
-      editorId="custom-icons-register"
+      editorId="icons-register"
       [customSvgIcons]="customSvgIcons"
       [controls]="controls"
       [globalContextMenuItems]="globalItems"
@@ -50,7 +50,7 @@ const customSvgIcons: Record<string, string> = {
     kritzel-editor { flex: 1; min-height: 0; }
   `],
 })
-export class CustomIconsRegisterComponent {
+export class IconsRegisterComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];

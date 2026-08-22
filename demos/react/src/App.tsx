@@ -44,7 +44,7 @@ import { WebsiteHeroPageMobile } from "./pages/website/WebsiteHeroPageMobile";
 import { LocalizationSwitchPage } from "./pages/advanced/localization/LocalizationSwitchPage";
 import { LocalizationCustomPage } from "./pages/advanced/localization/LocalizationCustomPage";
 import { FontsRegisterPage } from "./pages/advanced/customization/fonts/FontsRegisterPage";
-import { CustomIconsRegisterPage } from "./pages/advanced/customization/custom-icons/CustomIconsRegisterPage";
+import { IconsRegisterPage } from "./pages/advanced/customization/icons/IconsRegisterPage";
 import { LoginDialogProvidersPage } from "./pages/advanced/login-dialog/LoginDialogProvidersPage";
 import { LoginDialogFlowPage } from "./pages/advanced/login-dialog/LoginDialogFlowPage";
 
@@ -61,7 +61,7 @@ function App() {
         <Route path="/advanced/localization-switch" element={<LocalizationSwitchPage />} />
         <Route path="/advanced/localization-custom" element={<LocalizationCustomPage />} />
         <Route path="/advanced/customization/fonts-register" element={<FontsRegisterPage />} />
-        <Route path="/advanced/customization/custom-icons" element={<CustomIconsRegisterPage />} />
+        <Route path="/advanced/customization/icons" element={<IconsRegisterPage />} />
         <Route path="/advanced/login-dialog-providers" element={<LoginDialogProvidersPage />} />
         <Route path="/advanced/login-dialog-flow" element={<LoginDialogFlowPage />} />
         <Route path="/advanced/collaboration-local" element={<CollaborationLocalPage />} />

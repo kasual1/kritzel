@@ -1,5 +1,5 @@
 ---
-sidebar_label: Custom Fonts
+sidebar_label: Fonts
 displayed_sidebar: tutorialSidebar
 title: "Custom Fonts Concept | Kritzel for Angular"
 description: "Understand the core concept of Custom Fonts in Kritzel."
