@@ -44,6 +44,7 @@ import { WebsiteHeroPageMobile } from "./pages/website/WebsiteHeroPageMobile";
 import { LocalizationSwitchPage } from "./pages/advanced-concepts/localization/LocalizationSwitchPage";
 import { LocalizationCustomPage } from "./pages/advanced-concepts/localization/LocalizationCustomPage";
 import { FontsRegisterPage } from "./pages/advanced-concepts/fonts/FontsRegisterPage";
+import { CustomIconsRegisterPage } from "./pages/advanced-concepts/custom-icons/CustomIconsRegisterPage";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
         <Route path="/advanced-concepts/localization-switch" element={<LocalizationSwitchPage />} />
         <Route path="/advanced-concepts/localization-custom" element={<LocalizationCustomPage />} />
         <Route path="/advanced-concepts/fonts-register" element={<FontsRegisterPage />} />
+        <Route path="/advanced-concepts/custom-icons" element={<CustomIconsRegisterPage />} />
         <Route path="/advanced-concepts/collaboration-local" element={<CollaborationLocalPage />} />
         <Route path="/advanced-concepts/collaboration-realtime" element={<CollaborationRealtimePage />} />
         <Route path="/concepts/components-editor" element={<ComponentsEditorPage />} />

@@ -16,8 +16,8 @@ import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-galle
 import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio/image-annotation-studio.component';
 import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
 import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
-import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
-import { CollaborationRealtimeComponent } from './concepts/collaboration/collaboration-realtime.component';
+import { CollaborationLocalComponent } from './advanced-concepts/collaboration/collaboration-local.component';
+import { CollaborationRealtimeComponent } from './advanced-concepts/collaboration/collaboration-realtime.component';
 import { CollaborationLocalComponent as PersistenceLocalComponent } from './concepts/persistence/persistence-local.component';
 import { ComponentsEditorComponent } from './concepts/components/components-editor.component';
 import { ComponentsEditorUiComponent } from './concepts/components/components-editor-ui.component';
@@ -42,6 +42,7 @@ import { EditorPageCustomElementHtmlComponent } from './concepts/custom-elements
 import { LocalizationSwitchComponent } from './advanced-concepts/localization/localization-switch.component';
 import { LocalizationCustomComponent } from './advanced-concepts/localization/localization-custom.component';
 import { FontsRegisterComponent } from './advanced-concepts/fonts/fonts-register.component';
+import { CustomIconsRegisterComponent } from './advanced-concepts/custom-icons/custom-icons-register.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -119,6 +120,7 @@ export const routes: Routes = [
       { path: 'localization-switch', component: LocalizationSwitchComponent },
       { path: 'localization-custom', component: LocalizationCustomComponent },
       { path: 'fonts-register', component: FontsRegisterComponent },
+      { path: 'custom-icons', component: CustomIconsRegisterComponent },
     ],
   },
   {

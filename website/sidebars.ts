@@ -18,7 +18,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Advanced Concepts',
       collapsed: true,
-      items: ['advanced-concepts/concept-collaboration', 'advanced-concepts/concept-localization', 'advanced-concepts/concept-fonts'],
+      items: ['advanced-concepts/concept-collaboration', 'advanced-concepts/concept-localization', 'advanced-concepts/concept-fonts', 'advanced-concepts/concept-custom-icons'],
     },
     {
       type: 'category',
