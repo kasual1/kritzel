@@ -37,10 +37,10 @@ You can add support for additional languages (such as Spanish `'es'`) or overrid
 
 ## Related API Methods
 
-- Setting locale ([locale](api-reference-editor.md#props), [setLocale](api-reference-editor.md#setlocale), [getLocale](api-reference-editor.md#getlocale))
-- Fallback locale ([fallbackLocale](api-reference-editor.md#props))
-- Registering locales ([locales](api-reference-editor.md#props), [registerLocales](api-reference-editor.md#registerlocales), [getAvailableLocales](api-reference-editor.md#getavailablelocales))
-- Programmatic translation ([t](api-reference-editor.md#t))
-- Locale change events ([localeChange](api-reference-editor.md#events))
+- Setting locale ([locale](../api-reference-editor.md#props), [setLocale](../api-reference-editor.md#setlocale), [getLocale](../api-reference-editor.md#getlocale))
+- Fallback locale ([fallbackLocale](../api-reference-editor.md#props))
+- Registering locales ([locales](../api-reference-editor.md#props), [registerLocales](../api-reference-editor.md#registerlocales), [getAvailableLocales](../api-reference-editor.md#getavailablelocales))
+- Programmatic translation ([t](../api-reference-editor.md#t))
+- Locale change events ([localeChange](../api-reference-editor.md#events))
 
-For a comprehensive view, see the [API Reference](api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../api-reference-editor.md).

@@ -4,8 +4,8 @@ import EditorHocuspocusPage from './pages/e2e/EditorHocuspocusPage.vue'
 import MultiEditorPage from './pages/e2e/MultiEditorPage.vue'
 import WrappedEditorPage from './pages/e2e/WrappedEditorPage.vue'
 import BasicUsagePage from './pages/basic-usage/BasicUsagePage.vue'
-import CollaborationLocalPage from './pages/concepts/collaboration/CollaborationLocalPage.vue'
-import CollaborationRealtimePage from './pages/concepts/collaboration/CollaborationRealtimePage.vue'
+import CollaborationLocalPage from './pages/advanced-concepts/collaboration/CollaborationLocalPage.vue'
+import CollaborationRealtimePage from './pages/advanced-concepts/collaboration/CollaborationRealtimePage.vue'
 import ComponentsEditorPage from './pages/concepts/components/ComponentsEditorPage.vue'
 import ComponentsEditorUiPage from './pages/concepts/components/ComponentsEditorUiPage.vue'
 import ComponentsEnginePage from './pages/concepts/components/ComponentsEnginePage.vue'
@@ -38,6 +38,9 @@ import SlideshowPresentationPage from './pages/examples/slideshow-presentation/S
 import InfiniteCanvasGalleryPage from './pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage.vue'
 import ImageAnnotationStudioPage from './pages/examples/image-annotation-studio/ImageAnnotationStudioPage.vue'
 import QuickstartPage from './pages/getting-started/QuickstartPage.vue'
+import LocalizationSwitchPage from './pages/advanced-concepts/localization/LocalizationSwitchPage.vue'
+import LocalizationCustomPage from './pages/advanced-concepts/localization/LocalizationCustomPage.vue'
+import FontsRegisterPage from './pages/advanced-concepts/fonts/FontsRegisterPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -57,10 +60,18 @@ export const router = createRouter({
       component: BasicUsagePage,
     },
     {
-      path: '/concepts',
+      path: '/advanced-concepts',
       children: [
         { path: 'collaboration-local', component: CollaborationLocalPage },
         { path: 'collaboration-realtime', component: CollaborationRealtimePage },
+        { path: 'localization-switch', component: LocalizationSwitchPage },
+        { path: 'localization-custom', component: LocalizationCustomPage },
+        { path: 'fonts-register', component: FontsRegisterPage },
+      ],
+    },
+    {
+      path: '/concepts',
+      children: [
         { path: 'components-editor', component: ComponentsEditorPage },
         { path: 'components-editor-ui', component: ComponentsEditorUiPage },
         { path: 'components-engine', component: ComponentsEnginePage },
