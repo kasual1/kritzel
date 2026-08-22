@@ -2,14 +2,14 @@
 
 ## Overview
 
-Core Concept pages introduce fundamental architectural pillars of Kritzel (such as Viewport, Workspaces, Tools, Objects, Theming, Collaboration). Unlike the exhaustive, deep-dive Example pages, Core Concept pages are designed to give users a quick, high-level understanding of a concept, accompanied by very focused, small live-demo examples.
+Core Concept pages introduce fundamental architectural pillars of Kritzel (such as Viewport, Workspaces, Tools, Objects, Theming, Persistence). Unlike the exhaustive, deep-dive Example pages, Core Concept pages are designed to give users a quick, high-level understanding of a concept, accompanied by very focused, small live-demo examples.
 
 These pages bridge the gap between abstract architectural concepts and practical API usage.
 
 ## File Naming & Location
 
-- File: `website/docs/angular/concept-<concept>.md` (or relevant framework directory)
-- Sidebar registration: add page ID (`concept-<concept>`) to the `'Concepts'` category in `website/sidebars.ts`
+- File: `website/docs/angular/concept-<concept>.md` (or the corresponding framework directory)
+- Sidebar registration: add page ID `concept-<concept>` to the `Core Concepts` category in `website/sidebars.ts`
 
 ## Frontmatter
 
@@ -106,8 +106,8 @@ Based on past learnings, always strictly follow these operational rules when upd
 1. **Safe File Editing:** If a documentation file already exists, **NEVER** use terminal shell commands (like PowerShell's `Set-Content` or `echo`) to rewrite or overwrite the file. Shell escaping frequently corrupts Markdown syntax (e.g., turning ``` `method()` ``` into `\method()\`). Always use the system's native `replace_string_in_file` or edit tools to safely update file contents.
 2. **Strict Markdown Formatting:** Ensure all methods, variable names, bindings, and components mentioned in paragraph text are properly wrapped in backticks (e.g., `` `[activeWorkspaceId]` ``). Do NOT escape backticks.
 3. **Demo Component Integration:** Creating demo components requires a full loop:
-   - Create the `<concept>-<focus>.component.ts` file in `demos/angular/src/app/concepts/<concept>/`.
-   - Update `demos/angular/src/app/app.routes.ts` to import the file and add its route to the `concepts` children array.
+  - Create the `<concept>-<focus>.component.ts` file in `demos/angular/src/app/concepts/<concept>/`.
+  - Update `demos/angular/src/app/app.routes.ts` to import the file and add its route to the `concepts` children array.
    - Without the route, the `<LiveDemo>` iframe will fail to load the preview.
 - **Relevant Usage:** (CSS Variable mapping and toolbar configuration objects).
 
