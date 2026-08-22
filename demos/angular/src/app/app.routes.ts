@@ -45,6 +45,8 @@ import { FontsRegisterComponent } from './advanced/customization/fonts/fonts-reg
 import { IconsRegisterComponent } from './advanced/customization/icons/icons-register.component';
 import { UserManagementProvidersComponent } from './advanced/user-management/user-management-providers.component';
 import { UserManagementFlowComponent } from './advanced/user-management/user-management-flow.component';
+import { DynamicObjectsHtmlComponent } from './advanced/dynamic-objects/dynamic-objects-html.component';
+import { DynamicObjectsComponentComponent } from './advanced/dynamic-objects/dynamic-objects-component.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -130,6 +132,8 @@ export const routes: Routes = [
       { path: 'localization-custom', component: LocalizationCustomComponent },
       { path: 'user-management-providers', component: UserManagementProvidersComponent },
       { path: 'user-management-flow', component: UserManagementFlowComponent },
+      { path: 'dynamic-objects-html', component: DynamicObjectsHtmlComponent },
+      { path: 'dynamic-objects-component', component: DynamicObjectsComponentComponent },
     ],
   },
   {

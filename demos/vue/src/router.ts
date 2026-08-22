@@ -44,6 +44,8 @@ import FontsRegisterPage from './pages/advanced/customization/fonts/FontsRegiste
 import IconsRegisterPage from './pages/advanced/customization/icons/IconsRegisterPage.vue'
 import UserManagementProvidersPage from './pages/advanced/user-management/UserManagementProvidersPage.vue'
 import UserManagementFlowPage from './pages/advanced/user-management/UserManagementFlowPage.vue'
+import DynamicObjectsHtmlPage from './pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.vue'
+import DynamicObjectsComponentPage from './pages/advanced/dynamic-objects/DynamicObjectsComponentPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -87,6 +89,8 @@ export const router = createRouter({
         { path: 'localization-custom', component: LocalizationCustomPage },
         { path: 'user-management-providers', component: UserManagementProvidersPage },
         { path: 'user-management-flow', component: UserManagementFlowPage },
+        { path: 'dynamic-objects-html', component: DynamicObjectsHtmlPage },
+        { path: 'dynamic-objects-component', component: DynamicObjectsComponentPage },
         {
           path: 'customization',
           children: [
