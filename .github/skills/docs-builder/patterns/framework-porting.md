@@ -10,7 +10,7 @@ Angular remains the source of truth. React and Vue pages should preserve meaning
 
 - Source: website/docs/angular/*.md
 - Targets: website/docs/react/*.md, website/docs/vue/*.md
-- Typical pages: overview.md, quick-start.md, basic-usage.md, concept-*.md, example-*.md, advanced-concepts/concept-*.md, api-reference*.md
+- Typical pages: overview.md, quick-start.md, basic-usage.md, concept-*.md, example-*.md, advanced/concept-*.md, api-reference*.md
 
 ## Core Porting Rules
 

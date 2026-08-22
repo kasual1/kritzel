@@ -42,8 +42,8 @@ This separation ensures consistency: one authoritative source is written once, t
 | Category | File prefix | Description |
 |----------|-------------|-------------|
 | Examples | `example-*.md` | Progressive step-by-step guides showing feature usage |
-| Core Concepts | `concept-*.md` in the framework docs root | Foundational architecture and mental models |
-| Advanced Concepts | `advanced-concepts/concept-*.md` | Specialized integrations and advanced capabilities |
+| Fundamentals | `concept-*.md` in the framework docs root | Foundational architecture and mental models |
+| Advanced | `advanced/concept-*.md` | Specialized integrations and advanced capabilities |
 | API Reference | `api-reference*.md` | Generated or hand-written API surfaces |
 | Guides | `quick-start.md`, `basic-usage.md` | Onboarding content |
 
@@ -52,8 +52,8 @@ This separation ensures consistency: one authoritative source is written once, t
 Detailed conventions for each documentation category live in the `patterns/` subfolder:
 
 - [`patterns/examples.md`](patterns/examples.md) — How to write, structure, and maintain example pages
-- [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain core concept pages
-- [`patterns/advanced-concept.md`](patterns/advanced-concept.md) — How to write, structure, and maintain advanced concept pages
+- [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain Fundamentals pages
+- [`patterns/advanced-concept.md`](patterns/advanced-concept.md) — How to write, structure, and maintain Advanced pages
 - [`patterns/framework-porting.md`](patterns/framework-porting.md) — How to port Angular source docs to React and Vue consistently
 - [`patterns/custom-elements.md`](patterns/custom-elements.md) — How to document and demo `KritzelCustomElement` lifecycle, renderer state persistence, wheel behavior, and Vue-specific embedding constraints
 

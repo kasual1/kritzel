@@ -4,47 +4,47 @@ import { EditorPageComponent } from './e2e/editor-page.component';
 import { EditorHocuspocusPageComponent } from './e2e/editor-hocuspocus-page.component';
 import { MultiEditorPageComponent } from './e2e/multi-editor-page.component';
 import { WrappedEditorPageComponent } from './e2e/wrapped-editor-page.component';
-import { CustomContextMenuCanvasQuickActionsComponent } from './advanced-concepts/context-menus/custom-context-menu-canvas-quick-actions.component';
-import { CustomContextMenuClipboardActionsComponent } from './advanced-concepts/context-menus/custom-context-menu-clipboard-actions.component';
-import { CustomContextMenuSmartConditionalComponent } from './advanced-concepts/context-menus/custom-context-menu-smart-conditional.component';
-import { CustomContextMenuObjectInspectorComponent } from './advanced-concepts/context-menus/custom-context-menu-object-inspector.component';
+import { CustomContextMenuCanvasQuickActionsComponent } from './advanced/context-menus/custom-context-menu-canvas-quick-actions.component';
+import { CustomContextMenuClipboardActionsComponent } from './advanced/context-menus/custom-context-menu-clipboard-actions.component';
+import { CustomContextMenuSmartConditionalComponent } from './advanced/context-menus/custom-context-menu-smart-conditional.component';
+import { CustomContextMenuObjectInspectorComponent } from './advanced/context-menus/custom-context-menu-object-inspector.component';
 import { QuickstartComponent } from './getting-started/quickstart.component';
 import { ObjectExplorerComponent } from './examples/object-explorer/object-explorer.component';
 import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapper/blueprint-defect-mapper.component';
 import { SlideshowPresentationComponent } from './examples/slideshow-presentation/slideshow-presentation.component';
 import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery/infinite-canvas-gallery.component';
 import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio/image-annotation-studio.component';
-import { ThemingApplyComponent } from './advanced-concepts/customization/theming/theming-apply.component';
-import { ThemingCustomComponent } from './advanced-concepts/customization/theming/theming-custom.component';
-import { CollaborationLocalComponent } from './advanced-concepts/collaboration/collaboration-local.component';
-import { CollaborationRealtimeComponent } from './advanced-concepts/collaboration/collaboration-realtime.component';
-import { CollaborationLocalComponent as PersistenceLocalComponent } from './concepts/persistence/persistence-local.component';
-import { ComponentsEditorComponent } from './concepts/components/components-editor.component';
-import { ComponentsEditorUiComponent } from './concepts/components/components-editor-ui.component';
-import { ComponentsEngineComponent } from './concepts/components/components-engine.component';
-import { ObjectsAddRemoveComponent } from './concepts/objects/objects-add-remove.component';
-import { ObjectsQueryComponent } from './concepts/objects/objects-query.component';
-import { ObjectsSelectionComponent } from './concepts/objects/objects-selection.component';
-import { ObjectsGroupingComponent } from './concepts/objects/objects-grouping.component';
-import { ViewportChangeComponent } from './concepts/viewport/viewport-change.component';
-import { ViewportCenterComponent } from './concepts/viewport/viewport-center.component';
-import { ViewportCoordinatesComponent } from './concepts/viewport/viewport-coordinates.component';
-import { ToolsChangeComponent } from './concepts/tools/tools-change.component';
-import { ToolsControlsComponent } from './concepts/tools/tools-controls.component';
-import { ToolsDisableComponent } from './concepts/tools/tools-disable.component';
-import { ToolsRegisterComponent } from './concepts/tools/tools-register.component';
-import { WorkspacesSwitchComponent } from './concepts/workspaces/workspaces-switch.component';
-import { WorkspacesCrudComponent } from './concepts/workspaces/workspaces-crud.component';
-import { ObjectsOrderingComponent } from './concepts/objects/objects-ordering.component';
+import { ThemingApplyComponent } from './advanced/customization/theming/theming-apply.component';
+import { ThemingCustomComponent } from './advanced/customization/theming/theming-custom.component';
+import { CollaborationLocalComponent } from './advanced/collaboration/collaboration-local.component';
+import { CollaborationRealtimeComponent } from './advanced/collaboration/collaboration-realtime.component';
+import { CollaborationLocalComponent as PersistenceLocalComponent } from './fundamentals/persistence/persistence-local.component';
+import { ComponentsEditorComponent } from './fundamentals/components/components-editor.component';
+import { ComponentsEditorUiComponent } from './fundamentals/components/components-editor-ui.component';
+import { ComponentsEngineComponent } from './fundamentals/components/components-engine.component';
+import { ObjectsAddRemoveComponent } from './fundamentals/objects/objects-add-remove.component';
+import { ObjectsQueryComponent } from './fundamentals/objects/objects-query.component';
+import { ObjectsSelectionComponent } from './fundamentals/objects/objects-selection.component';
+import { ObjectsGroupingComponent } from './fundamentals/objects/objects-grouping.component';
+import { ViewportChangeComponent } from './fundamentals/viewport/viewport-change.component';
+import { ViewportCenterComponent } from './fundamentals/viewport/viewport-center.component';
+import { ViewportCoordinatesComponent } from './fundamentals/viewport/viewport-coordinates.component';
+import { ToolsChangeComponent } from './fundamentals/tools/tools-change.component';
+import { ToolsControlsComponent } from './fundamentals/tools/tools-controls.component';
+import { ToolsDisableComponent } from './fundamentals/tools/tools-disable.component';
+import { ToolsRegisterComponent } from './fundamentals/tools/tools-register.component';
+import { WorkspacesSwitchComponent } from './fundamentals/workspaces/workspaces-switch.component';
+import { WorkspacesCrudComponent } from './fundamentals/workspaces/workspaces-crud.component';
+import { ObjectsOrderingComponent } from './fundamentals/objects/objects-ordering.component';
 import { BasicUsageComponent } from './basic-usage/basic-usage.component';
-import { EditorPageCustomElementComponent } from './concepts/custom-elements/editor-page-custom-element.component';
-import { EditorPageCustomElementHtmlComponent } from './concepts/custom-elements/editor-page-custom-element-html.component';
-import { LocalizationSwitchComponent } from './advanced-concepts/localization/localization-switch.component';
-import { LocalizationCustomComponent } from './advanced-concepts/localization/localization-custom.component';
-import { FontsRegisterComponent } from './advanced-concepts/customization/fonts/fonts-register.component';
-import { CustomIconsRegisterComponent } from './advanced-concepts/customization/custom-icons/custom-icons-register.component';
-import { LoginDialogProvidersComponent } from './advanced-concepts/login-dialog/login-dialog-providers.component';
-import { LoginDialogFlowComponent } from './advanced-concepts/login-dialog/login-dialog-flow.component';
+import { EditorPageCustomElementComponent } from './fundamentals/custom-elements/editor-page-custom-element.component';
+import { EditorPageCustomElementHtmlComponent } from './fundamentals/custom-elements/editor-page-custom-element-html.component';
+import { LocalizationSwitchComponent } from './advanced/localization/localization-switch.component';
+import { LocalizationCustomComponent } from './advanced/localization/localization-custom.component';
+import { FontsRegisterComponent } from './advanced/customization/fonts/fonts-register.component';
+import { CustomIconsRegisterComponent } from './advanced/customization/custom-icons/custom-icons-register.component';
+import { LoginDialogProvidersComponent } from './advanced/login-dialog/login-dialog-providers.component';
+import { LoginDialogFlowComponent } from './advanced/login-dialog/login-dialog-flow.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -66,7 +66,7 @@ export const routes: Routes = [
     component: QuickstartComponent,
   },
   {
-    path: 'concepts',
+    path: 'fundamentals',
     children: [
       { path: 'collaboration-local', component: CollaborationLocalComponent },
       { path: 'persistence-local', component: PersistenceLocalComponent },
@@ -99,7 +99,7 @@ export const routes: Routes = [
     ],
   },
   {
-    path: 'advanced-concepts',
+    path: 'advanced',
     children: [
       {
         path: 'context-menus-canvas-quick-actions',

@@ -22,8 +22,8 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/tools-disable"
-  repoFiles={['src/app/concepts/tools/tools-disable.component.ts']}
+  demoPath="/fundamentals/tools-disable"
+  repoFiles={['src/app/fundamentals/tools/tools-disable.component.ts']}
 />
 
 ## Customizing the Toolbar
@@ -32,8 +32,8 @@ If you want a focused editing experience, pass a custom `controls` array to `kri
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/tools-controls"
-  repoFiles={['src/app/concepts/tools/tools-controls.component.ts']}
+  demoPath="/fundamentals/tools-controls"
+  repoFiles={['src/app/fundamentals/tools/tools-controls.component.ts']}
 />
 
 ## Adding Custom Tools
@@ -42,8 +42,8 @@ You can register a custom tool configuration and then surface it in the controls
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/tools-register"
-  repoFiles={['src/app/concepts/tools/tools-register.component.ts']}
+  demoPath="/fundamentals/tools-register"
+  repoFiles={['src/app/fundamentals/tools/tools-register.component.ts']}
 />
 
 ## Programmatically Changing the Active Tool
@@ -52,8 +52,8 @@ You can programmatically change the currently active tool using the API. This is
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/tools-change"
-  repoFiles={['src/app/concepts/tools/tools-change.component.ts']}
+  demoPath="/fundamentals/tools-change"
+  repoFiles={['src/app/fundamentals/tools/tools-change.component.ts']}
 />
 
 ## Related API Methods

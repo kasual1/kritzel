@@ -26,8 +26,8 @@ You can manually inject objects into the canvas or remove them programmatically,
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/objects-add-remove"
-  repoFiles={['src/app/concepts/objects/objects-add-remove.component.ts']}
+  demoPath="/fundamentals/objects-add-remove"
+  repoFiles={['src/app/fundamentals/objects/objects-add-remove.component.ts']}
 />
 
 ## Querying and Filtering Objects
@@ -36,8 +36,8 @@ Kritzel allows you to read the state of all objects currently on the canvas, or 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/objects-query"
-  repoFiles={['src/app/concepts/objects/objects-query.component.ts']}
+  demoPath="/fundamentals/objects-query"
+  repoFiles={['src/app/fundamentals/objects/objects-query.component.ts']}
 />
 
 ## Managing Object Selection
@@ -46,8 +46,8 @@ You can programmatically retrieve the currently selected objects, select specifi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/objects-selection"
-  repoFiles={['src/app/concepts/objects/objects-selection.component.ts']}
+  demoPath="/fundamentals/objects-selection"
+  repoFiles={['src/app/fundamentals/objects/objects-selection.component.ts']}
 />
 
 ## Grouping
@@ -56,8 +56,8 @@ Objects can be grouped together so they can be moved and transformed as a single
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/objects-grouping"
-  repoFiles={['src/app/concepts/objects/objects-grouping.component.ts']}
+  demoPath="/fundamentals/objects-grouping"
+  repoFiles={['src/app/fundamentals/objects/objects-grouping.component.ts']}
 />
 
 ## Ordering
@@ -66,8 +66,8 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/objects-ordering"
-  repoFiles={['src/app/concepts/objects/objects-ordering.component.ts']}
+  demoPath="/fundamentals/objects-ordering"
+  repoFiles={['src/app/fundamentals/objects/objects-ordering.component.ts']}
 />
 
 ## Related API Methods

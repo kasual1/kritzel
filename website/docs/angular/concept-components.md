@@ -23,8 +23,8 @@ The basic implementation of the Editor requires zero configuration. You simply d
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/components-editor"
-  repoFiles={['src/app/concepts/components/components-editor.component.ts']}
+  demoPath="/fundamentals/components-editor"
+  repoFiles={['src/app/fundamentals/components/components-editor.component.ts']}
 />
 
 ### Waiting for Initialization
@@ -56,8 +56,8 @@ You can toggle visibility for built-in UI components using the Editor's attribut
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/components-editor-ui"
-  repoFiles={['src/app/concepts/components/components-editor-ui.component.ts']}
+  demoPath="/fundamentals/components-editor-ui"
+  repoFiles={['src/app/fundamentals/components/components-editor-ui.component.ts']}
 />
 
 
@@ -69,8 +69,8 @@ Unlike the Editor, the Engine **does not register any drawing tools by default**
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/components-engine"
-  repoFiles={['src/app/concepts/components/components-engine.component.ts']}
+  demoPath="/fundamentals/components-engine"
+  repoFiles={['src/app/fundamentals/components/components-engine.component.ts']}
 />
 
 ## Related API Methods

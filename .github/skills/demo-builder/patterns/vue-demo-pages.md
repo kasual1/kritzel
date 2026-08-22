@@ -9,7 +9,7 @@ Vue demo pages are SFC route components in `demos/vue/src/pages/`. They support 
 | Category | Path template |
 |---|---|
 | Example demos | `demos/vue/src/pages/examples/<feature>/<FeatureExamplePage>.vue` |
-| Concept demos | `demos/vue/src/pages/concepts/<concept>/<ConceptFocusPage>.vue` |
+| Concept demos | `demos/vue/src/pages/fundamentals/<concept>/<ConceptFocusPage>.vue` |
 | Other guides | `demos/vue/src/pages/<guide>/<GuidePage>.vue` |
 
 Follow existing folder conventions in the target area.

@@ -40,7 +40,7 @@ It complements docs-builder:
 
 ## Workflow
 
-1. Identify target framework and demo category (basic-usage, concepts, examples, e2e).
+1. Identify target framework and demo category (basic-usage, fundamentals, advanced, examples, e2e).
 2. Load the framework pattern and scaffold/update the demo page.
 3. Register the route in the framework router.
 4. Verify editor id uniqueness, theme wiring, and iframe-safe panning/zoom behavior.
