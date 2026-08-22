@@ -20,7 +20,7 @@ const controls: KritzelToolbarControl[] = [
 <template>
   <div class="page">
     <div class="toolbar"><strong>Custom SVG Icons:</strong> toolbar and context-menu icons use the same registered names.</div>
-    <KritzelEditor ref="editor" editorId="custom-icons-register" :customSvgIcons="customSvgIcons" :controls="controls" :globalContextMenuItems="[{ label: 'Export board', icon: 'brand-export' }]" :objectContextMenuItems="[{ label: 'Export selection', icon: 'brand-export' }]" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @isReady="() => editor?.openContextMenu({ x: -50, y: -50 })" />
+    <KritzelEditor ref="editor" editorId="icons-register" :customSvgIcons="customSvgIcons" :controls="controls" :globalContextMenuItems="[{ label: 'Export board', icon: 'brand-export' }]" :objectContextMenuItems="[{ label: 'Export selection', icon: 'brand-export' }]" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @isReady="() => editor?.openContextMenu({ x: -50, y: -50 })" />
   </div>
 </template>
 

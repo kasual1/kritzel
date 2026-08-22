@@ -34,7 +34,7 @@ const controls: KritzelToolbarControl[] = [
   },
 ];
 
-export function CustomIconsRegisterPage() {
+export function IconsRegisterPage() {
   const [editor, setEditor] = useState<HTMLElement | null>(null);
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
@@ -43,7 +43,7 @@ export function CustomIconsRegisterPage() {
       </div>
       <KritzelEditor
         ref={setEditor}
-        editorId="custom-icons-register"
+        editorId="icons-register"
         customSvgIcons={customSvgIcons}
         controls={controls}
         globalContextMenuItems={[{ label: "Export board", icon: "brand-export", action: () => undefined }]}

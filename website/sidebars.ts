@@ -32,7 +32,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'advanced/customization/concept-theming',
         'advanced/customization/concept-fonts',
-        'advanced/customization/concept-custom-icons',
+        'advanced/customization/concept-icons',
       ],
     },
     {

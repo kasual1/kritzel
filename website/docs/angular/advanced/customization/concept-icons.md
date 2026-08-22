@@ -1,5 +1,5 @@
 ---
-sidebar_label: Custom Icons
+sidebar_label: Icons
 displayed_sidebar: tutorialSidebar
 title: "Custom Icons Concept | Kritzel for Angular"
 description: "Understand how to register and use custom SVG icons in Kritzel."
@@ -21,8 +21,8 @@ The demo registers four application-specific SVG icons and passes them to the ed
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/customization/custom-icons"
-  repoFiles={['src/app/advanced/customization/custom-icons/custom-icons-register.component.ts']}
+  demoPath="/advanced/customization/icons"
+  repoFiles={['src/app/advanced/customization/icons/icons-register.component.ts']}
 />
 
 ## Using Icons in Controls and Menus

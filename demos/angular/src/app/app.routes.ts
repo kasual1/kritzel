@@ -42,7 +42,7 @@ import { EditorPageCustomElementHtmlComponent } from './fundamentals/custom-elem
 import { LocalizationSwitchComponent } from './advanced/localization/localization-switch.component';
 import { LocalizationCustomComponent } from './advanced/localization/localization-custom.component';
 import { FontsRegisterComponent } from './advanced/customization/fonts/fonts-register.component';
-import { CustomIconsRegisterComponent } from './advanced/customization/custom-icons/custom-icons-register.component';
+import { IconsRegisterComponent } from './advanced/customization/icons/icons-register.component';
 import { LoginDialogProvidersComponent } from './advanced/login-dialog/login-dialog-providers.component';
 import { LoginDialogFlowComponent } from './advanced/login-dialog/login-dialog-flow.component';
 
@@ -123,7 +123,7 @@ export const routes: Routes = [
           { path: 'theming-apply', component: ThemingApplyComponent },
           { path: 'theming-custom', component: ThemingCustomComponent },
           { path: 'fonts-register', component: FontsRegisterComponent },
-          { path: 'custom-icons', component: CustomIconsRegisterComponent },
+          { path: 'icons', component: IconsRegisterComponent },
         ],
       },
       { path: 'localization-switch', component: LocalizationSwitchComponent },

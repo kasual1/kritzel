@@ -41,7 +41,7 @@ import QuickstartPage from './pages/getting-started/QuickstartPage.vue'
 import LocalizationSwitchPage from './pages/advanced/localization/LocalizationSwitchPage.vue'
 import LocalizationCustomPage from './pages/advanced/localization/LocalizationCustomPage.vue'
 import FontsRegisterPage from './pages/advanced/customization/fonts/FontsRegisterPage.vue'
-import CustomIconsRegisterPage from './pages/advanced/customization/custom-icons/CustomIconsRegisterPage.vue'
+import IconsRegisterPage from './pages/advanced/customization/icons/IconsRegisterPage.vue'
 import LoginDialogProvidersPage from './pages/advanced/login-dialog/LoginDialogProvidersPage.vue'
 import LoginDialogFlowPage from './pages/advanced/login-dialog/LoginDialogFlowPage.vue'
 
@@ -93,7 +93,7 @@ export const router = createRouter({
             { path: 'theming-apply', component: ThemingApplyPage },
             { path: 'theming-custom', component: ThemingCustomPage },
             { path: 'fonts-register', component: FontsRegisterPage },
-            { path: 'custom-icons', component: CustomIconsRegisterPage },
+            { path: 'icons', component: IconsRegisterPage },
           ],
         },
       ],
