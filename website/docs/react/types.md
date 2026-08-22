@@ -183,7 +183,7 @@ interface KritzelTheme {
 }
 ```
 
-See [Theming](concept-theming.md) for details.
+See [Theming](advanced-concepts/customization/concept-theming.md) for details.
 
 ---
 

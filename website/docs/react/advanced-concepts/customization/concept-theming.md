@@ -21,8 +21,8 @@ The simplest entry point is switching between the two built-in themes. Pass `lig
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/theming-apply"
-  repoFiles={['src/pages/concepts/theming/theming-apply.tsx']}
+  demoPath="/advanced-concepts/customization/theming-apply"
+  repoFiles={['src/pages/advanced-concepts/customization/theming/ThemingApplyPage.tsx']}
 />
 
 ## Creating a Custom Theme
@@ -31,8 +31,8 @@ This example intentionally applies a strong light-purple visual language and rem
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/theming-custom"
-  repoFiles={['src/pages/concepts/theming/theming-custom.tsx']}
+  demoPath="/advanced-concepts/customization/theming-custom"
+  repoFiles={['src/pages/advanced-concepts/customization/theming/ThemingCustomPage.tsx']}
 />
 
 ## Related API Methods
@@ -41,4 +41,4 @@ This example intentionally applies a strong light-purple visual language and rem
 - Built-in presets (`lightTheme`, `darkTheme`)
 - Theme type (`KritzelTheme`, `ThemeName`)
 
-For a comprehensive view, see the [API Reference](api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../../api-reference-editor.md).

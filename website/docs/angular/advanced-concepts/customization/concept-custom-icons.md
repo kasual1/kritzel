@@ -21,8 +21,8 @@ The demo registers four application-specific SVG icons and passes them to the ed
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced-concepts/custom-icons"
-  repoFiles={['src/app/advanced-concepts/custom-icons/custom-icons-register.component.ts']}
+  demoPath="/advanced-concepts/customization/custom-icons"
+  repoFiles={['src/app/advanced-concepts/customization/custom-icons/custom-icons-register.component.ts']}
 />
 
 ## Using Icons in Controls and Menus
@@ -33,9 +33,9 @@ Keep SVG definitions self-contained and use `currentColor` for strokes or fills 
 
 ## Related API Methods and Types
 
-- Registering icons ([customSvgIcons](../api-reference-editor.md#props), `KritzelIconRegistry.register()`, `KritzelIconRegistry.registerIcons()`)
+- Registering icons ([customSvgIcons](../../api-reference-editor.md#props), `KritzelIconRegistry.register()`, `KritzelIconRegistry.registerIcons()`)
 - Toolbar configuration (`KritzelToolbarControl.icon`)
 - Context-menu configuration (`ContextMenuItem.icon`)
-- Related editor configuration ([controls](../api-reference-editor.md#props), [globalContextMenuItems](../api-reference-editor.md#props), [objectContextMenuItems](../api-reference-editor.md#props))
+- Related editor configuration ([controls](../../api-reference-editor.md#props), [globalContextMenuItems](../../api-reference-editor.md#props), [objectContextMenuItems](../../api-reference-editor.md#props))
 
-For a comprehensive view, see the [API Reference](../api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../../api-reference-editor.md).

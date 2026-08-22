@@ -21,14 +21,14 @@ You can register fonts declaratively via the `[customFonts]` binding on `<kritze
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced-concepts/fonts-register"
-  repoFiles={['src/app/advanced-concepts/fonts/fonts-register.component.ts']}
+  demoPath="/advanced-concepts/customization/fonts-register"
+  repoFiles={['src/app/advanced-concepts/customization/fonts/fonts-register.component.ts']}
 />
 
 ## Related API Methods
 
-- Editor font configuration ([customFonts](../api-reference-editor.md#props), [registerFonts](../api-reference-editor.md#registerfonts))
+- Editor font configuration ([customFonts](../../api-reference-editor.md#props), [registerFonts](../../api-reference-editor.md#registerfonts))
 - Font registry management (`KritzelFontRegistry.register()`, `KritzelFontRegistry.registerFonts()`, `KritzelFontRegistry.list()`)
 - Font css resolution (`KritzelFontRegistry.resolveCssFontFamily()`)
 
-For a comprehensive view, see the [API Reference](../api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../../api-reference-editor.md).

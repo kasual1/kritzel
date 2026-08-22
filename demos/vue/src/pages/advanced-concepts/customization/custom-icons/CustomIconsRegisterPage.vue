@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getEditorRef, KritzelBrushTool, KritzelEditor, KritzelSelectionTool, KritzelTextTool, type KritzelToolbarControl } from 'kritzel-vue'
-import { vueThemeLight } from '../../../const/vue-theme-light'
+import { vueThemeLight } from '../../../../const/vue-theme-light'
 
 const editor = getEditorRef('editor')
 const customSvgIcons: Record<string, string> = {

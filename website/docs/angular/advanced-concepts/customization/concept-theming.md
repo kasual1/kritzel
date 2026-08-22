@@ -21,8 +21,8 @@ The simplest entry point is switching between the two built-in themes. Pass `lig
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/theming-apply"
-  repoFiles={['src/app/concepts/theming/theming-apply.component.ts']}
+  demoPath="/advanced-concepts/customization/theming-apply"
+  repoFiles={['src/app/advanced-concepts/customization/theming/theming-apply.component.ts']}
 />
 
 ## Creating a Custom Theme
@@ -31,14 +31,14 @@ This example intentionally applies a strong, light-purple visual language and re
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/theming-custom"
-  repoFiles={['src/app/concepts/theming/theming-custom.component.ts']}
+  demoPath="/advanced-concepts/customization/theming-custom"
+  repoFiles={['src/app/advanced-concepts/customization/theming/theming-custom.component.ts']}
 />
 
 ## Related API Methods
 
-- Applying themes ([theme](api-reference-editor.md#props), [themes](api-reference-editor.md#props))
+- Applying themes ([theme](../../api-reference-editor.md#props), [themes](../../api-reference-editor.md#props))
 - Built-in presets (`lightTheme`, `darkTheme`)
 - Theme type (`KritzelTheme`, `ThemeName`)
 
-For a comprehensive view, see the [API Reference](api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../../api-reference-editor.md).

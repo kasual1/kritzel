@@ -4,9 +4,9 @@ import {
   KritzelTheme,
   KritzelSyncConfig,
 } from 'kritzel-angular';
-import { angularThemeLight } from '../../const/angular-theme-light';
-import { angularThemeDark } from '../../const/angular-theme-dark';
-import { createSeedObjects } from '../../const/seed-objects';
+import { angularThemeLight } from '../../../const/angular-theme-light';
+import { angularThemeDark } from '../../../const/angular-theme-dark';
+import { createSeedObjects } from '../../../const/seed-objects';
 
 @Component({
   selector: 'app-theming-apply',

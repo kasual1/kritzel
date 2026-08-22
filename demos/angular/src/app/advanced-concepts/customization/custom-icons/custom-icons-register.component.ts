@@ -7,9 +7,9 @@ import {
   KritzelTextTool,
   KritzelToolbarControl,
 } from 'kritzel-angular';
-import { angularThemeLight } from '../../const/angular-theme-light';
-import { angularThemeDark } from '../../const/angular-theme-dark';
-import { createSeedObjects } from '../../const/seed-objects';
+import { angularThemeLight } from '../../../const/angular-theme-light';
+import { angularThemeDark } from '../../../const/angular-theme-dark';
+import { createSeedObjects } from '../../../const/seed-objects';
 
 const customSvgIcons: Record<string, string> = {
   'brand-select': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 3 14 8-6 2-2 6Z"/><path d="m11 13 4 5"/></svg>',

@@ -1,18 +1,20 @@
-import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+<script setup lang="ts">
+
 import {
+  getEditorRef,
   KritzelEditor,
-  KritzelTheme,
   lightTheme,
-} from 'kritzel-angular';
-import { createSeedObjects } from '../../const/seed-objects';
+  type KritzelTheme,
+} from 'kritzel-vue'
+import { seedEditor } from '../../../concepts/shared/concept-shared'
 
-const brandPurple = '#7c3aed';
-const brandPurpleHover = '#6d28d9';
-const brandPurpleActive = '#5b21b6';
-const brandPurpleLight = 'rgba(124, 58, 237, 0.1)';
-const brandPurpleMedium = 'rgba(124, 58, 237, 0.2)';
+const brandPurple = '#7c3aed'
+const brandPurpleHover = '#6d28d9'
+const brandPurpleActive = '#5b21b6'
+const brandPurpleLight = 'rgba(124, 58, 237, 0.1)'
+const brandPurpleMedium = 'rgba(124, 58, 237, 0.2)'
 
-const brandedPurpleFlatTheme = {
+const brandedPurpleFlatTheme: KritzelTheme = {
   ...lightTheme,
   name: 'branded-purple-flat',
   global: {
@@ -253,53 +255,43 @@ const brandedPurpleFlatTheme = {
     buttonHoverBackgroundColor: brandPurpleMedium,
     separatorColor: '#e1d2ff',
   },
-} as KritzelTheme;
+}
 
-@Component({
-  selector: 'app-theming-custom',
-  imports: [KritzelEditor],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <kritzel-editor
-      editorId="theming-custom"
-      theme="branded-purple-flat"
-      [themes]="themes"
-      [isPanningEnabled]="false"
-      [isZoomingEnabled]="false"
-      [isMoreMenuVisible]="true"
-      [isWorkspaceManagerVisible]="true"
-      (isReady)="onIsReady($event)"
-    ></kritzel-editor>
-  `,
-  styles: [
-    `
-      :host {
-        display: block;
-        height: 100%;
-        background: linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%);
-      }
+const editor = getEditorRef('editor');
 
-      kritzel-editor {
-        display: block;
-        height: 100%;
-        background: linear-gradient(180deg, #ffffff 0%, #f8f2ff 100%);
-        border: 1px solid #e1d2ff;
-        border-radius: 0;
-        box-sizing: border-box;
-      }
-    `,
-  ],
-})
-export class ThemingCustomComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
-  themes: KritzelTheme[] = [brandedPurpleFlatTheme];
-
-  
-
-  async onIsReady(_event: CustomEvent) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
+async function onReady() {
+  if (editor.value) {
+    await seedEditor(editor.value)
   }
 }
+</script>
+
+<template>
+  <div
+    :style="{
+      display: 'block',
+      height: '100%',
+      background: 'linear-gradient(180deg, #fbf8ff 0%, #f3ebff 100%)',
+    }"
+  >
+    <KritzelEditor
+      ref="editor"
+      editorId="theming-custom"
+      theme="branded-purple-flat"
+      :themes="[brandedPurpleFlatTheme]"
+      :isPanningEnabled="false"
+      :isZoomingEnabled="false"
+      :isMoreMenuVisible="true"
+      :isWorkspaceManagerVisible="true"
+      :style="{
+        display: 'block',
+        height: '100%',
+        background: 'linear-gradient(180deg, #ffffff 0%, #f8f2ff 100%)',
+        border: '1px solid #e1d2ff',
+        borderRadius: 0,
+        boxSizing: 'border-box',
+      }"
+      @isReady="onReady"
+    />
+  </div>
+</template>
