@@ -23,6 +23,7 @@ const sidebars: SidebarsConfig = {
         'advanced/concept-collaboration',
         'advanced/concept-localization',
         'advanced/concept-context-menus',
+        'advanced/concept-dynamic-objects',
       ],
     },
     {

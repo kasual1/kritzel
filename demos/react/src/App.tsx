@@ -47,6 +47,8 @@ import { FontsRegisterPage } from "./pages/advanced/customization/fonts/FontsReg
 import { IconsRegisterPage } from "./pages/advanced/customization/icons/IconsRegisterPage";
 import { UserManagementProvidersPage } from "./pages/advanced/user-management/UserManagementProvidersPage";
 import { UserManagementFlowPage } from "./pages/advanced/user-management/UserManagementFlowPage";
+import { DynamicObjectsHtmlPage } from "./pages/advanced/dynamic-objects/DynamicObjectsHtmlPage";
+import { DynamicObjectsComponentPage } from "./pages/advanced/dynamic-objects/DynamicObjectsComponentPage";
 
 function App() {
   return (
@@ -64,6 +66,8 @@ function App() {
         <Route path="/advanced/customization/icons" element={<IconsRegisterPage />} />
         <Route path="/advanced/user-management-providers" element={<UserManagementProvidersPage />} />
         <Route path="/advanced/user-management-flow" element={<UserManagementFlowPage />} />
+        <Route path="/advanced/dynamic-objects-html" element={<DynamicObjectsHtmlPage />} />
+        <Route path="/advanced/dynamic-objects-component" element={<DynamicObjectsComponentPage />} />
         <Route path="/advanced/collaboration-local" element={<CollaborationLocalPage />} />
         <Route path="/advanced/collaboration-realtime" element={<CollaborationRealtimePage />} />
         <Route path="/fundamentals/components-editor" element={<ComponentsEditorPage />} />
