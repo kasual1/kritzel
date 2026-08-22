@@ -5,8 +5,8 @@ import { EditorHocuspocusPage } from "./pages/e2e/EditorHocuspocusPage";
 import { MultiEditorPage } from "./pages/e2e/MultiEditorPage";
 import { WrappedEditorPage } from "./pages/e2e/WrappedEditorPage";
 import { BasicUsagePage } from "./pages/basic-usage/BasicUsagePage";
-import { CollaborationLocalPage } from "./pages/concepts/collaboration/CollaborationLocalPage";
-import { CollaborationRealtimePage } from "./pages/concepts/collaboration/CollaborationRealtimePage";
+import { CollaborationLocalPage } from "./pages/advanced-concepts/collaboration/CollaborationLocalPage";
+import { CollaborationRealtimePage } from "./pages/advanced-concepts/collaboration/CollaborationRealtimePage";
 import { ComponentsEditorPage } from "./pages/concepts/components/ComponentsEditorPage";
 import { ComponentsEditorUiPage } from "./pages/concepts/components/ComponentsEditorUiPage";
 import { ComponentsEnginePage } from "./pages/concepts/components/ComponentsEnginePage";
@@ -41,6 +41,9 @@ import { InfiniteCanvasGalleryPage } from "./pages/examples/infinite-canvas-gall
 import { ImageAnnotationStudioPage } from "./pages/examples/image-annotation-studio/ImageAnnotationStudioPage";
 import { WebsiteHeroPage } from "./pages/website/WebsiteHeroPage";
 import { WebsiteHeroPageMobile } from "./pages/website/WebsiteHeroPageMobile";
+import { LocalizationSwitchPage } from "./pages/advanced-concepts/localization/LocalizationSwitchPage";
+import { LocalizationCustomPage } from "./pages/advanced-concepts/localization/LocalizationCustomPage";
+import { FontsRegisterPage } from "./pages/advanced-concepts/fonts/FontsRegisterPage";
 
 function App() {
   return (
@@ -52,8 +55,11 @@ function App() {
         <Route path="/e2e/multi-editor" element={<MultiEditorPage />} />
         <Route path="/e2e/wrapped-editor" element={<WrappedEditorPage />} />
         <Route path="/basic-usage" element={<BasicUsagePage />} />
-        <Route path="/concepts/collaboration-local" element={<CollaborationLocalPage />} />
-        <Route path="/concepts/collaboration-realtime" element={<CollaborationRealtimePage />} />
+        <Route path="/advanced-concepts/localization-switch" element={<LocalizationSwitchPage />} />
+        <Route path="/advanced-concepts/localization-custom" element={<LocalizationCustomPage />} />
+        <Route path="/advanced-concepts/fonts-register" element={<FontsRegisterPage />} />
+        <Route path="/advanced-concepts/collaboration-local" element={<CollaborationLocalPage />} />
+        <Route path="/advanced-concepts/collaboration-realtime" element={<CollaborationRealtimePage />} />
         <Route path="/concepts/components-editor" element={<ComponentsEditorPage />} />
         <Route path="/concepts/components-editor-ui" element={<ComponentsEditorUiPage />} />
         <Route path="/concepts/components-engine" element={<ComponentsEnginePage />} />

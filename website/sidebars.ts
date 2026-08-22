@@ -12,13 +12,13 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Core Concepts',
       collapsed: true,
-      items: ['concept-components', 'concept-tools', 'concept-objects',  'concept-viewport', 'concept-workspaces', 'concept-context-menus', 'concept-persistence', 'concept-collaboration', 'concept-theming'],
+      items: ['concept-components', 'concept-tools', 'concept-objects',  'concept-viewport', 'concept-workspaces', 'concept-context-menus', 'concept-persistence', 'concept-theming'],
     },
     {
       type: 'category',
       label: 'Advanced Concepts',
       collapsed: true,
-      items: ['concept-localization', 'concept-fonts'],
+      items: ['advanced-concepts/concept-collaboration', 'advanced-concepts/concept-localization', 'advanced-concepts/concept-fonts'],
     },
     {
       type: 'category',

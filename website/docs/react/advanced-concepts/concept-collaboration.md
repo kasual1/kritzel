@@ -23,8 +23,8 @@ This is useful when users open the same board in multiple tabs and expect immedi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/collaboration-local"
-  repoFiles={['src/pages/concepts/collaboration/collaboration-local.tsx']}
+  demoPath="/advanced-concepts/collaboration-local"
+  repoFiles={['src/pages/advanced-concepts/collaboration/CollaborationLocalPage.tsx']}
 />
 
 ## Real-Time Multi-User Sync
@@ -38,8 +38,8 @@ A common production pattern combines local persistence (for offline resilience) 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/concepts/collaboration-realtime"
-  repoFiles={['src/pages/concepts/collaboration/collaboration-realtime.tsx']}
+  demoPath="/advanced-concepts/collaboration-realtime"
+  repoFiles={['src/pages/advanced-concepts/collaboration/CollaborationRealtimePage.tsx']}
 />
 
 ## Multiplexing Connections
@@ -53,4 +53,4 @@ When your application manages multiple documents simultaneously (for example, a 
 - Multiplexing lifecycle (`HocuspocusSyncProvider.createSharedWebSocket()`, `HocuspocusSyncProvider.destroySharedWebSocket()`)
 - Cross-tab provider (`BroadcastSyncProvider`)
 
-For a comprehensive view, see the [API Reference](api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../api-reference-editor.md).

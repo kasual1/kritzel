@@ -23,8 +23,8 @@ This is useful when users open the same board in multiple tabs and expect immedi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/collaboration-local"
-  repoFiles={['src/app/concepts/collaboration/collaboration-local.component.ts']}
+  demoPath="/advanced-concepts/collaboration-local"
+  repoFiles={['src/app/advanced-concepts/collaboration/collaboration-local.component.ts']}
 />
 
 ## Real-Time Multi-User Sync
@@ -38,8 +38,8 @@ A common production pattern combines local persistence (for offline resilience) 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/concepts/collaboration-realtime"
-  repoFiles={['src/app/concepts/collaboration/collaboration-realtime.component.ts']}
+  demoPath="/advanced-concepts/collaboration-realtime"
+  repoFiles={['src/app/advanced-concepts/collaboration/collaboration-realtime.component.ts']}
 />
 
 ## Multiplexing Connections
