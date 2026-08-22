@@ -57,8 +57,9 @@ This configuration uses `children` to create submenus for grouping related actio
 
 ## Related API Methods
 
-- Canvas menu configuration (`globalContextMenuItems`)
-- Object menu configuration (`objectContextMenuItems`)
+- Canvas menu configuration ([globalContextMenuItems](api-reference-editor.md#props))
+- Object menu configuration ([objectContextMenuItems](api-reference-editor.md#props))
+- Programmatic control ([openContextMenu](api-reference-editor.md#opencontextmenu), [hideContextMenu](api-reference-editor.md#hidecontextmenu))
 - Conditional behavior (`visible`, `disabled`)
 - Action handlers (`action`)
 - Grouping and hierarchy (`group`, `children`, `icon`)
