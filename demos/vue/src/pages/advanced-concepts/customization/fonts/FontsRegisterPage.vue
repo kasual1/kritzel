@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { KritzelEditor, type KritzelFontMap } from 'kritzel-vue'
-import { vueThemeLight } from '../../../const/vue-theme-light'
+import { vueThemeLight } from '../../../../const/vue-theme-light'
 
 const fonts: KritzelFontMap = {
   pacifico: { family: 'Pacifico', label: 'Pacifico Cursive', cssFontFamily: "'Pacifico', cursive", source: 'https://fonts.googleapis.com/css2?family=Pacifico&display=swap' },

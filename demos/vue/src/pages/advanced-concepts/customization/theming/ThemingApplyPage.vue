@@ -4,15 +4,15 @@ import {
   KritzelEditor,
   getEditorRef,
 } from 'kritzel-vue'
-import { vueThemeLight } from '../../../const/vue-theme-light'
-import { vueThemeDark } from '../../../const/vue-theme-dark'
+import { vueThemeLight } from '../../../../const/vue-theme-light'
+import { vueThemeDark } from '../../../../const/vue-theme-dark'
 import {
   buttonStyle,
   editorStyle,
   hostStyle,
   seedEditor,
   toolbarStyle,
-} from '../shared/concept-shared'
+} from '../../../concepts/shared/concept-shared'
 import { ref } from 'vue'
 
 const editor = getEditorRef('editor');

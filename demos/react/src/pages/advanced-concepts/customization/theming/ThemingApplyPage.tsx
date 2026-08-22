@@ -3,15 +3,15 @@ import {
   KritzelEditor,
   HTMLKritzelEditorElement,
 } from "kritzel-react";
-import { reactThemeLight } from "../../../const/react-theme-light";
-import { reactThemeDark } from "../../../const/react-theme-dark";
+import { reactThemeLight } from "../../../../const/react-theme-light";
+import { reactThemeDark } from "../../../../const/react-theme-dark";
 import {
   buttonStyle,
   editorStyle,
   hostStyle,
   seedEditor,
   toolbarStyle,
-} from "../shared/concept-shared";
+} from "../../../concepts/shared/concept-shared";
 
 export function ThemingApplyPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);

@@ -12,7 +12,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Core Concepts',
       collapsed: true,
-      items: ['concept-components', 'concept-tools', 'concept-objects',  'concept-viewport', 'concept-workspaces', 'concept-context-menus', 'concept-persistence', 'concept-theming'],
+      items: ['concept-components', 'concept-tools', 'concept-objects',  'concept-viewport', 'concept-workspaces', 'concept-context-menus', 'concept-persistence'],
     },
     {
       type: 'category',
@@ -21,9 +21,17 @@ const sidebars: SidebarsConfig = {
       items: [
         'advanced-concepts/concept-collaboration',
         'advanced-concepts/concept-localization',
-        'advanced-concepts/concept-fonts',
-        'advanced-concepts/concept-custom-icons',
         'advanced-concepts/concept-login-dialog',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Customization',
+      collapsed: true,
+      items: [
+        'advanced-concepts/customization/concept-theming',
+        'advanced-concepts/customization/concept-fonts',
+        'advanced-concepts/customization/concept-custom-icons',
       ],
     },
     {

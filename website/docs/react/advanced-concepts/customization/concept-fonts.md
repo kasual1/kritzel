@@ -1,7 +1,7 @@
 ---
 sidebar_label: Custom Fonts
 displayed_sidebar: tutorialSidebar
-title: "Custom Fonts Concept | Kritzel for Vue"
+title: "Custom Fonts Concept | Kritzel for React"
 description: "Understand the core concept of Custom Fonts in Kritzel."
 ---
 
@@ -20,9 +20,9 @@ When fonts are registered, Kritzel injects stylesheet URLs and waits for the bro
 Pass a `KritzelFontMap` to the `customFonts` prop on `<KritzelEditor>`, or call `registerFonts()` through the editor ref. Each registration can define a family, display label, CSS font family stack, and stylesheet source.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced-concepts/fonts-register"
-  repoFiles={['src/pages/advanced-concepts/fonts/FontsRegisterPage.vue']}
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  demoPath="/advanced-concepts/customization/fonts-register"
+  repoFiles={['src/pages/advanced-concepts/customization/fonts/FontsRegisterPage.tsx']}
 />
 
 ## Related API Methods
@@ -31,4 +31,4 @@ Pass a `KritzelFontMap` to the `customFonts` prop on `<KritzelEditor>`, or call 
 - Font registry management (`KritzelFontRegistry.register()`, `KritzelFontRegistry.registerFonts()`, `KritzelFontRegistry.list()`)
 - CSS family resolution (`KritzelFontRegistry.resolveCssFontFamily()`)
 
-For a comprehensive view, see the [API Reference](../api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../../api-reference-editor.md).

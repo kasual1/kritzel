@@ -21,8 +21,8 @@ import ObjectsSelectionPage from './pages/concepts/objects/ObjectsSelectionPage.
 import ObjectsGroupingPage from './pages/concepts/objects/ObjectsGroupingPage.vue'
 import ObjectsOrderingPage from './pages/concepts/objects/ObjectsOrderingPage.vue'
 import PersistenceLocalPage from './pages/concepts/persistence/PersistenceLocalPage.vue'
-import ThemingApplyPage from './pages/concepts/theming/ThemingApplyPage.vue'
-import ThemingCustomPage from './pages/concepts/theming/ThemingCustomPage.vue'
+import ThemingApplyPage from './pages/advanced-concepts/customization/theming/ThemingApplyPage.vue'
+import ThemingCustomPage from './pages/advanced-concepts/customization/theming/ThemingCustomPage.vue'
 import ToolsDisablePage from './pages/concepts/tools/ToolsDisablePage.vue'
 import ToolsControlsPage from './pages/concepts/tools/ToolsControlsPage.vue'
 import ToolsRegisterPage from './pages/concepts/tools/ToolsRegisterPage.vue'
@@ -40,8 +40,8 @@ import ImageAnnotationStudioPage from './pages/examples/image-annotation-studio/
 import QuickstartPage from './pages/getting-started/QuickstartPage.vue'
 import LocalizationSwitchPage from './pages/advanced-concepts/localization/LocalizationSwitchPage.vue'
 import LocalizationCustomPage from './pages/advanced-concepts/localization/LocalizationCustomPage.vue'
-import FontsRegisterPage from './pages/advanced-concepts/fonts/FontsRegisterPage.vue'
-import CustomIconsRegisterPage from './pages/advanced-concepts/custom-icons/CustomIconsRegisterPage.vue'
+import FontsRegisterPage from './pages/advanced-concepts/customization/fonts/FontsRegisterPage.vue'
+import CustomIconsRegisterPage from './pages/advanced-concepts/customization/custom-icons/CustomIconsRegisterPage.vue'
 import LoginDialogProvidersPage from './pages/advanced-concepts/login-dialog/LoginDialogProvidersPage.vue'
 import LoginDialogFlowPage from './pages/advanced-concepts/login-dialog/LoginDialogFlowPage.vue'
 
@@ -69,10 +69,17 @@ export const router = createRouter({
         { path: 'collaboration-realtime', component: CollaborationRealtimePage },
         { path: 'localization-switch', component: LocalizationSwitchPage },
         { path: 'localization-custom', component: LocalizationCustomPage },
-        { path: 'fonts-register', component: FontsRegisterPage },
-        { path: 'custom-icons', component: CustomIconsRegisterPage },
         { path: 'login-dialog-providers', component: LoginDialogProvidersPage },
         { path: 'login-dialog-flow', component: LoginDialogFlowPage },
+        {
+          path: 'customization',
+          children: [
+            { path: 'theming-apply', component: ThemingApplyPage },
+            { path: 'theming-custom', component: ThemingCustomPage },
+            { path: 'fonts-register', component: FontsRegisterPage },
+            { path: 'custom-icons', component: CustomIconsRegisterPage },
+          ],
+        },
       ],
     },
     {
@@ -111,8 +118,6 @@ export const router = createRouter({
         { path: 'objects-grouping', component: ObjectsGroupingPage },
         { path: 'objects-ordering', component: ObjectsOrderingPage },
         { path: 'persistence-local', component: PersistenceLocalPage },
-        { path: 'theming-apply', component: ThemingApplyPage },
-        { path: 'theming-custom', component: ThemingCustomPage },
         { path: 'tools-disable', component: ToolsDisablePage },
         { path: 'tools-controls', component: ToolsControlsPage },
         { path: 'tools-register', component: ToolsRegisterPage },

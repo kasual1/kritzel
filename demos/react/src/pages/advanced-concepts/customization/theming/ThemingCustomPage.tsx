@@ -5,7 +5,7 @@ import {
   HTMLKritzelEditorElement,
   type KritzelTheme,
 } from "kritzel-react";
-import { seedEditor } from "../shared/concept-shared";
+import { seedEditor } from "../../../concepts/shared/concept-shared";
 
 const brandPurple = "#7c3aed";
 const brandPurpleHover = "#6d28d9";

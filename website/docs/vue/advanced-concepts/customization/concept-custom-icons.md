@@ -1,7 +1,7 @@
 ---
 sidebar_label: Custom Icons
 displayed_sidebar: tutorialSidebar
-title: "Custom Icons Concept | Kritzel for React"
+title: "Custom Icons Concept | Kritzel for Vue"
 description: "Understand how to register and use custom SVG icons in Kritzel."
 ---
 
@@ -20,9 +20,9 @@ Pass a `Record<string, string>` to the `customSvgIcons` prop on `<KritzelEditor>
 The demo registers application-specific SVG icons and reuses their names in toolbar controls and global or object context-menu items.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/advanced-concepts/custom-icons"
-  repoFiles={['src/pages/advanced-concepts/custom-icons/CustomIconsRegisterPage.tsx']}
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  demoPath="/advanced-concepts/customization/custom-icons"
+  repoFiles={['src/pages/advanced-concepts/customization/custom-icons/CustomIconsRegisterPage.vue']}
 />
 
 ## Related API Methods and Types
@@ -32,4 +32,4 @@ The demo registers application-specific SVG icons and reuses their names in tool
 - Context-menu configuration (`ContextMenuItem.icon`)
 - Editor configuration (`controls`, `globalContextMenuItems`, `objectContextMenuItems`)
 
-For a comprehensive view, see the [API Reference](../api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../../api-reference-editor.md).

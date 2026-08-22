@@ -22,8 +22,8 @@ import { ObjectsSelectionPage } from "./pages/concepts/objects/ObjectsSelectionP
 import { ObjectsGroupingPage } from "./pages/concepts/objects/ObjectsGroupingPage";
 import { ObjectsOrderingPage } from "./pages/concepts/objects/ObjectsOrderingPage";
 import { PersistenceLocalPage } from "./pages/concepts/persistence/PersistenceLocalPage";
-import { ThemingApplyPage } from "./pages/concepts/theming/ThemingApplyPage";
-import { ThemingCustomPage } from "./pages/concepts/theming/ThemingCustomPage";
+import { ThemingApplyPage } from "./pages/advanced-concepts/customization/theming/ThemingApplyPage";
+import { ThemingCustomPage } from "./pages/advanced-concepts/customization/theming/ThemingCustomPage";
 import { ToolsDisablePage } from "./pages/concepts/tools/ToolsDisablePage";
 import { ToolsControlsPage } from "./pages/concepts/tools/ToolsControlsPage";
 import { ToolsRegisterPage } from "./pages/concepts/tools/ToolsRegisterPage";
@@ -43,8 +43,8 @@ import { WebsiteHeroPage } from "./pages/website/WebsiteHeroPage";
 import { WebsiteHeroPageMobile } from "./pages/website/WebsiteHeroPageMobile";
 import { LocalizationSwitchPage } from "./pages/advanced-concepts/localization/LocalizationSwitchPage";
 import { LocalizationCustomPage } from "./pages/advanced-concepts/localization/LocalizationCustomPage";
-import { FontsRegisterPage } from "./pages/advanced-concepts/fonts/FontsRegisterPage";
-import { CustomIconsRegisterPage } from "./pages/advanced-concepts/custom-icons/CustomIconsRegisterPage";
+import { FontsRegisterPage } from "./pages/advanced-concepts/customization/fonts/FontsRegisterPage";
+import { CustomIconsRegisterPage } from "./pages/advanced-concepts/customization/custom-icons/CustomIconsRegisterPage";
 import { LoginDialogProvidersPage } from "./pages/advanced-concepts/login-dialog/LoginDialogProvidersPage";
 import { LoginDialogFlowPage } from "./pages/advanced-concepts/login-dialog/LoginDialogFlowPage";
 
@@ -60,8 +60,8 @@ function App() {
         <Route path="/basic-usage" element={<BasicUsagePage />} />
         <Route path="/advanced-concepts/localization-switch" element={<LocalizationSwitchPage />} />
         <Route path="/advanced-concepts/localization-custom" element={<LocalizationCustomPage />} />
-        <Route path="/advanced-concepts/fonts-register" element={<FontsRegisterPage />} />
-        <Route path="/advanced-concepts/custom-icons" element={<CustomIconsRegisterPage />} />
+        <Route path="/advanced-concepts/customization/fonts-register" element={<FontsRegisterPage />} />
+        <Route path="/advanced-concepts/customization/custom-icons" element={<CustomIconsRegisterPage />} />
         <Route path="/advanced-concepts/login-dialog-providers" element={<LoginDialogProvidersPage />} />
         <Route path="/advanced-concepts/login-dialog-flow" element={<LoginDialogFlowPage />} />
         <Route path="/advanced-concepts/collaboration-local" element={<CollaborationLocalPage />} />
@@ -81,8 +81,8 @@ function App() {
         <Route path="/concepts/objects-grouping" element={<ObjectsGroupingPage />} />
         <Route path="/concepts/objects-ordering" element={<ObjectsOrderingPage />} />
         <Route path="/concepts/persistence-local" element={<PersistenceLocalPage />} />
-        <Route path="/concepts/theming-apply" element={<ThemingApplyPage />} />
-        <Route path="/concepts/theming-custom" element={<ThemingCustomPage />} />
+        <Route path="/advanced-concepts/customization/theming-apply" element={<ThemingApplyPage />} />
+        <Route path="/advanced-concepts/customization/theming-custom" element={<ThemingCustomPage />} />
         <Route path="/concepts/tools-disable" element={<ToolsDisablePage />} />
         <Route path="/concepts/tools-controls" element={<ToolsControlsPage />} />
         <Route path="/concepts/tools-register" element={<ToolsRegisterPage />} />
