@@ -27,7 +27,7 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 ## Customizing the Toolbar
 
-If you want a focused editing experience, pass a custom `toolbar` array to `<KritzelEditor>`. The editor will register and render only the tools you provide. In this example, the toolbar are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
+If you want a focused editing experience, pass a custom `toolbar` array to `<KritzelEditor>`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
@@ -37,7 +37,7 @@ If you want a focused editing experience, pass a custom `toolbar` array to `<Kri
 
 ## Adding Custom Tools
 
-You can register a custom tool configuration and then surface it in the toolbar panel. This example registers a custom highlighter built from `KritzelBrushTool` and adds it to the toolbar toolbar alongside `selection`, `pen`, and `text`.
+You can register a custom tool configuration and then surface it in the toolbar panel. This example registers a custom highlighter built from `KritzelBrushTool` and adds it to the toolbar alongside `selection`, `pen`, and `text`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"

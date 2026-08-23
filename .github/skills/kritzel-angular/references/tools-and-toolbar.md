@@ -89,14 +89,14 @@ async onReady() {
 
 ## Customizing the toolbar (`[toolbar]`)
 
-Replace the editor's toolbar wholesale with a `KritzelToolbarControl[]`:
+Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`:
 
 ```ts
 import {
-  KritzelToolbarControl, KritzelSelectionTool, KritzelBrushTool, KritzelTextTool, ShapeType,
+  KritzelToolbarItem, KritzelSelectionTool, KritzelBrushTool, KritzelTextTool, ShapeType,
 } from 'kritzel-angular';
 
-readonly toolbar: KritzelToolbarControl[] = [
+readonly toolbar: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
   {
     name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',

@@ -1,4 +1,4 @@
-import { KritzelShapeToolConfig } from "../interfaces/toolbar-control.interface";
+import { KritzelShapeToolConfig } from "../interfaces/toolbar-item.interface";
 import { ShapeType } from "../enums/shape-type.enum";
 import { DEFAULT_COLOR_PALETTE } from "../constants/color-palette.constants";
 import { DEFAULT_STROKE_SIZES } from "../constants/stroke-size.constants";

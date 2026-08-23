@@ -62,12 +62,12 @@ interface KritzelShortcut {
 }
 ```
 
-### KritzelToolbarControl
+### KritzelToolbarItem
 
 Defines a toolbar item for the `toolbar` prop on `<kritzel-editor>`.
 
 ```ts
-interface KritzelToolbarControl {
+interface KritzelToolbarItem {
   type: 'tool' | 'config';
   tool?: (new (...args: any[]) => KritzelBaseTool) | KritzelBaseTool;
   icon?: string;

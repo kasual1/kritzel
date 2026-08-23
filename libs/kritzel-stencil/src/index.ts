@@ -54,7 +54,7 @@ export * from './classes/managers/license.manager';
 export * from './classes/registries/custom-element-renderer.registry';
 export * from './classes/registries/font-registry.class';
 
-export * from './interfaces/toolbar-control.interface';
+export * from './interfaces/toolbar-item.interface';
 export * from './interfaces/menu-item.interface';
 export * from './interfaces/object-export.interface';
 export * from './interfaces/object-change-event.interface';

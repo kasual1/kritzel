@@ -92,15 +92,15 @@ async function onReady() {
 
 ## Customizing the toolbar (`toolbar` prop)
 
-Replace the editor's toolbar wholesale with a `KritzelToolbarControl[]`. **Define the array at module scope** (or `useMemo`) â€” a fresh array per render re-triggers the toolbar setup:
+Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`. **Define the array at module scope** (or `useMemo`) â€” a fresh array per render re-triggers the toolbar setup:
 
 ```tsx
 import {
   KritzelSelectionTool, KritzelBrushTool, KritzelTextTool,
-  type KritzelToolbarControl,
+  type KritzelToolbarItem,
 } from 'kritzel-react';
 
-const toolbar: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
   {
     name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',

@@ -11,7 +11,7 @@ import {
   EditorIsReadyEvent,
   KritzelSyncConfig,
   KritzelTextTool,
-  KritzelToolbarControl,
+  KritzelToolbarItem,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
@@ -74,7 +74,7 @@ export class ToolsRegisterComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  toolbar: KritzelToolbarControl[] = [
+  toolbar: KritzelToolbarItem[] = [
     {
       name: 'select',
       type: 'tool',

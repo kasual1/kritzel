@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelBrushTool, KritzelEditor, KritzelSelectionTool, KritzelTextTool, type KritzelToolbarControl } from 'kritzel-vue'
+import { getEditorRef, KritzelBrushTool, KritzelEditor, KritzelSelectionTool, KritzelTextTool, type KritzelToolbarItem } from 'kritzel-vue'
 import { vueThemeLight } from '../../../../const/vue-theme-light'
 
 const editor = getEditorRef('editor')
@@ -10,7 +10,7 @@ const customSvgIcons: Record<string, string> = {
   'brand-export': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
 }
 
-const toolbar: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', tool: KritzelSelectionTool, icon: 'brand-select', isDefault: true },
   { name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'brand-ink', config: { type: 'pen', color: { light: '#1f2937', dark: '#f3f4f6' }, size: 6, palettes: { pen: [{ light: '#1f2937', dark: '#f3f4f6' }] } } },
   { name: 'text', type: 'tool', tool: KritzelTextTool, icon: 'brand-label', config: { color: { light: '#1f2937', dark: '#f3f4f6' }, size: 18, fontFamily: 'Arial', palette: [{ light: '#1f2937', dark: '#f3f4f6' }] } },

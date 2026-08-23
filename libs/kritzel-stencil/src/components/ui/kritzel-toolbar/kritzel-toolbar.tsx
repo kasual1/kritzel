@@ -3,7 +3,7 @@ import { KritzelBrushTool } from '../../../classes/tools/brush-tool.class';
 import { KritzelLineTool } from '../../../classes/tools/line-tool.class';
 import { KritzelShapeTool } from '../../../classes/tools/shape-tool.class';
 import { KritzelTextTool } from '../../../classes/tools/text-tool.class';
-import { KritzelToolbarControl, KritzelToolbarSubOption } from '../../../interfaces/toolbar-control.interface';
+import { KritzelToolbarItem, KritzelToolbarSubOption } from '../../../interfaces/toolbar-item.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
@@ -25,8 +25,8 @@ export class KritzelToolbar {
   @Element() host!: HTMLElement;
 
   @Prop() visible: boolean = true;
-  @Prop() toolbar: KritzelToolbarControl[] = [];
-  @Prop({ mutable: true }) activeControl: KritzelToolbarControl | null = null;
+  @Prop() toolbar: KritzelToolbarItem[] = [];
+  @Prop({ mutable: true }) activeControl: KritzelToolbarItem | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() undoState: KritzelUndoState = null;
   @Prop() theme: ThemeName = 'light';
@@ -43,7 +43,7 @@ export class KritzelToolbar {
   @State() needsScrolling: boolean = false;
   @State() displayValues: ToolDisplayValues | null = null;
 
-  @State() internalToolbar: KritzelToolbarControl[] = [];
+  @State() internalToolbar: KritzelToolbarItem[] = [];
 
   private handleActiveToolChangeBound = this.handleActiveToolChange.bind(this);
   private handleSelectionChangeBound = this.handleSelectionChange.bind(this);
@@ -251,7 +251,7 @@ export class KritzelToolbar {
     }
   }
 
-  private async handleControlClick(control: KritzelToolbarControl) {
+  private async handleControlClick(control: KritzelToolbarItem) {
     this.activeControl = control;
 
     if (this.activeControl.type === 'tool') {
@@ -269,7 +269,7 @@ export class KritzelToolbar {
    * Get the currently selected sub-option for a control.
    * Returns the first sub-option as default if none is selected.
    */
-  private getSelectedSubOption(control: KritzelToolbarControl): KritzelToolbarSubOption | undefined {
+  private getSelectedSubOption(control: KritzelToolbarItem): KritzelToolbarSubOption | undefined {
     if (!control.subOptions?.length) return undefined;
     return this.selectedSubOptions.get(control.name) || control.subOptions[0];
   }
@@ -277,7 +277,7 @@ export class KritzelToolbar {
   /**
    * Select a sub-option and update the tool property
    */
-  private async selectSubOption(control: KritzelToolbarControl, option: KritzelToolbarSubOption) {
+  private async selectSubOption(control: KritzelToolbarItem, option: KritzelToolbarSubOption) {
     // Update the selected sub-options map (create new Map for reactivity)
     const newMap = new Map(this.selectedSubOptions);
     newMap.set(control.name, option);

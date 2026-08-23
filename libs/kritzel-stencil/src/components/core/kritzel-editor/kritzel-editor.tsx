@@ -1,6 +1,6 @@
 import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '../../../classes/registries/icon-registry.class';
-import { KritzelToolbarControl } from '../../../interfaces/toolbar-control.interface';
+import { KritzelToolbarItem } from '../../../interfaces/toolbar-item.interface';
 import { ShapeType } from '../../../enums/shape-type.enum';
 import { KritzelAlignment } from '../../../enums/alignment.enum';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
@@ -27,7 +27,7 @@ import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig, hasRemoteSyncProvider } from '../../../interfaces/sync-config.interface';
 import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
-import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
+import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-item.interface';
 import { ActiveWorkspaceChangeEvent } from '../../../events/active-workspace-change.event';
 import { DEFAULT_ASSET_STORAGE_CONFIG } from '../../../configs/default-asset-storage.config';
 import { EditorIsReadyEvent } from '../../../events/editor-is-ready.event';
@@ -79,7 +79,7 @@ export class KritzelEditor {
   };
   @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
-  @Prop() toolbar: KritzelToolbarControl[] = [
+  @Prop() toolbar: KritzelToolbarItem[] = [
     {
       name: 'selection',
       type: 'tool',
@@ -331,7 +331,7 @@ export class KritzelEditor {
   @State() activeNotification?: KritzelNotification;
   @State() isNotificationDismissing: boolean = false;
   @State() contextMenuState?: KritzelContextMenuState;
-  @State() normalizedToolbar: KritzelToolbarControl[] = [];
+  @State() normalizedToolbar: KritzelToolbarItem[] = [];
   @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
   @State() isSyncing: boolean = false;
   @State() isLoadingOverlayVisible: boolean = false;
@@ -388,7 +388,7 @@ export class KritzelEditor {
   }
 
   @Watch('toolbar')
-  onToolbarChange(newValue: KritzelToolbarControl[]) {
+  onToolbarChange(newValue: KritzelToolbarItem[]) {
     this.normalizedToolbar = this.normalizeToolbar(newValue);
   }
 
@@ -858,7 +858,7 @@ export class KritzelEditor {
     return !!config && 'fontFamily' in config && 'size' in config && 'color' in config;
   }
 
-  private normalizeToolbar(toolbar: KritzelToolbarControl[]): KritzelToolbarControl[] {
+  private normalizeToolbar(toolbar: KritzelToolbarItem[]): KritzelToolbarItem[] {
     return toolbar.map(control => {
       if (!this.isTextToolConfig(control.config)) {
         return control;
