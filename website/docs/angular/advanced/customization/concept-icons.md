@@ -36,6 +36,6 @@ Keep SVG definitions self-contained and use `currentColor` for strokes or fills 
 - Registering icons ([customSvgIcons](../../api-reference-editor.md#props), `KritzelIconRegistry.register()`, `KritzelIconRegistry.registerIcons()`)
 - Toolbar configuration (`KritzelToolbarItem.icon`)
 - Context-menu configuration (`ContextMenuItem.icon`)
-- Related editor configuration ([toolbar](../../api-reference-editor.md#props), [globalContextMenuItems](../../api-reference-editor.md#props), [objectContextMenuItems](../../api-reference-editor.md#props))
+- Related editor configuration ([toolbarItems](../../api-reference-editor.md#props), [globalContextMenuItems](../../api-reference-editor.md#props), [objectContextMenuItems](../../api-reference-editor.md#props))
 
 For a comprehensive view, see the [API Reference](../../api-reference-editor.md).

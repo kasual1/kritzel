@@ -9,7 +9,7 @@
 - [ ] `viewportBoundaryRight: number`
 - [ ] `viewportBoundaryTop: number`
 - [ ] `viewportBoundaryBottom: number`
-- [ ] `toolbar: KritzelToolbarItem[]`
+- [ ] `toolbarItems: KritzelToolbarItem[]`
 - [ ] `globalContextMenuItems: ContextMenuItem[]`
 - [ ] `objectContextMenuItems: ContextMenuItem[]`
 - [ ] `customSvgIcons: Record<string, string>`

@@ -64,7 +64,7 @@ interface KritzelShortcut {
 
 ### KritzelToolbarItem
 
-Defines a toolbar item for the `toolbar` prop on `<kritzel-editor>`.
+Defines a toolbar item for the `toolbarItems` prop on `<kritzel-editor>`.
 
 ```ts
 interface KritzelToolbarItem {
@@ -174,7 +174,7 @@ interface LineAnchor {
 interface KritzelTheme {
   global?: { ... };
   engine?: { backgroundColor?: string; ... };
-  toolbar?: { ... };
+  toolbarItems?: { ... };
   selection?: { ... };
   dialog?: { ... };
   contextMenu?: { ... };

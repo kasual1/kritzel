@@ -10,7 +10,7 @@ const customSvgIcons: Record<string, string> = {
   'brand-export': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
 }
 
-const toolbar: KritzelToolbarItem[] = [
+const toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', tool: KritzelSelectionTool, icon: 'brand-select', isDefault: true },
   { name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'brand-ink', config: { type: 'pen', color: { light: '#1f2937', dark: '#f3f4f6' }, size: 6, palettes: { pen: [{ light: '#1f2937', dark: '#f3f4f6' }] } } },
   { name: 'text', type: 'tool', tool: KritzelTextTool, icon: 'brand-label', config: { color: { light: '#1f2937', dark: '#f3f4f6' }, size: 18, fontFamily: 'Arial', palette: [{ light: '#1f2937', dark: '#f3f4f6' }] } },
@@ -20,7 +20,7 @@ const toolbar: KritzelToolbarItem[] = [
 <template>
   <div class="page">
     <div class="toolbar"><strong>Custom SVG Icons:</strong> toolbar and context-menu icons use the same registered names.</div>
-    <KritzelEditor ref="editor" editorId="icons-register" :customSvgIcons="customSvgIcons" :toolbar="toolbar" :globalContextMenuItems="[{ label: 'Export board', icon: 'brand-export' }]" :objectContextMenuItems="[{ label: 'Export selection', icon: 'brand-export' }]" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @isReady="() => editor?.openContextMenu({ x: -50, y: -50 })" />
+    <KritzelEditor ref="editor" editorId="icons-register" :customSvgIcons="customSvgIcons" :toolbarItems="toolbarItems" :globalContextMenuItems="[{ label: 'Export board', icon: 'brand-export' }]" :objectContextMenuItems="[{ label: 'Export selection', icon: 'brand-export' }]" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @isReady="() => editor?.openContextMenu({ x: -50, y: -50 })" />
   </div>
 </template>
 

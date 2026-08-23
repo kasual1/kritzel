@@ -90,7 +90,7 @@ async function onReady() {
 
 `registerTool(name, ToolClass, config?)` returns the tool instance (or the existing one if the name is taken).
 
-## Customizing the toolbar (`toolbar` prop)
+## Customizing the toolbar (`toolbarItems` prop)
 
 Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`. **Define the array at module scope** (or `useMemo`) â€” a fresh array per render re-triggers the toolbar setup:
 
@@ -100,7 +100,7 @@ import {
   type KritzelToolbarItem,
 } from 'kritzel-react';
 
-const toolbar: KritzelToolbarItem[] = [
+const toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
   {
     name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',
@@ -137,7 +137,7 @@ const toolbar: KritzelToolbarItem[] = [
 ];
 
 // in the component:
-<KritzelEditor toolbar={toolbar} ... />
+<KritzelEditor toolbarItems={toolbarItems} ... />
 ```
 
 Rules:

@@ -429,7 +429,7 @@ export function WebsiteHeroPage() {
           editorId="website-hero"
           licenseKey="KRTZL1.eyJzdWIiOiJLcml0emVsLmlvIiwicGxhbiI6ImVudGVycHJpc2UiLCJpYXQiOjE3ODYyNjc2NjEsImFsbG93ZWREb21haW5zIjpbImthc3VhbDEuZ2l0aHViLmlvIl19.tgeIfEBY1ARcU9kwhsHX_QI8migRQ59u82MW0JoEmeb-n-Ly2yZJdkMr0D7jdOJ0gdvmfHoqSQA8CkdaOKaSBQ"
           customFonts={WEBSITE_HERO_CUSTOM_FONTS}
-          controls={WEBSITE_HERO_CONTROLS}
+          toolbarItems={WEBSITE_HERO_CONTROLS}
           isPanningEnabled={false}
           isZoomingEnabled={true}
           isMoreMenuVisible={true}

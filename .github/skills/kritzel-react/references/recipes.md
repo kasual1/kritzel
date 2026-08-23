@@ -103,7 +103,7 @@ async function focusPin(id: string) {
 
 ```tsx
 // Only the selection tool in the toolbar â†’ users can pan/zoom/inspect but not draw
-const toolbar: KritzelToolbarItem[] = [
+const toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
 ];
 

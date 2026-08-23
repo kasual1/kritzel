@@ -23,7 +23,7 @@ const highlighterConfig: KritzelBrushToolConfig = {
   },
 }
 
-const toolbar: KritzelToolbarItem[] = [
+const toolbarItems: KritzelToolbarItem[] = [
   {
     name: 'select',
     type: 'tool',
@@ -106,7 +106,7 @@ async function onReady() {
       editorId="tools-register"
       theme="light"
       :themes="[vueThemeLight]"
-      :toolbar="toolbar"
+      :toolbarItems="toolbarItems"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"

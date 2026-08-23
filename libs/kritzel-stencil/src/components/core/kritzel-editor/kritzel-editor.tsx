@@ -79,7 +79,7 @@ export class KritzelEditor {
   };
   @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
-  @Prop() toolbar: KritzelToolbarItem[] = [
+  @Prop() toolbarItems: KritzelToolbarItem[] = [
     {
       name: 'selection',
       type: 'tool',
@@ -268,7 +268,7 @@ export class KritzelEditor {
   @Prop() customSvgIcons: Record<string, string> = {};
   /**
    * Registers fonts for runtime usage (for example custom object rendering).
-  * Text-tool config tooltip options are controlled via toolbar[].config.availableFonts.
+  * Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
    */
   @Prop() customFonts: KritzelFontMap = {};
   @Prop({ mutable: true }) isPanningEnabled: boolean = true;
@@ -387,8 +387,8 @@ export class KritzelEditor {
     void this.registerCustomFonts(newValue);
   }
 
-  @Watch('toolbar')
-  onToolbarChange(newValue: KritzelToolbarItem[]) {
+  @Watch('toolbarItems')
+  onToolbarItemsChange(newValue: KritzelToolbarItem[]) {
     this.normalizedToolbar = this.normalizeToolbar(newValue);
   }
 
@@ -848,7 +848,7 @@ export class KritzelEditor {
   currentUserDialogRef!: HTMLKritzelCurrentUserDialogElement;
 
   componentWillLoad() {
-    this.normalizedToolbar = this.normalizeToolbar(this.toolbar);
+    this.normalizedToolbar = this.normalizeToolbar(this.toolbarItems);
     this.recomputeMoreMenuItems();
     this.loadSettingsFromStorage();
     this.applyTheme();
@@ -858,8 +858,8 @@ export class KritzelEditor {
     return !!config && 'fontFamily' in config && 'size' in config && 'color' in config;
   }
 
-  private normalizeToolbar(toolbar: KritzelToolbarItem[]): KritzelToolbarItem[] {
-    return toolbar.map(control => {
+  private normalizeToolbar(toolbarItems: KritzelToolbarItem[]): KritzelToolbarItem[] {
+    return toolbarItems.map(control => {
       if (!this.isTextToolConfig(control.config)) {
         return control;
       }
@@ -1247,7 +1247,7 @@ export class KritzelEditor {
    * Registers custom fonts for the editor runtime.
    * @param fonts - Mapping from font keys to family names or font definitions.
    * @remarks This no longer controls the text-tool config tooltip font options.
-  * Configure tooltip fonts via toolbar[].config.availableFonts.
+  * Configure tooltip fonts via toolbarItems[].config.availableFonts.
    */
   @Method()
   async registerFonts(fonts: KritzelFontMap): Promise<void> {
@@ -1524,7 +1524,7 @@ export class KritzelEditor {
                 this.toolbarRef = el;
               }
             }}
-            toolbar={this.normalizedToolbar}
+            toolbarItems={this.normalizedToolbar}
             isUtilityPanelVisible={this.isUtilityPanelVisible}
             undoState={this.undoState ?? undefined}
             theme={this.theme}

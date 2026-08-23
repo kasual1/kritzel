@@ -354,7 +354,7 @@ export namespace Components {
          */
         "cursorTarget"?: HTMLElement;
         /**
-          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbar[].config.availableFonts.
+          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
           * @default {}
          */
         "customFonts": KritzelFontMap;
@@ -489,7 +489,7 @@ export namespace Components {
         /**
           * Registers custom fonts for the editor runtime.
           * @param fonts - Mapping from font keys to family names or font definitions.
-          * @remarks This no longer controls the text-tool config tooltip font options. Configure tooltip fonts via toolbar[].config.availableFonts.
+          * @remarks This no longer controls the text-tool config tooltip font options. Configure tooltip fonts via toolbarItems[].config.availableFonts.
          */
         "registerFonts": (fonts: KritzelFontMap) => Promise<void>;
         /**
@@ -539,7 +539,7 @@ export namespace Components {
         /**
           * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
          */
-        "toolbar": KritzelToolbarItem[];
+        "toolbarItems": KritzelToolbarItem[];
         /**
           * Triggers a UI notification programmatically.
           * @param notification - Notification payload. `id` and `timestamp` are optional.
@@ -1558,7 +1558,7 @@ export namespace Components {
         /**
           * @default []
          */
-        "toolbar": KritzelToolbarItem[];
+        "toolbarItems": KritzelToolbarItem[];
         /**
           * @default null
          */
@@ -2884,7 +2884,7 @@ declare namespace LocalJSX {
          */
         "cursorTarget"?: HTMLElement;
         /**
-          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbar[].config.availableFonts.
+          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
           * @default {}
          */
         "customFonts"?: KritzelFontMap;
@@ -3009,7 +3009,7 @@ declare namespace LocalJSX {
         /**
           * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
          */
-        "toolbar"?: KritzelToolbarItem[];
+        "toolbarItems"?: KritzelToolbarItem[];
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -3738,7 +3738,7 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "toolbar"?: KritzelToolbarItem[];
+        "toolbarItems"?: KritzelToolbarItem[];
         /**
           * @default null
          */
