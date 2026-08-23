@@ -20,7 +20,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       editorId="tools-toolbar"
       [theme]="'light'"
       [themes]="themes"
-      [toolbar]="toolbar"
+      [toolbarItems]="toolbarItems"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
@@ -42,7 +42,7 @@ export class ToolsControlsComponent {
 
   
 
-  toolbar: KritzelToolbarItem[] = [
+  toolbarItems: KritzelToolbarItem[] = [
     {
       name: 'select',
       type: 'tool',

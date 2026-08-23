@@ -105,7 +105,7 @@ async function onReady() {
 
 `registerTool(name, ToolClass, config?)` returns the tool instance (or the existing one if the name is taken).
 
-## Customizing the toolbar (`toolbar` prop)
+## Customizing the toolbar (`toolbarItems` prop)
 
 Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`. **Define the array as a `const` in `<script setup>`** â€” never inline in the template (an inline literal is recreated every render and re-triggers the toolbar setup):
 
@@ -116,7 +116,7 @@ import {
   type KritzelToolbarItem,
 } from 'kritzel-vue'
 
-const toolbar: KritzelToolbarItem[] = [
+const toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
   {
     name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',
@@ -154,7 +154,7 @@ const toolbar: KritzelToolbarItem[] = [
 </script>
 
 <template>
-  <KritzelEditor :toolbar="toolbar" />
+  <KritzelEditor :toolbarItems="toolbarItems" />
 </template>
 ```
 

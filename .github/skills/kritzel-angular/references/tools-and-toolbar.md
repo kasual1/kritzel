@@ -87,7 +87,7 @@ async onReady() {
 
 `registerTool(name, ToolClass, config?)` returns the tool instance (or the existing one if the name is taken).
 
-## Customizing the toolbar (`[toolbar]`)
+## Customizing the toolbar (`[toolbarItems]`)
 
 Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`:
 
@@ -96,7 +96,7 @@ import {
   KritzelToolbarItem, KritzelSelectionTool, KritzelBrushTool, KritzelTextTool, ShapeType,
 } from 'kritzel-angular';
 
-readonly toolbar: KritzelToolbarItem[] = [
+readonly toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
   {
     name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',
@@ -134,7 +134,7 @@ readonly toolbar: KritzelToolbarItem[] = [
 ```
 
 ```html
-<kritzel-editor [toolbar]="toolbar"></kritzel-editor>
+<kritzel-editor [toolbarItems]="toolbarItems"></kritzel-editor>
 ```
 
 Rules:

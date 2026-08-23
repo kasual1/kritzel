@@ -182,7 +182,7 @@ Custom tools should extend `KritzelBaseTool` and implement the pointer event han
 
 ## Customizing the Toolbar
 
-Pass a custom `toolbar` prop to `<KritzelEditor>` to change which tools appear:
+Pass a custom `toolbarItems` prop to `<KritzelEditor>` to change which tools appear:
 
 ```ts
 import { KritzelBrushTool, KritzelSelectionTool, KritzelEraserTool } from 'kritzel-react';

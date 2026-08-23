@@ -482,22 +482,22 @@ test.describe('Multiple Editors', () => {
     expect(countsB.objects).toBe(1);
   });
 
-  test('restricting the toolbar on one editor should not affect the other editor', async ({ page }) => {
+  test('restricting toolbar items on one editor should not affect the other editor', async ({ page }) => {
     await page.evaluate(() => {
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
-      editors[0].toolbar = editors[0].toolbar.filter((c: any) => c.name === 'selection' || c.name === 'brush');
+      editors[0].toolbarItems = editors[0].toolbarItems.filter((item: any) => item.name === 'selection' || item.name === 'brush');
     });
 
     await page.waitForFunction(() => {
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
-      return editors[0]?.toolbar?.length === 2;
+      return editors[0]?.toolbarItems?.length === 2;
     });
 
     const controlNames = await page.evaluate(() => {
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
       return {
-        editor0: (editors[0]?.toolbar ?? []).map((c: any) => c.name) as string[],
-        editor1: (editors[1]?.toolbar ?? []).map((c: any) => c.name) as string[],
+        editor0: (editors[0]?.toolbarItems ?? []).map((item: any) => item.name) as string[],
+        editor1: (editors[1]?.toolbarItems ?? []).map((item: any) => item.name) as string[],
       };
     });
 

@@ -116,7 +116,7 @@ await editor.value?.updateObject(pin, { fillColor: { light: '#10b981', dark: '#1
 <script setup lang="ts">
 // Only the selection tool in the toolbar â†’ users can pan/zoom/inspect but not draw.
 // Define the array as a const in <script setup> â€” never inline in the template.
-const toolbar: KritzelToolbarItem[] = [
+const toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
 ];
 
@@ -136,7 +136,7 @@ async function onReady() {
 </script>
 
 <template>
-  <KritzelEditor ref="editor" :toolbar="toolbar" @isReady="onReady" />
+  <KritzelEditor ref="editor" :toolbarItems="toolbarItems" @isReady="onReady" />
 </template>
 ```
 

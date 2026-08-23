@@ -23,7 +23,7 @@ All methods are async and return Promises. The editor exposes all the same metho
 | viewportBoundaryRight | number | Infinity | Right boundary in world coordinates |
 | viewportBoundaryTop | number | -Infinity | Top boundary in world coordinates |
 | viewportBoundaryBottom | number | Infinity | Bottom boundary in world coordinates |
-| toolbar | KritzelToolbarItem[] | Default toolbar | Toolbar items (selection, brush, line, eraser, text, shape, image, config) |
+| toolbarItems | KritzelToolbarItem[] | Default toolbar | Toolbar items (selection, brush, line, eraser, text, shape, image, config) |
 | globalContextMenuItems | ContextMenuItem[] | Paste, Select All | Context menu when right-clicking the canvas background |
 | objectContextMenuItems | ContextMenuItem[] | Copy, Paste, Order, Align, Group, Delete | Context menu when right-clicking a selected object |
 | customSvgIcons | Record&lt;string, string&gt; | {} | Custom SVG icon definitions by name |

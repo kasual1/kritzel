@@ -72,7 +72,7 @@ export function Canvas() {
 | [references/setup.md](references/setup.md) | Installation, sizing, editor vs. engine choice, headless engine setup, prop stability, multi-instance, SSR |
 | [references/objects.md](references/objects.md) | Creating/updating/removing/querying objects of every type, selection, grouping, z-order, clipboard |
 | [references/viewport.md](references/viewport.md) | Pan/zoom, coordinate conversion, boundaries, fitting content, scale limits |
-| [references/tools-and-toolbar.md](references/tools-and-toolbar.md) | Switching tools, registering custom/preconfigured tools, customizing the toolbar `toolbar` array |
+| [references/tools-and-toolbar.md](references/tools-and-toolbar.md) | Switching tools, registering custom/preconfigured tools, customizing the toolbar `toolbarItems` array |
 | [references/events.md](references/events.md) | Every event of editor & engine and the React prop/state patterns |
 | [references/workspaces-and-persistence.md](references/workspaces-and-persistence.md) | Workspaces, sync providers (IndexedDB/WebSocket/Hocuspocus), collaboration, import/export, screenshots |
 | [references/theming-and-context-menus.md](references/theming-and-context-menus.md) | Custom themes, theme-aware colors, global/object context menus |

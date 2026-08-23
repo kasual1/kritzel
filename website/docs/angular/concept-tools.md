@@ -28,7 +28,7 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 ## Customizing the Toolbar
 
-If you want a focused editing experience, pass a custom `toolbar` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
+If you want a focused editing experience, pass a custom `toolbarItems` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

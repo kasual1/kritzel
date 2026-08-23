@@ -422,7 +422,7 @@ describe('KritzelEditor', () => {
     });
 
     it('should normalize toolbar entries with default text fonts when availableFonts is missing', () => {
-      component.toolbar = [
+      component.toolbarItems = [
         {
           name: 'text',
           type: 'tool',
@@ -435,14 +435,14 @@ describe('KritzelEditor', () => {
         } as any,
       ];
 
-      component.onToolbarChange(component.toolbar);
+      component.onToolbarItemsChange(component.toolbarItems);
 
       const normalizedConfig = (component as any).normalizedToolbar[0].config;
       expect(normalizedConfig.availableFonts).toEqual(DEFAULT_TEXT_TOOL_AVAILABLE_FONTS);
     });
 
     it('should preserve explicitly configured text fonts in toolbar entries', () => {
-      component.toolbar = [
+      component.toolbarItems = [
         {
           name: 'text',
           type: 'tool',
@@ -461,7 +461,7 @@ describe('KritzelEditor', () => {
         } as any,
       ];
 
-      component.onToolbarChange(component.toolbar);
+      component.onToolbarItemsChange(component.toolbarItems);
 
       const normalizedConfig = (component as any).normalizedToolbar[0].config;
       expect(normalizedConfig.availableFonts).toEqual([

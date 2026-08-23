@@ -25,7 +25,7 @@ export class KritzelToolbar {
   @Element() host!: HTMLElement;
 
   @Prop() visible: boolean = true;
-  @Prop() toolbar: KritzelToolbarItem[] = [];
+  @Prop() toolbarItems: KritzelToolbarItem[] = [];
   @Prop({ mutable: true }) activeControl: KritzelToolbarItem | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() undoState: KritzelUndoState = null;
@@ -73,8 +73,8 @@ export class KritzelToolbar {
     }
   }
 
-  @Watch('toolbar')
-  async onToolbarChange() {
+  @Watch('toolbarItems')
+  async onToolbarItemsChange() {
     if (this.kritzelEngine) {
       await this.initializeTools();
     }
@@ -207,7 +207,7 @@ export class KritzelToolbar {
 
   private async initializeTools() {
     let hasDefault = false;
-    const newToolbar = this.toolbar.map(c => ({ ...c }));
+    const newToolbar = this.toolbarItems.map(c => ({ ...c }));
 
     for (const c of newToolbar) {
       if (c.type === 'tool' && c.tool) {
