@@ -5,7 +5,7 @@ import {
   KritzelEditor,
   KritzelSelectionTool,
   KritzelTextTool,
-  KritzelToolbarControl,
+  KritzelToolbarItem,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -56,7 +56,7 @@ export class IconsRegisterComponent {
   themes = [angularThemeLight, angularThemeDark];
   customSvgIcons = customSvgIcons;
 
-  toolbar: KritzelToolbarControl[] = [
+  toolbar: KritzelToolbarItem[] = [
     { name: 'select', type: 'tool', tool: KritzelSelectionTool, icon: 'brand-select', isDefault: true },
     {
       name: 'brush',

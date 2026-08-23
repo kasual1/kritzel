@@ -1,4 +1,4 @@
-import { KritzelTextToolConfig } from "../interfaces/toolbar-control.interface";
+import { KritzelTextToolConfig } from "../interfaces/toolbar-item.interface";
 import { DEFAULT_COLOR_PALETTE } from "../constants/color-palette.constants";
 import { DEFAULT_FONT_SIZES } from "../constants/stroke-size.constants";
 import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '../constants/text-tool-fonts.constants';

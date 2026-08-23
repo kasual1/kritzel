@@ -6,7 +6,7 @@ import {
   KritzelTextTool,
   HTMLKritzelEditorElement,
   type KritzelBrushToolConfig,
-  type KritzelToolbarControl,
+  type KritzelToolbarItem,
 } from "kritzel-react";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
@@ -23,7 +23,7 @@ const highlighterConfig: KritzelBrushToolConfig = {
   },
 };
 
-const toolbar: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarItem[] = [
   {
     name: "select",
     type: "tool",

@@ -12,7 +12,7 @@ import {
   ShapeType,
   KritzelTextTool,
   type HTMLKritzelEditorElement,
-  type KritzelToolbarControl,
+  type KritzelToolbarItem,
   type KritzelViewportState,
 } from "kritzel-react";
 import { setupImageStackRenderer } from "./custom-elements/imageStackCustomElement";
@@ -140,7 +140,7 @@ const WEBSITE_HERO_SHAPE_TOOL_CONFIG = {
   sizes: [4, 6, 8, 12, 16, 24],
 };
 
-const WEBSITE_HERO_CONTROLS: KritzelToolbarControl[] = [
+const WEBSITE_HERO_CONTROLS: KritzelToolbarItem[] = [
   {
     name: "selection",
     type: "tool",

@@ -91,7 +91,7 @@ async focusPin(id: string) {
 
 ```ts
 // Only the selection tool in the toolbar â†’ users can pan/zoom/inspect but not draw
-readonly toolbar: KritzelToolbarControl[] = [
+readonly toolbar: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
 ];
 

@@ -16,7 +16,7 @@ import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./in
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
-import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarItem } from "./interfaces/toolbar-item.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { KritzelFontMap } from "./interfaces/font.interface";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
@@ -62,7 +62,7 @@ export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./in
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
-export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
+export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarItem } from "./interfaces/toolbar-item.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { KritzelFontMap } from "./interfaces/font.interface";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
@@ -539,7 +539,7 @@ export namespace Components {
         /**
           * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
          */
-        "toolbar": KritzelToolbarControl[];
+        "toolbar": KritzelToolbarItem[];
         /**
           * Triggers a UI notification programmatically.
           * @param notification - Notification payload. `id` and `timestamp` are optional.
@@ -1540,7 +1540,7 @@ export namespace Components {
         /**
           * @default null
          */
-        "activeControl": KritzelToolbarControl | null;
+        "activeControl": KritzelToolbarItem | null;
         "closeTooltip": () => Promise<void>;
         /**
           * @default true
@@ -1558,7 +1558,7 @@ export namespace Components {
         /**
           * @default []
          */
-        "toolbar": KritzelToolbarControl[];
+        "toolbar": KritzelToolbarItem[];
         /**
           * @default null
          */
@@ -3009,7 +3009,7 @@ declare namespace LocalJSX {
         /**
           * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
          */
-        "toolbar"?: KritzelToolbarControl[];
+        "toolbar"?: KritzelToolbarItem[];
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -3720,7 +3720,7 @@ declare namespace LocalJSX {
         /**
           * @default null
          */
-        "activeControl"?: KritzelToolbarControl | null;
+        "activeControl"?: KritzelToolbarItem | null;
         /**
           * @default true
          */
@@ -3738,7 +3738,7 @@ declare namespace LocalJSX {
         /**
           * @default []
          */
-        "toolbar"?: KritzelToolbarControl[];
+        "toolbar"?: KritzelToolbarItem[];
         /**
           * @default null
          */

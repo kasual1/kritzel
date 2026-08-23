@@ -47,7 +47,7 @@ export type {
     HTMLKritzelEngineElement,
     KritzelCustomElementRenderer,
     KritzelCustomElementRenderContext,
-    KritzelToolbarControl,
+    KritzelToolbarItem,
     KritzelBrushToolConfig,
     KritzelLineToolConfig,
     KritzelShapeToolConfig,

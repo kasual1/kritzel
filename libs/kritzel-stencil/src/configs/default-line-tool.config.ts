@@ -1,4 +1,4 @@
-import { KritzelLineToolConfig } from '../interfaces/toolbar-control.interface';
+import { KritzelLineToolConfig } from '../interfaces/toolbar-item.interface';
 import { DEFAULT_COLOR_PALETTE } from '../constants/color-palette.constants';
 import { DEFAULT_STROKE_SIZES } from '../constants/stroke-size.constants';
 

@@ -5,12 +5,12 @@ import {
   KritzelEditor,
   KritzelSelectionTool,
   KritzelTextTool,
-  type KritzelToolbarControl,
+  type KritzelToolbarItem,
 } from 'kritzel-vue'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
 
-const toolbar: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarItem[] = [
   {
     name: 'select',
     type: 'tool',

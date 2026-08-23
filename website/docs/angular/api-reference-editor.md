@@ -16,7 +16,7 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 | `activeUsers` | `IKritzelUser[]` | Other users currently in the session. |
 | `activeWorkspaceId` | `string` | Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. |
 | `assetStorageConfig` | `KritzelAssetStorageConfig` | Asset storage configuration for images and binary data. |
-| `toolbar` | `KritzelToolbarControl[]` | Toolbar toolbar and tool configuration. |
+| `toolbar` | `KritzelToolbarItem[]` | Toolbar items and tool configuration. |
 | `cursorTarget` | `HTMLElement` | Element to apply cursor styles to. Defaults to editor container. |
 | `customFonts` | `{ [x: string]: KritzelFontRegistration; }` | Registers custom fonts for object rendering and text tool. |
 | `customSvgIcons` | `string` | Custom SVG icon definitions. |
