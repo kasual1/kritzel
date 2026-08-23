@@ -43,4 +43,4 @@ Register a `KritzelLocale` definition through the `locales` prop or dynamically 
 - Programmatic translation (`t()`)
 - Locale change events (`localeChange`)
 
-For a comprehensive view, see the [API Reference](../api-reference-editor.md).
+For a comprehensive view, see the [API Reference](../../api-reference-editor.md).
