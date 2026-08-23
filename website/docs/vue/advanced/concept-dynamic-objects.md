@@ -61,7 +61,7 @@ Always call the unregister function returned by `registerVueCustomElementRendere
 
 ## Related API Methods and Types
 
-- Object type ([`KritzelCustomElement`](../objects.md#kritzelcustomelement))
+- Object type ([`KritzelCustomElement`](../concept-objects.md))
 - Renderer registry (`KritzelCustomElementRendererRegistry.register`, `KritzelCustomElementRendererRegistry.unregister`, `registerVueCustomElementRenderer`)
 - Object creation ([addObject](../api-reference-editor.md#addobject))
 

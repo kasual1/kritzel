@@ -254,7 +254,7 @@ const config: Config = {
           ],
         },
       ],
-      copyright: `<span class="footer__meta"><span class="footer__meta-item">Copyright © ${new Date().getFullYear()} Kritzel</span>`,
+      copyright: `<span class="footer__meta"><span class="footer__meta-item">Copyright © ${new Date().getFullYear()} Kritzel</span></span>`,
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
