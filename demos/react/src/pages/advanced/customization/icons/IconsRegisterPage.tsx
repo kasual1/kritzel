@@ -16,7 +16,7 @@ const customSvgIcons = {
   "brand-export": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>',
 };
 
-const controls: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarControl[] = [
   { name: "select", type: "tool", tool: KritzelSelectionTool, icon: "brand-select", isDefault: true },
   {
     name: "brush",
@@ -45,7 +45,7 @@ export function IconsRegisterPage() {
         ref={setEditor}
         editorId="icons-register"
         customSvgIcons={customSvgIcons}
-        controls={controls}
+        toolbar={toolbar}
         globalContextMenuItems={[{ label: "Export board", icon: "brand-export", action: () => undefined }]}
         objectContextMenuItems={[{ label: "Export selection", icon: "brand-export", action: () => undefined }]}
         theme="light"

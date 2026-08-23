@@ -23,7 +23,7 @@ const highlighterConfig: KritzelBrushToolConfig = {
   },
 };
 
-const controls: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarControl[] = [
   {
     name: "select",
     type: "tool",
@@ -106,7 +106,7 @@ export function ToolsRegisterPage() {
         editorId="tools-register"
         theme="light"
         themes={[reactThemeLight]}
-        controls={controls}
+        toolbar={toolbar}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}

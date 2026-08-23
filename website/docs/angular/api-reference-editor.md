@@ -16,7 +16,7 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 | `activeUsers` | `IKritzelUser[]` | Other users currently in the session. |
 | `activeWorkspaceId` | `string` | Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. |
 | `assetStorageConfig` | `KritzelAssetStorageConfig` | Asset storage configuration for images and binary data. |
-| `controls` | `KritzelToolbarControl[]` | Toolbar controls and tool configuration. |
+| `toolbar` | `KritzelToolbarControl[]` | Toolbar toolbar and tool configuration. |
 | `cursorTarget` | `HTMLElement` | Element to apply cursor styles to. Defaults to editor container. |
 | `customFonts` | `{ [x: string]: KritzelFontRegistration; }` | Registers custom fonts for object rendering and text tool. |
 | `customSvgIcons` | `string` | Custom SVG icon definitions. |
@@ -24,7 +24,7 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 | `editorId` | `string` | Optional unique identifier for namespacing storage keys across multiple editor instances. |
 | `fallbackLocale` | `"de" | "en" | "fr" | string & {}` | The locale used to resolve terms missing from the active locale. |
 | `globalContextMenuItems` | `ContextMenuItem[]` | Context menu items for canvas background. |
-| `isControlsVisible` | `boolean` | Show or hide the toolbar. |
+| `isToolbarVisible` | `boolean` | Show or hide the toolbar. |
 | `isLoading` | `boolean` | External loading state. When true, a loading overlay is displayed. |
 | `isMoreMenuVisible` | `boolean` | Show or hide the 'More' menu. |
 | `isObjectDistanceFadingActive` | `boolean` | When true, objects fade based on distance to the viewport center. |

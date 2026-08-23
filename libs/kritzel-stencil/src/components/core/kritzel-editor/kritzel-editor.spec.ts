@@ -421,8 +421,8 @@ describe('KritzelEditor', () => {
       expect(spy).toHaveBeenCalledWith(runtimeFonts);
     });
 
-    it('should normalize controls with default text fonts when availableFonts is missing', () => {
-      component.controls = [
+    it('should normalize toolbar entries with default text fonts when availableFonts is missing', () => {
+      component.toolbar = [
         {
           name: 'text',
           type: 'tool',
@@ -435,14 +435,14 @@ describe('KritzelEditor', () => {
         } as any,
       ];
 
-      component.onControlsChange(component.controls);
+      component.onToolbarChange(component.toolbar);
 
-      const normalizedConfig = (component as any).normalizedControls[0].config;
+      const normalizedConfig = (component as any).normalizedToolbar[0].config;
       expect(normalizedConfig.availableFonts).toEqual(DEFAULT_TEXT_TOOL_AVAILABLE_FONTS);
     });
 
-    it('should preserve explicitly configured text fonts in controls', () => {
-      component.controls = [
+    it('should preserve explicitly configured text fonts in toolbar entries', () => {
+      component.toolbar = [
         {
           name: 'text',
           type: 'tool',
@@ -461,9 +461,9 @@ describe('KritzelEditor', () => {
         } as any,
       ];
 
-      component.onControlsChange(component.controls);
+      component.onToolbarChange(component.toolbar);
 
-      const normalizedConfig = (component as any).normalizedControls[0].config;
+      const normalizedConfig = (component as any).normalizedToolbar[0].config;
       expect(normalizedConfig.availableFonts).toEqual([
         {
           family: 'Lora',
@@ -492,7 +492,7 @@ describe('KritzelEditor', () => {
         },
       };
       component.isEngineReady = true;
-      component.isControlsReady = true;
+      component.isToolbarReady = true;
       component.isWorkspaceManagerReady = true;
       component.activeWorkspace = { id: 'workspace-1', name: 'Workspace 1', isPublic: false } as any;
 

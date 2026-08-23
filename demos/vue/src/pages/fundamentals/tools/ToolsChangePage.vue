@@ -60,7 +60,7 @@ async function onReady() {
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
-      :isControlsVisible="false"
+      :isToolbarVisible="false"
       :style="editorStyle"
       @isReady="onReady"
     />

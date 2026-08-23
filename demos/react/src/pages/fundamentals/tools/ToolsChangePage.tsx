@@ -51,7 +51,7 @@ export function ToolsChangePage() {
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
-        isControlsVisible={false}
+        isToolbarVisible={false}
         onIsReady={() => {
           if (editorRef.current) {
             void seedEditor(editorRef.current);

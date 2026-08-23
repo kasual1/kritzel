@@ -21,7 +21,6 @@
  - [kritzel-back-to-content](../../ui/kritzel-back-to-content)
  - [kritzel-brush-style](../kritzel-brush-style)
  - [kritzel-context-menu](../../ui/kritzel-context-menu)
- - [kritzel-controls](../../ui/kritzel-controls)
  - [kritzel-engine](../../core/kritzel-engine)
  - [kritzel-login-dialog](../../ui/kritzel-login-dialog)
  - [kritzel-master-detail](../kritzel-master-detail)
@@ -32,6 +31,7 @@
  - [kritzel-share-dialog](../../ui/kritzel-share-dialog)
  - [kritzel-split-button](../kritzel-split-button)
  - [kritzel-tool-config](../../ui/kritzel-tool-config)
+ - [kritzel-toolbar](../../ui/kritzel-toolbar)
  - [kritzel-utility-panel](../../ui/kritzel-utility-panel)
  - [kritzel-zoom-panel](../../ui/kritzel-zoom-panel)
 
@@ -41,7 +41,6 @@ graph TD;
   kritzel-back-to-content --> kritzel-icon
   kritzel-brush-style --> kritzel-icon
   kritzel-context-menu --> kritzel-icon
-  kritzel-controls --> kritzel-icon
   kritzel-engine --> kritzel-icon
   kritzel-login-dialog --> kritzel-icon
   kritzel-master-detail --> kritzel-icon
@@ -52,6 +51,7 @@ graph TD;
   kritzel-share-dialog --> kritzel-icon
   kritzel-split-button --> kritzel-icon
   kritzel-tool-config --> kritzel-icon
+  kritzel-toolbar --> kritzel-icon
   kritzel-utility-panel --> kritzel-icon
   kritzel-zoom-panel --> kritzel-icon
   style kritzel-icon fill:#f9f,stroke:#333,stroke-width:4px

@@ -17,7 +17,7 @@ The `<kritzel-engine>` is a headless rendering primitive for deeply custom integ
 
 When you need a deeply custom application without built-in UI chrome, use the `<kritzel-engine>`. The demo below demonstrates how to bind external standard HTML buttons to the headless Engine.
 
-Unlike the Editor, the Engine **does not register any drawing tools by default**. The Editor automatically registers tools through its built-in `<kritzel-controls>` toolbar component. When using the Engine directly, you must call `registerTool()` for each tool you want to use before calling `changeActiveTool()` or `changeActiveToolByName()`.
+Unlike the Editor, the Engine **does not register any drawing tools by default**. The Editor automatically registers tools through its built-in `<kritzel-toolbar>` toolbar component. When using the Engine directly, you must call `registerTool()` for each tool you want to use before calling `changeActiveTool()` or `changeActiveToolByName()`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

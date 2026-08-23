@@ -30,7 +30,7 @@ const customSvgIcons: Record<string, string> = {
     <kritzel-editor
       editorId="icons-register"
       [customSvgIcons]="customSvgIcons"
-      [controls]="controls"
+      [toolbar]="toolbar"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
       [theme]="'light'"
@@ -56,7 +56,7 @@ export class IconsRegisterComponent {
   themes = [angularThemeLight, angularThemeDark];
   customSvgIcons = customSvgIcons;
 
-  controls: KritzelToolbarControl[] = [
+  toolbar: KritzelToolbarControl[] = [
     { name: 'select', type: 'tool', tool: KritzelSelectionTool, icon: 'brand-select', isDefault: true },
     {
       name: 'brush',

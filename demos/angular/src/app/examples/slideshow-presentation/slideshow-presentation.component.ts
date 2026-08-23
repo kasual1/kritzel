@@ -57,7 +57,7 @@ interface Slide {
         [themes]="themes"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
-        [isControlsVisible]="false"
+        [isToolbarVisible]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady()"
@@ -268,7 +268,7 @@ export class SlideshowPresentationComponent {
 
     await this.editor.addObject(
       new KritzelText({
-        text: '• Offline-First Canvas Persistence\n• Dynamic Viewport & Navigation Helpers\n• Tailored Custom Color Tool Palettes\n• Entirely Interactive Drawing Tools',
+        text: 'â€¢ Offline-First Canvas Persistence\nâ€¢ Dynamic Viewport & Navigation Helpers\nâ€¢ Tailored Custom Color Tool Palettes\nâ€¢ Entirely Interactive Drawing Tools',
         translateX: 850,
         translateY: -50,
         fontSize: 20,

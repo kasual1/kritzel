@@ -31,7 +31,7 @@ kritzel-editor{
   z-index: 0;
 }
 
-kritzel-controls {
+kritzel-toolbar {
   position: absolute;
   z-index: 1;
   left: 0;
@@ -39,12 +39,12 @@ kritzel-controls {
   margin-inline: auto;
   width: max-content;
   max-width: calc(100% - 16px);
-  bottom: var(--kritzel-editor-controls-bottom, 14px);
-  transition: transform var(--kritzel-editor-controls-transition-duration, 0.1s) var(--kritzel-editor-controls-transition, ease-in-out);
+  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
+  transition: transform var(--kritzel-editor-toolbar-transition-duration, 0.1s) var(--kritzel-editor-toolbar-transition, ease-in-out);
 }
 
-kritzel-controls.keyboard-open {
-  transform: var(--kritzel-editor-controls-transform, translateY(300%));
+kritzel-toolbar.keyboard-open {
+  transform: var(--kritzel-editor-toolbar-transform, translateY(300%));
 }
 
 .top-left-buttons {
@@ -124,7 +124,7 @@ kritzel-controls.keyboard-open {
   position: absolute;
   z-index: 1;
   left: var(--kritzel-editor-top-left-buttons-left, 14px);
-  bottom: var(--kritzel-editor-controls-bottom, 14px);
+  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
   display: flex;
   align-items: flex-end;
 }

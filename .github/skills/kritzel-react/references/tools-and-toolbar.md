@@ -4,15 +4,15 @@ A *tool* is the active pointer-interaction mode; exactly one is active at a time
 
 | Name | Class | Creates |
 |---|---|---|
-| `selection` (default active) | `KritzelSelectionTool` | — selects/transforms |
+| `selection` (default active) | `KritzelSelectionTool` | â€” selects/transforms |
 | `brush` | `KritzelBrushTool` | `KritzelPath` |
-| `eraser` | `KritzelEraserTool` | — removes objects |
+| `eraser` | `KritzelEraserTool` | â€” removes objects |
 | `line` | `KritzelLineTool` | `KritzelLine` |
 | `shape` | `KritzelShapeTool` | `KritzelShape` |
 | `text` | `KritzelTextTool` | `KritzelText` |
 | `image` | `KritzelImageTool` | `KritzelImage` |
 
-Tool *names are whatever the controls config / `registerTool` call says* — when you customize the toolbar, `changeActiveToolByName` must use your names. `<KritzelEngine>` registers none.
+Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<KritzelEngine>` registers none.
 
 ## Switching tools
 
@@ -64,7 +64,7 @@ interface KritzelTextToolConfig {
 }
 ```
 
-All config types are exported from `kritzel-react`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` — spread them to tweak a single field.
+All config types are exported from `kritzel-react`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
 
 ## Registering preconfigured tool variants
 
@@ -81,7 +81,7 @@ async function onReady() {
     type: 'pen',
     color: { light: '#ff0000', dark: '#ff6666' },
     size: 16,
-    palettes: {},                 // empty → no color picker, color is locked
+    palettes: {},                 // empty â†’ no color picker, color is locked
   };
   await editor.registerTool('red-brush', KritzelBrushTool, red);
   await editor.changeActiveToolByName('red-brush');
@@ -90,9 +90,9 @@ async function onReady() {
 
 `registerTool(name, ToolClass, config?)` returns the tool instance (or the existing one if the name is taken).
 
-## Customizing the toolbar (`controls` prop)
+## Customizing the toolbar (`toolbar` prop)
 
-Replace the editor's toolbar wholesale with a `KritzelToolbarControl[]`. **Define the array at module scope** (or `useMemo`) — a fresh array per render re-triggers the toolbar setup:
+Replace the editor's toolbar wholesale with a `KritzelToolbarControl[]`. **Define the array at module scope** (or `useMemo`) â€” a fresh array per render re-triggers the toolbar setup:
 
 ```tsx
 import {
@@ -100,7 +100,7 @@ import {
   type KritzelToolbarControl,
 } from 'kritzel-react';
 
-const controls: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarControl[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
   {
     name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',
@@ -137,7 +137,7 @@ const controls: KritzelToolbarControl[] = [
 ];
 
 // in the component:
-<KritzelEditor controls={controls} ... />
+<KritzelEditor toolbar={toolbar} ... />
 ```
 
 Rules:
@@ -145,9 +145,9 @@ Rules:
 - `isDefault: true` marks the tool active on startup (use exactly one).
 - The same tool class can appear multiple times under different names/configs.
 - `subOptions` adds a per-control option picker, e.g. the shape tool's shape switcher: `{ id, icon, label, value: ShapeType.Ellipse, toolProperty: 'shapeType' }`.
-- Icons use the built-in icon names (`cursor`, `pen`, `eraser`, `arrow`, `shape-rectangle`, `type`, `image`, `highlighter`, …). Register custom SVGs via `customSvgIcons={{ name: '<svg…>' }}`.
+- Icons use the built-in icon names (`cursor`, `pen`, `eraser`, `arrow`, `shape-rectangle`, `type`, `image`, `highlighter`, â€¦). Register custom SVGs via `customSvgIcons={{ name: '<svgâ€¦>' }}`.
 
-To hide the toolbar entirely and drive tools from your own React UI: `isControlsVisible={false}` + `registerTool`/`changeActiveToolByName`. Mirror the active tool name in `useState` for button highlighting (see the basic-usage demo).
+To hide the toolbar entirely and drive tools from your own React UI: `isToolbarVisible={false}` + `registerTool`/`changeActiveToolByName`. Mirror the active tool name in `useState` for button highlighting (see the basic-usage demo).
 
 ## Fully custom tool classes
 

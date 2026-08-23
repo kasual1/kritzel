@@ -14,8 +14,8 @@ export const reactThemeDark: KritzelTheme = {
     boxBorderColor: 'rgba(8, 126, 164, 0.4)',
     handleStrokeColor: '#087ea4',
   },
-  controls: {
-    ...darkTheme.controls,
+  toolbar: {
+    ...darkTheme.toolbar,
     controlHoverBackgroundColor: 'rgba(8, 126, 164, 0.12)',
     controlActiveBackgroundColor: 'rgba(8, 126, 164, 0.18)',
     controlSelectedBackgroundColor: '#087ea4',

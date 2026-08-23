@@ -119,7 +119,7 @@ async function zoomIn() {
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
-      :isControlsVisible="false"
+      :isToolbarVisible="false"
       @isReady="onReady"
       @objectsChange="onObjectsChange"
     />

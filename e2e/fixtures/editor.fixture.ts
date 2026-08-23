@@ -10,7 +10,7 @@ export type KritzelAlignment =
 
 export type KritzelToolName = 'selection' | 'brush' | 'line' | 'eraser' | 'text' | 'shape' | 'image';
 
-/** Maps tool names to their default icon names used in the controls UI. */
+/** Maps tool names to their default icon names used in the toolbar UI. */
 const TOOL_ICON_MAP: Record<KritzelToolName, string> = {
   selection: 'cursor',
   brush: 'pen',
@@ -35,7 +35,7 @@ export interface WorldPoint {
 }
 
 export interface EditorProps {
-  isControlsVisible?: boolean;
+  isToolbarVisible?: boolean;
   isUtilityPanelVisible?: boolean;
   isPanningEnabled?: boolean;
   isZoomingEnabled?: boolean;
@@ -164,7 +164,7 @@ export interface KritzelNotificationConfig {
  * Provides helpers to interact with the editor across all framework demos.
  *
  * The editor renders via kritzel-engine (shadow DOM) which uses SVG elements
- * inside .origin > .object divs — not an HTML canvas.
+ * inside .origin > .object divs â€” not an HTML canvas.
  *
  * Each demo app exposes Kritzel class constructors on window.__kritzel__
  * (set up in their entry points), so Playwright can create real class
@@ -175,7 +175,7 @@ export class EditorPage {
   readonly editor: Locator;
   readonly engine: Locator;
   readonly origin: Locator;
-  readonly controls: Locator;
+  readonly toolbar: Locator;
   readonly utilityPanel: Locator;
   readonly zoomPanel: Locator;
 
@@ -184,7 +184,7 @@ export class EditorPage {
     this.editor = page.locator('kritzel-editor');
     this.engine = page.locator('kritzel-engine');
     this.origin = page.locator('kritzel-engine >>> .origin');
-    this.controls = page.locator('kritzel-controls');
+    this.toolbar = page.locator('kritzel-toolbar');
     this.utilityPanel = page.locator('kritzel-utility-panel');
     this.zoomPanel = page.locator('kritzel-zoom-panel');
   }
@@ -509,8 +509,8 @@ export class EditorPage {
   // --- Tool Activation ---
 
   /**
-   * Click a tool button in the kritzel-controls shadow DOM by tool name.
-   * Matches buttons via their `kritzel-icon[name]` attribute inside the controls.
+   * Click a tool button in the kritzel-toolbar shadow DOM by tool name.
+  * Matches buttons via their `kritzel-icon[name]` attribute inside the toolbar.
    */
   async clickToolButton(name: KritzelToolName) {
     if (!TOOL_ICON_MAP[name]) throw new Error(`Unknown tool name: "${name}". Valid names: ${Object.keys(TOOL_ICON_MAP).join(', ')}`);
@@ -687,7 +687,7 @@ export class EditorPage {
     return { pageX: box.x + screen.x, pageY: box.y + screen.y };
   }
 
-  /** Draw a stroke (mouse down → move through points → mouse up) for brush/eraser. */
+  /** Draw a stroke (mouse down â†’ move through points â†’ mouse up) for brush/eraser. */
   async drawStroke(worldPoints: WorldPoint[]) {
     if (worldPoints.length < 2) throw new Error('drawStroke requires at least 2 points');
 
@@ -707,7 +707,7 @@ export class EditorPage {
    * Draw a stroke using engine-relative SCREEN coordinates (pixels from the
    * engine's top-left), rather than world coordinates.
    *
-   * At extreme zoom the world→screen mapping is degenerate (large world
+   * At extreme zoom the worldâ†’screen mapping is degenerate (large world
    * deltas collapse to sub-pixel screen deltas), so a drawing gesture must be
    * expressed directly in screen space to be registered by the browser.
    */
@@ -757,8 +757,8 @@ export class EditorPage {
    * Set the raw viewport state (translateX, translateY, scale) directly on the
    * engine store, without animation or clamping.
    *
-   * Use this to deterministically reproduce extreme viewport positions — far
-   * from the origin at extreme zoom — that the animated public setViewport()
+   * Use this to deterministically reproduce extreme viewport positions â€” far
+   * from the origin at extreme zoom â€” that the animated public setViewport()
    * API cannot express precisely (it centers on a world point and animates).
    */
   async setViewportRaw(translateX: number, translateY: number, scale: number) {

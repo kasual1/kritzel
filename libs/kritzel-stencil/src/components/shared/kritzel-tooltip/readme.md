@@ -70,12 +70,12 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-controls](../../ui/kritzel-controls)
+ - [kritzel-toolbar](../../ui/kritzel-toolbar)
 
 ### Graph
 ```mermaid
 graph TD;
-  kritzel-controls --> kritzel-tooltip
+  kritzel-toolbar --> kritzel-tooltip
   style kritzel-tooltip fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

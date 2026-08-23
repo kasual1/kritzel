@@ -322,7 +322,7 @@ export function ImageAnnotationStudioPage() {
         scaleMin={0.1}
         isPanningEnabled={false}
         isZoomingEnabled={false}
-        isControlsVisible={false}
+        isToolbarVisible={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         isUtilityPanelVisible={false}

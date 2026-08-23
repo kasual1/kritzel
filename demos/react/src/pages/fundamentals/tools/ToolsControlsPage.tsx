@@ -10,7 +10,7 @@ import {
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
 
-const controls: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarControl[] = [
   {
     name: "select",
     type: "tool",
@@ -63,10 +63,10 @@ export function ToolsControlsPage() {
     <div style={hostStyle}>
       <KritzelEditor
         ref={editorRef}
-        editorId="tools-controls"
+        editorId="tools-toolbar"
         theme="light"
         themes={[reactThemeLight]}
-        controls={controls}
+        toolbar={toolbar}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}

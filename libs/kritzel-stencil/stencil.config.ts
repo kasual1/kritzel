@@ -8,7 +8,7 @@ const INTERNAL_COMPONENTS = [
   'kritzel-color',
   'kritzel-color-palette',
   'kritzel-context-menu',
-  'kritzel-controls',
+  'kritzel-toolbar',
   'kritzel-cursor-trail',
   'kritzel-dropdown',
   'kritzel-font',

@@ -10,7 +10,7 @@ import {
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
 
-const controls: KritzelToolbarControl[] = [
+const toolbar: KritzelToolbarControl[] = [
   {
     name: 'select',
     type: 'tool',
@@ -69,10 +69,10 @@ async function onReady() {
   <div :style="hostStyle">
     <KritzelEditor
       ref="editor"
-      editorId="tools-controls"
+      editorId="tools-toolbar"
       theme="light"
       :themes="[vueThemeLight]"
-      :controls="controls"
+      :toolbar="toolbar"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"

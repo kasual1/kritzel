@@ -76,7 +76,7 @@ export const appConfig: ApplicationConfig = {
 | [references/setup.md](references/setup.md) | Installation, app config, editor vs. engine choice, headless engine setup, multi-instance |
 | [references/objects.md](references/objects.md) | Creating/updating/removing/querying objects of every type, selection, grouping, z-order, clipboard |
 | [references/viewport.md](references/viewport.md) | Pan/zoom, coordinate conversion, boundaries, fitting content, scale limits |
-| [references/tools-and-toolbar.md](references/tools-and-toolbar.md) | Switching tools, registering custom/preconfigured tools, customizing the toolbar `controls` array |
+| [references/tools-and-toolbar.md](references/tools-and-toolbar.md) | Switching tools, registering custom/preconfigured tools, customizing the toolbar `toolbar` array |
 | [references/events.md](references/events.md) | Every event of editor & engine and the Angular binding/signal patterns |
 | [references/workspaces-and-persistence.md](references/workspaces-and-persistence.md) | Workspaces, sync providers (IndexedDB/WebSocket/Hocuspocus), collaboration, import/export, screenshots |
 | [references/theming-and-context-menus.md](references/theming-and-context-menus.md) | Custom themes, theme-aware colors, global/object context menus |

@@ -51,7 +51,7 @@ import { createSeedObjects } from '../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      [isControlsVisible]="false"
+      [isToolbarVisible]="false"
       (isReady)="onReady()"
       (objectsChange)="onObjectsChange($event)"
     ></kritzel-editor>

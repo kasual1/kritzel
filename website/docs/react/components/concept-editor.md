@@ -57,6 +57,6 @@ You can toggle visibility for built-in UI components using props. For example, s
 - Viewport and boundaries (`viewportBoundaryLeft`, `viewportBoundaryRight`, `scaleMin`, `scaleMax`)
 - Theme management (`theme` prop)
 - Context menu configuration (`globalContextMenuItems`, `objectContextMenuItems`)
-- Editor-only UI options (`isControlsVisible`, `isUtilityPanelVisible`, `isWorkspaceManagerVisible`, `isMoreMenuVisible`)
+- Editor-only UI options (`isToolbarVisible`, `isUtilityPanelVisible`, `isWorkspaceManagerVisible`, `isMoreMenuVisible`)
 
 For a comprehensive view, see the [API Reference](../api-reference-editor.md).

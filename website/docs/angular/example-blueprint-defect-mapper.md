@@ -24,7 +24,7 @@ This example makes use of the following core concepts. Click on the links below 
 - [Objects](/docs/angular/concept-objects) — seeding background images and creating shape objects as defect markers
 - [Viewport](/docs/angular/concept-viewport) — converting screen coordinates to world coordinates with `screenToWorld()` and focusing the camera with `setViewport()`
 - [Tools](/docs/angular/concept-tools) — switching to the selection tool programmatically during pin placement mode
-- [Components](/docs/angular/components/concept-editor) — hiding built-in controls and driving all interactions from a custom sidebar
+- [Components](/docs/angular/components/concept-editor) — hiding built-in toolbar and driving all interactions from a custom sidebar
 
 ---
 

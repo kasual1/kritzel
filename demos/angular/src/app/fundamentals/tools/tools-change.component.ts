@@ -29,7 +29,7 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      [isControlsVisible]="false"
+      [isToolbarVisible]="false"
       (isReady)="onReady($event)"
     ></kritzel-editor>
     <div class="status-bar">

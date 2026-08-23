@@ -12,15 +12,15 @@ import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
-  selector: 'app-tools-controls',
+  selector: 'app-tools-toolbar',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
-      editorId="tools-controls"
+      editorId="tools-toolbar"
       [theme]="'light'"
       [themes]="themes"
-      [controls]="controls"
+      [toolbar]="toolbar"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
@@ -42,7 +42,7 @@ export class ToolsControlsComponent {
 
   
 
-  controls: KritzelToolbarControl[] = [
+  toolbar: KritzelToolbarControl[] = [
     {
       name: 'select',
       type: 'tool',

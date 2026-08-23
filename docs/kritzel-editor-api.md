@@ -11,11 +11,11 @@
 | `viewportBoundaryRight` | `number` | `Infinity` |
 | `viewportBoundaryTop` | `number` | `-Infinity` |
 | `viewportBoundaryBottom` | `number` | `Infinity` |
-| `controls` | `KritzelToolbarControl[]` | Default toolbar set (selection, brush, line, eraser, text, shape, image, config) |
+| `toolbar` | `KritzelToolbarControl[]` | Default toolbar set (selection, brush, line, eraser, text, shape, image, config) |
 | `globalContextMenuItems` | `ContextMenuItem[]` | Paste, Select All |
 | `objectContextMenuItems` | `ContextMenuItem[]` | Copy, Paste, Order, Align, Group, Delete |
 | `customSvgIcons` | `Record<string, string>` | `{}` |
-| `isControlsVisible` | `boolean` | `true` |
+| `isToolbarVisible` | `boolean` | `true` |
 | `isUtilityPanelVisible` | `boolean` | `true` |
 | `syncConfig` | `KritzelSyncConfig` | `undefined` |
 

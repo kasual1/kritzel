@@ -41,7 +41,7 @@ readonly themes = [brandLight, brandDark];
 <kritzel-editor [themes]="themes" theme="brand"></kritzel-editor>
 ```
 
-Theme sections include: `global`, `engine` (canvas background), `checkerboard`, `controls` (toolbar), `selection`, `button`, `contextMenu`, `dialog`, `menu`, `moreMenu`, `dropdown`, `settings`, `tooltip`, `utilityPanel`, and more — always spread the corresponding base section before overriding.
+Theme sections include: `global`, `engine` (canvas background), `checkerboard`, `toolbar` (toolbar), `selection`, `button`, `contextMenu`, `dialog`, `menu`, `moreMenu`, `dropdown`, `settings`, `tooltip`, `utilityPanel`, and more — always spread the corresponding base section before overriding.
 
 Rules:
 - `[themes]` takes an **array** even for one theme; `[theme]` is the **name string**.

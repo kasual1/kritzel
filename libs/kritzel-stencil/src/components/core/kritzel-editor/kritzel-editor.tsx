@@ -28,7 +28,10 @@ import { KritzelSyncConfig, hasRemoteSyncProvider } from '../../../interfaces/sy
 import { KritzelAssetStorageConfig } from '../../../interfaces/asset-storage-config.interface';
 import { KritzelBaseTool } from '../../../classes/tools/base-tool.class';
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../../interfaces/toolbar-control.interface';
-import { ActiveWorkspaceChangeEvent, DEFAULT_ASSET_STORAGE_CONFIG, EditorIsReadyEvent, KritzelUndoState } from '../../..';
+import { ActiveWorkspaceChangeEvent } from '../../../events/active-workspace-change.event';
+import { DEFAULT_ASSET_STORAGE_CONFIG } from '../../../configs/default-asset-storage.config';
+import { EditorIsReadyEvent } from '../../../events/editor-is-ready.event';
+import { KritzelUndoState } from '../../../interfaces/undo-state.interface';
 import { DEFAULT_SYNC_CONFIG } from '../../../configs/default-sync.config';
 import { ThemeName, KritzelTheme } from '../../../interfaces/theme.interface';
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../../../interfaces/localization.interface';
@@ -76,7 +79,7 @@ export class KritzelEditor {
   };
   @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
-  @Prop() controls: KritzelToolbarControl[] = [
+  @Prop() toolbar: KritzelToolbarControl[] = [
     {
       name: 'selection',
       type: 'tool',
@@ -265,12 +268,12 @@ export class KritzelEditor {
   @Prop() customSvgIcons: Record<string, string> = {};
   /**
    * Registers fonts for runtime usage (for example custom object rendering).
-   * Text-tool config tooltip options are controlled via controls[].config.availableFonts.
+  * Text-tool config tooltip options are controlled via toolbar[].config.availableFonts.
    */
   @Prop() customFonts: KritzelFontMap = {};
   @Prop({ mutable: true }) isPanningEnabled: boolean = true;
   @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
-  @Prop() isControlsVisible: boolean = true;
+  @Prop() isToolbarVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
@@ -310,7 +313,7 @@ export class KritzelEditor {
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
 
   @State() isEngineReady: boolean = false;
-  @State() isControlsReady: boolean = false;
+  @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
   @State() workspaces: KritzelWorkspace[] = [];
   @State() activeWorkspace?: KritzelWorkspace;
@@ -328,7 +331,7 @@ export class KritzelEditor {
   @State() activeNotification?: KritzelNotification;
   @State() isNotificationDismissing: boolean = false;
   @State() contextMenuState?: KritzelContextMenuState;
-  @State() normalizedControls: KritzelToolbarControl[] = [];
+  @State() normalizedToolbar: KritzelToolbarControl[] = [];
   @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
   @State() isSyncing: boolean = false;
   @State() isLoadingOverlayVisible: boolean = false;
@@ -343,13 +346,13 @@ export class KritzelEditor {
 
   @Watch('isEngineReady')
   onIsEngineReady(newValue: boolean) {
-    if (newValue && this.isControlsReady) {
+    if (newValue && this.isToolbarReady) {
       this.checkIsReady();
     }
   }
 
-  @Watch('isControlsReady')
-  onIsControlsReady(newValue: boolean) {
+  @Watch('isToolbarReady')
+  onIsToolbarReady(newValue: boolean) {
     if (newValue && this.isEngineReady) {
       this.checkIsReady();
     }
@@ -384,9 +387,9 @@ export class KritzelEditor {
     void this.registerCustomFonts(newValue);
   }
 
-  @Watch('controls')
-  onControlsChange(newValue: KritzelToolbarControl[]) {
-    this.normalizedControls = this.normalizeControls(newValue);
+  @Watch('toolbar')
+  onToolbarChange(newValue: KritzelToolbarControl[]) {
+    this.normalizedToolbar = this.normalizeToolbar(newValue);
   }
 
   @Watch('moreMenuItems')
@@ -836,7 +839,7 @@ export class KritzelEditor {
   }
 
   engineRef!: HTMLKritzelEngineElement;
-  controlsRef!: HTMLKritzelControlsElement;
+  toolbarRef!: HTMLKritzelToolbarElement;
   settingsRef!: HTMLKritzelSettingsElement;
   exportRef!: HTMLKritzelExportElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
@@ -845,7 +848,7 @@ export class KritzelEditor {
   currentUserDialogRef!: HTMLKritzelCurrentUserDialogElement;
 
   componentWillLoad() {
-    this.normalizedControls = this.normalizeControls(this.controls);
+    this.normalizedToolbar = this.normalizeToolbar(this.toolbar);
     this.recomputeMoreMenuItems();
     this.loadSettingsFromStorage();
     this.applyTheme();
@@ -855,8 +858,8 @@ export class KritzelEditor {
     return !!config && 'fontFamily' in config && 'size' in config && 'color' in config;
   }
 
-  private normalizeControls(controls: KritzelToolbarControl[]): KritzelToolbarControl[] {
-    return controls.map(control => {
+  private normalizeToolbar(toolbar: KritzelToolbarControl[]): KritzelToolbarControl[] {
+    return toolbar.map(control => {
       if (!this.isTextToolConfig(control.config)) {
         return control;
       }
@@ -902,11 +905,11 @@ export class KritzelEditor {
   async checkIsReady() {
     await customElements.whenDefined('kritzel-editor');
     await customElements.whenDefined('kritzel-workspace-manager');
-    await customElements.whenDefined('kritzel-controls');
+    await customElements.whenDefined('kritzel-toolbar');
     await customElements.whenDefined('kritzel-engine');
     await this.waitForCustomFontsReady();
 
-    if (!this.isEngineReady || !this.isControlsReady || !this.isWorkspaceManagerReady || !this.activeWorkspace) {
+    if (!this.isEngineReady || !this.isToolbarReady || !this.isWorkspaceManagerReady || !this.activeWorkspace) {
       return;
     }
 
@@ -1244,7 +1247,7 @@ export class KritzelEditor {
    * Registers custom fonts for the editor runtime.
    * @param fonts - Mapping from font keys to family names or font definitions.
    * @remarks This no longer controls the text-tool config tooltip font options.
-   * Configure tooltip fonts via controls[].config.availableFonts.
+  * Configure tooltip fonts via toolbar[].config.availableFonts.
    */
   @Method()
   async registerFonts(fonts: KritzelFontMap): Promise<void> {
@@ -1374,27 +1377,27 @@ export class KritzelEditor {
         // iOS specific adjustments
         this.host.style.setProperty('--kritzel-editor-top-left-buttons-top', '14px');
         this.host.style.setProperty('--kritzel-editor-top-left-buttons-left', '14px');
-        this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
-        this.host.style.setProperty('--kritzel-editor-controls-transition', 'cubic-bezier(0.25, 0.1, 0.25, 1.0)');
-        this.host.style.setProperty('--kritzel-editor-controls-transform', 'translateY(200%)');
-        this.host.style.setProperty('--kritzel-editor-controls-transition-duration', '0.25s');
+        this.host.style.setProperty('--kritzel-editor-toolbar-bottom', '14px');
+        this.host.style.setProperty('--kritzel-editor-toolbar-transition', 'cubic-bezier(0.25, 0.1, 0.25, 1.0)');
+        this.host.style.setProperty('--kritzel-editor-toolbar-transform', 'translateY(200%)');
+        this.host.style.setProperty('--kritzel-editor-toolbar-transition-duration', '0.25s');
         break;
 
       case 'Android':
         // Android specific adjustments
         this.host.style.setProperty('--kritzel-editor-top-left-buttons-top', '14px');
         this.host.style.setProperty('--kritzel-editor-top-left-buttons-left', '14px');
-        this.host.style.setProperty('--kritzel-editor-controls-bottom', '24px');
-        this.host.style.setProperty('--kritzel-editor-controls-transition', 'cubic-bezier(0.25, 0.1, 0.25, 1.0)');
-        this.host.style.setProperty('--kritzel-editor-controls-transform', 'translateY(200%)');
-        this.host.style.setProperty('--kritzel-editor-controls-transition-duration', '0.25s');
+        this.host.style.setProperty('--kritzel-editor-toolbar-bottom', '24px');
+        this.host.style.setProperty('--kritzel-editor-toolbar-transition', 'cubic-bezier(0.25, 0.1, 0.25, 1.0)');
+        this.host.style.setProperty('--kritzel-editor-toolbar-transform', 'translateY(200%)');
+        this.host.style.setProperty('--kritzel-editor-toolbar-transition-duration', '0.25s');
         break;
 
       default:
         // Default for Windows/Linux
         this.host.style.setProperty('--kritzel-editor-top-left-buttons-top', '14px');
         this.host.style.setProperty('--kritzel-editor-top-left-buttons-left', '14px');
-        this.host.style.setProperty('--kritzel-editor-controls-bottom', '14px');
+        this.host.style.setProperty('--kritzel-editor-toolbar-bottom', '14px');
         break;
     }
   }
@@ -1513,21 +1516,21 @@ export class KritzelEditor {
             onLoadingChange={event => (this.isLoadingOverlayVisible = event.detail)}
           ></kritzel-engine>
 
-          <kritzel-controls
-            visible={this.isControlsVisible}
+          <kritzel-toolbar
+            visible={this.isToolbarVisible}
             class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
             ref={el => {
               if (el) {
-                this.controlsRef = el;
+                this.toolbarRef = el;
               }
             }}
-            controls={this.normalizedControls}
+            toolbar={this.normalizedToolbar}
             isUtilityPanelVisible={this.isUtilityPanelVisible}
             undoState={this.undoState ?? undefined}
             theme={this.theme}
             terms={this.resolvedTerms}
-            onIsControlsReady={() => (this.isControlsReady = true)}
-          ></kritzel-controls>
+            onIsToolbarReady={() => (this.isToolbarReady = true)}
+          ></kritzel-toolbar>
 
           <div class="bottom-left-buttons">
             <kritzel-zoom-panel

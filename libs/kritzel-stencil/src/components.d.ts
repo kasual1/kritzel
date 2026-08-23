@@ -12,19 +12,20 @@ import { ThemeAwareColor } from "./constants/color-palette.constants";
 import { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelBaseObject } from "./classes/objects/base-object.class";
-import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
-import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
+import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 import { KritzelFontMap } from "./interfaces/font.interface";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
-import { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
+import { EditorIsReadyEvent } from "./events/editor-is-ready.event";
+import { ActiveWorkspaceChangeEvent } from "./events/active-workspace-change.event";
 import { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
+import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
@@ -45,6 +46,7 @@ import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 import { LineArrowConfig } from "./interfaces/arrow-head.interface";
+import { LoginEvent as LoginEvent1 } from ".";
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 import { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
 import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
@@ -56,19 +58,20 @@ export { ThemeAwareColor } from "./constants/color-palette.constants";
 export { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelBaseObject } from "./classes/objects/base-object.class";
-export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
-export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 export { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from "./interfaces/dialog.interface";
 export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
+export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig, KritzelToolbarControl } from "./interfaces/toolbar-control.interface";
 export { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from "./interfaces/menu-item.interface";
 export { KritzelFontMap } from "./interfaces/font.interface";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
-export { ActiveWorkspaceChangeEvent, EditorIsReadyEvent, KritzelUndoState as KritzelUndoState1, LoginEvent as LoginEvent1 } from ".";
+export { EditorIsReadyEvent } from "./events/editor-is-ready.event";
+export { ActiveWorkspaceChangeEvent } from "./events/active-workspace-change.event";
 export { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
+export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
@@ -89,6 +92,7 @@ export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
 export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
 export { LineArrowConfig } from "./interfaces/arrow-head.interface";
+export { LoginEvent as LoginEvent1 } from ".";
 export { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from "./interfaces/master-detail.interface";
 export { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
 export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
@@ -220,38 +224,6 @@ export namespace Components {
         "items": ContextMenuItem[];
         "objects": KritzelBaseObject[];
     }
-    interface KritzelControls {
-        /**
-          * @default null
-         */
-        "activeControl": KritzelToolbarControl | null;
-        "closeTooltip": () => Promise<void>;
-        /**
-          * @default []
-         */
-        "controls": KritzelToolbarControl[];
-        /**
-          * @default true
-         */
-        "isUtilityPanelVisible": boolean;
-        /**
-          * Resolved localized strings keyed by term key, supplied by the editor.
-          * @default {}
-         */
-        "terms": Partial<Record<KritzelTermKey, string>>;
-        /**
-          * @default 'light'
-         */
-        "theme": ThemeName;
-        /**
-          * @default null
-         */
-        "undoState": KritzelUndoState;
-        /**
-          * @default true
-         */
-        "visible": boolean;
-    }
     interface KritzelCurrentUser {
         /**
           * Avatar size in pixels
@@ -375,10 +347,6 @@ export namespace Components {
         "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
         "changeActiveToolByName": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
-        /**
-          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
-         */
-        "controls": KritzelToolbarControl[];
         "copy": () => Promise<void>;
         "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
         /**
@@ -386,7 +354,7 @@ export namespace Components {
          */
         "cursorTarget"?: HTMLElement;
         /**
-          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via controls[].config.availableFonts.
+          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbar[].config.availableFonts.
           * @default {}
          */
         "customFonts": KritzelFontMap;
@@ -445,10 +413,6 @@ export namespace Components {
         "hideContextMenu": () => Promise<void>;
         "importFromFile": () => Promise<void>;
         /**
-          * @default true
-         */
-        "isControlsVisible": boolean;
-        /**
           * Whether the editor is in a loading state. When true, a loading overlay is displayed.
           * @default false
          */
@@ -465,6 +429,10 @@ export namespace Components {
           * @default true
          */
         "isPanningEnabled": boolean;
+        /**
+          * @default true
+         */
+        "isToolbarVisible": boolean;
         /**
           * @default true
          */
@@ -521,7 +489,7 @@ export namespace Components {
         /**
           * Registers custom fonts for the editor runtime.
           * @param fonts - Mapping from font keys to family names or font definitions.
-          * @remarks This no longer controls the text-tool config tooltip font options. Configure tooltip fonts via controls[].config.availableFonts.
+          * @remarks This no longer controls the text-tool config tooltip font options. Configure tooltip fonts via toolbar[].config.availableFonts.
          */
         "registerFonts": (fonts: KritzelFontMap) => Promise<void>;
         /**
@@ -568,6 +536,10 @@ export namespace Components {
          */
         "theme": ThemeName;
         "themes"?: KritzelTheme[];
+        /**
+          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
+         */
+        "toolbar": KritzelToolbarControl[];
         /**
           * Triggers a UI notification programmatically.
           * @param notification - Notification payload. `id` and `timestamp` are optional.
@@ -1564,6 +1536,38 @@ export namespace Components {
         "theme": ThemeName;
         "tool": ConfigurableTool;
     }
+    interface KritzelToolbar {
+        /**
+          * @default null
+         */
+        "activeControl": KritzelToolbarControl | null;
+        "closeTooltip": () => Promise<void>;
+        /**
+          * @default true
+         */
+        "isUtilityPanelVisible": boolean;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
+        /**
+          * @default 'light'
+         */
+        "theme": ThemeName;
+        /**
+          * @default []
+         */
+        "toolbar": KritzelToolbarControl[];
+        /**
+          * @default null
+         */
+        "undoState": KritzelUndoState;
+        /**
+          * @default true
+         */
+        "visible": boolean;
+    }
     interface KritzelTooltip {
         "anchorElement": HTMLElement;
         "close": () => Promise<void>;
@@ -1667,10 +1671,6 @@ export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelContextMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelContextMenuElement;
-}
-export interface KritzelControlsCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLKritzelControlsElement;
 }
 export interface KritzelCurrentUserDialogCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1779,6 +1779,10 @@ export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelToolConfigCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelToolConfigElement;
+}
+export interface KritzelToolbarCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelToolbarElement;
 }
 export interface KritzelTooltipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1907,23 +1911,6 @@ declare global {
         prototype: HTMLKritzelContextMenuElement;
         new (): HTMLKritzelContextMenuElement;
     };
-    interface HTMLKritzelControlsElementEventMap {
-        "isControlsReady": void;
-    }
-    interface HTMLKritzelControlsElement extends Components.KritzelControls, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLKritzelControlsElementEventMap>(type: K, listener: (this: HTMLKritzelControlsElement, ev: KritzelControlsCustomEvent<HTMLKritzelControlsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLKritzelControlsElementEventMap>(type: K, listener: (this: HTMLKritzelControlsElement, ev: KritzelControlsCustomEvent<HTMLKritzelControlsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLKritzelControlsElement: {
-        prototype: HTMLKritzelControlsElement;
-        new (): HTMLKritzelControlsElement;
-    };
     interface HTMLKritzelCurrentUserElement extends Components.KritzelCurrentUser, HTMLStencilElement {
     }
     var HTMLKritzelCurrentUserElement: {
@@ -1995,7 +1982,7 @@ declare global {
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
-        "undoStateChange": KritzelUndoState1;
+        "undoStateChange": KritzelUndoState;
         "themeChange": ThemeName;
         "localeChange": LocaleCode;
         "viewportChange": KritzelViewportState;
@@ -2482,6 +2469,23 @@ declare global {
         prototype: HTMLKritzelToolConfigElement;
         new (): HTMLKritzelToolConfigElement;
     };
+    interface HTMLKritzelToolbarElementEventMap {
+        "isToolbarReady": void;
+    }
+    interface HTMLKritzelToolbarElement extends Components.KritzelToolbar, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelToolbarElementEventMap>(type: K, listener: (this: HTMLKritzelToolbarElement, ev: KritzelToolbarCustomEvent<HTMLKritzelToolbarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelToolbarElementEventMap>(type: K, listener: (this: HTMLKritzelToolbarElement, ev: KritzelToolbarCustomEvent<HTMLKritzelToolbarElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelToolbarElement: {
+        prototype: HTMLKritzelToolbarElement;
+        new (): HTMLKritzelToolbarElement;
+    };
     interface HTMLKritzelTooltipElementEventMap {
         "tooltipClosed": void;
         "tooltipOpened": void;
@@ -2578,7 +2582,6 @@ declare global {
         "kritzel-color": HTMLKritzelColorElement;
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
-        "kritzel-controls": HTMLKritzelControlsElement;
         "kritzel-current-user": HTMLKritzelCurrentUserElement;
         "kritzel-current-user-dialog": HTMLKritzelCurrentUserDialogElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
@@ -2612,6 +2615,7 @@ declare global {
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
         "kritzel-sync-indicator": HTMLKritzelSyncIndicatorElement;
         "kritzel-tool-config": HTMLKritzelToolConfigElement;
+        "kritzel-toolbar": HTMLKritzelToolbarElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
         "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
         "kritzel-watermark": HTMLKritzelWatermarkElement;
@@ -2758,38 +2762,6 @@ declare namespace LocalJSX {
         "onActionSelected"?: (event: KritzelContextMenuCustomEvent<ContextMenuItem>) => void;
         "onClose"?: (event: KritzelContextMenuCustomEvent<void>) => void;
     }
-    interface KritzelControls {
-        /**
-          * @default null
-         */
-        "activeControl"?: KritzelToolbarControl | null;
-        /**
-          * @default []
-         */
-        "controls"?: KritzelToolbarControl[];
-        /**
-          * @default true
-         */
-        "isUtilityPanelVisible"?: boolean;
-        "onIsControlsReady"?: (event: KritzelControlsCustomEvent<void>) => void;
-        /**
-          * Resolved localized strings keyed by term key, supplied by the editor.
-          * @default {}
-         */
-        "terms"?: Partial<Record<KritzelTermKey, string>>;
-        /**
-          * @default 'light'
-         */
-        "theme"?: ThemeName;
-        /**
-          * @default null
-         */
-        "undoState"?: KritzelUndoState;
-        /**
-          * @default true
-         */
-        "visible"?: boolean;
-    }
     interface KritzelCurrentUser {
         /**
           * Avatar size in pixels
@@ -2908,15 +2880,11 @@ declare namespace LocalJSX {
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         /**
-          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
-         */
-        "controls"?: KritzelToolbarControl[];
-        /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
         "cursorTarget"?: HTMLElement;
         /**
-          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via controls[].config.availableFonts.
+          * Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbar[].config.availableFonts.
           * @default {}
          */
         "customFonts"?: KritzelFontMap;
@@ -2942,10 +2910,6 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * @default true
-         */
-        "isControlsVisible"?: boolean;
-        /**
           * Whether the editor is in a loading state. When true, a loading overlay is displayed.
           * @default false
          */
@@ -2962,6 +2926,10 @@ declare namespace LocalJSX {
           * @default true
          */
         "isPanningEnabled"?: boolean;
+        /**
+          * @default true
+         */
+        "isToolbarVisible"?: boolean;
         /**
           * @default true
          */
@@ -3019,7 +2987,7 @@ declare namespace LocalJSX {
         "onObjectsRemoved"?: (event: KritzelEditorCustomEvent<ObjectsRemovedEvent>) => void;
         "onObjectsUpdated"?: (event: KritzelEditorCustomEvent<ObjectsUpdatedEvent>) => void;
         "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
-        "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
+        "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState>) => void;
         "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
         /**
           * @default 1000
@@ -3038,6 +3006,10 @@ declare namespace LocalJSX {
          */
         "theme"?: ThemeName;
         "themes"?: KritzelTheme[];
+        /**
+          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shape-rectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
+         */
+        "toolbar"?: KritzelToolbarControl[];
         "user"?: IKritzelUser;
         /**
           * @default Infinity
@@ -3744,6 +3716,38 @@ declare namespace LocalJSX {
         "theme"?: ThemeName;
         "tool"?: ConfigurableTool;
     }
+    interface KritzelToolbar {
+        /**
+          * @default null
+         */
+        "activeControl"?: KritzelToolbarControl | null;
+        /**
+          * @default true
+         */
+        "isUtilityPanelVisible"?: boolean;
+        "onIsToolbarReady"?: (event: KritzelToolbarCustomEvent<void>) => void;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        /**
+          * @default 'light'
+         */
+        "theme"?: ThemeName;
+        /**
+          * @default []
+         */
+        "toolbar"?: KritzelToolbarControl[];
+        /**
+          * @default null
+         */
+        "undoState"?: KritzelUndoState;
+        /**
+          * @default true
+         */
+        "visible"?: boolean;
+    }
     interface KritzelTooltip {
         "anchorElement"?: HTMLElement;
         /**
@@ -3876,11 +3880,6 @@ declare namespace LocalJSX {
         "opacity": number;
         "theme": ThemeName;
     }
-    interface KritzelControlsAttributes {
-        "visible": boolean;
-        "isUtilityPanelVisible": boolean;
-        "theme": ThemeName;
-    }
     interface KritzelCurrentUserAttributes {
         "avatarSize": number;
     }
@@ -3915,7 +3914,7 @@ declare namespace LocalJSX {
         "fallbackLocale": LocaleCode;
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
-        "isControlsVisible": boolean;
+        "isToolbarVisible": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
@@ -4045,6 +4044,11 @@ declare namespace LocalJSX {
         "isExpanded": boolean;
         "theme": ThemeName;
     }
+    interface KritzelToolbarAttributes {
+        "visible": boolean;
+        "isUtilityPanelVisible": boolean;
+        "theme": ThemeName;
+    }
     interface KritzelTooltipAttributes {
         "isVisible": boolean;
         "offsetY": number;
@@ -4071,7 +4075,6 @@ declare namespace LocalJSX {
         "kritzel-color": Omit<KritzelColor, keyof KritzelColorAttributes> & { [K in keyof KritzelColor & keyof KritzelColorAttributes]?: KritzelColor[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `attr:${K}`]?: KritzelColorAttributes[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `prop:${K}`]?: KritzelColor[K] };
         "kritzel-color-palette": Omit<KritzelColorPalette, keyof KritzelColorPaletteAttributes> & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes]?: KritzelColorPalette[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `attr:${K}`]?: KritzelColorPaletteAttributes[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `prop:${K}`]?: KritzelColorPalette[K] };
         "kritzel-context-menu": KritzelContextMenu;
-        "kritzel-controls": Omit<KritzelControls, keyof KritzelControlsAttributes> & { [K in keyof KritzelControls & keyof KritzelControlsAttributes]?: KritzelControls[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `attr:${K}`]?: KritzelControlsAttributes[K] } & { [K in keyof KritzelControls & keyof KritzelControlsAttributes as `prop:${K}`]?: KritzelControls[K] };
         "kritzel-current-user": Omit<KritzelCurrentUser, keyof KritzelCurrentUserAttributes> & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes]?: KritzelCurrentUser[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `attr:${K}`]?: KritzelCurrentUserAttributes[K] } & { [K in keyof KritzelCurrentUser & keyof KritzelCurrentUserAttributes as `prop:${K}`]?: KritzelCurrentUser[K] };
         "kritzel-current-user-dialog": KritzelCurrentUserDialog;
         "kritzel-cursor-trail": KritzelCursorTrail;
@@ -4105,6 +4108,7 @@ declare namespace LocalJSX {
         "kritzel-stroke-size": Omit<KritzelStrokeSize, keyof KritzelStrokeSizeAttributes> & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes]?: KritzelStrokeSize[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `attr:${K}`]?: KritzelStrokeSizeAttributes[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `prop:${K}`]?: KritzelStrokeSize[K] };
         "kritzel-sync-indicator": Omit<KritzelSyncIndicator, keyof KritzelSyncIndicatorAttributes> & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes]?: KritzelSyncIndicator[K] } & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes as `attr:${K}`]?: KritzelSyncIndicatorAttributes[K] } & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes as `prop:${K}`]?: KritzelSyncIndicator[K] };
         "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
+        "kritzel-toolbar": Omit<KritzelToolbar, keyof KritzelToolbarAttributes> & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes]?: KritzelToolbar[K] } & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes as `attr:${K}`]?: KritzelToolbarAttributes[K] } & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes as `prop:${K}`]?: KritzelToolbar[K] };
         "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
         "kritzel-utility-panel": KritzelUtilityPanel;
         "kritzel-watermark": Omit<KritzelWatermark, keyof KritzelWatermarkAttributes> & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes]?: KritzelWatermark[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `attr:${K}`]?: KritzelWatermarkAttributes[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `prop:${K}`]?: KritzelWatermark[K] };
@@ -4125,7 +4129,6 @@ declare module "@stencil/core" {
             "kritzel-color": LocalJSX.IntrinsicElements["kritzel-color"] & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
             "kritzel-color-palette": LocalJSX.IntrinsicElements["kritzel-color-palette"] & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-context-menu": LocalJSX.IntrinsicElements["kritzel-context-menu"] & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;
-            "kritzel-controls": LocalJSX.IntrinsicElements["kritzel-controls"] & JSXBase.HTMLAttributes<HTMLKritzelControlsElement>;
             "kritzel-current-user": LocalJSX.IntrinsicElements["kritzel-current-user"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserElement>;
             "kritzel-current-user-dialog": LocalJSX.IntrinsicElements["kritzel-current-user-dialog"] & JSXBase.HTMLAttributes<HTMLKritzelCurrentUserDialogElement>;
             "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
@@ -4169,6 +4172,7 @@ declare module "@stencil/core" {
             "kritzel-stroke-size": LocalJSX.IntrinsicElements["kritzel-stroke-size"] & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
             "kritzel-sync-indicator": LocalJSX.IntrinsicElements["kritzel-sync-indicator"] & JSXBase.HTMLAttributes<HTMLKritzelSyncIndicatorElement>;
             "kritzel-tool-config": LocalJSX.IntrinsicElements["kritzel-tool-config"] & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;
+            "kritzel-toolbar": LocalJSX.IntrinsicElements["kritzel-toolbar"] & JSXBase.HTMLAttributes<HTMLKritzelToolbarElement>;
             "kritzel-tooltip": LocalJSX.IntrinsicElements["kritzel-tooltip"] & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
             "kritzel-utility-panel": LocalJSX.IntrinsicElements["kritzel-utility-panel"] & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;
             /**

@@ -28,7 +28,7 @@
 
 ### Used by
 
- - [kritzel-controls](../kritzel-controls)
+ - [kritzel-toolbar](../kritzel-toolbar)
 
 ### Depends on
 
@@ -56,7 +56,7 @@ graph TD;
   kritzel-font-size --> kritzel-font
   kritzel-font-family --> kritzel-dropdown
   kritzel-color-palette --> kritzel-color
-  kritzel-controls --> kritzel-tool-config
+  kritzel-toolbar --> kritzel-tool-config
   style kritzel-tool-config fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

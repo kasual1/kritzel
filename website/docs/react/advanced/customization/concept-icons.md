@@ -11,13 +11,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel's icon system uses named SVG definitions. Built-in controls and menus resolve an icon name through the shared `KritzelIconRegistry`, so you can add icons for application actions without changing Kritzel's components.
+Kritzel's icon system uses named SVG definitions. Built-in toolbar and menus resolve an icon name through the shared `KritzelIconRegistry`, so you can add icons for application actions without changing Kritzel's components.
 
-Pass a `Record<string, string>` to the `customSvgIcons` prop on `<KritzelEditor>`. Use the same names anywhere Kritzel accepts an `icon`, including context-menu items and toolbar controls.
+Pass a `Record<string, string>` to the `customSvgIcons` prop on `<KritzelEditor>`. Use the same names anywhere Kritzel accepts an `icon`, including context-menu items and toolbar toolbar.
 
 ## Registering and Using Custom SVG Icons
 
-The demo registers application-specific SVG icons and reuses their names in toolbar controls and global or object context-menu items.
+The demo registers application-specific SVG icons and reuses their names in toolbar toolbar and global or object context-menu items.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
@@ -30,6 +30,6 @@ The demo registers application-specific SVG icons and reuses their names in tool
 - Registering icons (`customSvgIcons`, `KritzelIconRegistry.register()`, `KritzelIconRegistry.registerIcons()`)
 - Toolbar configuration (`KritzelToolbarControl.icon`)
 - Context-menu configuration (`ContextMenuItem.icon`)
-- Editor configuration (`controls`, `globalContextMenuItems`, `objectContextMenuItems`)
+- Editor configuration (`toolbar`, `globalContextMenuItems`, `objectContextMenuItems`)
 
 For a comprehensive view, see the [API Reference](../../api-reference-editor.md).
