@@ -48,12 +48,32 @@ export class MyComponent {
 
 ## Customizing the Editor UI
 
-You can toggle visibility for built-in UI components using the Editor's attributes. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to false will not render the workspace manager at the top left nor the more menu at the top right, giving you a more minimal interface while retaining all core whiteboard functionality.
+Beyond toggling whole panels, the Editor exposes two independent customization surfaces: simple visibility flags for its built-in chrome, and fully custom context menus for canvas and object interactions.
+
+### Toggling Built-in UI Chrome
+
+You can toggle visibility for built-in UI components using the Editor's attributes. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to false will not render the workspace manager at the top left nor the more menu at the top right, giving you a more minimal interface while retaining all core whiteboard functionality. `isControlsVisible` and `isUtilityPanelVisible` work the same way for the tool toolbar and the utility panel.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/components-editor-ui"
   repoFiles={['src/app/fundamentals/components/components-editor-ui.component.ts']}
+/>
+
+### Configuring Context Menus
+
+The Editor separates right-click actions into two arrays: `globalContextMenuItems` for empty-canvas interactions, and `objectContextMenuItems` for selected-object interactions. Each item accepts a `label`, an `icon`, an `action` handler, and optional `visible`/`disabled` conditions so entries can react to editor state, plus `group` and `children` for grouping and nested submenus.
+
+```ts
+editor.globalContextMenuItems = [
+  { label: 'Export as PNG', icon: 'export', action: () => editor.exportAsPng() },
+];
+```
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/advanced/context-menus-canvas-quick-actions"
+  repoFiles={['src/app/advanced/context-menus/custom-context-menu-canvas-quick-actions.component.ts']}
 />
 
 ## Related API Methods

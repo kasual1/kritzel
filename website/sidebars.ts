@@ -33,8 +33,6 @@ const sidebars: SidebarsConfig = {
       items: [
         'advanced/concept-user-management',
         'advanced/concept-collaboration',
-        'advanced/concept-localization',
-        'advanced/concept-context-menus',
         'advanced/concept-dynamic-objects',
       ],
     },
@@ -46,6 +44,7 @@ const sidebars: SidebarsConfig = {
         'advanced/customization/concept-theming',
         'advanced/customization/concept-fonts',
         'advanced/customization/concept-icons',
+        'advanced/customization/concept-localization',
       ],
     },
     {
