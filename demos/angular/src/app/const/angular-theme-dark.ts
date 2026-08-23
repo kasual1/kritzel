@@ -17,8 +17,8 @@ export const angularThemeDark: KritzelTheme = {
     boxBorderColor: 'rgba(255, 64, 129, 0.4)',
     handleStrokeColor: '#ff4081',
   },
-  controls: {
-    ...darkTheme.controls,
+  toolbar: {
+    ...darkTheme.toolbar,
     controlHoverBackgroundColor: 'rgba(255, 64, 129, 0.12)',
     controlActiveBackgroundColor: 'rgba(255, 64, 129, 0.18)',
     controlSelectedBackgroundColor: '#ff4081',

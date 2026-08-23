@@ -29,7 +29,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 ## Screenshot-Style Annotation Canvas with External Color Tools
 
-Users pick a color from a row of circular swatches in a custom bottom toolbar, then sketch freehand annotations directly over the image. A mode toggle switches between brush drawing and text placement for callouts. The built-in editor controls are hidden - all interaction flows through the external toolbar.
+Users pick a color from a row of circular swatches in a custom bottom toolbar, then sketch freehand annotations directly over the image. A mode toggle switches between brush drawing and text placement for callouts. The built-in editor toolbar are hidden - all interaction flows through the external toolbar.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"

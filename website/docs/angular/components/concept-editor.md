@@ -52,7 +52,7 @@ Beyond toggling whole panels, the Editor exposes two independent customization s
 
 ### Toggling Built-in UI Chrome
 
-You can toggle visibility for built-in UI components using the Editor's attributes. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to false will not render the workspace manager at the top left nor the more menu at the top right, giving you a more minimal interface while retaining all core whiteboard functionality. `isControlsVisible` and `isUtilityPanelVisible` work the same way for the tool toolbar and the utility panel.
+You can toggle visibility for built-in UI components using the Editor's attributes. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to false will not render the workspace manager at the top left nor the more menu at the top right, giving you a more minimal interface while retaining all core whiteboard functionality. `isToolbarVisible` and `isUtilityPanelVisible` work the same way for the tool toolbar and the utility panel.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -82,6 +82,6 @@ editor.globalContextMenuItems = [
 - Viewport and boundaries ([viewportBoundaryLeft](../api-reference-editor.md#props), [viewportBoundaryRight](../api-reference-editor.md#props), [scaleMin](../api-reference-editor.md#props), [scaleMax](../api-reference-editor.md#props))
 - Theme management ([theme](../api-reference-editor.md#props) property)
 - Context menu configuration ([globalContextMenuItems](../api-reference-editor.md#props), [objectContextMenuItems](../api-reference-editor.md#props))
-- Editor-only UI options ([isControlsVisible](../api-reference-editor.md#props), [isUtilityPanelVisible](../api-reference-editor.md#props), [isWorkspaceManagerVisible](../api-reference-editor.md#props), [isMoreMenuVisible](../api-reference-editor.md#props))
+- Editor-only UI options ([isToolbarVisible](../api-reference-editor.md#props), [isUtilityPanelVisible](../api-reference-editor.md#props), [isWorkspaceManagerVisible](../api-reference-editor.md#props), [isMoreMenuVisible](../api-reference-editor.md#props))
 
 For a comprehensive view, see the [API Reference](../api-reference-editor.md).

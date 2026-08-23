@@ -22,8 +22,8 @@ export const angularThemeLight: KritzelTheme = {
     itemHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
     itemActiveBackgroundColor: 'rgba(221, 0, 48, 0.12)',
   },
-  controls: {
-    ...lightTheme.controls,
+  toolbar: {
+    ...lightTheme.toolbar,
     controlHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
     controlActiveBackgroundColor: 'rgba(221, 0, 48, 0.12)',
     controlSelectedBackgroundColor: '#dd0031',

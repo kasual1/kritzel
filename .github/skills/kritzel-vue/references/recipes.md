@@ -1,4 +1,4 @@
-# Recipes — proven end-to-end patterns
+# Recipes â€” proven end-to-end patterns
 
 Composable patterns distilled from the official Vue examples. All assume the golden rules: seeding happens in the `@isReady` handler, every call awaited, Kritzel state mirrored into `ref()`s, methods called through `editor.value` (the computed ref from `getEditorRef('editor')`, resolved at the top level of `<script setup>`).
 
@@ -59,7 +59,7 @@ async function activateBrush(name: string) {
     <KritzelEditor
       ref="editor"
       editorId="annotation"
-      :isControlsVisible="false" :isMoreMenuVisible="false"
+      :isToolbarVisible="false" :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false" :isUtilityPanelVisible="false"
       :style="{ flex: 1, minHeight: 0, display: 'block' }"
       @isReady="onReady"
@@ -68,7 +68,7 @@ async function activateBrush(name: string) {
 </template>
 ```
 
-## 2. Pin map / defect mapper (click → world coords → marker)
+## 2. Pin map / defect mapper (click â†’ world coords â†’ marker)
 
 ```ts
 async function onReady() {
@@ -87,7 +87,7 @@ async function onCanvasClick(ev: MouseEvent) {
   const { x, y } = await editor.value.screenToWorld(ev.clientX - rect.left, ev.clientY - rect.top);
   const pin = new KritzelShape({
     shapeType: ShapeType.Ellipse,
-    translateX: x - 25, translateY: y - 25,        // center 50×50 pin on click
+    translateX: x - 25, translateY: y - 25,        // center 50Ã—50 pin on click
     width: 50, height: 50,
     rotation: -15,
     fillColor: { light: '#e53935', dark: '#ef5350' },
@@ -102,7 +102,7 @@ async function focusPin(id: string) {
   if (!editor.value) return;
   const pin = await editor.value.getObjectById(id);
   if (!pin) return;
-  await editor.value.setViewport(pin.centerX, pin.centerY, 1.0);  // camera only — pin stays put
+  await editor.value.setViewport(pin.centerX, pin.centerY, 1.0);  // camera only â€” pin stays put
   await editor.value.selectObjects([pin]);
 }
 
@@ -114,9 +114,9 @@ await editor.value?.updateObject(pin, { fillColor: { light: '#10b981', dark: '#1
 
 ```vue
 <script setup lang="ts">
-// Only the selection tool in the toolbar → users can pan/zoom/inspect but not draw.
-// Define the array as a const in <script setup> — never inline in the template.
-const controls: KritzelToolbarControl[] = [
+// Only the selection tool in the toolbar â†’ users can pan/zoom/inspect but not draw.
+// Define the array as a const in <script setup> â€” never inline in the template.
+const toolbar: KritzelToolbarControl[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
 ];
 
@@ -136,7 +136,7 @@ async function onReady() {
 </script>
 
 <template>
-  <KritzelEditor ref="editor" :controls="controls" @isReady="onReady" />
+  <KritzelEditor ref="editor" :toolbar="toolbar" @isReady="onReady" />
 </template>
 ```
 
@@ -179,7 +179,7 @@ async function goToSlide(i: number) {
     ref="editor"
     :viewportBoundaryLeft="bounds.left"  :viewportBoundaryRight="bounds.right"
     :viewportBoundaryTop="bounds.top"    :viewportBoundaryBottom="bounds.bottom"
-    :isControlsVisible="false"
+    :isToolbarVisible="false"
     @isReady="onReady"
   />
 </template>
@@ -192,7 +192,7 @@ Mirror the canvas into your own model via the granular events; navigate and edit
 ```ts
 import type { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from 'kritzel-vue';
 
-// template: @objectsAdded / @objectsRemoved / @objectsUpdated → update your tree ref
+// template: @objectsAdded / @objectsRemoved / @objectsUpdated â†’ update your tree ref
 const allObjects = ref<KritzelBaseObject[]>([]);
 
 function onObjectsAdded(event: CustomEvent<ObjectsAddedEvent>) {

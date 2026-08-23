@@ -161,7 +161,7 @@ export function BasicUsagePage() {
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
-        isControlsVisible={false}
+        isToolbarVisible={false}
         onIsReady={() => {
           void onReady();
         }}

@@ -26,7 +26,7 @@
 
 ### Used by
 
- - [kritzel-controls](../kritzel-controls)
+ - [kritzel-toolbar](../kritzel-toolbar)
 
 ### Depends on
 
@@ -36,7 +36,7 @@
 ```mermaid
 graph TD;
   kritzel-utility-panel --> kritzel-icon
-  kritzel-controls --> kritzel-utility-panel
+  kritzel-toolbar --> kritzel-utility-panel
   style kritzel-utility-panel fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

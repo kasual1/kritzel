@@ -38,7 +38,7 @@ const highlighterConfig: KritzelBrushToolConfig = {
       editorId="tools-register"
       [theme]="'light'"
       [themes]="themes"
-      [controls]="controls"
+      [toolbar]="toolbar"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
@@ -74,7 +74,7 @@ export class ToolsRegisterComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  controls: KritzelToolbarControl[] = [
+  toolbar: KritzelToolbarControl[] = [
     {
       name: 'select',
       type: 'tool',

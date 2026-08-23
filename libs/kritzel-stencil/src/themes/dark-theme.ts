@@ -82,7 +82,7 @@ export const darkTheme: KritzelTheme = {
     itemHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
   },
 
-  controls: {
+  toolbar: {
     backgroundColor: '#2a2a2a',
     border: '1px solid #3a3a3a',
     boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',

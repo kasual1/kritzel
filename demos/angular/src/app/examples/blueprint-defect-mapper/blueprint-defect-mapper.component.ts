@@ -40,7 +40,7 @@ interface Defect {
           #editorEl
           [themes]="themes"
           [theme]="'light'"
-          [isControlsVisible]="false"
+          [isToolbarVisible]="false"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
           [isPanningEnabled]="false"

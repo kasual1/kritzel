@@ -48,6 +48,6 @@ The core Stencil library follows a structured approach to organize its component
 ### Theming
 Kritzel uses a CSS custom property (CSS variables) based theming system. All themeable properties are defined as `--kritzel-*` CSS variables in component stylesheets.
 
-- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--kritzel-*` variables and automatically generate/update the `KritzelTheme` interface in `src/interfaces/theme.interface.ts`. This groups variables by category (e.g., controls, menu, dialog).
+- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--kritzel-*` variables and automatically generate/update the `KritzelTheme` interface in `src/interfaces/theme.interface.ts`. This groups variables by category (e.g., toolbar, menu, dialog).
 - **Theme Definitions**: Theme presets are defined in `src/themes/` (e.g., `light-theme.ts`, `dark-theme.ts`) and implement the `KritzelTheme` interface.
 - **Adding New Theme Variables**: When adding new CSS variables to components, re-run the generation script and update the theme files accordingly.

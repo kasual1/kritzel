@@ -487,7 +487,7 @@ export function BlueprintDefectMapperPage() {
           themes={[reactThemeLight]}
           isPanningEnabled={false}
           isZoomingEnabled={false}
-          isControlsVisible={false}
+          isToolbarVisible={false}
           isMoreMenuVisible={false}
           isWorkspaceManagerVisible={false}
           onIsReady={() => {

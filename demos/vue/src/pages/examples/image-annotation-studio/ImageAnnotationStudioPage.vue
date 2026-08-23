@@ -168,7 +168,7 @@ async function ensureSeedImage() {
       :themes="themes"
       :scaleMax="10"
       :scaleMin="0.1"
-      :isControlsVisible="false"
+      :isToolbarVisible="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :isUtilityPanelVisible="false"

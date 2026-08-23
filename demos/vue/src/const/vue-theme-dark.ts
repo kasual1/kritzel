@@ -14,8 +14,8 @@ export const vueThemeDark: KritzelTheme = {
     boxBorderColor: 'rgba(66, 184, 131, 0.4)',
     handleStrokeColor: '#42b883',
   },
-  controls: {
-    ...darkTheme.controls,
+  toolbar: {
+    ...darkTheme.toolbar,
     controlHoverBackgroundColor: 'rgba(66, 184, 131, 0.12)',
     controlActiveBackgroundColor: 'rgba(66, 184, 131, 0.18)',
     controlSelectedBackgroundColor: '#42b883',

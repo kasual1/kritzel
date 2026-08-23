@@ -23,11 +23,11 @@ All methods are async and return Promises. The editor exposes all the same metho
 | viewportBoundaryRight | number | Infinity | Right boundary in world coordinates |
 | viewportBoundaryTop | number | -Infinity | Top boundary in world coordinates |
 | viewportBoundaryBottom | number | Infinity | Bottom boundary in world coordinates |
-| controls | KritzelToolbarControl[] | Default toolbar | Toolbar items (selection, brush, line, eraser, text, shape, image, config) |
+| toolbar | KritzelToolbarControl[] | Default toolbar | Toolbar items (selection, brush, line, eraser, text, shape, image, config) |
 | globalContextMenuItems | ContextMenuItem[] | Paste, Select All | Context menu when right-clicking the canvas background |
 | objectContextMenuItems | ContextMenuItem[] | Copy, Paste, Order, Align, Group, Delete | Context menu when right-clicking a selected object |
 | customSvgIcons | Record&lt;string, string&gt; | {} | Custom SVG icon definitions by name |
-| isControlsVisible | boolean | true | Show/hide the toolbar |
+| isToolbarVisible | boolean | true | Show/hide the toolbar |
 | isUtilityPanelVisible | boolean | true | Show/hide the utility panel (undo/redo, zoom) |
 | syncConfig | KritzelSyncConfig | undefined | Sync provider configuration |
 

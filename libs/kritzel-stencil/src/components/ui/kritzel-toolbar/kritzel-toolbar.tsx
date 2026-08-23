@@ -16,16 +16,16 @@ import { KritzelTermKey } from '../../../interfaces/localization.interface';
 type ToolConfig = Record<string, any>;
 
 @Component({
-  tag: 'kritzel-controls',
-  styleUrl: 'kritzel-controls.css',
+  tag: 'kritzel-toolbar',
+  styleUrl: 'kritzel-toolbar.css',
   shadow: true,
   assetsDirs: ['../assets'],
 })
-export class KritzelControls {
+export class KritzelToolbar {
   @Element() host!: HTMLElement;
 
   @Prop() visible: boolean = true;
-  @Prop() controls: KritzelToolbarControl[] = [];
+  @Prop() toolbar: KritzelToolbarControl[] = [];
   @Prop({ mutable: true }) activeControl: KritzelToolbarControl | null = null;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() undoState: KritzelUndoState = null;
@@ -33,7 +33,7 @@ export class KritzelControls {
   /** Resolved localized strings keyed by term key, supplied by the editor. */
   @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
-  @Event() isControlsReady: EventEmitter<void>;
+  @Event() isToolbarReady: EventEmitter<void>;
 
   @State() firstConfig: ToolConfig | null = null;
   @State() isTouchDevice: boolean = KritzelDevicesHelper.isTouchDevice();
@@ -43,7 +43,7 @@ export class KritzelControls {
   @State() needsScrolling: boolean = false;
   @State() displayValues: ToolDisplayValues | null = null;
 
-  @State() internalControls: KritzelToolbarControl[] = [];
+  @State() internalToolbar: KritzelToolbarControl[] = [];
 
   private handleActiveToolChangeBound = this.handleActiveToolChange.bind(this);
   private handleSelectionChangeBound = this.handleSelectionChange.bind(this);
@@ -58,7 +58,7 @@ export class KritzelControls {
   }
 
   async handleActiveToolChange(event: CustomEvent) {
-    this.activeControl = this.internalControls.find(control => control.tool === event.detail) || null;
+    this.activeControl = this.internalToolbar.find(control => control.tool === event.detail) || null;
 
     if (this.activeControl?.tool) {
       this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
@@ -73,8 +73,8 @@ export class KritzelControls {
     }
   }
 
-  @Watch('controls')
-  async onControlsChange() {
+  @Watch('toolbar')
+  async onToolbarChange() {
     if (this.kritzelEngine) {
       await this.initializeTools();
     }
@@ -156,7 +156,7 @@ export class KritzelControls {
   async componentWillLoad() {
     await this.initializeEngine();
     await this.initializeTools();
-    this.isControlsReady.emit();
+    this.isToolbarReady.emit();
   }
 
   componentDidLoad() {
@@ -207,9 +207,9 @@ export class KritzelControls {
 
   private async initializeTools() {
     let hasDefault = false;
-    const newControls = this.controls.map(c => ({ ...c }));
+    const newToolbar = this.toolbar.map(c => ({ ...c }));
 
-    for (const c of newControls) {
+    for (const c of newToolbar) {
       if (c.type === 'tool' && c.tool) {
         let toolConstructor = c.tool;
         if (typeof toolConstructor !== 'function') {
@@ -238,11 +238,11 @@ export class KritzelControls {
       }
     }
 
-    this.internalControls = newControls;
+    this.internalToolbar = newToolbar;
 
     // If no tool is marked as default, activate the first tool control
     if (!hasDefault) {
-      const firstTool = this.internalControls.find(c => c.type === 'tool' && c.tool);
+      const firstTool = this.internalToolbar.find(c => c.type === 'tool' && c.tool);
       if (firstTool) {
         await this.kritzelEngine!.changeActiveTool(firstTool.tool as KritzelBaseTool);
         this.activeControl = firstTool;
@@ -302,8 +302,8 @@ export class KritzelControls {
     const hasConfigUI = activeToolConfig !== null;
 
     // Separate tool controls from config control
-    const toolControls = this.internalControls.filter(c => c.type === 'tool' || c.type === 'separator');
-    const configControl = this.internalControls.find(c => c.type === 'config' && c.name === this.firstConfig?.name);
+    const toolControls = this.internalToolbar.filter(c => c.type === 'tool' || c.type === 'separator');
+    const configControl = this.internalToolbar.find(c => c.type === 'config' && c.name === this.firstConfig?.name);
 
     return (
       <Host
@@ -327,7 +327,7 @@ export class KritzelControls {
           ></kritzel-utility-panel>
         )}
 
-        <div class="kritzel-controls">
+        <div class="kritzel-toolbar">
           {/* Left scroll indicator gradient */}
           <div class={{ 'scroll-indicator-left': true, 'visible': this.canScrollLeft }}></div>
 

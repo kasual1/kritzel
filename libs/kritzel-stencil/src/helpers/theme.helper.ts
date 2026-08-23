@@ -25,7 +25,7 @@ export class ThemeHelper {
    * ThemeHelper.flattenThemeToVariables(lightTheme)
    * // Returns Map {
    * //   '--kritzel-global-pointer-cursor' => 'pointer',
-   * //   '--kritzel-controls-gap' => '8px',
+  * //   '--kritzel-toolbar-gap' => '8px',
    * //   ...
    * // }
    */

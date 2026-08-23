@@ -73,7 +73,6 @@ export * from './interfaces/user.interface';
 export * from './interfaces/theme.interface';
 export * from './interfaces/localization.interface';
 export * from './interfaces/shortcut.interface';
-export * from './interfaces/undo-state.interface';
 export * from './interfaces/share.interface';
 export * from './interfaces/engine-state.interface';
 export * from './interfaces/debug-info.interface';

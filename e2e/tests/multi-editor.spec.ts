@@ -482,22 +482,22 @@ test.describe('Multiple Editors', () => {
     expect(countsB.objects).toBe(1);
   });
 
-  test('restricting the controls list on one editor should not affect the other editor', async ({ page }) => {
+  test('restricting the toolbar on one editor should not affect the other editor', async ({ page }) => {
     await page.evaluate(() => {
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
-      editors[0].controls = editors[0].controls.filter((c: any) => c.name === 'selection' || c.name === 'brush');
+      editors[0].toolbar = editors[0].toolbar.filter((c: any) => c.name === 'selection' || c.name === 'brush');
     });
 
     await page.waitForFunction(() => {
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
-      return editors[0]?.controls?.length === 2;
+      return editors[0]?.toolbar?.length === 2;
     });
 
     const controlNames = await page.evaluate(() => {
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
       return {
-        editor0: (editors[0]?.controls ?? []).map((c: any) => c.name) as string[],
-        editor1: (editors[1]?.controls ?? []).map((c: any) => c.name) as string[],
+        editor0: (editors[0]?.toolbar ?? []).map((c: any) => c.name) as string[],
+        editor1: (editors[1]?.toolbar ?? []).map((c: any) => c.name) as string[],
       };
     });
 
@@ -516,17 +516,17 @@ test.describe('Multiple Editors', () => {
 
     await page.waitForFunction(() => {
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
-      const controlsEl = editors[1]?.querySelector('kritzel-controls') as any;
-      return controlsEl?.isUtilityPanelVisible === false;
+      const toolbarElement = editors[1]?.querySelector('kritzel-toolbar') as any;
+      return toolbarElement?.isUtilityPanelVisible === false;
     });
 
     const panelState = await page.evaluate(() => {
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
-      const controls0 = editors[0]?.querySelector('kritzel-controls') as any;
-      const controls1 = editors[1]?.querySelector('kritzel-controls') as any;
+      const toolbar0 = editors[0]?.querySelector('kritzel-toolbar') as any;
+      const toolbar1 = editors[1]?.querySelector('kritzel-toolbar') as any;
       return {
-        editor0UtilityPanelVisible: controls0?.isUtilityPanelVisible as boolean,
-        editor1UtilityPanelVisible: controls1?.isUtilityPanelVisible as boolean,
+        editor0UtilityPanelVisible: toolbar0?.isUtilityPanelVisible as boolean,
+        editor1UtilityPanelVisible: toolbar1?.isUtilityPanelVisible as boolean,
       };
     });
 

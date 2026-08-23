@@ -65,12 +65,12 @@ npm run test
 --kritzel-<category>-<property-name>
 ```
 
-- Category = component or domain (e.g., `controls`, `menu`, `selection-box`)
+- Category = component or domain (e.g., `toolbar`, `menu`, `selection-box`)
 - Property = camelCase when in TypeScript, kebab-case in CSS
 
 Examples:
-- `--kritzel-controls-background-color` → `controls.backgroundColor`
-- `--kritzel-selection-box-border-color` → `selection.boxBorderColor`
+- `--kritzel-toolbar-background-color` â†’ `toolbar.backgroundColor`
+- `--kritzel-selection-box-border-color` â†’ `selection.boxBorderColor`
 
 ## Category Detection
 
@@ -79,7 +79,7 @@ The generator groups variables by matching known category prefixes (longest matc
 ## How Themes Are Applied
 
 1. `KritzelThemeManager` holds a registry of `KritzelTheme` objects
-2. `ThemeHelper.flattenThemeToVariables(theme)` converts the nested theme object to a flat `Record<string, string>` of CSS variable names → values
+2. `ThemeHelper.flattenThemeToVariables(theme)` converts the nested theme object to a flat `Record<string, string>` of CSS variable names â†’ values
 3. `ThemeHelper.applyVariablesToElement(vars, element)` writes them as inline styles on the host element
 4. Components read variables via `var(--kritzel-*, fallback)` in their CSS
 
@@ -102,7 +102,7 @@ Resolved at render time via `KritzelColorHelper.resolveThemeColor(color, current
 
 - Always provide a fallback in `var()` declarations
 - Prefix ALL custom properties with `--kritzel-`
-- Never hardcode colors in components — always use CSS variables
+- Never hardcode colors in components â€” always use CSS variables
 - Keep light and dark theme presets in sync (same keys)
 - When switching themes, remove variables applied by the previous theme that are absent from the next theme; partial custom themes must not inherit stale values
 - Run the generator after adding/removing variables

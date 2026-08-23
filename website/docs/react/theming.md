@@ -33,7 +33,7 @@ editor.addEventListener('themeChange', (event) => {
 | Token | Value |
 |-------|-------|
 | Engine background | `#ffffff` |
-| Controls background | `#ffffff` |
+| toolbar background | `#ffffff` |
 | Selected control | `#007AFF` |
 | Primary text | `#000000` |
 | Border | `#ebebeb` |
@@ -45,7 +45,7 @@ editor.addEventListener('themeChange', (event) => {
 | Token | Value |
 |-------|-------|
 | Engine background | `#1a1a1a` |
-| Controls background | `#2a2a2a` |
+| toolbar background | `#2a2a2a` |
 | Selected control | `#0A84FF` |
 | Primary text | `#ffffff` |
 | Border | `#3a3a3a` |
@@ -84,6 +84,6 @@ The `KritzelTheme` interface defines CSS variables for every component section. 
 import { lightTheme, darkTheme } from 'kritzel-stencil';
 ```
 
-Theme sections include: `global`, `engine`, `controls`, `selection`, `dialog`, `contextMenu`, `utilityPanel`, `tooltip`, `menu`, `dropdown`, `portal`, `settings`, `splitButton`, `moreMenu`, and more.
+Theme sections include: `global`, `engine`, `toolbar`, `selection`, `dialog`, `contextMenu`, `utilityPanel`, `tooltip`, `menu`, `dropdown`, `portal`, `settings`, `splitButton`, `moreMenu`, and more.
 
 Each section contains granular color tokens (background, text, border, hover states, etc.) that map to CSS custom properties on the component host elements.

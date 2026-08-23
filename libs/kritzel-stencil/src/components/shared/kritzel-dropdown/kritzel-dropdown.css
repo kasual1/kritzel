@@ -104,7 +104,7 @@
   background-color: var(--kritzel-dropdown-background, #ffffff);
   border: 1px solid var(--kritzel-global-border-color, #ebebeb);
   border-radius: var(--kritzel-dropdown-menu-border-radius, var(--kritzel-dropdown-border-radius, 6px));
-  box-shadow: var(--kritzel-controls-box-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
+  box-shadow: var(--kritzel-toolbar-box-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
   z-index: 1000;
   max-height: 240px;
   overflow-y: auto;
@@ -139,7 +139,7 @@
 
 /* Adjust box shadow for upward opening */
 .dropdown-menu.open-up {
-  box-shadow: var(--kritzel-controls-box-shadow, 0 -4px 12px rgba(0, 0, 0, 0.15));
+  box-shadow: var(--kritzel-toolbar-box-shadow, 0 -4px 12px rgba(0, 0, 0, 0.15));
 }
 
 .dropdown-option {

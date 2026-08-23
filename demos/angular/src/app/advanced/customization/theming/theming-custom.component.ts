@@ -40,8 +40,8 @@ const brandedPurpleFlatTheme = {
     selectedBackgroundColor: '#f2e9ff',
     circleBorderColor: '#e1d2ff',
   },
-  controls: {
-    ...lightTheme.controls,
+  toolbar: {
+    ...lightTheme.toolbar,
     backgroundColor: '#f8f2ff',
     border: '1px solid #e1d2ff',
     borderRadius: '0px',

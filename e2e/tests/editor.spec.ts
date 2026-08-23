@@ -19,8 +19,8 @@ test.describe('Editor', () => {
     await editorPage.goto();
     await editorPage.waitForReady();
 
-    await editorPage.setProps({ isControlsVisible: false });
-    const visible = await editorPage.getProp<boolean>('isControlsVisible');
+    await editorPage.setProps({ isToolbarVisible: false });
+    const visible = await editorPage.getProp<boolean>('isToolbarVisible');
 
     expect(visible).toBe(false);
   });
@@ -185,55 +185,55 @@ test.describe('Editor', () => {
     await expect(editorPage.engine).toHaveScreenshot('Editor-zoom-panel-zoom-out.png', { timeout: 1000 });
   });
 
-  test('controls fit inside the editor when it spans the full viewport', async ({ editorPage, page }) => {
+  test('toolbar fits inside the editor when it spans the full viewport', async ({ editorPage, page }) => {
     await editorPage.goto();
     await editorPage.waitForReady();
 
-    await editorPage.controls.waitFor({ state: 'visible' });
+    await editorPage.toolbar.waitFor({ state: 'visible' });
     await editorPage.activateTool('brush');
 
     const viewport = page.viewportSize();
     const editorBox = await editorPage.editor.boundingBox();
-    const controlsBox = await editorPage.controls.boundingBox();
+    const toolbarBox = await editorPage.toolbar.boundingBox();
 
     expect(viewport).not.toBeNull();
     expect(editorBox).not.toBeNull();
-    expect(controlsBox).not.toBeNull();
+    expect(toolbarBox).not.toBeNull();
 
     // Editor spans the viewport.
     expect(editorBox!.width).toBeCloseTo(viewport!.width, 0);
 
-    // Controls fit horizontally inside the editor.
-    expect(controlsBox!.width).toBeLessThanOrEqual(editorBox!.width);
-    expect(controlsBox!.x).toBeGreaterThanOrEqual(editorBox!.x);
-    expect(controlsBox!.x + controlsBox!.width).toBeLessThanOrEqual(editorBox!.x + editorBox!.width + 1);
+    // Toolbar fits horizontally inside the editor.
+    expect(toolbarBox!.width).toBeLessThanOrEqual(editorBox!.width);
+    expect(toolbarBox!.x).toBeGreaterThanOrEqual(editorBox!.x);
+    expect(toolbarBox!.x + toolbarBox!.width).toBeLessThanOrEqual(editorBox!.x + editorBox!.width + 1);
 
     await expect(page).toHaveScreenshot('Editor-controls-fullscreen.png', { fullPage: true });
   });
 
-  test('controls fit inside the editor when wrapped in a narrow container', async ({ editorPage, page }) => {
+  test('toolbar fits inside the editor when wrapped in a narrow container', async ({ editorPage, page }) => {
     const WRAPPER_WIDTH = 320;
     const WRAPPER_HEIGHT = 600;
 
     await editorPage.goto(`/e2e/wrapped-editor?width=${WRAPPER_WIDTH}&height=${WRAPPER_HEIGHT}`);
     await editorPage.waitForReady();
 
-    await editorPage.controls.waitFor({ state: 'visible' });
+    await editorPage.toolbar.waitFor({ state: 'visible' });
     await editorPage.activateTool('brush');
 
     const editorBox = await editorPage.editor.boundingBox();
-    const controlsBox = await editorPage.controls.boundingBox();
+    const toolbarBox = await editorPage.toolbar.boundingBox();
 
     expect(editorBox).not.toBeNull();
-    expect(controlsBox).not.toBeNull();
+    expect(toolbarBox).not.toBeNull();
 
     // Editor fills the wrapper content box (wrapper width minus 2 * 4px border).
     expect(Math.round(editorBox!.width)).toBe(WRAPPER_WIDTH - 8);
 
-    // Controls must not be wider than the editor and must stay within its bounds.
-    expect(controlsBox!.width).toBeLessThanOrEqual(editorBox!.width);
-    expect(controlsBox!.x).toBeGreaterThanOrEqual(editorBox!.x - 1);
-    expect(controlsBox!.x + controlsBox!.width).toBeLessThanOrEqual(editorBox!.x + editorBox!.width + 1);
+    // Toolbar must not be wider than the editor and must stay within its bounds.
+    expect(toolbarBox!.width).toBeLessThanOrEqual(editorBox!.width);
+    expect(toolbarBox!.x).toBeGreaterThanOrEqual(editorBox!.x - 1);
+    expect(toolbarBox!.x + toolbarBox!.width).toBeLessThanOrEqual(editorBox!.x + editorBox!.width + 1);
 
     await expect(page).toHaveScreenshot('Editor-controls-wrapped.png', { fullPage: true });
   });
@@ -242,7 +242,7 @@ test.describe('Editor', () => {
     await editorPage.goto();
     await editorPage.waitForReady();
 
-    // Open the more-menu (⋮ button) inside the editor's shadow DOM.
+    // Open the more-menu (â‹® button) inside the editor's shadow DOM.
     await page.getByTestId('more-menu-button').click();
 
     // Click the Settings item in the dropdown.
@@ -266,7 +266,7 @@ test.describe('Editor', () => {
     await editorPage.goto(`/e2e/wrapped-editor?width=${WRAPPER_WIDTH}&height=${WRAPPER_HEIGHT}`);
     await editorPage.waitForReady();
 
-    // Open the more-menu (⋮ button) inside the editor's shadow DOM.
+    // Open the more-menu (â‹® button) inside the editor's shadow DOM.
     await page.getByTestId('more-menu-button').click();
 
     // Click the Settings item in the dropdown.
@@ -293,7 +293,7 @@ test.describe('Editor', () => {
     await editorPage.goto(`/e2e/wrapped-editor?width=${WRAPPER_WIDTH}&height=${WRAPPER_HEIGHT}`);
     await editorPage.waitForReady();
 
-    // Open the more-menu (⋮ button) inside the editor's shadow DOM.
+    // Open the more-menu (â‹® button) inside the editor's shadow DOM.
     await page.getByTestId('more-menu-button').click();
 
     // Click the Settings item in the dropdown.

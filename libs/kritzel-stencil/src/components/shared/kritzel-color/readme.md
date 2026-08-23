@@ -19,15 +19,15 @@
 ### Used by
 
  - [kritzel-color-palette](../kritzel-color-palette)
- - [kritzel-controls](../../ui/kritzel-controls)
  - [kritzel-stroke-size](../kritzel-stroke-size)
+ - [kritzel-toolbar](../../ui/kritzel-toolbar)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-color-palette --> kritzel-color
-  kritzel-controls --> kritzel-color
   kritzel-stroke-size --> kritzel-color
+  kritzel-toolbar --> kritzel-color
   style kritzel-color fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

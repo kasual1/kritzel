@@ -18,7 +18,7 @@ const CSS_VARIABLE_PATTERN = /--kritzel-([a-zA-Z0-9-]+)/g;
 const KNOWN_CATEGORIES = [
   'engine',
   'snap',
-  'controls',
+  'toolbar',
   'tooltip',
   'context-menu',
   'menu',

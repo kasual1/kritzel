@@ -363,7 +363,7 @@ function statusClass(status: DefectStatus): string {
         editorId="blueprint-defect-mapper"
         theme="light"
         :themes="[vueThemeLight]"
-        :isControlsVisible="false"
+        :isToolbarVisible="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :isPanningEnabled="false"

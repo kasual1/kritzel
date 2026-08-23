@@ -127,24 +127,6 @@ export interface KritzelTheme {
     padding?: string;
   };
 
-  /** Controls variables */
-  controls?: {
-    backgroundColor?: string;
-    border?: string;
-    borderRadius?: string;
-    boxShadow?: string;
-    controlActiveBackgroundColor?: string;
-    controlBorderRadius?: string;
-    controlColor?: string;
-    controlHoverBackgroundColor?: string;
-    controlPadding?: string;
-    controlSelectedBackgroundColor?: string;
-    controlSelectedColor?: string;
-    gap?: string;
-    padding?: string;
-    separatorColor?: string;
-  };
-
   /** Current user dialog variables */
   currentUserDialog?: {
     emailColor?: string;
@@ -205,10 +187,6 @@ export interface KritzelTheme {
 
   /** Editor variables */
   editor?: {
-    controlsBottom?: string;
-    controlsTransform?: string;
-    controlsTransition?: string;
-    controlsTransitionDuration?: string;
     loadingOverlayBackground?: string;
     loadingOverlayColor?: string;
     loadingOverlayDelay?: string;
@@ -224,6 +202,10 @@ export interface KritzelTheme {
     syncIndicatorSpinnerColor?: string;
     syncIndicatorSpinnerTrack?: string;
     syncIndicatorZIndex?: string;
+    toolbarBottom?: string;
+    toolbarTransform?: string;
+    toolbarTransition?: string;
+    toolbarTransitionDuration?: string;
     topCenterNotificationTop?: string;
     topCenterNotificationZIndex?: string;
     topLeftButtonsLeft?: string;
@@ -544,6 +526,24 @@ export interface KritzelTheme {
     suffixBackground?: string;
     suffixColor?: string;
     textColor?: string;
+  };
+
+  /** Toolbar variables */
+  toolbar?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    controlActiveBackgroundColor?: string;
+    controlBorderRadius?: string;
+    controlColor?: string;
+    controlHoverBackgroundColor?: string;
+    controlPadding?: string;
+    controlSelectedBackgroundColor?: string;
+    controlSelectedColor?: string;
+    gap?: string;
+    padding?: string;
+    separatorColor?: string;
   };
 
   /** Tooltip variables */

@@ -37,7 +37,7 @@ export const vueThemeLight: KritzelTheme = {
     itemActiveBackgroundColor: 'rgba(66, 184, 131, 0.12)',
     itemDisabledColor: '#aaaaaa',
   },
-  controls: {
+  toolbar: {
     boxShadow: '0 0 3px rgba(0, 0, 0, 0.08)',
     border: '1px solid #ebebeb',
     borderRadius: '16px',
