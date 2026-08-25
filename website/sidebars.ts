@@ -63,7 +63,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Api Reference',
       collapsed: true,
-      items: ['api-reference-editor', 'api-reference-engine', 'types'],
+      items: ['api-reference-editor', 'api-reference-engine'],
     }
   ],
 };
