@@ -1,4 +1,3 @@
-import "./App.css";
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { EditorPage } from "./pages/e2e/EditorPage";
 import { EditorHocuspocusPage } from "./pages/e2e/EditorHocuspocusPage";
