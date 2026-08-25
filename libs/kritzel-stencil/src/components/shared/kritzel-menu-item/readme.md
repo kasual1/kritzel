@@ -34,14 +34,12 @@
 
 - [kritzel-icon](../kritzel-icon)
 - [kritzel-portal](../kritzel-portal)
-- [kritzel-menu](../kritzel-menu)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-menu-item --> kritzel-icon
   kritzel-menu-item --> kritzel-portal
-  kritzel-menu-item --> kritzel-menu
   kritzel-menu --> kritzel-menu-item
   style kritzel-menu-item fill:#f9f,stroke:#333,stroke-width:4px
 ```

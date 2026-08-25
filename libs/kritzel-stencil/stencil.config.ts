@@ -28,7 +28,6 @@ const INTERNAL_COMPONENTS = [
   'kritzel-current-user',
   'kritzel-more-menu',
   'kritzel-avatar',
-  'kritzel-active-users',
   'kritzel-share-dialog',
   'kritzel-slide-toggle',
   'kritzel-shape-fill'

@@ -98,6 +98,8 @@ export class KritzelMenuItem {
   };
 
   private renderViewMode() {
+    const childMenuTag = ['kritzel', 'menu'].join('-');
+
     return [
       <div class="menu-item-content left">
         {this.item.icon && (
@@ -114,14 +116,14 @@ export class KritzelMenuItem {
               <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
             </button>,
             <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4} onClose={this.handleMenuClose}>
-              <kritzel-menu
-                items={this.item.children}
-                parent={this.item}
-                onItemSelect={event => this.itemSelect.emit(event.detail)}
-                onItemSave={event => this.itemSave.emit(event.detail)}
-                onItemCancel={event => this.itemCancel.emit(event.detail)}
-                onClose={this.handleMenuClose}
-              ></kritzel-menu>
+              {h(childMenuTag, {
+                items: this.item.children,
+                parent: this.item,
+                onItemSelect: event => this.itemSelect.emit(event.detail),
+                onItemSave: event => this.itemSave.emit(event.detail),
+                onItemCancel: event => this.itemCancel.emit(event.detail),
+                onClose: this.handleMenuClose,
+              })}
             </kritzel-portal>,
           ]}
       </div>,

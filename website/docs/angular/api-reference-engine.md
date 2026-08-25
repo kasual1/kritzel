@@ -1,78 +1,32 @@
----
+﻿---
 
 sidebar_label: Engine
 displayed_sidebar: tutorialSidebar
 title: "Engine API Reference | Kritzel for Angular"
 description: "Complete API reference for the headless Kritzel engine: rendering, viewport, pointer events, and workspace management."
+toc_max_heading_level: 2
 ---
 
 # Engine
 
 The `<kritzel-engine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in UI chrome.
 
-## Props
+## Object
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `activeWorkspaceId` | `string` | Optional workspace ID to load. If provided, the engine will automatically load this workspace by ID. |
-| `assetStorageConfig` | `KritzelAssetStorageConfig` | Asset storage configuration for images and binary data. |
-| `cursorTarget` | `HTMLElement` | Element to apply cursor styles to. Defaults to engine container. |
-| `debugInfo` | `KritzelDebugInfo` | Debug overlay configuration options. |
-| `editorId` | `string` | Optional unique identifier for namespacing storage keys across multiple engine instances. |
-| `fallbackLocale` | `"de" | "en" | "fr" | string & {}` | The locale used to resolve terms missing from the active locale. |
-| `globalContextMenuItems` | `ContextMenuItem[]` | Context menu items for canvas background. |
-| `isLoading` | `boolean` | External loading state. Combined with internal workspace-loading state to drive the overlay. |
-| `isObjectDistanceFadingActive` | `boolean` | When true, objects fade based on distance to the viewport center. |
-| `isPanningEnabled` | `boolean` | Enable or disable viewport panning via regular wheel input. |
-| `isZoomingEnabled` | `boolean` | Enable or disable viewport zooming via Ctrl+wheel. |
-| `licenseKey` | `string` | License key that, when valid, removes the "Powered by Kritzel" watermark. |
-| `locale` | `"de" | "en" | "fr" | string & {}` | Current active locale code (e.g. 'en', 'de', 'fr'). |
-| `locales` | `KritzelLocale[]` | Array of available locale definitions (with optional partial term overrides). |
-| `lockDrawingScale` | `boolean` | When true, objects are drawn at a fixed visual size regardless of zoom. |
-| `objectContextMenuItems` | `ContextMenuItem[]` | Context menu items for selected objects. |
-| `scaleMax` | `number` | Maximum zoom scale allowed. |
-| `scaleMin` | `number` | Minimum zoom scale allowed. |
-| `syncConfig` | `KritzelSyncConfig` | Real-time collaboration sync provider configuration. |
-| `theme` | `"dark" | "light" | string & {}` | Current active theme. |
-| `themes` | `KritzelTheme[]` | Array of available themes. |
-| `user` | `IKritzelUser` | The current user for awareness broadcasting (name, id, cursor position). |
-| `viewportBoundaryBottom` | `number` | Bottom pan boundary in world coordinates. |
-| `viewportBoundaryLeft` | `number` | Left pan boundary in world coordinates. |
-| `viewportBoundaryRight` | `number` | Right pan boundary in world coordinates. |
-| `viewportBoundaryTop` | `number` | Top pan boundary in world coordinates. |
-| `workspace` | `KritzelWorkspace` | The active workspace to load and display. Changing this prop switches the active workspace. |
+### Props
 
-## Events
+No object-specific props.
+
+### Events
 
 | Event | Payload Type | Description |
-|-------|-------------|-------------|
-| `activeToolChange` | `KritzelBaseTool` | Emitted when the active drawing tool changes. |
-| `activeWorkspaceChange` | `KritzelWorkspace` | Emitted when the active workspace changes. |
-| `awarenessChange` | `Map<number, Record<string, any>>` | Emitted when collaborative awareness states change. |
-| `contextMenuStateChange` | `KritzelContextMenuState` | Emitted when context-menu visibility, items, or position changes. |
-| `isEngineReady` | `KritzelEngineState` | Emitted when the engine is fully initialized and ready. |
-| `loadingChange` | `boolean` | Emitted when the combined loading state changes. |
-| `longpress` | `PointerEvent` | Emitted on long-press (useful for mobile context menus). |
-| `notificationsChange` | `KritzelNotification` | Emitted when notifications change. |
-| `objectsAdded` | `ObjectsAddedEvent` | Emitted when one or more objects are added to the canvas. |
-| `objectsChange` | `KritzelBaseObject[]` | Emitted when objects on the canvas are added, removed, or modified. |
-| `objectsInViewportChange` | `ObjectsInViewportChangeEvent` | Emitted when visible objects change (after pan/zoom). |
-| `objectsRemoved` | `ObjectsRemovedEvent` | Emitted when one or more objects are removed from the canvas. |
-| `objectsSelectionChange` | `void` | Emitted when the set of selected objects changes. |
-| `objectsUpdated` | `ObjectsUpdatedEvent` | Emitted when one or more objects are updated on the canvas. |
-| `syncingChange` | `boolean` | Emitted when remote workspace synchronization status changes. |
-| `undoStateChange` | `KritzelUndoState` | Emitted when undo/redo availability changes. |
-| `viewportChange` | `KritzelViewportState` | Emitted on viewport pan, zoom, or resize. |
-| `workspacesChange` | `KritzelWorkspace[]` | Emitted when workspaces are created, updated, or deleted. |
+|-------|--------------|-------------|
+| objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. |
+| objectsChange | KritzelBaseObject[] | Emitted when objects on the canvas are added, removed, or modified. |
+| objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. |
+| objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. |
 
----
-
-## Methods
-
-All methods are async and return Promises.
-
-
-### Object
+### Methods
 
 #### addObject
 
@@ -156,7 +110,19 @@ getObjectsInViewport(): Promise<KritzelBaseObject[]>
 
 ---
 
-### Selection
+## Selection
+
+### Props
+
+No selection-specific props.
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| objectsSelectionChange | void | Emitted when the set of selected objects changes. |
+
+### Methods
 
 #### getSelectedObjects
 
@@ -200,7 +166,29 @@ triggerSelectionChange(): Promise<void>
 
 ---
 
-### Viewport & Navigation
+## Viewport & Navigation
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| isPanningEnabled | boolean | Enable or disable viewport panning via regular wheel input. |
+| isZoomingEnabled | boolean | Enable or disable viewport zooming via Ctrl+wheel. |
+| scaleMax | number | Maximum zoom scale allowed. |
+| scaleMin | number | Minimum zoom scale allowed. |
+| viewportBoundaryBottom | number | Bottom pan boundary in world coordinates. |
+| viewportBoundaryLeft | number | Left pan boundary in world coordinates. |
+| viewportBoundaryRight | number | Right pan boundary in world coordinates. |
+| viewportBoundaryTop | number | Top pan boundary in world coordinates. |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| viewportChange | KritzelViewportState | Emitted on viewport pan, zoom, or resize. |
+| objectsInViewportChange | KritzelBaseObject[] | Emitted when the set of objects visible in the current viewport changes (for example after pan/zoom). |
+
+### Methods
 
 #### getViewport
 
@@ -308,7 +296,29 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 
 ---
 
-### Workspace
+## Workspace
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| activeWorkspaceId | string | Optional workspace ID to load. If provided, the engine automatically loads this workspace by ID. |
+| workspace | KritzelWorkspace | Active workspace to load and display. |
+| syncConfig | KritzelSyncConfig | Configuration for real-time synchronization providers (for example IndexedDB/WebSocket). |
+| user | IKritzelUser | Current user for awareness broadcasting (name, id, cursor position). |
+| isLoading | boolean | External loading state merged with internal workspace loading state. |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| activeWorkspaceChange | KritzelWorkspace | Emitted when the active workspace changes (for example after import or switching workspaces). |
+| workspacesChange | KritzelWorkspace[] | Emitted when workspaces are created, updated, or deleted. |
+| awarenessChange | AwarenessStateMap | Emitted when awareness state changes (remote user cursors/presence). |
+| syncingChange | boolean | Emitted when remote workspace synchronization status changes. |
+| loadingChange | boolean | Emitted when the combined loading state changes (external isLoading or internal workspace loading). |
+
+### Methods
 
 #### createWorkspace
 
@@ -376,7 +386,19 @@ reinitSync(): Promise<void>
 
 ---
 
-### Tool Management
+## Tool Management
+
+### Props
+
+No tool-specific props.
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| activeToolChange | KritzelBaseTool | Emitted when the active drawing tool changes. |
+
+### Methods
 
 #### registerTool
 
@@ -424,7 +446,17 @@ enable(): Promise<void>
 
 ---
 
-### Clipboard & Editing
+## Clipboard & Editing
+
+### Props
+
+No clipboard/editing-specific props.
+
+### Events
+
+No clipboard/editing-specific events.
+
+### Methods
 
 #### copy
 
@@ -460,7 +492,17 @@ delete(): Promise<void>
 
 ---
 
-### Ordering
+## Ordering
+
+### Props
+
+No ordering-specific props.
+
+### Events
+
+No ordering-specific events.
+
+### Methods
 
 #### bringForward
 
@@ -496,7 +538,17 @@ sendToBack(object?: KritzelBaseObject): Promise<void>
 
 ---
 
-### Alignment
+## Alignment
+
+### Props
+
+No alignment-specific props.
+
+### Events
+
+No alignment-specific events.
+
+### Methods
 
 #### alignObjects
 
@@ -510,7 +562,17 @@ Alignment values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `Start
 
 ---
 
-### Grouping
+## Grouping
+
+### Props
+
+No grouping-specific props.
+
+### Events
+
+No grouping-specific events.
+
+### Methods
 
 #### group
 
@@ -530,7 +592,19 @@ ungroup(): Promise<void>
 
 ---
 
-### Undo & Redo
+## Undo & Redo
+
+### Props
+
+No undo/redo-specific props.
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| undoStateChange | KritzelUndoState | Emitted when undo/redo availability changes. |
+
+### Methods
 
 #### undo
 
@@ -550,7 +624,17 @@ redo(): Promise<void>
 
 ---
 
-### Export & Import
+## Export & Import
+
+### Props
+
+No export/import-specific props.
+
+### Events
+
+No export/import-specific events.
+
+### Methods
 
 #### getScreenshot
 
@@ -642,7 +726,23 @@ importFromFile(): Promise<void>
 
 ---
 
-### Localization & Settings
+## Localization & Settings
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| fallbackLocale | LocaleCode | Locale used to resolve terms missing from the active locale. |
+| locale | LocaleCode | Current locale (language) code applied to the editor, for example en, de, fr. |
+| locales | KritzelLocale[] | Available locale definitions with optional partial term overrides. |
+| theme | ThemeCode | Current theme applied to the editor. |
+| themes | KritzelTheme[] | Available themes for the editor. |
+
+### Events
+
+No localization/settings-specific events.
+
+### Methods
 
 #### registerLocales
 
@@ -718,7 +818,32 @@ loadSettings(): Promise<Partial<KritzelSettingsConfig> | null>
 
 ---
 
-### Context Menu & Lifecycle
+## Context Menu & Lifecycle
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| assetStorageConfig | KritzelAssetStorageConfig | Configuration for binary asset storage providers (for example image bytes and remote asset sync). |
+| cursorTarget | HTMLElement | HTML element to apply cursor styles to. Defaults to document.body if not set. |
+| debugInfo | KritzelDebugInfo | Controls which debug overlays are visible. |
+| editorId | string | Optional unique identifier for namespacing storage keys across multiple engine instances. |
+| globalContextMenuItems | ContextMenuItem[] | Context menu items shown when right-clicking the canvas background. |
+| isObjectDistanceFadingActive | boolean | When true, objects fade based on distance to the viewport center. |
+| licenseKey | string | Valid key removes the Powered by Kritzel watermark. |
+| lockDrawingScale | boolean | Keep drawn objects at a fixed visual size regardless of zoom. |
+| objectContextMenuItems | ContextMenuItem[] | Context menu items shown when right-clicking selected objects. |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| contextMenuStateChange | KritzelContextMenuState | Emitted when context-menu visibility, items, or position changes. |
+| isEngineReady | KritzelEngineState | Emitted when the engine has fully initialized and is ready for interaction. |
+| longpress | PointerEvent | Emitted on long-press (touch/pen), useful for showing custom context menus on mobile. |
+| notificationsChange | KritzelNotification | Emitted when notifications change. |
+
+### Methods
 
 #### openContextMenu
 

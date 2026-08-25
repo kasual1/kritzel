@@ -79,7 +79,6 @@ graph TD;
   kritzel-menu --> kritzel-menu-item
   kritzel-menu-item --> kritzel-icon
   kritzel-menu-item --> kritzel-portal
-  kritzel-menu-item --> kritzel-menu
   kritzel-editor --> kritzel-more-menu
   style kritzel-more-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```

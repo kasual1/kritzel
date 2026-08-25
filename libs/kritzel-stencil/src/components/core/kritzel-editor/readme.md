@@ -1171,7 +1171,6 @@ graph TD;
   kritzel-menu --> kritzel-menu-item
   kritzel-menu-item --> kritzel-icon
   kritzel-menu-item --> kritzel-portal
-  kritzel-menu-item --> kritzel-menu
   kritzel-back-to-content --> kritzel-icon
   kritzel-notification-card --> kritzel-icon
   kritzel-context-menu --> kritzel-icon

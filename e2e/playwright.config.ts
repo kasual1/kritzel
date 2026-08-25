@@ -5,6 +5,18 @@ const REACT_PORT = 5173;
 const VUE_PORT = 5174;
 
 const E2E_PROJECT = process.env.E2E_PROJECT;
+const SELECTED_PROJECTS = new Set(
+  [
+    ...(E2E_PROJECT ? E2E_PROJECT.split(',') : []),
+    ...process.argv.flatMap((argument, index, argumentsList) => {
+      if (argument.startsWith('--project=')) {
+        return [argument.slice('--project='.length)];
+      }
+
+      return argument === '--project' && argumentsList[index + 1] ? [argumentsList[index + 1]] : [];
+    }),
+  ].filter(Boolean),
+);
 
 export default defineConfig({
   testDir: './tests',
@@ -77,6 +89,6 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
-  ].filter(({ project }) => !E2E_PROJECT || project === E2E_PROJECT)
+  ].filter(({ project }) => SELECTED_PROJECTS.size === 0 || SELECTED_PROJECTS.has(project))
    .map(({ project: _, ...server }) => server),
 });
