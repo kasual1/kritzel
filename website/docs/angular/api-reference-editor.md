@@ -10,6 +10,35 @@ toc_max_heading_level: 2
 
 The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It wraps `<kritzel-engine>` and adds a toolbar, utility panel, context menus, dialogs, and workspace management.
 
+## General
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| activeUsers | IKritzelUser[] | Other users currently in the session. |
+| isLoading | boolean | Whether the editor is currently in a loading state. |
+| syncConfig | KritzelSyncConfig | Real-time collaboration provider configuration. |
+| user | IKritzelUser | Current authenticated user for awareness/collaboration state. |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| awarenessChange | AwarenessStateMap | Emitted when collaborative awareness state changes. |
+
+### Methods
+
+#### reinitSync
+
+Reinitializes the active synchronization provider connection.
+
+```ts
+reinitSync(): Promise<void>
+```
+
+---
+
 ## Object
 
 ### Props
@@ -298,18 +327,13 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 
 | Property | Type | Description |
 |----------|------|-------------|
-| activeUsers | IKritzelUser[] | Other users currently in the session. |
 | activeWorkspaceId | string | Optional workspace ID to set as active. If provided, the editor auto-activates that workspace. |
-| isLoading | boolean | Whether the editor is currently in a loading state. |
-| syncConfig | KritzelSyncConfig | Real-time collaboration provider configuration. |
-| user | IKritzelUser | Current authenticated user for awareness/collaboration state. |
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
 | activeWorkspaceChange | ActiveWorkspaceChangeEvent | Emitted when the active workspace changes. |
-| awarenessChange | AwarenessStateMap | Emitted when collaborative awareness state changes. |
 | isPublicChange | IKritzelIsPublicChangedEvent | Emitted when workspace public sharing status toggles. |
 
 ### Methods
@@ -360,14 +384,6 @@ Loads a workspace shared externally using a secure access token.
 
 ```ts
 loadSharedWorkspace(token: string): Promise<void>
-```
-
-#### reinitSync
-
-Reinitializes the active synchronization provider connection.
-
-```ts
-reinitSync(): Promise<void>
 ```
 
 ---
