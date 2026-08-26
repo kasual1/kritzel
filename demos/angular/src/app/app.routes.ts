@@ -1,8 +1,4 @@
 import { Routes } from '@angular/router';
-import { EditorPageComponent } from './e2e/editor-page.component';
-import { EditorHocuspocusPageComponent } from './e2e/editor-hocuspocus-page.component';
-import { MultiEditorPageComponent } from './e2e/multi-editor-page.component';
-import { WrappedEditorPageComponent } from './e2e/wrapped-editor-page.component';
 import { QuickStartComponent } from './getting-started/quick-start.component';
 import { BasicUsageComponent } from './getting-started/basic-usage.component';
 import { ComponentsEditorComponent } from './fundamentals/components/components-editor.component';
@@ -48,16 +44,7 @@ import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-galle
 import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio.component';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
-  {
-    path: 'e2e',
-    children: [
-      { path: 'editor', component: EditorPageComponent },
-      { path: 'editor-hocuspocus', component: EditorHocuspocusPageComponent },
-      { path: 'multi-editor', component: MultiEditorPageComponent },
-      { path: 'wrapped-editor', component: WrappedEditorPageComponent },
-    ],
-  },
+  { path: '', pathMatch: 'full', redirectTo: 'getting-started/quick-start' },
   {
     path: 'getting-started',
     children: [
@@ -180,5 +167,5 @@ export const routes: Routes = [
       { path: 'image-annotation-studio', component: ImageAnnotationStudioComponent },
     ],
   },
-  { path: '**', redirectTo: 'e2e/editor' },
+  { path: '**', redirectTo: 'getting-started/quick-start' },
 ];

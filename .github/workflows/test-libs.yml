@@ -108,7 +108,12 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run e2e tests (${{ matrix.project }})
+      - name: Run functional e2e tests (${{ matrix.project }})
+        run: npx playwright test --config=e2e/playwright.config.ts --project=e2e-${{ matrix.project }}
+        env:
+          E2E_PROJECT: e2e-${{ matrix.project }}
+
+      - name: Run visual regression tests (${{ matrix.project }})
         run: npx playwright test --config=e2e/playwright.config.ts --project=${{ matrix.project }}
         env:
           E2E_PROJECT: ${{ matrix.project }}

@@ -1,8 +1,4 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import EditorPage from './pages/e2e/EditorPage.vue'
-import EditorHocuspocusPage from './pages/e2e/EditorHocuspocusPage.vue'
-import MultiEditorPage from './pages/e2e/MultiEditorPage.vue'
-import WrappedEditorPage from './pages/e2e/WrappedEditorPage.vue'
 import QuickStartPage from './pages/getting-started/QuickStartPage.vue'
 import BasicUsagePage from './pages/getting-started/BasicUsagePage.vue'
 import ComponentsEditorPage from './pages/fundamentals/components/ComponentsEditorPage.vue'
@@ -50,16 +46,7 @@ import ImageAnnotationStudioPage from './pages/examples/ImageAnnotationStudioPag
 export const router = createRouter({
   history: createWebHashHistory(),
   routes: [
-    { path: '/', redirect: '/e2e/editor' },
-    {
-      path: '/e2e',
-      children: [
-        { path: 'editor', component: EditorPage },
-        { path: 'editor-hocuspocus', component: EditorHocuspocusPage },
-        { path: 'multi-editor', component: MultiEditorPage },
-        { path: 'wrapped-editor', component: WrappedEditorPage },
-      ],
-    },
+    { path: '/', redirect: '/getting-started/quick-start' },
     {
       path: '/getting-started',
       children: [
@@ -182,6 +169,6 @@ export const router = createRouter({
         { path: 'image-annotation-studio', component: ImageAnnotationStudioPage },
       ],
     },
-    { path: '/:pathMatch(.*)*', redirect: '/e2e/editor' },
+    { path: '/:pathMatch(.*)*', redirect: '/getting-started/quick-start' },
   ],
 })
