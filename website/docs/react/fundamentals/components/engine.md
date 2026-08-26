@@ -21,8 +21,8 @@ Unlike the Editor, the Engine **does not register any drawing tools by default**
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components-engine"
-  repoFiles={['src/pages/fundamentals/components/components-engine.tsx']}
+  demoPath="/fundamentals/components/engine"
+  repoFiles={['src/pages/fundamentals/components/ComponentsEnginePage.tsx']}
 />
 
 ## Related API Methods

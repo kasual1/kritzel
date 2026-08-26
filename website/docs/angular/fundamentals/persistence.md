@@ -21,7 +21,7 @@ Configure `IndexedDBSyncProvider` in `syncConfig.providers` to make object state
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/persistence-local"
+  demoPath="/fundamentals/persistence/local"
   repoFiles={['src/app/fundamentals/persistence/persistence-local.component.ts']}
 />
 

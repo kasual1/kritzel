@@ -23,8 +23,8 @@ By default, Kritzel provides a built-in UI for managing multiple workspaces. How
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/workspaces-switch"
-  repoFiles={['src/pages/fundamentals/workspaces/workspaces-switch.vue']}
+  demoPath="/fundamentals/workspaces/switch"
+  repoFiles={['src/pages/fundamentals/workspaces/WorkspacesSwitchPage.vue']}
 />
 
 ## Managing Workspaces (Create, Read, Update, Delete)
@@ -33,8 +33,8 @@ Kritzel allows you to fully manage the lifecycle of workspaces. You can create n
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/workspaces-crud"
-  repoFiles={['src/pages/fundamentals/workspaces/workspaces-crud.vue']}
+  demoPath="/fundamentals/workspaces/crud"
+  repoFiles={['src/pages/fundamentals/workspaces/WorkspacesCrudPage.vue']}
 />
 
 ## Related API Methods

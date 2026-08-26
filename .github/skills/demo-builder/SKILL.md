@@ -30,6 +30,24 @@ It complements docs-builder:
 | React | `demos/react/src/pages/` | `demos/react/src/App.tsx` |
 | Vue | `demos/vue/src/pages/` | `demos/vue/src/router.ts` |
 
+## Categories and Routes
+
+Demo folders mirror the documentation categories, and **the route is the folder path**:
+`demos/<fw>/<root>/fundamentals/tools/<file>` is served at `/fundamentals/tools/<name>`.
+
+| Category | Folder | Example route |
+|---|---|---|
+| Getting Started | `getting-started/` | `/getting-started/quick-start` |
+| Fundamentals | `fundamentals/<topic>/` (+ flat `fundamentals/components/`) | `/fundamentals/tools/disable` |
+| Advanced | `advanced/<topic>/` | `/advanced/collaboration/local` |
+| Customization | `customization/<topic>/` | `/customization/theming/apply` |
+| Examples | `examples/` (flat, one file per example) | `/examples/object-explorer` |
+| E2E harness | `e2e/` | `/e2e/editor` |
+
+The final route segment drops the folder-derived prefix that the file name keeps
+(`fundamentals/tools/tools-disable.component.ts` -> `/fundamentals/tools/disable`), so file
+names stay unique and greppable while routes stay short and mirror the docs URLs.
+
 ## Patterns
 
 - `patterns/angular-demo-pages.md` - Angular standalone demo components
@@ -40,7 +58,7 @@ It complements docs-builder:
 
 ## Workflow
 
-1. Identify target framework and demo category (basic-usage, fundamentals, advanced, examples, e2e).
+1. Identify target framework and demo category (getting-started, fundamentals, advanced, customization, examples, e2e).
 2. Load the framework pattern and scaffold/update the demo page.
 3. Register the route in the framework router.
 4. Verify editor id uniqueness, theme wiring, and iframe-safe panning/zoom behavior.

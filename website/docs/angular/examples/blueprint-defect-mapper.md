@@ -41,7 +41,7 @@ Instead, to center the camera viewport on a static image background or a station
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/examples/blueprint-defect-mapper"
-  repoFiles={['src/app/examples/blueprint-defect-mapper/blueprint-defect-mapper.component.ts']}
+  repoFiles={['src/app/examples/blueprint-defect-mapper.component.ts']}
 />
 
 The background scenery is registered directly in `onReady()` when the canvas activates. Because we want user-drawn drawings or shapes to sit on top of the architectural drawing, the image scenery item is loaded and pushed first. The custom `pointer-events: none` property applied to the blueprint layer allows users to select manually added pins or draw arrows over the blueprint scenery without dragging the floorplan background by mistake.

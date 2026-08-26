@@ -21,7 +21,7 @@ You can programmatically set the viewport's pan and zoom using the `setViewport`
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/viewport-change"
+  demoPath="/fundamentals/viewport/change"
   repoFiles={['src/app/fundamentals/viewport/viewport-change.component.ts']}
 />
 
@@ -31,7 +31,7 @@ Kritzel provides built-in methods to quickly navigate back to the content. You c
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/viewport-center"
+  demoPath="/fundamentals/viewport/center"
   repoFiles={['src/app/fundamentals/viewport/viewport-center.component.ts']}
 />
 
@@ -43,7 +43,7 @@ Use `screenToWorld` and `worldToScreen` to bridge this gap.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/viewport-coordinates"
+  demoPath="/fundamentals/viewport/coordinates"
   repoFiles={['src/app/fundamentals/viewport/viewport-coordinates.component.ts']}
 />
 

@@ -27,8 +27,8 @@ You can manually inject objects into the canvas or remove them programmatically,
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/objects-add-remove"
-  repoFiles={['src/pages/fundamentals/objects/objects-add-remove.vue']}
+  demoPath="/fundamentals/objects/add-remove"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsAddRemovePage.vue']}
 />
 
 ## Querying and Filtering Objects
@@ -37,8 +37,8 @@ Kritzel allows you to read the state of all objects currently on the canvas or f
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/objects-query"
-  repoFiles={['src/pages/fundamentals/objects/objects-query.vue']}
+  demoPath="/fundamentals/objects/query"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsQueryPage.vue']}
 />
 
 ## Managing Object Selection
@@ -47,8 +47,8 @@ You can programmatically retrieve the currently selected objects, select specifi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/objects-selection"
-  repoFiles={['src/pages/fundamentals/objects/objects-selection.vue']}
+  demoPath="/fundamentals/objects/selection"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsSelectionPage.vue']}
 />
 
 ## Grouping
@@ -57,8 +57,8 @@ Objects can be grouped together so they can be moved and transformed as a single
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/objects-grouping"
-  repoFiles={['src/pages/fundamentals/objects/objects-grouping.vue']}
+  demoPath="/fundamentals/objects/grouping"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsGroupingPage.vue']}
 />
 
 ## Ordering
@@ -67,8 +67,8 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/objects-ordering"
-  repoFiles={['src/pages/fundamentals/objects/objects-ordering.vue']}
+  demoPath="/fundamentals/objects/ordering"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsOrderingPage.vue']}
 />
 
 ## Related API Methods

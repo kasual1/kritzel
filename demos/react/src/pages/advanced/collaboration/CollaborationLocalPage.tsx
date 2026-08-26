@@ -11,7 +11,7 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
-} from "../../fundamentals/shared/concept-shared";
+} from "../../shared/demo-shared";
 
 export function CollaborationLocalPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);

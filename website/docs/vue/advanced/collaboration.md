@@ -23,7 +23,7 @@ This is useful when users open the same board in multiple tabs and expect immedi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/collaboration-local"
+  demoPath="/advanced/collaboration/local"
   repoFiles={['src/pages/advanced/collaboration/CollaborationLocalPage.vue']}
 />
 
@@ -38,7 +38,7 @@ A common production pattern combines local persistence (for offline resilience) 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/collaboration-realtime"
+  demoPath="/advanced/collaboration/realtime"
   repoFiles={['src/pages/advanced/collaboration/CollaborationRealtimePage.vue']}
 />
 

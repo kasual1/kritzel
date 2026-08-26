@@ -38,7 +38,7 @@ The simplest way to use a dynamic object is to build a plain DOM subtree and pas
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/dynamic-objects-html"
+  demoPath="/advanced/dynamic-objects/html"
   repoFiles={['src/pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.vue']}
 />
 
@@ -55,7 +55,7 @@ Always call the unregister function returned by `registerVueCustomElementRendere
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/dynamic-objects-component"
+  demoPath="/advanced/dynamic-objects/component"
   repoFiles={['src/pages/advanced/dynamic-objects/DynamicObjectsComponentPage.vue']}
 />
 

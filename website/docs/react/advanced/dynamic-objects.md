@@ -38,7 +38,7 @@ The simplest way to use a dynamic object is to build a plain DOM subtree and pas
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/advanced/dynamic-objects-html"
+  demoPath="/advanced/dynamic-objects/html"
   repoFiles={['src/pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.tsx']}
 />
 
@@ -55,7 +55,7 @@ Always unregister the renderer, and unmount any mounted React roots, when the ho
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/advanced/dynamic-objects-component"
+  demoPath="/advanced/dynamic-objects/component"
   repoFiles={['src/pages/advanced/dynamic-objects/DynamicObjectsComponentPage.tsx']}
 />
 

@@ -39,8 +39,8 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/user-management-providers"
-  repoFiles={['src/pages/advanced/user-management/UserManagementProvidersPage.vue']}
+  demoPath="/fundamentals/components/user-management-providers"
+  repoFiles={['src/pages/fundamentals/components/UserManagementProvidersPage.vue']}
 />
 
 ## Handling the Login Flow
@@ -68,8 +68,8 @@ const editor = getEditorRef('editor')
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/user-management-flow"
-  repoFiles={['src/pages/advanced/user-management/UserManagementFlowPage.vue']}
+  demoPath="/fundamentals/components/user-management-flow"
+  repoFiles={['src/pages/fundamentals/components/UserManagementFlowPage.vue']}
 />
 
 ## Theming the Dialog

@@ -5,8 +5,8 @@ import {
   KritzelEraserTool,
   KritzelSelectionTool,
 } from "kritzel-react";
-import { buttonStyle, hostStyle, toolbarStyle } from "../shared/concept-shared";
-import { createSeedObjects } from "../../basic-usage/seed-objects";
+import { buttonStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { createSeedObjects } from "../../getting-started/seed-objects";
 
 export function ComponentsEnginePage() {
   const engineRef = useRef<HTMLKritzelEngineElement | null>(null);

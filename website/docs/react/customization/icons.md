@@ -21,8 +21,8 @@ The demo registers application-specific SVG icons and reuses their names in tool
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/advanced/customization/icons"
-  repoFiles={['src/pages/advanced/customization/icons/IconsRegisterPage.tsx']}
+  demoPath="/customization/icons/register"
+  repoFiles={['src/pages/customization/icons/IconsRegisterPage.tsx']}
 />
 
 ## Related API Methods and Types

@@ -128,6 +128,6 @@ Below is a complete example combining everything covered in this guide. It provi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  repoFiles={['src/pages/basic-usage/BasicUsagePage.vue']}
-  demoPath="/basic-usage"
+  repoFiles={['src/pages/getting-started/BasicUsagePage.vue']}
+  demoPath="/getting-started/basic-usage"
 />

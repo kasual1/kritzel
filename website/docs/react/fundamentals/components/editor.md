@@ -19,8 +19,8 @@ The basic implementation of the Editor requires zero configuration. You simply r
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components-editor"
-  repoFiles={['src/pages/fundamentals/components/components-editor.tsx']}
+  demoPath="/fundamentals/components/editor"
+  repoFiles={['src/pages/fundamentals/components/ComponentsEditorPage.tsx']}
 />
 
 ## Waiting for Initialization
@@ -48,8 +48,8 @@ You can toggle visibility for built-in UI components using props. For example, s
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components-editor-ui"
-  repoFiles={['src/pages/fundamentals/components/components-editor-ui.tsx']}
+  demoPath="/fundamentals/components/editor-ui"
+  repoFiles={['src/pages/fundamentals/components/ComponentsEditorUiPage.tsx']}
 />
 
 ## Related API Methods

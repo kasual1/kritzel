@@ -38,8 +38,8 @@ This renders the editor with the **full default toolbar**: selection, brush, era
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/getting-started"
-  repoFiles={['src/pages/getting-started/QuickstartPage.vue']}
+  demoPath="/getting-started/quick-start"
+  repoFiles={['src/pages/getting-started/QuickStartPage.vue']}
 />
 
 ## Optional Enhancements

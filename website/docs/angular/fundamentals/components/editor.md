@@ -19,7 +19,7 @@ The basic implementation of the Editor requires zero configuration. You simply d
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components-editor"
+  demoPath="/fundamentals/components/editor"
   repoFiles={['src/app/fundamentals/components/components-editor.component.ts']}
 />
 
@@ -56,7 +56,7 @@ You can toggle visibility for built-in UI components using the Editor's attribut
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components-editor-ui"
+  demoPath="/fundamentals/components/editor-ui"
   repoFiles={['src/app/fundamentals/components/components-editor-ui.component.ts']}
 />
 
@@ -72,8 +72,8 @@ editor.globalContextMenuItems = [
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/context-menus-canvas-quick-actions"
-  repoFiles={['src/app/advanced/context-menus/custom-context-menu-canvas-quick-actions.component.ts']}
+  demoPath="/fundamentals/components/context-menus-canvas-quick-actions"
+  repoFiles={['src/app/fundamentals/components/context-menus-canvas-quick-actions.component.ts']}
 />
 
 ## User Management
@@ -106,8 +106,8 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/user-management-providers"
-  repoFiles={['src/app/advanced/user-management/user-management-providers.component.ts']}
+  demoPath="/fundamentals/components/user-management-providers"
+  repoFiles={['src/app/fundamentals/components/user-management-providers.component.ts']}
 />
 
 ### Handling the Login Flow
@@ -121,8 +121,8 @@ Clicking a provider button puts that button into a loading state and emits the e
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/user-management-flow"
-  repoFiles={['src/app/advanced/user-management/user-management-flow.component.ts']}
+  demoPath="/fundamentals/components/user-management-flow"
+  repoFiles={['src/app/fundamentals/components/user-management-flow.component.ts']}
 />
 
 ## Related API Methods

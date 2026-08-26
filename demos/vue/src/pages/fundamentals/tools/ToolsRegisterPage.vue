@@ -9,7 +9,7 @@ import {
   type KritzelToolbarItem,
 } from 'kritzel-vue'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../shared/concept-shared'
+import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../../shared/demo-shared'
 
 const highlighterConfig: KritzelBrushToolConfig = {
   type: 'highlighter',

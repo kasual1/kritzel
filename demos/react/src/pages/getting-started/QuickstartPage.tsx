@@ -1,14 +1,14 @@
 import { CSSProperties, useCallback, useRef } from "react";
 import { KritzelEditor } from "kritzel-react";
 import { reactThemeLight } from "../../const/react-theme-light";
-import { seedEditor } from "../fundamentals/shared/concept-shared";
+import { seedEditor } from "../shared/demo-shared";
 
 const hostStyle: CSSProperties = {
   display: "block",
   height: "100%",
 };
 
-export function QuickstartPage() {
+export function QuickStartPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
 
   const onReady = useCallback(async () => {

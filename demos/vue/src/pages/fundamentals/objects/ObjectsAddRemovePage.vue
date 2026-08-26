@@ -15,7 +15,7 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
-} from '../shared/concept-shared'
+} from '../../shared/demo-shared'
 import { ref } from 'vue';
 
 const editor = getEditorRef('editor');

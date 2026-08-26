@@ -36,8 +36,8 @@ This renders the editor with the **full default toolbar**: selection, brush, era
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/getting-started"
-  repoFiles={['src/pages/getting-started/QuickstartPage.tsx']}
+  demoPath="/getting-started/quick-start"
+  repoFiles={['src/pages/getting-started/QuickStartPage.tsx']}
 />
 
 ## Optional Enhancements

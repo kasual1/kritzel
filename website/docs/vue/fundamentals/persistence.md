@@ -21,8 +21,8 @@ Configure `IndexedDBSyncProvider` in `syncConfig.providers` to make object state
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/persistence-local"
-  repoFiles={['src/pages/fundamentals/persistence/persistence-local.vue']}
+  demoPath="/fundamentals/persistence/local"
+  repoFiles={['src/pages/fundamentals/persistence/PersistenceLocalPage.vue']}
 />
 
 ## Related API Methods

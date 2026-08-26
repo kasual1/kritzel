@@ -21,8 +21,8 @@ You can programmatically set the viewport pan and zoom using `setViewport`, or u
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/viewport-change"
-  repoFiles={['src/pages/fundamentals/viewport/viewport-change.tsx']}
+  demoPath="/fundamentals/viewport/change"
+  repoFiles={['src/pages/fundamentals/viewport/ViewportChangePage.tsx']}
 />
 
 ## Centering Content
@@ -31,8 +31,8 @@ Kritzel provides built-in methods to quickly navigate back to content. You can c
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/viewport-center"
-  repoFiles={['src/pages/fundamentals/viewport/viewport-center.tsx']}
+  demoPath="/fundamentals/viewport/center"
+  repoFiles={['src/pages/fundamentals/viewport/ViewportCenterPage.tsx']}
 />
 
 ## Coordinate Mapping
@@ -43,8 +43,8 @@ Use `screenToWorld` and `worldToScreen` to bridge this gap.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/viewport-coordinates"
-  repoFiles={['src/pages/fundamentals/viewport/viewport-coordinates.tsx']}
+  demoPath="/fundamentals/viewport/coordinates"
+  repoFiles={['src/pages/fundamentals/viewport/ViewportCoordinatesPage.tsx']}
 />
 
 ## Related API Methods

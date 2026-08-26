@@ -10,7 +10,7 @@ import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
-  selector: 'app-collaboration-local',
+  selector: 'app-persistence-local',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -101,7 +101,7 @@ import { createSeedObjects } from '../../const/seed-objects';
     `,
   ],
 })
-export class CollaborationLocalComponent {
+export class PersistenceLocalComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];

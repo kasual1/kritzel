@@ -21,8 +21,8 @@ Configure `IndexedDBSyncProvider` in `syncConfig.providers` to make object state
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/persistence-local"
-  repoFiles={['src/pages/fundamentals/persistence/persistence-local.tsx']}
+  demoPath="/fundamentals/persistence/local"
+  repoFiles={['src/pages/fundamentals/persistence/PersistenceLocalPage.tsx']}
 />
 
 ## Related API Methods

@@ -23,7 +23,7 @@ This is useful when users open the same board in multiple tabs and expect immedi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/collaboration-local"
+  demoPath="/advanced/collaboration/local"
   repoFiles={['src/app/advanced/collaboration/collaboration-local.component.ts']}
 />
 
@@ -38,7 +38,7 @@ A common production pattern combines local persistence (for offline resilience) 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/collaboration-realtime"
+  demoPath="/advanced/collaboration/realtime"
   repoFiles={['src/app/advanced/collaboration/collaboration-realtime.component.ts']}
 />
 

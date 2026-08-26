@@ -9,7 +9,7 @@ import {
   type KritzelToolbarItem,
 } from "kritzel-react";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { editorStyle, hostStyle, seedEditor } from "../shared/concept-shared";
+import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
 
 const highlighterConfig: KritzelBrushToolConfig = {
   type: "highlighter",
