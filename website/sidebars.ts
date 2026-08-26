@@ -31,7 +31,6 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       collapsed: true,
       items: [
-        'advanced/concept-user-management',
         'advanced/concept-collaboration',
         'advanced/concept-dynamic-objects',
       ],
