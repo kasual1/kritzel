@@ -4,12 +4,12 @@
 
 Example pages demonstrate a single Kritzel feature through multiple **self-contained, realistic use cases**. Each example on the page is a complete, copy-paste-ready implementation that solves a real scenario a developer might encounter. Examples are ordered from simple to advanced, but every example stands alone — a developer can grab any single one without needing the others.
 
-Each page lives at `website/docs/angular/example-<feature>.md` and uses the `<LiveDemo>` component to embed hosted previews alongside fetched source code.
+Each page lives at `website/docs/angular/examples/<feature>.md` and uses the `<LiveDemo>` component to embed hosted previews alongside fetched source code.
 
 ## File Naming & Location
 
-- File: `website/docs/angular/example-<feature>.md`
-- Sidebar registration: add page ID (`example-<feature>`) to the `'Examples'` category in `website/sidebars.ts`
+- File: `website/docs/angular/examples/<feature>.md`
+- Sidebar registration: add page ID (`examples/<feature>`) to the `'Examples'` category in `website/sidebars.ts`
 
 ## Frontmatter
 

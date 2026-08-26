@@ -9,9 +9,9 @@ import { getPreferredFramework, subscribeToPreferredFramework, type Framework } 
 import styles from "./styles.module.css";
 
 const quickStartPaths: Record<Framework, string> = {
-  angular: "/docs/angular/quick-start",
-  react: "/docs/react/quick-start",
-  vue: "/docs/vue/quick-start",
+  angular: "/docs/angular/getting-started/quick-start",
+  react: "/docs/react/getting-started/quick-start",
+  vue: "/docs/vue/getting-started/quick-start",
 };
 
 interface CallToActionButton {

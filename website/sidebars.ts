@@ -6,7 +6,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Getting Started',
       collapsed: false,
-      items: ['quick-start', 'basic-usage'],
+      items: ['getting-started/quick-start', 'getting-started/basic-usage'],
     },
     {
       type: 'category',
@@ -17,13 +17,13 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Components',
           collapsed: true,
-          items: ['components/concept-editor', 'components/concept-engine'],
+          items: ['fundamentals/components/editor', 'fundamentals/components/engine'],
         },
-        'concept-tools',
-        'concept-objects',
-        'concept-viewport',
-        'concept-workspaces',
-        'concept-persistence',
+        'fundamentals/tools',
+        'fundamentals/objects',
+        'fundamentals/viewport',
+        'fundamentals/workspaces',
+        'fundamentals/persistence',
       ],
     },
     {
@@ -31,8 +31,8 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       collapsed: true,
       items: [
-        'advanced/concept-collaboration',
-        'advanced/concept-dynamic-objects',
+        'advanced/collaboration',
+        'advanced/dynamic-objects',
       ],
     },
     {
@@ -40,17 +40,17 @@ const sidebars: SidebarsConfig = {
       label: 'Customization',
       collapsed: true,
       items: [
-        'advanced/customization/concept-theming',
-        'advanced/customization/concept-fonts',
-        'advanced/customization/concept-icons',
-        'advanced/customization/concept-localization',
+        'customization/theming',
+        'customization/fonts',
+        'customization/icons',
+        'customization/localization',
       ],
     },
     {
       type: 'category',
       label: 'Examples',
       collapsed: true,
-      items: ['example-object-explorer', 'example-blueprint-defect-mapper', 'example-slideshow-presentation', 'example-image-annotation-studio'],
+      items: ['examples/object-explorer', 'examples/blueprint-defect-mapper', 'examples/slideshow-presentation', 'examples/image-annotation-studio'],
     },
     {
       type: 'category',
@@ -62,7 +62,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Api Reference',
       collapsed: true,
-      items: ['api-reference-editor', 'api-reference-engine'],
+      items: ['api-reference/editor', 'api-reference/engine'],
     }
   ],
 };

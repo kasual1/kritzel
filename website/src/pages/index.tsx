@@ -15,9 +15,9 @@ import styles from "./index.module.css";
 import React from "react";
 
 const quickStartPaths: Record<keyof typeof frameworkPaths, string> = {
-  angular: "/docs/angular/quick-start",
-  react: "/docs/react/quick-start",
-  vue: "/docs/vue/quick-start",
+  angular: "/docs/angular/getting-started/quick-start",
+  react: "/docs/react/getting-started/quick-start",
+  vue: "/docs/vue/getting-started/quick-start",
 };
 
 function HomepageEditorEmbed() {
@@ -132,7 +132,7 @@ function HomepageEditorEmbed() {
 }
 
 function HomepageHeader() {
-  const [targetPath, setTargetPath] = React.useState('/docs/react/quick-start');
+  const [targetPath, setTargetPath] = React.useState('/docs/react/getting-started/quick-start');
   const [isEditorCardVisible, setIsEditorCardVisible] = React.useState(false);
 
   React.useEffect(() => {

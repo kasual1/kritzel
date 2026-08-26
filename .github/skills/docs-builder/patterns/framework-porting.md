@@ -10,7 +10,7 @@ Angular remains the source of truth. React and Vue pages should preserve meaning
 
 - Source: website/docs/angular/*.md
 - Targets: website/docs/react/*.md, website/docs/vue/*.md
-- Typical pages: overview.md, quick-start.md, basic-usage.md, concept-*.md, example-*.md, advanced/concept-*.md, api-reference*.md
+- Typical pages: getting-started/*.md, fundamentals/*.md, fundamentals/components/*.md, advanced/*.md, customization/*.md, examples/*.md, api-reference/*.md
 
 ## Core Porting Rules
 
@@ -37,7 +37,7 @@ Angular remains the source of truth. React and Vue pages should preserve meaning
 
 6. Keep links valid per framework docs tree.
 - Ensure local links target existing docs in the same framework section.
-- Prefer existing concept pages (for example concept-collaboration, concept-theming) over non-existent short aliases.
+- Prefer existing concept pages (for example advanced/collaboration, customization/theming) over non-existent short aliases.
 
 ## LiveDemo Porting Rules
 

@@ -39,13 +39,18 @@ This separation ensures consistency: one authoritative source is written once, t
 
 ## Documentation Categories
 
-| Category | File prefix | Description |
-|----------|-------------|-------------|
-| Examples | `example-*.md` | Progressive step-by-step guides showing feature usage |
-| Fundamentals | `concept-*.md` in the framework docs root | Foundational architecture and mental models |
-| Advanced | `advanced/concept-*.md` | Specialized integrations and advanced capabilities |
-| API Reference | `api-reference*.md` | Generated or hand-written API surfaces |
-| Guides | `quick-start.md`, `basic-usage.md` | Onboarding content |
+Pages are grouped by folder. Filenames carry **no category prefix** — the folder is the
+structure, and the route mirrors the file path exactly (no `slug`/`id` frontmatter is used).
+
+| Category | Folder | Description |
+|----------|--------|-------------|
+| Getting Started | `getting-started/` | Onboarding content (`quick-start.md`, `basic-usage.md`) |
+| Fundamentals | `fundamentals/` (components in `fundamentals/components/`) | Foundational architecture and mental models |
+| Advanced | `advanced/` | Specialized integrations and advanced capabilities |
+| Customization | `customization/` | Theming, fonts, icons, localization |
+| Examples | `examples/` | Progressive step-by-step guides showing feature usage |
+| API Reference | `api-reference/` | Generated or hand-written API surfaces |
+| License | `license.md` (framework docs root) | Licensing information |
 
 ## Patterns
 

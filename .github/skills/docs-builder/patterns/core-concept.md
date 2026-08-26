@@ -8,8 +8,8 @@ These pages bridge the gap between abstract architectural concepts and practical
 
 ## File Naming & Location
 
-- File: `website/docs/angular/concept-<concept>.md` (or the corresponding framework directory)
-- Sidebar registration: add page ID `concept-<concept>` to the `Fundamentals` category in `website/sidebars.ts`
+- File: `website/docs/angular/fundamentals/<concept>.md` (or the corresponding framework directory)
+- Sidebar registration: add page ID `fundamentals/<concept>` to the `Fundamentals` category in `website/sidebars.ts`
 
 ## Frontmatter
 
@@ -32,7 +32,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 4. **`## Related API Methods`** — A quick bulleted list summarizing the most relevant API methods associated with this concept.
     - Group methods by a short, high-level context label, followed by the methods in parentheses (e.g., `- Camera control (\`setViewport()\`, \`panTo()\`)`).
     - Keep it simple: do not use bold descriptions or long explanatory sentences.
-    - ALWAYS end this section with the exact sentence: `For a comprehensive view, see the [API Reference](api-reference-editor.md).`
+    - ALWAYS end this section with the exact sentence: `For a comprehensive view, see the [API Reference](../api-reference/editor.md).`
 
 ## Focused Live-Demo Example Constraints
 
