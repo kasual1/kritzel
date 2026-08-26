@@ -4,9 +4,9 @@ const CHANGE_EVENT = 'kritzel-framework-preference-change';
 export type Framework = 'angular' | 'react' | 'vue';
 
 export const frameworkPaths: Record<Framework, string> = {
-  angular: '/docs/angular/quick-start',
-  react: '/docs/react/quick-start',
-  vue: '/docs/vue/quick-start',
+  angular: '/docs/angular/getting-started/quick-start',
+  react: '/docs/react/getting-started/quick-start',
+  vue: '/docs/vue/getting-started/quick-start',
 };
 
 export function getPreferredFramework(): Framework {

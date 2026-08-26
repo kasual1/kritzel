@@ -6,7 +6,7 @@ Kritzel is a framework-agnostic infinite canvas and collaborative whiteboard eng
 
 Kritzel handles the hard parts of canvas-based applications — infinite pan/zoom, hit-testing, CRDT-based collaboration, undo/redo, and cross-browser rendering — so you can focus on your product's domain logic.
 
-**Full documentation:** [kritzel.io/docs/angular/quick-start](https://kritzel.io/docs/angular/quick-start)
+**Full documentation:** [kritzel.io/docs/angular/getting-started/quick-start](https://kritzel.io/docs/angular/getting-started/quick-start)
 
 ## Installation
 
@@ -109,7 +109,7 @@ Kritzel is composed of a small set of core concepts that work together to power 
 - **Theming** — Built-in light and dark themes with full CSS variable customization to match your brand.
 - **Collaboration** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
 
-Learn more in the [full documentation](https://kritzel.io/docs/angular/overview).
+Learn more in the [full documentation](https://kritzel.io/docs/angular/getting-started/basic-usage).
 
 ## License
 

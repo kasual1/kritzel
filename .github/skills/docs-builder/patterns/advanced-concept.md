@@ -6,10 +6,10 @@ Advanced pages explain specialized Kritzel integrations and capabilities that bu
 
 ## File Naming & Location
 
-- Angular source page: `website/docs/angular/advanced/concept-<concept>.md`.
-- React translation: `website/docs/react/advanced/concept-<concept>.md`.
-- Vue translation: `website/docs/vue/advanced/concept-<concept>.md`.
-- Sidebar registration: add the document ID `advanced/concept-<concept>` to the `Advanced` category in `website/sidebars.ts`.
+- Angular source page: `website/docs/angular/advanced/<concept>.md`.
+- React translation: `website/docs/react/advanced/<concept>.md`.
+- Vue translation: `website/docs/vue/advanced/<concept>.md`.
+- Sidebar registration: add the document ID `advanced/<concept>` to the `Advanced` category in `website/sidebars.ts`.
 - Keep the document path, sidebar ID, demo route, and demo source directory aligned for every framework.
 
 ## Frontmatter
@@ -33,7 +33,7 @@ Use framework-specific titles for React and Vue translations. Keep the `displaye
 2. **`## Overview`** — Explain the capability, its role in Kritzel, and when developers should use it.
 3. **Focused configuration sections** — Show atomic tasks such as enabling the feature, registering custom definitions, or handling runtime changes.
 4. **`## Related API Methods`** — List the most relevant props, methods, events, providers, registries, or types.
-5. End with an API Reference link relative to the page location: `[API Reference](../api-reference-editor.md)`.
+5. End with an API Reference link relative to the page location: `[API Reference](../api-reference/editor.md)`.
 
 Keep examples focused. Do not turn an Advanced page into a complete application tutorial.
 
@@ -90,7 +90,7 @@ Keep examples focused. Do not turn an Advanced page into a complete application 
 ## Validation Checklist
 
 1. The page exists under `website/docs/<framework>/advanced/`.
-2. The sidebar contains `advanced/concept-<concept>` for every configured docs plugin.
+2. The sidebar contains `advanced/<concept>` for every configured docs plugin.
 3. Every LiveDemo route exists in the target framework router.
 4. Every `repoFiles` path exists in the target demo project.
 5. Nested API links use `../` from the advanced directory.

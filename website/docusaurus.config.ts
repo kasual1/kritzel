@@ -1,4 +1,6 @@
 import { themes as prismThemes } from "prism-react-renderer";
+import fs from "node:fs";
+import nodePath from "node:path";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
 
@@ -24,6 +26,51 @@ const DEMO_BASE_URLS = {
 };
 const ABSOLUTE_URL = (path: string) =>
   `${SITE_URL}${SITE_BASE_URL.replace(/\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
+
+const FRAMEWORKS = ["angular", "react", "vue"] as const;
+
+// Legacy flat doc paths -> current category-based paths, applied to every framework instance.
+const LEGACY_DOC_PATHS: Record<string, string> = {
+  "quick-start": "getting-started/quick-start",
+  "basic-usage": "getting-started/basic-usage",
+  "components/concept-editor": "fundamentals/components/editor",
+  "components/concept-engine": "fundamentals/components/engine",
+  "concept-tools": "fundamentals/tools",
+  "concept-objects": "fundamentals/objects",
+  "concept-viewport": "fundamentals/viewport",
+  "concept-workspaces": "fundamentals/workspaces",
+  "concept-persistence": "fundamentals/persistence",
+  "advanced/concept-collaboration": "advanced/collaboration",
+  "advanced/concept-dynamic-objects": "advanced/dynamic-objects",
+  "advanced/concept-user-management": "advanced/user-management",
+  "advanced/customization/concept-theming": "customization/theming",
+  "advanced/customization/concept-fonts": "customization/fonts",
+  "advanced/customization/concept-icons": "customization/icons",
+  "advanced/customization/concept-localization": "customization/localization",
+  "example-object-explorer": "examples/object-explorer",
+  "example-blueprint-defect-mapper": "examples/blueprint-defect-mapper",
+  "example-slideshow-presentation": "examples/slideshow-presentation",
+  "example-image-annotation-studio": "examples/image-annotation-studio",
+  "example-infinite-canvas-gallery": "examples/infinite-canvas-gallery",
+  "api-reference-editor": "api-reference/editor",
+  "api-reference-engine": "api-reference/engine",
+  "api-reference-tools": "api-reference/tools",
+  "api-reference": "api-reference/overview",
+  objects: "api-reference/object-types",
+  tools: "api-reference/built-in-tools",
+  theming: "api-reference/theme-tokens",
+  types: "api-reference/types",
+};
+
+const DOC_REDIRECTS = FRAMEWORKS.flatMap((framework) =>
+  Object.entries(LEGACY_DOC_PATHS)
+    // not every page exists for every framework
+    .filter(([, to]) => fs.existsSync(nodePath.join(__dirname, "docs", framework, `${to}.md`)))
+    .map(([from, to]) => ({
+      from: `/docs/${framework}/${from}`,
+      to: `/docs/${framework}/${to}`,
+    })),
+);
 
 const config: Config = {
   title: "Kritzel - Infinite Canvas Library for React, Vue & Angular",
@@ -104,6 +151,12 @@ const config: Config = {
       };
     },
     [
+      "@docusaurus/plugin-client-redirects",
+      {
+        redirects: DOC_REDIRECTS,
+      },
+    ],
+    [
       "@docusaurus/plugin-content-docs",
       {
         id: "angular",
@@ -159,7 +212,7 @@ const config: Config = {
         {
           type: 'custom-docsLink',
           label: 'Documentation',
-          to: '/docs/react/quick-start',
+          to: '/docs/react/getting-started/quick-start',
           position: 'right',
         },
         {
@@ -169,17 +222,17 @@ const config: Config = {
           items: [
             {
               label: 'React',
-              to: '/docs/react/quick-start',
+              to: '/docs/react/getting-started/quick-start',
               activeBasePath: 'docs/react'
             },
             {
               label: 'Vue',
-              to: '/docs/vue/quick-start',
+              to: '/docs/vue/getting-started/quick-start',
               activeBasePath: 'docs/vue'
             },
             {
               label: 'Angular',
-              to: '/docs/angular/quick-start',
+              to: '/docs/angular/getting-started/quick-start',
               activeBasePath: 'docs/angular'
             },
           ],
@@ -208,11 +261,11 @@ const config: Config = {
           items: [
             {
               label: 'Getting Started',
-              to: '/docs/react/quick-start',
+              to: '/docs/react/getting-started/quick-start',
             },
             {
               label: 'Examples',
-              to: '/docs/react/example-object-explorer',
+              to: '/docs/react/examples/object-explorer',
             },
           ],
         },
@@ -221,15 +274,15 @@ const config: Config = {
           items: [
             {
               label: 'Angular',
-              to: '/docs/angular/quick-start',
+              to: '/docs/angular/getting-started/quick-start',
             },
             {
               label: 'React',
-              to: '/docs/react/quick-start',
+              to: '/docs/react/getting-started/quick-start',
             },
             {
               label: 'Vue',
-              to: '/docs/vue/quick-start',
+              to: '/docs/vue/getting-started/quick-start',
             },
           ],
         },
@@ -312,42 +365,42 @@ const config: Config = {
             position: 1,
             name: "Documentation",
             description: "Guides, concepts, and API reference for the Kritzel infinite canvas library.",
-            url: ABSOLUTE_URL("/docs/react/quick-start"),
+            url: ABSOLUTE_URL("/docs/react/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 2,
             name: "Getting Started",
             description: "Quick start guide to install and integrate Kritzel into your app.",
-            url: ABSOLUTE_URL("/docs/react/quick-start"),
+            url: ABSOLUTE_URL("/docs/react/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 3,
             name: "API Reference",
             description: "Detailed reference for the Kritzel editor and engine components.",
-            url: ABSOLUTE_URL("/docs/react/api-reference-editor"),
+            url: ABSOLUTE_URL("/docs/react/api-reference/editor"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 4,
             name: "Angular",
             description: "Use Kritzel in Angular applications.",
-            url: ABSOLUTE_URL("/docs/angular/quick-start"),
+            url: ABSOLUTE_URL("/docs/angular/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 5,
             name: "React",
             description: "Use Kritzel in React applications.",
-            url: ABSOLUTE_URL("/docs/react/quick-start"),
+            url: ABSOLUTE_URL("/docs/react/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
             position: 6,
             name: "Vue",
             description: "Use Kritzel in Vue applications.",
-            url: ABSOLUTE_URL("/docs/vue/quick-start"),
+            url: ABSOLUTE_URL("/docs/vue/getting-started/quick-start"),
           },
           {
             "@type": "SiteNavigationElement",
