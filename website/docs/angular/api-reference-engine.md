@@ -829,7 +829,6 @@ loadSettings(): Promise<Partial<KritzelSettingsConfig> | null>
 | debugInfo | KritzelDebugInfo | Controls which debug overlays are visible. |
 | editorId | string | Optional unique identifier for namespacing storage keys across multiple engine instances. |
 | globalContextMenuItems | ContextMenuItem[] | Context menu items shown when right-clicking the canvas background. |
-| isObjectDistanceFadingActive | boolean | When true, objects fade based on distance to the viewport center. |
 | licenseKey | string | Valid key removes the Powered by Kritzel watermark. |
 | lockDrawingScale | boolean | Keep drawn objects at a fixed visual size regardless of zoom. |
 | objectContextMenuItems | ContextMenuItem[] | Context menu items shown when right-clicking selected objects. |

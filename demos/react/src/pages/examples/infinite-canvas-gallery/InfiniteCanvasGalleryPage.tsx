@@ -297,7 +297,6 @@ export function InfiniteCanvasGalleryPage() {
           themes={[reactThemeLight]}
           isMoreMenuVisible={true}
           isWorkspaceManagerVisible={false}
-          isObjectDistanceFadingActive={true}
           onIsReady={() => {
             void onReady();
           }}

@@ -422,10 +422,6 @@ export namespace Components {
          */
         "isMoreMenuVisible": boolean;
         /**
-          * @default false
-         */
-        "isObjectDistanceFadingActive": boolean;
-        /**
           * @default true
          */
         "isPanningEnabled": boolean;
@@ -839,11 +835,6 @@ export namespace Components {
           * @default false
          */
         "isLoading": boolean;
-        /**
-          * When true, objects fade based on distance to the viewport center.
-          * @default false
-         */
-        "isObjectDistanceFadingActive": boolean;
         /**
           * When false, non-modified wheel events do not pan the viewport.
           * @default true
@@ -2919,10 +2910,6 @@ declare namespace LocalJSX {
          */
         "isMoreMenuVisible"?: boolean;
         /**
-          * @default false
-         */
-        "isObjectDistanceFadingActive"?: boolean;
-        /**
           * @default true
          */
         "isPanningEnabled"?: boolean;
@@ -3063,11 +3050,6 @@ declare namespace LocalJSX {
           * @default false
          */
         "isLoading"?: boolean;
-        /**
-          * When true, objects fade based on distance to the viewport center.
-          * @default false
-         */
-        "isObjectDistanceFadingActive"?: boolean;
         /**
           * When false, non-modified wheel events do not pan the viewport.
           * @default true
@@ -3919,7 +3901,6 @@ declare namespace LocalJSX {
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
         "isZoomPanelVisible": boolean;
-        "isObjectDistanceFadingActive": boolean;
         "isLoading": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
@@ -3930,7 +3911,6 @@ declare namespace LocalJSX {
         "scaleMax": number;
         "scaleMin": number;
         "lockDrawingScale": boolean;
-        "isObjectDistanceFadingActive": boolean;
         "theme": ThemeName;
         "licenseKey": string;
         "locale": LocaleCode;

@@ -217,13 +217,6 @@ export class KritzelEngine {
     this.core.store.state.lockDrawingScale = newValue;
   }
 
-  /** When true, objects fade based on distance to the viewport center. */
-  @Prop() isObjectDistanceFadingActive: boolean = false;
-  @Watch('isObjectDistanceFadingActive')
-  onIsObjectDistanceFadingActiveChange() {
-    this.core.rerender();
-  }
-
   /** The current theme to apply to the editor */
   @Prop() theme: ThemeName = 'light';
   @Watch('theme')
@@ -2355,13 +2348,6 @@ export class KritzelEngine {
     undoStackSize: 0,
     redoStackSize: 0,
   };
-  private readonly _objectDistanceFadeNearScale = 1;
-  private readonly _objectDistanceFadeFarScale = 0.15;
-  private readonly _objectDistanceFadeMinOpacity = 0;
-  private readonly _objectDistanceFadeCloseStartScale = 2;
-  private readonly _objectDistanceFadeCloseMaxScale = 4;
-  private readonly _objectDistanceFadeCloseMinOpacity = 0;
-
   private syncLoadingState(): void {
     this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
     this.loadingChange.emit(this.core.store.state.isLoading);
@@ -2872,64 +2858,10 @@ export class KritzelEngine {
     this.core.rerender();
   }
 
-  private getObjectDistanceFadeMultiplier(objectScale: number, viewportScale: number): number {
-    if (!this.isObjectDistanceFadingActive) {
-      return 1;
-    }
-
-    const safeViewportScale = Math.max(Number.isFinite(viewportScale) ? viewportScale : 1, Number.EPSILON);
-    const safeObjectScale = Math.max(Number.isFinite(objectScale) ? objectScale : 1, Number.EPSILON);
-    const normalizedScale = safeViewportScale / safeObjectScale;
-
-    const farFadeMultiplier = this.getFarDistanceFadeMultiplier(normalizedScale);
-    const closeFadeMultiplier = this.getCloseDistanceFadeMultiplier(normalizedScale);
-
-    return Math.min(farFadeMultiplier, closeFadeMultiplier);
-  }
-
-  private getFarDistanceFadeMultiplier(normalizedScale: number): number {
-    if (normalizedScale >= this._objectDistanceFadeNearScale) {
-      return 1;
-    }
-
-    if (normalizedScale <= this._objectDistanceFadeFarScale) {
-      return this._objectDistanceFadeMinOpacity;
-    }
-
-    const progress = (this._objectDistanceFadeNearScale - normalizedScale) / (this._objectDistanceFadeNearScale - this._objectDistanceFadeFarScale);
-    const smooth = progress * progress * (3 - 2 * progress);
-
-    return 1 - smooth * (1 - this._objectDistanceFadeMinOpacity);
-  }
-
-  private getCloseDistanceFadeMultiplier(normalizedScale: number): number {
-    if (normalizedScale <= this._objectDistanceFadeCloseStartScale) {
-      return 1;
-    }
-
-    if (normalizedScale >= this._objectDistanceFadeCloseMaxScale) {
-      return this._objectDistanceFadeCloseMinOpacity;
-    }
-
-    const progress = (normalizedScale - this._objectDistanceFadeCloseStartScale) / (this._objectDistanceFadeCloseMaxScale - this._objectDistanceFadeCloseStartScale);
-    const smooth = progress * progress * (3 - 2 * progress);
-
-    return 1 - smooth * (1 - this._objectDistanceFadeCloseMinOpacity);
-  }
-
-  private shouldApplyDistanceFade(object: KritzelBaseObject<any>): boolean {
-    return (
-      !KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') &&
-      !KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox')
-    );
-  }
-
-  private getObjectEffectiveOpacity(object: KritzelBaseObject<any>, viewportScale: number): { multiplied: number; overridden: string } {
+  private getObjectEffectiveOpacity(object: KritzelBaseObject<any>): { multiplied: number; overridden: string } {
     const safeObjectOpacity = Number.isFinite(object.opacity) ? object.opacity : 1;
-    const distanceFadeMultiplier = this.shouldApplyDistanceFade(object) ? this.getObjectDistanceFadeMultiplier(object.scale!, viewportScale) : 1;
-
-    const multiplied = (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity * distanceFadeMultiplier;
-    const overridden = ((object.markedForRemoval ? 0.5 : safeObjectOpacity) * distanceFadeMultiplier).toString();
+    const multiplied = (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity;
+    const overridden = (object.markedForRemoval ? 0.5 : safeObjectOpacity).toString();
 
     return { multiplied, overridden };
   }
@@ -2983,7 +2915,6 @@ export class KritzelEngine {
     const baseHandleSizePx = computedStyle.getPropertyValue('--kritzel-selection-handle-size').trim() || '6px';
     const baseHandleSize = parseFloat(baseHandleSizePx);
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
-    const viewportScale = this.core.store.state.scale;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
     const visibleObjects = this.core.store.objectsInViewport;
@@ -3098,7 +3029,7 @@ export class KritzelEngine {
           }}
         >
           {visibleObjects?.map(object => {
-            const { multiplied: effectiveOpacity, overridden: effectiveOpacityString } = this.getObjectEffectiveOpacity(object, viewportScale);
+            const { multiplied: effectiveOpacity, overridden: effectiveOpacityString } = this.getObjectEffectiveOpacity(object);
 
             return (
               <div

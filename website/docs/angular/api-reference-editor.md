@@ -20,7 +20,6 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 | assetStorageConfig | KritzelAssetStorageConfig | Asset storage provider configuration for uploaded/rendered assets. |
 | debugInfo | KritzelDebugInfo | Debug overlay configuration options. |
 | editorId | string | Optional editor identifier for namespacing storage keys across instances. |
-| isObjectDistanceFadingActive | boolean | Enables distance-based fading for rendered objects. |
 | licenseKey | string | Valid license removes the Powered by Kritzel watermark. |
 | lockDrawingScale | boolean | Keeps drawn objects at fixed visual size across zoom levels. |
 
