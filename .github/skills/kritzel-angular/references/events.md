@@ -29,7 +29,7 @@ onObjectsChange(e: CustomEvent<KritzelBaseObject[]>) {
 | `undoStateChange` | `KritzelUndoState` | Undo/redo availability changes — drive custom undo/redo buttons |
 | `themeChange` | `ThemeName` | Theme switched (settings UI or `theme` prop) |
 | `viewportChange` | `KritzelViewportState` | Pan/zoom/resize |
-| `isPublicChange` | `IKritzelIsPublicChangedEvent` | Share-state of active workspace toggles |
+| `isPublicChange` | `IKritzelIsPublicChangeEvent` | Share-state of active workspace toggles |
 | `awarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `login` / `logout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
 

@@ -213,7 +213,7 @@ export class KritzelEditor {
   @Output() viewportChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelViewportState>>();
   @Output() logout = new EventEmitter<KritzelEditorCustomEvent<void>>();
   @Output() login = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLoginEvent>>();
-  @Output() isPublicChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangedEvent>>();
+  @Output() isPublicChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangeEvent>>();
   @Output() awarenessChange = new EventEmitter<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -234,7 +234,7 @@ import type { ThemeName as IKritzelEditorThemeName } from 'kritzel-stencil/dist/
 import type { LocaleCode as IKritzelEditorLocaleCode } from 'kritzel-stencil/dist/components';
 import type { KritzelViewportState as IKritzelEditorKritzelViewportState } from 'kritzel-stencil/dist/components';
 import type { LoginEvent as IKritzelEditorLoginEvent } from 'kritzel-stencil/dist/components';
-import type { IKritzelIsPublicChangedEvent as IKritzelEditorIKritzelIsPublicChangedEvent } from 'kritzel-stencil/dist/components';
+import type { IKritzelIsPublicChangeEvent as IKritzelEditorIKritzelIsPublicChangeEvent } from 'kritzel-stencil/dist/components';
 
 export declare interface KritzelEditor extends Components.KritzelEditor {
 
@@ -262,7 +262,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
   login: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLoginEvent>>;
 
-  isPublicChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangedEvent>>;
+  isPublicChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangeEvent>>;
 
   awarenessChange: EventEmitter<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>;
 }

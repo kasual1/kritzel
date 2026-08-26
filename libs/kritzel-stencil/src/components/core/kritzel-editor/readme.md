@@ -50,7 +50,7 @@
 | ----------------------- | ----------- | ------------------------------------------------------------- |
 | `activeWorkspaceChange` |             | `CustomEvent<ActiveWorkspaceChangeEvent>`                     |
 | `awarenessChange`       |             | `CustomEvent<Map<number, Record<string, any>>>`               |
-| `isPublicChange`        |             | `CustomEvent<IKritzelIsPublicChangedEvent>`                   |
+| `isPublicChange`        |             | `CustomEvent<IKritzelIsPublicChangeEvent>`                    |
 | `isReady`               |             | `CustomEvent<EditorIsReadyEvent>`                             |
 | `localeChange`          |             | `CustomEvent<"de" \| "en" \| "fr" \| string & {}>`            |
 | `login`                 |             | `CustomEvent<LoginEvent>`                                     |

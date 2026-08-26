@@ -28,7 +28,7 @@ import { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, O
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { LoginEvent } from "./events/login.event";
-import { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
+import { IKritzelIsPublicChangeEvent } from "./interfaces/share.interface";
 import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
@@ -74,7 +74,7 @@ export { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, O
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { LoginEvent } from "./events/login.event";
-export { IKritzelIsPublicChangedEvent } from "./interfaces/share.interface";
+export { IKritzelIsPublicChangeEvent } from "./interfaces/share.interface";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
@@ -1979,7 +1979,7 @@ declare global {
         "viewportChange": KritzelViewportState;
         "logout": void;
         "login": LoginEvent;
-        "isPublicChange": IKritzelIsPublicChangedEvent;
+        "isPublicChange": IKritzelIsPublicChangeEvent;
         "awarenessChange": Map<number, Record<string, any>>;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
@@ -2964,7 +2964,7 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
-        "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>) => void;
+        "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>) => void;
         "onIsReady"?: (event: KritzelEditorCustomEvent<EditorIsReadyEvent>) => void;
         "onLocaleChange"?: (event: KritzelEditorCustomEvent<LocaleCode>) => void;
         "onLogin"?: (event: KritzelEditorCustomEvent<LoginEvent>) => void;

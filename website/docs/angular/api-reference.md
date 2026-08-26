@@ -272,7 +272,7 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 | awarenessChange | Both | AwarenessStateMap | Emitted when collaborative awareness states change. |
 | syncingChange | Engine | boolean | Emitted when remote workspace synchronization status changes. |
 | loadingChange | Engine | boolean | Emitted when the combined loading state changes. |
-| isPublicChange | Editor | IKritzelIsPublicChangedEvent | Emitted when workspace public sharing status changes. |
+| isPublicChange | Editor | IKritzelIsPublicChangeEvent | Emitted when workspace public sharing status changes. |
 
 ### Methods
 

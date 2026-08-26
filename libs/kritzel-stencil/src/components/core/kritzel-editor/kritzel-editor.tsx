@@ -44,7 +44,7 @@ import { KritzelShortcut } from '../../../interfaces/shortcut.interface';
 import { KritzelViewportState } from '../../../interfaces/viewport-state.interface';
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '../../../interfaces/object-change-event.interface';
 import { IKritzelUser } from '../../../interfaces/user.interface';
-import { IKritzelIsPublicChangedEvent } from '../../../interfaces/share.interface';
+import { IKritzelIsPublicChangeEvent } from '../../../interfaces/share.interface';
 import { KritzelLoginConfig as KritzelLoginConfig } from '../../../interfaces/login-config.interface';
 import { LoginEvent } from '../../../events/login.event';
 import { KritzelNotification } from '../../../interfaces/notification.interface';
@@ -308,7 +308,7 @@ export class KritzelEditor {
   @Event() viewportChange!: EventEmitter<KritzelViewportState>;
   @Event() logout!: EventEmitter<void>;
   @Event() login!: EventEmitter<LoginEvent>;
-  @Event() isPublicChange!: EventEmitter<IKritzelIsPublicChangedEvent>;
+  @Event() isPublicChange!: EventEmitter<IKritzelIsPublicChangeEvent>;
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
 
   @State() isEngineReady: boolean = false;
