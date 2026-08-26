@@ -1,7 +1,7 @@
 import { test, expect } from '../fixtures/editor.fixture';
 import type { Locator } from '@playwright/test';
 
-const ROUTE = '/basic-usage';
+const ROUTE = '/getting-started/basic-usage';
 
 async function waitForPageReady(editorPage: { page: import('@playwright/test').Page; waitForReady: () => Promise<void> }) {
   const { page } = editorPage;

@@ -21,7 +21,7 @@ Unlike the Editor, the Engine **does not register any drawing tools by default**
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components-engine"
+  demoPath="/fundamentals/components/engine"
   repoFiles={['src/app/fundamentals/components/components-engine.component.ts']}
 />
 

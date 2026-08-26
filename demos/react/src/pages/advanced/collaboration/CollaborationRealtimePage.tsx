@@ -12,7 +12,7 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
-} from "../../fundamentals/shared/concept-shared";
+} from "../../shared/demo-shared";
 
 export function CollaborationRealtimePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);

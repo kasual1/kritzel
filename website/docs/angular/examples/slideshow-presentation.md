@@ -34,7 +34,7 @@ A curated slides deck with an interactive Angular dashboard header. Clicking nex
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/examples/slideshow-presentation"
-  repoFiles={['src/app/examples/slideshow-presentation/slideshow-presentation.component.ts']}
+  repoFiles={['src/app/examples/slideshow-presentation.component.ts']}
 />
 
 Slides are positioned at evenly spaced horizontal offsets and seeded as `KritzelShape` objects in `onReady()`. Navigating between slides calls `setViewport(centerX, centerY, scale)` to pan the camera to the target slide's coordinates. The viewport boundary inputs (`viewportBoundaryLeft`, `viewportBoundaryRight`, etc.) are updated dynamically per slide to clamp the camera within the active slide's margins.

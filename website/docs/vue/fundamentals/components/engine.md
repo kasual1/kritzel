@@ -21,8 +21,8 @@ Unlike the Editor, the Engine **does not register any drawing tools by default**
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/components-engine"
-  repoFiles={['src/pages/fundamentals/components/components-engine.vue']}
+  demoPath="/fundamentals/components/engine"
+  repoFiles={['src/pages/fundamentals/components/ComponentsEnginePage.vue']}
 />
 
 ## Related API Methods

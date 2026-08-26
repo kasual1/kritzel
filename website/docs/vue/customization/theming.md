@@ -21,8 +21,8 @@ The simplest entry point is switching between the two built-in themes. Pass `lig
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/customization/theming-apply"
-  repoFiles={['src/pages/advanced/customization/theming/ThemingApplyPage.vue']}
+  demoPath="/customization/theming/apply"
+  repoFiles={['src/pages/customization/theming/ThemingApplyPage.vue']}
 />
 
 ## Creating a Custom Theme
@@ -31,8 +31,8 @@ This example intentionally applies a strong light-purple visual language and rem
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/customization/theming-custom"
-  repoFiles={['src/pages/advanced/customization/theming/ThemingCustomPage.vue']}
+  demoPath="/customization/theming/custom"
+  repoFiles={['src/pages/customization/theming/ThemingCustomPage.vue']}
 />
 
 ## Related API Methods

@@ -10,7 +10,7 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
-} from "../shared/concept-shared";
+} from "../../shared/demo-shared";
 
 export function ToolsDisablePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);

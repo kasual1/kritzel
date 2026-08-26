@@ -145,6 +145,6 @@ Below is a complete example combining everything covered in this guide. It provi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  repoFiles={['src/pages/basic-usage/BasicUsagePage.tsx']}
-  demoPath="/basic-usage"
+  repoFiles={['src/pages/getting-started/BasicUsagePage.tsx']}
+  demoPath="/getting-started/basic-usage"
 />

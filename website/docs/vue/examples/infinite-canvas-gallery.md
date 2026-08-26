@@ -35,7 +35,7 @@ Twenty artwork thumbnails — sourced from [placehold.co](https://placehold.co) 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
   demoPath="/examples/infinite-canvas-gallery"
-  repoFiles={['src/pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage.vue']}
+  repoFiles={['src/pages/examples/InfiniteCanvasGalleryPage.vue']}
 />
 
 The key detail: `maxWidth` and `maxHeight` on each `KritzelImage.fromUrl` call must match the intended display size. The default constraints are `300 × 300`, so images larger than that are silently scaled down unless overridden.

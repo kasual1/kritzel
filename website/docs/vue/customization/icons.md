@@ -21,8 +21,8 @@ The demo registers application-specific SVG icons and reuses their names in tool
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/customization/icons"
-  repoFiles={['src/pages/advanced/customization/icons/IconsRegisterPage.vue']}
+  demoPath="/customization/icons/register"
+  repoFiles={['src/pages/customization/icons/IconsRegisterPage.vue']}
 />
 
 ## Related API Methods and Types

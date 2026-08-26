@@ -11,7 +11,7 @@ import {
   seedEditor,
   statusBarStyle,
   toolbarStyle,
-} from "../shared/concept-shared";
+} from "../../shared/demo-shared";
 
 type ToolName = "select" | "brush" | "eraser" | "line" | "shape" | "text";
 

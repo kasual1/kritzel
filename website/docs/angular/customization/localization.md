@@ -21,8 +21,8 @@ To change the active interface language, bind the `[locale]` property on `<kritz
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/localization-switch"
-  repoFiles={['src/app/advanced/localization/localization-switch.component.ts']}
+  demoPath="/customization/localization/switch"
+  repoFiles={['src/app/customization/localization/localization-switch.component.ts']}
 />
 
 ## Registering Custom Locales & Term Overrides
@@ -31,8 +31,8 @@ You can add support for additional languages (such as Spanish `'es'`) or overrid
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/localization-custom"
-  repoFiles={['src/app/advanced/localization/localization-custom.component.ts']}
+  demoPath="/customization/localization/custom"
+  repoFiles={['src/app/customization/localization/localization-custom.component.ts']}
 />
 
 ## Related API Methods

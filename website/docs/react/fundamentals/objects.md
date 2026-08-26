@@ -27,8 +27,8 @@ You can manually inject objects into the canvas or remove them programmatically,
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/objects-add-remove"
-  repoFiles={['src/pages/fundamentals/objects/objects-add-remove.tsx']}
+  demoPath="/fundamentals/objects/add-remove"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsAddRemovePage.tsx']}
 />
 
 ## Querying and Filtering Objects
@@ -37,8 +37,8 @@ Kritzel allows you to read the state of all objects currently on the canvas or f
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/objects-query"
-  repoFiles={['src/pages/fundamentals/objects/objects-query.tsx']}
+  demoPath="/fundamentals/objects/query"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsQueryPage.tsx']}
 />
 
 ## Managing Object Selection
@@ -47,8 +47,8 @@ You can programmatically retrieve the currently selected objects, select specifi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/objects-selection"
-  repoFiles={['src/pages/fundamentals/objects/objects-selection.tsx']}
+  demoPath="/fundamentals/objects/selection"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsSelectionPage.tsx']}
 />
 
 ## Grouping
@@ -57,8 +57,8 @@ Objects can be grouped together so they can be moved and transformed as a single
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/objects-grouping"
-  repoFiles={['src/pages/fundamentals/objects/objects-grouping.tsx']}
+  demoPath="/fundamentals/objects/grouping"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsGroupingPage.tsx']}
 />
 
 ## Ordering
@@ -67,8 +67,8 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/objects-ordering"
-  repoFiles={['src/pages/fundamentals/objects/objects-ordering.tsx']}
+  demoPath="/fundamentals/objects/ordering"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsOrderingPage.tsx']}
 />
 
 ## Related API Methods

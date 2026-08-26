@@ -19,8 +19,8 @@ The basic implementation of the Editor requires zero configuration. You simply r
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/components-editor"
-  repoFiles={['src/pages/fundamentals/components/components-editor.vue']}
+  demoPath="/fundamentals/components/editor"
+  repoFiles={['src/pages/fundamentals/components/ComponentsEditorPage.vue']}
 />
 
 ## Waiting for Initialization
@@ -50,8 +50,8 @@ You can toggle visibility for built-in UI components using props. For example, s
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/components-editor-ui"
-  repoFiles={['src/pages/fundamentals/components/components-editor-ui.vue']}
+  demoPath="/fundamentals/components/editor-ui"
+  repoFiles={['src/pages/fundamentals/components/ComponentsEditorUiPage.vue']}
 />
 
 ## Related API Methods

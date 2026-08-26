@@ -34,7 +34,7 @@ A presentation-style explorer layout with a dashboard header, grouped tree navig
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
   demoPath="/examples/object-explorer"
-  repoFiles={['src/pages/examples/object-explorer/ObjectExplorerPage.vue']}
+  repoFiles={['src/pages/examples/ObjectExplorerPage.vue']}
 />
 
 The object list is seeded in `onReady()` and kept in sync via the `objectsAdded`, `objectsRemoved`, and `objectsUpdated` event callbacks. Root objects are derived by filtering out any IDs that appear as children inside `KritzelGroup` objects. Selecting a tree node calls `updateObject()` to apply property changes from the inspector fields in real time.

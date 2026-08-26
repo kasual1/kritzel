@@ -21,8 +21,8 @@ Pass a `KritzelFontMap` to the `customFonts` prop on `<KritzelEditor>`, or call 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/advanced/customization/fonts-register"
-  repoFiles={['src/pages/advanced/customization/fonts/FontsRegisterPage.tsx']}
+  demoPath="/customization/fonts/register"
+  repoFiles={['src/pages/customization/fonts/FontsRegisterPage.tsx']}
 />
 
 ## Related API Methods

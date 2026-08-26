@@ -2,34 +2,34 @@ import { test, expect } from '../fixtures/editor.fixture';
 import type { Locator } from '@playwright/test';
 
 const FUNDAMENTAL_ROUTES = [
-  '/advanced/collaboration-local',
-  '/advanced/collaboration-realtime',
-  '/fundamentals/components-editor',
-  '/fundamentals/components-editor-ui',
-  '/fundamentals/components-engine',
-  '/advanced/context-menus-canvas-quick-actions',
-  '/advanced/context-menus-clipboard-actions',
-  '/advanced/context-menus-object-inspector',
-  '/advanced/context-menus-smart-conditional',
-  '/fundamentals/custom-elements',
-  '/fundamentals/custom-elements-html',
-  '/fundamentals/objects-add-remove',
-  '/fundamentals/objects-grouping',
-  '/fundamentals/objects-ordering',
-  '/fundamentals/objects-query',
-  '/fundamentals/objects-selection',
-  '/fundamentals/persistence-local',
-  '/advanced/customization/theming-apply',
-  '/advanced/customization/theming-custom',
-  '/fundamentals/tools-change',
-  '/fundamentals/tools-controls',
-  '/fundamentals/tools-disable',
-  '/fundamentals/tools-register',
-  '/fundamentals/viewport-center',
-  '/fundamentals/viewport-change',
-  '/fundamentals/viewport-coordinates',
-  '/fundamentals/workspaces-crud',
-  '/fundamentals/workspaces-switch',
+  '/advanced/collaboration/local',
+  '/advanced/collaboration/realtime',
+  '/advanced/dynamic-objects/custom-element',
+  '/advanced/dynamic-objects/custom-element-html',
+  '/customization/theming/apply',
+  '/customization/theming/custom',
+  '/fundamentals/components/editor',
+  '/fundamentals/components/editor-ui',
+  '/fundamentals/components/engine',
+  '/fundamentals/components/context-menus-canvas-quick-actions',
+  '/fundamentals/components/context-menus-clipboard-actions',
+  '/fundamentals/components/context-menus-object-inspector',
+  '/fundamentals/components/context-menus-smart-conditional',
+  '/fundamentals/objects/add-remove',
+  '/fundamentals/objects/grouping',
+  '/fundamentals/objects/ordering',
+  '/fundamentals/objects/query',
+  '/fundamentals/objects/selection',
+  '/fundamentals/persistence/local',
+  '/fundamentals/tools/change',
+  '/fundamentals/tools/disable',
+  '/fundamentals/tools/register',
+  '/fundamentals/tools/toolbar',
+  '/fundamentals/viewport/center',
+  '/fundamentals/viewport/change',
+  '/fundamentals/viewport/coordinates',
+  '/fundamentals/workspaces/crud',
+  '/fundamentals/workspaces/switch',
 ] as const;
 
 async function waitForFundamentalPage(editorPage: { page: import('@playwright/test').Page; waitForReady: () => Promise<void> }) {
@@ -65,14 +65,14 @@ async function getPrimaryCanvas(editorPage: { page: import('@playwright/test').P
 
 test.describe('Fundamentals & Advanced Pages Visual Regression', () => {
   for (const route of FUNDAMENTAL_ROUTES) {
-    const routeName = route.split('/').pop()!;
+    const routeName = route.slice(1).replace(/\//g, '-');
 
     test(`should match screenshot for ${routeName}`, async ({ editorPage }) => {
       await editorPage.goto(route);
       await waitForFundamentalPage(editorPage);
 
       const canvas = await getPrimaryCanvas(editorPage);
-      await expect(canvas).toHaveScreenshot(`concept-${routeName}.png`);
+      await expect(canvas).toHaveScreenshot(`${routeName}.png`);
     });
   }
 });

@@ -21,8 +21,8 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/tools-disable"
-  repoFiles={['src/pages/fundamentals/tools/tools-disable.vue']}
+  demoPath="/fundamentals/tools/disable"
+  repoFiles={['src/pages/fundamentals/tools/ToolsDisablePage.vue']}
 />
 
 ## Customizing the Toolbar
@@ -31,8 +31,8 @@ If you want a focused editing experience, pass a custom `toolbarItems` array to 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/tools-toolbar"
-  repoFiles={['src/pages/fundamentals/tools/tools-toolbar.vue']}
+  demoPath="/fundamentals/tools/toolbar"
+  repoFiles={['src/pages/fundamentals/tools/ToolsToolbarPage.vue']}
 />
 
 ## Adding Custom Tools
@@ -41,8 +41,8 @@ You can register a custom tool configuration and then surface it in the toolbar 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/tools-register"
-  repoFiles={['src/pages/fundamentals/tools/tools-register.vue']}
+  demoPath="/fundamentals/tools/register"
+  repoFiles={['src/pages/fundamentals/tools/ToolsRegisterPage.vue']}
 />
 
 ## Programmatically Changing the Active Tool
@@ -51,8 +51,8 @@ You can programmatically change the currently active tool using the API. This is
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/tools-change"
-  repoFiles={['src/pages/fundamentals/tools/tools-change.vue']}
+  demoPath="/fundamentals/tools/change"
+  repoFiles={['src/pages/fundamentals/tools/ToolsChangePage.vue']}
 />
 
 ## Related API Methods

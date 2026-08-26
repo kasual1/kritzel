@@ -55,8 +55,8 @@ This renders the editor with the **full default toolbar** — selection, brush, 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/getting-started"
-  repoFiles={['src/app/getting-started/quickstart.component.ts']}
+  demoPath="/getting-started/quick-start"
+  repoFiles={['src/app/getting-started/quick-start.component.ts']}
 />
 
 ## Optional Enhancements

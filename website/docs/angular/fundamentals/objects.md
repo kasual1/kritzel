@@ -26,7 +26,7 @@ You can manually inject objects into the canvas or remove them programmatically,
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/objects-add-remove"
+  demoPath="/fundamentals/objects/add-remove"
   repoFiles={['src/app/fundamentals/objects/objects-add-remove.component.ts']}
 />
 
@@ -36,7 +36,7 @@ Kritzel allows you to read the state of all objects currently on the canvas, or 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/objects-query"
+  demoPath="/fundamentals/objects/query"
   repoFiles={['src/app/fundamentals/objects/objects-query.component.ts']}
 />
 
@@ -46,7 +46,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/objects-selection"
+  demoPath="/fundamentals/objects/selection"
   repoFiles={['src/app/fundamentals/objects/objects-selection.component.ts']}
 />
 
@@ -56,7 +56,7 @@ Objects can be grouped together so they can be moved and transformed as a single
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/objects-grouping"
+  demoPath="/fundamentals/objects/grouping"
   repoFiles={['src/app/fundamentals/objects/objects-grouping.component.ts']}
 />
 
@@ -66,7 +66,7 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/objects-ordering"
+  demoPath="/fundamentals/objects/ordering"
   repoFiles={['src/app/fundamentals/objects/objects-ordering.component.ts']}
 />
 

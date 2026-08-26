@@ -21,8 +21,8 @@ Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/localization-switch"
-  repoFiles={['src/pages/advanced/localization/LocalizationSwitchPage.vue']}
+  demoPath="/customization/localization/switch"
+  repoFiles={['src/pages/customization/localization/LocalizationSwitchPage.vue']}
 />
 
 ## Registering Custom Locales & Term Overrides
@@ -31,8 +31,8 @@ Register a `KritzelLocale` definition through the `locales` prop or dynamically 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/advanced/localization-custom"
-  repoFiles={['src/pages/advanced/localization/LocalizationCustomPage.vue']}
+  demoPath="/customization/localization/custom"
+  repoFiles={['src/pages/customization/localization/LocalizationCustomPage.vue']}
 />
 
 ## Related API Methods

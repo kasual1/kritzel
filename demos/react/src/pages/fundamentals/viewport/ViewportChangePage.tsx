@@ -12,7 +12,7 @@ import {
   seedEditor,
   statusBarStyle,
   toolbarStyle,
-} from "../shared/concept-shared";
+} from "../../shared/demo-shared";
 
 export function ViewportChangePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);

@@ -8,8 +8,8 @@ React demo pages are route components in `demos/react/src/pages/`. They support 
 
 | Category | Path template |
 |---|---|
-| Example demos | `demos/react/src/pages/examples/<feature>/<FeatureExamplePage>.tsx` |
-| Concept demos | `demos/react/src/pages/fundamentals/<concept>/<ConceptFocusPage>.tsx` |
+| Example demos | `demos/react/src/pages/examples/<ExampleName>Page.tsx` |
+| Fundamentals demos | `demos/react/src/pages/fundamentals/<topic>/<TopicFocus>Page.tsx` |
 | Other guides | `demos/react/src/pages/<guide>/<GuidePage>.tsx` |
 
 Follow existing folder conventions in the target area.

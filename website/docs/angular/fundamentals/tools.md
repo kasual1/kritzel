@@ -22,7 +22,7 @@ If your application needs to temporarily lock the canvas to prevent user interac
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/tools-disable"
+  demoPath="/fundamentals/tools/disable"
   repoFiles={['src/app/fundamentals/tools/tools-disable.component.ts']}
 />
 
@@ -32,7 +32,7 @@ If you want a focused editing experience, pass a custom `toolbarItems` array to 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/tools-toolbar"
+  demoPath="/fundamentals/tools/toolbar"
   repoFiles={['src/app/fundamentals/tools/tools-toolbar.component.ts']}
 />
 
@@ -42,7 +42,7 @@ You can register a custom tool configuration and then surface it in the toolbar 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/tools-register"
+  demoPath="/fundamentals/tools/register"
   repoFiles={['src/app/fundamentals/tools/tools-register.component.ts']}
 />
 
@@ -52,7 +52,7 @@ You can programmatically change the currently active tool using the API. This is
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/tools-change"
+  demoPath="/fundamentals/tools/change"
   repoFiles={['src/app/fundamentals/tools/tools-change.component.ts']}
 />
 

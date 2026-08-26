@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getEditorRef, KritzelEditor } from 'kritzel-vue'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { editorStyle, hostStyle, seedEditor } from '../shared/concept-shared'
+import { editorStyle, hostStyle, seedEditor } from '../../shared/demo-shared'
 
 const editor = getEditorRef('editor');
 

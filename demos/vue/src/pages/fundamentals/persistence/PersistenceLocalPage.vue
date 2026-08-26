@@ -13,7 +13,7 @@ import {
   hostStyle,
   seedEditor,
   toolbarStyle,
-} from '../shared/concept-shared'
+} from '../../shared/demo-shared'
 
 const editor = getEditorRef('editor');
 
