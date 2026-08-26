@@ -76,7 +76,7 @@ export type {
     ObjectsUpdatedEvent,
     ObjectsInViewportChangeEvent,
     KritzelUndoState,
-    IKritzelIsPublicChangedEvent,
+    IKritzelIsPublicChangeEvent,
     KritzelEngineState,
     KritzelDebugInfo,
     IKritzelUser,

@@ -25,7 +25,7 @@ Handlers are typed as receiving `KritzelEditorCustomEvent<T>` (a `CustomEvent` s
 | `onUndoStateChange` | `KritzelUndoState` | Undo/redo availability changes — drive custom undo/redo buttons |
 | `onThemeChange` | `ThemeName` | Theme switched (settings UI or `theme` prop) |
 | `onViewportChange` | `KritzelViewportState` | Pan/zoom/resize |
-| `onIsPublicChange` | `IKritzelIsPublicChangedEvent` | Share-state of active workspace toggles |
+| `onIsPublicChange` | `IKritzelIsPublicChangeEvent` | Share-state of active workspace toggles |
 | `onAwarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `onLogin` / `onLogout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
 

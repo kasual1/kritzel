@@ -401,7 +401,7 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
 | activeWorkspaceChange | ActiveWorkspaceChangeEvent | Emitted when the active workspace changes. |
-| isPublicChange | IKritzelIsPublicChangedEvent | Emitted when workspace public sharing status toggles. |
+| isPublicChange | IKritzelIsPublicChangeEvent | Emitted when workspace public sharing status toggles. |
 
 ### Methods
 
