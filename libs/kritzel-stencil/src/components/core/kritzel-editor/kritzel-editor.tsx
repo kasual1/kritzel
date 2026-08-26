@@ -278,7 +278,6 @@ export class KritzelEditor {
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
   @Prop() isZoomPanelVisible: boolean = true;
-  @Prop() isObjectDistanceFadingActive: boolean = false;
   @Prop() syncConfig?: KritzelSyncConfig = DEFAULT_SYNC_CONFIG;
   @Prop() assetStorageConfig?: KritzelAssetStorageConfig = DEFAULT_ASSET_STORAGE_CONFIG;
 
@@ -1480,7 +1479,6 @@ export class KritzelEditor {
             user={this.user}
             scaleMax={this.scaleMax}
             lockDrawingScale={this.lockDrawingScale}
-            isObjectDistanceFadingActive={this.isObjectDistanceFadingActive}
             scaleMin={this.scaleMin}
             cursorTarget={this.cursorTarget}
             isLoading={this.isLoading}

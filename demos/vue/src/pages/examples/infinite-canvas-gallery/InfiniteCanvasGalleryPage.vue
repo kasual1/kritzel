@@ -272,7 +272,6 @@ async function syncVisibleObjects(viewport: KritzelViewportState) {
       :themes="[vueThemeLight]"
       :isMoreMenuVisible="true"
       :isWorkspaceManagerVisible="false"
-      :isObjectDistanceFadingActive="true"
       :loginConfig="undefined"
       :style="{ display: 'block', width: '100%', height: '100%' }"
       @isReady="onIsReady"

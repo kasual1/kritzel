@@ -77,7 +77,6 @@ const pointInSphere = (index: number, count: number) => {
         [themes]="themes"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="false"
-        [isObjectDistanceFadingActive]="true"
         (isReady)="onIsReady($event)"
         (viewportChange)="onViewportChange($event)"
       ></kritzel-editor>

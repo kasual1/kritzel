@@ -595,7 +595,6 @@ exportViewportAsSvg: Promise<void>
 | fallbackLocale | Both | LocaleCode | Locale used for missing translations. |
 | globalContextMenuItems | Both | ContextMenuItem[] | Context menu items for the canvas background. |
 | isMoreMenuVisible | Editor | boolean | Show or hide the More menu. |
-| isObjectDistanceFadingActive | Both | boolean | Fade objects based on distance from viewport center. |
 | isToolbarVisible | Editor | boolean | Show or hide the toolbar. |
 | isUtilityPanelVisible | Editor | boolean | Show or hide the utility panel. |
 | isWorkspaceManagerVisible | Editor | boolean | Show or hide the workspace manager toggle. |
