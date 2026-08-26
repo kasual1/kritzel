@@ -1,8 +1,4 @@
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import { EditorPage } from "./pages/e2e/EditorPage";
-import { EditorHocuspocusPage } from "./pages/e2e/EditorHocuspocusPage";
-import { MultiEditorPage } from "./pages/e2e/MultiEditorPage";
-import { WrappedEditorPage } from "./pages/e2e/WrappedEditorPage";
 import { QuickStartPage } from "./pages/getting-started/QuickStartPage";
 import { BasicUsagePage } from "./pages/getting-started/BasicUsagePage";
 import { ComponentsEditorPage } from "./pages/fundamentals/components/ComponentsEditorPage";
@@ -53,11 +49,7 @@ function App() {
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/e2e/editor" replace />} />
-        <Route path="/e2e/editor" element={<EditorPage />} />
-        <Route path="/e2e/editor-hocuspocus" element={<EditorHocuspocusPage />} />
-        <Route path="/e2e/multi-editor" element={<MultiEditorPage />} />
-        <Route path="/e2e/wrapped-editor" element={<WrappedEditorPage />} />
+        <Route path="/" element={<Navigate to="/getting-started/quick-start" replace />} />
 
         <Route path="/getting-started/quick-start" element={<QuickStartPage />} />
         <Route path="/getting-started/basic-usage" element={<BasicUsagePage />} />
@@ -109,7 +101,7 @@ function App() {
 
         <Route path="/website/hero" element={<WebsiteHeroPage />} />
         <Route path="/website/hero-mobile" element={<WebsiteHeroPageMobile />} />
-        <Route path="*" element={<Navigate to="/e2e/editor" replace />} />
+        <Route path="*" element={<Navigate to="/getting-started/quick-start" replace />} />
       </Routes>
     </HashRouter>
   );

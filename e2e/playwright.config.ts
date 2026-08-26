@@ -4,6 +4,12 @@ const ANGULAR_PORT = 4200;
 const REACT_PORT = 5173;
 const VUE_PORT = 5174;
 
+const E2E_ANGULAR_PORT = 4300;
+const E2E_REACT_PORT = 5273;
+const E2E_VUE_PORT = 5274;
+
+const VISUAL_SPEC_PATTERN = /.*-visual\.spec\.ts$/;
+
 const E2E_PROJECT = process.env.E2E_PROJECT;
 const SELECTED_PROJECTS = new Set(
   [
@@ -38,10 +44,43 @@ export default defineConfig({
   },
 
   projects: [
+    // Functional specs run against the standalone e2e harness apps.
+    {
+      name: 'e2e-angular',
+      testDir: './tests',
+      testMatch: ['*.spec.ts'],
+      testIgnore: [VISUAL_SPEC_PATTERN],
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: `http://localhost:${E2E_ANGULAR_PORT}`,
+      },
+    },
+    {
+      name: 'e2e-react',
+      testDir: './tests',
+      testMatch: ['*.spec.ts'],
+      testIgnore: [VISUAL_SPEC_PATTERN],
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: `http://localhost:${E2E_REACT_PORT}`,
+      },
+    },
+    {
+      name: 'e2e-vue',
+      testDir: './tests',
+      testMatch: ['*.spec.ts'],
+      testIgnore: [VISUAL_SPEC_PATTERN],
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: `http://localhost:${E2E_VUE_PORT}`,
+      },
+    },
+    // Visual regression specs run against the docs-facing demo apps.
+    // Named to match the pre-existing screenshot baseline paths (e2e/screenshots/<name>/**).
     {
       name: 'angular',
       testDir: './tests',
-      testMatch: ['*.spec.ts'],
+      testMatch: [VISUAL_SPEC_PATTERN],
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${ANGULAR_PORT}`,
@@ -50,7 +89,7 @@ export default defineConfig({
     {
       name: 'react',
       testDir: './tests',
-      testMatch: ['*.spec.ts'],
+      testMatch: [VISUAL_SPEC_PATTERN],
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${REACT_PORT}`,
@@ -59,7 +98,7 @@ export default defineConfig({
     {
       name: 'vue',
       testDir: './tests',
-      testMatch: ['*.spec.ts'],
+      testMatch: [VISUAL_SPEC_PATTERN],
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${VUE_PORT}`,
@@ -68,6 +107,27 @@ export default defineConfig({
   ],
 
   webServer: [
+    {
+      project: 'e2e-angular',
+      command: 'npm run start:e2e:prod -w e2e/apps/angular',
+      port: E2E_ANGULAR_PORT,
+      reuseExistingServer: !process.env.CI,
+      cwd: '..',
+    },
+    {
+      project: 'e2e-react',
+      command: 'npm run start:e2e:prod -w e2e/apps/react',
+      port: E2E_REACT_PORT,
+      reuseExistingServer: !process.env.CI,
+      cwd: '..',
+    },
+    {
+      project: 'e2e-vue',
+      command: 'npm run start:e2e:prod -w e2e/apps/vue',
+      port: E2E_VUE_PORT,
+      reuseExistingServer: !process.env.CI,
+      cwd: '..',
+    },
     {
       project: 'angular',
       command: 'npm run start:e2e:prod -w demos/angular',
