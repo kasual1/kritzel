@@ -16,25 +16,93 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 
 | Property | Type | Description |
 |----------|------|-------------|
-| activeUsers | IKritzelUser[] | Other users currently in the session. |
 | isLoading | boolean | Whether the editor is currently in a loading state. |
-| syncConfig | KritzelSyncConfig | Real-time collaboration provider configuration. |
-| user | IKritzelUser | Current authenticated user for awareness/collaboration state. |
+| assetStorageConfig | KritzelAssetStorageConfig | Asset storage provider configuration for uploaded/rendered assets. |
+| debugInfo | KritzelDebugInfo | Debug overlay configuration options. |
+| editorId | string | Optional editor identifier for namespacing storage keys across instances. |
+| isObjectDistanceFadingActive | boolean | Enables distance-based fading for rendered objects. |
+| licenseKey | string | Valid license removes the Powered by Kritzel watermark. |
+| lockDrawingScale | boolean | Keeps drawn objects at fixed visual size across zoom levels. |
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| awarenessChange | AwarenessStateMap | Emitted when collaborative awareness state changes. |
+| isReady | EditorIsReadyEvent | Emitted when the editor is fully initialized and ready. |
 
 ### Methods
 
-#### reinitSync
+#### beginSceneBootstrap
 
-Reinitializes the active synchronization provider connection.
+Starts a scene bootstrap phase by hiding the scene immediately.
 
 ```ts
-reinitSync(): Promise<void>
+beginSceneBootstrap(): Promise<void>
+```
+
+#### endSceneBootstrap
+
+Ends the scene bootstrap phase.
+
+```ts
+endSceneBootstrap(): Promise<void>
+```
+
+---
+
+## UI Elements
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| cursorTarget | HTMLElement | Element used as cursor target. Defaults to editor container if omitted. |
+| customSvgIcons | string | Custom SVG icon definitions. |
+| globalContextMenuItems | ContextMenuItem[] | Context menu items shown on canvas background. |
+| isMoreMenuVisible | boolean | Controls visibility of the More menu. |
+| isToolbarVisible | boolean | Controls toolbar visibility. |
+| isUtilityPanelVisible | boolean | Controls utility panel visibility. |
+| isWorkspaceManagerVisible | boolean | Controls workspace manager visibility. |
+| isZoomPanelVisible | boolean | Controls zoom panel visibility. |
+| moreMenuItems | IKritzelMenuItem[] | Custom entries for the More dropdown menu. |
+| objectContextMenuItems | ContextMenuItem[] | Context menu items shown for selected objects. |
+
+### Events
+
+No UI-specific events.
+
+### Methods
+
+#### openContextMenu
+
+Opens a context menu programmatically at the given screen coordinates.
+
+```ts
+openContextMenu(options: { x: number; y: number; objectId?: string }): Promise<void>
+```
+
+#### hideContextMenu
+
+Hides the active context menu.
+
+```ts
+hideContextMenu(): Promise<void>
+```
+
+#### getDisplayableShortcuts
+
+Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
+
+```ts
+getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, "action" | "condition">[]>
+```
+
+#### triggerNotification
+
+Triggers a UI notification programmatically.
+
+```ts
+triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" | "timestamp">>): Promise<void>
 ```
 
 ---
@@ -712,16 +780,13 @@ loadObjectsFromJson(json: string): Promise<number>
 
 ---
 
-## Fonts & Localization
+## Theming
 
 ### Props
 
 | Property | Type | Description |
 |----------|------|-------------|
 | customFonts | KritzelFontMap | Registers fonts for runtime rendering and text-tool usage. |
-| fallbackLocale | LocaleCode | Locale used to resolve terms missing from the active locale. |
-| locale | LocaleCode | Current locale code used by the editor. |
-| locales | KritzelLocale[] | Available locale definitions with optional term overrides. |
 | theme | ThemeCode | Current active theme. |
 | themes | KritzelTheme[] | Available theme definitions. |
 
@@ -729,7 +794,6 @@ loadObjectsFromJson(json: string): Promise<number>
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| localeChange | LocaleCode | Emitted when the active locale changes. |
 | themeChange | ThemeCode | Emitted when the active theme changes. |
 
 ### Methods
@@ -741,6 +805,26 @@ Registers custom fonts for runtime rendering and text-tool usage.
 ```ts
 registerFonts(fonts: KritzelFontMap): Promise<void>
 ```
+
+---
+
+## Localization
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| fallbackLocale | LocaleCode | Locale used to resolve terms missing from the active locale. |
+| locale | LocaleCode | Current locale code used by the editor. |
+| locales | KritzelLocale[] | Available locale definitions with optional term overrides. |
+
+### Events
+
+| Event | Payload Type | Description |
+|----------|--------------|-------------|
+| localeChange | LocaleCode | Emitted when the active locale changes. |
+
+### Methods
 
 #### registerLocales
 
@@ -784,13 +868,13 @@ t(key: KritzelTermKey, vars?: KritzelTermVars): Promise<string>
 
 ---
 
-## External Services & Dialogs
+## User Management
 
 ### Props
 
 | Property | Type | Description |
 |----------|------|-------------|
-| assetStorageConfig | KritzelAssetStorageConfig | Asset storage provider configuration for uploaded/rendered assets. |
+| user | IKritzelUser | Current authenticated user for awareness/collaboration state. |
 | loginConfig | KritzelLoginConfig | Login dialog provider configuration. |
 
 ### Events
@@ -820,80 +904,30 @@ setLoginLoading(provider: string | null): Promise<void>
 
 ---
 
-## UI & Lifecycle
+## Collaboration
 
 ### Props
 
 | Property | Type | Description |
 |----------|------|-------------|
-| cursorTarget | HTMLElement | Element used as cursor target. Defaults to editor container if omitted. |
-| customSvgIcons | string | Custom SVG icon definitions. |
-| debugInfo | KritzelDebugInfo | Debug overlay configuration options. |
-| editorId | string | Optional editor identifier for namespacing storage keys across instances. |
-| globalContextMenuItems | ContextMenuItem[] | Context menu items shown on canvas background. |
-| isMoreMenuVisible | boolean | Controls visibility of the More menu. |
-| isObjectDistanceFadingActive | boolean | Enables distance-based fading for rendered objects. |
-| isToolbarVisible | boolean | Controls toolbar visibility. |
-| isUtilityPanelVisible | boolean | Controls utility panel visibility. |
-| isWorkspaceManagerVisible | boolean | Controls workspace manager visibility. |
-| isZoomPanelVisible | boolean | Controls zoom panel visibility. |
-| licenseKey | string | Valid license removes the Powered by Kritzel watermark. |
-| lockDrawingScale | boolean | Keeps drawn objects at fixed visual size across zoom levels. |
-| moreMenuItems | IKritzelMenuItem[] | Custom entries for the More dropdown menu. |
-| objectContextMenuItems | ContextMenuItem[] | Context menu items shown for selected objects. |
+| activeUsers | IKritzelUser[] | Other users currently in the session. |
+| syncConfig | KritzelSyncConfig | Real-time collaboration provider configuration. |
 
 ### Events
 
 | Event | Payload Type | Description |
-|-------|--------------|-------------|
-| isReady | EditorIsReadyEvent | Emitted when the editor is fully initialized and ready. |
+|----------|--------------|-------------|
+| awarenessChange | AwarenessStateMap | Emitted when collaborative awareness state changes. |
 
 ### Methods
 
-#### openContextMenu
+#### reinitSync
 
-Opens a context menu programmatically at the given screen coordinates.
-
-```ts
-openContextMenu(options: { x: number; y: number; objectId?: string }): Promise<void>
-```
-
-#### hideContextMenu
-
-Hides the active context menu.
+Reinitializes the active synchronization provider connection.
 
 ```ts
-hideContextMenu(): Promise<void>
+reinitSync(): Promise<void>
 ```
 
-#### getDisplayableShortcuts
+---
 
-Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
-
-```ts
-getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, "action" | "condition">[]>
-```
-
-#### triggerNotification
-
-Triggers a UI notification programmatically.
-
-```ts
-triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" | "timestamp">>): Promise<void>
-```
-
-#### beginSceneBootstrap
-
-Starts a scene bootstrap phase by hiding the scene immediately.
-
-```ts
-beginSceneBootstrap(): Promise<void>
-```
-
-#### endSceneBootstrap
-
-Ends the scene bootstrap phase.
-
-```ts
-endSceneBootstrap(): Promise<void>
-```
