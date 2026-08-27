@@ -20,6 +20,59 @@ const quickStartPaths: Record<keyof typeof frameworkPaths, string> = {
   vue: "/docs/vue/getting-started/quick-start",
 };
 
+const productHighlights = [
+  {
+    eyebrow: "Made for scale",
+    title: "A canvas that keeps up with every idea",
+    description:
+      "Give people room to think. Kritzel renders an expansive workspace with responsive panning, zooming, and spatial indexing built in.",
+    image: "/img/highlights/infinite-canvas.png",
+    imageAlt: "Kritzel editor showing an infinite canvas workspace",
+  },
+  {
+    eyebrow: "Built around your product",
+    title: "Compose the experience your users need",
+    description:
+      "Start with a polished editor or use the engine directly. Customize tools, objects, UI, and workflows without working around someone else's product decisions.",
+    image: "/img/highlights/customizable-editor.png",
+    imageAlt: "Kritzel editor with drawing tools and a customized workspace",
+  },
+  {
+    eyebrow: "Ready for every team",
+    title: "Collaboration that feels immediate",
+    description:
+      "Bring shared workspaces to life with realtime synchronization, persistence, and a foundation that works across desktop, tablet, and mobile.",
+    image: "/img/highlights/realtime-collaboration.png",
+    imageAlt: "Kritzel collaborative workspace with multiple objects on the canvas",
+  },
+] as const;
+
+function ProductHighlights() {
+  return (
+    <section className={styles.productHighlights} aria-label="Kritzel capabilities">
+      <div className="container">
+        {productHighlights.map((highlight, index) => (
+          <article
+            className={clsx(styles.productHighlight, index % 2 === 1 && styles.productHighlightReversed)}
+            key={highlight.title}
+          >
+            <div className={styles.productHighlightImage}>
+              <img src={highlight.image} alt={highlight.imageAlt} loading="lazy" />
+            </div>
+            <div className={styles.productHighlightContent}>
+              <p className={styles.productHighlightEyebrow}>{highlight.eyebrow}</p>
+              <Heading as="h2" className={styles.productHighlightTitle}>
+                {highlight.title}
+              </Heading>
+              <p className={styles.productHighlightDescription}>{highlight.description}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function HomepageEditorEmbed() {
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const [isMobileViewport, setIsMobileViewport] = React.useState(false);
@@ -271,6 +324,7 @@ export default function Home(): ReactNode {
       <HomepageHeader />
       <main>
         <HomepageFeatures />
+        {/* <ProductHighlights /> */}
         <hr className={styles.sectionSeparator} />
         <FAQSection />
         <CallToAction />
