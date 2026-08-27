@@ -260,7 +260,7 @@ export function ImageAnnotationStudioPage() {
     setActiveSketchTool(toolName);
     setActiveMode("sketch");
     await syncTextColorToActiveSketchTool(toolName);
-    await editor.changeActiveToolByName(toolName);
+    await editor.changeActiveTool(toolName);
   }
 
   async function activateMode(mode: AnnotationMode) {
@@ -273,11 +273,11 @@ export function ImageAnnotationStudioPage() {
 
     if (mode === "text") {
       await syncTextColorToActiveSketchTool(activeSketchTool);
-      await editor.changeActiveToolByName("text");
+      await editor.changeActiveTool("text");
       return;
     }
 
-    await editor.changeActiveToolByName(activeSketchTool);
+    await editor.changeActiveTool(activeSketchTool);
   }
 
   async function onReady() {

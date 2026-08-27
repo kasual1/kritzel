@@ -19,7 +19,7 @@ Tool *names are whatever the toolbar config / `registerTool` call says* â€”
 ```ts
 await editor.changeActiveToolByName('brush');
 // or with an instance (e.g. the return value of registerTool):
-await editor.changeActiveTool(toolInstance);
+await editor.changeActiveToolByName(toolInstance.name);
 ```
 
 Switching tools clears the current selection. `disable()` / `enable()` turn all canvas interaction off/on (e.g. while a modal is open).
@@ -163,5 +163,5 @@ export class StampTool extends KritzelBaseTool {
 }
 
 const tool = await editor.registerTool('stamp', StampTool);
-await editor.changeActiveTool(tool!);
+  await editor.changeActiveToolByName(tool!.name);
 ```

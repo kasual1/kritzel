@@ -29,7 +29,7 @@ Angular remains the source of truth. React and Vue pages should preserve meaning
 4. Convert code snippets to framework-appropriate syntax.
 - React snippets: JSX/TSX patterns and React event/listener idioms.
 - Vue snippets: SFC-style snippets where relevant (<script setup>, <template>).
-- Keep API method names unchanged (changeActiveToolByName, zoomTo, centerObjectInViewport, etc.).
+- Keep API method names unchanged (changeActiveTool, zoomTo, centerObjectInViewport, etc.).
 
 5. Use language fences consistently.
 - In Vue docs, embedded component/template snippets must use html code fences.

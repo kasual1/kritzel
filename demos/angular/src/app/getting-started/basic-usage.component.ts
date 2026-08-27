@@ -152,12 +152,12 @@ export class BasicUsageComponent {
 
   async setBrushTool() {
     this.activeTool.set('brush');
-    await this.editor.changeActiveToolByName('brush');
+    await this.editor.changeActiveTool('brush');
   }
 
   async setSelectTool() {
     this.activeTool.set('select');
-    await this.editor.changeActiveToolByName('select');
+    await this.editor.changeActiveTool('select');
   }
 
   async addText() {

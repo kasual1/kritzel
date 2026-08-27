@@ -120,7 +120,7 @@ export class HeadlessCanvasComponent {
     await this.engine.registerTool('selection', KritzelSelectionTool);
     await this.engine.registerTool('brush', KritzelBrushTool);
     await this.engine.registerTool('eraser', KritzelEraserTool);
-    await this.engine.changeActiveToolByName('brush');
+    await this.engine.changeActiveTool('brush');
   }
 }
 ```

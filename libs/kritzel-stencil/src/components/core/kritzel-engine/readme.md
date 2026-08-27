@@ -235,23 +235,7 @@ Type: `Promise<boolean>`
 
 `true` if objects were provided and the viewport was adjusted, `false` otherwise.
 
-### `changeActiveTool(tool: KritzelBaseTool) => Promise<void>`
-
-Switches the active drawing tool. Deactivates the current tool and clears any selection.
-
-#### Parameters
-
-| Name   | Type              | Description                      |
-| ------ | ----------------- | -------------------------------- |
-| `tool` | `KritzelBaseTool` | - The tool instance to activate. |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `changeActiveToolByName(toolName: string) => Promise<void>`
+### `changeActiveTool(toolName: string) => Promise<void>`
 
 Switches the active drawing tool by its registered name.
 

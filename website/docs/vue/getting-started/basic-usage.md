@@ -35,18 +35,18 @@ function onReady(event: Event) {
 
 ## Changing Tools Programmatically
 
-The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `changeActiveToolByName` method — the name must match the tool's registered name (the `name` of the corresponding `toolbarItems` entry when you customize the toolbar). All editor mutations are asynchronous.
+The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `changeActiveTool` method — the name must match the tool's registered name (the `name` of the corresponding `toolbarItems` entry when you customize the toolbar). All editor mutations are asynchronous.
 
 ```ts
 async function setBrushTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.changeActiveToolByName('brush')
+    await editor.changeActiveTool('brush')
   }
 }
 
 async function setSelectionTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.changeActiveToolByName('selection')
+    await editor.changeActiveTool('selection')
   }
 }
 ```

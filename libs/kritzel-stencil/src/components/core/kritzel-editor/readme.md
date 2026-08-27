@@ -231,23 +231,7 @@ Type: `Promise<boolean>`
 
 
 
-### `changeActiveTool(tool: KritzelBaseTool) => Promise<void>`
-
-
-
-#### Parameters
-
-| Name   | Type              | Description |
-| ------ | ----------------- | ----------- |
-| `tool` | `KritzelBaseTool` |             |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `changeActiveToolByName(toolName: string) => Promise<void>`
+### `changeActiveTool(toolName: string) => Promise<void>`
 
 
 

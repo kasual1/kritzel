@@ -30,7 +30,7 @@ export function ToolsChangePage() {
 
   async function setTool(name: ToolName) {
     setActiveTool(name);
-    await editorRef.current?.changeActiveToolByName(name);
+    await editorRef.current?.changeActiveTool(name);
   }
 
   return (

@@ -162,9 +162,7 @@ async function setActiveTool(
       const editors = Array.from(document.querySelectorAll('kritzel-editor')) as any[];
       const editor = editors[editorIndex];
       if (!editor) throw new Error(`kritzel-editor at index ${editorIndex} not found`);
-      const tool = editor?.engineRef?.core?.toolRegistry?.getTool(toolName);
-      if (!tool) throw new Error(`Tool '${toolName}' not found in editor at index ${editorIndex}`);
-      await editor.changeActiveTool(tool);
+      await editor.changeActiveTool(toolName);
     },
     { editorIndex, toolName }
   );

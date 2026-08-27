@@ -618,7 +618,7 @@ bg
     this.placingMode.set(newMode);
     if (newMode) {
       // Force change editor selection tool to prevent drawing marks while dropping pin
-      this.editor.changeActiveToolByName('select');
+      this.editor.changeActiveTool('select');
     }
   }
 

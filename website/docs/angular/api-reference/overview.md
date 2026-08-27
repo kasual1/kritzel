@@ -346,14 +346,6 @@ registerTool(
 ): Promise<KritzelBaseTool>
 ```
 
-#### changeActiveTool
-
-Switches the active drawing tool. Deactivates the current tool and clears any selection.
-
-```ts
-changeActiveTool(tool: KritzelBaseTool): Promise<void>
-```
-
 #### disable
 
 Disables all user interaction with the engine (pointer, keyboard, etc.).

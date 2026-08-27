@@ -111,7 +111,7 @@ export function HeadlessCanvas() {
     await engine.registerTool('selection', KritzelSelectionTool);
     await engine.registerTool('brush', KritzelBrushTool);
     await engine.registerTool('eraser', KritzelEraserTool);
-    await engine.changeActiveToolByName('brush');
+    await engine.changeActiveTool('brush');
   }
 
   return (

@@ -17,7 +17,7 @@ The `<kritzel-engine>` is a headless rendering primitive for deeply custom integ
 
 When you need a deeply custom application without built-in UI chrome, use the `<kritzel-engine>`. The demo below demonstrates how to bind external standard HTML buttons to the headless Engine.
 
-Unlike the Editor, the Engine **does not register any drawing tools by default**. The Editor automatically registers tools through its built-in `<kritzel-toolbar>` toolbar component. When using the Engine directly, you must call `registerTool()` for each tool you want to use before calling `changeActiveTool()` or `changeActiveToolByName()`.
+Unlike the Editor, the Engine **does not register any drawing tools by default**. The Editor automatically registers tools through its built-in `<kritzel-toolbar>` toolbar component. When using the Engine directly, you must call `registerTool()` for each tool you want to use before calling `changeActiveTool()`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -27,7 +27,7 @@ Unlike the Editor, the Engine **does not register any drawing tools by default**
 
 ## Related API Methods
 
-- Tool registration and selection ([registerTool](../../api-reference/editor.md#registertool), [changeActiveTool](../../api-reference/editor.md#changeactivetool), [changeActiveToolByName](../../api-reference/editor.md#changeactivetoolbyname))
+- Tool registration and selection ([registerTool](../../api-reference/editor.md#registertool), [changeActiveTool](../../api-reference/editor.md#changeactivetool))
 - Viewport and boundaries ([viewportBoundaryLeft](../../api-reference/editor.md#props), [viewportBoundaryRight](../../api-reference/editor.md#props), [scaleMin](../../api-reference/editor.md#props), [scaleMax](../../api-reference/editor.md#props))
 - Theme management ([theme](../../api-reference/editor.md#props) property)
 - Context menu configuration ([globalContextMenuItems](../../api-reference/editor.md#props), [objectContextMenuItems](../../api-reference/editor.md#props))

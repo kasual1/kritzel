@@ -29,7 +29,7 @@ const activeTool = ref<ToolName>('select')
 
 async function setTool(name: ToolName) {
   activeTool.value = name
-  await editor.value?.changeActiveToolByName(name)
+  await editor.value?.changeActiveTool(name)
 }
 
 async function onReady() {

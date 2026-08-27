@@ -293,7 +293,7 @@ registerTool(
 Switches the active drawing tool. Deactivates the current tool and clears any selection.
 
 ```ts
-changeActiveTool(tool: KritzelBaseTool): Promise<void>
+changeActiveTool(toolName: string): Promise<void>
 ```
 
 #### disable

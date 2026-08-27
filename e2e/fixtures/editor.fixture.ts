@@ -563,7 +563,7 @@ export class EditorPage {
     return el.evaluate(el => el.classList.contains('selected'));
   }
 
-  /** Change the active tool via the editor's public API (bypasses controls UI). */
+  /** Change the active tool by name via the editor's public API (bypasses controls UI). */
   async changeActiveTool(toolName: string) {
     return this.callMethod('changeActiveTool', toolName);
   }

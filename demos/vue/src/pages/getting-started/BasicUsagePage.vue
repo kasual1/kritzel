@@ -54,7 +54,7 @@ async function setBrushTool() {
   }
 
   activeTool.value = 'brush'
-  await editor.value.changeActiveToolByName('brush')
+  await editor.value.changeActiveTool('brush')
 }
 
 async function setSelectTool() {
@@ -63,7 +63,7 @@ async function setSelectTool() {
   }
 
   activeTool.value = 'select'
-  await editor.value.changeActiveToolByName('select')
+  await editor.value.changeActiveTool('select')
 }
 
 async function addText() {

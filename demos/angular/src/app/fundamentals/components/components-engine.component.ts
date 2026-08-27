@@ -84,19 +84,19 @@ export class ComponentsEngineComponent {
     for (const obj of createSeedObjects()) {
       await this.engine.addObject(obj);
     }
-    await this.engine.changeActiveToolByName('brush');
+    await this.engine.changeActiveTool('brush');
   }
 
   async setBrush() {
-    await this.engine?.changeActiveToolByName('brush');
+    await this.engine?.changeActiveTool('brush');
   }
 
   async setEraser() {
-    await this.engine?.changeActiveToolByName('eraser');
+    await this.engine?.changeActiveTool('eraser');
   }
 
   async setSelect() {
-    await this.engine?.changeActiveToolByName('select');
+    await this.engine?.changeActiveTool('select');
   }
 
   async undo() {

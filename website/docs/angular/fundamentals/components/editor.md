@@ -127,7 +127,7 @@ Clicking a provider button puts that button into a loading state and emits the e
 
 ## Related API Methods
 
-- Tool registration and selection ([registerTool](../../api-reference/editor.md#registertool), [changeActiveTool](../../api-reference/editor.md#changeactivetool), [changeActiveToolByName](../../api-reference/editor.md#changeactivetoolbyname))
+- Tool registration and selection ([registerTool](../../api-reference/editor.md#registertool), [changeActiveTool](../../api-reference/editor.md#changeactivetool))
 - Viewport and boundaries ([viewportBoundaryLeft](../../api-reference/editor.md#props), [viewportBoundaryRight](../../api-reference/editor.md#props), [scaleMin](../../api-reference/editor.md#props), [scaleMax](../../api-reference/editor.md#props))
 - Theme management ([theme](../../api-reference/editor.md#props) property)
 - Context menu configuration ([globalContextMenuItems](../../api-reference/editor.md#props), [objectContextMenuItems](../../api-reference/editor.md#props))

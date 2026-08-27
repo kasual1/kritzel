@@ -58,7 +58,6 @@ describe('KritzelEditor', () => {
       reinitSync: jest.fn().mockResolvedValue(undefined),
       registerTool: jest.fn().mockResolvedValue(null),
       changeActiveTool: jest.fn().mockResolvedValue(undefined),
-      changeActiveToolByName: jest.fn().mockResolvedValue(undefined),
       disable: jest.fn().mockResolvedValue(undefined),
       enable: jest.fn().mockResolvedValue(undefined),
       copy: jest.fn().mockResolvedValue(undefined),

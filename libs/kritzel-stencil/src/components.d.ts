@@ -344,8 +344,7 @@ export namespace Components {
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
-        "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
-        "changeActiveToolByName": (toolName: string) => Promise<void>;
+        "changeActiveTool": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
         "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
@@ -637,15 +636,10 @@ export namespace Components {
          */
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
-          * Switches the active drawing tool. Deactivates the current tool and clears any selection.
-          * @param tool - The tool instance to activate.
-         */
-        "changeActiveTool": (tool: KritzelBaseTool) => Promise<void>;
-        /**
           * Switches the active drawing tool by its registered name.
           * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
          */
-        "changeActiveToolByName": (toolName: string) => Promise<void>;
+        "changeActiveTool": (toolName: string) => Promise<void>;
         /**
           * Deselects all currently selected objects.
          */

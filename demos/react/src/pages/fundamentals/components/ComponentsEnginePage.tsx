@@ -31,15 +31,15 @@ export function ComponentsEnginePage() {
       await engine.addObject(obj);
     }
 
-    await engine.changeActiveToolByName("brush");
+    await engine.changeActiveTool("brush");
   }
 
   return (
     <div style={hostStyle}>
       <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.changeActiveToolByName("brush"))}>Brush</button>
-        <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.changeActiveToolByName("eraser"))}>Eraser</button>
-        <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.changeActiveToolByName("select"))}>Select</button>
+        <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.changeActiveTool("brush"))}>Brush</button>
+        <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.changeActiveTool("eraser"))}>Eraser</button>
+        <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.changeActiveTool("select"))}>Select</button>
         <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.undo())}>Undo</button>
         <button style={buttonStyle(false)} onClick={() => void withEngine((engine) => engine.redo())}>Redo</button>
       </div>

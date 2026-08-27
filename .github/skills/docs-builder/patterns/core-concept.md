@@ -72,7 +72,7 @@ When authoring a Fundamentals page, draw upon the appropriate subset of the Krit
 - **Concept:** How the user interacts with the canvas via registered drawing/selection modes.
 - **Relevant Usage:** 
   - `registerTool(toolName, toolClass, config)`
-  - `changeActiveTool(tool)`
+  - `changeActiveTool(toolName)`
   - `disable()`, `enable()`
 
 ### 3. Objects
