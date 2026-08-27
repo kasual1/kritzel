@@ -86,8 +86,5 @@ export class MyCustomTool extends KritzelBaseTool {
 }
 
 // In your application logic:
-const tool = await editor.registerTool('my-custom-tool', MyCustomTool, {});
-await editor.changeActiveTool(tool);
-// or, equivalently, by its registered name:
-await editor.changeActiveToolByName('my-custom-tool');
+await editor.changeActiveTool('my-custom-tool');
 ```

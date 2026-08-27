@@ -46,11 +46,11 @@ export class AnnotationStudioComponent {
         palettes: {},                             // locked color, no picker
       });
     }
-    await this.editor.changeActiveToolByName('brush-red');
+    await this.editor.changeActiveTool('brush-red');
   }
 
   async activateBrush(name: string) {
-    await this.editor.changeActiveToolByName(`brush-${name}`);
+    await this.editor.changeActiveTool(`brush-${name}`);
   }
 }
 ```

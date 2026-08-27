@@ -418,7 +418,7 @@ export class ImageAnnotationStudioComponent {
     this.activeSketchTool.set(toolName);
     this.activeMode.set('sketch');
     await this.syncTextColorToActiveSketchTool();
-    await this.editor.changeActiveToolByName(toolName);
+    await this.editor.changeActiveTool(toolName);
   }
 
   async activateMode(mode: AnnotationMode) {
@@ -426,11 +426,11 @@ export class ImageAnnotationStudioComponent {
 
     if (mode === 'text') {
       await this.syncTextColorToActiveSketchTool();
-      await this.editor.changeActiveToolByName('text');
+      await this.editor.changeActiveTool('text');
       return;
     }
 
-    await this.editor.changeActiveToolByName(this.activeSketchTool());
+    await this.editor.changeActiveTool(this.activeSketchTool());
   }
 
   async undo() {

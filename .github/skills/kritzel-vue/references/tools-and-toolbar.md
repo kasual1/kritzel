@@ -21,7 +21,7 @@ In the snippets below, `editor` is the computed ref to the native element (`getE
 ```ts
 await editor.value?.changeActiveToolByName('brush');
 // or with an instance (e.g. the return value of registerTool):
-await editor.value?.changeActiveTool(toolInstance);
+await editor.value?.changeActiveToolByName(toolInstance.name);
 ```
 
 Switching tools clears the current selection. `disable()` / `enable()` turn all canvas interaction off/on (e.g. while a modal is open):
@@ -207,5 +207,5 @@ export class StampTool extends KritzelBaseTool {
 }
 
 const tool = await editor.value?.registerTool('stamp', StampTool);
-await editor.value?.changeActiveTool(tool!);
+await editor.value?.changeActiveToolByName(tool!.name);
 ```

@@ -32,16 +32,16 @@ async function onReady() {
     await engine.value.addObject(obj)
   }
 
-  await engine.value.changeActiveToolByName('brush')
+  await engine.value.changeActiveTool('brush')
 }
 </script>
 
 <template>
   <div :style="hostStyle">
     <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" @click="withEngine((e) => e.changeActiveToolByName('brush'))">Brush</button>
-      <button :style="buttonStyle(false)" @click="withEngine((e) => e.changeActiveToolByName('eraser'))">Eraser</button>
-      <button :style="buttonStyle(false)" @click="withEngine((e) => e.changeActiveToolByName('select'))">Select</button>
+      <button :style="buttonStyle(false)" @click="withEngine((e) => e.changeActiveTool('brush'))">Brush</button>
+      <button :style="buttonStyle(false)" @click="withEngine((e) => e.changeActiveTool('eraser'))">Eraser</button>
+      <button :style="buttonStyle(false)" @click="withEngine((e) => e.changeActiveTool('select'))">Select</button>
       <button :style="buttonStyle(false)" @click="withEngine((e) => e.undo())">Undo</button>
       <button :style="buttonStyle(false)" @click="withEngine((e) => e.redo())">Redo</button>
     </div>

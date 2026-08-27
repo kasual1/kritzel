@@ -34,11 +34,11 @@ export function AnnotationStudio() {
         palettes: {},                             // locked color, no picker
       });
     }
-    await editor.changeActiveToolByName('brush-red');
+    await editor.changeActiveTool('brush-red');
   }
 
   async function activateBrush(name: string) {
-    await editorRef.current?.changeActiveToolByName(`brush-${name}`);
+    await editorRef.current?.changeActiveTool(`brush-${name}`);
   }
 
   return (

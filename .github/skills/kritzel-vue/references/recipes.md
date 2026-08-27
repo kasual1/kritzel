@@ -42,7 +42,7 @@ async function onReady() {
 
 async function activateBrush(name: string) {
   activeBrush.value = name;
-  await editor.value?.changeActiveToolByName(`brush-${name}`);
+  await editor.value?.changeActiveTool(`brush-${name}`);
 }
 </script>
 

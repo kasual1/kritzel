@@ -58,7 +58,7 @@ async function activateColorTool(toolName: string) {
   activeSketchTool.value = toolName
   activeMode.value = 'sketch'
   await syncTextColorToActiveSketchTool()
-  await editor.value?.changeActiveToolByName(toolName)
+  await editor.value?.changeActiveTool(toolName)
 }
 
 async function activateMode(mode: AnnotationMode) {
@@ -66,11 +66,11 @@ async function activateMode(mode: AnnotationMode) {
 
   if (mode === 'text') {
     await syncTextColorToActiveSketchTool()
-    await editor.value?.changeActiveToolByName('text')
+    await editor.value?.changeActiveTool('text')
     return
   }
 
-  await editor.value?.changeActiveToolByName(activeSketchTool.value)
+  await editor.value?.changeActiveTool(activeSketchTool.value)
 }
 
 async function undo() {

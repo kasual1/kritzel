@@ -798,12 +798,7 @@ export class KritzelEngine {
     return Promise.resolve(registeredTool);
   }
 
-  /**
-   * Switches the active drawing tool. Deactivates the current tool and clears any selection.
-   * @param tool - The tool instance to activate.
-   */
-  @Method()
-  async changeActiveTool(tool: KritzelBaseTool) {
+  private async activateTool(tool: KritzelBaseTool): Promise<void> {
     if (this.core.store.state.activeTool === tool) {
       return;
     }
@@ -819,13 +814,13 @@ export class KritzelEngine {
    * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
    */
   @Method()
-  async changeActiveToolByName(toolName: string): Promise<void> {
+  async changeActiveTool(toolName: string): Promise<void> {
     const tool = this.core.toolRegistry.getTool(toolName);
     if (!tool) {
       console.warn(`[KritzelEngine] No tool registered with name: ${toolName}`);
       return;
     }
-    await this.changeActiveTool(tool);
+    await this.activateTool(tool);
   }
 
   /** Disables all user interaction with the engine (pointer, keyboard, etc.). */

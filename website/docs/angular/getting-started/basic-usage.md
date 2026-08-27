@@ -10,9 +10,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 # Basic Usage
 
-Once you have `<kritzel-editor>` rendering in your application, you can start interacting with the canvas programmatically. The editor acts as a stateful engine: it manages the view, drawing state, and objects internally, exposing its outward state through DOM events and providing asynchronous methods for programmatic mutations.
+Once you have `<kritzel-editor>` rendering in your application, you can start interacting with the canvas programmatically. Internally, the editor manages the view, drawing state, and objects. It reports changes through DOM events, and lets you make programmatic changes via asynchronous method calls.
 
-## Understanding the Editor Lifecycle
+## Wait for the Editor's isReady Event
 
 Before making API calls, you must wait for the editor to fully initialize. The `<kritzel-editor>` emits an `isReady` event when the engine is mounted, the internal rendering context is created, and default workspaces are loaded.
 
@@ -40,34 +40,26 @@ export class AppComponent {
 
 ## Changing Tools Programmatically
 
-The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `changeActiveToolByName` method — the name must match the tool's registered name (the `name` of the corresponding `toolbarItems` entry when you customize the toolbar). All editor mutations are asynchronous.
+The default toolbar includes these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. To switch tools in code, call `changeActiveTool` with the tool's registered name. Changes made through the editor API happen asynchronously.
 
 ```ts
 async setBrushTool() {
-  if (this.editor) {
-    await this.editor.changeActiveToolByName('brush');
-  }
+  await this.editor.changeActiveTool('brush');
 }
 
 async setSelectionTool() {
-  if (this.editor) {
-    await this.editor.changeActiveToolByName('selection');
-  }
+  await this.editor.changeActiveTool('selection');
 }
 ```
 
 ## Working with the Object Model
 
-Kritzel elements on the canvas (shapes, text, drawings) are represented as objects. You can listen to `objectsChange` to sync external UI (like a layer panel or status bar), and use API methods to query or manipulate objects.
-
-For instance, adding a text element programmatically:
+All elements on the canvas are represented as objects. You can listen to `objectsChange` to track changes, and use the core object methods to work with them: `addObject` to add an object, `updateObject` to change one, and `deleteObject` to remove one. For instance, adding a text element programmatically looks as follows:
 
 ```ts
 import { KritzelText } from "kritzel-angular";
 
 async addText() {
-  if (!this.editor) return;
-
   const text = new KritzelText({
     text: "Programmatic text!",
     translateX: 0,
@@ -78,7 +70,6 @@ async addText() {
   });
 
   await this.editor.addObject(text);
-  await this.editor.selectObjects([text]); 
 }
 ```
 
@@ -88,15 +79,11 @@ The editor allows you to programmatically control the viewport (camera) to zoom,
 
 ```ts
 async zoomIn() {
-  if (this.editor) {
-    await this.editor.zoomTo(1.5);
-  }
+  await this.editor.zoomTo(1.5);
 }
 
 async focusOnObject(targetObject: any) {
-  if (this.editor) {
-    await this.editor.centerObjectInViewport(targetObject);
-  }
+  await this.editor.centerObjectInViewport(targetObject);
 }
 ```
 

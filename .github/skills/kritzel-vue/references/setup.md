@@ -115,7 +115,7 @@ async function onReady() {
   await engine.value.registerTool('selection', KritzelSelectionTool)
   await engine.value.registerTool('brush', KritzelBrushTool)
   await engine.value.registerTool('eraser', KritzelEraserTool)
-  await engine.value.changeActiveToolByName('brush')
+  await engine.value.changeActiveTool('brush')
 }
 </script>
 

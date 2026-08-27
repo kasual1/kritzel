@@ -414,18 +414,10 @@ registerTool(
 
 #### changeActiveTool
 
-Switches the active drawing tool. Deactivates the current tool and clears any selection.
-
-```ts
-changeActiveTool(tool: KritzelBaseTool): Promise<void>
-```
-
-#### changeActiveToolByName
-
 Switches the active drawing tool by its registered name.
 
 ```ts
-changeActiveToolByName(toolName: string): Promise<void>
+changeActiveTool(toolName: string): Promise<void>
 ```
 
 #### disable

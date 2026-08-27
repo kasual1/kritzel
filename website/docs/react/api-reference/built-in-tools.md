@@ -168,7 +168,7 @@ const tool = await editor.registerTool('my-tool', MyCustomToolClass, {
 });
 
 // Switch to the custom tool
-await editor.changeActiveTool(tool);
+await editor.changeActiveTool('my-custom-tool');
 ```
 
 Custom tools should extend `KritzelBaseTool` and implement the pointer event handlers:

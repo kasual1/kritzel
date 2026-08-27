@@ -51,7 +51,7 @@ import { KritzelEditor } from 'kritzel-angular';
 export class EditorComponent {}
 ```
 
-This renders the editor with the **full default toolbar** — selection, brush, eraser, line, shape, text, and image tools.
+This renders the editor with all the default ui elements such as the toolbar, the workspace manager, the more menu and the zoom control panel.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
