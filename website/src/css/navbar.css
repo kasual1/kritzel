@@ -274,12 +274,13 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-get-license-link {
   }
 
   .navbar-sidebar .menu__link--sublist {
+    font-size: 0.93rem !important;
     font-weight: normal !important;
     color: var(--ifm-menu-color) !important;
   }
 
   .navbar-sidebar .menu__link {
-    font-size: 0.93rem;
+    font-size: 0.93rem !important;
     padding-right: 1rem;
     border-radius: 0.6rem;
   }
