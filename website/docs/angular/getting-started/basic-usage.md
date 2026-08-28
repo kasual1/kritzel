@@ -63,7 +63,7 @@ export class CanvasComponent {
 }
 ```
 
-For example, changing `showToolbar` from application state updates the editor without calling a method.
+For example, changing `isToolbarVisible` from application state updates the editor without calling a method.
 
 ## Listening to Events
 
