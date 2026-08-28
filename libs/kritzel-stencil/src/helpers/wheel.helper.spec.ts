@@ -11,46 +11,46 @@ describe('KritzelWheelHelper', () => {
     }) as WheelEvent;
 
   it('returns false for Ctrl+wheel', () => {
-    const customElement = { isSelected: true } as any;
+    const dynamicObject = { isSelected: true } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(createWheelEvent({ ctrlKey: true }), customElement);
+    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(createWheelEvent({ ctrlKey: true }), dynamicObject);
 
     expect(result).toBe(false);
   });
 
-  it('returns false for non-selected custom elements', () => {
-    const customElement = { isSelected: false } as any;
+  it('returns false for non-selected dynamic objects', () => {
+    const dynamicObject = { isSelected: false } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(createWheelEvent({ deltaY: 10 }), customElement);
+    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(createWheelEvent({ deltaY: 10 }), dynamicObject);
 
     expect(result).toBe(false);
   });
 
   it('returns false when no scroll container is found', () => {
     const root = document.createElement('div');
-    const customElement = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = { isSelected: true, elementRef: root } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(
+    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaY: 10,
         composedPath: () => [document.createElement('div')],
       }),
-      customElement,
+      dynamicObject,
     );
 
     expect(result).toBe(false);
   });
 
-  it('returns false when the custom element has no scrollable content', () => {
+  it('returns false when the dynamic object has no scrollable content', () => {
     const root = document.createElement('div');
-    const customElement = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = { isSelected: true, elementRef: root } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(
+    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaY: 10,
         composedPath: () => [document.createElement('div'), root],
       }),
-      customElement,
+      dynamicObject,
     );
 
     expect(result).toBe(false);
@@ -66,14 +66,14 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     root.appendChild(scrollHost);
 
-    const customElement = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = { isSelected: true, elementRef: root } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(
+    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaY: 10,
         composedPath: () => [scrollHost, root],
       }),
-      customElement,
+      dynamicObject,
     );
 
     expect(result).toBe(true);
@@ -89,14 +89,14 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     root.appendChild(scrollHost);
 
-    const customElement = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = { isSelected: true, elementRef: root } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(
+    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaY: 10,
         composedPath: () => [scrollHost, root],
       }),
-      customElement,
+      dynamicObject,
     );
 
     expect(result).toBe(false);
@@ -112,14 +112,14 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     root.appendChild(scrollHost);
 
-    const customElement = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = { isSelected: true, elementRef: root } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(
+    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaX: 10,
         composedPath: () => [scrollHost, root],
       }),
-      customElement,
+      dynamicObject,
     );
 
     expect(result).toBe(true);
@@ -135,14 +135,14 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     root.appendChild(scrollHost);
 
-    const customElement = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = { isSelected: true, elementRef: root } as any;
 
-    const result = KritzelWheelHelper.shouldKeepWheelInCustomElement(
+    const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
         deltaX: 10,
         composedPath: () => [scrollHost, root],
       }),
-      customElement,
+      dynamicObject,
     );
 
     expect(result).toBe(false);

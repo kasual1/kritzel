@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import {
-  KritzelCustomElement,
+  KritzelDynamicObject,
   KritzelEditor,
   type HTMLKritzelEditorElement,
 } from "kritzel-react";
-import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
 import {
@@ -22,13 +22,13 @@ type MountedTodoRenderer = {
   latestState: TodoListState;
 };
 
-export function DynamicObjectsCustomElementPage() {
+export function DynamicObjectsElementPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const hasAddedInitialCustomElement = useRef(false);
+  const hasAddedInitialDynamicObject = useRef(false);
   const mountedRenderers = useRef<Map<string, MountedTodoRenderer>>(new Map());
 
   useEffect(() => {
-    KritzelCustomElementRendererRegistry.register(TODO_RENDERER_KEY, {
+    KritzelDynamicObjectRendererRegistry.register(TODO_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) {
           return;
@@ -81,12 +81,12 @@ export function DynamicObjectsCustomElementPage() {
         renderer.root.unmount();
       });
       mountedRenderers.current.clear();
-      KritzelCustomElementRendererRegistry.unregister(TODO_RENDERER_KEY);
+      KritzelDynamicObjectRendererRegistry.unregister(TODO_RENDERER_KEY);
     };
   }, []);
 
   async function onReady() {
-    if (hasAddedInitialCustomElement.current) {
+    if (hasAddedInitialDynamicObject.current) {
       return;
     }
 
@@ -95,12 +95,12 @@ export function DynamicObjectsCustomElementPage() {
       return;
     }
 
-    hasAddedInitialCustomElement.current = true;
+    hasAddedInitialDynamicObject.current = true;
 
     const placeholder = document.createElement("div");
     placeholder.textContent = "Loading Todo List...";
 
-    const customElement = new KritzelCustomElement({
+    const dynamicObject = new KritzelDynamicObject({
       element: placeholder,
       rendererKey: TODO_RENDERER_KEY,
       rendererData: createTodoListInitialState(),
@@ -110,16 +110,16 @@ export function DynamicObjectsCustomElementPage() {
       height: 380,
     });
 
-    customElement.isRotatable = false;
+    dynamicObject.isRotatable = false;
 
-    await editorRef.current?.addObject(customElement);
+    await editorRef.current?.addObject(dynamicObject);
   }
 
   return (
     <div style={hostStyle}>
       <KritzelEditor
         ref={editorRef}
-        editorId="react-custom-elements"
+        editorId="react-dynamic-objects"
         theme="light"
         themes={[reactThemeLight]}
         style={editorStyle}

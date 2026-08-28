@@ -76,7 +76,7 @@ Select the relevant pattern based on what you're working on:
 | [helper.md](patterns/helper.md) | Adding or editing a static utility helper |
 | [provider.md](patterns/provider.md) | Adding or editing a sync/asset provider |
 | [manager.md](patterns/manager.md) | Adding or editing a cross-cutting manager |
-| [custom-elements.md](patterns/custom-elements.md) | Maintaining custom-element object rendering, renderer lifecycle, wheel behavior, and wrapper integration |
+| [dynamic-objects.md](patterns/dynamic-objects.md) | Maintaining dynamic object rendering, renderer lifecycle, wheel behavior, and wrapper integration |
 | [unit-tests.md](patterns/unit-tests.md) | Adding/updating Jest specs, fixing flaky tests, or adapting tests after refactors |
 | [reactivity-and-wrappers.md](patterns/reactivity-and-wrappers.md) | Debugging or preventing prop timing bugs between Stencil core and Angular/React/Vue wrappers |
 
@@ -126,8 +126,8 @@ export {
 12. **Treat sync persistence as opt-in by default** — `kritzel-editor` defaults to `syncConfig.providers = []`, so object state is not persisted across page reloads and not persisted when switching workspaces unless a sync provider is explicitly configured
 13. **Choose providers by persistence scope** — use `IndexedDBSyncProvider` for persistent local storage across reloads (and across workspaces), and use `InMemorySyncProvider` when cross-workspace persistence is needed only within the current runtime session
 14. **Keep demos deterministic unless persistence is the concept** — most demos should keep no sync provider so reload resets canvas state; workspace concept demos are the main exception and should use `InMemorySyncProvider`
-15. **Custom-element renderers must be lifecycle-safe** — always provide mount/unmount symmetry and return normalized renderer state from unmount when state persistence is expected
-16. **Wheel behavior must preserve canvas navigation** — custom elements should consume wheel only when they can actually scroll in the current direction; otherwise wheel must pass through to viewport interactions
+15. **Dynamic object renderers must be lifecycle-safe** — always provide mount/unmount symmetry and return normalized renderer state from unmount when state persistence is expected
+16. **Wheel behavior must preserve canvas navigation** — dynamic objects should consume wheel only when they can actually scroll in the current direction; otherwise wheel must pass through to viewport interactions
 
 ## Unit Tests
 

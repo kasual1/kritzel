@@ -1,5 +1,5 @@
-import { KritzelCustomElement } from "kritzel-react";
-import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObject } from "kritzel-react";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
 
 export const IMAGE_STACK_RENDERER_KEY = "website-hero-image-stack";
 export const IMAGE_STACK_OBJECT_SIZE = 255;
@@ -331,7 +331,7 @@ function mountImageStackWidget(initialState: ImageStackState): MountedImageStack
 export function setupImageStackRenderer() {
   const mountedWidgets = new Map<string, MountedImageStack>();
 
-  KritzelCustomElementRendererRegistry.register(IMAGE_STACK_RENDERER_KEY, {
+  KritzelDynamicObjectRendererRegistry.register(IMAGE_STACK_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) {
         return;
@@ -388,7 +388,7 @@ export function setupImageStackRenderer() {
       widget.root.remove();
     });
     mountedWidgets.clear();
-    KritzelCustomElementRendererRegistry.unregister(IMAGE_STACK_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(IMAGE_STACK_RENDERER_KEY);
   };
 }
 
@@ -396,7 +396,7 @@ export function createImageStackCustomElement() {
   const imagePlaceholder = document.createElement("div");
   imagePlaceholder.textContent = "Loading Image Stack...";
 
-  const imageStackElement = new KritzelCustomElement({
+  const imageStackElement = new KritzelDynamicObject({
     element: imagePlaceholder,
     rendererKey: IMAGE_STACK_RENDERER_KEY,
     rendererData: createImageStackInitialState(),

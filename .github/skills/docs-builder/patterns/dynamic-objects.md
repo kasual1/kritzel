@@ -1,14 +1,14 @@
-# Pattern: Custom Element Objects
+# Pattern: Dynamic Objects
 
 ## Purpose
 
-Use this pattern when documenting `KritzelCustomElement` behavior, authoring custom-element concept demos, or porting custom-element demos across Angular, React, and Vue.
+Use this pattern when documenting `KritzelDynamicObject` behavior, authoring dynamic object concept demos, or porting dynamic object demos across Angular, React, and Vue.
 
-This pattern is derived from `libs/kritzel-stencil/src/classes/objects/custom-element.class.ts` and reflects the runtime contract maintainers must preserve.
+This pattern is derived from `libs/kritzel-stencil/src/classes/objects/dynamic-object.class.ts` and reflects the runtime contract maintainers must preserve.
 
 ## Core Runtime Contract
 
-`KritzelCustomElement` is a normal canvas object that embeds arbitrary HTML content while still participating in selection, movement, resize, ordering, serialization, and workspace persistence.
+`KritzelDynamicObject` is a normal canvas object that embeds arbitrary HTML content while still participating in selection, movement, resize, ordering, serialization, and workspace persistence.
 
 Hosting modes:
 - Pure HTML mode: provide `element` only and let the object mount native DOM directly.
@@ -32,7 +32,7 @@ Unmount behavior:
 
 ## Documentation Rules for Usage
 
-When writing docs or demos about custom elements:
+When writing docs or demos about dynamic objects:
 1. Show both usage modes clearly:
 - Direct DOM fallback (`element` only)
 - Renderer-driven mode (`rendererKey` + `rendererData`) for framework-specific component/content mounting via the registry
@@ -46,7 +46,7 @@ When writing docs or demos about custom elements:
 
 ## Interactivity and Selection Rules
 
-`KritzelCustomElement` intentionally keeps the mount container clickable so an unselected object can still be selected while embedded content can be toggled between interactive and non-interactive.
+`KritzelDynamicObject` intentionally keeps the mount container clickable so an unselected object can still be selected while embedded content can be toggled between interactive and non-interactive.
 
 Document this behavior explicitly when relevant:
 - Container remains pointer-active for selection
@@ -55,17 +55,17 @@ Document this behavior explicitly when relevant:
 
 ## Wheel and Scroll Rules
 
-Custom-element content must not trap canvas navigation.
+Dynamic object content must not trap canvas navigation.
 
 Documented expectation:
 - If embedded content can scroll in wheel direction, keep wheel in custom content
 - If it cannot scroll (no overflow or boundary reached), pass wheel to viewport
 
-Always mention this for custom-element demos that contain scrollable controls.
+Always mention this for dynamic object demos that contain scrollable controls.
 
 ## Extension Rules (for New Renderer Types)
 
-When documenting how to extend custom elements:
+When documenting how to extend dynamic objects:
 1. Define a stable renderer key
 2. Register renderer in startup/mount phase
 3. Normalize incoming `data` defensively
@@ -75,15 +75,15 @@ When documenting how to extend custom elements:
 
 ## Vue-Specific Behavior (Important)
 
-Vue requires extra care for embedded custom-element content:
+Vue requires extra care for embedded dynamic object content:
 1. A regular Vue SFC mounted into an engine-managed host may not carry styles reliably, because style injection and host/shadow boundaries differ from standard app mounting.
 2. Prefer a Vue custom element strategy (`defineCustomElement`) for embedded renderer content when styling/encapsulation matters.
-3. In demos and docs, favor wrapper-level helper APIs (for example `registerVueCustomElementRenderer`) over ad-hoc page-local patches.
+3. In demos and docs, favor wrapper-level helper APIs (for example `registerVueDynamicObjectRenderer`) over ad-hoc page-local patches.
 4. Keep using `getEditorRef`/`getEngineRef` for editor access in Vue pages; template refs target component instances, not native editor elements.
 
 ## Doc Author Checklist
 
-Before finishing custom-element docs/demo updates:
+Before finishing dynamic object docs/demo updates:
 1. Route exists for every referenced demo path
 2. `repoFiles` point to real files
 3. Renderer registration and unregistration are both shown

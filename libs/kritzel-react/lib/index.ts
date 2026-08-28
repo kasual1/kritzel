@@ -9,7 +9,7 @@ export {
     KritzelLine,
     KritzelShape,
     KritzelGroup,
-    KritzelCustomElement,
+    KritzelDynamicObject,
     KritzelFontRegistry,
     KritzelBaseTool,
     KritzelBrushTool,

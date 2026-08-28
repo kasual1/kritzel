@@ -18,7 +18,7 @@ Use this pattern whenever demo pages are created, moved, or ported across Angula
 - Keep interaction behavior equivalent across frameworks.
 - Keep API method intent equivalent even when component syntax differs.
 
-4. Preserve custom-element lifecycle parity when applicable.
+4. Preserve dynamic object lifecycle parity when applicable.
 - Keep renderer key semantics equivalent.
 - Keep mount/unmount persistence behavior equivalent.
 - Keep seed object behavior idempotent and deterministic.
@@ -53,9 +53,9 @@ When a docs page embeds a demo:
 
 4. For local docs previews, verify `website/docusaurus.config.ts` `customFields.demoBaseUrls` points to running demo dev servers.
 
-## Custom-Element Reliability Checks
+## Dynamic Object Reliability Checks
 
-When a demo route uses `KritzelCustomElement`:
+When a demo route uses `KritzelDynamicObject`:
 
 1. Renderer registration and teardown are both implemented.
 2. Unmount returns serializable state snapshot where persistence is expected.
@@ -70,4 +70,4 @@ When a demo route uses `KritzelCustomElement`:
 3. Theme application is intentional (framework theme by default).
 4. Editor `editorId` is unique.
 5. Docs links (`demoPath` and `repoFiles`) still resolve if applicable.
-6. If custom elements are used, `patterns/custom-element-objects.md` checks are satisfied.
+6. If dynamic objects are used, `patterns/dynamic-objects.md` checks are satisfied.

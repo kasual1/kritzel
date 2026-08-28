@@ -29,8 +29,8 @@ import CollaborationLocalPage from './pages/advanced/collaboration/Collaboration
 import CollaborationRealtimePage from './pages/advanced/collaboration/CollaborationRealtimePage.vue'
 import DynamicObjectsHtmlPage from './pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.vue'
 import DynamicObjectsComponentPage from './pages/advanced/dynamic-objects/DynamicObjectsComponentPage.vue'
-import DynamicObjectsCustomElementPage from './pages/advanced/dynamic-objects/DynamicObjectsCustomElementPage.vue'
-import DynamicObjectsCustomElementHtmlPage from './pages/advanced/dynamic-objects/DynamicObjectsCustomElementHtmlPage.vue'
+import DynamicObjectsElementPage from './pages/advanced/dynamic-objects/DynamicObjectsElementPage.vue'
+import DynamicObjectsElementHtmlPage from './pages/advanced/dynamic-objects/DynamicObjectsElementHtmlPage.vue'
 import ThemingApplyPage from './pages/customization/theming/ThemingApplyPage.vue'
 import ThemingCustomPage from './pages/customization/theming/ThemingCustomPage.vue'
 import FontsRegisterPage from './pages/customization/fonts/FontsRegisterPage.vue'
@@ -126,8 +126,8 @@ export const router = createRouter({
           children: [
             { path: 'html', component: DynamicObjectsHtmlPage },
             { path: 'component', component: DynamicObjectsComponentPage },
-            { path: 'custom-element', component: DynamicObjectsCustomElementPage },
-            { path: 'custom-element-html', component: DynamicObjectsCustomElementHtmlPage },
+            { path: 'element', component: DynamicObjectsElementPage },
+            { path: 'element-html', component: DynamicObjectsElementHtmlPage },
           ],
         },
       ],

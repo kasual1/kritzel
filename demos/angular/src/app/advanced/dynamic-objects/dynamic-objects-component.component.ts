@@ -12,8 +12,8 @@ import {
 
 import {
   EditorIsReadyEvent,
-  KritzelCustomElement,
-  KritzelCustomElementRendererRegistry,
+  KritzelDynamicObject,
+  KritzelDynamicObjectRendererRegistry,
   KritzelEditor,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
@@ -23,7 +23,7 @@ import { CounterWidgetComponent, createCounterWidgetInitialState } from './count
 const COUNTER_RENDERER_KEY = 'angular-dynamic-object-counter';
 
 type CounterRendererContext = {
-  object: KritzelCustomElement;
+  object: KritzelDynamicObject;
   container: HTMLElement | null;
   data?: unknown;
 };
@@ -62,12 +62,12 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
   private readonly appRef = inject(ApplicationRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly mountedCounters = new Map<string, ComponentRef<CounterWidgetComponent>>();
-  private hasAddedInitialCustomElement = false;
+  private hasAddedInitialDynamicObject = false;
 
   themes = [angularThemeLight, angularThemeDark];
 
   constructor() {
-    KritzelCustomElementRendererRegistry.register(COUNTER_RENDERER_KEY, {
+    KritzelDynamicObjectRendererRegistry.register(COUNTER_RENDERER_KEY, {
       onMount: ({ object, container, data }: CounterRendererContext) => {
         if (!container) {
           return;
@@ -115,7 +115,7 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
   }
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>): Promise<void> {
-    if (this.hasAddedInitialCustomElement) {
+    if (this.hasAddedInitialDynamicObject) {
       return;
     }
 
@@ -124,12 +124,12 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
       return;
     }
 
-    this.hasAddedInitialCustomElement = true;
+    this.hasAddedInitialDynamicObject = true;
 
     const placeholder = document.createElement('div');
     placeholder.textContent = 'Loading Counter...';
 
-    const customElement = new KritzelCustomElement({
+    const dynamicObject = new KritzelDynamicObject({
       element: placeholder,
       rendererKey: COUNTER_RENDERER_KEY,
       rendererData: createCounterWidgetInitialState(),
@@ -139,9 +139,9 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
       height: 160,
     });
 
-    customElement.isRotatable = false;
+    dynamicObject.isRotatable = false;
 
-    await this.editor.addObject(customElement);
+    await this.editor.addObject(dynamicObject);
   }
 
   ngOnDestroy(): void {
@@ -151,6 +151,6 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
     });
     this.mountedCounters.clear();
 
-    KritzelCustomElementRendererRegistry.unregister(COUNTER_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(COUNTER_RENDERER_KEY);
   }
 }

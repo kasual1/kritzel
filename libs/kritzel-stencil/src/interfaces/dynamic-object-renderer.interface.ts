@@ -1,11 +1,11 @@
-import { KritzelCustomElement } from '../classes/objects/custom-element.class';
+import { KritzelDynamicObject } from '../classes/objects/dynamic-object.class';
 
 /**
  * Context passed to a renderer when mounting, updating, or unmounting.
  */
-export interface KritzelCustomElementRenderContext {
-  /** The custom element object being rendered. */
-  object: KritzelCustomElement;
+export interface KritzelDynamicObjectRenderContext {
+  /** The dynamic object object being rendered. */
+  object: KritzelDynamicObject;
   /** Container element to render into (mount) or receive lifecycle notifications (unmount). */
   container: HTMLElement | null;
   /** Custom data payload for the renderer (e.g., component props, state). */
@@ -13,16 +13,16 @@ export interface KritzelCustomElementRenderContext {
 }
 
 /**
- * Renderer implementation for custom elements on the canvas.
+ * Renderer implementation for dynamic objects on the canvas.
  * Handles framework-specific mounting, updating, and cleanup.
  */
-export interface KritzelCustomElementRenderer {
+export interface KritzelDynamicObjectRenderer {
   /**
-   * Called when the custom element enters the viewport or is first added to canvas.
+   * Called when the dynamic object enters the viewport or is first added to canvas.
    * Renderer is responsible for creating and appending DOM to context.container.
    * @param context - Render context with object, container, and data
    */
-  onMount(context: KritzelCustomElementRenderContext): void;
+  onMount(context: KritzelDynamicObjectRenderContext): void;
 
   /**
    * Called when object properties (position, size, rotation, etc.) change.
@@ -31,7 +31,7 @@ export interface KritzelCustomElementRenderer {
    * @param context - Render context with updated object and data
    * @param changedProperties - Array of property names that changed
    */
-  onUpdate?(context: KritzelCustomElementRenderContext, changedProperties: string[]): void;
+  onUpdate?(context: KritzelDynamicObjectRenderContext, changedProperties: string[]): void;
 
   /**
    * Called when the object leaves the viewport, is deleted, or workspace is unloaded.
@@ -40,5 +40,5 @@ export interface KritzelCustomElementRenderer {
    * @param context - Render context with object and container
    * @returns Optional updated data payload to persist
    */
-  onUnmount(context: KritzelCustomElementRenderContext): unknown;
+  onUnmount(context: KritzelDynamicObjectRenderContext): unknown;
 }

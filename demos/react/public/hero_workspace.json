@@ -395,7 +395,7 @@
       "rows": 1
     },
     {
-      "__class__": "KritzelCustomElement",
+      "__class__": "KritzelDynamicObject",
       "id": "cbd8DZPqWSy6MeqG",
       "workspaceId": "2NQcd49oXzZGGwHQ",
       "translateX": 284.99165223795046,
@@ -477,7 +477,7 @@
       "rows": 1
     },
     {
-      "__class__": "KritzelCustomElement",
+      "__class__": "KritzelDynamicObject",
       "id": "KSEDCSilHel8JByE",
       "workspaceId": "2NQcd49oXzZGGwHQ",
       "translateX": 276.09881353054107,
@@ -562,7 +562,7 @@
       "rows": 1
     },
     {
-      "__class__": "KritzelCustomElement",
+      "__class__": "KritzelDynamicObject",
       "id": "K6pac9LAmwoQlXCs",
       "workspaceId": "2NQcd49oXzZGGwHQ",
       "translateX": -513.1759076822287,

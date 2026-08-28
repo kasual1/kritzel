@@ -14,7 +14,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelGroup } from '../objects/group.class';
-import { KritzelCustomElement } from '../objects/custom-element.class';
+import { KritzelDynamicObject } from '../objects/dynamic-object.class';
 import { DEFAULT_COLOR_PALETTE } from '../../constants/color-palette.constants';
 
 jest.mock('../core/core.class');
@@ -855,9 +855,9 @@ describe('KritzelSelectionTool', () => {
       expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
     });
 
-    it('should keep current selection group when clicking an already selected custom element', () => {
-      const customEl = Object.create(KritzelCustomElement.prototype);
-      customEl.__class__ = 'KritzelCustomElement';
+    it('should keep current selection group when clicking an already selected dynamic object', () => {
+      const customEl = Object.create(KritzelDynamicObject.prototype);
+      customEl.__class__ = 'KritzelDynamicObject';
       customEl.id = 'custom-1';
       customEl.hitTest = jest.fn().mockReturnValue(true);
 
@@ -1090,10 +1090,10 @@ describe('KritzelSelectionTool', () => {
     });
   });
 
-  describe('KritzelCustomElement interaction semantics', () => {
-    it('should allow normal selection/move handlers for unselected custom elements', () => {
-      const customEl = Object.create(KritzelCustomElement.prototype);
-      customEl.__class__ = 'KritzelCustomElement';
+  describe('KritzelDynamicObject interaction semantics', () => {
+    it('should allow normal selection/move handlers for unselected dynamic objects', () => {
+      const customEl = Object.create(KritzelDynamicObject.prototype);
+      customEl.__class__ = 'KritzelDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = false;
       customEl.isInteractive = false;
@@ -1112,9 +1112,9 @@ describe('KritzelSelectionTool', () => {
       expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
     });
 
-    it('should skip normal handlers for selected single custom elements', () => {
-      const customEl = Object.create(KritzelCustomElement.prototype);
-      customEl.__class__ = 'KritzelCustomElement';
+    it('should skip normal handlers for selected single dynamic objects', () => {
+      const customEl = Object.create(KritzelDynamicObject.prototype);
+      customEl.__class__ = 'KritzelDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = true;
       customEl.isInteractive = false;
@@ -1139,9 +1139,9 @@ describe('KritzelSelectionTool', () => {
       expect(tool.rotationHandler.handlePointerDown).not.toHaveBeenCalled();
     });
 
-    it('should keep handlers active for custom elements during multi-selection', () => {
-      const customEl = Object.create(KritzelCustomElement.prototype);
-      customEl.__class__ = 'KritzelCustomElement';
+    it('should keep handlers active for dynamic objects during multi-selection', () => {
+      const customEl = Object.create(KritzelDynamicObject.prototype);
+      customEl.__class__ = 'KritzelDynamicObject';
       customEl.id = 'custom-1';
       customEl.isSelected = true;
       customEl.isInteractive = false;

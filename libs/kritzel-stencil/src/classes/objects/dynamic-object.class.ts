@@ -1,10 +1,10 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelMathHelper } from '../../helpers/math.helper';
-import { KritzelCustomElementRendererRegistry } from '../registries/custom-element-renderer.registry';
+import { KritzelDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
 import { KritzelHTMLHelper } from '../../helpers/html.helper';
 
-export interface KritzelCustomElementConfig {
+export interface KritzelDynamicObjectConfig {
   element?: HTMLElement;
   rendererKey?: string;
   rendererData?: unknown;
@@ -21,8 +21,8 @@ export interface KritzelCustomElementConfig {
  * Extends KritzelBaseObject to inherit common object functionality like positioning,
  * scaling, and lifecycle management.
  */
-export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
-  override __class__: string = 'KritzelCustomElement';
+export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> {
+  override __class__: string = 'KritzelDynamicObject';
 
   /** The HTML element to be rendered on the canvas. */
   element!: HTMLElement;
@@ -41,8 +41,8 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   rendererData?: unknown;
 
   /**
-   * Creates a new KritzelCustomElement instance.
-   * @param config - Optional configuration object for the custom element.
+   * Creates a new KritzelDynamicObject instance.
+   * @param config - Optional configuration object for the dynamic object.
    * @param config.element - The HTML element to wrap.
    * @param config.translateX - Initial X position offset. Defaults to 0.
    * @param config.translateY - Initial Y position offset. Defaults to 0.
@@ -50,7 +50,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param config.height - Initial height in pixels. Defaults to 0.
    * @param config.width - Initial width in pixels. Defaults to 0.
    */
-  constructor(config?: KritzelCustomElementConfig) {
+  constructor(config?: KritzelDynamicObjectConfig) {
     super();
 
     if (config) {
@@ -67,10 +67,10 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
-   * Factory method to create a new KritzelCustomElement with proper core binding.
+   * Factory method to create a new KritzelDynamicObject with proper core binding.
    * Generates a unique ID and assigns the element to the active workspace.
    * @param core - The KritzelCore instance for state management and ID generation.
-   * @param config - Optional configuration object for the custom element.
+   * @param config - Optional configuration object for the dynamic object.
    * @param config.element - The HTML element to wrap.
    * @param config.translateX - Initial X position offset.
    * @param config.translateY - Initial Y position offset.
@@ -79,8 +79,8 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    * @param config.width - Initial width in pixels.
    * @returns A new KritzelBaseObject instance bound to the core.
    */
-  static override create(core: KritzelCore, config?: KritzelCustomElementConfig): KritzelBaseObject<Element> {
-    const object = new KritzelCustomElement(config);
+  static override create(core: KritzelCore, config?: KritzelDynamicObjectConfig): KritzelBaseObject<Element> {
+    const object = new KritzelDynamicObject(config);
 
     object._core = core;
     object.id = object.generateId();
@@ -92,11 +92,11 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
-   * Mounts the custom element to a container element in the DOM.
+   * Mounts the dynamic object to a container element in the DOM.
    * If a renderer is registered for this.rendererKey, delegates to the renderer.
    * Otherwise, uses the standard DOM element mounting fallback.
    * Skips mounting if already mounted to the same container with content attached.
-   * @param element - The container HTML element to mount this custom element into.
+   * @param element - The container HTML element to mount this dynamic object into.
    */
   override mount(element: HTMLElement): void {
     if (element === null) {
@@ -122,7 +122,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
     // Try renderer-based approach if a key is set
     if (this.rendererKey) {
-      const renderer = KritzelCustomElementRendererRegistry.get(this.rendererKey);
+      const renderer = KritzelDynamicObjectRendererRegistry.get(this.rendererKey);
       if (renderer) {
         element.innerHTML = ''; // Clear container
         renderer.onMount({
@@ -166,7 +166,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
     }
 
     if (this.elementRef instanceof HTMLElement) {
-      // Keep the mount container clickable so unselected custom elements can still be selected.
+      // Keep the mount container clickable so unselected dynamic objects can still be selected.
       this.elementRef.style.pointerEvents = 'auto';
       this.elementRef.style.cursor = '';
 
@@ -193,7 +193,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
-   * Returns true when a text-input-like element inside this custom element
+   * Returns true when a text-input-like element inside this dynamic object
    * currently owns focus.
    */
   hasFocusedInputElement(): boolean {
@@ -356,7 +356,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
-   * Unmounts the custom element and performs cleanup.
+   * Unmounts the dynamic object and performs cleanup.
    * If a renderer is registered, delegates to renderer.onUnmount and captures returned state.
    * Otherwise, simply removes from DOM.
    * Called when object is deleted, viewport culled, or editor is unloading.
@@ -368,7 +368,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
 
     // Try renderer-based unmount if renderer is registered
     if (this.rendererKey) {
-      const renderer = KritzelCustomElementRendererRegistry.get(this.rendererKey);
+      const renderer = KritzelDynamicObjectRendererRegistry.get(this.rendererKey);
       if (renderer) {
         // Capture any updated data returned by renderer
         const updatedData = renderer.onUnmount({
@@ -402,7 +402,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
    */
   private createPlaceholder(): HTMLElement {
     const el = document.createElement('div');
-    el.textContent = '[Custom Element]';
+    el.textContent = '[Dynamic Object]';
     el.style.border = '1px dashed #ccc';
     el.style.display = 'flex';
     el.style.alignItems = 'center';
@@ -414,7 +414,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
-   * Resizes and repositions the custom element on the canvas.
+   * Resizes and repositions the dynamic object on the canvas.
    * Updates both the internal state and the DOM element's inline styles.
    * Syncs changes to Yjs for collaborative editing and cross-tab propagation.
    * @param x - The new X position (translateX) in canvas coordinates.
@@ -442,13 +442,13 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
-   * Creates a deep copy of this custom element.
+   * Creates a deep copy of this dynamic object.
    * The copy receives a new unique ID, is marked as unmounted,
    * and contains a cloned copy of the underlying HTML element.
-   * @returns A new KritzelCustomElement instance with copied properties and a cloned DOM element.
+   * @returns A new KritzelDynamicObject instance with copied properties and a cloned DOM element.
    */
-  override copy(): KritzelCustomElement {
-    const copiedObject: KritzelCustomElement = Object.create(Object.getPrototypeOf(this));
+  override copy(): KritzelDynamicObject {
+    const copiedObject: KritzelDynamicObject = Object.create(Object.getPrototypeOf(this));
     Object.assign(copiedObject, this);
     copiedObject.id = this.generateId();
     copiedObject.isMounted = false;
@@ -463,7 +463,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
-   * Serializes the custom element to a plain JavaScript object for persistence.
+   * Serializes the dynamic object to a plain JavaScript object for persistence.
    * Stores HTML as a string (safe for JSON/Yjs) and captures dimension metadata.
    * @returns A serializable object with htmlString and dimension snapshots
    */
@@ -496,7 +496,7 @@ export class KritzelCustomElement extends KritzelBaseObject<HTMLElement> {
   }
 
   /**
-   * Deserializes the custom element from a plain object.
+   * Deserializes the dynamic object from a plain object.
    * Reconstructs the element from stored HTML string with fallback to placeholder.
    * @template T - The expected return type
    * @param object - The serialized object data to restore from

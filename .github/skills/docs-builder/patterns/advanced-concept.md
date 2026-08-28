@@ -2,7 +2,7 @@
 
 ## Overview
 
-Advanced pages explain specialized Kritzel integrations and capabilities that build on the core architecture, such as localization, custom fonts, collaboration, persistence providers, or custom-element integrations. They should retain the concise, concept-first style of Fundamentals pages while documenting the additional configuration and framework integration details these features require.
+Advanced pages explain specialized Kritzel integrations and capabilities that build on the core architecture, such as localization, custom fonts, collaboration, persistence providers, or dynamic object integrations. They should retain the concise, concept-first style of Fundamentals pages while documenting the additional configuration and framework integration details these features require.
 
 ## File Naming & Location
 

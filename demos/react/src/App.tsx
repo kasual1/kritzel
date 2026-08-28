@@ -29,8 +29,8 @@ import { CollaborationLocalPage } from "./pages/advanced/collaboration/Collabora
 import { CollaborationRealtimePage } from "./pages/advanced/collaboration/CollaborationRealtimePage";
 import { DynamicObjectsHtmlPage } from "./pages/advanced/dynamic-objects/DynamicObjectsHtmlPage";
 import { DynamicObjectsComponentPage } from "./pages/advanced/dynamic-objects/DynamicObjectsComponentPage";
-import { DynamicObjectsCustomElementPage } from "./pages/advanced/dynamic-objects/DynamicObjectsCustomElementPage";
-import { DynamicObjectsCustomElementHtmlPage } from "./pages/advanced/dynamic-objects/DynamicObjectsCustomElementHtmlPage";
+import { DynamicObjectsElementPage } from "./pages/advanced/dynamic-objects/DynamicObjectsElementPage";
+import { DynamicObjectsElementHtmlPage } from "./pages/advanced/dynamic-objects/DynamicObjectsElementHtmlPage";
 import { ThemingApplyPage } from "./pages/customization/theming/ThemingApplyPage";
 import { ThemingCustomPage } from "./pages/customization/theming/ThemingCustomPage";
 import { FontsRegisterPage } from "./pages/customization/fonts/FontsRegisterPage";
@@ -83,8 +83,8 @@ function App() {
         <Route path="/advanced/collaboration/realtime" element={<CollaborationRealtimePage />} />
         <Route path="/advanced/dynamic-objects/html" element={<DynamicObjectsHtmlPage />} />
         <Route path="/advanced/dynamic-objects/component" element={<DynamicObjectsComponentPage />} />
-        <Route path="/advanced/dynamic-objects/custom-element" element={<DynamicObjectsCustomElementPage />} />
-        <Route path="/advanced/dynamic-objects/custom-element-html" element={<DynamicObjectsCustomElementHtmlPage />} />
+        <Route path="/advanced/dynamic-objects/element" element={<DynamicObjectsElementPage />} />
+        <Route path="/advanced/dynamic-objects/element-html" element={<DynamicObjectsElementHtmlPage />} />
 
         <Route path="/customization/theming/apply" element={<ThemingApplyPage />} />
         <Route path="/customization/theming/custom" element={<ThemingCustomPage />} />

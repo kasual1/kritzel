@@ -1,5 +1,5 @@
-import { KritzelCustomElement } from "kritzel-react";
-import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObject } from "kritzel-react";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
 
 export const VIDEO_RENDERER_KEY = "website-hero-video";
 const VIDEO_Z_INDEX = 12;
@@ -237,7 +237,7 @@ function mountVideoWidget(initialState: VideoState): MountedVideoWidget {
 export function setupVideoRenderer() {
   const mountedWidgets = new Map<string, MountedVideoWidget>();
 
-  KritzelCustomElementRendererRegistry.register(VIDEO_RENDERER_KEY, {
+  KritzelDynamicObjectRendererRegistry.register(VIDEO_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) {
         return;
@@ -292,7 +292,7 @@ export function setupVideoRenderer() {
       widget.root.remove();
     });
     mountedWidgets.clear();
-    KritzelCustomElementRendererRegistry.unregister(VIDEO_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(VIDEO_RENDERER_KEY);
   };
 }
 
@@ -300,7 +300,7 @@ export function createVideoCustomElement() {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Loading Video...";
 
-  const customElement = new KritzelCustomElement({
+  const customElement = new KritzelDynamicObject({
     element: placeholder,
     rendererKey: VIDEO_RENDERER_KEY,
     rendererData: createVideoInitialState(),

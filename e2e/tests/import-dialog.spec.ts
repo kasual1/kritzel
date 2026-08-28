@@ -70,12 +70,12 @@ async function addAllObjectTypesToCanvas(editorPage: EditorPage, page: Page) {
   await editorPage.waitForObjectsAdded();
 
   await editorPage.prepareWaitForObjectsAdded();
-  await editorPage.addCustomElement({
+  await editorPage.addDynamicObject({
     translateX: 120,
     translateY: 50,
     width: 100,
     height: 60,
-    contentText: 'Custom Element',
+    contentText: 'Dynamic Object',
   });
   await editorPage.waitForObjectsAdded();
 }
@@ -138,7 +138,7 @@ test.describe('Workspace import via more-menu', () => {
       'KritzelText',
       'KritzelLine',
       'KritzelImage',
-      'KritzelCustomElement',
+      'KritzelDynamicObject',
     ]);
 
     await editorPage.clearSelection();

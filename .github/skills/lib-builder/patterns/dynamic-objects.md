@@ -1,19 +1,19 @@
-# Custom Elements Pattern
+# Dynamic Objects Pattern
 
 ## Scope
 
-Use this pattern when maintaining custom-element object behavior across core and wrappers.
+Use this pattern when maintaining dynamic object behavior across core and wrappers.
 
 Primary touchpoints:
-- `libs/kritzel-stencil/src/classes/objects/custom-element.class.ts`
+- `libs/kritzel-stencil/src/classes/objects/dynamic-object.class.ts`
 - `libs/kritzel-stencil/src/components/core/kritzel-engine/kritzel-engine.tsx`
 - `libs/kritzel-stencil/src/helpers/wheel.helper.ts`
-- `libs/kritzel-stencil/src/classes/registries/custom-element-renderer.registry.ts`
-- Wrapper helpers such as `libs/kritzel-vue/lib/vue-custom-element-renderer.ts`
+- `libs/kritzel-stencil/src/classes/registries/dynamic-object-renderer.registry.ts`
+- Wrapper helpers such as `libs/kritzel-vue/lib/vue-dynamic-object-renderer.ts`
 
 ## Maintainer Mental Model
 
-A Kritzel custom-element object is a persisted canvas object whose visual content is mounted into an engine-managed container.
+A Kritzel dynamic object is a persisted canvas object whose visual content is mounted into an engine-managed container.
 
 Supported hosting modes:
 - Pure HTML hosting: object mounts its `element` directly (no renderer required).
@@ -21,7 +21,7 @@ Supported hosting modes:
 
 Flow:
 1. Object stores `rendererKey` + optional `rendererData`
-2. Engine resolves renderer via `KritzelCustomElementRendererRegistry`
+2. Engine resolves renderer via `KritzelDynamicObjectRendererRegistry`
 3. Renderer mounts framework/runtime content into the object container
 4. Renderer unmount returns latest serializable state for persistence
 
@@ -52,7 +52,7 @@ Rules:
 Wheel handling must not trap canvas navigation.
 
 Expected behavior:
-- If mounted custom-element content can scroll in the wheel direction, keep wheel in custom element
+- If mounted dynamic object content can scroll in the wheel direction, keep wheel in the dynamic object
 - If content cannot scroll (no overflow or at boundary), pass wheel back to editor/viewport
 
 Do:
@@ -81,10 +81,10 @@ Maintainer guidance:
 
 ## Testing Matrix
 
-Minimum coverage for custom-element changes:
+Minimum coverage for dynamic object changes:
 - Unit: helper decisions (wheel/scroll, normalization)
 - Unit: engine behavior around mount/unmount and state handoff
-- E2E: create/update/remove custom-element object and rendererData persistence
+- E2E: create/update/remove dynamic object and rendererData persistence
 - E2E: non-scrollable content does not block viewport wheel behavior
 
 Keep E2E assertions deterministic:

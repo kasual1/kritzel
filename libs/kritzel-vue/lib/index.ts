@@ -1,7 +1,7 @@
 export * from './components';
 export * from './composables';
 export * from './plugin';
-export * from './vue-custom-element-renderer';
+export * from './vue-dynamic-object-renderer';
 
 export {
     KritzelBaseObject,
@@ -11,7 +11,7 @@ export {
     KritzelLine,
     KritzelShape,
     KritzelGroup,
-    KritzelCustomElement,
+    KritzelDynamicObject,
     KritzelFontRegistry,
     KritzelBaseTool,
     KritzelBrushTool,

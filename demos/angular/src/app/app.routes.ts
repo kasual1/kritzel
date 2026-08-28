@@ -29,8 +29,8 @@ import { CollaborationLocalComponent } from './advanced/collaboration/collaborat
 import { CollaborationRealtimeComponent } from './advanced/collaboration/collaboration-realtime.component';
 import { DynamicObjectsHtmlComponent } from './advanced/dynamic-objects/dynamic-objects-html.component';
 import { DynamicObjectsComponentComponent } from './advanced/dynamic-objects/dynamic-objects-component.component';
-import { DynamicObjectsCustomElementComponent } from './advanced/dynamic-objects/dynamic-objects-custom-element.component';
-import { DynamicObjectsCustomElementHtmlComponent } from './advanced/dynamic-objects/dynamic-objects-custom-element-html.component';
+import { DynamicObjectsElementComponent } from './advanced/dynamic-objects/dynamic-objects-element.component';
+import { DynamicObjectsElementHtmlComponent } from './advanced/dynamic-objects/dynamic-objects-element-html.component';
 import { ThemingApplyComponent } from './customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './customization/theming/theming-custom.component';
 import { FontsRegisterComponent } from './customization/fonts/fonts-register.component';
@@ -124,8 +124,8 @@ export const routes: Routes = [
         children: [
           { path: 'html', component: DynamicObjectsHtmlComponent },
           { path: 'component', component: DynamicObjectsComponentComponent },
-          { path: 'custom-element', component: DynamicObjectsCustomElementComponent },
-          { path: 'custom-element-html', component: DynamicObjectsCustomElementHtmlComponent },
+          { path: 'element', component: DynamicObjectsElementComponent },
+          { path: 'element-html', component: DynamicObjectsElementHtmlComponent },
         ],
       },
     ],

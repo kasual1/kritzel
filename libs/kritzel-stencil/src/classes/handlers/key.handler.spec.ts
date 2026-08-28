@@ -8,7 +8,7 @@ describe('KritzelKeyHandler', () => {
   let mockTool: jest.Mocked<KritzelBaseTool>;
   let mockSelectionGroup: { objects: unknown[] } | null;
   let mockActiveText: unknown | null;
-  let mockActiveInteractiveCustomElement: unknown | null;
+  let mockActiveInteractiveDynamicObject: unknown | null;
   let mockState: {
     isCtrlKeyPressed: boolean;
   };
@@ -21,7 +21,7 @@ describe('KritzelKeyHandler', () => {
 
     mockSelectionGroup = null;
     mockActiveText = null;
-    mockActiveInteractiveCustomElement = null;
+    mockActiveInteractiveDynamicObject = null;
     mockState = {
       isCtrlKeyPressed: false,
     };
@@ -37,8 +37,8 @@ describe('KritzelKeyHandler', () => {
         get activeText() {
           return mockActiveText;
         },
-        get activeInteractiveCustomElement() {
-          return mockActiveInteractiveCustomElement;
+        get activeInteractiveDynamicObject() {
+          return mockActiveInteractiveDynamicObject;
         },
         get activeShape() {
           return null;
@@ -386,9 +386,9 @@ describe('KritzelKeyHandler', () => {
       });
     });
 
-    describe('Interactive custom element selection', () => {
-      it('should not execute Select All shortcut when focused input-like content exists in a selected custom element', () => {
-        mockActiveInteractiveCustomElement = { __class__: 'KritzelCustomElement', isInteractive: true };
+    describe('Interactive dynamic object selection', () => {
+      it('should not execute Select All shortcut when focused input-like content exists in a selected dynamic object', () => {
+        mockActiveInteractiveDynamicObject = { __class__: 'KritzelDynamicObject', isInteractive: true };
         const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
@@ -398,9 +398,9 @@ describe('KritzelKeyHandler', () => {
         expect(mockCore.selectAllObjectsInViewport).not.toHaveBeenCalled();
       });
 
-      it('should still execute Escape shortcut when focused input-like content exists in a selected custom element', () => {
+      it('should still execute Escape shortcut when focused input-like content exists in a selected dynamic object', () => {
         mockSelectionGroup = { objects: [] };
-        mockActiveInteractiveCustomElement = { __class__: 'KritzelCustomElement', isInteractive: true };
+        mockActiveInteractiveDynamicObject = { __class__: 'KritzelDynamicObject', isInteractive: true };
         const event = new KeyboardEvent('keydown', { key: 'Escape' });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
@@ -410,8 +410,8 @@ describe('KritzelKeyHandler', () => {
         expect(mockCore.clearSelection).toHaveBeenCalled();
       });
 
-      it('should execute shortcuts when no selected custom element has focused input-like content', () => {
-        mockActiveInteractiveCustomElement = null;
+      it('should execute shortcuts when no selected dynamic object has focused input-like content', () => {
+        mockActiveInteractiveDynamicObject = null;
         const event = new KeyboardEvent('keydown', { key: 'a', ctrlKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 

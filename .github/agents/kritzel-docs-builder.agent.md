@@ -27,7 +27,7 @@ Your job is to produce accurate, maintainable, high-quality Docusaurus documenta
 - Examples: .github/skills/docs-builder/patterns/examples.md
 - Concepts: .github/skills/docs-builder/patterns/core-concept.md
 - Framework porting: .github/skills/docs-builder/patterns/framework-porting.md
-- Custom elements: .github/skills/docs-builder/patterns/custom-elements.md
+- Dynamic objects: .github/skills/docs-builder/patterns/dynamic-objects.md
 3. Draft the smallest complete edit that resolves the request.
 4. If navigation changed, update website/sidebars.ts.
 5. Run a focused quality pass for technical accuracy, structure, and broken internal references.

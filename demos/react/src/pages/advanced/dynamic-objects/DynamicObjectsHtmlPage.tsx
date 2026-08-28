@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { KritzelCustomElement, KritzelEditor, type HTMLKritzelEditorElement } from "kritzel-react";
+import { KritzelDynamicObject, KritzelEditor, type HTMLKritzelEditorElement } from "kritzel-react";
 import { reactThemeLight } from "../../../const/react-theme-light";
 
 function createHtmlCounterElement(): HTMLElement {
@@ -61,10 +61,10 @@ function createHtmlCounterElement(): HTMLElement {
 
 export function DynamicObjectsHtmlPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const hasAddedInitialCustomElement = useRef(false);
+  const hasAddedInitialDynamicObject = useRef(false);
 
   async function onReady() {
-    if (hasAddedInitialCustomElement.current) {
+    if (hasAddedInitialDynamicObject.current) {
       return;
     }
 
@@ -73,9 +73,9 @@ export function DynamicObjectsHtmlPage() {
       return;
     }
 
-    hasAddedInitialCustomElement.current = true;
+    hasAddedInitialDynamicObject.current = true;
 
-    const customElement = new KritzelCustomElement({
+    const dynamicObject = new KritzelDynamicObject({
       element: createHtmlCounterElement(),
       translateX: -150,
       translateY: -90,
@@ -83,9 +83,9 @@ export function DynamicObjectsHtmlPage() {
       height: 160,
     });
 
-    customElement.isRotatable = false;
+    dynamicObject.isRotatable = false;
 
-    await editorRef.current?.addObject(customElement);
+    await editorRef.current?.addObject(dynamicObject);
   }
 
   return (

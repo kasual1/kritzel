@@ -5,7 +5,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
-import { KritzelCustomElement } from '../objects/custom-element.class';
+import { KritzelDynamicObject } from '../objects/dynamic-object.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
@@ -256,14 +256,14 @@ export class KritzelStore {
   }
 
   /**
-   * Gets the currently selected custom element whose focused descendant is an input-like element.
-   * @returns The interactive custom element with focused input-like content, or null if none matches
+   * Gets the currently selected dynamic object whose focused descendant is an input-like element.
+   * @returns The interactive dynamic object with focused input-like content, or null if none matches
    */
-  get activeInteractiveCustomElement(): KritzelCustomElement | null {
-    const interactiveCustomElement = this.selectedObjects.find(
-      object => KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && object.hasFocusedInputElement(),
+  get activeInteractiveDynamicObject(): KritzelDynamicObject | null {
+    const interactiveDynamicObject = this.selectedObjects.find(
+      object => KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject') && object.hasFocusedInputElement(),
     );
-    return (interactiveCustomElement as KritzelCustomElement) ?? null;
+    return (interactiveDynamicObject as KritzelDynamicObject) ?? null;
   }
 
   /**

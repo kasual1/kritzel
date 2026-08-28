@@ -12,7 +12,7 @@ import { KritzelLineTool } from "../tools/line-tool.class";
 import { KritzelSelectionTool } from "../tools/selection-tool.class";
 import { KritzelTextTool } from "../tools/text-tool.class";
 import { KritzelShapeTool } from "../tools/shape-tool.class";
-import { KritzelCustomElement } from "../objects/custom-element.class";
+import { KritzelDynamicObject } from "../objects/dynamic-object.class";
 import type { KritzelCore } from "./core.class";
 import { KritzelWorkspace } from "./workspace.class";
 
@@ -41,7 +41,7 @@ export class KritzelReviver {
    *
    * Supported classes:
    * - Objects: KritzelPath, KritzelLine, KritzelText, KritzelShape, KritzelImage,
-   *            KritzelCustomElement, KritzelSelectionGroup, KritzelGroup
+   *            KritzelDynamicObject, KritzelSelectionGroup, KritzelGroup
    * - Workspace: KritzelWorkspace
    * - Tools: KritzelBrushTool, KritzelEraserTool, KritzelImageTool, KritzelSelectionTool,
    *          KritzelTextTool, KritzelLineTool, KritzelShapeTool
@@ -79,8 +79,8 @@ export class KritzelReviver {
           case 'KritzelImage':
             revivedObj = KritzelImage.create(this._core).deserialize(obj);
             break;
-          case 'KritzelCustomElement':
-            revivedObj = KritzelCustomElement.create(this._core).deserialize(obj);
+          case 'KritzelDynamicObject':
+            revivedObj = KritzelDynamicObject.create(this._core).deserialize(obj);
             break;
           case 'KritzelSelectionGroup':
             revivedObj = KritzelSelectionGroup.create(this._core).deserialize(obj);

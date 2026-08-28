@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import {
-  KritzelCustomElement,
+  KritzelDynamicObject,
   KritzelEditor,
   type HTMLKritzelEditorElement,
 } from "kritzel-react";
-import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
 
@@ -180,13 +180,13 @@ function createInteractiveHtmlWidget(initialState: HtmlWidgetState): MountedHtml
   };
 }
 
-export function DynamicObjectsCustomElementHtmlPage() {
+export function DynamicObjectsElementHtmlPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const hasAddedInitialCustomElement = useRef(false);
+  const hasAddedInitialDynamicObject = useRef(false);
   const mountedWidgets = useRef<Map<string, MountedHtmlWidget>>(new Map());
 
   useEffect(() => {
-    KritzelCustomElementRendererRegistry.register(HTML_RENDERER_KEY, {
+    KritzelDynamicObjectRendererRegistry.register(HTML_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) {
           return;
@@ -232,12 +232,12 @@ export function DynamicObjectsCustomElementHtmlPage() {
         mountedWidget.root.remove();
       });
       mountedWidgets.current.clear();
-      KritzelCustomElementRendererRegistry.unregister(HTML_RENDERER_KEY);
+      KritzelDynamicObjectRendererRegistry.unregister(HTML_RENDERER_KEY);
     };
   }, []);
 
   async function onReady() {
-    if (hasAddedInitialCustomElement.current) {
+    if (hasAddedInitialDynamicObject.current) {
       return;
     }
 
@@ -246,12 +246,12 @@ export function DynamicObjectsCustomElementHtmlPage() {
       return;
     }
 
-    hasAddedInitialCustomElement.current = true;
+    hasAddedInitialDynamicObject.current = true;
 
     const placeholder = document.createElement("div");
     placeholder.textContent = "Loading Interactive HTML...";
 
-    const customElement = new KritzelCustomElement({
+    const dynamicObject = new KritzelDynamicObject({
       element: placeholder,
       rendererKey: HTML_RENDERER_KEY,
       rendererData: createInitialHtmlWidgetState(),
@@ -261,16 +261,16 @@ export function DynamicObjectsCustomElementHtmlPage() {
       height: 420,
     });
 
-    customElement.isRotatable = false;
+    dynamicObject.isRotatable = false;
 
-    await editorRef.current?.addObject(customElement);
+    await editorRef.current?.addObject(dynamicObject);
   }
 
   return (
     <div style={hostStyle}>
       <KritzelEditor
         ref={editorRef}
-        editorId="react-custom-elements-html"
+        editorId="react-dynamic-objects-html"
         theme="light"
         themes={[reactThemeLight]}
         style={editorStyle}

@@ -5,7 +5,7 @@ import { KritzelShape } from '../classes/objects/shape.class';
 import { KritzelText } from '../classes/objects/text.class';
 import { KritzelImage } from '../classes/objects/image.class';
 import { KritzelGroup } from '../classes/objects/group.class';
-import { KritzelCustomElement } from '../classes/objects/custom-element.class';
+import { KritzelDynamicObject } from '../classes/objects/dynamic-object.class';
 import { KritzelClassHelper } from './class.helper';
 import { KritzelColorHelper } from './color.helper';
 import { ThemeName } from '../interfaces/theme.interface';
@@ -328,8 +328,8 @@ export class KritzelSvgExportHelper {
     if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
       return this.imageToSvg(object, imageDataUrls);
     }
-    if (KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement')) {
-      return this.customElementToSvg(object, rasterSafeForCanvas);
+    if (KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject')) {
+      return this.dynamicObjectToSvg(object, rasterSafeForCanvas);
     }
     if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
       return this.groupToSvg(object, theme, imageDataUrls, rasterSafeForCanvas);
@@ -538,14 +538,14 @@ export class KritzelSvgExportHelper {
   }
 
   /**
-   * Converts a KritzelCustomElement to SVG.
+   * Converts a KritzelDynamicObject to SVG.
    * SVG mode: embeds HTML in foreignObject (best-effort).
    * PNG/raster mode: renders placeholder rect with warning.
-   * @param obj - The custom element object
+   * @param obj - The dynamic object
    * @param rasterSafeForCanvas - If true, render placeholder (for PNG export)
    * @returns SVG element string
    */
-  private static customElementToSvg(obj: KritzelCustomElement, rasterSafeForCanvas: boolean = false): string {
+  private static dynamicObjectToSvg(obj: KritzelDynamicObject, rasterSafeForCanvas: boolean = false): string {
     const transform = this.buildTransform(obj);
     const opacity = obj.opacity !== 1 ? ` opacity="${obj.opacity}"` : '';
     const scale = this.getObjectScale(obj);
@@ -554,10 +554,10 @@ export class KritzelSvgExportHelper {
 
     if (rasterSafeForCanvas) {
       // PNG export: render placeholder rect (foreignObject doesn't rasterize to PNG well)
-      console.warn('[KritzelCustomElement SVG Export] Custom elements do not serialize well to PNG. Use SVG export or screenshot instead.');
+      console.warn('[KritzelDynamicObject SVG Export] Dynamic objects do not serialize well to PNG. Use SVG export or screenshot instead.');
       return `<g transform="${transform}"${opacity}>
       <rect x="0" y="0" width="${width}" height="${height}" fill="#f0f0f0" stroke="#999" stroke-width="1" />
-      <text x="${width / 2}" y="${height / 2}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#999">[Custom Element]</text>
+      <text x="${width / 2}" y="${height / 2}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#999">[Dynamic Object]</text>
     </g>`;
     }
 

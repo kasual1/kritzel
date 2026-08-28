@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 
-import { EditorIsReadyEvent, KritzelCustomElement, KritzelEditor } from 'kritzel-angular';
+import { EditorIsReadyEvent, KritzelDynamicObject, KritzelEditor } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 
@@ -101,10 +101,10 @@ export class DynamicObjectsHtmlComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  private hasAddedInitialCustomElement = false;
+  private hasAddedInitialDynamicObject = false;
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>): Promise<void> {
-    if (this.hasAddedInitialCustomElement) {
+    if (this.hasAddedInitialDynamicObject) {
       return;
     }
 
@@ -113,9 +113,9 @@ export class DynamicObjectsHtmlComponent {
       return;
     }
 
-    this.hasAddedInitialCustomElement = true;
+    this.hasAddedInitialDynamicObject = true;
 
-    const customElement = new KritzelCustomElement({
+    const dynamicObject = new KritzelDynamicObject({
       element: createHtmlCounterElement(),
       translateX: -150,
       translateY: -90,
@@ -123,8 +123,8 @@ export class DynamicObjectsHtmlComponent {
       height: 160,
     });
 
-    customElement.isRotatable = false;
+    dynamicObject.isRotatable = false;
 
-    await this.editor.addObject(customElement);
+    await this.editor.addObject(dynamicObject);
   }
 }

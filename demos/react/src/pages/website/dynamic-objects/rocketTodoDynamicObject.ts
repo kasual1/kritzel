@@ -1,5 +1,5 @@
-import { KritzelCustomElement } from "kritzel-react";
-import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObject } from "kritzel-react";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
 
 export const ROCKET_TODO_RENDERER_KEY = "website-hero-rocket-todo";
 
@@ -191,7 +191,7 @@ function mountRocketTodoWidget(initialState: RocketTodoState): MountedRocketTodo
 export function setupRocketTodoRenderer() {
   const mountedWidgets = new Map<string, MountedRocketTodo>();
 
-  KritzelCustomElementRendererRegistry.register(ROCKET_TODO_RENDERER_KEY, {
+  KritzelDynamicObjectRendererRegistry.register(ROCKET_TODO_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) {
         return;
@@ -234,7 +234,7 @@ export function setupRocketTodoRenderer() {
       widget.root.remove();
     });
     mountedWidgets.clear();
-    KritzelCustomElementRendererRegistry.unregister(ROCKET_TODO_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(ROCKET_TODO_RENDERER_KEY);
   };
 }
 
@@ -242,7 +242,7 @@ export function createRocketTodoCustomElement() {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Loading Launch Checklist...";
 
-  const customElement = new KritzelCustomElement({
+  const customElement = new KritzelDynamicObject({
     element: placeholder,
     rendererKey: ROCKET_TODO_RENDERER_KEY,
     rendererData: createRocketTodoInitialState(),

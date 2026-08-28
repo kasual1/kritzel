@@ -2,9 +2,9 @@
 import { onBeforeUnmount, ref } from 'vue'
 import {
   getEditorRef,
-  KritzelCustomElement,
+  KritzelDynamicObject,
   KritzelEditor,
-  registerVueCustomElementRenderer,
+  registerVueDynamicObjectRenderer,
   type HTMLKritzelEditorElement,
 } from 'kritzel-vue'
 import { vueThemeLight } from '../../../const/vue-theme-light'
@@ -21,8 +21,8 @@ function createCounterWidgetInitialState(): CounterWidgetState {
 const COUNTER_RENDERER_KEY = 'vue-dynamic-object-counter'
 
 const editor = getEditorRef('editor')
-const hasAddedInitialCustomElement = ref(false)
-const unregisterCounterRenderer = registerVueCustomElementRenderer(COUNTER_RENDERER_KEY, {
+const hasAddedInitialDynamicObject = ref(false)
+const unregisterCounterRenderer = registerVueDynamicObjectRenderer(COUNTER_RENDERER_KEY, {
   tagName: 'kritzel-vue-counter-widget',
   component: CounterWidget,
   createInitialState: createCounterWidgetInitialState,
@@ -34,7 +34,7 @@ onBeforeUnmount(() => {
 
 async function onReady() {
   const editorValue = editor.value as HTMLKritzelEditorElement | undefined
-  if (!editorValue || hasAddedInitialCustomElement.value) {
+  if (!editorValue || hasAddedInitialDynamicObject.value) {
     return
   }
 
@@ -43,12 +43,12 @@ async function onReady() {
     return
   }
 
-  hasAddedInitialCustomElement.value = true
+  hasAddedInitialDynamicObject.value = true
 
   const placeholder = document.createElement('div')
   placeholder.textContent = 'Loading Counter...'
 
-  const customElement = new KritzelCustomElement({
+  const dynamicObject = new KritzelDynamicObject({
     element: placeholder,
     rendererKey: COUNTER_RENDERER_KEY,
     rendererData: createCounterWidgetInitialState(),
@@ -58,9 +58,9 @@ async function onReady() {
     height: 160,
   })
 
-  customElement.isRotatable = false
+  dynamicObject.isRotatable = false
 
-  await editorValue.addObject(customElement)
+  await editorValue.addObject(dynamicObject)
 }
 </script>
 

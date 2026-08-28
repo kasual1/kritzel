@@ -6,7 +6,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
-import { KritzelCustomElement } from '../objects/custom-element.class';
+import { KritzelDynamicObject } from '../objects/dynamic-object.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 
 type TestState = Omit<KritzelEngineState, 'objects'> & { objects: NonNullable<KritzelEngineState['objects']> };
@@ -613,35 +613,35 @@ describe('KritzelStore', () => {
     });
   });
 
-  describe('activeInteractiveCustomElement', () => {
-    it('should return null when no selected custom element has focused input-like content', () => {
-      const customElement = new KritzelCustomElement();
-      customElement.isSelected = true;
-      customElement.isInteractive = true;
-      jest.spyOn(customElement, 'hasFocusedInputElement').mockReturnValue(false);
-      mockState.objects.insert(customElement);
+  describe('activeInteractiveDynamicObject', () => {
+    it('should return null when no selected dynamic object has focused input-like content', () => {
+      const dynamicObject = new KritzelDynamicObject();
+      dynamicObject.isSelected = true;
+      dynamicObject.isInteractive = true;
+      jest.spyOn(dynamicObject, 'hasFocusedInputElement').mockReturnValue(false);
+      mockState.objects.insert(dynamicObject);
 
-      expect(store.activeInteractiveCustomElement).toBeNull();
+      expect(store.activeInteractiveDynamicObject).toBeNull();
     });
 
-    it('should return the selected custom element with focused input-like content', () => {
-      const customElement = new KritzelCustomElement();
-      customElement.isSelected = true;
-      customElement.isInteractive = true;
-      jest.spyOn(customElement, 'hasFocusedInputElement').mockReturnValue(true);
-      mockState.objects.insert(customElement);
+    it('should return the selected dynamic object with focused input-like content', () => {
+      const dynamicObject = new KritzelDynamicObject();
+      dynamicObject.isSelected = true;
+      dynamicObject.isInteractive = true;
+      jest.spyOn(dynamicObject, 'hasFocusedInputElement').mockReturnValue(true);
+      mockState.objects.insert(dynamicObject);
 
-      expect(store.activeInteractiveCustomElement).toBe(customElement);
+      expect(store.activeInteractiveDynamicObject).toBe(dynamicObject);
     });
 
-    it('should ignore custom elements that are not selected even when input-like content is focused', () => {
-      const customElement = new KritzelCustomElement();
-      customElement.isSelected = false;
-      customElement.isInteractive = true;
-      jest.spyOn(customElement, 'hasFocusedInputElement').mockReturnValue(true);
-      mockState.objects.insert(customElement);
+    it('should ignore dynamic objects that are not selected even when input-like content is focused', () => {
+      const dynamicObject = new KritzelDynamicObject();
+      dynamicObject.isSelected = false;
+      dynamicObject.isInteractive = true;
+      jest.spyOn(dynamicObject, 'hasFocusedInputElement').mockReturnValue(true);
+      mockState.objects.insert(dynamicObject);
 
-      expect(store.activeInteractiveCustomElement).toBeNull();
+      expect(store.activeInteractiveDynamicObject).toBeNull();
     });
   });
 

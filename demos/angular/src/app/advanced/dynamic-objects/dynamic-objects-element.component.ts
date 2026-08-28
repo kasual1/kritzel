@@ -12,8 +12,8 @@ import {
 
 import {
   EditorIsReadyEvent,
-  KritzelCustomElement,
-  KritzelCustomElementRendererRegistry,
+  KritzelDynamicObject,
+  KritzelDynamicObjectRendererRegistry,
   KritzelEditor,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
@@ -23,13 +23,13 @@ import { createTodoListInitialState, TodoListComponent, TodoListState } from './
 const TODO_RENDERER_KEY = 'angular-todo-list';
 
 type TodoRendererContext = {
-  object: KritzelCustomElement;
+  object: KritzelDynamicObject;
   container: HTMLElement | null;
   data?: unknown;
 };
 
 @Component({
-  selector: 'app-dynamic-objects-custom-element',
+  selector: 'app-dynamic-objects-element',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -40,18 +40,18 @@ type TodoRendererContext = {
     ></kritzel-editor>
   `,
 })
-export class DynamicObjectsCustomElementComponent implements OnDestroy {
+export class DynamicObjectsElementComponent implements OnDestroy {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   private readonly appRef = inject(ApplicationRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly mountedTodoComponents = new Map<string, ComponentRef<TodoListComponent>>();
-  private hasAddedInitialCustomElement = false;
+  private hasAddedInitialDynamicObject = false;
 
   themes = [angularThemeLight, angularThemeDark];
 
   constructor() {
-    KritzelCustomElementRendererRegistry.register(TODO_RENDERER_KEY, {
+    KritzelDynamicObjectRendererRegistry.register(TODO_RENDERER_KEY, {
       onMount: ({ object, container, data }: TodoRendererContext) => {
         if (!container) {
           return;
@@ -99,7 +99,7 @@ export class DynamicObjectsCustomElementComponent implements OnDestroy {
   }
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>): Promise<void> {
-    if (this.hasAddedInitialCustomElement) {
+    if (this.hasAddedInitialDynamicObject) {
       return;
     }
 
@@ -108,12 +108,12 @@ export class DynamicObjectsCustomElementComponent implements OnDestroy {
       return;
     }
 
-    this.hasAddedInitialCustomElement = true;
+    this.hasAddedInitialDynamicObject = true;
 
     const placeholder = document.createElement('div');
     placeholder.textContent = 'Loading Todo List...';
 
-    const customElement = new KritzelCustomElement({
+    const dynamicObject = new KritzelDynamicObject({
       element: placeholder,
       rendererKey: TODO_RENDERER_KEY,
       rendererData: createTodoListInitialState(),
@@ -123,9 +123,9 @@ export class DynamicObjectsCustomElementComponent implements OnDestroy {
       height: 380,
     });
 
-    customElement.isRotatable = false;
+    dynamicObject.isRotatable = false;
 
-    await this.editor.addObject(customElement);
+    await this.editor.addObject(dynamicObject);
   }
 
   ngOnDestroy(): void {
@@ -135,6 +135,6 @@ export class DynamicObjectsCustomElementComponent implements OnDestroy {
     });
     this.mountedTodoComponents.clear();
 
-    KritzelCustomElementRendererRegistry.unregister(TODO_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(TODO_RENDERER_KEY);
   }
 }
