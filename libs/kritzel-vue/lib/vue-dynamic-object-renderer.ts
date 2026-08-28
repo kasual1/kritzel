@@ -1,17 +1,17 @@
 import { defineCustomElement, type DefineComponent } from 'vue';
 import {
-  KritzelCustomElementRendererRegistry,
-  type KritzelCustomElementRenderContext,
-  type KritzelCustomElementRenderer,
+  KritzelDynamicObjectRendererRegistry,
+  type KritzelDynamicObjectRenderContext,
+  type KritzelDynamicObjectRenderer,
 } from 'kritzel-stencil';
 
-export interface VueCustomElementRendererOptions<TState = unknown> {
+export interface VueDynamicObjectRendererOptions<TState = unknown> {
   tagName: string;
   component: DefineComponent<any, any, any, any, any, any, any, any>;
   createInitialState?: () => TState;
-  getInitialState?: (data: unknown, context: KritzelCustomElementRenderContext) => TState;
-  mapProps?: (state: TState | undefined, context: KritzelCustomElementRenderContext) => Record<string, unknown>;
-  normalizeState?: (state: unknown, context: KritzelCustomElementRenderContext) => TState;
+  getInitialState?: (data: unknown, context: KritzelDynamicObjectRenderContext) => TState;
+  mapProps?: (state: TState | undefined, context: KritzelDynamicObjectRenderContext) => Record<string, unknown>;
+  normalizeState?: (state: unknown, context: KritzelDynamicObjectRenderContext) => TState;
   onStateChangeProp?: string | null;
   styles?: string;
 }
@@ -27,9 +27,9 @@ function setHostProps(host: HTMLElement, props: Record<string, unknown>): void {
   });
 }
 
-export function createVueCustomElementRenderer<TState = unknown>(
-  options: VueCustomElementRendererOptions<TState>,
-): KritzelCustomElementRenderer {
+export function createVueDynamicObjectRenderer<TState = unknown>(
+  options: VueDynamicObjectRendererOptions<TState>,
+): KritzelDynamicObjectRenderer {
   const mountedElements = new Map<string, MountedVueCustomElement<TState>>();
 
   const ensureCustomElementDefined = () => {
@@ -107,14 +107,14 @@ export function createVueCustomElementRenderer<TState = unknown>(
   };
 }
 
-export function registerVueCustomElementRenderer<TState = unknown>(
+export function registerVueDynamicObjectRenderer<TState = unknown>(
   rendererKey: string,
-  options: VueCustomElementRendererOptions<TState>,
+  options: VueDynamicObjectRendererOptions<TState>,
 ): () => void {
-  const renderer = createVueCustomElementRenderer(options);
-  KritzelCustomElementRendererRegistry.register(rendererKey, renderer);
+  const renderer = createVueDynamicObjectRenderer(options);
+  KritzelDynamicObjectRendererRegistry.register(rendererKey, renderer);
 
   return () => {
-    KritzelCustomElementRendererRegistry.unregister(rendererKey);
+    KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
   };
 }

@@ -75,14 +75,14 @@ async function addAllObjectTypesToCanvas(editorPage: any, page: Page) {
   });
   await editorPage.waitForObjectsAdded();
 
-  // Custom Element
+  // Dynamic Object
   await editorPage.prepareWaitForObjectsAdded();
-  await editorPage.addCustomElement({
+  await editorPage.addDynamicObject({
     translateX: 120,
     translateY: 50,
     width: 100,
     height: 60,
-    contentText: 'Custom Element',
+    contentText: 'Dynamic Object',
   });
   await editorPage.waitForObjectsAdded();
 }
@@ -254,7 +254,7 @@ test.describe('Export dialog', () => {
       'KritzelText',
       'KritzelLine',
       'KritzelImage',
-      'KritzelCustomElement',
+      'KritzelDynamicObject',
     ]);
 
     const shape = getExportedObjectByClass(objects, 'KritzelShape');
@@ -292,13 +292,13 @@ test.describe('Export dialog', () => {
     expect(image.mimeType).toBe('image/png');
     expect(image.src).toBe('');
 
-    const customElement = getExportedObjectByClass(objects, 'KritzelCustomElement');
-    expect(customElement.translateX).toBe(120);
-    expect(customElement.translateY).toBe(50);
-    expect(customElement.width).toBe(100);
-    expect(customElement.height).toBe(60);
-    expect(typeof customElement.htmlString).toBe('string');
-    expect(customElement.htmlString).toContain('Custom Element');
+    const dynamicObject = getExportedObjectByClass(objects, 'KritzelDynamicObject');
+    expect(dynamicObject.translateX).toBe(120);
+    expect(dynamicObject.translateY).toBe(50);
+    expect(dynamicObject.width).toBe(100);
+    expect(dynamicObject.height).toBe(60);
+    expect(typeof dynamicObject.htmlString).toBe('string');
+    expect(dynamicObject.htmlString).toContain('Dynamic Object');
 
     expect(payload.assets).toBeDefined();
     expect(Object.keys(payload.assets ?? {})).toHaveLength(1);

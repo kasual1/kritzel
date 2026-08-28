@@ -213,7 +213,7 @@
       "rows": 1
     },
     {
-      "__class__": "KritzelCustomElement",
+      "__class__": "KritzelDynamicObject",
       "id": "gRee56TOqWmvQNsU",
       "workspaceId": "6LvbiGTKSM0LiJh3",
       "translateX": 242.72155387824685,
@@ -304,7 +304,7 @@
       "rows": 1
     },
     {
-      "__class__": "KritzelCustomElement",
+      "__class__": "KritzelDynamicObject",
       "id": "Lnfenf3SbR0uIqbh",
       "workspaceId": "6LvbiGTKSM0LiJh3",
       "translateX": 234.04684411010763,
@@ -506,7 +506,7 @@
       "isCompleted": true
     },
     {
-      "__class__": "KritzelCustomElement",
+      "__class__": "KritzelDynamicObject",
       "id": "bOAhtjsPEIK0pZYh",
       "workspaceId": "6LvbiGTKSM0LiJh3",
       "translateX": -494.8632246710976,

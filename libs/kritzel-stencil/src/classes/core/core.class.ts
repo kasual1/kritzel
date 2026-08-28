@@ -635,8 +635,8 @@ export class KritzelCore {
       });
     }
 
-    // Unmount custom elements before removal
-    if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelCustomElement')) {
+    // Unmount dynamic objects before removal
+    if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
       (object as any).unmount();
     }
 
@@ -688,12 +688,12 @@ export class KritzelCore {
     this.removeSelectionBox();
 
     for (const object of selectionGroup.objects ?? []) {
-      if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
-        const customElementObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
-        if (typeof customElementObject.setIsInteractive === 'function') {
-          customElementObject.setIsInteractive(true);
+      if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelDynamicObject')) {
+        const dynamicObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
+        if (typeof dynamicObject.setIsInteractive === 'function') {
+          dynamicObject.setIsInteractive(true);
         } else {
-          customElementObject.isInteractive = true;
+          dynamicObject.isInteractive = true;
         }
       }
     }
@@ -719,12 +719,12 @@ export class KritzelCore {
     selectionGroup.deselectAllChildren?.();
 
     for (const object of selectionGroup.objects ?? []) {
-      if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelCustomElement')) {
-        const customElementObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
-        if (typeof customElementObject.setIsInteractive === 'function') {
-          customElementObject.setIsInteractive(false);
+      if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelDynamicObject')) {
+        const dynamicObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
+        if (typeof dynamicObject.setIsInteractive === 'function') {
+          dynamicObject.setIsInteractive(false);
         } else {
-          customElementObject.isInteractive = false;
+          dynamicObject.isInteractive = false;
         }
       }
     }

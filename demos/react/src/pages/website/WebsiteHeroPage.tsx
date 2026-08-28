@@ -15,14 +15,14 @@ import {
   type KritzelToolbarItem,
   type KritzelViewportState,
 } from "kritzel-react";
-import { setupImageStackRenderer } from "./custom-elements/imageStackCustomElement";
-import { setupRocketTodoRenderer } from "./custom-elements/rocketTodoCustomElement";
-import { setupCoreStageDashboardRenderer } from "./custom-elements/coreStageDashboardCustomElement";
-import { setupVideoRenderer } from "./custom-elements/videoCustomElement";
+import { setupImageStackRenderer } from "./dynamic-objects/imageStackDynamicObject";
+import { setupRocketTodoRenderer } from "./dynamic-objects/rocketTodoDynamicObject";
+import { setupCoreStageDashboardRenderer } from "./dynamic-objects/coreStageDashboardDynamicObject";
+import { setupVideoRenderer } from "./dynamic-objects/videoDynamicObject";
 import {
   preloadThreeDModelViewerAssets,
   setupThreeDModelViewerRenderer,
-} from "./custom-elements/threeDModelViewerCustomElement";
+} from "./dynamic-objects/threeDModelViewerDynamicObject";
 import { registerHeroServiceWorker } from "./registerHeroServiceWorker";
 
 const normalizedBaseUrl = import.meta.env.BASE_URL.endsWith("/")

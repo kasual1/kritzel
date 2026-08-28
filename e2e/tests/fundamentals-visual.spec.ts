@@ -4,8 +4,8 @@ import type { Locator } from '@playwright/test';
 const FUNDAMENTAL_ROUTES = [
   '/advanced/collaboration/local',
   '/advanced/collaboration/realtime',
-  '/advanced/dynamic-objects/custom-element',
-  '/advanced/dynamic-objects/custom-element-html',
+  '/advanced/dynamic-objects/element',
+  '/advanced/dynamic-objects/element-html',
   '/customization/theming/apply',
   '/customization/theming/custom',
   '/fundamentals/components/editor',

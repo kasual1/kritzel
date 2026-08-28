@@ -113,9 +113,9 @@ export function TodoListComponent({ initialState, onStateChange }: TodoListCompo
       </header>
 
       <form style={createFormStyle} onSubmit={addTodo}>
-        <label htmlFor="react-custom-element-new-todo" style={srOnlyStyle}>New todo</label>
+        <label htmlFor="react-dynamic-object-new-todo" style={srOnlyStyle}>New todo</label>
         <input
-          id="react-custom-element-new-todo"
+          id="react-dynamic-object-new-todo"
           type="text"
           value={newTodo}
           onChange={(event) => setNewTodo(event.target.value)}
@@ -143,9 +143,9 @@ export function TodoListComponent({ initialState, onStateChange }: TodoListCompo
               <li key={todo.id} style={{ ...itemStyle, ...(todo.isCompleted ? completedItemStyle : undefined) }}>
                 {isEditing ? (
                   <form style={editFormStyle} onSubmit={(event) => saveEdit(todo.id, event)}>
-                    <label htmlFor={`react-custom-element-edit-${todo.id}`} style={srOnlyStyle}>Edit todo</label>
+                    <label htmlFor={`react-dynamic-object-edit-${todo.id}`} style={srOnlyStyle}>Edit todo</label>
                     <input
-                      id={`react-custom-element-edit-${todo.id}`}
+                      id={`react-dynamic-object-edit-${todo.id}`}
                       type="text"
                       value={editValue}
                       onChange={(event) => setEditValue(event.target.value)}

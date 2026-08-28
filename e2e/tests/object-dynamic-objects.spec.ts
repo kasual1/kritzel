@@ -4,7 +4,7 @@ async function waitForWheelHandling(page: import('@playwright/test').Page) {
   await page.waitForTimeout(120);
 }
 
-async function wheelOverCustomElementContent(
+async function wheelOverDynamicObjectContent(
   page: import('@playwright/test').Page,
   testId: string,
   options: { deltaX?: number; deltaY?: number } = {}
@@ -17,7 +17,7 @@ async function wheelOverCustomElementContent(
 
     const target = engine.shadowRoot.querySelector(`[data-testid="${id}"]`) as HTMLElement | null;
     if (!target) {
-      throw new Error(`Custom element content with data-testid="${id}" not found`);
+      throw new Error(`Dynamic object content with data-testid="${id}" not found`);
     }
 
     const rect = target.getBoundingClientRect();
@@ -31,14 +31,14 @@ async function wheelOverCustomElementContent(
   await page.mouse.wheel(options.deltaX ?? 0, options.deltaY ?? 0);
 }
 
-test.describe('Custom-element objects', () => {
+test.describe('Dynamic objects', () => {
   test.beforeEach(async ({ editorPage }) => {
     await editorPage.goto();
     await editorPage.waitForReady();
   });
 
-  test('should add a custom element and return an object with an id', async ({ editorPage }) => {
-    const result = await editorPage.addCustomElement({
+  test('should add a dynamic object and return an object with an id', async ({ editorPage }) => {
+    const result = await editorPage.addDynamicObject({
       translateX: 120,
       translateY: 90,
       width: 260,
@@ -54,28 +54,28 @@ test.describe('Custom-element objects', () => {
     expect(count).toBe(1);
   });
 
-  test('should persist custom element dimensions and position', async ({ editorPage }) => {
-    const created = await editorPage.addCustomElement({
+  test('should persist dynamic object dimensions and position', async ({ editorPage }) => {
+    const created = await editorPage.addDynamicObject({
       translateX: 210,
       translateY: 170,
       width: 320,
       height: 210,
-      contentText: 'Sized custom element',
+      contentText: 'Sized dynamic object',
     });
 
     const object = await editorPage.getObjectById<any>(created.id);
     expect(object).not.toBeNull();
-    expect(object.__class__).toBe('KritzelCustomElement');
+    expect(object.__class__).toBe('KritzelDynamicObject');
     expect(object.translateX).toBe(210);
     expect(object.translateY).toBe(170);
     expect(object.width).toBe(320);
     expect(object.height).toBe(210);
   });
 
-  test('should render custom element content in the engine DOM', async ({ editorPage }) => {
+  test('should render dynamic object content in the engine DOM', async ({ editorPage }) => {
     await editorPage.prepareWaitForObjectsAdded();
 
-    await editorPage.addCustomElement({
+    await editorPage.addDynamicObject({
       translateX: 100,
       translateY: 100,
       width: 280,
@@ -98,13 +98,13 @@ test.describe('Custom-element objects', () => {
     expect(text).toContain('Rendered custom content');
   });
 
-  test('should update width and height of a custom element', async ({ editorPage }) => {
-    const created = await editorPage.addCustomElement({
+  test('should update width and height of a dynamic object', async ({ editorPage }) => {
+    const created = await editorPage.addDynamicObject({
       translateX: 60,
       translateY: 60,
       width: 200,
       height: 140,
-      contentText: 'Resizable custom element',
+      contentText: 'Resizable dynamic object',
     });
 
     await editorPage.updateObject(created, { width: 360, height: 260 });
@@ -114,8 +114,8 @@ test.describe('Custom-element objects', () => {
     expect(updated.height).toBe(260);
   });
 
-  test('should remove a custom element and decrement total count', async ({ editorPage }) => {
-    const created = await editorPage.addCustomElement({
+  test('should remove a dynamic object and decrement total count', async ({ editorPage }) => {
+    const created = await editorPage.addDynamicObject({
       translateX: 90,
       translateY: 100,
       width: 220,
@@ -131,8 +131,8 @@ test.describe('Custom-element objects', () => {
     expect(await editorPage.getObjectElementCount()).toBe(0);
   });
 
-  test('should pass wheel handling to viewport when selected custom element is not scrollable', async ({ editorPage }) => {
-    const created = await editorPage.addCustomElement({
+  test('should pass wheel handling to viewport when selected dynamic object is not scrollable', async ({ editorPage }) => {
+    const created = await editorPage.addDynamicObject({
       translateX: 130,
       translateY: 120,
       width: 320,
@@ -145,7 +145,7 @@ test.describe('Custom-element objects', () => {
 
     const before = await editorPage.getViewport();
 
-    await wheelOverCustomElementContent(editorPage.page, 'non-scrollable-custom-content', { deltaY: 140 });
+    await wheelOverDynamicObjectContent(editorPage.page, 'non-scrollable-custom-content', { deltaY: 140 });
     await waitForWheelHandling(editorPage.page);
 
     const after = await editorPage.getViewport();

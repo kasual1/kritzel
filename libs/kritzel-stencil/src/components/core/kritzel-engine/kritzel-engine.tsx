@@ -26,7 +26,7 @@ import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
 import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
-import { KritzelCustomElement } from '../../../classes/objects/custom-element.class';
+import { KritzelDynamicObject } from '../../../classes/objects/dynamic-object.class';
 import { KritzelWorkspace, WORKSPACE_EXPORT_VERSION } from '../../../classes/core/workspace.class';
 import { KritzelReviver } from '../../../classes/core/reviver.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
@@ -426,8 +426,8 @@ export class KritzelEngine {
 
     if (
       hoveredObject &&
-      ObjectHelper.isClass<KritzelCustomElement>(hoveredObject, 'KritzelCustomElement') &&
-      KritzelWheelHelper.shouldKeepWheelInCustomElement(ev, hoveredObject)
+      ObjectHelper.isClass<KritzelDynamicObject>(hoveredObject, 'KritzelDynamicObject') &&
+      KritzelWheelHelper.shouldKeepWheelInDynamicObject(ev, hoveredObject)
     ) {
       return;
     }
@@ -451,9 +451,9 @@ export class KritzelEngine {
       return;
     }
 
-    // Interactive custom-element content should receive native pointer events
+    // Interactive dynamic-object content should receive native pointer events
     // whenever the object is marked interactive.
-    if (this.isEmbeddedCustomElementInteraction(ev)) {
+    if (this.isEmbeddedDynamicObjectInteraction(ev)) {
       return;
     }
 
@@ -548,7 +548,7 @@ export class KritzelEngine {
     this.core.store.state?.activeTool?.handlePointerUp(ev);
   }
 
-  private isEmbeddedCustomElementInteraction(event: PointerEvent): boolean {
+  private isEmbeddedDynamicObjectInteraction(event: PointerEvent): boolean {
     const path = event.composedPath() as EventTarget[];
     const objectElement = path.find((entry): entry is HTMLElement => {
       return entry instanceof HTMLElement && entry.classList.contains('object');
@@ -559,7 +559,7 @@ export class KritzelEngine {
     }
 
     const object = this.core.store.objects.findById(objectElement.id);
-    if (!object || !KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement')) {
+    if (!object || !KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject')) {
       return false;
     }
 
@@ -585,13 +585,13 @@ export class KritzelEngine {
     }
 
     // Only bypass canvas tool handling when the pointer event came from an
-    // actually interactive descendant inside the custom element subtree.
+    // actually interactive descendant inside the dynamic object subtree.
     return potentialRoots.some(root => this.isNativeInteractiveEmbeddedTarget(path, root));
   }
 
-  private isNativeInteractiveEmbeddedTarget(path: EventTarget[], customElementRoot: HTMLElement): boolean {
+  private isNativeInteractiveEmbeddedTarget(path: EventTarget[], dynamicObjectRoot: HTMLElement): boolean {
     const interactiveSelector = 'input, button, textarea, select, a[href], [contenteditable="true"], [contenteditable=""]';
-    const rootIndex = path.findIndex(entry => entry === customElementRoot);
+    const rootIndex = path.findIndex(entry => entry === dynamicObjectRoot);
 
     if (rootIndex === -1) {
       return false;
@@ -2332,7 +2332,7 @@ export class KritzelEngine {
   private _assetStorageConfigRevision: number = 0;
   private _isWorkspaceLoading: boolean = false;
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
-  private _previousVisibleCustomElements: Set<string> = new Set();
+  private _previousVisibleDynamicObjects: Set<string> = new Set();
   private _revealedImageKeys: Set<string> = new Set();
   private _sceneBootstrapOpacity: number = 1;
   private _sceneBootstrapTransitionEnabled: boolean = false;
@@ -2469,10 +2469,10 @@ export class KritzelEngine {
       this._sceneBootstrapTransitionTimer = null;
     }
 
-    // Unmount all remaining custom elements
+    // Unmount all remaining dynamic objects
     if (this.core.store.allObjects) {
       this.core.store.allObjects.forEach(object => {
-        if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelCustomElement')) {
+        if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
           (object as any).unmount();
         }
       });
@@ -2935,33 +2935,33 @@ export class KritzelEngine {
         return 'auto';
       }
 
-      if (object.objects.length === 1 && KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object.objects[0], 'KritzelCustomElement')) {
+      if (object.objects.length === 1 && KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object.objects[0], 'KritzelDynamicObject')) {
         return 'none';
       }
 
       return 'auto';
     };
 
-    // Track visible custom elements and unmount culled ones
-    const currentVisibleCustomElements = new Set<string>();
+    // Track visible dynamic objects and unmount culled ones
+    const currentVisibleDynamicObjects = new Set<string>();
     visibleObjects.forEach(object => {
-      if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelCustomElement')) {
-        currentVisibleCustomElements.add(object.id);
+      if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
+        currentVisibleDynamicObjects.add(object.id);
       }
     });
 
-    // Unmount custom elements that left the viewport
-    this._previousVisibleCustomElements.forEach(id => {
-      if (!currentVisibleCustomElements.has(id)) {
+    // Unmount dynamic objects that left the viewport
+    this._previousVisibleDynamicObjects.forEach(id => {
+      if (!currentVisibleDynamicObjects.has(id)) {
         const object = this.core.store.objects.findById(id);
-        if (object && KritzelClassHelper.isInstanceOf<any>(object, 'KritzelCustomElement')) {
+        if (object && KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
           (object as any).unmount();
         }
       }
     });
 
     // Update tracking set for next render
-    this._previousVisibleCustomElements = currentVisibleCustomElements;
+    this._previousVisibleDynamicObjects = currentVisibleDynamicObjects;
 
     this.core.cursorManager.applyCursor();
 
@@ -3212,7 +3212,7 @@ export class KritzelEngine {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
+                {KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject') && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3397,7 +3397,7 @@ export class KritzelEngine {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isSelected: {object.isSelected ? 'true' : 'false'}</div>
 
-                    {KritzelClassHelper.isInstanceOf<KritzelCustomElement>(object, 'KritzelCustomElement') && (
+                    {KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject') && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isInteractive: {object.isInteractive ? 'true' : 'false'}</div>
                       </div>

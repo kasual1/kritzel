@@ -544,8 +544,8 @@ describe('KritzelEngine', () => {
     });
   });
 
-  describe('embedded custom element interaction', () => {
-    const setupInteractiveCustomElementEvent = (target: HTMLElement) => {
+  describe('embedded dynamic object interaction', () => {
+    const setupInteractiveDynamicObjectEvent = (target: HTMLElement) => {
       const objectElement = document.createElement('div');
       objectElement.id = 'custom-1';
       objectElement.classList.add('object');
@@ -553,16 +553,16 @@ describe('KritzelEngine', () => {
       const embeddedRoot = document.createElement('div');
       embeddedRoot.appendChild(target);
 
-      const customElementObject = {
+      const dynamicObjectObject = {
         id: 'custom-1',
         isInteractive: true,
         element: embeddedRoot,
       } as any;
 
-      (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
-      core.store.selectionGroup = { objects: [customElementObject] };
+      (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
+      core.store.selectionGroup = { objects: [dynamicObjectObject] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === customElementObject && className === 'KritzelCustomElement';
+        return obj === dynamicObjectObject && className === 'KritzelDynamicObject';
       });
 
       const event = {
@@ -570,20 +570,20 @@ describe('KritzelEngine', () => {
         composedPath: jest.fn().mockReturnValue([target, embeddedRoot, objectElement]),
       } as unknown as PointerEvent;
 
-      return { event, customElementObject };
+      return { event, dynamicObjectObject };
     };
 
-    it('keeps default pointer handling for unselected interactive custom elements', () => {
+    it('keeps default pointer handling for unselected interactive dynamic objects', () => {
       const objectElement = document.createElement('div');
       objectElement.id = 'custom-2';
       objectElement.classList.add('object');
 
-      const nonSelectedCustomElement = { id: 'custom-2', isInteractive: true } as any;
-      const differentSelectedCustomElement = { id: 'custom-1', isInteractive: true } as any;
-      (core.store.objects.findById as jest.Mock).mockReturnValue(nonSelectedCustomElement);
-      core.store.selectionGroup = { objects: [differentSelectedCustomElement] };
+      const nonSelectedDynamicObject = { id: 'custom-2', isInteractive: true } as any;
+      const differentSelectedDynamicObject = { id: 'custom-1', isInteractive: true } as any;
+      (core.store.objects.findById as jest.Mock).mockReturnValue(nonSelectedDynamicObject);
+      core.store.selectionGroup = { objects: [differentSelectedDynamicObject] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return (obj === nonSelectedCustomElement || obj === differentSelectedCustomElement) && className === 'KritzelCustomElement';
+        return (obj === nonSelectedDynamicObject || obj === differentSelectedDynamicObject) && className === 'KritzelDynamicObject';
       });
 
       const activeTool = { handlePointerDown: jest.fn() };
@@ -607,7 +607,7 @@ describe('KritzelEngine', () => {
 
     it('bypasses canvas pointer handling for native interactive descendants', () => {
       const input = document.createElement('input');
-      const { event } = setupInteractiveCustomElementEvent(input);
+      const { event } = setupInteractiveDynamicObjectEvent(input);
 
       const activeTool = { handlePointerDown: jest.fn() };
       core.store.state.activeTool = activeTool;
@@ -625,7 +625,7 @@ describe('KritzelEngine', () => {
 
     it('keeps default pointer handling for non-interactive descendants', () => {
       const container = document.createElement('div');
-      const { event } = setupInteractiveCustomElementEvent(container);
+      const { event } = setupInteractiveDynamicObjectEvent(container);
 
       const activeTool = { handlePointerDown: jest.fn() };
       core.store.state.activeTool = activeTool;
@@ -644,7 +644,7 @@ describe('KritzelEngine', () => {
     it('bypasses canvas pointer handling for contenteditable descendants', () => {
       const editable = document.createElement('div');
       editable.setAttribute('contenteditable', 'true');
-      const { event } = setupInteractiveCustomElementEvent(editable);
+      const { event } = setupInteractiveDynamicObjectEvent(editable);
 
       const activeTool = { handlePointerDown: jest.fn() };
       core.store.state.activeTool = activeTool;
@@ -669,17 +669,17 @@ describe('KritzelEngine', () => {
       const input = document.createElement('input');
       rendererContainer.appendChild(input);
 
-      const customElementObject = {
+      const dynamicObjectObject = {
         id: 'custom-3',
         isInteractive: true,
         element: document.createElement('div'),
         elementRef: rendererContainer,
       } as any;
 
-      (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
-      core.store.selectionGroup = { objects: [customElementObject] };
+      (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
+      core.store.selectionGroup = { objects: [dynamicObjectObject] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === customElementObject && className === 'KritzelCustomElement';
+        return obj === dynamicObjectObject && className === 'KritzelDynamicObject';
       });
 
       const activeTool = { handlePointerDown: jest.fn() };
@@ -713,17 +713,17 @@ describe('KritzelEngine', () => {
       shadowRoot.appendChild(input);
       rendererContainer.appendChild(shadowHost);
 
-      const customElementObject = {
+      const dynamicObjectObject = {
         id: 'custom-4',
         isInteractive: true,
         element: document.createElement('div'),
         elementRef: rendererContainer,
       } as any;
 
-      (core.store.objects.findById as jest.Mock).mockReturnValue(customElementObject);
-      core.store.selectionGroup = { objects: [customElementObject] };
+      (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
+      core.store.selectionGroup = { objects: [dynamicObjectObject] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === customElementObject && className === 'KritzelCustomElement';
+        return obj === dynamicObjectObject && className === 'KritzelDynamicObject';
       });
 
       const activeTool = { handlePointerDown: jest.fn() };
@@ -1021,7 +1021,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
-    it('keeps wheel handling in hovered custom element while it can still scroll down', () => {
+    it('keeps wheel handling in hovered dynamic object while it can still scroll down', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
 
@@ -1034,13 +1034,13 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
       objectElement.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({
@@ -1053,19 +1053,19 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
-    it('passes wheel handling through when a hovered custom element is not scrollable', () => {
+    it('passes wheel handling through when a hovered dynamic object is not scrollable', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
 
       const objectElement = document.createElement('div');
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({
@@ -1078,16 +1078,16 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
     });
 
-    it('allows Ctrl+wheel viewport handling while hovering a custom element', () => {
+    it('allows Ctrl+wheel viewport handling while hovering a dynamic object', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
       engine.isZoomingEnabled = true;
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(createWheelEvent({ ctrlKey: true, deltaY: -8 }));
 
@@ -1095,7 +1095,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
     });
 
-    it('hands wheel handling to the viewport at the bottom edge of a custom element scroll container', () => {
+    it('hands wheel handling to the viewport at the bottom edge of a dynamic object scroll container', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
       engine.isPanningEnabled = true;
@@ -1109,13 +1109,13 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
       objectElement.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({
@@ -1128,7 +1128,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
     });
 
-    it('keeps wheel handling in hovered custom element while it can still scroll up', () => {
+    it('keeps wheel handling in hovered dynamic object while it can still scroll up', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
 
@@ -1141,13 +1141,13 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
       objectElement.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({
@@ -1160,7 +1160,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
-    it('hands wheel handling to the viewport at the top edge of a custom element scroll container', () => {
+    it('hands wheel handling to the viewport at the top edge of a dynamic object scroll container', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
       engine.isPanningEnabled = true;
@@ -1174,13 +1174,13 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
       objectElement.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({
@@ -1205,13 +1205,13 @@ describe('KritzelEngine', () => {
       const typoRefContainer = document.createElement('div');
       typoRefContainer.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elmeentRef: typoRefContainer,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(createWheelEvent({ deltaY: -5 }));
 
@@ -1219,7 +1219,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
-    it('keeps wheel handling in hovered custom element while it can still scroll right', () => {
+    it('keeps wheel handling in hovered dynamic object while it can still scroll right', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
 
@@ -1232,13 +1232,13 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
       objectElement.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({
@@ -1252,7 +1252,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
-    it('hands wheel handling to the viewport at the right edge of a custom element scroll container', () => {
+    it('hands wheel handling to the viewport at the right edge of a dynamic object scroll container', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
       engine.isPanningEnabled = true;
@@ -1266,13 +1266,13 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
       objectElement.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({
@@ -1286,7 +1286,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).toHaveBeenCalledTimes(1);
     });
 
-    it('keeps wheel handling in hovered custom element while it can still scroll left', () => {
+    it('keeps wheel handling in hovered dynamic object while it can still scroll left', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
 
@@ -1299,13 +1299,13 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
       objectElement.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({
@@ -1319,7 +1319,7 @@ describe('KritzelEngine', () => {
       expect(activeTool.handleWheel).not.toHaveBeenCalled();
     });
 
-    it('hands wheel handling to the viewport at the left edge of a custom element scroll container', () => {
+    it('hands wheel handling to the viewport at the left edge of a dynamic object scroll container', () => {
       const activeTool = { handleWheel: jest.fn() } as any;
       core.store.state.activeTool = activeTool;
       engine.isPanningEnabled = true;
@@ -1333,13 +1333,13 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
       objectElement.appendChild(scrollHost);
 
-      const hoveredCustomElement = {
-        __class__: 'KritzelCustomElement',
+      const hoveredDynamicObject = {
+        __class__: 'KritzelDynamicObject',
         isSelected: true,
         elementRef: objectElement,
       } as any;
 
-      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredCustomElement);
+      (core.getObjectFromPointerEvent as jest.Mock).mockReturnValue(hoveredDynamicObject);
 
       engine.handleWheel(
         createWheelEvent({

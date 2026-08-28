@@ -60,7 +60,7 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 - [`patterns/core-concept.md`](patterns/core-concept.md) — How to write, structure, and maintain Fundamentals pages
 - [`patterns/advanced-concept.md`](patterns/advanced-concept.md) — How to write, structure, and maintain Advanced pages
 - [`patterns/framework-porting.md`](patterns/framework-porting.md) — How to port Angular source docs to React and Vue consistently
-- [`patterns/custom-elements.md`](patterns/custom-elements.md) — How to document and demo `KritzelCustomElement` lifecycle, renderer state persistence, wheel behavior, and Vue-specific embedding constraints
+- [`patterns/dynamic-objects.md`](patterns/dynamic-objects.md) — How to document and demo `KritzelDynamicObject` lifecycle, renderer state persistence, wheel behavior, and Vue-specific embedding constraints
 
 For runnable demo implementation under `demos/**`, use the `demo-builder` skill:
 
@@ -97,9 +97,9 @@ Apply these rules whenever docs include `<LiveDemo>` (especially during Angular 
 - Angular and React resolve the native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` directly (Angular `viewChild`/`ElementRef`, React `useRef`) — no composable needed.
 - See `.github/skills/demo-builder/patterns/vue-demo-pages.md` ("Editor / Engine Ref Access") for the required Vue usage.
 
-7. For custom-element documentation, apply lifecycle and framework constraints.
-- Load `patterns/custom-elements.md` whenever docs or demos cover `KritzelCustomElement`, `rendererKey`, or `rendererData`.
-- In Vue-facing custom-element docs, explicitly call out style/encapsulation caveats and prefer Vue custom-element based renderer strategies over ad-hoc SFC mounting.
+7. For dynamic object documentation, apply lifecycle and framework constraints.
+- Load `patterns/dynamic-objects.md` whenever docs or demos cover `KritzelDynamicObject`, `rendererKey`, or `rendererData`.
+- In Vue-facing dynamic object docs, explicitly call out style/encapsulation caveats and prefer Vue custom-element based renderer strategies over ad-hoc SFC mounting.
 
 ## Workflow
 

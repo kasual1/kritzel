@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angul
 
 import {
   EditorIsReadyEvent,
-  KritzelCustomElement,
-  KritzelCustomElementRendererRegistry,
+  KritzelDynamicObject,
+  KritzelDynamicObjectRendererRegistry,
   KritzelEditor,
 } from 'kritzel-angular';
 import { angularThemeDark } from '../../const/angular-theme-dark';
@@ -12,7 +12,7 @@ import { angularThemeLight } from '../../const/angular-theme-light';
 const HTML_RENDERER_KEY = 'angular-interactive-html';
 
 type HtmlRendererContext = {
-  object: KritzelCustomElement;
+  object: KritzelDynamicObject;
   container: HTMLElement | null;
   data?: unknown;
 };
@@ -188,7 +188,7 @@ function createInteractiveHtmlWidget(initialState: HtmlWidgetState): MountedHtml
 }
 
 @Component({
-  selector: 'app-dynamic-objects-custom-element-html',
+  selector: 'app-dynamic-objects-element-html',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -199,16 +199,16 @@ function createInteractiveHtmlWidget(initialState: HtmlWidgetState): MountedHtml
     ></kritzel-editor>
   `,
 })
-export class DynamicObjectsCustomElementHtmlComponent implements OnDestroy {
+export class DynamicObjectsElementHtmlComponent implements OnDestroy {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   private readonly mountedWidgets = new Map<string, MountedHtmlWidget>();
-  private hasAddedInitialCustomElement = false;
+  private hasAddedInitialDynamicObject = false;
 
   themes = [angularThemeLight, angularThemeDark];
 
   constructor() {
-    KritzelCustomElementRendererRegistry.register(HTML_RENDERER_KEY, {
+    KritzelDynamicObjectRendererRegistry.register(HTML_RENDERER_KEY, {
       onMount: ({ object, container, data }: HtmlRendererContext) => {
         if (!container) {
           return;
@@ -251,7 +251,7 @@ export class DynamicObjectsCustomElementHtmlComponent implements OnDestroy {
   }
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>): Promise<void> {
-    if (this.hasAddedInitialCustomElement) {
+    if (this.hasAddedInitialDynamicObject) {
       return;
     }
 
@@ -260,12 +260,12 @@ export class DynamicObjectsCustomElementHtmlComponent implements OnDestroy {
       return;
     }
 
-    this.hasAddedInitialCustomElement = true;
+    this.hasAddedInitialDynamicObject = true;
 
     const placeholder = document.createElement('div');
     placeholder.textContent = 'Loading Interactive HTML...';
 
-    const customElement = new KritzelCustomElement({
+    const dynamicObject = new KritzelDynamicObject({
       element: placeholder,
       rendererKey: HTML_RENDERER_KEY,
       rendererData: createInitialHtmlWidgetState(),
@@ -275,9 +275,9 @@ export class DynamicObjectsCustomElementHtmlComponent implements OnDestroy {
       height: 420,
     });
 
-    customElement.isRotatable = false;
+    dynamicObject.isRotatable = false;
 
-    await this.editor.addObject(customElement);
+    await this.editor.addObject(dynamicObject);
   }
 
   ngOnDestroy(): void {
@@ -287,6 +287,6 @@ export class DynamicObjectsCustomElementHtmlComponent implements OnDestroy {
     });
     this.mountedWidgets.clear();
 
-    KritzelCustomElementRendererRegistry.unregister(HTML_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(HTML_RENDERER_KEY);
   }
 }

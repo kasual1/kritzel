@@ -56,14 +56,14 @@ React refs resolve directly to native elements. Use `useRef<HTMLKritzelEditorEle
 
 When a demo needs initial object content, use a shared seed helper for consistent visuals and less duplicated setup code.
 
-## Custom-Element Objects
+## Dynamic Objects
 
-When a page uses `KritzelCustomElement`:
+When a page uses `KritzelDynamicObject`:
 
 1. Keep renderer setup and object factories in dedicated modules (not inline in the page component).
 2. Register/unregister renderers in page lifecycle hooks.
 3. Use guarded, idempotent `onReady` seeding and add factory-created objects through the editor ref.
-4. Apply `patterns/custom-element-objects.md` for lifecycle, state, and cleanup rules.
+4. Apply `patterns/dynamic-objects.md` for lifecycle, state, and cleanup rules.
 
 ## Docs LiveDemo Correspondence
 

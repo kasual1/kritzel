@@ -5,7 +5,7 @@ import { KritzelShape } from '../classes/objects/shape.class';
 import { KritzelText } from '../classes/objects/text.class';
 import { KritzelImage } from '../classes/objects/image.class';
 import { KritzelGroup } from '../classes/objects/group.class';
-import { KritzelCustomElement } from '../classes/objects/custom-element.class';
+import { KritzelDynamicObject } from '../classes/objects/dynamic-object.class';
 import { ShapeType } from '../enums/shape-type.enum';
 
 // Mock ProseMirror modules for KritzelText
@@ -715,11 +715,11 @@ describe('KritzelSvgExportHelper', () => {
     });
   });
 
-  describe('KritzelCustomElement SVG export', () => {
-    it('should export custom element as foreignObject in SVG mode', () => {
+  describe('KritzelDynamicObject SVG export', () => {
+    it('should export dynamic object as foreignObject in SVG mode', () => {
       const el = document.createElement('div');
       el.textContent = 'Custom Content';
-      const obj = new KritzelCustomElement({
+      const obj = new KritzelDynamicObject({
         element: el,
         translateX: 0,
         translateY: 0,
@@ -735,10 +735,10 @@ describe('KritzelSvgExportHelper', () => {
       expect(svg).toContain('height=\"100\"');
     });
 
-    it('should export custom element as placeholder rect in raster-safe mode', () => {
+    it('should export dynamic object as placeholder rect in raster-safe mode', () => {
       const el = document.createElement('div');
       el.textContent = 'Custom';
-      const obj = new KritzelCustomElement({
+      const obj = new KritzelDynamicObject({
         element: el,
         translateX: 0,
         translateY: 0,
@@ -750,15 +750,15 @@ describe('KritzelSvgExportHelper', () => {
       const svg = KritzelSvgExportHelper.objectToSvgElement(obj, 'light', undefined, true);
 
       expect(svg).toContain('<rect');
-      expect(svg).toContain('[Custom Element]');
+      expect(svg).toContain('[Dynamic Object]');
       expect(svg).not.toContain('foreignObject');
-      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Custom elements do not serialize well'));
+      expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('Dynamic objects do not serialize well'));
 
       consoleSpy.mockRestore();
     });
 
-    it('should handle empty custom element', () => {
-      const obj = new KritzelCustomElement({
+    it('should handle empty dynamic object', () => {
+      const obj = new KritzelDynamicObject({
         element: document.createElement('div'),
         translateX: 0,
         translateY: 0,
@@ -771,10 +771,10 @@ describe('KritzelSvgExportHelper', () => {
       expect(svg).toContain('foreignObject');
     });
 
-    it('should apply opacity to custom element SVG', () => {
+    it('should apply opacity to dynamic object SVG', () => {
       const el = document.createElement('div');
       el.textContent = 'Transparent';
-      const obj = new KritzelCustomElement({
+      const obj = new KritzelDynamicObject({
         element: el,
         translateX: 0,
         translateY: 0,

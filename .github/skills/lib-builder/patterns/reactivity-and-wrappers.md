@@ -40,9 +40,9 @@ Always treat this as cross-framework behavior, not framework-specific behavior:
 
 If the bug appears in one wrapper demo, validate the core fix in Stencil and avoid wrapper-only workarounds.
 
-## Custom-Element Runtime Note
+## Dynamic Object Runtime Note
 
-For custom-element object renderers, wrapper abstractions may legitimately handle framework-specific runtime behavior (for example style encapsulation and mount strategy), but they must not change the core lifecycle contract:
+For dynamic object renderers, wrapper abstractions may legitimately handle framework-specific runtime behavior (for example style encapsulation and mount strategy), but they must not change the core lifecycle contract:
 - Register renderer before object mount paths execute
 - Keep mount/unmount cleanup symmetric
 - Persist latest normalized state on unmount when renderer state is user-editable

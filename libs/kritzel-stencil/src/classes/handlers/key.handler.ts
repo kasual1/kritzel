@@ -144,7 +144,7 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     // of running global canvas shortcuts. Escape is the one exception — it
     // still runs through the shortcut system so it can collapse the text
     // selection (handled inside the shortcut's action).
-    if ((this._core.store.activeText || this._core.store.activeShape || this._core.store.activeInteractiveCustomElement) && event.key !== 'Escape') {
+    if ((this._core.store.activeText || this._core.store.activeShape || this._core.store.activeInteractiveDynamicObject) && event.key !== 'Escape') {
       return;
     }
 

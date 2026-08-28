@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import {
-  KritzelCustomElement,
+  KritzelDynamicObject,
   KritzelEditor,
   type HTMLKritzelEditorElement,
 } from "kritzel-react";
-import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { CounterWidget, createCounterWidgetInitialState, type CounterWidgetState } from "./CounterWidget";
 
@@ -18,11 +18,11 @@ type MountedCounterRenderer = {
 
 export function DynamicObjectsComponentPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const hasAddedInitialCustomElement = useRef(false);
+  const hasAddedInitialDynamicObject = useRef(false);
   const mountedRenderers = useRef<Map<string, MountedCounterRenderer>>(new Map());
 
   useEffect(() => {
-    KritzelCustomElementRendererRegistry.register(COUNTER_RENDERER_KEY, {
+    KritzelDynamicObjectRendererRegistry.register(COUNTER_RENDERER_KEY, {
       onMount: ({ object, container, data }) => {
         if (!container) {
           return;
@@ -69,12 +69,12 @@ export function DynamicObjectsComponentPage() {
         renderer.root.unmount();
       });
       mountedRenderers.current.clear();
-      KritzelCustomElementRendererRegistry.unregister(COUNTER_RENDERER_KEY);
+      KritzelDynamicObjectRendererRegistry.unregister(COUNTER_RENDERER_KEY);
     };
   }, []);
 
   async function onReady() {
-    if (hasAddedInitialCustomElement.current) {
+    if (hasAddedInitialDynamicObject.current) {
       return;
     }
 
@@ -83,12 +83,12 @@ export function DynamicObjectsComponentPage() {
       return;
     }
 
-    hasAddedInitialCustomElement.current = true;
+    hasAddedInitialDynamicObject.current = true;
 
     const placeholder = document.createElement("div");
     placeholder.textContent = "Loading Counter...";
 
-    const customElement = new KritzelCustomElement({
+    const dynamicObject = new KritzelDynamicObject({
       element: placeholder,
       rendererKey: COUNTER_RENDERER_KEY,
       rendererData: createCounterWidgetInitialState(),
@@ -98,9 +98,9 @@ export function DynamicObjectsComponentPage() {
       height: 160,
     });
 
-    customElement.isRotatable = false;
+    dynamicObject.isRotatable = false;
 
-    await editorRef.current?.addObject(customElement);
+    await editorRef.current?.addObject(dynamicObject);
   }
 
   return (

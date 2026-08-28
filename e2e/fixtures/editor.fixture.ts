@@ -131,7 +131,7 @@ export interface KritzelImageConfig {
   scale?: number;
 }
 
-export interface KritzelCustomElementConfig {
+export interface KritzelDynamicObjectConfig {
   html?: string;
   translateX?: number;
   translateY?: number;
@@ -358,8 +358,8 @@ export class EditorPage {
     }, config);
   }
 
-  /** Create a KritzelCustomElement and add it to the editor. */
-  async addCustomElement(config: KritzelCustomElementConfig) {
+  /** Create a KritzelDynamicObject and add it to the editor. */
+  async addDynamicObject(config: KritzelDynamicObjectConfig) {
     return this.page.evaluate((cfg) => {
       const k = (window as any).__kritzel__;
       if (!k) throw new Error('Kritzel classes not loaded. Call loadKritzelClasses() first.');
@@ -394,7 +394,7 @@ export class EditorPage {
         contentRoot.textContent = cfg.contentText ?? 'Custom element content';
       }
 
-      const customElement = new k.KritzelCustomElement({
+      const dynamicObject = new k.KritzelDynamicObject({
         element: contentRoot,
         translateX: cfg.translateX,
         translateY: cfg.translateY,
@@ -409,10 +409,10 @@ export class EditorPage {
       });
 
       if (typeof cfg.isInteractive === 'boolean') {
-        customElement.isInteractive = cfg.isInteractive;
+        dynamicObject.isInteractive = cfg.isInteractive;
       }
 
-      return el.addObject(customElement);
+      return el.addObject(dynamicObject);
     }, config);
   }
 

@@ -1,8 +1,8 @@
-# Pattern: Custom-Element Objects (Cross-Framework)
+# Pattern: Dynamic Objects (Cross-Framework)
 
 ## Purpose
 
-Use this pattern when a demo page creates or mounts `KritzelCustomElement` objects.
+Use this pattern when a demo page creates or mounts `KritzelDynamicObject` objects.
 
 Applies to Angular, React, and Vue demos equally.
 
@@ -19,7 +19,7 @@ Split responsibilities into three layers:
 - Keep renderer-specific DOM/UI logic out of the page file.
 
 3. Object factory
-- Create configured `KritzelCustomElement` instances in dedicated functions.
+- Create configured `KritzelDynamicObject` instances in dedicated functions.
 - Return object instances that are ready to add via editor APIs.
 
 ## Renderer Key Rules
@@ -76,4 +76,4 @@ Split responsibilities into three layers:
 1. Preserve behavior parity when porting renderer-based demos.
 2. Keep state shape and persistence semantics equivalent.
 3. Keep seed positions/sizes comparable unless framework-specific constraints require divergence.
-4. Verify route and docs references after refactors that move custom-element modules.
+4. Verify route and docs references after refactors that move dynamic object modules.

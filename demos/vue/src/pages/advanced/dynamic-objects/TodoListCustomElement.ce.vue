@@ -108,9 +108,9 @@ function saveEdit(todoId: number) {
     </header>
 
     <form class="create-form" @submit.prevent="addTodo">
-      <label for="vue-custom-element-new-todo" class="sr-only">New todo</label>
+      <label for="vue-dynamic-object-new-todo" class="sr-only">New todo</label>
       <input
-        id="vue-custom-element-new-todo"
+        id="vue-dynamic-object-new-todo"
         v-model="newTodo"
         type="text"
         placeholder="Add a new task"
@@ -134,8 +134,8 @@ function saveEdit(todoId: number) {
         :class="{ completed: todo.isCompleted }"
       >
         <form v-if="editingId === todo.id" class="edit-form" @submit.prevent="saveEdit(todo.id)">
-          <label :for="`vue-custom-element-edit-${todo.id}`" class="sr-only">Edit todo</label>
-          <input :id="`vue-custom-element-edit-${todo.id}`" v-model="editValue" type="text" />
+          <label :for="`vue-dynamic-object-edit-${todo.id}`" class="sr-only">Edit todo</label>
+          <input :id="`vue-dynamic-object-edit-${todo.id}`" v-model="editValue" type="text" />
           <div class="actions">
             <button type="submit" :disabled="editValue.trim().length === 0">Save</button>
             <button type="button" @click="cancelEdit">Cancel</button>

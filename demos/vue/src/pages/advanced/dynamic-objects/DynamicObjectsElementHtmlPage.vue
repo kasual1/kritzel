@@ -2,11 +2,11 @@
 import { onBeforeUnmount, ref } from 'vue'
 import {
   getEditorRef,
-  KritzelCustomElement,
+  KritzelDynamicObject,
   KritzelEditor,
   type HTMLKritzelEditorElement,
 } from 'kritzel-vue'
-import { KritzelCustomElementRendererRegistry } from 'kritzel-stencil'
+import { KritzelDynamicObjectRendererRegistry } from 'kritzel-stencil'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
@@ -183,10 +183,10 @@ function createInteractiveHtmlWidget(initialState: HtmlWidgetState): MountedHtml
 }
 
 const editor = getEditorRef('customElementsEditorHtml')
-const hasAddedInitialCustomElement = ref(false)
+const hasAddedInitialDynamicObject = ref(false)
 const mountedWidgets = new Map<string, MountedHtmlWidget>()
 
-KritzelCustomElementRendererRegistry.register(HTML_RENDERER_KEY, {
+KritzelDynamicObjectRendererRegistry.register(HTML_RENDERER_KEY, {
   onMount: ({ object, container, data }) => {
     if (!container) {
       return
@@ -232,12 +232,12 @@ onBeforeUnmount(() => {
     mountedWidget.root.remove()
   })
   mountedWidgets.clear()
-  KritzelCustomElementRendererRegistry.unregister(HTML_RENDERER_KEY)
+  KritzelDynamicObjectRendererRegistry.unregister(HTML_RENDERER_KEY)
 })
 
 async function onReady() {
   const editorValue = editor.value as HTMLKritzelEditorElement | undefined
-  if (!editorValue || hasAddedInitialCustomElement.value) {
+  if (!editorValue || hasAddedInitialDynamicObject.value) {
     return
   }
 
@@ -246,12 +246,12 @@ async function onReady() {
     return
   }
 
-  hasAddedInitialCustomElement.value = true
+  hasAddedInitialDynamicObject.value = true
 
   const placeholder = document.createElement('div')
   placeholder.textContent = 'Loading Interactive HTML...'
 
-  const customElement = new KritzelCustomElement({
+  const dynamicObject = new KritzelDynamicObject({
     element: placeholder,
     rendererKey: HTML_RENDERER_KEY,
     rendererData: createInitialHtmlWidgetState(),
@@ -261,9 +261,9 @@ async function onReady() {
     height: 420,
   })
 
-  customElement.isRotatable = false
+  dynamicObject.isRotatable = false
 
-  await editorValue.addObject(customElement)
+  await editorValue.addObject(dynamicObject)
 }
 </script>
 
@@ -271,7 +271,7 @@ async function onReady() {
   <div :style="hostStyle">
     <KritzelEditor
       ref="customElementsEditorHtml"
-      editorId="vue-custom-elements-html"
+      editorId="vue-dynamic-objects-html"
       theme="light"
       :themes="[vueThemeLight]"
       :style="editorStyle"

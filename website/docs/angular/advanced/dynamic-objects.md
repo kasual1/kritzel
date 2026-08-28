@@ -11,15 +11,15 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Most canvas objects in Kritzel (shapes, lines, text, images) render through the engine's own drawing pipeline. `KritzelCustomElement` is different: it is a canvas object whose visual content is arbitrary HTML that you provide, while it still fully participates in selection, movement, resizing, ordering, and workspace persistence like any other object.
+Most canvas objects in Kritzel (shapes, lines, text, images) render through the engine's own drawing pipeline. `KritzelDynamicObject` is different: it is a canvas object whose visual content is arbitrary HTML that you provide, while it still fully participates in selection, movement, resizing, ordering, and workspace persistence like any other object.
 
-`KritzelCustomElement` supports two hosting modes:
+`KritzelDynamicObject` supports two hosting modes:
 
 - **Native HTML mode** — pass a plain DOM `element` and let the object mount it directly. No registration is required.
-- **Registered component mode** — pass a `rendererKey` (and optional `rendererData`) so a renderer registered on `KritzelCustomElementRendererRegistry` mounts a real Angular, React, or Vue component into the object's container.
+- **Registered component mode** — pass a `rendererKey` (and optional `rendererData`) so a renderer registered on `KritzelDynamicObjectRendererRegistry` mounts a real Angular, React, or Vue component into the object's container.
 
 ```ts
-interface KritzelCustomElementConfig {
+interface KritzelDynamicObjectConfig {
   element?: HTMLElement;
   rendererKey?: string;
   rendererData?: unknown;
@@ -44,7 +44,7 @@ The simplest way to use a dynamic object is to build a plain DOM subtree and pas
 
 ## Rendering Framework Components
 
-For richer content, register a renderer on `KritzelCustomElementRendererRegistry` with a stable `rendererKey`. When an object using that key mounts, the registry's `onMount` hook receives the object, its container, and any previously persisted `rendererData`, so you can create and attach a live Angular component (via `createComponent`, `ApplicationRef`, and `EnvironmentInjector`) instead of static markup.
+For richer content, register a renderer on `KritzelDynamicObjectRendererRegistry` with a stable `rendererKey`. When an object using that key mounts, the registry's `onMount` hook receives the object, its container, and any previously persisted `rendererData`, so you can create and attach a live Angular component (via `createComponent`, `ApplicationRef`, and `EnvironmentInjector`) instead of static markup.
 
 State flows through `rendererData`:
 
@@ -61,8 +61,8 @@ Always unregister the renderer, and detach/destroy any mounted component views, 
 
 ## Related API Methods and Types
 
-- Object type ([`KritzelCustomElement`](../api-reference/object-types.md#kritzelcustomelement))
-- Renderer registry (`KritzelCustomElementRendererRegistry.register`, `KritzelCustomElementRendererRegistry.unregister`)
+- Object type ([`KritzelDynamicObject`](../api-reference/object-types.md#kritzelcustomelement))
+- Renderer registry (`KritzelDynamicObjectRendererRegistry.register`, `KritzelDynamicObjectRendererRegistry.unregister`)
 - Object creation ([addObject](../api-reference/editor.md#addobject))
 
 For a comprehensive view, see the [API Reference](../api-reference/editor.md).

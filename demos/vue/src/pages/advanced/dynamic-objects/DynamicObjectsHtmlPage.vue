@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getEditorRef, KritzelCustomElement, KritzelEditor, type HTMLKritzelEditorElement } from 'kritzel-vue'
+import { getEditorRef, KritzelDynamicObject, KritzelEditor, type HTMLKritzelEditorElement } from 'kritzel-vue'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 
 const editor = getEditorRef('editor')
-const hasAddedInitialCustomElement = ref(false)
+const hasAddedInitialDynamicObject = ref(false)
 
 function createHtmlCounterElement(): HTMLElement {
   const root = document.createElement('section')
@@ -65,7 +65,7 @@ function createHtmlCounterElement(): HTMLElement {
 
 async function onReady() {
   const editorValue = editor.value as HTMLKritzelEditorElement | undefined
-  if (!editorValue || hasAddedInitialCustomElement.value) {
+  if (!editorValue || hasAddedInitialDynamicObject.value) {
     return
   }
 
@@ -74,9 +74,9 @@ async function onReady() {
     return
   }
 
-  hasAddedInitialCustomElement.value = true
+  hasAddedInitialDynamicObject.value = true
 
-  const customElement = new KritzelCustomElement({
+  const dynamicObject = new KritzelDynamicObject({
     element: createHtmlCounterElement(),
     translateX: -150,
     translateY: -90,
@@ -84,9 +84,9 @@ async function onReady() {
     height: 160,
   })
 
-  customElement.isRotatable = false
+  dynamicObject.isRotatable = false
 
-  await editorValue.addObject(customElement)
+  await editorValue.addObject(dynamicObject)
 }
 </script>
 

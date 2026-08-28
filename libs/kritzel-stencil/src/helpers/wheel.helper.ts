@@ -1,16 +1,16 @@
-import { KritzelCustomElement } from '../classes/objects/custom-element.class';
+import { KritzelDynamicObject } from '../classes/objects/dynamic-object.class';
 
 export class KritzelWheelHelper {
-  public static shouldKeepWheelInCustomElement(ev: WheelEvent, customElement: KritzelCustomElement): boolean {
+  public static shouldKeepWheelInDynamicObject(ev: WheelEvent, dynamicObject: KritzelDynamicObject): boolean {
     // Keep Ctrl+wheel available for viewport zoom gestures.
-    if (ev.ctrlKey || customElement.isSelected !== true) {
+    if (ev.ctrlKey || dynamicObject.isSelected !== true) {
       return false;
     }
 
     const path = typeof ev.composedPath === 'function' ? (ev.composedPath() as EventTarget[]) : [];
-    const scrollContainer = this.getScrollableContainerFromEventPath(path, customElement);
+    const scrollContainer = this.getScrollableContainerFromEventPath(path, dynamicObject);
 
-    // No scroll container found inside the custom element: let the wheel
+    // No scroll container found inside the dynamic object: let the wheel
     // event pass through so the viewport can continue handling it.
     if (!scrollContainer) {
       return false;
@@ -19,18 +19,18 @@ export class KritzelWheelHelper {
     return this.canElementConsumeWheel(scrollContainer, ev.deltaX, ev.deltaY);
   }
 
-  private static getScrollableContainerFromEventPath(path: EventTarget[], customElement: KritzelCustomElement): HTMLElement | null {
+  private static getScrollableContainerFromEventPath(path: EventTarget[], dynamicObject: KritzelDynamicObject): HTMLElement | null {
     const potentialRoots: HTMLElement[] = [];
 
-    if (customElement.element instanceof HTMLElement) {
-      potentialRoots.push(customElement.element);
+    if (dynamicObject.element instanceof HTMLElement) {
+      potentialRoots.push(dynamicObject.element);
     }
 
-    if (customElement.elementRef instanceof HTMLElement) {
-      potentialRoots.push(customElement.elementRef);
+    if (dynamicObject.elementRef instanceof HTMLElement) {
+      potentialRoots.push(dynamicObject.elementRef);
     }
 
-    const legacyElementRef = (customElement as KritzelCustomElement & { elmeentRef?: HTMLElement }).elmeentRef;
+    const legacyElementRef = (dynamicObject as KritzelDynamicObject & { elmeentRef?: HTMLElement }).elmeentRef;
     if (legacyElementRef instanceof HTMLElement) {
       potentialRoots.push(legacyElementRef);
     }
@@ -53,7 +53,7 @@ export class KritzelWheelHelper {
     }
 
     // Fallback for synthetic/custom wheel events where composedPath is absent
-    // or does not include the custom-element subtree.
+    // or does not include the dynamic-object subtree.
     for (const root of potentialRoots) {
       if (this.isScrollableElement(root)) {
         return root;
@@ -88,7 +88,7 @@ export class KritzelWheelHelper {
     const canConsumeVertical = this.canElementConsumeVerticalWheel(element, deltaY);
     const canConsumeHorizontal = this.canElementConsumeHorizontalWheel(element, deltaX);
 
-    // Keep wheel events inside the custom element whenever at least one
+    // Keep wheel events inside the dynamic object whenever at least one
     // requested axis can still be consumed by its scroll container.
     return canConsumeVertical || canConsumeHorizontal;
   }

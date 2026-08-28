@@ -1,8 +1,8 @@
-import { KritzelCustomElement } from './custom-element.class';
+import { KritzelDynamicObject } from './dynamic-object.class';
 import { KritzelCore } from '../core/core.class';
-import { KritzelCustomElementRendererRegistry } from '../registries/custom-element-renderer.registry';
+import { KritzelDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
 
-describe('KritzelCustomElement', () => {
+describe('KritzelDynamicObject', () => {
   let mockCore: jest.Mocked<KritzelCore>;
   let mockObjectsUpdate: jest.Mock;
 
@@ -48,16 +48,16 @@ describe('KritzelCustomElement', () => {
 
   describe('constructor', () => {
     it('should create with default values when no config provided', () => {
-      const obj = new KritzelCustomElement();
+      const obj = new KritzelDynamicObject();
 
-      expect(obj.__class__).toBe('KritzelCustomElement');
+      expect(obj.__class__).toBe('KritzelDynamicObject');
       expect(obj.isInteractive).toBe(false);
       expect(obj.element).toBeUndefined();
     });
 
     it('should apply config values', () => {
       const element = createMockElement();
-      const obj = new KritzelCustomElement({
+      const obj = new KritzelDynamicObject({
         element,
         translateX: 10,
         translateY: 20,
@@ -76,7 +76,7 @@ describe('KritzelCustomElement', () => {
 
     it('should default optional config values to 0 or 1', () => {
       const element = createMockElement();
-      const obj = new KritzelCustomElement({ element });
+      const obj = new KritzelDynamicObject({ element });
 
       expect(obj.element).toBe(element);
       expect(obj.translateX).toBe(0);
@@ -88,7 +88,7 @@ describe('KritzelCustomElement', () => {
 
     it('should convert constructor rotation from degrees to radians', () => {
       const element = createMockElement();
-      const obj = new KritzelCustomElement({
+      const obj = new KritzelDynamicObject({
         element,
         rotation: -90,
       });
@@ -100,9 +100,9 @@ describe('KritzelCustomElement', () => {
   describe('create', () => {
     it('should create an instance with core reference and generated id', () => {
       const element = createMockElement();
-      const obj = KritzelCustomElement.create(mockCore, { element }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element }) as KritzelDynamicObject;
 
-      expect(obj).toBeInstanceOf(KritzelCustomElement);
+      expect(obj).toBeInstanceOf(KritzelDynamicObject);
       expect(obj.id).toBeDefined();
       expect(obj.id.length).toBeGreaterThan(0);
       expect(obj.element).toBe(element);
@@ -110,21 +110,21 @@ describe('KritzelCustomElement', () => {
 
     it('should set workspaceId from core store', () => {
       const element = createMockElement();
-      const obj = KritzelCustomElement.create(mockCore, { element }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element }) as KritzelDynamicObject;
 
       expect(obj.workspaceId).toBe('workspace-1');
     });
 
     it('should pass config through to constructor', () => {
       const element = createMockElement();
-      const obj = KritzelCustomElement.create(mockCore, {
+      const obj = KritzelDynamicObject.create(mockCore, {
         element,
         translateX: 50,
         translateY: 60,
         scale: 3,
         width: 200,
         height: 300,
-      }) as KritzelCustomElement;
+      }) as KritzelDynamicObject;
 
       expect(obj.translateX).toBe(50);
       expect(obj.translateY).toBe(60);
@@ -135,22 +135,22 @@ describe('KritzelCustomElement', () => {
 
     it('should convert create rotation from degrees to radians', () => {
       const element = createMockElement();
-      const obj = KritzelCustomElement.create(mockCore, {
+      const obj = KritzelDynamicObject.create(mockCore, {
         element,
         rotation: -90,
-      }) as KritzelCustomElement;
+      }) as KritzelDynamicObject;
 
       expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
     });
   });
 
   describe('mount', () => {
-    let obj: KritzelCustomElement;
+    let obj: KritzelDynamicObject;
     let innerElement: HTMLElement;
 
     beforeEach(() => {
       innerElement = createMockElement();
-      obj = KritzelCustomElement.create(mockCore, { element: innerElement }) as KritzelCustomElement;
+      obj = KritzelDynamicObject.create(mockCore, { element: innerElement }) as KritzelDynamicObject;
     });
 
     it('should mount the element into the container', () => {
@@ -240,7 +240,7 @@ describe('KritzelCustomElement', () => {
       const input = document.createElement('input');
       shadowRoot.appendChild(input);
 
-      KritzelCustomElementRendererRegistry.register(rendererKey, {
+      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: ({ container }) => {
           if (!container) {
             return;
@@ -251,10 +251,10 @@ describe('KritzelCustomElement', () => {
         onUnmount: () => undefined,
       });
 
-      const rendererObj = KritzelCustomElement.create(mockCore, {
+      const rendererObj = KritzelDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
-      }) as KritzelCustomElement;
+      }) as KritzelDynamicObject;
 
       const container = document.createElement('div');
       rendererObj.mount(container);
@@ -267,7 +267,7 @@ describe('KritzelCustomElement', () => {
 
       expect(blurSpy).toHaveBeenCalledTimes(1);
 
-      KritzelCustomElementRendererRegistry.unregister(rendererKey);
+      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should keep renderer container selectable while disabling mounted interactive content', () => {
@@ -275,7 +275,7 @@ describe('KritzelCustomElement', () => {
       const mountedHost = document.createElement('div');
       mountedHost.innerHTML = '<button type="button">Click</button>';
 
-      KritzelCustomElementRendererRegistry.register(rendererKey, {
+      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
         onMount: ({ container }) => {
           if (!container) {
             return;
@@ -286,10 +286,10 @@ describe('KritzelCustomElement', () => {
         onUnmount: () => undefined,
       });
 
-      const rendererObj = KritzelCustomElement.create(mockCore, {
+      const rendererObj = KritzelDynamicObject.create(mockCore, {
         element: createMockElement(),
         rendererKey,
-      }) as KritzelCustomElement;
+      }) as KritzelDynamicObject;
 
       const container = document.createElement('div');
 
@@ -304,7 +304,7 @@ describe('KritzelCustomElement', () => {
       expect(container.style.pointerEvents).toBe('auto');
       expect(mountedHost.style.pointerEvents).toBe('auto');
 
-      KritzelCustomElementRendererRegistry.unregister(rendererKey);
+      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
     });
 
     it('should detect focused input-like descendants when interactive', () => {
@@ -357,16 +357,16 @@ describe('KritzelCustomElement', () => {
   });
 
   describe('resize', () => {
-    let obj: KritzelCustomElement;
+    let obj: KritzelDynamicObject;
     let innerElement: HTMLElement;
 
     beforeEach(() => {
       innerElement = createMockElement();
-      obj = KritzelCustomElement.create(mockCore, {
+      obj = KritzelDynamicObject.create(mockCore, {
         element: innerElement,
         width: 100,
         height: 100,
-      }) as KritzelCustomElement;
+      }) as KritzelDynamicObject;
     });
 
     it('should update dimensions and position', () => {
@@ -409,17 +409,17 @@ describe('KritzelCustomElement', () => {
   describe('copy', () => {
     it('should return a new instance with a different id', () => {
       const innerElement = createMockElement();
-      const obj = KritzelCustomElement.create(mockCore, {
+      const obj = KritzelDynamicObject.create(mockCore, {
         element: innerElement,
         translateX: 10,
         translateY: 20,
         width: 100,
         height: 200,
-      }) as KritzelCustomElement;
+      }) as KritzelDynamicObject;
 
       const copy = obj.copy();
 
-      expect(copy).toBeInstanceOf(KritzelCustomElement);
+      expect(copy).toBeInstanceOf(KritzelDynamicObject);
       expect(copy.id).not.toBe(obj.id);
       expect(copy.translateX).toBe(10);
       expect(copy.translateY).toBe(20);
@@ -429,7 +429,7 @@ describe('KritzelCustomElement', () => {
 
     it('should set isMounted to false on the copy', () => {
       const innerElement = createMockElement();
-      const obj = KritzelCustomElement.create(mockCore, { element: innerElement }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element: innerElement }) as KritzelDynamicObject;
       const container = document.createElement('div');
       obj.mount(container);
 
@@ -441,7 +441,7 @@ describe('KritzelCustomElement', () => {
 
     it('should reset transient interaction state on copied object', () => {
       const innerElement = createMockElement();
-      const obj = KritzelCustomElement.create(mockCore, { element: innerElement }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element: innerElement }) as KritzelDynamicObject;
       obj.isSelected = true;
       obj.isHovered = true;
       obj.isInteractive = true;
@@ -462,7 +462,7 @@ describe('KritzelCustomElement', () => {
     it('should clone the HTML element', () => {
       const innerElement = createMockElement();
       innerElement.textContent = 'hello';
-      const obj = KritzelCustomElement.create(mockCore, { element: innerElement }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element: innerElement }) as KritzelDynamicObject;
 
       const copy = obj.copy();
 
@@ -475,7 +475,7 @@ describe('KritzelCustomElement', () => {
     it('should serialize element as HTML string', () => {
       const el = document.createElement('div');
       el.textContent = 'Hello';
-      const obj = KritzelCustomElement.create(mockCore, { element: el, width: 100, height: 50 }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element: el, width: 100, height: 50 }) as KritzelDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -485,7 +485,7 @@ describe('KritzelCustomElement', () => {
 
     it('should serialize with dimension snapshot', () => {
       const el = document.createElement('div');
-      const obj = KritzelCustomElement.create(mockCore, { element: el, width: 150, height: 75 }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element: el, width: 150, height: 75 }) as KritzelDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -495,7 +495,7 @@ describe('KritzelCustomElement', () => {
 
     it('should exclude _core and _elementRef from serialized output', () => {
       const el = document.createElement('div');
-      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element: el }) as KritzelDynamicObject;
 
       const serialized = obj.serialize();
 
@@ -504,7 +504,7 @@ describe('KritzelCustomElement', () => {
     });
 
     it('should handle empty element', () => {
-      const obj = new KritzelCustomElement();
+      const obj = new KritzelDynamicObject();
       obj._core = mockCore;
 
       const serialized = obj.serialize();
@@ -516,10 +516,10 @@ describe('KritzelCustomElement', () => {
       const el = document.createElement('button');
       el.id = 'test-button';
       el.textContent = 'Click Me';
-      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element: el }) as KritzelDynamicObject;
 
       const serialized = obj.serialize();
-      const restored = new KritzelCustomElement();
+      const restored = new KritzelDynamicObject();
       restored._core = mockCore;
       restored.deserialize(serialized);
 
@@ -528,33 +528,33 @@ describe('KritzelCustomElement', () => {
     });
 
     it('should create placeholder on deserialize if htmlString is missing', () => {
-      const obj = new KritzelCustomElement();
+      const obj = new KritzelDynamicObject();
       obj._core = mockCore;
 
       obj.deserialize({});
 
       expect(obj.element).toBeDefined();
-      expect(obj.element.textContent).toContain('[Custom Element]');
+      expect(obj.element.textContent).toContain('[Dynamic Object]');
     });
 
     it('should create placeholder on deserialize if htmlString is invalid', () => {
-      const obj = new KritzelCustomElement();
+      const obj = new KritzelDynamicObject();
       obj._core = mockCore;
 
       // Test with empty htmlString fallback - temp.firstElementChild will be null
       obj.deserialize({ htmlString: '' });
 
       expect(obj.element).toBeDefined();
-      expect(obj.element.textContent).toContain('[Custom Element]');
+      expect(obj.element.textContent).toContain('[Dynamic Object]');
     });
 
     it('should survive serialization roundtrip with complex HTML', () => {
       const el = document.createElement('div');
       el.innerHTML = '<p><strong>Bold</strong> and <em>italic</em></p>';
-      const obj = KritzelCustomElement.create(mockCore, { element: el }) as KritzelCustomElement;
+      const obj = KritzelDynamicObject.create(mockCore, { element: el }) as KritzelDynamicObject;
 
       const serialized = obj.serialize();
-      const restored = new KritzelCustomElement();
+      const restored = new KritzelDynamicObject();
       restored._core = mockCore;
       restored.deserialize(serialized);
 
@@ -565,13 +565,13 @@ describe('KritzelCustomElement', () => {
 
   describe('interaction semantics', () => {
     it('should have isInteractive property defaulting to false', () => {
-      const obj = new KritzelCustomElement();
+      const obj = new KritzelDynamicObject();
 
       expect(obj.isInteractive).toBe(false);
     });
 
     it('should not persist isInteractive through serialization', () => {
-      const obj = new KritzelCustomElement();
+      const obj = new KritzelDynamicObject();
       obj.isInteractive = true;
 
       const serialized = obj.serialize();
@@ -581,7 +581,7 @@ describe('KritzelCustomElement', () => {
     });
 
     it('should ignore legacy allowEmbeddedInteraction on deserialize', () => {
-      const obj = new KritzelCustomElement();
+      const obj = new KritzelDynamicObject();
       obj._core = mockCore;
 
       obj.deserialize({ allowEmbeddedInteraction: true, isInteractive: false });

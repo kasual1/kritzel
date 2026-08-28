@@ -76,7 +76,7 @@ When adding or porting <LiveDemo> blocks:
 - Use `demoPath` with framework-aware base URLs unless an explicit absolute `iframeUrl` is required.
 - Ensure `demoPath` starts with `/` and matches the router path exactly.
 
-9. Port custom-element demos as runtime-equivalent behavior, not syntax-only copies.
+9. Port dynamic object demos as runtime-equivalent behavior, not syntax-only copies.
 - Preserve `rendererKey` + `rendererData` lifecycle semantics in all frameworks.
 - Keep mount/unmount cleanup symmetry and persisted state handoff behavior equivalent.
 - In Vue targets, explicitly evaluate style encapsulation: prefer Vue custom-element based renderer strategies when embedded content styling would otherwise leak or fail.
@@ -107,7 +107,7 @@ After porting, verify:
 6. Every `<LiveDemo demoPath="...">` resolves in the framework router.
 7. `website/docusaurus.config.ts` local `demoBaseUrls` values match currently used framework dev ports.
 8. `repoFiles` paths exist and reflect current folder structure (no stale `examples/` paths after moves).
-9. For custom-element demos, each framework documents equivalent renderer lifecycle behavior; Vue docs include explicit note about custom-element encapsulation strategy when relevant.
+9. For dynamic object demos, each framework documents equivalent renderer lifecycle behavior; Vue docs include explicit note about custom-element encapsulation strategy when relevant.
 
 ## Suggested Search Checks
 

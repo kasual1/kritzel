@@ -19,7 +19,7 @@ All objects share a common foundational structure. No matter the specific type, 
 - **Transforms:** `rotation`, `scale`
 - **Styling:** `opacity`, `backgroundColor`, `borderColor`, `zIndex`
 
-Because all objects share this base, the engine can uniformly handle hit-testing, rendering bounds, and selection outlines. Currently, tools create specific instances of sub-classed objects: `KritzelPath`, `KritzelLine`, `KritzelShape`, `KritzelText`, `KritzelImage`, and `KritzelCustomElement`.
+Because all objects share this base, the engine can uniformly handle hit-testing, rendering bounds, and selection outlines. Currently, tools create specific instances of sub-classed objects: `KritzelPath`, `KritzelLine`, `KritzelShape`, `KritzelText`, `KritzelImage`, and `KritzelDynamicObject`.
 
 ## Adding and Removing Objects
 

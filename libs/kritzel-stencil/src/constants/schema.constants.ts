@@ -2,4 +2,4 @@
 export const CURRENT_APP_STATE_SCHEMA_VERSION = 2;
 
 /** Current schema version for workspace Y.Docs (drawable objects). */
-export const CURRENT_WORKSPACE_SCHEMA_VERSION = 2;
+export const CURRENT_WORKSPACE_SCHEMA_VERSION = 3;

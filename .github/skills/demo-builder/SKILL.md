@@ -53,7 +53,7 @@ names stay unique and greppable while routes stay short and mirror the docs URLs
 - `patterns/angular-demo-pages.md` - Angular standalone demo components
 - `patterns/react-demo-pages.md` - React demo page components
 - `patterns/vue-demo-pages.md` - Vue demo page components
-- `patterns/custom-element-objects.md` - General custom-element object setup and lifecycle rules
+- `patterns/dynamic-objects.md` - General dynamic object setup and lifecycle rules
 - `patterns/cross-framework-demo-reliability.md` - Path parity, docs integration, and framework equivalence checks
 
 ## Workflow
@@ -62,6 +62,6 @@ names stay unique and greppable while routes stay short and mirror the docs URLs
 2. Load the framework pattern and scaffold/update the demo page.
 3. Register the route in the framework router.
 4. Verify editor id uniqueness, theme wiring, and iframe-safe panning/zoom behavior.
-5. If the page uses `KritzelCustomElement`, load and apply `patterns/custom-element-objects.md`.
+5. If the page uses `KritzelDynamicObject`, load and apply `patterns/dynamic-objects.md`.
 6. If docs `<LiveDemo>` references this demo, validate route and repo file path parity.
 7. If porting, run cross-framework checks from `patterns/cross-framework-demo-reliability.md`.

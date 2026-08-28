@@ -2,9 +2,9 @@
 import { onBeforeUnmount, ref } from 'vue'
 import {
   getEditorRef,
-  KritzelCustomElement,
+  KritzelDynamicObject,
   KritzelEditor,
-  registerVueCustomElementRenderer,
+  registerVueDynamicObjectRenderer,
   type HTMLKritzelEditorElement,
 } from 'kritzel-vue'
 import { vueThemeLight } from '../../../const/vue-theme-light.ts'
@@ -41,8 +41,8 @@ function createTodoListInitialState(): TodoListState {
 const TODO_RENDERER_KEY = 'vue-todo-list'
 
 const editor = getEditorRef('customElementsEditor')
-const hasAddedInitialCustomElement = ref(false)
-const unregisterTodoRenderer = registerVueCustomElementRenderer(TODO_RENDERER_KEY, {
+const hasAddedInitialDynamicObject = ref(false)
+const unregisterTodoRenderer = registerVueDynamicObjectRenderer(TODO_RENDERER_KEY, {
   tagName: 'kritzel-vue-todo-list',
   component: TodoListCustomElement,
   createInitialState: createTodoListInitialState,
@@ -54,7 +54,7 @@ onBeforeUnmount(() => {
 
 async function onReady() {
   const editorValue = editor.value as HTMLKritzelEditorElement | undefined
-  if (!editorValue || hasAddedInitialCustomElement.value) {
+  if (!editorValue || hasAddedInitialDynamicObject.value) {
     return
   }
 
@@ -63,12 +63,12 @@ async function onReady() {
     return
   }
 
-  hasAddedInitialCustomElement.value = true
+  hasAddedInitialDynamicObject.value = true
 
   const placeholder = document.createElement('div')
   placeholder.textContent = 'Loading Todo List...'
 
-  const customElement = new KritzelCustomElement({
+  const dynamicObject = new KritzelDynamicObject({
     element: placeholder,
     rendererKey: TODO_RENDERER_KEY,
     rendererData: createTodoListInitialState(),
@@ -78,9 +78,9 @@ async function onReady() {
     height: 380,
   })
 
-  customElement.isRotatable = false
+  dynamicObject.isRotatable = false
 
-  await editorValue.addObject(customElement)
+  await editorValue.addObject(dynamicObject)
 }
 </script>
 
@@ -88,7 +88,7 @@ async function onReady() {
   <div :style="hostStyle">
     <KritzelEditor
       ref="customElementsEditor"
-      editorId="vue-custom-elements"
+      editorId="vue-dynamic-objects"
       theme="light"
       :themes="[vueThemeLight]"
       :style="editorStyle"

@@ -115,7 +115,7 @@ Permanent grouping of multiple objects.
 - Dissolved via `ungroup()` method
 - Children move, resize, and rotate as a unit
 
-### `KritzelCustomElement`
+### `KritzelDynamicObject`
 
 User-defined custom HTML element on the canvas.
 

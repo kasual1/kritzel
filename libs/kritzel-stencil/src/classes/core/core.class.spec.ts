@@ -8,7 +8,7 @@ import { KritzelPath } from '../objects/path.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelShape } from '../objects/shape.class';
-import { KritzelCustomElement } from '../objects/custom-element.class';
+import { KritzelDynamicObject } from '../objects/dynamic-object.class';
 import { KritzelBaseTool } from '../tools/base-tool.class';
 import { KritzelWorkspace } from './workspace.class';
 import { KritzelStore } from './store.class';
@@ -551,9 +551,9 @@ describe('KritzelCore', () => {
       expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
     });
 
-    it('should add a rotated custom element object', () => {
+    it('should add a rotated dynamic object object', () => {
       const element = document.createElement('div');
-      const obj = new KritzelCustomElement({
+      const obj = new KritzelDynamicObject({
         element,
         rotation: -90,
       });
@@ -703,10 +703,10 @@ describe('KritzelCore', () => {
       expect(mockEngine.triggerSelectionChange).toHaveBeenCalled();
     });
 
-    it('should enable isInteractive for selected custom elements', () => {
-      const customElementObject = {
+    it('should enable isInteractive for selected dynamic objects', () => {
+      const dynamicObjectObject = {
         id: 'custom-1',
-        __class__: 'KritzelCustomElement',
+        __class__: 'KritzelDynamicObject',
         isInteractive: false,
       } as unknown as KritzelBaseObject<any>;
       const regularObject = {
@@ -717,12 +717,12 @@ describe('KritzelCore', () => {
 
       const newGroup = {
         id: 'new-sg',
-        objects: [customElementObject, regularObject],
+        objects: [dynamicObjectObject, regularObject],
       } as unknown as KritzelSelectionGroup;
 
       core.addSelectionGroup(newGroup);
 
-      expect(customElementObject.isInteractive).toBe(true);
+      expect(dynamicObjectObject.isInteractive).toBe(true);
       expect(regularObject.isInteractive).toBe(false);
     });
 
@@ -777,10 +777,10 @@ describe('KritzelCore', () => {
       expect(mockObjectsMap.remove).not.toHaveBeenCalled();
     });
 
-    it('should disable isInteractive for deselected custom elements', () => {
-      const customElementObject = {
+    it('should disable isInteractive for deselected dynamic objects', () => {
+      const dynamicObjectObject = {
         id: 'custom-1',
-        __class__: 'KritzelCustomElement',
+        __class__: 'KritzelDynamicObject',
         isInteractive: true,
       } as unknown as KritzelBaseObject<any>;
       const regularObject = {
@@ -791,13 +791,13 @@ describe('KritzelCore', () => {
 
       const sg = {
         id: 'sg-1',
-        objects: [customElementObject, regularObject],
+        objects: [dynamicObjectObject, regularObject],
       } as unknown as KritzelSelectionGroup;
       mockStore.selectionGroup = sg;
 
       core.removeSelectionGroup();
 
-      expect(customElementObject.isInteractive).toBe(false);
+      expect(dynamicObjectObject.isInteractive).toBe(false);
       expect(regularObject.isInteractive).toBe(true);
     });
 

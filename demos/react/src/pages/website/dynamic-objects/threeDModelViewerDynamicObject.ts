@@ -1,6 +1,6 @@
 import { ModelViewerElement } from "@google/model-viewer";
-import { KritzelCustomElement } from "kritzel-react";
-import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObject } from "kritzel-react";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
 
 // <model-viewer> throttles its render resolution down to 50% whenever the page drops
 // frames, and the auto-rotating scene never goes idle, so it never recovers full
@@ -287,7 +287,7 @@ function mountThreeDModelViewerWidget(
 export function setupThreeDModelViewerRenderer() {
   void preloadThreeDModelViewerAssets();
 
-  KritzelCustomElementRendererRegistry.register(THREE_D_MODEL_VIEWER_RENDERER_KEY, {
+  KritzelDynamicObjectRendererRegistry.register(THREE_D_MODEL_VIEWER_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) {
         return;
@@ -344,7 +344,7 @@ export function setupThreeDModelViewerRenderer() {
       widget.root.remove();
     });
     mountedThreeDModelViewers.clear();
-    KritzelCustomElementRendererRegistry.unregister(THREE_D_MODEL_VIEWER_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(THREE_D_MODEL_VIEWER_RENDERER_KEY);
   };
 }
 
@@ -352,7 +352,7 @@ export function createThreeDModelViewerCustomElement() {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Loading 3D model...";
 
-  const customElement = new KritzelCustomElement({
+  const customElement = new KritzelDynamicObject({
     element: placeholder,
     rendererKey: THREE_D_MODEL_VIEWER_RENDERER_KEY,
     rendererData: createThreeDModelViewerInitialState(),

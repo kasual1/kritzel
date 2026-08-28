@@ -1,5 +1,5 @@
-import { KritzelCustomElement } from "kritzel-react";
-import { KritzelCustomElementRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObject } from "kritzel-react";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
 
 export const CORE_STAGE_DASHBOARD_RENDERER_KEY = "website-hero-core-stage-dashboard";
 const CORE_STAGE_DASHBOARD_Z_INDEX = 14;
@@ -448,7 +448,7 @@ function mountCoreStageDashboardWidget(initialState: CoreStageDashboardState): M
 export function setupCoreStageDashboardRenderer() {
   const mountedWidgets = new Map<string, MountedCoreStageDashboard>();
 
-  KritzelCustomElementRendererRegistry.register(CORE_STAGE_DASHBOARD_RENDERER_KEY, {
+  KritzelDynamicObjectRendererRegistry.register(CORE_STAGE_DASHBOARD_RENDERER_KEY, {
     onMount: ({ object, container, data }) => {
       if (!container) {
         return;
@@ -503,7 +503,7 @@ export function setupCoreStageDashboardRenderer() {
       widget.root.remove();
     });
     mountedWidgets.clear();
-    KritzelCustomElementRendererRegistry.unregister(CORE_STAGE_DASHBOARD_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(CORE_STAGE_DASHBOARD_RENDERER_KEY);
   };
 }
 
@@ -511,7 +511,7 @@ export function createCoreStageDashboardCustomElement() {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Loading Core Stage Dashboard...";
 
-  const customElement = new KritzelCustomElement({
+  const customElement = new KritzelDynamicObject({
     element: placeholder,
     rendererKey: CORE_STAGE_DASHBOARD_RENDERER_KEY,
     rendererData: createCoreStageDashboardInitialState(),
