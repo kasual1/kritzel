@@ -115,6 +115,13 @@
 
 }
 
+.kritzel-control:disabled,
+.kritzel-control.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .kritzel-control-separator {
   width: 1px;
   height: 24px;
@@ -200,6 +207,15 @@
 .kritzel-control-split.selected .kritzel-control-main:hover,
 .kritzel-control-split.selected .kritzel-control-dropdown:hover {
   background-color: rgba(255, 255, 255, 0.15);
+}
+
+.kritzel-control-split .kritzel-control-main:disabled,
+.kritzel-control-split .kritzel-control-main.disabled,
+.kritzel-control-split .kritzel-control-dropdown:disabled,
+.kritzel-control-split .kritzel-control-dropdown.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Submenu content styles (positioned by kritzel-tooltip) */

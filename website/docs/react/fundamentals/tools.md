@@ -35,6 +35,16 @@ If you want a focused editing experience, pass a custom `toolbarItems` array to 
   repoFiles={['src/pages/fundamentals/tools/ToolsToolbarPage.tsx']}
 />
 
+## Disabling Individual Toolbar Items
+
+For more fine-grained control than the global `enable()`/`disable()` methods, set `isDisabled` on a specific entry of the `toolbarItems` array. The tool is rendered in a disabled state and can no longer be selected, while every other tool remains fully interactive. `isDisabled` accepts a plain boolean or a (sync or async) function, so you can resolve it dynamically from your own state or an API call.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  demoPath="/fundamentals/tools/toolbar-item-disable"
+  repoFiles={['src/pages/fundamentals/tools/ToolsToolbarItemDisablePage.tsx']}
+/>
+
 ## Adding Custom Tools
 
 You can register a custom tool configuration and then surface it in the toolbar panel. This example registers a custom highlighter built from `KritzelBrushTool` and adds it to the toolbar alongside `selection`, `pen`, and `text`.

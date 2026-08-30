@@ -1,13 +1,13 @@
 ---
-sidebar_label: Localization
+sidebar_label: Locales
 displayed_sidebar: tutorialSidebar
-title: "Localization Concept | Kritzel for Vue"
-description: "Understand the core concept of Localization in Kritzel."
+title: "Locales | Kritzel for Vue"
+description: "Understand how to customize Kritzel with locales."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# Localization
+# Locales
 
 ## Overview
 

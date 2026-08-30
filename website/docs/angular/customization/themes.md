@@ -1,13 +1,13 @@
 ---
-sidebar_label: Theming
+sidebar_label: Themes
 displayed_sidebar: tutorialSidebar
-title: "Theming Concept | Kritzel for Angular"
-description: "Understand the core concept of Theming in Kritzel."
+title: "Themes | Kritzel for Angular"
+description: "Understand how to customize Kritzel with themes."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# Theming
+# Themes
 
 ## Overview
 

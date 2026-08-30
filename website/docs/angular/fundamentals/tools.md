@@ -77,6 +77,16 @@ If your application needs to temporarily lock the canvas to prevent user interac
   repoFiles={['src/app/fundamentals/tools/tools-disable.component.ts']}
 />
 
+## Disabling Individual Toolbar Items
+
+For more fine-grained control than the global `enable()`/`disable()` methods, set `isDisabled` on a specific entry of the `toolbarItems` array. The tool is rendered in a disabled state and can no longer be selected, while every other tool remains fully interactive. `isDisabled` accepts a plain boolean or a (sync or async) function, so you can resolve it dynamically from your own state or an API call.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/tools/toolbar-item-disable"
+  repoFiles={['src/app/fundamentals/tools/tools-toolbar-item-disable.component.ts']}
+/>
+
 ## Related API Methods
 
 - Tool activation ([changeActiveTool](../api-reference/editor.md#changeactivetool))

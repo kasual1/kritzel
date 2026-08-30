@@ -21,6 +21,7 @@ Once `<kritzel-editor>` or `<kritzel-engine>` is rendering in your application, 
 
 While the `<kritzel-editor>` is the main way to integrate Kritzel into your application, the same APIs also apply to `<kritzel-engine>`. The examples below focus on `<kritzel-editor>`, but the concepts carry over to the engine as well.
 
+For the full documentation, please see the API reference of the [Editor](../api-reference/editor.md) or the [Engine](../api-reference/engine.md).
 
 ## Waiting for Initialization
 
@@ -117,7 +118,7 @@ async addText() {
 
 Other object, tool, and viewport methods follow the same asynchronous pattern.
 
-## Interactive Basic Usage Example
+## Basic Usage Example
 
 Below is a complete example combining props, events, and public methods. It uses the Editor's custom toolbar to trigger methods, inserts programmatic text, zooms the viewport, and displays a dynamic object count from an event.
 

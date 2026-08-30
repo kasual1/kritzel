@@ -17,6 +17,7 @@ import { ObjectsSelectionPage } from "./pages/fundamentals/objects/ObjectsSelect
 import { ObjectsGroupingPage } from "./pages/fundamentals/objects/ObjectsGroupingPage";
 import { ObjectsOrderingPage } from "./pages/fundamentals/objects/ObjectsOrderingPage";
 import { ToolsDisablePage } from "./pages/fundamentals/tools/ToolsDisablePage";
+import { ToolsToolbarItemDisablePage } from "./pages/fundamentals/tools/ToolsToolbarItemDisablePage";
 import { ToolsToolbarPage } from "./pages/fundamentals/tools/ToolsToolbarPage";
 import { ToolsRegisterPage } from "./pages/fundamentals/tools/ToolsRegisterPage";
 import { ToolsChangePage } from "./pages/fundamentals/tools/ToolsChangePage";
@@ -71,6 +72,7 @@ function App() {
         <Route path="/fundamentals/objects/grouping" element={<ObjectsGroupingPage />} />
         <Route path="/fundamentals/objects/ordering" element={<ObjectsOrderingPage />} />
         <Route path="/fundamentals/tools/disable" element={<ToolsDisablePage />} />
+        <Route path="/fundamentals/tools/toolbar-item-disable" element={<ToolsToolbarItemDisablePage />} />
         <Route path="/fundamentals/tools/toolbar" element={<ToolsToolbarPage />} />
         <Route path="/fundamentals/tools/register" element={<ToolsRegisterPage />} />
         <Route path="/fundamentals/tools/change" element={<ToolsChangePage />} />

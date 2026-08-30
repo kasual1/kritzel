@@ -25,6 +25,16 @@ If your application needs to temporarily lock the canvas to prevent user interac
   repoFiles={['src/pages/fundamentals/tools/ToolsDisablePage.vue']}
 />
 
+## Disabling Individual Toolbar Items
+
+For more fine-grained control than the global `enable()`/`disable()` methods, set `isDisabled` on a specific entry of the `toolbarItems` array. The tool is rendered in a disabled state and can no longer be selected, while every other tool remains fully interactive. `isDisabled` accepts a plain boolean or a (sync or async) function, so you can resolve it dynamically from your own state or an API call.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  demoPath="/fundamentals/tools/toolbar-item-disable"
+  repoFiles={['src/pages/fundamentals/tools/ToolsToolbarItemDisablePage.vue']}
+/>
+
 ## Customizing the Toolbar
 
 If you want a focused editing experience, pass a custom `toolbarItems` array to `<KritzelEditor>`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
