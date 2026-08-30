@@ -13,17 +13,12 @@ const sidebars: SidebarsConfig = {
       label: 'Fundamentals',
       collapsed: true,
       items: [
-        {
-          type: 'category',
-          label: 'Components',
-          collapsed: true,
-          items: ['fundamentals/components/editor', 'fundamentals/components/engine'],
-        },
         'fundamentals/tools',
         'fundamentals/objects',
         'fundamentals/viewport',
         'fundamentals/workspaces',
         'fundamentals/persistence',
+        'fundamentals/controls',
       ],
     },
     {
@@ -31,6 +26,7 @@ const sidebars: SidebarsConfig = {
       label: 'Advanced',
       collapsed: true,
       items: [
+        'advanced/user-management',
         'advanced/collaboration',
         'advanced/dynamic-objects',
       ],

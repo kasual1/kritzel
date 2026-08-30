@@ -44,7 +44,7 @@ export class ToolsToolbarComponent {
 
   toolbarItems: KritzelToolbarItem[] = [
     {
-      name: 'select',
+      name: 'selection',
       type: 'tool',
       tool: KritzelSelectionTool,
       icon: 'cursor',

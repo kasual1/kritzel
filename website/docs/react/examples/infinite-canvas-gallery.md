@@ -24,7 +24,7 @@ This example makes use of the following core concepts. Click on the links below 
 - [Objects](/docs/react/fundamentals/objects) - loading images with `KritzelImage.fromUrl()` and placing them at world-space coordinates
 - [Viewport](/docs/react/fundamentals/viewport) - setting an initial zoomed-out overview with `setViewport()`
 - [Tools](/docs/react/fundamentals/tools) - reducing the toolbar to a single selection tool for a read-only experience
-- [Components](/docs/react/fundamentals/components/editor) - configuring the editor for a non-editable presentation mode
+- [Editor API Reference](/docs/react/api-reference/editor) - configuring the editor for a non-editable presentation mode
 
 ---
 

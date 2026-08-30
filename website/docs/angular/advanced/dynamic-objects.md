@@ -61,7 +61,7 @@ Always unregister the renderer, and detach/destroy any mounted component views, 
 
 ## Related API Methods and Types
 
-- Object type ([`KritzelDynamicObject`](../api-reference/object-types.md#kritzelcustomelement))
+- Object type ([`KritzelDynamicObject`](../api-reference/object-types.md#kritzeldynamicobject))
 - Renderer registry (`KritzelDynamicObjectRendererRegistry.register`, `KritzelDynamicObjectRendererRegistry.unregister`)
 - Object creation ([addObject](../api-reference/editor.md#addobject))
 

@@ -22,7 +22,7 @@ Complete the [Quick Start](../getting-started/quick-start.md) guide to have a wo
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
 - [Objects](/docs/react/fundamentals/objects) - querying, updating, and removing canvas objects programmatically
-- [Components](/docs/react/fundamentals/components/editor) - listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
+- [Editor API Reference](/docs/react/api-reference/editor) - listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
 - [Viewport](/docs/react/fundamentals/viewport) - panning and zooming to focus on a selected object
 
 ---

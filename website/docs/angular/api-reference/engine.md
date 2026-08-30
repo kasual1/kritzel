@@ -9,7 +9,7 @@ toc_max_heading_level: 2
 
 # Engine
 
-The `<kritzel-engine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in UI chrome.
+The `<kritzel-engine>` is the low-level headless canvas primitive. It handles rendering, viewport management, pointer events, undo/redo, and workspace management with no built-in controls.
 
 ## Object
 

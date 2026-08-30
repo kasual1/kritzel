@@ -22,7 +22,7 @@ Complete the [Quick Start](../getting-started/quick-start.md) guide to have a wo
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
 - [Objects](/docs/angular/fundamentals/objects) — querying, updating, and removing canvas objects programmatically
-- [Components](/docs/angular/fundamentals/components/editor) — listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
+- [Editor API Reference](/docs/angular/api-reference/editor) — listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
 - [Viewport](/docs/angular/fundamentals/viewport) — panning and zooming to focus on a selected object
 
 ---

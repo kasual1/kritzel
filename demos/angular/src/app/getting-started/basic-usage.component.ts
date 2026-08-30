@@ -29,7 +29,7 @@ import { createSeedObjects } from '../const/seed-objects';
         Brush
       </button>
       <button
-        [class.active]="activeTool() === 'select'"
+        [class.active]="activeTool() === 'selection'"
         (click)="setSelectTool()"
       >
         Select
@@ -37,6 +37,7 @@ import { createSeedObjects } from '../const/seed-objects';
       <button (click)="addText()">Add Text</button>
       <button (click)="undoAction()">Undo</button>
       <button (click)="zoomIn()">Zoom In</button>
+      <button (click)="zoomOut()">Zoom Out</button>
       <span class="status">{{ statusLine() }}</span>
     </header>
 
@@ -125,7 +126,7 @@ export class BasicUsageComponent {
   themes = [angularThemeLight, angularThemeDark];
 
   isReady = signal<boolean>(false);
-  activeTool = signal<'brush' | 'select'>('select');
+  activeTool = signal<'brush' | 'selection'>('selection');
   objectsCount = signal<number>(0);
 
   statusLine = computed(() => {
@@ -156,8 +157,8 @@ export class BasicUsageComponent {
   }
 
   async setSelectTool() {
-    this.activeTool.set('select');
-    await this.editor.changeActiveTool('select');
+    this.activeTool.set('selection');
+    await this.editor.changeActiveTool('selection');
   }
 
   async addText() {
@@ -179,6 +180,10 @@ export class BasicUsageComponent {
   }
 
   async zoomIn() {
-    await this.editor.zoomTo(1.5);
+    await this.editor.zoomIn()
+  }
+
+  async zoomOut() {
+    await this.editor.zoomOut()
   }
 }

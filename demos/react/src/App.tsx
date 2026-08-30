@@ -10,6 +10,7 @@ import { ContextMenusCanvasQuickActionsPage } from "./pages/fundamentals/compone
 import { ContextMenusClipboardActionsPage } from "./pages/fundamentals/components/ContextMenusClipboardActionsPage";
 import { ContextMenusSmartConditionalPage } from "./pages/fundamentals/components/ContextMenusSmartConditionalPage";
 import { ContextMenusObjectInspectorPage } from "./pages/fundamentals/components/ContextMenusObjectInspectorPage";
+import { NotificationsTriggerPage } from "./pages/fundamentals/components/NotificationsTriggerPage";
 import { ObjectsAddRemovePage } from "./pages/fundamentals/objects/ObjectsAddRemovePage";
 import { ObjectsQueryPage } from "./pages/fundamentals/objects/ObjectsQueryPage";
 import { ObjectsSelectionPage } from "./pages/fundamentals/objects/ObjectsSelectionPage";
@@ -63,6 +64,7 @@ function App() {
         <Route path="/fundamentals/components/context-menus-clipboard-actions" element={<ContextMenusClipboardActionsPage />} />
         <Route path="/fundamentals/components/context-menus-smart-conditional" element={<ContextMenusSmartConditionalPage />} />
         <Route path="/fundamentals/components/context-menus-object-inspector" element={<ContextMenusObjectInspectorPage />} />
+        <Route path="/fundamentals/components/notifications-trigger" element={<NotificationsTriggerPage />} />
         <Route path="/fundamentals/objects/add-remove" element={<ObjectsAddRemovePage />} />
         <Route path="/fundamentals/objects/query" element={<ObjectsQueryPage />} />
         <Route path="/fundamentals/objects/selection" element={<ObjectsSelectionPage />} />

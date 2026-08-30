@@ -24,7 +24,7 @@ This example makes use of the following core concepts. Click on the links below 
 - [Objects](/docs/react/fundamentals/objects) - seeding background images and creating shape objects as defect markers
 - [Viewport](/docs/react/fundamentals/viewport) - converting screen coordinates to world coordinates with `screenToWorld()` and focusing the camera with `setViewport()`
 - [Tools](/docs/react/fundamentals/tools) - switching to the selection tool programmatically during pin placement mode
-- [Components](/docs/react/fundamentals/components/editor) - hiding built-in toolbar and driving all interactions from a custom sidebar
+- [Controls](/docs/react/fundamentals/controls) - hiding built-in toolbar and driving all interactions from a custom sidebar
 
 ---
 

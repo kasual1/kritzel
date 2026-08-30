@@ -22,7 +22,7 @@ Complete the [Quick Start](../getting-started/quick-start.md) guide to have a wo
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
 - [Viewport](/docs/react/fundamentals/viewport) - programmatically panning and zooming the camera to center on specific world coordinates
-- [Components](/docs/react/fundamentals/components/editor) - configuring viewport boundary inputs to lock the camera within slide margins
+- [Viewport](/docs/react/fundamentals/viewport) - configuring viewport boundary inputs to lock the camera within slide margins
 - [Objects](/docs/react/fundamentals/objects) - seeding shape objects at absolute world-space positions to act as slide templates
 
 ---

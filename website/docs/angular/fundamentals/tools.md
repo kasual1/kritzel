@@ -11,24 +11,14 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Kritzel, a Tool represents an active state that determines how user input (like mouse clicks, touches, and pen strokes) behaves on the canvas. Because Kritzel is a state machine, only one tool can be active at a time. The active tool intercepts all pointer events and executes its specific logic to perform actions such as drawing, selecting, or erasing.
+In Kritzel, a tool determines how user input, such as mouse clicks and touches, behave on the canvas. Only one tool can be active at a time. The active tool handles all incoming pointer events and runs its specific logic to perform actions like drawing, selecting, or erasing.
 
-Kritzel provides a versatile set of default tools like the Selection Tool, Brush Tool, Line Tool, Shape Tool, and Text Tool. You can also customize existing tools or register entirely custom tools to extend functionality.
+Kritzel provides a versatile set of default tools like the Selection Tool, Brush Tool, Line Tool, Shape Tool, and Text Tool. You can also customize existing tools or register entirely new tools to extend functionality.
 
+## Adjusting the Toolbar
 
-## Disabling and Enabling Tools
-
-If your application needs to temporarily lock the canvas to prevent user interaction (for example, during a loading state or when opening a modal), you can disable and enable tool interactions.
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/tools/disable"
-  repoFiles={['src/app/fundamentals/tools/tools-disable.component.ts']}
-/>
-
-## Customizing the Toolbar
-
-If you want a focused editing experience, pass a custom `toolbarItems` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
+You can adjust the toolbar by passing a custom `toolbarItems` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
+Also notice, that we limited the color palette for every tool
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -46,14 +36,24 @@ You can register a custom tool configuration and then surface it in the toolbar 
   repoFiles={['src/app/fundamentals/tools/tools-register.component.ts']}
 />
 
-## Programmatically Changing the Active Tool
+## Changing the Active Tool
 
-You can programmatically change the currently active tool using the API. This is useful when you want to build your own custom toolbar or trigger tool changes via keyboard shortcuts.
+You can programmatically change the currently active tool by calling the `changeActiveTool` method with the name of the tool on the editor instance.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/tools/change"
   repoFiles={['src/app/fundamentals/tools/tools-change.component.ts']}
+/>
+
+## Disabling Tools
+
+If your application needs to temporarily lock the canvas to prevent user interaction, you can disable and enable tool interactions.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/tools/disable"
+  repoFiles={['src/app/fundamentals/tools/tools-disable.component.ts']}
 />
 
 ## Related API Methods
