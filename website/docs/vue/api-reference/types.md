@@ -72,6 +72,7 @@ interface KritzelToolbarItem {
   tool?: (new (...args: any[]) => KritzelBaseTool) | KritzelBaseTool;
   icon?: string;
   isDefault?: boolean;
+  isDisabled?: boolean | (() => boolean | Promise<boolean>);
   name: string;
   config?: KritzelBrushToolConfig | KritzelLineToolConfig | KritzelTextToolConfig | KritzelShapeToolConfig;
   subOptions?: KritzelToolbarSubOption[];

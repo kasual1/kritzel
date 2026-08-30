@@ -17,6 +17,7 @@ import ObjectsSelectionPage from './pages/fundamentals/objects/ObjectsSelectionP
 import ObjectsGroupingPage from './pages/fundamentals/objects/ObjectsGroupingPage.vue'
 import ObjectsOrderingPage from './pages/fundamentals/objects/ObjectsOrderingPage.vue'
 import ToolsDisablePage from './pages/fundamentals/tools/ToolsDisablePage.vue'
+import ToolsToolbarItemDisablePage from './pages/fundamentals/tools/ToolsToolbarItemDisablePage.vue'
 import ToolsToolbarPage from './pages/fundamentals/tools/ToolsToolbarPage.vue'
 import ToolsRegisterPage from './pages/fundamentals/tools/ToolsRegisterPage.vue'
 import ToolsChangePage from './pages/fundamentals/tools/ToolsChangePage.vue'
@@ -87,6 +88,7 @@ export const router = createRouter({
           path: 'tools',
           children: [
             { path: 'disable', component: ToolsDisablePage },
+            { path: 'toolbar-item-disable', component: ToolsToolbarItemDisablePage },
             { path: 'toolbar', component: ToolsToolbarPage },
             { path: 'register', component: ToolsRegisterPage },
             { path: 'change', component: ToolsChangePage },

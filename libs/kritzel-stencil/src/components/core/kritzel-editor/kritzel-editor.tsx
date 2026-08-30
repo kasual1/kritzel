@@ -92,6 +92,7 @@ export class KritzelEditor {
       type: 'tool',
       tool: KritzelBrushTool,
       icon: 'pen',
+      isDisabled: true,
       config: DEFAULT_BRUSH_CONFIG,
     },
     {

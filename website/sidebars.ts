@@ -36,10 +36,10 @@ const sidebars: SidebarsConfig = {
       label: 'Customization',
       collapsed: true,
       items: [
-        'customization/theming',
+        'customization/themes',
         'customization/fonts',
         'customization/icons',
-        'customization/localization',
+        'customization/locales',
       ],
     },
     {

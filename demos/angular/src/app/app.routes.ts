@@ -19,6 +19,7 @@ import { ObjectsOrderingComponent } from './fundamentals/objects/objects-orderin
 import { ToolsChangeComponent } from './fundamentals/tools/tools-change.component';
 import { ToolsToolbarComponent } from './fundamentals/tools/tools-toolbar.component';
 import { ToolsDisableComponent } from './fundamentals/tools/tools-disable.component';
+import { ToolsToolbarItemDisableComponent } from './fundamentals/tools/tools-toolbar-item-disable.component';
 import { ToolsRegisterComponent } from './fundamentals/tools/tools-register.component';
 import { ToolsConfigComponent } from './fundamentals/tools/tools-config.component';
 import { ViewportChangeComponent } from './fundamentals/viewport/viewport-change.component';
@@ -86,6 +87,7 @@ export const routes: Routes = [
         path: 'tools',
         children: [
           { path: 'disable', component: ToolsDisableComponent },
+          { path: 'toolbar-item-disable', component: ToolsToolbarItemDisableComponent },
           { path: 'toolbar', component: ToolsToolbarComponent },
           { path: 'config', component: ToolsConfigComponent },
           { path: 'register', component: ToolsRegisterComponent },

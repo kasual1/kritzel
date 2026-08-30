@@ -44,6 +44,7 @@ export class KritzelToolbar {
   @State() displayValues: ToolDisplayValues | null = null;
 
   @State() internalToolbar: KritzelToolbarItem[] = [];
+  @State() resolvedDisabled: Map<string, boolean> = new Map();
 
   private handleActiveToolChangeBound = this.handleActiveToolChange.bind(this);
   private handleSelectionChangeBound = this.handleSelectionChange.bind(this);
@@ -209,6 +210,8 @@ export class KritzelToolbar {
     let hasDefault = false;
     const newToolbar = this.toolbarItems.map(c => ({ ...c }));
 
+    await this.resolveDisabledStates(newToolbar);
+
     for (const c of newToolbar) {
       if (c.type === 'tool' && c.tool) {
         let toolConstructor = c.tool;
@@ -222,7 +225,7 @@ export class KritzelToolbar {
         }
       }
 
-      if (c.type === 'tool' && c.isDefault && c.tool) {
+      if (c.type === 'tool' && c.isDefault && !this.isControlDisabled(c) && c.tool) {
         await this.kritzelEngine!.changeActiveTool(c.name);
         this.activeControl = c;
         this.updateDisplayValues(c.tool as KritzelBaseTool);
@@ -242,7 +245,7 @@ export class KritzelToolbar {
 
     // If no tool is marked as default, activate the first tool control
     if (!hasDefault) {
-      const firstTool = this.internalToolbar.find(c => c.type === 'tool' && c.tool);
+      const firstTool = this.internalToolbar.find(c => c.type === 'tool' && c.tool && !this.isControlDisabled(c));
       if (firstTool) {
         await this.kritzelEngine!.changeActiveTool(firstTool.name);
         this.activeControl = firstTool;
@@ -251,7 +254,38 @@ export class KritzelToolbar {
     }
   }
 
+  /**
+   * Resolves each tool's `isDisabled` (boolean or sync/async function) into `resolvedDisabled`.
+   */
+  private async resolveDisabledStates(items: KritzelToolbarItem[]): Promise<void> {
+    const entries = await Promise.all(
+      items
+        .filter(item => item.type === 'tool')
+        .map(async item => [item.name, await this.evaluateDisabled(item.isDisabled)] as const),
+    );
+    this.resolvedDisabled = new Map(entries);
+  }
+
+  private async evaluateDisabled(value?: boolean | (() => boolean | Promise<boolean>)): Promise<boolean> {
+    if (typeof value === 'function') {
+      try {
+        return !!(await value());
+      } catch {
+        return false;
+      }
+    }
+    return !!value;
+  }
+
+  private isControlDisabled(control: KritzelToolbarItem): boolean {
+    return this.resolvedDisabled.get(control.name) ?? false;
+  }
+
   private async handleControlClick(control: KritzelToolbarItem) {
+    if (this.isControlDisabled(control)) {
+      return;
+    }
+
     this.activeControl = control;
 
     if (this.activeControl.type === 'tool') {
@@ -278,6 +312,10 @@ export class KritzelToolbar {
    * Select a sub-option and update the tool property
    */
   private async selectSubOption(control: KritzelToolbarItem, option: KritzelToolbarSubOption) {
+    if (this.isControlDisabled(control)) {
+      return;
+    }
+
     // Update the selected sub-options map (create new Map for reactivity)
     const newMap = new Map(this.selectedSubOptions);
     newMap.set(control.name, option);
@@ -338,6 +376,7 @@ export class KritzelToolbar {
               if (control.subOptions?.length) {
                 const selectedSubOption = this.getSelectedSubOption(control);
                 const isActive = this.activeControl?.name === control.name;
+                const isDisabled = this.isControlDisabled(control);
 
                 return (
                   <div
@@ -352,9 +391,14 @@ export class KritzelToolbar {
                     }}
                   >
                     <button
-                      class="kritzel-control-main"
+                      class={{
+                        'kritzel-control-main': true,
+                        'disabled': isDisabled,
+                      }}
+                      disabled={isDisabled}
                       onClick={() => this.handleControlClick(control)}
                       aria-label={selectedSubOption?.label}
+                      aria-disabled={isDisabled}
                       data-testid={`tool-${control.name}-main`}
                     >
                       <kritzel-icon name={selectedSubOption?.icon || control.icon}></kritzel-icon>
@@ -363,11 +407,14 @@ export class KritzelToolbar {
                       class={{
                         'kritzel-control-dropdown': true,
                         'visible': isActive,
+                        'disabled': isDisabled,
                       }}
+                      disabled={isDisabled}
                       ref={el => {
                         if (el) (control as any)._triggerRef = el;
                       }}
                       aria-label={`Select ${control.name} options`}
+                      aria-disabled={isDisabled}
                       data-testid={`tool-${control.name}-dropdown`}
                       tabIndex={isActive ? 0 : -1}
                     >
@@ -406,11 +453,14 @@ export class KritzelToolbar {
                   class={{
                     'kritzel-control': true,
                     'selected': this.activeControl?.name === control?.name,
+                    'disabled': this.isControlDisabled(control),
                   }}
+                  disabled={this.isControlDisabled(control)}
                   key={control.name}
                   data-testid={`tool-${control.name}`}
                   onClick={_event => this.handleControlClick?.(control)}
                   aria-label={control.name.charAt(0).toUpperCase() + control.name.slice(1)}
+                  aria-disabled={this.isControlDisabled(control)}
                 >
                   <kritzel-icon name={control.icon}></kritzel-icon>
                 </button>
