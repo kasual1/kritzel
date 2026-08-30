@@ -20,9 +20,9 @@ const globalItems: ContextMenuItem[] = [
   },
   {
     label: 'Select All',
-    icon: 'select-all',
+      isDisabled: async () => ((await editor.value?.getObjectsInViewport()) ?? []).length === 0,
     group: 'clipboard',
-    disabled: async () => ((await editor.value?.getObjectsInViewport()) ?? []).length === 0,
+      isDisabled: async () => ((await editor.value?.getObjectsInViewport()) ?? []).length === 0,
     action: async () => {
       await editor.value?.selectAllObjectsInViewport()
     },

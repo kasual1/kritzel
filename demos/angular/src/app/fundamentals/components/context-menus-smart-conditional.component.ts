@@ -55,7 +55,7 @@ export class ContextMenusSmartConditionalComponent {
       },
       icon: 'select-all',
       group: 'clipboard',
-      disabled: async () => (await this.editor.getObjectsInViewport()).length === 0,
+      isDisabled: async () => (await this.editor.getObjectsInViewport()).length === 0,
     },
   ];
 
@@ -102,11 +102,4 @@ export class ContextMenusSmartConditionalComponent {
     });
   }
 
-  
-
-  private async seedObjects() {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 }
