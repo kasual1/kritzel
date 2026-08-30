@@ -32,12 +32,12 @@ Every toolbar item of type `tool` accepts an optional `config` property. It defi
 
 Each tool has its own config shape:
 
-- **Brush** (`KritzelBrushToolConfig`) — `type`, `color`, `size`, `opacity`, `palettes`, `sizes`
+- **Brush** (`KritzelBrushToolConfig`) — `color`, `size`, `opacity`, `palette`, `sizes`
 - **Line** (`KritzelLineToolConfig`) — `color`, `size`, `opacity`, `palette`, `sizes`, `arrows`
 - **Shape** (`KritzelShapeToolConfig`) — `shapeType`, `fillColor`, `strokeColor`, `strokeWidth`, `fontColor`, `fontSize`, `fontFamily`, `palette`, `sizes`
 - **Text** (`KritzelTextToolConfig`) — `color`, `size`, `fontFamily`, `availableFonts`, `palette`, `sizes`
 
-Colors are theme aware, so each palette entry provides a value per theme and an optional `label`. Note that the brush tool uses `palettes` and `sizes` keyed by brush `type` (for example `pen` or `highlighter`), while the other tools use a flat `palette` and `sizes` array. Any property you omit falls back to the corresponding default config.
+Colors are theme aware, so each palette entry provides a value per theme and an optional `label`. All tool configs use a flat `palette` and `sizes` array. Any property you omit falls back to the corresponding default config.
 
 The toolbar item of type `config` renders the config tooltip for the currently active tool, so keep it in the toolbar whenever you want users to change these values at runtime.
 

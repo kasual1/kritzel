@@ -23,15 +23,12 @@ const toolbarItems: KritzelToolbarItem[] = [
     tool: KritzelBrushTool,
     icon: "pen",
     config: {
-      type: "pen",
       color: { light: "#1f2937", dark: "#f3f4f6" },
       size: 6,
-      palettes: {
-        pen: [
-          { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
-          { light: "#087ea4", dark: "#7dd3fc", label: "Accent" },
-        ],
-      },
+      palette: [
+        { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
+        { light: "#087ea4", dark: "#7dd3fc", label: "Accent" },
+      ],
     },
     isDefault: true,
   },

@@ -64,10 +64,9 @@ export class IconsRegisterComponent {
       tool: KritzelBrushTool,
       icon: 'brand-ink',
       config: {
-        type: 'pen',
         color: { light: '#1f2937', dark: '#f3f4f6' },
         size: 6,
-        palettes: { pen: [{ light: '#1f2937', dark: '#f3f4f6' }] },
+        palette: [{ light: '#1f2937', dark: '#f3f4f6' }],
       },
     },
     {

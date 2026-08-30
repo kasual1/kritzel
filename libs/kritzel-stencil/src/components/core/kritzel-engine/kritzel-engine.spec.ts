@@ -2123,53 +2123,53 @@ describe('KritzelEngine', () => {
       expect(newTool.opacity).toBe(0.25);
     });
 
-    it('resolves palettes map into palette for brush tool config', async () => {
+    it('passes palette array directly for brush tool config', async () => {
       const newTool: any = { name: 'pen', palette: [] };
       (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
       (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
 
       class FakeBrushTool {}
       const customPalette = [{ light: '#ff0000', dark: '#ff0000' }];
-      const config = { type: 'pen', color: customPalette[0], size: 6, palettes: { pen: customPalette } } as any;
+      const config = { color: customPalette[0], size: 6, palette: customPalette } as any;
       await engine.registerTool('pen', FakeBrushTool, config);
 
       expect(newTool.palette).toBe(customPalette);
     });
 
-    it('resolves palettes map into palette for existing brush tool', async () => {
+    it('passes palette array directly for existing brush tool', async () => {
       const existingTool: any = { name: 'pen', palette: [{ light: '#000', dark: '#fff' }] };
       (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
       (core.toolRegistry.getTool as jest.Mock).mockReturnValue(existingTool);
 
       class FakeBrushTool {}
       const customPalette = [{ light: '#ff0000', dark: '#ff0000' }];
-      const config = { type: 'pen', color: customPalette[0], size: 6, palettes: { pen: customPalette } } as any;
+      const config = { color: customPalette[0], size: 6, palette: customPalette } as any;
       await engine.registerTool('pen', FakeBrushTool, config);
 
       expect(existingTool.palette).toBe(customPalette);
     });
 
-    it('resolves sizes map into sizes for brush tool config', async () => {
+    it('passes sizes array directly for brush tool config', async () => {
       const newTool: any = { name: 'pen', sizes: [] };
       (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
       (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(newTool);
 
       class FakeBrushTool {}
       const customSizes = [2, 4, 8];
-      const config = { type: 'pen', color: { light: '#000', dark: '#fff' }, size: 6, palettes: { pen: [] }, sizes: { pen: customSizes } } as any;
+      const config = { color: { light: '#000', dark: '#fff' }, size: 6, palette: [], sizes: customSizes } as any;
       await engine.registerTool('pen', FakeBrushTool, config);
 
       expect(newTool.sizes).toBe(customSizes);
     });
 
-    it('resolves sizes map into sizes for existing brush tool', async () => {
+    it('passes sizes array directly for existing brush tool', async () => {
       const existingTool: any = { name: 'pen', sizes: [4, 6, 8, 12, 16, 24] };
       (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(true);
       (core.toolRegistry.getTool as jest.Mock).mockReturnValue(existingTool);
 
       class FakeBrushTool {}
       const customSizes = [1, 2, 4];
-      const config = { type: 'pen', color: { light: '#000', dark: '#fff' }, size: 4, palettes: { pen: [] }, sizes: { pen: customSizes } } as any;
+      const config = { color: { light: '#000', dark: '#fff' }, size: 4, palette: [], sizes: customSizes } as any;
       await engine.registerTool('pen', FakeBrushTool, config);
 
       expect(existingTool.sizes).toBe(customSizes);

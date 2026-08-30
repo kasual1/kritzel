@@ -40,12 +40,9 @@ The `<kritzel-editor>` component registers these tools by default:
 
 ```ts
 interface KritzelBrushToolConfig {
-  type: 'pen' | 'highlighter';
   color: ThemeAwareColor;
   size: number;
-  palettes: {
-    [brushType: string]: ThemeAwareColor[];
-  };
+  palette: ThemeAwareColor[];
 }
 ```
 
@@ -53,7 +50,6 @@ interface KritzelBrushToolConfig {
 
 | Property | Default |
 |----------|---------|
-| `type` | `'pen'` |
 | `color` | `{ light: '#000000', dark: '#ffffff' }` |
 | `size` | `16` |
 

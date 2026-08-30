@@ -90,10 +90,9 @@ interface KritzelToolbarSubOption {
 
 ```ts
 interface KritzelBrushToolConfig {
-  type: 'pen' | 'highlighter';
   color: ThemeAwareColor;
   size: number;
-  palettes: { [brushType: string]: ThemeAwareColor[] };
+  palette: ThemeAwareColor[];
 }
 
 interface KritzelLineToolConfig {

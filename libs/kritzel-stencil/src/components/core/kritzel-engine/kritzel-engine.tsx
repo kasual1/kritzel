@@ -2380,24 +2380,6 @@ export class KritzelEngine {
     Object.entries(normalizedToolConfig).forEach(([key, value]) => {
       (tool as unknown as Record<string, unknown>)[key] = value;
     });
-
-    // Resolve palettes map into the flat palette array the UI reads
-    if ('palettes' in normalizedToolConfig && 'type' in normalizedToolConfig) {
-      const brushConfig = normalizedToolConfig as KritzelBrushToolConfig;
-      const resolvedPalette = brushConfig.palettes[brushConfig.type];
-      if (resolvedPalette) {
-        (tool as unknown as Record<string, unknown>)['palette'] = resolvedPalette;
-      }
-    }
-
-    // Resolve sizes map into the flat sizes array the UI reads (brush tool uses a map keyed by type)
-    if ('sizes' in normalizedToolConfig && normalizedToolConfig.sizes != null && 'type' in normalizedToolConfig) {
-      const brushConfig = normalizedToolConfig as KritzelBrushToolConfig;
-      const resolvedSizes = brushConfig.sizes?.[brushConfig.type];
-      if (resolvedSizes) {
-        (tool as unknown as Record<string, unknown>)['sizes'] = resolvedSizes;
-      }
-    }
   }
 
   private normalizeToolConfig(

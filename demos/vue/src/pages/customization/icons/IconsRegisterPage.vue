@@ -12,7 +12,7 @@ const customSvgIcons: Record<string, string> = {
 
 const toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', tool: KritzelSelectionTool, icon: 'brand-select', isDefault: true },
-  { name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'brand-ink', config: { type: 'pen', color: { light: '#1f2937', dark: '#f3f4f6' }, size: 6, palettes: { pen: [{ light: '#1f2937', dark: '#f3f4f6' }] } } },
+  { name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'brand-ink', config: { color: { light: '#1f2937', dark: '#f3f4f6' }, size: 6, palette: [{ light: '#1f2937', dark: '#f3f4f6' }] } },
   { name: 'text', type: 'tool', tool: KritzelTextTool, icon: 'brand-label', config: { color: { light: '#1f2937', dark: '#f3f4f6' }, size: 18, fontFamily: 'Arial', palette: [{ light: '#1f2937', dark: '#f3f4f6' }] } },
 ]
 </script>
