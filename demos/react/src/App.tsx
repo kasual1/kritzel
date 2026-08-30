@@ -33,6 +33,9 @@ import { DynamicObjectsHtmlPage } from "./pages/advanced/dynamic-objects/Dynamic
 import { DynamicObjectsComponentPage } from "./pages/advanced/dynamic-objects/DynamicObjectsComponentPage";
 import { DynamicObjectsElementPage } from "./pages/advanced/dynamic-objects/DynamicObjectsElementPage";
 import { DynamicObjectsElementHtmlPage } from "./pages/advanced/dynamic-objects/DynamicObjectsElementHtmlPage";
+import { ImportExportViewportExportPage } from "./pages/advanced/import-export/ImportExportViewportExportPage";
+import { ImportExportWorkspaceExportPage } from "./pages/advanced/import-export/ImportExportWorkspaceExportPage";
+import { ImportExportWorkspaceImportPage } from "./pages/advanced/import-export/ImportExportWorkspaceImportPage";
 import { ThemingApplyPage } from "./pages/customization/theming/ThemingApplyPage";
 import { ThemingCustomPage } from "./pages/customization/theming/ThemingCustomPage";
 import { FontsRegisterPage } from "./pages/customization/fonts/FontsRegisterPage";
@@ -89,6 +92,9 @@ function App() {
         <Route path="/advanced/dynamic-objects/component" element={<DynamicObjectsComponentPage />} />
         <Route path="/advanced/dynamic-objects/element" element={<DynamicObjectsElementPage />} />
         <Route path="/advanced/dynamic-objects/element-html" element={<DynamicObjectsElementHtmlPage />} />
+        <Route path="/advanced/import-export/viewport-export" element={<ImportExportViewportExportPage />} />
+        <Route path="/advanced/import-export/workspace-export" element={<ImportExportWorkspaceExportPage />} />
+        <Route path="/advanced/import-export/workspace-import" element={<ImportExportWorkspaceImportPage />} />
 
         <Route path="/customization/theming/apply" element={<ThemingApplyPage />} />
         <Route path="/customization/theming/custom" element={<ThemingCustomPage />} />
