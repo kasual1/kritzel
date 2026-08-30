@@ -20,6 +20,7 @@ import { ToolsChangeComponent } from './fundamentals/tools/tools-change.componen
 import { ToolsToolbarComponent } from './fundamentals/tools/tools-toolbar.component';
 import { ToolsDisableComponent } from './fundamentals/tools/tools-disable.component';
 import { ToolsRegisterComponent } from './fundamentals/tools/tools-register.component';
+import { ToolsConfigComponent } from './fundamentals/tools/tools-config.component';
 import { ViewportChangeComponent } from './fundamentals/viewport/viewport-change.component';
 import { ViewportCenterComponent } from './fundamentals/viewport/viewport-center.component';
 import { ViewportCoordinatesComponent } from './fundamentals/viewport/viewport-coordinates.component';
@@ -86,6 +87,7 @@ export const routes: Routes = [
         children: [
           { path: 'disable', component: ToolsDisableComponent },
           { path: 'toolbar', component: ToolsToolbarComponent },
+          { path: 'config', component: ToolsConfigComponent },
           { path: 'register', component: ToolsRegisterComponent },
           { path: 'change', component: ToolsChangeComponent },
         ],

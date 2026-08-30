@@ -18,12 +18,33 @@ Kritzel provides a versatile set of default tools like the Selection Tool, Brush
 ## Adjusting the Toolbar
 
 You can adjust the toolbar by passing a custom `toolbarItems` array to `kritzel-editor`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
-Also notice, that we limited the color palette for every tool
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/tools/toolbar"
   repoFiles={['src/app/fundamentals/tools/tools-toolbar.component.ts']}
+/>
+
+
+## Adjusting the Tool Config
+
+Every toolbar item of type `tool` accepts an optional `config` property. It defines the initial state of the tool and the options that are offered in the config tooltip, such as the color palette, the available sizes, or the default opacity.
+
+Each tool has its own config shape:
+
+- **Brush** (`KritzelBrushToolConfig`) — `type`, `color`, `size`, `opacity`, `palettes`, `sizes`
+- **Line** (`KritzelLineToolConfig`) — `color`, `size`, `opacity`, `palette`, `sizes`, `arrows`
+- **Shape** (`KritzelShapeToolConfig`) — `shapeType`, `fillColor`, `strokeColor`, `strokeWidth`, `fontColor`, `fontSize`, `fontFamily`, `palette`, `sizes`
+- **Text** (`KritzelTextToolConfig`) — `color`, `size`, `fontFamily`, `availableFonts`, `palette`, `sizes`
+
+Colors are theme aware, so each palette entry provides a value per theme and an optional `label`. Note that the brush tool uses `palettes` and `sizes` keyed by brush `type` (for example `pen` or `highlighter`), while the other tools use a flat `palette` and `sizes` array. Any property you omit falls back to the corresponding default config.
+
+The toolbar item of type `config` renders the config tooltip for the currently active tool, so keep it in the toolbar whenever you want users to change these values at runtime.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/tools/config"
+  repoFiles={['src/app/fundamentals/tools/tools-config.component.ts']}
 />
 
 ## Adding Custom Tools
