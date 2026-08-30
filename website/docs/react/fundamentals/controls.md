@@ -49,7 +49,8 @@ Use `group` to cluster related entries with a separator, and `children` to nest 
   repoFiles={['src/pages/fundamentals/components/ContextMenusObjectInspectorPage.tsx']}
 />
 
-The optional `visible` and `disabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling Select All when the viewport is empty.
+The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling Select All when the viewport is empty.
+The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling Select All when the viewport is empty.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"

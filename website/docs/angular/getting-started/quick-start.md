@@ -16,7 +16,7 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 
 ## Installation
 
-Run the following command to install Kritzel and add it to your package.json.
+Run the following command to install Kritzel and add it as a project dependency.
 
 ```bash
 npm install kritzel-angular

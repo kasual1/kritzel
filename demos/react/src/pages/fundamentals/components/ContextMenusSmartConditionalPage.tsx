@@ -22,9 +22,9 @@ export function ContextMenusSmartConditionalPage() {
       },
       {
         label: "Select All",
-        icon: "select-all",
+          isDisabled: async () => ((await editorRef.current?.getObjectsInViewport()) ?? []).length === 0,
         group: "clipboard",
-        disabled: async () => ((await editorRef.current?.getObjectsInViewport()) ?? []).length === 0,
+          isDisabled: async () => ((await editorRef.current?.getObjectsInViewport()) ?? []).length === 0,
         action: async () => {
           await editorRef.current?.selectAllObjectsInViewport();
         },

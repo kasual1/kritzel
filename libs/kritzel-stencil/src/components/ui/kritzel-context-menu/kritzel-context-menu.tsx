@@ -243,9 +243,9 @@ export class KritzelContextMenu {
     const processed: ProcessedMenuItem[] = [];
 
     for (const item of items) {
-      const isVisible = await this.evaluateProperty(item.visible, true);
+      const isVisible = await this.evaluateProperty(item.isVisible, true);
       if (isVisible) {
-        const isDisabled = await this.evaluateProperty(item.disabled, false);
+        const isDisabled = await this.evaluateProperty(item.isDisabled, false);
         let processedChildren: ProcessedMenuItem[] | undefined;
 
         if (item.children && item.children.length > 0) {

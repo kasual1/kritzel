@@ -1,5 +1,11 @@
-import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, KritzelSyncConfig } from 'kritzel-angular';
+import { ChangeDetectionStrategy, Component, computed, signal, ViewChild } from '@angular/core';
+import {
+  KritzelBrushTool,
+  KritzelEditor,
+  KritzelEraserTool,
+  KritzelSelectionTool,
+  KritzelToolbarItem,
+} from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -11,21 +17,22 @@ import { createSeedObjects } from '../../const/seed-objects';
   template: `
     <div class="toolbar">
       <button (click)="toggle()">
-        {{ isDisabled() ? 'Enable' : 'Disable' }}
+        {{ isEraserDisabled() ? 'Enable eraser tool' : 'Disable eraser tool' }}
       </button>
-      <span class="status" [class.disabled]="isDisabled()">
-        {{ isDisabled() ? 'Interactions disabled' : 'Interactions enabled' }}
+      <span class="status" [class.disabled]="isEraserDisabled()">
+        {{ isEraserDisabled() ? 'Eraser tool disabled' : 'Eraser tool enabled' }}
       </span>
     </div>
     <kritzel-editor
       editorId="tools-disable"
       [theme]="'light'"
       [themes]="themes"
+      [toolbarItems]="toolbarItems()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
+      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: [`
@@ -43,25 +50,47 @@ export class ToolsDisableComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  
+  isEraserDisabled = signal(true);
 
-  isDisabled = signal(true);
+  toolbarItems = computed<KritzelToolbarItem[]>(() => {
+    const isEraserDisabled = this.isEraserDisabled();
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    return [
+      {
+        name: 'selection',
+        type: 'tool',
+        isDefault: true,
+        tool: KritzelSelectionTool,
+        icon: 'cursor',
+      },
+      {
+        name: 'brush',
+        type: 'tool',
+        tool: KritzelBrushTool,
+        icon: 'pen',
+      },
+      {
+        name: 'eraser',
+        type: 'tool',
+        tool: KritzelEraserTool,
+        icon: 'eraser',
+        // Demonstrates the function form of `isDisabled` for dynamic, state-driven control.
+        isDisabled: () => isEraserDisabled,
+      },
+      {
+        name: 'config',
+        type: 'config',
+      },
+    ];
+  });
+
+  async onReady() {
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);
     }
-
-   await this.editor.disable();
   }
 
-  async toggle() {
-    if (this.isDisabled()) {
-      await this.editor.enable();
-      this.isDisabled.set(false);
-    } else {
-      await this.editor.disable();
-      this.isDisabled.set(true);
-    }
+  toggle() {
+    this.isEraserDisabled.update(value => !value);
   }
 }

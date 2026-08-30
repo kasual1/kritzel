@@ -165,7 +165,7 @@ export class KritzelEditor {
       label: 'menu.export',
       icon: 'upload',
       group: 'clipboard',
-      visible: (_, objects) => this.canExportObjects(objects),
+      isVisible: (_, objects) => this.canExportObjects(objects),
       action: (_, objects) => {
         const format = this.getPreferredExportFormat(objects);
         if (!format) {
