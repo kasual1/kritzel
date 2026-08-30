@@ -40,10 +40,9 @@ export class AnnotationStudioComponent {
 
     for (const c of this.colors) {
       await this.editor.registerTool(`brush-${c.name}`, KritzelBrushTool, {
-        type: 'pen',
         color: { light: c.hex, dark: c.dark },
         size: 16,
-        palettes: {},                             // locked color, no picker
+        palette: [],                              // locked color, no picker
       });
     }
     await this.editor.changeActiveTool('brush-red');

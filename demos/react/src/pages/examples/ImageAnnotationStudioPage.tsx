@@ -208,12 +208,9 @@ export function ImageAnnotationStudioPage() {
   async function registerColorTools(editor: HTMLKritzelEditorElement) {
     for (const tool of colorTools) {
       await editor.registerTool(tool.name, KritzelBrushTool, {
-        type: "pen",
         color: { light: tool.color, dark: tool.color },
         size: 5,
-        palettes: {
-          pen: [{ light: tool.color, dark: tool.color, label: tool.label }],
-        },
+        palette: [{ light: tool.color, dark: tool.color, label: tool.label }],
       });
     }
   }

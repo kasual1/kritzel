@@ -36,10 +36,9 @@ await editor.value?.enable();
 
 ```ts
 interface KritzelBrushToolConfig {
-  type: 'pen' | 'highlighter';
   color: ThemeAwareColor;                 // { light, dark }
   size: number;
-  palettes: { [brushType: string]: ThemeAwareColor[] }; // {} or empty arrays disable the picker
+  palette: ThemeAwareColor[];             // [] disables the picker
   opacity?: number;                       // highlighters typically ~0.6
 }
 
@@ -85,10 +84,9 @@ import { KritzelBrushTool, KritzelEditor, getEditorRef, type KritzelBrushToolCon
 const editor = getEditorRef('editor')
 
 const red: KritzelBrushToolConfig = {
-  type: 'pen',
   color: { light: '#ff0000', dark: '#ff6666' },
   size: 16,
-  palettes: {},                 // empty â†’ no color picker, color is locked
+  palette: [],                 // empty → no color picker, color is locked
 }
 
 async function onReady() {
@@ -121,24 +119,20 @@ const toolbarItems: KritzelToolbarItem[] = [
   {
     name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',
     config: {
-      type: 'pen',
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 6,
-      palettes: {
-        pen: [
-          { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
-          { light: '#42b883', dark: '#7ee2b8', label: 'Accent' },
-        ],
-      },
+      palette: [
+        { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
+        { light: '#42b883', dark: '#7ee2b8', label: 'Accent' },
+      ],
     },
   },
   {
     name: 'highlighter', type: 'tool', tool: KritzelBrushTool, icon: 'highlighter',
     config: {
-      type: 'highlighter',
       color: { light: '#ffeb3b', dark: '#fff176' },
       size: 20, opacity: 0.6,
-      palettes: { highlighter: [{ light: '#ffeb3b', dark: '#fff176', label: 'Yellow' }] },
+      palette: [{ light: '#ffeb3b', dark: '#fff176', label: 'Yellow' }],
     },
   },
   {

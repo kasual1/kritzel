@@ -32,16 +32,11 @@ export interface KritzelTextToolConfig {
 }
 
 export interface KritzelBrushToolConfig {
-  type: 'pen' | 'highlighter';
   color: ThemeAwareColor;
   size: number;
   opacity?: number;
-  palettes: {
-    [brushType: string]: ThemeAwareColor[];
-  };
-  sizes?: {
-    [brushType: string]: number[];
-  };
+  palette: ThemeAwareColor[];
+  sizes?: number[];
 }
 
 export interface KritzelLineToolConfig {

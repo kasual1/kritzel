@@ -462,21 +462,18 @@ export class ImageAnnotationStudioComponent {
   private async registerColorTools() {
     for (const tool of this.colorTools) {
       await this.editor.registerTool(tool.name, KritzelBrushTool, {
-        type: 'pen',
         color: {
           light: tool.color,
           dark: tool.color,
         },
         size: 5,
-        palettes: {
-          pen: [
-            {
-              light: tool.color,
-              dark: tool.color,
-              label: tool.label,
-            },
-          ],
-        },
+        palette: [
+          {
+            light: tool.color,
+            dark: tool.color,
+            label: tool.label,
+          },
+        ],
       });
     }
   }

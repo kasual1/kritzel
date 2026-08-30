@@ -31,10 +31,9 @@ async function onReady() {
 
   for (const c of COLORS) {
     await editor.value.registerTool(`brush-${c.name}`, KritzelBrushTool, {
-      type: 'pen',
       color: { light: c.hex, dark: c.dark },
       size: 16,
-      palettes: {},                                  // locked color, no picker
+      palette: [],                                  // locked color, no picker
     });
   }
   await activateBrush('red');
