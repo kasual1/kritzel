@@ -458,6 +458,30 @@ Exports the current viewport as an SVG file and triggers a browser download.
 exportViewportAsSvg: Promise<void>
 ```
 
+#### downloadAsJson
+
+Downloads the canvas state as a JSON file. Use the optional filename directly.
+
+```ts
+downloadAsJson(filename?: string): Promise<void>
+```
+
+#### importFromFile
+
+Triggers a local file selector, parsing the user's selected file to import objects.
+
+```ts
+importFromFile(): Promise<void>
+```
+
+#### loadObjectsFromJson
+
+Hydrates the canvas with a serialized JSON string containing objects.
+
+```ts
+loadObjectsFromJson(json: string): Promise<number>
+```
+
 ---
 
 ### Other

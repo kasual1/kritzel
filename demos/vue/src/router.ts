@@ -33,6 +33,9 @@ import DynamicObjectsHtmlPage from './pages/advanced/dynamic-objects/DynamicObje
 import DynamicObjectsComponentPage from './pages/advanced/dynamic-objects/DynamicObjectsComponentPage.vue'
 import DynamicObjectsElementPage from './pages/advanced/dynamic-objects/DynamicObjectsElementPage.vue'
 import DynamicObjectsElementHtmlPage from './pages/advanced/dynamic-objects/DynamicObjectsElementHtmlPage.vue'
+import ImportExportViewportExportPage from './pages/advanced/import-export/ImportExportViewportExportPage.vue'
+import ImportExportWorkspaceExportPage from './pages/advanced/import-export/ImportExportWorkspaceExportPage.vue'
+import ImportExportWorkspaceImportPage from './pages/advanced/import-export/ImportExportWorkspaceImportPage.vue'
 import ThemingApplyPage from './pages/customization/theming/ThemingApplyPage.vue'
 import ThemingCustomPage from './pages/customization/theming/ThemingCustomPage.vue'
 import FontsRegisterPage from './pages/customization/fonts/FontsRegisterPage.vue'
@@ -132,6 +135,14 @@ export const router = createRouter({
             { path: 'component', component: DynamicObjectsComponentPage },
             { path: 'element', component: DynamicObjectsElementPage },
             { path: 'element-html', component: DynamicObjectsElementHtmlPage },
+          ],
+        },
+        {
+          path: 'import-export',
+          children: [
+            { path: 'viewport-export', component: ImportExportViewportExportPage },
+            { path: 'workspace-export', component: ImportExportWorkspaceExportPage },
+            { path: 'workspace-import', component: ImportExportWorkspaceImportPage },
           ],
         },
       ],
