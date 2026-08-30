@@ -29,6 +29,7 @@ const sidebars: SidebarsConfig = {
         'advanced/user-management',
         'advanced/collaboration',
         'advanced/dynamic-objects',
+        'advanced/import-export',
       ],
     },
     {

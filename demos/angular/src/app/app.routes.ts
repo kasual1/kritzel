@@ -33,6 +33,9 @@ import { DynamicObjectsHtmlComponent } from './advanced/dynamic-objects/dynamic-
 import { DynamicObjectsComponentComponent } from './advanced/dynamic-objects/dynamic-objects-component.component';
 import { DynamicObjectsElementComponent } from './advanced/dynamic-objects/dynamic-objects-element.component';
 import { DynamicObjectsElementHtmlComponent } from './advanced/dynamic-objects/dynamic-objects-element-html.component';
+import { ImportExportViewportExportComponent } from './advanced/import-export/import-export-viewport-export.component';
+import { ImportExportWorkspaceExportComponent } from './advanced/import-export/import-export-workspace-export.component';
+import { ImportExportWorkspaceImportComponent } from './advanced/import-export/import-export-workspace-import.component';
 import { ThemingApplyComponent } from './customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './customization/theming/theming-custom.component';
 import { FontsRegisterComponent } from './customization/fonts/fonts-register.component';
@@ -130,6 +133,14 @@ export const routes: Routes = [
           { path: 'component', component: DynamicObjectsComponentComponent },
           { path: 'element', component: DynamicObjectsElementComponent },
           { path: 'element-html', component: DynamicObjectsElementHtmlComponent },
+        ],
+      },
+      {
+        path: 'import-export',
+        children: [
+          { path: 'viewport-export', component: ImportExportViewportExportComponent },
+          { path: 'workspace-export', component: ImportExportWorkspaceExportComponent },
+          { path: 'workspace-import', component: ImportExportWorkspaceImportComponent },
         ],
       },
     ],
