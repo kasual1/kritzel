@@ -74,7 +74,7 @@ In order to disable a specific tool, set `isDisabled` on the corresponding entry
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/tools/tool-disable"
+  demoPath="/fundamentals/tools/disable"
   repoFiles={['src/app/fundamentals/tools/tools-disable.component.ts']}
 />
 
