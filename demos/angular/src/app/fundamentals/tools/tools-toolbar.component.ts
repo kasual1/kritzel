@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import {
+  DEFAULT_BRUSH_CONFIG,
   KritzelBrushTool,
   KritzelEditor,
   KritzelSelectionTool,
@@ -54,17 +55,6 @@ export class ToolsToolbarComponent {
       type: 'tool',
       tool: KritzelBrushTool,
       icon: 'pen',
-      config: {
-        type: 'pen',
-        color: { light: '#1f2937', dark: '#f3f4f6' },
-        size: 6,
-        palettes: {
-          pen: [
-            { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
-            { light: '#dd0031', dark: '#ff5b79', label: 'Accent' },
-          ],
-        },
-      },
       isDefault: true,
     },
     {
@@ -72,15 +62,6 @@ export class ToolsToolbarComponent {
       type: 'tool',
       tool: KritzelTextTool,
       icon: 'type',
-      config: {
-        color: { light: '#1f2937', dark: '#f3f4f6' },
-        size: 18,
-        fontFamily: 'Arial',
-        palette: [
-          { light: '#1f2937', dark: '#f3f4f6' },
-          { light: '#dd0031', dark: '#ff5b79' },
-        ],
-      },
     },
     {
       name: 'config',

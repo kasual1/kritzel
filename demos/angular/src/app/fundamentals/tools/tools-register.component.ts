@@ -5,29 +5,15 @@ import {
 } from '@angular/core';
 import {
   KritzelBrushTool,
-  KritzelBrushToolConfig,
   KritzelEditor,
   KritzelSelectionTool,
   EditorIsReadyEvent,
-  KritzelSyncConfig,
   KritzelTextTool,
   KritzelToolbarItem,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
-
-const highlighterConfig: KritzelBrushToolConfig = {
-  type: 'highlighter',
-  color: { light: '#ffeb3b', dark: '#fff176' },
-  size: 20,
-  palettes: {
-    highlighter: [
-      { light: '#ffeb3b', dark: '#fff176', label: 'Yellow' },
-      { light: '#76ff03', dark: '#b2ff59', label: 'Green' },
-    ],
-  },
-};
 
 @Component({
   selector: 'app-tools-register',
@@ -148,7 +134,6 @@ export class ToolsRegisterComponent {
     await this.editor.registerTool(
       'highlighter',
       KritzelBrushTool,
-      highlighterConfig,
     );
   }
 }
