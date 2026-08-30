@@ -24,7 +24,7 @@ This example makes use of the following core concepts. Click on the links below 
 - [Objects](/docs/vue/fundamentals/objects) - seeding background images and creating shape objects as defect markers
 - [Viewport](/docs/vue/fundamentals/viewport) - converting screen coordinates to world coordinates with `screenToWorld()` and focusing the camera with `setViewport()`
 - [Tools](/docs/vue/fundamentals/tools) - switching to the selection tool programmatically during pin placement mode
-- [Components](/docs/vue/fundamentals/components/editor) - hiding built-in toolbar and driving all interactions from a custom sidebar
+- [Controls](/docs/vue/fundamentals/controls) - hiding built-in toolbar and driving all interactions from a custom sidebar
 
 ---
 

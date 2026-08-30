@@ -23,7 +23,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 - [Tools](/docs/vue/fundamentals/tools) - registering multiple brush tools with fixed colors and switching between them programmatically
 - [Objects](/docs/vue/fundamentals/objects) - seeding a centered background image as non-interactive scenery
-- [Components](/docs/vue/fundamentals/components/editor) - driving editor behavior from a custom external toolbar via `changeActiveTool()`
+- [Tools](/docs/vue/fundamentals/tools) - driving editor behavior from a custom external toolbar via `changeActiveTool()`
 
 ---
 

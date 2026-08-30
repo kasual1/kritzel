@@ -23,7 +23,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 - [Tools](/docs/react/fundamentals/tools) - registering multiple brush tools with fixed colors and switching between them programmatically
 - [Objects](/docs/react/fundamentals/objects) - seeding a centered background image as non-interactive scenery
-- [Components](/docs/react/fundamentals/components/editor) - driving editor behavior from a custom external toolbar via `changeActiveTool()`
+- [Tools](/docs/react/fundamentals/tools) - driving editor behavior from a custom external toolbar via `changeActiveTool()`
 
 ---
 

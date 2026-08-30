@@ -16,6 +16,8 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 
 ## Installation
 
+Run the following command to install Kritzel and add it to your package.json.
+
 ```bash
 npm install kritzel-angular
 ```
@@ -65,7 +67,7 @@ This renders the editor with all the default ui elements such as the toolbar, th
 
 By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
 
-For provider behavior details and persistence guidance, see the [Persistence concept](../fundamentals/persistence.md).
+For provider behavior details and persistence guidance, take a look at [Persistence](../fundamentals/persistence.md).
 
 ```ts title="editor.component.ts"
 import { Component } from '@angular/core';

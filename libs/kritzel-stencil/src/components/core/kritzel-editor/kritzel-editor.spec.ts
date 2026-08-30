@@ -434,9 +434,9 @@ describe('KritzelEditor', () => {
         } as any,
       ];
 
-      component.onToolbarItemsChange(component.toolbarItems);
+      const normalizedToolbar = (component as any).normalizeToolbar(component.toolbarItems);
 
-      const normalizedConfig = (component as any).normalizedToolbar[0].config;
+      const normalizedConfig = normalizedToolbar[0].config;
       expect(normalizedConfig.availableFonts).toEqual(DEFAULT_TEXT_TOOL_AVAILABLE_FONTS);
     });
 
@@ -460,9 +460,9 @@ describe('KritzelEditor', () => {
         } as any,
       ];
 
-      component.onToolbarItemsChange(component.toolbarItems);
+      const normalizedToolbar = (component as any).normalizeToolbar(component.toolbarItems);
 
-      const normalizedConfig = (component as any).normalizedToolbar[0].config;
+      const normalizedConfig = normalizedToolbar[0].config;
       expect(normalizedConfig.availableFonts).toEqual([
         {
           family: 'Lora',

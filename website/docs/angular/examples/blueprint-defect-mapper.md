@@ -24,7 +24,7 @@ This example makes use of the following core concepts. Click on the links below 
 - [Objects](/docs/angular/fundamentals/objects) — seeding background images and creating shape objects as defect markers
 - [Viewport](/docs/angular/fundamentals/viewport) — converting screen coordinates to world coordinates with `screenToWorld()` and focusing the camera with `setViewport()`
 - [Tools](/docs/angular/fundamentals/tools) — switching to the selection tool programmatically during pin placement mode
-- [Components](/docs/angular/fundamentals/components/editor) — hiding built-in toolbar and driving all interactions from a custom sidebar
+- [Controls](/docs/angular/fundamentals/controls) — hiding built-in toolbar and driving all interactions from a custom sidebar
 
 ---
 

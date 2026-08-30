@@ -22,7 +22,7 @@ Complete the [Quick Start](../getting-started/quick-start.md) guide to have a wo
 This example makes use of the following core concepts. Click on the links below to go into the details:
 
 - [Objects](/docs/vue/fundamentals/objects) - querying, updating, and removing canvas objects programmatically
-- [Components](/docs/vue/fundamentals/components/editor) - listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
+- [Editor API Reference](/docs/vue/api-reference/editor) - listening to `objectsAdded`, `objectsUpdated`, and `objectsRemoved` events to keep external UI in sync
 - [Viewport](/docs/vue/fundamentals/viewport) - panning and zooming to focus on a selected object
 
 ---

@@ -10,6 +10,7 @@ import { ContextMenusCanvasQuickActionsComponent } from './fundamentals/componen
 import { ContextMenusClipboardActionsComponent } from './fundamentals/components/context-menus-clipboard-actions.component';
 import { ContextMenusSmartConditionalComponent } from './fundamentals/components/context-menus-smart-conditional.component';
 import { ContextMenusObjectInspectorComponent } from './fundamentals/components/context-menus-object-inspector.component';
+import { NotificationsTriggerComponent } from './fundamentals/components/notifications-trigger.component';
 import { ObjectsAddRemoveComponent } from './fundamentals/objects/objects-add-remove.component';
 import { ObjectsQueryComponent } from './fundamentals/objects/objects-query.component';
 import { ObjectsSelectionComponent } from './fundamentals/objects/objects-selection.component';
@@ -67,6 +68,7 @@ export const routes: Routes = [
           { path: 'context-menus-clipboard-actions', component: ContextMenusClipboardActionsComponent },
           { path: 'context-menus-smart-conditional', component: ContextMenusSmartConditionalComponent },
           { path: 'context-menus-object-inspector', component: ContextMenusObjectInspectorComponent },
+          { path: 'notifications-trigger', component: NotificationsTriggerComponent },
         ],
       },
       {

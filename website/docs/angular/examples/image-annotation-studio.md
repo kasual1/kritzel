@@ -23,7 +23,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 - [Tools](/docs/angular/fundamentals/tools) — registering multiple brush tools with fixed colors and switching between them programmatically
 - [Objects](/docs/angular/fundamentals/objects) — seeding a centered background image as non-interactive scenery
-- [Components](/docs/angular/fundamentals/components/editor) — driving editor behavior from a custom external toolbar via `changeActiveTool()`
+- [Tools](/docs/angular/fundamentals/tools) — driving editor behavior from a custom external toolbar via `changeActiveTool()`
 
 ---
 

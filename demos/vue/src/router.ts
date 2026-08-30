@@ -10,6 +10,7 @@ import ContextMenusCanvasQuickActionsPage from './pages/fundamentals/components/
 import ContextMenusClipboardActionsPage from './pages/fundamentals/components/ContextMenusClipboardActionsPage.vue'
 import ContextMenusSmartConditionalPage from './pages/fundamentals/components/ContextMenusSmartConditionalPage.vue'
 import ContextMenusObjectInspectorPage from './pages/fundamentals/components/ContextMenusObjectInspectorPage.vue'
+import NotificationsTriggerPage from './pages/fundamentals/components/NotificationsTriggerPage.vue'
 import ObjectsAddRemovePage from './pages/fundamentals/objects/ObjectsAddRemovePage.vue'
 import ObjectsQueryPage from './pages/fundamentals/objects/ObjectsQueryPage.vue'
 import ObjectsSelectionPage from './pages/fundamentals/objects/ObjectsSelectionPage.vue'
@@ -69,6 +70,7 @@ export const router = createRouter({
             { path: 'context-menus-clipboard-actions', component: ContextMenusClipboardActionsPage },
             { path: 'context-menus-smart-conditional', component: ContextMenusSmartConditionalPage },
             { path: 'context-menus-object-inspector', component: ContextMenusObjectInspectorPage },
+            { path: 'notifications-trigger', component: NotificationsTriggerPage },
           ],
         },
         {

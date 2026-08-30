@@ -11,25 +11,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel ships a presentational login dialog that `<KritzelEditor>` renders as soon as a `loginConfig` prop is supplied. The dialog only displays provider buttons and emits events — the actual authentication is always performed by your application.
+Kritzel ships a presentational login dialog that `<KritzelEditor>` renders as soon as a `loginConfig` prop is supplied. The dialog only displays provider buttons and emits events - the actual authentication is always performed by your application.
 
 Providing a `loginConfig` has two effects: a **Sign in** button appears in the editor header while no authenticated user is set, and features that require an account (such as sharing a workspace) open the dialog instead of failing.
-
-The configuration object has the following shape:
-
-```ts
-interface KritzelLoginConfig {
-  providers: KritzelLoginProvider[];
-  title?: string;
-  subtitle?: string;
-}
-
-interface KritzelLoginProvider {
-  name: string;   // machine identifier emitted in the login event
-  label: string;  // button text
-  icon?: string;  // icon name registered via customSvgIcons
-}
-```
 
 ## Configuring Providers
 

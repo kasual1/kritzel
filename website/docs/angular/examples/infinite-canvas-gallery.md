@@ -24,7 +24,7 @@ This example makes use of the following core concepts. Click on the links below 
 - [Objects](/docs/angular/fundamentals/objects) — loading images with `KritzelImage.fromUrl()` and placing them at world-space coordinates
 - [Viewport](/docs/angular/fundamentals/viewport) — setting an initial zoomed-out overview with `setViewport()`
 - [Tools](/docs/angular/fundamentals/tools) — reducing the toolbar to a single selection tool for a read-only experience
-- [Components](/docs/angular/fundamentals/components/editor) — configuring the editor for a non-editable presentation mode
+- [Editor API Reference](/docs/angular/api-reference/editor) — configuring the editor for a non-editable presentation mode
 
 ---
 

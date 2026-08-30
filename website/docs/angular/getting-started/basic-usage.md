@@ -9,20 +9,22 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 # Basic Usage
 
+## Overview
+
+For most use cases `<kritzel-editor>` is the preferred choice. It gives you a ready made whiteboard experience and includes customizable controls that can be further tuned to your needs. Only use `<kritzel-engine>` when you want to build the entire UI yourself.
+
 Once `<kritzel-editor>` or `<kritzel-engine>` is rendering in your application, you can interact with the canvas in three complementary ways:
 
 - **Setting props** to configure the component declaratively.
 - **Listening to events** to react to changes from the editor or engine.
 - **Calling methods** to make imperative changes or query state.
 
-The headless Engine provides the same core canvas API as the editor, but without the built-in UI elements. The examples below use `<kritzel-editor>`, but the object, viewport, tool, and workspace APIs also apply to `<kritzel-engine>`.
+While the `<kritzel-editor>` is the main way to integrate Kritzel into your application, the same APIs also apply to `<kritzel-engine>`. The examples below focus on `<kritzel-editor>`, but the concepts carry over to the engine as well.
 
-For more detailed documentation, take a look at the [Editor](../../fundamentals/components/editor/) or the [Engine](../../fundamentals/components/engine/). 
- 
 
-## Waiting for the Editor to be Ready
+## Waiting for Initialization
 
-Before interacting with an editor instance through its public API, you must wait for the editor's `isReady` event. The `<kritzel-editor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available. This is especially important when obtaining the element with `ViewChild` and calling methods from your component.
+Before interacting with an editor instance through its public API, you must wait for the editor's `isReady` event. The `<kritzel-editor>` emits `isReady` after the engine is mounted, the internal rendering context is created, and the initial workspace state is available.
 
 ```ts
 import { Component, ElementRef, ViewChild } from '@angular/core';
@@ -34,18 +36,20 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 export class AppComponent {
   @ViewChild('editor') editorRef!: ElementRef<HTMLKritzelEditorElement>;
 
+  private editor!: HTMLKritzelEditorElement;
+
   onReady() {
-    const editor = this.editorRef.nativeElement;
-    editor.changeActiveTool('brush');
+    this.editor = this.editorRef.nativeElement;
+    this.editor.changeActiveTool('brush');
   }
 }
 ```
 
-Do not call methods such as `changeActiveTool`, `addObject`, or `setViewport` before this event. Props that are bound in the template can be supplied as part of Angular's normal component setup, but imperative access to the editor should begin only after `isReady` has fired.
+Only call methods such as `changeActiveTool` after the editor has emitted the `isReady` event.
 
 ## Setting Props
 
-Props are the declarative way to configure the editor. Bind Angular component values with square-bracket syntax. Use props such as `theme`, `scaleMin`, `syncConfig`, and `isToolbarVisible` to customize editor behavior and the built-in UI.
+Props are the declarative way to configure the editor. Use props such as `theme`, `scaleMin`, `syncConfig`, and `isToolbarVisible` to customize editor behavior and the built-in UI.
 
 ```ts
 import { Component } from '@angular/core';
@@ -59,11 +63,11 @@ import { KritzelEditor, KritzelSyncConfig } from 'kritzel-angular';
   `,
 })
 export class CanvasComponent {
-  isToolbarVisible = true;
+  isToolbarVisible = false;
 }
 ```
 
-For example, changing `isToolbarVisible` from application state updates the editor without calling a method.
+For example, changing `isToolbarVisible` from application state hides the editor's toolbar.
 
 ## Listening to Events
 

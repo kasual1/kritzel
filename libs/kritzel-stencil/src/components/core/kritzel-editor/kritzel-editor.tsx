@@ -330,7 +330,6 @@ export class KritzelEditor {
   @State() activeNotification?: KritzelNotification;
   @State() isNotificationDismissing: boolean = false;
   @State() contextMenuState?: KritzelContextMenuState;
-  @State() normalizedToolbar: KritzelToolbarItem[] = [];
   @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
   @State() isSyncing: boolean = false;
   @State() isLoadingOverlayVisible: boolean = false;
@@ -384,11 +383,6 @@ export class KritzelEditor {
   @Watch('customFonts')
   onCustomFontsChange(newValue: KritzelFontMap) {
     void this.registerCustomFonts(newValue);
-  }
-
-  @Watch('toolbarItems')
-  onToolbarItemsChange(newValue: KritzelToolbarItem[]) {
-    this.normalizedToolbar = this.normalizeToolbar(newValue);
   }
 
   @Watch('moreMenuItems')
@@ -842,7 +836,6 @@ export class KritzelEditor {
   currentUserDialogRef!: HTMLKritzelCurrentUserDialogElement;
 
   componentWillLoad() {
-    this.normalizedToolbar = this.normalizeToolbar(this.toolbarItems);
     this.recomputeMoreMenuItems();
     this.loadSettingsFromStorage();
     this.applyTheme();
@@ -850,6 +843,17 @@ export class KritzelEditor {
 
   private isTextToolConfig(config?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): config is KritzelTextToolConfig {
     return !!config && 'fontFamily' in config && 'size' in config && 'color' in config;
+  }
+
+  private lastToolbarItemsRef: KritzelToolbarItem[] | null = null;
+  private lastNormalizedToolbarItems: KritzelToolbarItem[] = [];
+
+  private getNormalizedToolbarItems(): KritzelToolbarItem[] {
+    if (this.toolbarItems !== this.lastToolbarItemsRef) {
+      this.lastToolbarItemsRef = this.toolbarItems;
+      this.lastNormalizedToolbarItems = this.normalizeToolbar(this.toolbarItems);
+    }
+    return this.lastNormalizedToolbarItems;
   }
 
   private normalizeToolbar(toolbarItems: KritzelToolbarItem[]): KritzelToolbarItem[] {
@@ -1400,6 +1404,7 @@ export class KritzelEditor {
     const isLoggedIn = this.isLoggedIn;
     const shouldShowCurrentUser = isLoggedIn;
     const shouldShowLoginButton = this.isReady && !!this.loginConfig && !isLoggedIn;
+    const normalizedToolbarItems = this.getNormalizedToolbarItems();
 
     return (
       <Host>
@@ -1517,7 +1522,7 @@ export class KritzelEditor {
                 this.toolbarRef = el;
               }
             }}
-            toolbarItems={this.normalizedToolbar}
+            toolbarItems={normalizedToolbarItems}
             isUtilityPanelVisible={this.isUtilityPanelVisible}
             undoState={this.undoState ?? undefined}
             theme={this.theme}
