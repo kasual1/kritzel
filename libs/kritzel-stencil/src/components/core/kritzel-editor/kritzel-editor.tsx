@@ -788,6 +788,24 @@ export class KritzelEditor {
   }
 
   @Method()
+  async openWorkspaceManagerMenu(): Promise<void> {
+    if (!this.isWorkspaceManagerVisible) {
+      return;
+    }
+
+    await this.workspaceManagerRef?.open();
+  }
+
+  @Method()
+  async openMoreMenu(): Promise<void> {
+    if (!this.isMoreMenuVisible) {
+      return;
+    }
+
+    await this.moreMenuRef?.open();
+  }
+
+  @Method()
   async triggerSelectionChange() {
     return this.engineRef.triggerSelectionChange();
   }
@@ -831,6 +849,8 @@ export class KritzelEditor {
   settingsRef!: HTMLKritzelSettingsElement;
   exportRef!: HTMLKritzelExportElement;
   splitButtonRef!: HTMLKritzelSplitButtonElement;
+  workspaceManagerRef!: HTMLKritzelWorkspaceManagerElement;
+  moreMenuRef!: HTMLKritzelMoreMenuElement;
   shareDialogRef!: HTMLKritzelShareDialogElement;
   loginDialogRef!: HTMLKritzelLoginDialogElement;
   currentUserDialogRef!: HTMLKritzelCurrentUserDialogElement;
@@ -1418,6 +1438,11 @@ export class KritzelEditor {
         >
           <div class="top-left-buttons">
             <kritzel-workspace-manager
+              ref={el => {
+                if (el) {
+                  this.workspaceManagerRef = el;
+                }
+              }}
               visible={this.isWorkspaceManagerVisible}
               workspaces={this.workspaces}
               activeWorkspace={this.activeWorkspace}
@@ -1588,7 +1613,16 @@ export class KritzelEditor {
 
             {shouldShowLoginButton && <kritzel-button onButtonClick={() => this.loginDialogRef?.open()}>{this.resolvedTerms['login.dialogTitle'] ?? 'Sign in'}</kritzel-button>}
 
-            <kritzel-more-menu items={this.resolvedMoreMenuItems} visible={this.isMoreMenuVisible} terms={this.resolvedTerms}></kritzel-more-menu>
+            <kritzel-more-menu
+              ref={el => {
+                if (el) {
+                  this.moreMenuRef = el;
+                }
+              }}
+              items={this.resolvedMoreMenuItems}
+              visible={this.isMoreMenuVisible}
+              terms={this.resolvedTerms}
+            ></kritzel-more-menu>
 
             <kritzel-share-dialog
               ref={el => {

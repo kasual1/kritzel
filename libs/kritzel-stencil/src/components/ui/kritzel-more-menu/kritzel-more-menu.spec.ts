@@ -7,6 +7,7 @@ jest.mock('@stencil/core', () => ({
   State: () => () => {},
   Watch: () => () => {},
   Event: () => () => {},
+  Method: () => () => {},
   Element: () => () => {},
 }));
 
@@ -21,6 +22,7 @@ describe('KritzelMoreMenu', () => {
   it('re-evaluates item visibility when opening with unchanged item references', async () => {
     let hasRemoteProvider = false;
 
+    component.visible = true;
     component.items = [
       {
         id: 'share',
@@ -42,5 +44,34 @@ describe('KritzelMoreMenu', () => {
 
     expect((component as any).visibleItems).toHaveLength(1);
     expect((component as any).visibleItems[0].id).toBe('share');
+  });
+
+  it('opens programmatically and resolves the latest visible items', async () => {
+    let hasRemoteProvider = false;
+
+    component.visible = true;
+    component.items = [
+      {
+        id: 'share',
+        label: 'menu.share',
+        isVisible: () => hasRemoteProvider,
+      } as any,
+    ];
+
+    hasRemoteProvider = true;
+
+    await component.open();
+
+    expect((component as any).menuAnchor).toBe(component.host);
+    expect((component as any).visibleItems).toHaveLength(1);
+    expect((component as any).visibleItems[0].id).toBe('share');
+  });
+
+  it('does not open programmatically when hidden', async () => {
+    component.visible = false;
+
+    await component.open();
+
+    expect((component as any).menuAnchor).toBeNull();
   });
 });

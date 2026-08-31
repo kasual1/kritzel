@@ -80,6 +80,22 @@ Opens a context menu programmatically at the given screen coordinates.
 openContextMenu(options: { x: number; y: number; objectId?: string }): Promise<void>
 ```
 
+#### openWorkspaceManagerMenu
+
+Opens the built-in workspace manager menu programmatically.
+
+```ts
+openWorkspaceManagerMenu(): Promise<void>
+```
+
+#### openMoreMenu
+
+Opens the built-in More menu programmatically.
+
+```ts
+openMoreMenu(): Promise<void>
+```
+
 #### hideContextMenu
 
 Hides the active context menu.

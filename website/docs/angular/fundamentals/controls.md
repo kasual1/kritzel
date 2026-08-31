@@ -13,9 +13,23 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 The `<kritzel-editor>` includes a complete whiteboard interface, including toolbars, utility panels, context menus, and settings dialogs. You can selectively hide its built-in UI elements for a more focused experience, or replace the context-menu actions with controls tailored to your application.
 
-## Components
+## Workspace Manager
 
-You can toggle visibility for built-in UI components using the Editor's attributes. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to false will not render the workspace manager at the top left nor the more menu at the top right, giving you a more minimal interface while retaining all core whiteboard functionality. `isToolbarVisible`, `isUtilityPanelVisible`, and `isZoomPanelVisible` work the same way for the tool toolbar, the utility panel, and the zoom control panel.
+The workspace manager in the top-left corner lets people switch between workspaces and create, rename, or delete them. Set `isWorkspaceManagerVisible` to `false` when your application provides workspace navigation elsewhere or presents a single document.
+
+## More Menu
+
+The more menu in the top-right corner groups secondary editor actions. Use `moreMenuItems` to provide its actions, and set `isMoreMenuVisible` to `false` when those actions belong in your application's own interface.
+
+## Toolbar and Utility Panel
+
+The toolbar provides the configured drawing and selection tools, while the utility panel exposes undo, redo, and delete actions. Set `isToolbarVisible` or `isUtilityPanelVisible` to `false` independently to replace either control surface without changing the editor's core functionality.
+
+## Zoom Panel
+
+The zoom panel shows the current zoom level and provides zoom-in and zoom-out buttons. Set `isZoomPanelVisible` to `false` when viewport controls are supplied elsewhere in your application.
+
+The following example hides the workspace manager and more menu while keeping the rest of the editor interface available.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -49,7 +63,6 @@ Use `group` to cluster related entries with a separator, and `children` to nest 
   repoFiles={['src/app/fundamentals/components/context-menus-object-inspector.component.ts']}
 />
 
-The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling "Select All" when the viewport is empty.
 The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling "Select All" when the viewport is empty.
 
 <LiveDemo

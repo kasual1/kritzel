@@ -23,6 +23,19 @@
 | `workspaceChange`         |             | `CustomEvent<KritzelWorkspace>` |
 
 
+## Methods
+
+### `open() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
 ## Dependencies
 
 ### Used by
