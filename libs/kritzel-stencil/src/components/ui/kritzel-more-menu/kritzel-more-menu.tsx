@@ -1,4 +1,4 @@
-import { Component, Host, h, Prop, State, Element, Event, EventEmitter, Watch } from '@stencil/core';
+import { Component, Host, h, Prop, State, Element, Event, EventEmitter, Watch, Method } from '@stencil/core';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
@@ -57,6 +57,18 @@ export class KritzelMoreMenu {
     void this.resolveVisibleItems();
   }
 
+  @Method()
+  async open(): Promise<void> {
+    if (!this.visible || this.menuAnchor) {
+      return;
+    }
+
+    window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
+    this.menuAnchor = this.host;
+    this.visibleItems = this.filterVisibleItemsSync(this.items ?? []);
+    await this.resolveVisibleItems();
+  }
+
   componentWillLoad() {
     void this.resolveVisibleItems();
   }
@@ -66,10 +78,7 @@ export class KritzelMoreMenu {
     if (this.menuAnchor) {
       this.closeMenu();
     } else {
-      window.dispatchEvent(new CustomEvent('kritzel-dismiss-menus'));
-      this.menuAnchor = this.host;
-      this.visibleItems = this.filterVisibleItemsSync(this.items ?? []);
-      void this.resolveVisibleItems();
+      void this.open();
     }
   };
 

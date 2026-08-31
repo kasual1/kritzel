@@ -2,7 +2,7 @@ import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { ObjectHelper } from '../../../helpers/object.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
-import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen } from '@stencil/core';
+import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen, Method } from '@stencil/core';
 
 @Component({
   tag: 'kritzel-workspace-manager',
@@ -48,6 +48,15 @@ export class KritzelWorkspaceManager {
   async componentWillLoad() {
     await this.initializeEngine();
     this.isWorkspaceManagerReady.emit();
+  }
+
+  @Method()
+  async open(): Promise<void> {
+    if (!this.visible) {
+      return;
+    }
+
+    await this.splitButtonRef?.open();
   }
 
   private async initializeEngine() {

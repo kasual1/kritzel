@@ -161,6 +161,48 @@ describe('KritzelEditor', () => {
       await component.getWorkspaces();
       expect(mockEngine.getWorkspaces).toHaveBeenCalled();
     });
+
+    it('should open the workspace manager menu when visible', async () => {
+      const open = jest.fn().mockResolvedValue(undefined);
+      component.isWorkspaceManagerVisible = true;
+      component.workspaceManagerRef = { open } as any;
+
+      await component.openWorkspaceManagerMenu();
+
+      expect(open).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not open the workspace manager menu when hidden', async () => {
+      const open = jest.fn().mockResolvedValue(undefined);
+      component.isWorkspaceManagerVisible = false;
+      component.workspaceManagerRef = { open } as any;
+
+      await component.openWorkspaceManagerMenu();
+
+      expect(open).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('More Menu Methods', () => {
+    it('should open the more menu when visible', async () => {
+      const open = jest.fn().mockResolvedValue(undefined);
+      component.isMoreMenuVisible = true;
+      component.moreMenuRef = { open } as any;
+
+      await component.openMoreMenu();
+
+      expect(open).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not open the more menu when hidden', async () => {
+      const open = jest.fn().mockResolvedValue(undefined);
+      component.isMoreMenuVisible = false;
+      component.moreMenuRef = { open } as any;
+
+      await component.openMoreMenu();
+
+      expect(open).not.toHaveBeenCalled();
+    });
   });
 
   describe('Toolbar/Clipboard Methods', () => {
