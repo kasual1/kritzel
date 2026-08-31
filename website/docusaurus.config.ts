@@ -54,10 +54,7 @@ const LEGACY_DOC_PATHS: Record<string, string> = {
   "example-infinite-canvas-gallery": "examples/infinite-canvas-gallery",
   "api-reference-editor": "api-reference/editor",
   "api-reference-engine": "api-reference/engine",
-  "api-reference-tools": "api-reference/tools",
-  "api-reference": "api-reference/overview",
-  objects: "api-reference/object-types",
-  tools: "api-reference/built-in-tools",
+  objects: "api-reference/objects",
   theming: "api-reference/theme-tokens",
   types: "api-reference/types",
 };
