@@ -302,6 +302,7 @@ export class KritzelEditor {
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
   @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
+  @Event() objectsSelectionChange!: EventEmitter<KritzelBaseObject[]>;
   @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
   @Event() themeChange!: EventEmitter<ThemeName>;
   @Event() localeChange!: EventEmitter<LocaleCode>;
@@ -1014,6 +1015,12 @@ export class KritzelEditor {
     this.objectsUpdated.emit(event.detail);
   }
 
+  handleObjectsSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
+    console.log(event.detail);
+    event.stopPropagation();
+    this.objectsSelectionChange.emit(event.detail);
+  }
+
   handleUndoStateChange(event: CustomEvent<KritzelUndoState>) {
     event.stopPropagation();
     this.undoStateChange.emit(event.detail);
@@ -1529,6 +1536,7 @@ export class KritzelEditor {
             onObjectsAdded={event => this.handleObjectsAdded(event)}
             onObjectsRemoved={event => this.handleObjectsRemoved(event)}
             onObjectsUpdated={event => this.handleObjectsUpdated(event)}
+            onObjectsSelectionChange={event => this.handleObjectsSelectionChange(event)}
             onUndoStateChange={event => this.handleUndoStateChange(event)}
             onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
             onViewportChange={event => this.handleViewportChange(event)}

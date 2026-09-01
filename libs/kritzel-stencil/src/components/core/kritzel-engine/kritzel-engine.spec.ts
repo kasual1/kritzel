@@ -361,10 +361,16 @@ describe('KritzelEngine', () => {
   });
 
   describe('selection delegation', () => {
-    it('triggerSelectionChange emits the objectsSelectionChange event', async () => {
+    it('triggerSelectionChange emits the current selection and synchronizes transition tracking', async () => {
+      const selectedObjects = [{ id: 'selected-object' }];
+      core.store.selectedObjects = selectedObjects;
+      core.store.selectionGroup = { objects: selectedObjects };
+
       await engine.triggerSelectionChange();
+      engine.emitObjectsChange();
 
       expect((engine as any).objectsSelectionChange.emit).toHaveBeenCalledTimes(1);
+      expect((engine as any).objectsSelectionChange.emit).toHaveBeenCalledWith(selectedObjects);
     });
 
     it('clearSelection delegates to core', async () => {

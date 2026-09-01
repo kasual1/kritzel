@@ -161,7 +161,7 @@ export class KritzelStore {
    * @returns Array of selected objects
    */
   get selectedObjects(): KritzelBaseObject<Element>[] {
-    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup)).filter(o => o.isSelected);
+    return this.allObjects.filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox)).filter(o => o.isSelected);
   }
 
   /**

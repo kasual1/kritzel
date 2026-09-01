@@ -323,9 +323,6 @@ export class KritzelEngine {
   /** Emitted when the active drawing tool changes. */
   @Event() activeToolChange!: EventEmitter<KritzelBaseTool>;
 
-  /** Emitted when the set of selected objects changes. */
-  @Event() objectsSelectionChange!: EventEmitter<void>;
-
   /** Emitted when workspaces are created, updated, or deleted. */
   @Event() workspacesChange!: EventEmitter<KritzelWorkspace[]>;
 
@@ -346,6 +343,9 @@ export class KritzelEngine {
 
   /** Emitted when one or more objects are updated on the canvas. */
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
+
+  /** Emitted when the set of selected objects changes. */
+  @Event() objectsSelectionChange!: EventEmitter<KritzelBaseObject[]>;
 
   /** Emitted when the undo/redo state changes, providing current undo availability. */
   @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
@@ -377,7 +377,9 @@ export class KritzelEngine {
   /** Manually triggers the `objectsSelectionChange` event. */
   @Method()
   async triggerSelectionChange() {
-    this.objectsSelectionChange.emit();
+    const selectedObjects = this.core.store.selectedObjects as KritzelBaseObject[];
+    this._lastHadSelectionGroup = this.core.store.selectionGroup !== null;
+    this.objectsSelectionChange.emit(selectedObjects);
   }
 
   /** Starts a scene bootstrap phase by hiding the scene immediately. */
@@ -2757,13 +2759,15 @@ export class KritzelEngine {
 
   emitObjectsChange() {
     const objectsMap = this.core.store.objects;
+    const selectedObjects = this.core.store.selectedObjects as KritzelBaseObject[];
+
     if (!objectsMap) {
       this.objectsChange.emit([]);
       this.undoStateChange.emit(this._defaultUndoState);
 
       if (this._lastHadSelectionGroup) {
         this._lastHadSelectionGroup = false;
-        this.objectsSelectionChange.emit();
+        this.objectsSelectionChange.emit(selectedObjects);
       }
 
       return;
@@ -2778,7 +2782,7 @@ export class KritzelEngine {
 
     if (this._lastHadSelectionGroup !== hasSelectionGroup) {
       this._lastHadSelectionGroup = hasSelectionGroup;
-      this.objectsSelectionChange.emit();
+      this.objectsSelectionChange.emit(selectedObjects);
     }
   }
 
