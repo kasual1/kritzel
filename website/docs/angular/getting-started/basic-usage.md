@@ -35,12 +35,9 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
   template: `<kritzel-editor #editor (isReady)="onReady()"></kritzel-editor>`
 })
 export class AppComponent {
-  @ViewChild('editor') editorRef!: ElementRef<HTMLKritzelEditorElement>;
-
-  private editor!: HTMLKritzelEditorElement;
+  @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   onReady() {
-    this.editor = this.editorRef.nativeElement;
     this.editor.changeActiveTool('brush');
   }
 }

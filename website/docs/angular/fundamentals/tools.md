@@ -11,9 +11,21 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Kritzel, a tool determines how user input, such as mouse clicks and touches, behave on the canvas. Only one tool can be active at a time. The active tool handles all incoming pointer events and runs its specific logic to perform actions like drawing, selecting, or erasing.
+In Kritzel, the easiest way to manually interact with the canvas is through tools. Kritzel comes with a configurable toolbar that allows users to select and switch between a set of different prebuilt tools. A tool handles user interaction on the canvas and typically either adds or removes objects.
 
-Kritzel provides a versatile set of default tools like the Selection Tool, Brush Tool, Line Tool, Shape Tool, and Text Tool. You can also customize existing tools or register entirely new tools to extend functionality.
+The toolbar includes the following tools:
+
+- [Selection Tool](../api-reference/tools.md#selection-tool)
+- [Brush Tool](../api-reference/tools.md#brush-tool)
+- [Line Tool](../api-reference/tools.md#line-tool)
+- [Shape Tool](../api-reference/tools.md#shape-tool)
+- [Text Tool](../api-reference/tools.md#text-tool)
+- [Image Tool](../api-reference/tools.md#image-tool)
+- [Eraser Tool](../api-reference/tools.md#eraser-tool)
+
+You can also customize existing tool configurations or register entirely new tools to extend editor capabilities. 
+
+If you rather want to programmatically interact with the canvas, take a look at the [Objects](objects.md) section.
 
 ## Adjusting the Toolbar
 

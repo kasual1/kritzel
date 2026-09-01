@@ -11,7 +11,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Kritzel, the "Viewport" represents the visible area of the canvas. Because Kritzel supports potentially infinite or bounded canvas structures, users need to pan and zoom to navigate different areas of their drawing. 
+In Kritzel, the "Viewport" represents the visible area of the canvas. Because Kritzel supports an infinite canvas structure, users need to pan and zoom to navigate different areas of their drawing. 
 
 The Viewport API allows you to programmatically control the camera, read the current viewer state, and map coordinates between the device screen and the virtual canvas world.
 

@@ -3,14 +3,13 @@ import {
   KritzelEditor,
   EditorIsReadyEvent,
   KritzelBaseObject,
-  KritzelSyncConfig,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
-  selector: 'app-objects-query',
+  selector: 'app-objects-filter',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -24,7 +23,7 @@ import { createSeedObjects } from '../../const/seed-objects';
     </div>
     <div class="content">
       <kritzel-editor
-        editorId="objects-query"
+        editorId="objects-filter"
         [theme]="'light'"
         [themes]="themes"
         [isPanningEnabled]="false"
@@ -66,12 +65,10 @@ import { createSeedObjects } from '../../const/seed-objects';
     .empty { color: #999; font-style: italic; }
   `],
 })
-export class ObjectsQueryComponent {
+export class ObjectsFilterComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-
-  
 
   results = signal<KritzelBaseObject[]>([]);
   totalCount = signal(0);
@@ -83,7 +80,6 @@ export class ObjectsQueryComponent {
         await this.editor.addObject(obj);
       }
     }
-    await this.queryAll();
   }
 
   async queryAll() {

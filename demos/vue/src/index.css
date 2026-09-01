@@ -8,3 +8,7 @@ main {
   width: 100%;
   overscroll-behavior-x: none;
 }
+
+input[type='checkbox'] {
+  accent-color: #42b883;
+}

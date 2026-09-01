@@ -11,8 +11,14 @@ import { ContextMenusClipboardActionsComponent } from './fundamentals/components
 import { ContextMenusSmartConditionalComponent } from './fundamentals/components/context-menus-smart-conditional.component';
 import { ContextMenusObjectInspectorComponent } from './fundamentals/components/context-menus-object-inspector.component';
 import { NotificationsTriggerComponent } from './fundamentals/components/notifications-trigger.component';
-import { ObjectsAddRemoveComponent } from './fundamentals/objects/objects-add-remove.component';
-import { ObjectsQueryComponent } from './fundamentals/objects/objects-query.component';
+import { WorkspaceManagerOpenComponent } from './fundamentals/components/workspace-manager-open.component';
+import { MoreMenuOpenComponent } from './fundamentals/components/more-menu-open.component';
+import { ToolbarUtilityPanelComponent } from './fundamentals/components/toolbar-utility-panel.component';
+import { ZoomPanelToggleComponent } from './fundamentals/components/zoom-panel-toggle.component';
+import { ObjectsAddComponent } from './fundamentals/objects/objects-add.component';
+import { ObjectsRemoveComponent } from './fundamentals/objects/objects-remove.component';
+import { ObjectsUpdateComponent } from './fundamentals/objects/objects-update.component';
+import { ObjectsFilterComponent } from './fundamentals/objects/objects-filter.component';
 import { ObjectsSelectionComponent } from './fundamentals/objects/objects-selection.component';
 import { ObjectsGroupingComponent } from './fundamentals/objects/objects-grouping.component';
 import { ObjectsOrderingComponent } from './fundamentals/objects/objects-ordering.component';
@@ -73,13 +79,19 @@ export const routes: Routes = [
           { path: 'context-menus-smart-conditional', component: ContextMenusSmartConditionalComponent },
           { path: 'context-menus-object-inspector', component: ContextMenusObjectInspectorComponent },
           { path: 'notifications-trigger', component: NotificationsTriggerComponent },
+          { path: 'workspace-manager-open', component: WorkspaceManagerOpenComponent },
+          { path: 'more-menu-open', component: MoreMenuOpenComponent },
+          { path: 'toolbar-utility-panel', component: ToolbarUtilityPanelComponent },
+          { path: 'zoom-panel-toggle', component: ZoomPanelToggleComponent },
         ],
       },
       {
         path: 'objects',
         children: [
-          { path: 'add-remove', component: ObjectsAddRemoveComponent },
-          { path: 'query', component: ObjectsQueryComponent },
+          { path: 'add', component: ObjectsAddComponent },
+          { path: 'remove', component: ObjectsRemoveComponent },
+          { path: 'update', component: ObjectsUpdateComponent },
+          { path: 'filter', component: ObjectsFilterComponent },
           { path: 'selection', component: ObjectsSelectionComponent },
           { path: 'grouping', component: ObjectsGroupingComponent },
           { path: 'ordering', component: ObjectsOrderingComponent },

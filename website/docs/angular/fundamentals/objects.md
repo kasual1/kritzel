@@ -7,40 +7,55 @@ description: "Understand the core concept of Objects in Kritzel."
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# Canvas Objects
+# Objects
 
 ## Overview
 
-Everything visually rendered onto the Kritzel canvas—whether it's a brush stroke, a text block, or an image—is conceptually an **Object**. 
+Everything placed on the Kritzel canvas is considered an object. Objects can be either added using a tool from the toolbar or programmatically via the editor's API.
 
-All objects share a common foundational structure. No matter the specific type, every object tracks its spatial existence in the infinite canvas using standard 2D properties:
-- **Position & Dimensions:** `x`, `y`, `width`, `height`
-- **Transforms:** `rotation`, `scale`
-- **Styling:** `opacity`, `backgroundColor`, `borderColor`, `zIndex`
+Kritzel comes with the following built-in objects:
 
-Because all objects share this base, the engine can uniformly handle hit-testing, rendering bounds, and selection outlines. Currently, tools create specific instances of sub-classed objects: `KritzelPath`, `KritzelLine`, `KritzelShape`, `KritzelText`, `KritzelImage`, and `KritzelDynamicObject`.
+- [Path](../api-reference/objects.md#path)
+- [Line](../api-reference/objects.md#line)
+- [Shape](../api-reference/objects.md#shape)
+- [Text](../api-reference/objects.md#text)
+- [Image](../api-reference/objects.md#image)
+- [Group](../api-reference/objects.md#group)
+- [Dynamic Object](../api-reference/objects.md#dynamic-object)
 
-## Adding and Removing Objects
+Take a look at [Tools](tools.md) for more information on how to create and manipulate objects using the toolbar.
 
-You can manually inject objects into the canvas or remove them programmatically, bypassing the need for a user to draw them.
+## Adding Objects
 
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/objects/add-remove"
-  repoFiles={['src/app/fundamentals/objects/objects-add-remove.component.ts']}
-/>
-
-## Querying and Filtering Objects
-
-Kritzel allows you to read the state of all objects currently on the canvas, or find specific objects. This is useful for building layer panels or object inspectors.
+You can manually inject objects into the canvas programmatically, bypassing the need for a user to draw them.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/objects/query"
-  repoFiles={['src/app/fundamentals/objects/objects-query.component.ts']}
+  demoPath="/fundamentals/objects/add"
+  repoFiles={['src/app/fundamentals/objects/objects-add.component.ts']}
 />
 
-## Managing Object Selection
+## Removing Objects
+
+You can remove objects from the canvas programmatically when they are no longer needed.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/objects/remove"
+  repoFiles={['src/app/fundamentals/objects/objects-remove.component.ts']}
+/>
+
+## Updating Objects
+
+Object properties should never be mutated directly. Instead, changes go through `updateObject()`, which takes the object and a partial set of properties to apply. This ensures the change is properly persisted, synced, and reflected on the canvas.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/objects/update"
+  repoFiles={['src/app/fundamentals/objects/objects-update.component.ts']}
+/>
+
+## Selecting Objects
 
 You can programmatically retrieve the currently selected objects, select specific objects, or clear the selection.
 
@@ -50,7 +65,17 @@ You can programmatically retrieve the currently selected objects, select specifi
   repoFiles={['src/app/fundamentals/objects/objects-selection.component.ts']}
 />
 
-## Grouping
+## Filtering Objects
+
+Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Kritzel's internal selection-related objects.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/objects/filter"
+  repoFiles={['src/app/fundamentals/objects/objects-filter.component.ts']}
+/>
+
+## Grouping Objects
 
 Objects can be grouped together so they can be moved and transformed as a single unit.
 
@@ -60,7 +85,7 @@ Objects can be grouped together so they can be moved and transformed as a single
   repoFiles={['src/app/fundamentals/objects/objects-grouping.component.ts']}
 />
 
-## Ordering
+## Ordering Objects
 
 Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward.
 
