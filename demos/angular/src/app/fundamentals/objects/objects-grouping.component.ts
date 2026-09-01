@@ -33,7 +33,8 @@ import { createSeedObjects } from '../../const/seed-objects';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady($event)"
+        (isReady)="onReady()"
+        (objectsSelectionChange)="onObjectsSelectionChange()"
       ></kritzel-editor>
       <aside>
         <h3>Objects</h3>
@@ -129,15 +130,17 @@ export class ObjectsGroupingComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  
-
   objects = signal<KritzelBaseObject[]>([]);
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+  async onReady() {
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);
     }
 
+    await this.refreshObjects();
+  }
+
+  async onObjectsSelectionChange() {
     await this.refreshObjects();
   }
 

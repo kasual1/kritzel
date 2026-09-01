@@ -30,7 +30,7 @@ import { createSeedObjects } from '../../const/seed-objects';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady($event)"
+        (isReady)="onReady()"
         (objectsSelectionChange)="refreshSelection()"
       ></kritzel-editor>
       <aside>
@@ -79,7 +79,7 @@ export class ObjectsSelectionComponent {
 
   selectedObjects = signal<KritzelBaseObject[]>([]);
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+  async onReady() {
     const existing = await this.editor.getAllObjects();
     if (existing.length === 0) {
       for (const obj of createSeedObjects()) {
