@@ -197,7 +197,7 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
@@ -207,6 +207,7 @@ export class KritzelEditor {
   @Output() objectsAdded = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsAddedEvent>>();
   @Output() objectsRemoved = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsRemovedEvent>>();
   @Output() objectsUpdated = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsUpdatedEvent>>();
+  @Output() objectsSelectionChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelBaseObject[]>>();
   @Output() undoStateChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelUndoState>>();
   @Output() themeChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorThemeName>>();
   @Output() localeChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLocaleCode>>();
@@ -250,6 +251,8 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
 
   objectsUpdated: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsUpdatedEvent>>;
 
+  objectsSelectionChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelBaseObject[]>>;
+
   undoStateChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelUndoState>>;
 
   themeChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorThemeName>>;
@@ -279,13 +282,12 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isPanningEnabled', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspace'],
-  outputs: ['isEngineReady', 'activeToolChange', 'objectsSelectionChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'contextMenuStateChange', 'loadingChange', 'syncingChange'],
+  outputs: ['isEngineReady', 'activeToolChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'contextMenuStateChange', 'loadingChange', 'syncingChange'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;
   @Output() isEngineReady = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelEngineState>>();
   @Output() activeToolChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelBaseTool>>();
-  @Output() objectsSelectionChange = new EventEmitter<KritzelEngineCustomEvent<void>>();
   @Output() workspacesChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelWorkspace[]>>();
   @Output() activeWorkspaceChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelWorkspace>>();
   @Output() longpress = new EventEmitter<KritzelEngineCustomEvent<PointerEvent>>();
@@ -293,6 +295,7 @@ export class KritzelEngine {
   @Output() objectsAdded = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineObjectsAddedEvent>>();
   @Output() objectsRemoved = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineObjectsRemovedEvent>>();
   @Output() objectsUpdated = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineObjectsUpdatedEvent>>();
+  @Output() objectsSelectionChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelBaseObject[]>>();
   @Output() undoStateChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelUndoState>>();
   @Output() objectsInViewportChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineObjectsInViewportChangeEvent>>();
   @Output() viewportChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelViewportState>>();
@@ -332,10 +335,6 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
    */
   activeToolChange: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelBaseTool>>;
   /**
-   * Emitted when the set of selected objects changes.
-   */
-  objectsSelectionChange: EventEmitter<KritzelEngineCustomEvent<void>>;
-  /**
    * Emitted when workspaces are created, updated, or deleted.
    */
   workspacesChange: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelWorkspace[]>>;
@@ -363,6 +362,10 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
    * Emitted when one or more objects are updated on the canvas.
    */
   objectsUpdated: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineObjectsUpdatedEvent>>;
+  /**
+   * Emitted when the set of selected objects changes.
+   */
+  objectsSelectionChange: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelBaseObject[]>>;
   /**
    * Emitted when the undo/redo state changes, providing current undo availability.
    */

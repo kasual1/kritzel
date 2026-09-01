@@ -36,7 +36,8 @@ import { createSeedObjects } from '../../const/seed-objects';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady($event)"
+        (isReady)="onReady()"
+        (objectSelectionChange)="handleObjectSelectionChange()"
       ></kritzel-editor>
       <aside>
         <h3>Objects (z-order)</h3>
@@ -137,7 +138,7 @@ export class ObjectsOrderingComponent {
 
   objects = signal<KritzelBaseObject[]>([]);
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+  async onReady() {
     const existing = await this.editor.getAllObjects();
     if (existing.length === 0) {
       for (const obj of createSeedObjects()) {
@@ -148,6 +149,11 @@ export class ObjectsOrderingComponent {
     }
 
     await this.refreshObjects();
+  }
+
+  async handleObjectSelectionChange() {
+    console.log('Object selection changed');
+    this.refreshObjects();
   }
 
   async selectAll() {
@@ -176,7 +182,7 @@ export class ObjectsOrderingComponent {
   }
 
   private async refreshObjects() {
-    const all = await this.editor.getAllObjects();
+    const all = await this.editor.findObjects(obj => obj.__class__ !== 'KritzelSelectionBox');
     this.objects.set([...all].sort((a, b) => a.zIndex - b.zIndex));
   }
 

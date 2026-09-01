@@ -1971,6 +1971,7 @@ declare global {
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
+        "objectsSelectionChange": KritzelBaseObject[];
         "undoStateChange": KritzelUndoState;
         "themeChange": ThemeName;
         "localeChange": LocaleCode;
@@ -1997,7 +1998,6 @@ declare global {
     interface HTMLKritzelEngineElementEventMap {
         "isEngineReady": KritzelEngineState;
         "activeToolChange": KritzelBaseTool;
-        "objectsSelectionChange": void;
         "workspacesChange": KritzelWorkspace[];
         "activeWorkspaceChange": KritzelWorkspace;
         "longpress": PointerEvent;
@@ -2005,6 +2005,7 @@ declare global {
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
         "objectsUpdated": ObjectsUpdatedEvent;
+        "objectsSelectionChange": KritzelBaseObject[];
         "undoStateChange": KritzelUndoState;
         "objectsInViewportChange": ObjectsInViewportChangeEvent;
         "viewportChange": KritzelViewportState;
@@ -2970,6 +2971,7 @@ declare namespace LocalJSX {
         "onObjectsAdded"?: (event: KritzelEditorCustomEvent<ObjectsAddedEvent>) => void;
         "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
         "onObjectsRemoved"?: (event: KritzelEditorCustomEvent<ObjectsRemovedEvent>) => void;
+        "onObjectsSelectionChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
         "onObjectsUpdated"?: (event: KritzelEditorCustomEvent<ObjectsUpdatedEvent>) => void;
         "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState>) => void;
@@ -3131,7 +3133,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when the set of selected objects changes.
          */
-        "onObjectsSelectionChange"?: (event: KritzelEngineCustomEvent<void>) => void;
+        "onObjectsSelectionChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
         /**
           * Emitted when one or more objects are updated on the canvas.
          */

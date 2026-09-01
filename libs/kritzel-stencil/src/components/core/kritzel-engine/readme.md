@@ -53,7 +53,7 @@
 | `objectsChange`           | Emitted when objects on the canvas are added, removed, or modified.                                        | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
 | `objectsInViewportChange` | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).         | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
 | `objectsRemoved`          | Emitted when one or more objects are removed from the canvas.                                              | `CustomEvent<ObjectsRemovedEvent>`                            |
-| `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                          | `CustomEvent<void>`                                           |
+| `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                          | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
 | `objectsUpdated`          | Emitted when one or more objects are updated on the canvas.                                                | `CustomEvent<ObjectsUpdatedEvent>`                            |
 | `syncingChange`           | Emitted when remote workspace synchronization is in progress.                                              | `CustomEvent<boolean>`                                        |
 | `undoStateChange`         | Emitted when the undo/redo state changes, providing current undo availability.                             | `CustomEvent<KritzelUndoState>`                               |
