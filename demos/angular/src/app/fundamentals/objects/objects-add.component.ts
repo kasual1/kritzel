@@ -10,16 +10,14 @@ import {
   KritzelBaseObject,
   KritzelShape,
   KritzelPath,
-  KritzelSyncConfig,
   ShapeType,
-  IndexedDBSyncProvider,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
-  selector: 'app-objects-add-remove',
+  selector: 'app-objects-add',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -27,13 +25,10 @@ import { createSeedObjects } from '../../const/seed-objects';
       <button (click)="addRectangle()">Add Rectangle</button>
       <button (click)="addEllipse()">Add Ellipse</button>
       <button (click)="addPath()">Add Path</button>
-      <button (click)="removeLastObject()" [disabled]="objects().length === 0">
-        Remove Last
-      </button>
       <span class="count">Objects: {{ objects().length }}</span>
     </div>
     <kritzel-editor
-      editorId="objects-add-remove"
+      editorId="objects-add"
       [theme]="'light'"
       [themes]="themes"
       [isPanningEnabled]="false"
@@ -72,15 +67,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         color: #fff;
         border-color: #dd0031;
       }
-      .toolbar button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      .toolbar button:disabled:hover {
-        background: #fff;
-        color: inherit;
-        border-color: #ccc;
-      }
       .count {
         margin-left: auto;
         font-size: 13px;
@@ -92,7 +78,7 @@ import { createSeedObjects } from '../../const/seed-objects';
     `,
   ],
 })
-export class ObjectsAddRemoveComponent {
+export class ObjectsAddComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
@@ -103,9 +89,8 @@ export class ObjectsAddRemoveComponent {
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);
     }
-    
-    const all = await this.editor.getAllObjects();
-    this.objects.set(all);
+
+    this.objects.set(await this.editor.getAllObjects());
   }
 
   async addRectangle() {
@@ -156,14 +141,6 @@ export class ObjectsAddRemoveComponent {
     });
     await this.editor.addObject(path);
     this.objects.set(await this.editor.getAllObjects());
-  }
-
-  async removeLastObject() {
-    const all = await this.editor.getAllObjects();
-    if (all.length > 0) {
-      await this.editor.removeObject(all[all.length - 1]);
-      this.objects.set(await this.editor.getAllObjects());
-    }
   }
 
   private randomOffset(): number {

@@ -2,51 +2,48 @@
 sidebar_label: Objects
 title: "Objects | Kritzel for Angular"
 description: "Reference for all canvas object types in Kritzel: brush, line, shape, text, and image."
+toc_max_heading_level: 2
 ---
 # Objects
 
-All objects on the canvas extend `KritzelBaseObject`. Each tool creates a specific object type when the user draws on the canvas.
+This is the API reference for all canvas object types in Kritzel.
+Every object consists of properties, computed properties and methods.
 
-## KritzelBaseObject
+## Base Object
 
-Abstract base class for every object that can be placed on the canvas. All other object types listed below extend this class and inherit its properties, computed properties, and methods — only properties/methods specific to a given type are listed in its own section.
+`KritzelBaseObject` is the abstract base class for every object that can be placed on the canvas. All other object types listed below extend this class and inherit its properties, computed properties, and methods and extend them with their own specific functionality.
 
 ### Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| id | string | auto-generated UUID | Unique identifier |
-| workspaceId | string | — | ID of the workspace this object belongs to |
-| x | number | — | X position in world coordinates |
-| y | number | — | Y position in world coordinates |
-| translateX | number | — | World-space X translation |
-| translateY | number | — | World-space Y translation |
-| width | number | — | Width in world units |
-| height | number | — | Height in world units |
-| rotation | number | 0 | Rotation in radians |
-| opacity | number | 1 | Opacity (0–1) |
-| zIndex | number | 0 | Z-order layer |
-| scale | number | — | Object scale |
-| backgroundColor | ThemeAwareColor | — | Background color |
-| borderColor | ThemeAwareColor | — | Border color |
-| borderWidth | number | 0 | Border width |
-| padding | number | 0 | Padding |
-| resizing | boolean | false | Whether the object is currently being resized |
-| markedForRemoval | boolean | false | Whether the object is pending removal |
-| userId | string | — | ID of the user who created the object |
-| isVisible | boolean | true | Visibility flag |
-| isSelected | boolean | false | Whether the object is selected |
-| isHovered | boolean | false | Whether the object is hovered |
-| isMounted | boolean | false | Whether the object is mounted to the DOM |
-| isEditable | boolean | false | Whether the object is in edit mode |
-| isInteractive | boolean | false | Whether the object responds to interaction |
-| isResizable | boolean | true | Whether the object can be resized |
-| isRotatable | boolean | true | Whether the object can be rotated |
-
-### Computed Properties
-
 | Property | Type | Description |
 |----------|------|-------------|
+| id | string | Unique identifier |
+| workspaceId | string | ID of the workspace this object belongs to |
+| x | number | X position in world coordinates |
+| y | number | Y position in world coordinates |
+| translateX | number | World-space X translation |
+| translateY | number | World-space Y translation |
+| width | number | Width in world units |
+| height | number | Height in world units |
+| rotation | number | Rotation in radians |
+| opacity | number | Opacity (0–1) |
+| zIndex | number | Z-order layer |
+| scale | number | Object scale |
+| backgroundColor | ThemeAwareColor | Background color |
+| borderColor | ThemeAwareColor | Border color |
+| borderWidth | number | Border width |
+| padding | number | Padding |
+| resizing | boolean | Whether the object is currently being resized |
+| markedForRemoval | boolean | Whether the object is pending removal |
+| userId | string | ID of the user who created the object |
+| isVisible | boolean | Visibility flag |
+| isSelected | boolean | Whether the object is selected |
+| isHovered | boolean | Whether the object is hovered |
+| isMounted | boolean | Whether the object is mounted to the DOM |
+| isEditable | boolean | Whether the object is in edit mode |
+| isInteractive | boolean | Whether the object responds to interaction |
+| isResizable | boolean | Whether the object can be resized |
+| isRotatable | boolean | Whether the object can be rotated |
 | centerX | number | Center X coordinate |
 | centerY | number | Center Y coordinate |
 | totalWidth | number | Width including padding and borders |
@@ -59,276 +56,451 @@ Abstract base class for every object that can be placed on the canvas. All other
 
 ### Methods
 
-| Method | Description |
-|--------|-------------|
-| mount(element) | Mounts the object to a DOM element |
-| generateId() | Generates a new unique identifier |
-| isInViewport() | Tests if the object is visible in the current viewport |
-| centerInViewport() | Moves the object to the center of the current viewport |
-| update() | Notifies the store that the object was updated |
-| move(startX, startY, endX, endY) | Moves the object by the delta between two points |
-| resize(x, y, width, height) | Resizes and repositions the object |
-| rotate(value) | Sets the rotation angle in radians |
-| updatePosition(x, y) | Updates the object's translateX/translateY |
-| clone() | Creates a shallow copy of the object with the same id |
-| copy() | Creates an independent copy of the object with a new id |
-| serialize() | Converts the object to a plain serializable representation |
-| deserialize(data) | Restores the object from serialized data |
-| isClass(className) | Type guard that checks the object's `__class__` |
-| edit(event) | Handles edit actions; overridden by editable object types |
-| hitTest(x, y) | Tests if a world-coordinate point intersects this object |
-| hitTestPolygon(polygon) | Tests if a polygon intersects this object |
+#### mount
+
+Mounts the object to a DOM element.
+
+```ts
+mount(element)
+```
+
+#### generateId
+
+Generates a new unique identifier.
+
+```ts
+generateId()
+```
+
+#### isInViewport
+
+Tests if the object is visible in the current viewport.
+
+```ts
+isInViewport()
+```
+
+#### centerInViewport
+
+Moves the object to the center of the current viewport.
+
+```ts
+centerInViewport()
+```
+
+#### update
+
+Notifies the store that the object was updated.
+
+```ts
+update()
+```
+
+#### move
+
+Moves the object by the delta between two points.
+
+```ts
+move(startX, startY, endX, endY)
+```
+
+#### resize
+
+Resizes and repositions the object.
+
+```ts
+resize(x, y, width, height)
+```
+
+#### rotate
+
+Sets the rotation angle in radians.
+
+```ts
+rotate(value)
+```
+
+#### updatePosition
+
+Updates the object's translateX and translateY values.
+
+```ts
+updatePosition(x, y)
+```
+
+#### clone
+
+Creates a shallow copy of the object with the same id.
+
+```ts
+clone()
+```
+
+#### copy
+
+Creates an independent copy of the object with a new id.
+
+```ts
+copy()
+```
+
+#### serialize
+
+Converts the object to a plain serializable representation.
+
+```ts
+serialize()
+```
+
+#### deserialize
+
+Restores the object from serialized data.
+
+```ts
+deserialize(data)
+```
+
+#### isClass
+
+Checks whether the object's `__class__` matches a class name.
+
+```ts
+isClass(className)
+```
+
+#### edit
+
+Handles edit actions and is overridden by editable object types.
+
+```ts
+edit(event)
+```
+
+#### hitTest
+
+Tests whether a world-coordinate point intersects this object.
+
+```ts
+hitTest(x, y)
+```
+
+#### hitTestPolygon
+
+Tests whether a polygon intersects this object.
+
+```ts
+hitTestPolygon(polygon)
+```
 
 ---
 
-## KritzelPath
+## Path
 
-Freehand brush strokes. Rendered as SVG paths using the [perfect-freehand](https://github.com/steveruizok/perfect-freehand) library.
-
-- Created by: `KritzelBrushTool`
-- Removed by: `KritzelEraserTool`
+`KritzelPath` represents a brush stroke rendered as an SVG path.
+It is created by the `KritzelBrushTool` when the user draws a freehand stroke.
 
 ### Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| points | number[][] | [] | Array of [x, y] coordinate pairs defining the path |
-| d | string | — | Generated SVG path data string |
-| stroke | ThemeAwareColor | none | Stroke color |
-| strokeWidth | number | 8 | Width of the stroke in pixels |
-| lineSlack | number | 0.5 | Additional padding for bounding box calculations |
-| fill | ThemeAwareColor | — | Fill color |
-| isDebugInfoVisible | boolean | true | Whether debug info is rendered for the path |
-| isCompleted | boolean | false | Whether the stroke has finished being drawn |
-
-### Computed Properties
-
 | Property | Type | Description |
 |----------|------|-------------|
+| points | number[][] | Array of [x, y] coordinate pairs defining the path |
+| d | string | Generated SVG path data string |
+| stroke | ThemeAwareColor | Stroke color |
+| strokeWidth | number | Width of the stroke in pixels |
+| lineSlack | number | Additional padding for bounding box calculations |
+| fill | ThemeAwareColor | Fill color |
+| isDebugInfoVisible | boolean | Whether debug info is rendered for the path |
+| isCompleted | boolean | Whether the stroke has finished being drawn |
 | viewBox | string | SVG viewBox attribute for local (object-relative) rendering |
 
 ---
 
-## KritzelLine
+## Line
 
-Straight lines and arrows with configurable start/end arrowheads.
-
-- Created by: `KritzelLineTool`
-- Supports anchor snapping to other objects (connecting lines to shapes)
-- Arrowhead styles: `triangle`, `open`, `diamond`, `circle`
+`KritzelLine` represents a straight or curved line with configurable arrowheads at either end. `KritzelLineTool` creates lines, which can snap their endpoints to anchors on other objects. Arrowheads support triangle, open, diamond, and circle styles.
 
 ### Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| startX | number | 0 | X coordinate of the start point |
-| startY | number | 0 | Y coordinate of the start point |
-| endX | number | 0 | X coordinate of the end point |
-| endY | number | 0 | Y coordinate of the end point |
-| controlX | number | — | X coordinate of the curve control point |
-| controlY | number | — | Y coordinate of the curve control point |
-| stroke | ThemeAwareColor | — | Stroke color |
-| strokeWidth | number | 4 | Width of the stroke in pixels |
-| startAnchor | LineAnchor | — | Anchor connection for the start point |
-| endAnchor | LineAnchor | — | Anchor connection for the end point |
-| arrows | LineArrowConfig | — | Arrow head configuration for start and end of line |
-| isDebugInfoVisible | boolean | true | Whether debug info is rendered for the line |
-| isCompleted | boolean | false | Whether the line has finished being drawn |
-
-### Computed Properties
-
 | Property | Type | Description |
 |----------|------|-------------|
+| startX | number | X coordinate of the start point |
+| startY | number | X coordinate of the start point |
+| endX | number | X coordinate of the end point |
+| endY | number | X coordinate of the end point |
+| controlX | number | X coordinate of the curve control point |
+| controlY | number | X coordinate of the curve control point |
+| stroke | ThemeAwareColor | Stroke color |
+| strokeWidth | number | Width of the stroke in pixels |
+| startAnchor | LineAnchor | Anchor connection for the start point |
+| endAnchor | LineAnchor | Anchor connection for the end point |
+| arrows | LineArrowConfig | Arrow head configuration for start and end of line |
+| isDebugInfoVisible | boolean | Whether debug info is rendered for the line |
+| isCompleted | boolean | Whether the line has finished being drawn |
 | d | string | Generated SVG path data string (straight line or quadratic Bezier curve) |
 | viewBox | string | SVG viewBox attribute string |
 
 ---
 
-## KritzelShape
+## Shape
 
-Geometric shapes: rectangle, ellipse, or triangle.
-
-- Created by: `KritzelShapeTool`
-- Can contain editable text
-- Shape type is determined by the `ShapeType` enum
-
-```ts
-enum ShapeType {
-  Rectangle = 'rectangle',
-  Ellipse   = 'ellipse',
-  Triangle  = 'triangle',
-}
-```
+`KritzelShape` represents a rectangle, ellipse, or triangle created by `KritzelShapeTool`. Shapes can contain editable text, and the shapeType property determines their geometry.
 
 ### Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| shapeType | ShapeType | Rectangle | Rectangle, Ellipse, or Triangle |
-| fillColor | ThemeAwareColor | transparent | Fill color |
-| strokeColor | ThemeAwareColor | #000000 | Stroke color |
-| strokeWidth | number | 4 | Width of the shape's stroke in pixels |
-| fontFamily | string | Arial | Font family for the shape's text content |
-| fontSize | number | 16 | Font size for text content in points |
-| fontColor | ThemeAwareColor | #000000 | Font color for text content |
-| scaleFactor | number | 1 | Horizontal scale factor for transformations |
-| isEditing | boolean | false | Whether the shape's text is currently being edited |
-| editor | EditorView | — | ProseMirror editor instance for the shape's text |
-| content | any | — | Serialized ProseMirror document content |
-| uneditedObject | KritzelShape | — | Snapshot of the shape before editing started |
-
-### Computed Properties
-
 | Property | Type | Description |
 |----------|------|-------------|
+| shapeType | ShapeType | Rectangle, Ellipse, or Triangle |
+| fillColor | ThemeAwareColor | Fill color |
+| strokeColor | ThemeAwareColor | Stroke color |
+| strokeWidth | number | Width of the shape's stroke in pixels |
+| fontFamily | string | Font family for the shape's text content |
+| fontSize | number | Font size for text content in points |
+| fontColor | ThemeAwareColor | Font color for text content |
+| scaleFactor | number | Horizontal scale factor for transformations |
+| isEditing | boolean | Whether the shape's text is currently being edited |
+| editor | EditorView | ProseMirror editor instance for the shape's text |
+| content | any | Serialized ProseMirror document content |
+| uneditedObject | KritzelShape | Snapshot of the shape before editing started |
 | viewBox | string | SVG viewBox using screen-space coordinates |
 
 ### Methods
 
-| Method | Description |
-|--------|-------------|
-| updateDimensions() | Recomputes world-space translateX/translateY from screen-space x/y |
-| mountTextEditor(element) | Mounts the ProseMirror text editor to a DOM element |
-| setContent(content) | Sets the text content from a serialized ProseMirror document |
-| focus(coords) | Focuses the text editor, optionally positioning the cursor at given coordinates |
+#### updateDimensions
+
+Recomputes world-space translateX and translateY from screen-space x and y values.
+
+```ts
+updateDimensions()
+```
+
+#### mountTextEditor
+
+Mounts the ProseMirror text editor to a DOM element.
+
+```ts
+mountTextEditor(element)
+```
+
+#### setContent
+
+Sets the text content from a serialized ProseMirror document.
+
+```ts
+setContent(content)
+```
+
+#### focus
+
+Focuses the text editor, optionally positioning the cursor at given coordinates.
+
+```ts
+focus(coords)
+```
 
 ---
 
-## KritzelText
+## Text
 
-Rich text object powered by [ProseMirror](https://prosemirror.net/).
-
-- Created by: `KritzelTextTool`
-- Supports font family, size, and color configuration
+`KritzelText` represents rich text on the canvas. It is created via the `KritzelTextTool` and supports inline text editing.
 
 ### Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| fontFamily | string | Arial | Font family name |
-| fontSize | number | 8 | Font size in points |
-| fontColor | ThemeAwareColor | #000000 | Font color |
-| initialWidth | number | 1 | Initial width before scaling |
-| initialHeight | number | 1 | Initial height before scaling |
-| scaleFactor | number | 1 | Horizontal scale factor for transformations |
-| isDebugInfoVisible | boolean | true | Whether debug info is rendered for the text object |
-| isEditing | boolean | false | Whether the text is currently being edited |
-| isNewlyCreated | boolean | false | Whether the text object was just created and not yet edited |
-| editor | EditorView | — | ProseMirror editor instance |
-| content | any | — | Serialized ProseMirror document content |
-| uneditedObject | KritzelText | — | Snapshot of the text object before editing started |
-| rows | number | 1 | Number of text rows |
-
-### Computed Properties
-
 | Property | Type | Description |
 |----------|------|-------------|
+| fontFamily | string | Font family name |
+| fontSize | number | Font size in points |
+| fontColor | ThemeAwareColor | Font color |
+| initialWidth | number | Initial width before scaling |
+| initialHeight | number | Initial height before scaling |
+| scaleFactor | number | Horizontal scale factor for transformations |
+| isDebugInfoVisible | boolean | Whether debug info is rendered for the text object |
+| isEditing | boolean | Whether the text is currently being edited |
+| isNewlyCreated | boolean | Whether the text object was just created and not yet edited |
+| editor | EditorView | ProseMirror editor instance |
+| content | any | Serialized ProseMirror document content |
+| uneditedObject | KritzelText | Snapshot of the text object before editing started |
+| rows | number | Number of text rows |
 | isEmpty | boolean | Whether the editor is empty or contains only whitespace |
 
 ### Methods
 
-| Method | Description |
-|--------|-------------|
-| setContent(content) | Sets the text content from a serialized ProseMirror document |
-| createEditor() | Creates and configures a new ProseMirror editor instance |
-| adjustSizeOnInput() | Recalculates width/height based on the current content |
-| focus(coords) | Focuses the text editor, optionally positioning the cursor at given coordinates |
+#### setContent
+
+Sets the text content from a serialized ProseMirror document.
+
+```ts
+setContent(content)
+```
+
+#### createEditor
+
+Creates and configures a new ProseMirror editor instance.
+
+```ts
+createEditor()
+```
+
+#### adjustSizeOnInput
+
+Recalculates width and height based on the current content.
+
+```ts
+adjustSizeOnInput()
+```
+
+#### focus
+
+Focuses the text editor, optionally positioning the cursor at given coordinates.
+
+```ts
+focus(coords)
+```
 
 ---
 
-## KritzelImage
+## Image
 
-Raster image object.
-
-- Created by: `KritzelImageTool`
-- Supports resizing while maintaining aspect ratio
+`KritzelImage` represents a raster image placed on the canvas by `KritzelImageTool`. It supports resizing while preserving the image's aspect ratio.
 
 ### Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| assetId | string | '' | Stable asset identifier used to resolve the image bytes |
-| mimeType | string | '' | MIME type of the referenced asset |
-| src | string | '' | Legacy inline data URL (deprecated, use assetId) |
-| maxWidth | number | 300 | Maximum width in pixels |
-| maxHeight | number | 300 | Maximum height in pixels |
-| maxCompressionSize | number | 1200 | Maximum size used when compressing the image |
-| resolvedSrc | string | — | URL resolved from the asset storage layer (not persisted) |
-| loadState | KritzelAssetLoadState | idle | Current load state of the referenced asset (not persisted) |
-| maxLoadAttempts | number | 3 | Maximum number of definitive resolution failures before giving up |
-| loadAttempts | number | 0 | Number of definitive resolution failures so far (not persisted) |
-| maxTransientRetryDurationMs | number | 30000 | Maximum time to keep retrying transient failures |
-| transientRetryStartedAt | number | — | Timestamp of the first transient failure in the current retry chain |
-
-### Methods
-
-| Method | Description |
-|--------|-------------|
-| ensureResolved() | Triggers (idempotent) resolution of the referenced asset |
-
----
-
-## KritzelGroup
-
-Permanent grouping of multiple objects. Unlike a temporary multi-selection, a group is persisted and saved with the workspace.
-
-- Supports nested groups (groups can contain other groups)
-- Clicking any child selects the entire group
-- Children move, resize, and rotate as a unit
-
-### Properties
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| childIds | string[] | [] | IDs of the child objects within this group |
-
-### Computed Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
+| assetId | string | Stable asset identifier used to resolve the image bytes |
+| mimeType | string | MIME type of the referenced asset |
+| src | string | Legacy inline data URL (deprecated, use assetId) |
+| maxWidth | number | Maximum width in pixels |
+| maxHeight | number | Maximum height in pixels |
+| maxCompressionSize | number | Maximum size used when compressing the image |
+| resolvedSrc | string | URL resolved from the asset storage layer (not persisted) |
+| loadState | KritzelAssetLoadState | Current load state of the referenced asset (not persisted) |
+| maxLoadAttempts | number | Maximum number of definitive resolution failures before giving up |
+| loadAttempts | number | Number of definitive resolution failures so far (not persisted) |
+| maxTransientRetryDurationMs | number | Maximum time to keep retrying transient failures |
+| transientRetryStartedAt | number | Timestamp of the first transient failure in the current retry chain |
+
+### Methods
+
+#### ensureResolved
+
+Triggers idempotent resolution of the referenced asset.
+
+```ts
+ensureResolved()
+```
+
+---
+
+## Group
+
+`KritzelGroup` permanently groups multiple objects so that they can be manipulated as a single unit. Groups may be nested. Selecting a child selects its group. Their children move, resize, and rotate as a unit.
+
+### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| childIds | string[] | IDs of the child objects within this group |
 | children | KritzelBaseObject[] | The actual child objects resolved from the store |
 | length | number | Number of children in this group |
 
 ### Methods
 
-| Method | Description |
-|--------|-------------|
-| addChild(object) | Adds a child object to this group |
-| removeChild(objectId) | Removes a child object from this group by id |
-| ungroup() | Returns all children as top-level objects |
-| finalize() | Refreshes the bounding box and snapshots after children are positioned |
-| refreshBoundingBox() | Recalculates the group's bounding box based on its children |
+#### addChild
+
+Adds a child object to this group.
+
+```ts
+addChild(object)
+```
+
+#### removeChild
+
+Removes a child object from this group by id.
+
+```ts
+removeChild(objectId)
+```
+
+#### ungroup
+
+Returns all children as top-level objects.
+
+```ts
+ungroup()
+```
+
+#### finalize
+
+Refreshes the bounding box and snapshots after children are positioned.
+
+```ts
+finalize()
+```
+
+#### refreshBoundingBox
+
+Recalculates the group's bounding box based on its children.
+
+```ts
+refreshBoundingBox()
+```
 
 ### Static Methods
 
-| Method | Description |
-|--------|-------------|
-| createFromObjects(core, objects) | Creates a group from an array of existing objects |
-| findParentGroup(core, objectId) | Finds the parent group that contains the given object as a direct child |
-| collectDescendantIds(group) | Recursively collects the ids of all descendants of a group |
+#### createFromObjects
+
+Creates a group from an array of existing objects.
+
+```ts
+createFromObjects(core, objects)
+```
+
+#### findParentGroup
+
+Finds the parent group that contains the given object as a direct child.
+
+```ts
+findParentGroup(core, objectId)
+```
+
+#### collectDescendantIds
+
+Recursively collects the ids of all descendants of a group.
+
+```ts
+collectDescendantIds(group)
+```
 
 ---
 
-## KritzelDynamicObject
+## Dynamic Object
 
-User-defined custom HTML element on the canvas.
-
-- Allows embedding arbitrary HTML content as a canvas object
-- Participates in selection, movement, and z-ordering like any other object
+`KritzelDynamicObject` represents a user-defined custom HTML element on the canvas. It can embed arbitrary HTML content and participates in selection, movement, and z-ordering like any other object.
 
 ### Properties
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| element | HTMLElement | — | The HTML element rendered on the canvas |
-| rendererKey | string | — | Identifier for a registered renderer (e.g. 'angular-component', 'react-default') |
-| rendererData | unknown | — | Custom data payload passed to the renderer |
+| Property | Type | Description |
+|----------|------|-------------|
+| element | HTMLElement | The HTML element rendered on the canvas |
+| rendererKey | string | Identifier for a registered renderer (e.g. 'angular-component', 'react-default') |
+| rendererData | unknown | Custom data payload passed to the renderer |
 
 ### Methods
 
-| Method | Description |
-|--------|-------------|
-| setIsInteractive(isInteractive) | Updates interactivity state for the embedded HTML content |
-| hasFocusedInputElement() | Returns true when a text-input-like element inside this object currently has focus |
+#### setIsInteractive
+
+Updates interactivity state for the embedded HTML content.
+
+```ts
+setIsInteractive(isInteractive)
+```
+
+#### hasFocusedInputElement
+
+Returns true when a text-input-like element inside this object currently has focus.
+
+```ts
+hasFocusedInputElement()
+```
 
 

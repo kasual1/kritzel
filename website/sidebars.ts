@@ -13,8 +13,8 @@ const sidebars: SidebarsConfig = {
       label: 'Fundamentals',
       collapsed: true,
       items: [
-        'fundamentals/tools',
         'fundamentals/objects',
+        'fundamentals/tools',
         'fundamentals/viewport',
         'fundamentals/workspaces',
         'fundamentals/persistence',
@@ -59,7 +59,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Api Reference',
       collapsed: true,
-      items: ['api-reference/editor', 'api-reference/engine', 'api-reference/objects'],
+      items: ['api-reference/editor', 'api-reference/engine', 'api-reference/objects', 'api-reference/tools'],
     }
   ],
 };

@@ -9,3 +9,7 @@ body,
   overflow: hidden;
   overscroll-behavior-x: none;
 }
+
+input[type='checkbox'] {
+  accent-color: #087ea4;
+}

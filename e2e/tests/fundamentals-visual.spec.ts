@@ -18,7 +18,7 @@ const FUNDAMENTAL_ROUTES = [
   '/fundamentals/objects/add-remove',
   '/fundamentals/objects/grouping',
   '/fundamentals/objects/ordering',
-  '/fundamentals/objects/query',
+  '/fundamentals/objects/filter',
   '/fundamentals/objects/selection',
   '/fundamentals/persistence/local',
   '/fundamentals/tools/change',

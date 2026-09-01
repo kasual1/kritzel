@@ -19,7 +19,6 @@ import { createSeedObjects } from '../../const/seed-objects';
       <button (click)="selectAll()">Select All</button>
       <button (click)="selectFirst()">Select First</button>
       <button (click)="clearSelection()">Clear Selection</button>
-      <button (click)="refreshSelection()">Get Selected</button>
       <span class="count">Selected: {{ selectedObjects().length }}</span>
     </div>
     <div class="content">
@@ -32,6 +31,7 @@ import { createSeedObjects } from '../../const/seed-objects';
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
         (isReady)="onReady($event)"
+        (objectsSelectionChange)="refreshSelection()"
       ></kritzel-editor>
       <aside>
         <h3>Selected</h3>
@@ -91,20 +91,17 @@ export class ObjectsSelectionComponent {
   async selectAll() {
     const all = await this.editor.getAllObjects();
     await this.editor.selectObjects(all);
-    await this.refreshSelection();
   }
 
   async selectFirst() {
     const all = await this.editor.getAllObjects();
     if (all.length > 0) {
       await this.editor.selectObjects([all[0]]);
-      await this.refreshSelection();
     }
   }
 
   async clearSelection() {
     await this.editor.clearSelection();
-    await this.refreshSelection();
   }
 
   async refreshSelection() {
