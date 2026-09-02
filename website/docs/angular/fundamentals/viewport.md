@@ -47,14 +47,9 @@ Use `screenToWorld` and `worldToScreen` to bridge this gap.
   repoFiles={['src/app/fundamentals/viewport/viewport-coordinates.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-The following methods are available on the Editor and Engine components for managing the viewport:
+For the full list of available APIs, see the following reference sections.
 
-- State reading ([getViewport](../api-reference/editor.md#getviewport))
-- Camera control ([setViewport](../api-reference/editor.md#setviewport), [panTo](../api-reference/editor.md#panto), [zoomTo](../api-reference/editor.md#zoomto))
-- Content centering ([centerObjectInViewport](../api-reference/editor.md#centerobjectinviewport), [backToContent](../api-reference/editor.md#backtocontent))
-- Coordinate mapping ([screenToWorld](../api-reference/editor.md#screentoworld), [worldToScreen](../api-reference/editor.md#worldtoscreen))
-
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Viewport & Navigation](../api-reference/editor.md#viewport--navigation)
 

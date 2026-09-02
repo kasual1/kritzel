@@ -97,10 +97,8 @@ Call `triggerNotification()` to display a transient message in the editor. Notif
   repoFiles={['src/app/fundamentals/components/notifications-trigger.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-- Context menu configuration ([globalContextMenuItems](../api-reference/editor.md#props), [objectContextMenuItems](../api-reference/editor.md#props), `ContextMenuItem`)
-- Editor UI options ([isToolbarVisible](../api-reference/editor.md#props), [isUtilityPanelVisible](../api-reference/editor.md#props), [isWorkspaceManagerVisible](../api-reference/editor.md#props), [isMoreMenuVisible](../api-reference/editor.md#props), [isZoomPanelVisible](../api-reference/editor.md#props), [moreMenuItems](../api-reference/editor.md#props))
-- Notifications ([triggerNotification](../api-reference/editor.md#triggernotification), `KritzelNotification`)
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Editor UI Elements](../api-reference/editor.md#ui-elements)

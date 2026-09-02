@@ -59,10 +59,9 @@ Always unregister the renderer, and detach/destroy any mounted component views, 
   repoFiles={['src/app/advanced/dynamic-objects/dynamic-objects-component.component.ts']}
 />
 
-## Related API Methods and Types
+## API Details
 
-- Object type ([`KritzelDynamicObject`](../api-reference/objects.md#dynamic-object))
-- Renderer registry (`KritzelDynamicObjectRendererRegistry.register`, `KritzelDynamicObjectRendererRegistry.unregister`)
-- Object creation ([addObject](../api-reference/editor.md#addobject))
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Dynamic Object](../api-reference/objects.md#dynamic-object)
+- [Object](../api-reference/editor.md#object)

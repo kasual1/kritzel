@@ -46,12 +46,8 @@ A common production pattern combines local persistence (for offline resilience) 
 
 When your application manages multiple documents simultaneously (e.g. a workspace switcher), the `HocuspocusSyncProvider` supports multiplexing — sharing a single WebSocket connection for all documents. This reduces connection overhead, avoids redundant authentication handshakes, and makes document switching instantaneous since the connection is already established.
 
-## Related API Methods
+## API Details
 
-- Sync configuration ([syncConfig](../api-reference/editor.md#props) prop, provider composition)
-- Reinitialization ([reinitSync](../api-reference/editor.md#reinitsync))
-- Provider factories (`WebSocketSyncProvider.with()`, `HocuspocusSyncProvider.with()`)
-- Multiplexing lifecycle (`HocuspocusSyncProvider.createSharedWebSocket()`, `HocuspocusSyncProvider.destroySharedWebSocket()`)
-- Cross-tab provider (`BroadcastSyncProvider`)
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Collaboration](../api-reference/editor.md#collaboration)

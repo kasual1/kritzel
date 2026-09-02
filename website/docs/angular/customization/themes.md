@@ -35,10 +35,8 @@ This example intentionally applies a strong, light-purple visual language and re
   repoFiles={['src/app/customization/theming/theming-custom.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-- Applying themes ([theme](../api-reference/editor.md#props), [themes](../api-reference/editor.md#props))
-- Built-in presets (`lightTheme`, `darkTheme`)
-- Theme type (`KritzelTheme`, `ThemeName`)
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Theming](../api-reference/editor.md#theming)

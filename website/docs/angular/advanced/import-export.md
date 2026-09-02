@@ -48,10 +48,8 @@ Call `importFromJson()` on the engine with a JSON string produced by `exportAsJs
   repoFiles={['src/app/advanced/import-export/import-export-workspace-import.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-- Viewport export ([exportViewportAsPng](../api-reference/editor.md#exportviewportaspng), [exportViewportAsSvg](../api-reference/editor.md#exportviewportassvg))
-- Workspace export (`exportAsJson`, [downloadAsJson](../api-reference/editor.md#downloadasjson))
-- Workspace import (`importFromJson`, [loadObjectsFromJson](../api-reference/editor.md#loadobjectsfromjson), [importFromFile](../api-reference/editor.md#importfromfile))
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Export & Import](../api-reference/editor.md#export--import)

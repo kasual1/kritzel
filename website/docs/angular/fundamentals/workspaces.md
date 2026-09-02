@@ -37,10 +37,8 @@ Kritzel allows you to fully manage the lifecycle of workspaces. You can create n
   repoFiles={['src/app/fundamentals/workspaces/workspaces-crud.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-- Getting workspace state ([getWorkspaces](../api-reference/editor.md#getworkspaces), [getActiveWorkspace](../api-reference/editor.md#getactiveworkspace))
-- Modifying workspaces ([createWorkspace](../api-reference/editor.md#createworkspace), [updateWorkspace](../api-reference/editor.md#updateworkspace), [deleteWorkspace](../api-reference/editor.md#deleteworkspace))
-- Component integration bindings ([activeWorkspaceId](../api-reference/editor.md#props), [activeWorkspaceChange](../api-reference/editor.md#events))
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Workspace](../api-reference/editor.md#workspace)

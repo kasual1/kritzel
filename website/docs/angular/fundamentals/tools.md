@@ -86,10 +86,9 @@ In order to disable a specific tool, set `isDisabled` on the corresponding entry
   repoFiles={['src/app/fundamentals/tools/tools-disable.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-- Tool activation ([changeActiveTool](../api-reference/editor.md#changeactivetool))
-- Tool configuration ([registerTool](../api-reference/editor.md#registertool))
-- Tool interaction ([enable](../api-reference/editor.md#enable), [disable](../api-reference/editor.md#disable))
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Tool Management](../api-reference/editor.md#tool-management)
+- [Tools](../api-reference/tools.md)
