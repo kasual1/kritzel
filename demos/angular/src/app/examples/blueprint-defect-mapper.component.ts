@@ -4,19 +4,16 @@ import {
   ViewChild,
   ElementRef,
   signal,
-  OnDestroy,
 } from '@angular/core';
 import {
   KritzelEditor,
-  KritzelViewportState,
-  KritzelSyncConfig,
   KritzelShape,
   KritzelImage,
   ShapeType,
-  IndexedDBSyncProvider,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../const/angular-theme-light';
 import { angularThemeDark } from '../const/angular-theme-dark';
+import { InfoPanelComponent } from '../components/info-panel.component';
 
 interface Defect {
   id: string;
@@ -30,7 +27,7 @@ interface Defect {
 
 @Component({
   selector: 'app-blueprint-defect-mapper',
-  imports: [KritzelEditor],
+  imports: [InfoPanelComponent, KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="mapper-workspace">
@@ -56,7 +53,10 @@ interface Defect {
         }
       </div>
 
-      <aside class="sidebar">
+      <app-info-panel
+        class="sidebar info-panel-content-column"
+        [showOnMobile]="true"
+      >
         <div class="sidebar-header">
           <span class="badge">Facilities</span>
           <h2 class="sidebar-title">Blueprint Defect Mapper</h2>
@@ -146,7 +146,7 @@ interface Defect {
             }
           </div>
         </div>
-      </aside>
+      </app-info-panel>
     </div>
   `,
   styles: `
@@ -194,6 +194,8 @@ interface Defect {
     }
 
     .sidebar {
+      --demo-info-panel-body-padding: 0;
+      flex: 0 0 320px;
       width: 320px;
       border-left: 1px solid #ebebeb;
       background: #ffffff;
@@ -201,6 +203,20 @@ interface Defect {
       flex-direction: column;
       height: 100%;
       box-shadow: -1px 0 3px rgba(0, 0, 0, 0.02);
+    }
+
+    @media (max-width: 720px) {
+      .sidebar {
+        display: block;
+        flex: 0 0 0;
+        width: 0;
+        min-width: 0;
+        min-height: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        pointer-events: none;
+      }
     }
 
     .sidebar-header {
@@ -461,7 +477,6 @@ export class BlueprintDefectMapperComponent {
 
     bg.translateX = -bg.width / 2;
     bg.translateY = (-bg.height / 2);
-bg
     await this.editor.addObject(bg);
 
     // 2. Seed initial reported defects onto floor plans

@@ -46,7 +46,7 @@ import { InfoPanelComponent } from '../components/info-panel.component';
         ></kritzel-editor>
       </div>
 
-      <app-info-panel>
+      <app-info-panel [showOnMobile]="true">
         <div class="panel-header">
           <span class="panel-tagline">Explorer Mode</span>
           <h2 class="panel-title">Hierarchical Object Explorer</h2>
