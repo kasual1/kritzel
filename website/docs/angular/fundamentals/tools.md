@@ -40,18 +40,14 @@ You can adjust the toolbar by passing a custom `toolbarItems` array to `kritzel-
 
 ## Adjusting the Tool Config
 
-Every toolbar item of type `tool` accepts an optional `config` property. It defines the initial state of the tool and the options that are offered in the config tooltip, such as the color palette, the available sizes, or the default opacity.
+Each toolbar item of type `tool` accepts an optional `config` property for its initial values and the options shown in the configuration tooltip. Omitted properties use the tool's defaults.
 
-Each tool has its own config shape:
+- [Brush Config](../api-reference/tools.md#brush-tool)
+- [Line Config](../api-reference/tools.md#line-tool)
+- [Shape Config](../api-reference/tools.md#shape-tool)
+- [Text Config](../api-reference/tools.md#text-tool)
 
-- **Brush** (`KritzelBrushToolConfig`) — `color`, `size`, `opacity`, `palette`, `sizes`
-- **Line** (`KritzelLineToolConfig`) — `color`, `size`, `opacity`, `palette`, `sizes`, `arrows`
-- **Shape** (`KritzelShapeToolConfig`) — `shapeType`, `fillColor`, `strokeColor`, `strokeWidth`, `fontColor`, `fontSize`, `fontFamily`, `palette`, `sizes`
-- **Text** (`KritzelTextToolConfig`) — `color`, `size`, `fontFamily`, `availableFonts`, `palette`, `sizes`
-
-Colors are theme aware, so each palette entry provides a value per theme and an optional `label`. All tool configs use a flat `palette` and `sizes` array. Any property you omit falls back to the corresponding default config.
-
-The toolbar item of type `config` renders the config tooltip for the currently active tool, so keep it in the toolbar whenever you want users to change these values at runtime.
+Add a toolbar item of type `config` to let users adjust the active tool at runtime.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
