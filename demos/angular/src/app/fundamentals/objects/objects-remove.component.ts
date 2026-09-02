@@ -12,18 +12,18 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-remove',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar class="toolbar">
       <button (click)="removeLastObject()" [disabled]="objects().length === 0">
-        Remove Last
+        Remove Object
       </button>
-      <span class="count">Objects: {{ objects().length }}</span>
-    </div>
+    </app-toolbar>
     <kritzel-editor
       editorId="objects-remove"
       [theme]="'light'"
@@ -72,11 +72,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         background: #fff;
         color: inherit;
         border-color: #ccc;
-      }
-      .count {
-        margin-left: auto;
-        font-size: 13px;
-        color: #333;
       }
       kritzel-editor {
         flex: 1;

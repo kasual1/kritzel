@@ -13,19 +13,25 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import {
+  InfoPanelComponent,
+  InfoPanelToggleComponent,
+} from '../../components/info-panel.component';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-update',
-  imports: [KritzelEditor, DecimalPipe],
+  imports: [KritzelEditor, DecimalPipe, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
-      <button (click)="selectFirst()">Select First Object</button>
+    <app-toolbar>
+      <button (click)="selectFirst()">Select Object</button>
       <span class="separator"></span>
       <button (click)="moveRight()" [disabled]="selectionCount() !== 1">Move Right</button>
       <button (click)="rotate()" [disabled]="selectionCount() !== 1">Rotate 15°</button>
       <button (click)="toggleOpacity()" [disabled]="selectionCount() !== 1">Toggle Opacity</button>
-    </div>
+      <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
+    </app-toolbar>
     <div class="content">
       <kritzel-editor
         editorId="objects-update"
@@ -38,8 +44,8 @@ import { createSeedObjects } from '../../const/seed-objects';
         (isReady)="onReady($event)"
         (objectsSelectionChange)="onSelectionChange()"
       ></kritzel-editor>
-      <aside>
-        <h3>Selected Object</h3>
+      <app-info-panel #infoPanel [hasToolbarToggle]="true">
+        <h3>Object</h3>
         @if (selected(); as obj) {
           <ul>
             <li><span class="label">translateX</span><span class="value">{{ obj.translateX | number: '1.0-0' }}</span></li>
@@ -50,7 +56,7 @@ import { createSeedObjects } from '../../const/seed-objects';
         } @else {
           <p class="empty">Nothing selected</p>
         }
-      </aside>
+      </app-info-panel>
     </div>
   `,
   styles: [
@@ -61,31 +67,14 @@ import { createSeedObjects } from '../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      .toolbar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #ebebeb;
-        flex-wrap: wrap;
-      }
-      .toolbar button {
-        padding: 6px 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: #fff;
-        cursor: pointer;
-        font-size: 13px;
-      }
-      .toolbar button:hover:not(:disabled) {
-        background: #dd0031;
-        color: #fff;
-        border-color: #dd0031;
-      }
-      .toolbar button:disabled {
+      app-toolbar > button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+      }
+      app-toolbar > button:disabled:hover {
+        background: #fff;
+        color: inherit;
+        border-color: #ccc;
       }
       .separator {
         width: 1px;
@@ -96,20 +85,13 @@ import { createSeedObjects } from '../../const/seed-objects';
         display: flex;
         flex: 1;
         min-height: 0;
+        position: relative;
       }
       kritzel-editor {
         flex: 1;
       }
-      aside {
-        width: 180px;
-        overflow-y: auto;
-        padding: 8px;
-        border-left: 1px solid #ebebeb;
-        font-size: 13px;
-      }
-      aside h3 {
-        margin: 0 0 8px;
-        font-size: 14px;
+      app-info-panel {
+        --demo-info-panel-width: 180px;
       }
       ul {
         list-style: none;
