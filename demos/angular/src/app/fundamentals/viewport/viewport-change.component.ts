@@ -4,19 +4,20 @@ import { KritzelEditor, EditorIsReadyEvent, KritzelViewportState, KritzelSyncCon
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-viewport-change',
-  imports: [KritzelEditor, DecimalPipe],
+  imports: [KritzelEditor, DecimalPipe, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <button (click)="panToOrigin()">Pan to Origin</button>
       <button (click)="panToOffset()">Pan to (200, 150)</button>
       <button (click)="zoomIn()">Zoom In</button>
       <button (click)="zoomOut()">Zoom Out</button>
       <button (click)="setFullViewport()">Set (100, 100, 0.5)</button>
-    </div>
+    </app-toolbar>
     <kritzel-editor
       editorId="viewport-change"
       [theme]="'light'"
@@ -36,9 +37,6 @@ import { createSeedObjects } from '../../const/seed-objects';
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    .toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; flex-wrap: wrap; }
-    .toolbar button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
-    .toolbar button:hover { background: #dd0031; color: #fff; border-color: #dd0031; }
     kritzel-editor { flex: 1; }
     .status-bar { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #f5f5f5; border-top: 1px solid #ebebeb; font-size: 13px; font-family: monospace; }
   `],

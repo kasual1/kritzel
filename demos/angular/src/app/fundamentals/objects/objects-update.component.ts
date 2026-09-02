@@ -67,20 +67,6 @@ import { ToolbarComponent } from '../../components/toolbar.component';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      app-toolbar > button:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-      app-toolbar > button:disabled:hover {
-        background: #fff;
-        color: inherit;
-        border-color: #ccc;
-      }
-      .separator {
-        width: 1px;
-        height: 20px;
-        background: #ddd;
-      }
       .content {
         display: flex;
         flex: 1;

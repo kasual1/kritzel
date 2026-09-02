@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { KritzelEditor, EditorIsReadyEvent, KritzelFontMap, KritzelTheme, KritzelText, lightTheme } from 'kritzel-angular';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 const customFontConfig: KritzelFontMap = {
   'pacifico': {
@@ -24,15 +25,15 @@ const customFontConfig: KritzelFontMap = {
 
 @Component({
   selector: 'app-fonts-register',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <span class="label">Custom Fonts Demo:</span>
       <button (click)="addPacificoText()">Add Pacifico Text</button>
       <button (click)="addFiraCodeText()">Add Fira Code Text</button>
       <button (click)="addSpaceGroteskText()">Add Space Grotesk Text</button>
-    </div>
+    </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
         editorId="fonts-register"
@@ -51,10 +52,6 @@ const customFontConfig: KritzelFontMap = {
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    .toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; }
-    .toolbar .label { font-weight: 500; font-size: 13px; margin-right: 4px; }
-    .toolbar button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
-    .toolbar button:hover { background: #dd0031; color: #fff; border-color: #dd0031; }
     .editor-wrap { flex: 1; position: relative; }
     .status-bar { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #f5f5f5; border-top: 1px solid #ebebeb; font-size: 13px; font-family: monospace; }
   `],

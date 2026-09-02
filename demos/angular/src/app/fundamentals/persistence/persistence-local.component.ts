@@ -8,16 +8,17 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-persistence-local',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <span class="label">Persistence Provider:</span>
       <span class="status">IndexedDB enabled</span>
-    </div>
+    </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
         editorId="persistence-local"
@@ -46,23 +47,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         font-family: Roboto, sans-serif;
         color: var(--angular-text);
         background: linear-gradient(180deg, #fff8f9 0%, #ffffff 100%);
-      }
-
-      .toolbar {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 12px;
-        background: #ffffff;
-        border-bottom: 1px solid var(--angular-border);
-        box-shadow: 0 1px 0 #f8d9df;
-      }
-
-      .label {
-        font-weight: 700;
-        font-size: 13px;
-        color: var(--angular-primary);
-        letter-spacing: 0.2px;
       }
 
       label {
