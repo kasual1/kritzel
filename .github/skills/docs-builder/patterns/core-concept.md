@@ -29,10 +29,10 @@ import LiveDemo from '@site/src/components/LiveDemo';
 1. **`# <Concept Name>`** — The main page title.
 2. **`## Overview`** — Explain what the concept is, its role within the Kritzel architecture, and why a developer should care. Keep it high-level.
 3. **Use Case Sections (`##` or `###`)** — Provide multiple *very focused* live-demo examples showing users exactly how to accomplish specific, atomic tasks related to the concept. **Do not** use a literal `## Focused Use Cases` heading; instead, promote the use cases to top-level or natural descriptive headings (e.g., `## Using the Editor Component`).
-4. **`## Related API Methods`** — A quick bulleted list summarizing the most relevant API methods associated with this concept.
-    - Group methods by a short, high-level context label, followed by the methods in parentheses (e.g., `- Camera control (\`setViewport()\`, \`panTo()\`)`).
-    - Keep it simple: do not use bold descriptions or long explanatory sentences.
-    - ALWAYS end this section with the exact sentence: `For a comprehensive view, see the [API Reference](../api-reference/editor.md).`
+4. **`## API Details`** — A quick bulleted list linking to the most relevant API reference sections associated with this concept.
+  - Start with: `For the full list of available APIs, see the following reference sections.`
+  - Link to top-level sections (e.g., `- [Viewport & Navigation](../api-reference/editor.md#viewport--navigation)`) rather than individual methods, props, events, or types.
+  - Keep the list focused. Include multiple links only when the page genuinely covers distinct API sections.
 
 ## Focused Live-Demo Example Constraints
 
@@ -121,7 +121,7 @@ Fundamentals pages are authored in Angular first. If React/Vue translations are 
 
 Quick checks before finishing:
 
-1. Keep conceptual sections aligned across frameworks (Overview, focused demos, Related API Methods).
+1. Keep conceptual sections aligned across frameworks (Overview, focused demos, API Details).
 2. Translate framework-specific naming in prose and snippets.
 3. In React/Vue docs, use `<KritzelEditor>` and avoid `<kritzel-editor>`.
 4. In Vue docs, use `html` fences for embedded component/template snippets.

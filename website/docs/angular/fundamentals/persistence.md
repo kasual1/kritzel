@@ -25,10 +25,8 @@ Configure `IndexedDBSyncProvider` in `syncConfig.providers` to make object state
   repoFiles={['src/app/fundamentals/persistence/persistence-local.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-- Sync configuration ([syncConfig](../api-reference/editor.md#props), `KritzelSyncConfig`)
-- Local persistence provider (`IndexedDBSyncProvider`)
-- Provider list (`syncConfig.providers`)
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Collaboration](../api-reference/editor.md#collaboration)

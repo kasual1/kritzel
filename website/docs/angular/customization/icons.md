@@ -31,11 +31,9 @@ Toolbar items use the `icon` property on `KritzelToolbarItem`. Context-menu entr
 
 Keep SVG definitions self-contained and use `currentColor` for strokes or fills when the icon should follow the active theme's control color. Register each name before the component renders the control or menu that references it.
 
-## Related API Methods and Types
+## API Details
 
-- Registering icons ([customSvgIcons](../api-reference/editor.md#props), `KritzelIconRegistry.register()`, `KritzelIconRegistry.registerIcons()`)
-- Toolbar configuration (`KritzelToolbarItem.icon`)
-- Context-menu configuration (`ContextMenuItem.icon`)
-- Related editor configuration ([toolbarItems](../api-reference/editor.md#props), [globalContextMenuItems](../api-reference/editor.md#props), [objectContextMenuItems](../api-reference/editor.md#props))
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Editor UI Elements](../api-reference/editor.md#ui-elements)
+- [Tool Management](../api-reference/editor.md#tool-management)

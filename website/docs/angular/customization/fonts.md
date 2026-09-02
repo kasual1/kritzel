@@ -25,10 +25,8 @@ You can register fonts declaratively via the `[customFonts]` binding on `<kritze
   repoFiles={['src/app/customization/fonts/fonts-register.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-- Editor font configuration ([customFonts](../api-reference/editor.md#props), [registerFonts](../api-reference/editor.md#registerfonts))
-- Font registry management (`KritzelFontRegistry.register()`, `KritzelFontRegistry.registerFonts()`, `KritzelFontRegistry.list()`)
-- Font css resolution (`KritzelFontRegistry.resolveCssFontFamily()`)
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Theming](../api-reference/editor.md#theming)

@@ -58,10 +58,8 @@ Clicking a provider button puts that button into a loading state and emits the e
   repoFiles={['src/app/fundamentals/components/user-management-flow.component.ts']}
 />
 
-## Related API Methods
+## API Details
 
-- User management configuration ([loginConfig](../api-reference/editor.md#props), `KritzelLoginConfig`, `KritzelLoginProvider`)
-- User management icons and state ([customSvgIcons](../api-reference/editor.md#props), [user](../api-reference/editor.md#props), `KritzelIconRegistry`, `IKritzelUser`)
-- User management events and methods ([login](../api-reference/editor.md#events), [logout](../api-reference/editor.md#events), [openLoginDialog](../api-reference/editor.md#openlogindialog), [setLoginLoading](../api-reference/editor.md#setloginloading), `LoginEvent`)
+For the full list of available APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [User Management](../api-reference/editor.md#user-management)
