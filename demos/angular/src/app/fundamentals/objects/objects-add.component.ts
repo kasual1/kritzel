@@ -15,18 +15,18 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-add',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar class="toolbar">
       <button (click)="addRectangle()">Add Rectangle</button>
       <button (click)="addEllipse()">Add Ellipse</button>
       <button (click)="addPath()">Add Path</button>
-      <span class="count">Objects: {{ objects().length }}</span>
-    </div>
+    </app-toolbar>
     <kritzel-editor
       editorId="objects-add"
       [theme]="'light'"
@@ -66,11 +66,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         background: #dd0031;
         color: #fff;
         border-color: #dd0031;
-      }
-      .count {
-        margin-left: auto;
-        font-size: 13px;
-        color: #333;
       }
       kritzel-editor {
         flex: 1;

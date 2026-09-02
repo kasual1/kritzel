@@ -9,18 +9,23 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import {
+  InfoPanelComponent,
+  InfoPanelToggleComponent,
+} from '../../components/info-panel.component';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-objects-selection',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, InfoPanelComponent, InfoPanelToggleComponent, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <button (click)="selectAll()">Select All</button>
-      <button (click)="selectFirst()">Select First</button>
+      <button (click)="selectFirst()">Select Object</button>
       <button (click)="clearSelection()">Clear Selection</button>
-      <span class="count">Selected: {{ selectedObjects().length }}</span>
-    </div>
+      <app-info-panel-toggle [panel]="infoPanel"></app-info-panel-toggle>
+    </app-toolbar>
     <div class="content">
       <kritzel-editor
         editorId="objects-selection"
@@ -33,8 +38,8 @@ import { createSeedObjects } from '../../const/seed-objects';
         (isReady)="onReady()"
         (objectsSelectionChange)="refreshSelection()"
       ></kritzel-editor>
-      <aside>
-        <h3>Selected</h3>
+      <app-info-panel #infoPanel [hasToolbarToggle]="true">
+        <h3>Objects</h3>
         <ul>
           @for (obj of selectedObjects(); track obj.id) {
             <li>
@@ -46,19 +51,13 @@ import { createSeedObjects } from '../../const/seed-objects';
             <li class="empty">Nothing selected</li>
           }
         </ul>
-      </aside>
+      </app-info-panel>
     </div>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    .toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; flex-wrap: wrap; }
-    .toolbar button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
-    .toolbar button:hover { background: #dd0031; color: #fff; border-color: #dd0031; }
-    .count { margin-left: auto; font-size: 13px; color: #333; }
-    .content { display: flex; flex: 1; min-height: 0; }
+    .content { display: flex; flex: 1; min-height: 0; position: relative; }
     kritzel-editor { flex: 1; }
-    aside { width: 200px; overflow-y: auto; padding: 8px; border-left: 1px solid #ebebeb; font-size: 13px; }
-    aside h3 { margin: 0 0 8px; font-size: 14px; }
     ul { list-style: none; margin: 0; padding: 0; }
     li { padding: 4px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
     .type { color: #333; font-weight: 500; }
