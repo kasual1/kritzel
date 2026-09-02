@@ -3,15 +3,16 @@ import { KritzelEditor, EditorIsReadyEvent, KritzelSyncConfig } from 'kritzel-an
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
 
 @Component({
   selector: 'app-tools-change',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       @for (tool of tools; track tool.name) {
         <button
           [class.active]="activeTool() === tool.name"
@@ -20,7 +21,7 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
           {{ tool.label }}
         </button>
       }
-    </div>
+    </app-toolbar>
     <kritzel-editor
       editorId="tools-change"
       [theme]="'light'"
@@ -38,10 +39,6 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    .toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; flex-wrap: wrap; }
-    .toolbar button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
-    .toolbar button:hover { background: #dd0031; color: #fff; border-color: #dd0031; }
-    .toolbar button.active { background: #dd0031; color: #fff; border-color: #dd0031; }
     kritzel-editor { flex: 1; }
     .status-bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-top: 1px solid #ebebeb; font-size: 13px; }
   `],

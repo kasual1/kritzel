@@ -7,13 +7,14 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-theming-apply',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <button
         [class.active]="activeName === 'light'"
         (click)="activeName = 'light'"
@@ -26,7 +27,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       >
         Dark
       </button>
-    </div>
+    </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
         editorId="theming-apply"
@@ -46,30 +47,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         display: flex;
         flex-direction: column;
         height: 100%;
-      }
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        padding: 8px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #e0e0e0;
-      }
-      .toolbar button {
-        padding: 4px 16px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        cursor: pointer;
-        background: #fff;
-      }
-      .toolbar button:hover {
-        background: #dd0031;
-        color: #fff;
-        border-color: #dd0031;
-      }
-      .toolbar button.active {
-        background: #dd0031;
-        color: #fff;
-        border-color: #dd0031;
       }
       .editor-wrap {
         flex: 1;

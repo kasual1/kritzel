@@ -13,19 +13,21 @@ import {
   KritzelSyncConfig,
 } from 'kritzel-angular';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-components-engine',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <button (click)="setBrush()">Brush</button>
       <button (click)="setEraser()">Eraser</button>
       <button (click)="setSelect()">Select</button>
       <button (click)="undo()">Undo</button>
       <button (click)="redo()">Redo</button>
-    </div>
+    </app-toolbar>
     <div class="engine-wrap">
       <kritzel-engine
         #engine
@@ -41,23 +43,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         display: flex;
         flex-direction: column;
         height: 100%;
-      }
-      .toolbar {
-        display: flex;
-        gap: 8px;
-        padding: 8px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #e0e0e0;
-      }
-      .toolbar button {
-        padding: 6px 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        cursor: pointer;
-        background: #fff;
-      }
-      .toolbar button:hover {
-        background: #e8e8e8;
       }
       .engine-wrap {
         flex: 1;

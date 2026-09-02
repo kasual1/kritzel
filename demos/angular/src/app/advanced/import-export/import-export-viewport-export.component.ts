@@ -3,17 +3,18 @@ import { KritzelEditor, EditorIsReadyEvent } from 'kritzel-angular';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-import-export-viewport-export',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <span class="label">Viewport Export</span>
       <button (click)="exportAsPng()">Export as PNG</button>
       <button (click)="exportAsSvg()">Export as SVG</button>
-    </div>
+    </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
         editorId="import-export-viewport-export"
@@ -34,30 +35,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         flex-direction: column;
         height: 100%;
         font-family: Roboto, sans-serif;
-      }
-      .toolbar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #e0e0e0;
-      }
-      .label {
-        font-weight: 700;
-        font-size: 13px;
-        color: #dd0031;
-        margin-right: 4px;
-      }
-      .toolbar button {
-        padding: 6px 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        cursor: pointer;
-        background: #fff;
-      }
-      .toolbar button:hover {
-        background: #e8e8e8;
       }
       .editor-wrap {
         flex: 1;

@@ -1,15 +1,17 @@
 import { Component, ChangeDetectionStrategy, ElementRef, CUSTOM_ELEMENTS_SCHEMA, signal, viewChild } from '@angular/core';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-import-export-workspace-import',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  imports: [ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <span class="label">Workspace Import</span>
       <span class="status">Active workspace: {{ activeWorkspaceName() }}</span>
-    </div>
+    </app-toolbar>
     <div class="content">
       <div class="engine-wrap">
         <kritzel-engine #engine [isPanningEnabled]="false" [isZoomingEnabled]="false" (isEngineReady)="onReady()"></kritzel-engine>
@@ -27,24 +29,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         flex-direction: column;
         height: 100%;
         font-family: Roboto, sans-serif;
-      }
-      .toolbar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #e0e0e0;
-      }
-      .label {
-        font-weight: 700;
-        font-size: 13px;
-        color: #dd0031;
-        margin-right: 4px;
-      }
-      .status {
-        font-size: 12px;
-        color: #555;
       }
       .content {
         flex: 1;

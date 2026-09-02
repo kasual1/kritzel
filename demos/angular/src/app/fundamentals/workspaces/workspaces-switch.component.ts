@@ -15,13 +15,14 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-workspaces-switch',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       @for (ws of workspaces(); track ws.id) {
         <button
           [class.active]="ws.id === activeWorkspaceId()"
@@ -30,7 +31,7 @@ import { createSeedObjects } from '../../const/seed-objects';
           {{ ws.name }}
         </button>
       }
-    </div>
+    </app-toolbar>
     <kritzel-editor
       editorId="workspaces-switch"
       [theme]="'light'"
@@ -52,32 +53,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         flex-direction: column;
         height: 100%;
         font-family: Roboto, sans-serif;
-      }
-      .toolbar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #ebebeb;
-      }
-      .toolbar button {
-        padding: 6px 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        background: #fff;
-        cursor: pointer;
-        font-size: 13px;
-      }
-      .toolbar button:hover {
-        background: #dd0031;
-        color: #fff;
-        border-color: #dd0031;
-      }
-      .toolbar button.active {
-        background: #dd0031;
-        color: #fff;
-        border-color: #dd0031;
       }
       kritzel-editor {
         flex: 1;

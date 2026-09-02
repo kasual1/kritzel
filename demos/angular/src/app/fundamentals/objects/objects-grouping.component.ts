@@ -60,11 +60,6 @@ import { createSeedObjects } from '../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      .separator {
-        width: 1px;
-        height: 20px;
-        background: #ddd;
-      }
       .content {
         display: flex;
         flex: 1;

@@ -15,13 +15,14 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-workspaces-crud',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       @for (ws of workspaces(); track ws.id) {
         <div class="tab" [class.active]="ws.id === activeWorkspaceId()">
           <button class="tab-label" (click)="switchTo(ws)">
@@ -35,7 +36,7 @@ import { createSeedObjects } from '../../const/seed-objects';
         </div>
       }
       <button class="add-btn" (click)="createWorkspace()">+ New</button>
-    </div>
+    </app-toolbar>
     <kritzel-editor
       editorId="workspaces-crud"
       [theme]="'light'"
@@ -58,13 +59,8 @@ import { createSeedObjects } from '../../const/seed-objects';
         height: 100%;
         font-family: Roboto, sans-serif;
       }
-      .toolbar {
-        display: flex;
-        align-items: center;
+      app-toolbar {
         gap: 4px;
-        padding: 8px 12px;
-        background: #f5f5f5;
-        border-bottom: 1px solid #ebebeb;
         overflow-x: auto;
       }
       .tab {

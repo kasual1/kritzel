@@ -9,20 +9,21 @@ import {
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
+import { ToolbarComponent } from '../../components/toolbar.component';
 
 @Component({
   selector: 'app-tools-disable',
-  imports: [KritzelEditor],
+  imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
+    <app-toolbar>
       <button (click)="toggle()">
         {{ isEraserDisabled() ? 'Enable eraser tool' : 'Disable eraser tool' }}
       </button>
       <span class="status" [class.disabled]="isEraserDisabled()">
         {{ isEraserDisabled() ? 'Eraser tool disabled' : 'Eraser tool enabled' }}
       </span>
-    </div>
+    </app-toolbar>
     <kritzel-editor
       editorId="tools-disable"
       [theme]="'light'"
@@ -37,9 +38,6 @@ import { createSeedObjects } from '../../const/seed-objects';
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
-    .toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; }
-    .toolbar button { padding: 6px 12px; border: 1px solid #ccc; border-radius: 4px; background: #fff; cursor: pointer; font-size: 13px; }
-    .toolbar button:hover { background: #dd0031; color: #fff; border-color: #dd0031; }
     .status { font-size: 13px; color: #333; }
     .status.disabled { color: #e53935; font-weight: 500; }
     kritzel-editor { flex: 1; }
