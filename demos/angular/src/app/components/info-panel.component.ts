@@ -17,6 +17,10 @@ let nextInfoPanelId = 0;
   encapsulation: ViewEncapsulation.None,
   host: {
     '[class.has-toolbar-toggle]': 'hasToolbarToggle()',
+    '(pointerdown)': 'stopPointerEvent($event)',
+    '(pointermove)': 'stopPointerEvent($event)',
+    '(pointerup)': 'stopPointerEvent($event)',
+    '(pointercancel)': 'stopPointerEvent($event)',
   },
   template: `
     <button
@@ -121,6 +125,10 @@ export class InfoPanelComponent {
 
   toggle() {
     this.isOpen.update((isOpen) => !isOpen);
+  }
+
+  stopPointerEvent(event: PointerEvent) {
+    event.stopPropagation();
   }
 }
 

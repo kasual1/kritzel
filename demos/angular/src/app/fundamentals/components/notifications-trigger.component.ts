@@ -1,8 +1,9 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
+import { EditorIsReadyEvent, KritzelEditor } from 'kritzel-angular';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { ToolbarComponent } from '../../components/toolbar.component';
+import { createSeedObjects } from '../../const/seed-objects';
 
 @Component({
   selector: 'app-notifications-trigger',
@@ -23,6 +24,7 @@ import { ToolbarComponent } from '../../components/toolbar.component';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
+      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: `
@@ -36,6 +38,12 @@ export class NotificationsTriggerComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
+
+  async onReady(_event: CustomEvent<EditorIsReadyEvent>): Promise<void> {
+    for (const object of createSeedObjects()) {
+      await this.editor.addObject(object);
+    }
+  }
 
   async notify(type: 'info' | 'warning' | 'error'): Promise<void> {
     await this.editor.triggerNotification({

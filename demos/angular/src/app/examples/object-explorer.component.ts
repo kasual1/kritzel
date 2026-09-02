@@ -21,10 +21,11 @@ import {
 import { angularThemeLight } from '../const/angular-theme-light';
 import { angularThemeDark } from '../const/angular-theme-dark';
 import { createSeedObjects } from '../const/seed-objects';
+import { InfoPanelComponent } from '../components/info-panel.component';
 
 @Component({
   selector: 'app-object-explorer',
-  imports: [CommonModule, KritzelEditor],
+  imports: [CommonModule, KritzelEditor, InfoPanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="content-shell">
@@ -45,7 +46,7 @@ import { createSeedObjects } from '../const/seed-objects';
         ></kritzel-editor>
       </div>
 
-      <aside>
+      <app-info-panel>
         <div class="panel-header">
           <span class="panel-tagline">Explorer Mode</span>
           <h2 class="panel-title">Hierarchical Object Explorer</h2>
@@ -133,7 +134,12 @@ import { createSeedObjects } from '../const/seed-objects';
         </ng-template>
 
         @if (selectedObject(); as selObj) {
-          <section class="section inspector">
+          <section
+            class="section inspector"
+            (pointerdown)="beginInspectorInteraction()"
+            (pointerup)="restoreInspectorSelection()"
+            (pointercancel)="restoreInspectorSelection()"
+          >
             <h4>Inspector: {{ selObj.__class__.replace('Kritzel', '') }}</h4>
 
             <div class="inspector-field">
@@ -228,7 +234,7 @@ import { createSeedObjects } from '../const/seed-objects';
             </div>
           </section>
         }
-      </aside>
+      </app-info-panel>
     </div>
   `,
   styles: `
@@ -245,6 +251,7 @@ import { createSeedObjects } from '../const/seed-objects';
       display: flex;
       flex: 1;
       min-height: 0;
+      position: relative;
     }
 
     .editor-container {
@@ -258,16 +265,14 @@ import { createSeedObjects } from '../const/seed-objects';
       height: 100%;
     }
 
-    aside {
-      width: 340px;
-      overflow-y: auto;
-      border-left: 1px solid #ebebeb;
-      background-color: #ffffff;
-      padding: 12px;
+    app-info-panel {
+      --demo-info-panel-width: 340px;
       font-size: 13px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+    }
+
+    .panel-header,
+    .section {
+      margin-bottom: 12px;
     }
 
     .panel-header {
@@ -592,6 +597,7 @@ export class ObjectExplorerComponent implements OnDestroy {
   allObjects = signal<KritzelBaseObject[]>([]);
   expandedGroups = signal<Set<string>>(new Set<string>());
   selectedObject = signal<KritzelBaseObject | null>(null);
+  private inspectorInteractionObject: KritzelBaseObject | null = null;
 
   searchQuery = signal<string>('');
   availableTypes = ['KritzelShape', 'KritzelText', 'KritzelLine', 'KritzelPath'];
@@ -860,9 +866,27 @@ export class ObjectExplorerComponent implements OnDestroy {
     await this.editor.updateObject(active, payload);
   }
 
+  beginInspectorInteraction() {
+    this.inspectorInteractionObject = this.selectedObject();
+  }
+
+  async restoreInspectorSelection() {
+    const inspectedObject = this.inspectorInteractionObject;
+    this.inspectorInteractionObject = null;
+
+    if (!inspectedObject) {
+      return;
+    }
+
+    const currentObject = await this.editor.getObjectById(inspectedObject.id);
+    if (currentObject) {
+      await this.editor.selectObjects([currentObject]);
+    }
+  }
+
   private async syncInspectorWithSelection() {
     const selected = await this.editor.getSelectedObjects();
-    this.selectedObject.set(selected[0] ?? null);
+    this.selectedObject.set(selected[0] ?? this.inspectorInteractionObject);
   }
 
   private async applyTypeOpacityFilter() {
