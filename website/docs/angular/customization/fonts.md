@@ -22,7 +22,7 @@ You can register fonts declaratively via the `[customFonts]` binding on `<kritze
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/customization/fonts/register"
-  repoFiles={['src/app/customization/fonts/fonts-register.component.ts']}
+  repoFiles={['src/app/pages/customization/fonts/fonts-register.component.ts']}
 />
 
 ## API Details

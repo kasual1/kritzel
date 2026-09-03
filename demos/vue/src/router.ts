@@ -1,16 +1,14 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import QuickStartPage from './pages/getting-started/QuickStartPage.vue'
 import BasicUsagePage from './pages/getting-started/BasicUsagePage.vue'
-import ComponentsEditorPage from './pages/fundamentals/components/ComponentsEditorPage.vue'
-import ComponentsEditorUiPage from './pages/fundamentals/components/ComponentsEditorUiPage.vue'
-import ComponentsEnginePage from './pages/fundamentals/components/ComponentsEnginePage.vue'
-import UserManagementProvidersPage from './pages/fundamentals/components/UserManagementProvidersPage.vue'
-import UserManagementFlowPage from './pages/fundamentals/components/UserManagementFlowPage.vue'
-import ContextMenusCanvasQuickActionsPage from './pages/fundamentals/components/ContextMenusCanvasQuickActionsPage.vue'
-import ContextMenusClipboardActionsPage from './pages/fundamentals/components/ContextMenusClipboardActionsPage.vue'
-import ContextMenusSmartConditionalPage from './pages/fundamentals/components/ContextMenusSmartConditionalPage.vue'
-import ContextMenusObjectInspectorPage from './pages/fundamentals/components/ContextMenusObjectInspectorPage.vue'
-import NotificationsTriggerPage from './pages/fundamentals/components/NotificationsTriggerPage.vue'
+import UserManagementProvidersPage from './pages/advanced/user-management/UserManagementProvidersPage.vue'
+import UserManagementFlowPage from './pages/advanced/user-management/UserManagementFlowPage.vue'
+import ComponentsEditorUiPage from './pages/fundamentals/controls/ComponentsEditorUiPage.vue'
+import ContextMenusCanvasQuickActionsPage from './pages/fundamentals/controls/ContextMenusCanvasQuickActionsPage.vue'
+import ContextMenusClipboardActionsPage from './pages/fundamentals/controls/ContextMenusClipboardActionsPage.vue'
+import ContextMenusSmartConditionalPage from './pages/fundamentals/controls/ContextMenusSmartConditionalPage.vue'
+import ContextMenusObjectInspectorPage from './pages/fundamentals/controls/ContextMenusObjectInspectorPage.vue'
+import NotificationsTriggerPage from './pages/fundamentals/controls/NotificationsTriggerPage.vue'
 import ObjectsAddRemovePage from './pages/fundamentals/objects/ObjectsAddRemovePage.vue'
 import ObjectsQueryPage from './pages/fundamentals/objects/ObjectsQueryPage.vue'
 import ObjectsSelectionPage from './pages/fundamentals/objects/ObjectsSelectionPage.vue'
@@ -63,13 +61,9 @@ export const router = createRouter({
       path: '/fundamentals',
       children: [
         {
-          path: 'components',
+          path: 'controls',
           children: [
-            { path: 'editor', component: ComponentsEditorPage },
             { path: 'editor-ui', component: ComponentsEditorUiPage },
-            { path: 'engine', component: ComponentsEnginePage },
-            { path: 'user-management-providers', component: UserManagementProvidersPage },
-            { path: 'user-management-flow', component: UserManagementFlowPage },
             { path: 'context-menus-canvas-quick-actions', component: ContextMenusCanvasQuickActionsPage },
             { path: 'context-menus-clipboard-actions', component: ContextMenusClipboardActionsPage },
             { path: 'context-menus-smart-conditional', component: ContextMenusSmartConditionalPage },
@@ -121,6 +115,13 @@ export const router = createRouter({
     {
       path: '/advanced',
       children: [
+        {
+          path: 'user-management',
+          children: [
+            { path: 'providers', component: UserManagementProvidersPage },
+            { path: 'flow', component: UserManagementFlowPage },
+          ],
+        },
         {
           path: 'collaboration',
           children: [

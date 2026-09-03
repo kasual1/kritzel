@@ -22,7 +22,7 @@ The simplest entry point is switching between the two built-in themes. Pass `lig
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/customization/theming/apply"
-  repoFiles={['src/app/customization/theming/theming-apply.component.ts']}
+  repoFiles={['src/app/pages/customization/theming/theming-apply.component.ts']}
 />
 
 ## Creating a Custom Theme
@@ -32,7 +32,7 @@ This example intentionally applies a strong, light-purple visual language and re
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/customization/theming/custom"
-  repoFiles={['src/app/customization/theming/theming-custom.component.ts']}
+  repoFiles={['src/app/pages/customization/theming/theming-custom.component.ts']}
 />
 
 ## API Details

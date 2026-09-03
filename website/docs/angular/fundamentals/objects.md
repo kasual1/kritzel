@@ -32,7 +32,7 @@ You can manually inject objects into the canvas programmatically, bypassing the 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/objects/add"
-  repoFiles={['src/app/fundamentals/objects/objects-add.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/objects/objects-add.component.ts']}
 />
 
 ## Removing Objects
@@ -42,7 +42,7 @@ You can remove objects from the canvas programmatically when they are no longer 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/objects/remove"
-  repoFiles={['src/app/fundamentals/objects/objects-remove.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/objects/objects-remove.component.ts']}
 />
 
 ## Updating Objects
@@ -52,7 +52,7 @@ Object properties should never be mutated directly. Instead, changes go through 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/objects/update"
-  repoFiles={['src/app/fundamentals/objects/objects-update.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/objects/objects-update.component.ts']}
 />
 
 ## Selecting Objects
@@ -62,7 +62,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/objects/selection"
-  repoFiles={['src/app/fundamentals/objects/objects-selection.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/objects/objects-selection.component.ts']}
 />
 
 ## Filtering Objects
@@ -72,7 +72,7 @@ Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()`
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/objects/filter"
-  repoFiles={['src/app/fundamentals/objects/objects-filter.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/objects/objects-filter.component.ts']}
 />
 
 ## Grouping Objects
@@ -82,7 +82,7 @@ Objects can be grouped together so they can be moved and transformed as a single
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/objects/grouping"
-  repoFiles={['src/app/fundamentals/objects/objects-grouping.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/objects/objects-grouping.component.ts']}
 />
 
 ## Ordering Objects
@@ -92,7 +92,7 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/objects/ordering"
-  repoFiles={['src/app/fundamentals/objects/objects-ordering.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/objects/objects-ordering.component.ts']}
 />
 
 ## API Details

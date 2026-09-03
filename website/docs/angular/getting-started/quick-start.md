@@ -58,7 +58,7 @@ This renders the editor with all the default ui elements such as the toolbar, th
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/getting-started/quick-start"
-  repoFiles={['src/app/getting-started/quick-start.component.ts']}
+  repoFiles={['src/app/pages/getting-started/quick-start.component.ts']}
 />
 
 ## Optional Enhancements

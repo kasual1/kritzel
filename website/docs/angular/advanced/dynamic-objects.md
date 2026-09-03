@@ -39,7 +39,7 @@ The simplest way to use a dynamic object is to build a plain DOM subtree and pas
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/advanced/dynamic-objects/html"
-  repoFiles={['src/app/advanced/dynamic-objects/dynamic-objects-html.component.ts']}
+  repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-html.component.ts']}
 />
 
 ## Rendering Framework Components
@@ -56,7 +56,7 @@ Always unregister the renderer, and detach/destroy any mounted component views, 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/advanced/dynamic-objects/component"
-  repoFiles={['src/app/advanced/dynamic-objects/dynamic-objects-component.component.ts']}
+  repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-component.component.ts']}
 />
 
 ## API Details

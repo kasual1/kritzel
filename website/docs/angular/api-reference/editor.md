@@ -1,4 +1,4 @@
-﻿---
+---
 sidebar_label: Editor
 displayed_sidebar: tutorialSidebar
 title: "Editor API Reference | Kritzel for Angular"

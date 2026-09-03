@@ -33,8 +33,6 @@ const FRAMEWORKS = ["angular", "react", "vue"] as const;
 const LEGACY_DOC_PATHS: Record<string, string> = {
   "quick-start": "getting-started/quick-start",
   "basic-usage": "getting-started/basic-usage",
-  "components/concept-editor": "fundamentals/components/editor",
-  "components/concept-engine": "fundamentals/components/engine",
   "concept-tools": "fundamentals/tools",
   "concept-objects": "fundamentals/objects",
   "concept-viewport": "fundamentals/viewport",

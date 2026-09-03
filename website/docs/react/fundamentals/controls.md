@@ -19,8 +19,8 @@ Use the Editor's visibility props to toggle its built-in controls. For example, 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components/editor-ui"
-  repoFiles={['src/pages/fundamentals/components/ComponentsEditorUiPage.tsx']}
+  demoPath="/fundamentals/controls/editor-ui"
+  repoFiles={['src/pages/fundamentals/controls/ComponentsEditorUiPage.tsx']}
 />
 
 ## Context Menus
@@ -29,24 +29,24 @@ The Editor separates right-click actions into `globalContextMenuItems` for empty
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components/context-menus-canvas-quick-actions"
-  repoFiles={['src/pages/fundamentals/components/ContextMenusCanvasQuickActionsPage.tsx']}
+  demoPath="/fundamentals/controls/context-menus-canvas-quick-actions"
+  repoFiles={['src/pages/fundamentals/controls/ContextMenusCanvasQuickActionsPage.tsx']}
 />
 
 Items can also call clipboard methods such as `copy`, `paste`, and `delete`, wiring the menu to the same actions available from keyboard shortcuts.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components/context-menus-clipboard-actions"
-  repoFiles={['src/pages/fundamentals/components/ContextMenusClipboardActionsPage.tsx']}
+  demoPath="/fundamentals/controls/context-menus-clipboard-actions"
+  repoFiles={['src/pages/fundamentals/controls/ContextMenusClipboardActionsPage.tsx']}
 />
 
 Use `group` to cluster related entries with a separator, and `children` to nest a submenu of arbitrary depth for actions that do not need a top-level entry.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components/context-menus-object-inspector"
-  repoFiles={['src/pages/fundamentals/components/ContextMenusObjectInspectorPage.tsx']}
+  demoPath="/fundamentals/controls/context-menus-object-inspector"
+  repoFiles={['src/pages/fundamentals/controls/ContextMenusObjectInspectorPage.tsx']}
 />
 
 The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling Select All when the viewport is empty.
@@ -54,8 +54,8 @@ The optional `isVisible` and `isDisabled` conditions accept booleans or async fu
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components/context-menus-smart-conditional"
-  repoFiles={['src/pages/fundamentals/components/ContextMenusSmartConditionalPage.tsx']}
+  demoPath="/fundamentals/controls/context-menus-smart-conditional"
+  repoFiles={['src/pages/fundamentals/controls/ContextMenusSmartConditionalPage.tsx']}
 />
 
 ## Notifications
@@ -64,8 +64,8 @@ Call `triggerNotification()` to display a transient message in the editor. Notif
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components/notifications-trigger"
-  repoFiles={['src/pages/fundamentals/components/NotificationsTriggerPage.tsx']}
+  demoPath="/fundamentals/controls/notifications-trigger"
+  repoFiles={['src/pages/fundamentals/controls/NotificationsTriggerPage.tsx']}
 />
 
 ## Related API Methods

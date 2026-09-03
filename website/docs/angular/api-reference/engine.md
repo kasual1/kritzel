@@ -1,4 +1,4 @@
-﻿---
+---
 
 sidebar_label: Engine
 displayed_sidebar: tutorialSidebar
