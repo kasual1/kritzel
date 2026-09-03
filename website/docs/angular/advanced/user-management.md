@@ -60,6 +60,6 @@ Clicking a provider button puts that button into a loading state and emits the e
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [User Management](../api-reference/editor.md#user-management)

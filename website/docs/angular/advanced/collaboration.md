@@ -48,6 +48,6 @@ When your application manages multiple documents simultaneously (e.g. a workspac
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Collaboration](../api-reference/editor.md#collaboration)

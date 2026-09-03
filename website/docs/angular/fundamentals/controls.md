@@ -99,6 +99,6 @@ Call `triggerNotification()` to display a transient message in the editor. Notif
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Editor UI Elements](../api-reference/editor.md#ui-elements)

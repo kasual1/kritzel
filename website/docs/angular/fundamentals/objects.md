@@ -97,7 +97,7 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Object](../api-reference/editor.md#object)
 - [Selection](../api-reference/editor.md#selection)

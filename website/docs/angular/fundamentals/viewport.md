@@ -49,7 +49,7 @@ Use `screenToWorld` and `worldToScreen` to bridge this gap.
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Viewport & Navigation](../api-reference/editor.md#viewport--navigation)
 

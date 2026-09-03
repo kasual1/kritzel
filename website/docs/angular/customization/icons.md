@@ -33,7 +33,7 @@ Keep SVG definitions self-contained and use `currentColor` for strokes or fills 
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Editor UI Elements](../api-reference/editor.md#ui-elements)
 - [Tool Management](../api-reference/editor.md#tool-management)

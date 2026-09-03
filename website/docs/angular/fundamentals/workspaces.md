@@ -39,6 +39,6 @@ Kritzel allows you to fully manage the lifecycle of workspaces. You can create n
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Workspace](../api-reference/editor.md#workspace)

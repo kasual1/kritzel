@@ -30,7 +30,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 2. **`## Overview`** — Explain what the concept is, its role within the Kritzel architecture, and why a developer should care. Keep it high-level.
 3. **Use Case Sections (`##` or `###`)** — Provide multiple *very focused* live-demo examples showing users exactly how to accomplish specific, atomic tasks related to the concept. **Do not** use a literal `## Focused Use Cases` heading; instead, promote the use cases to top-level or natural descriptive headings (e.g., `## Using the Editor Component`).
 4. **`## API Details`** — A quick bulleted list linking to the most relevant API reference sections associated with this concept.
-  - Start with: `For the full list of available APIs, see the following reference sections.`
+  - Start with: `For the full list of related APIs, see the following reference sections.`
   - Link to top-level sections (e.g., `- [Viewport & Navigation](../api-reference/editor.md#viewport--navigation)`) rather than individual methods, props, events, or types.
   - Keep the list focused. Include multiple links only when the page genuinely covers distinct API sections.
 
