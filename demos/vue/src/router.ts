@@ -21,7 +21,6 @@ import ToolsRegisterPage from './pages/fundamentals/tools/ToolsRegisterPage.vue'
 import ToolsChangePage from './pages/fundamentals/tools/ToolsChangePage.vue'
 import ViewportChangePage from './pages/fundamentals/viewport/ViewportChangePage.vue'
 import ViewportCenterPage from './pages/fundamentals/viewport/ViewportCenterPage.vue'
-import ViewportCoordinatesPage from './pages/fundamentals/viewport/ViewportCoordinatesPage.vue'
 import WorkspacesSwitchPage from './pages/fundamentals/workspaces/WorkspacesSwitchPage.vue'
 import WorkspacesCrudPage from './pages/fundamentals/workspaces/WorkspacesCrudPage.vue'
 import PersistenceLocalPage from './pages/fundamentals/persistence/PersistenceLocalPage.vue'
@@ -96,7 +95,6 @@ export const router = createRouter({
           children: [
             { path: 'change', component: ViewportChangePage },
             { path: 'center', component: ViewportCenterPage },
-            { path: 'coordinates', component: ViewportCoordinatesPage },
           ],
         },
         {

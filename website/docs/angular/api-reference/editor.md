@@ -356,7 +356,7 @@ zoomOut(factor?: number, duration?: number): Promise<void>
 
 #### centerObjectInViewport
 
-Pans and zooms the viewport to center on the given object.
+Moves the given object to the center of the current viewport and returns the updated object. Use `panToObject` or `centerObjects` when you want to move the camera instead.
 
 ```ts
 centerObjectInViewport(object: KritzelBaseObject): Promise<KritzelBaseObject<HTMLElement | SVGElement>>
