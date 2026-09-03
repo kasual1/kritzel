@@ -24,9 +24,12 @@ import { ToolsToolbarComponent } from './pages/fundamentals/tools/tools-toolbar.
 import { ToolsDisableComponent } from './pages/fundamentals/tools/tools-disable.component';
 import { ToolsRegisterComponent } from './pages/fundamentals/tools/tools-register.component';
 import { ToolsConfigComponent } from './pages/fundamentals/tools/tools-config.component';
-import { ViewportChangeComponent } from './pages/fundamentals/viewport/viewport-change.component';
+import { ViewportPanComponent } from './pages/fundamentals/viewport/viewport-pan.component';
+import { ViewportZoomComponent } from './pages/fundamentals/viewport/viewport-zoom.component';
 import { ViewportCenterComponent } from './pages/fundamentals/viewport/viewport-center.component';
-import { ViewportCoordinatesComponent } from './pages/fundamentals/viewport/viewport-coordinates.component';
+import { ViewportLimitsComponent } from './pages/fundamentals/viewport/viewport-limits.component';
+import { ViewportBoundariesComponent } from './pages/fundamentals/viewport/viewport-boundaries.component';
+import { ViewportEventsComponent } from './pages/fundamentals/viewport/viewport-events.component';
 import { WorkspacesSwitchComponent } from './pages/fundamentals/workspaces/workspaces-switch.component';
 import { WorkspacesCrudComponent } from './pages/fundamentals/workspaces/workspaces-crud.component';
 import { PersistenceLocalComponent } from './pages/fundamentals/persistence/persistence-local.component';
@@ -102,9 +105,12 @@ export const routes: Routes = [
       {
         path: 'viewport',
         children: [
-          { path: 'change', component: ViewportChangeComponent },
+          { path: 'pan', component: ViewportPanComponent },
+          { path: 'zoom', component: ViewportZoomComponent },
           { path: 'center', component: ViewportCenterComponent },
-          { path: 'coordinates', component: ViewportCoordinatesComponent },
+          { path: 'limits', component: ViewportLimitsComponent },
+          { path: 'boundaries', component: ViewportBoundariesComponent },
+          { path: 'events', component: ViewportEventsComponent },
         ],
       },
       {

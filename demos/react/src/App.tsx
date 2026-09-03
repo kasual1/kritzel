@@ -21,7 +21,6 @@ import { ToolsRegisterPage } from "./pages/fundamentals/tools/ToolsRegisterPage"
 import { ToolsChangePage } from "./pages/fundamentals/tools/ToolsChangePage";
 import { ViewportChangePage } from "./pages/fundamentals/viewport/ViewportChangePage";
 import { ViewportCenterPage } from "./pages/fundamentals/viewport/ViewportCenterPage";
-import { ViewportCoordinatesPage } from "./pages/fundamentals/viewport/ViewportCoordinatesPage";
 import { WorkspacesSwitchPage } from "./pages/fundamentals/workspaces/WorkspacesSwitchPage";
 import { WorkspacesCrudPage } from "./pages/fundamentals/workspaces/WorkspacesCrudPage";
 import { PersistenceLocalPage } from "./pages/fundamentals/persistence/PersistenceLocalPage";
@@ -77,7 +76,6 @@ function App() {
         <Route path="/fundamentals/tools/change" element={<ToolsChangePage />} />
         <Route path="/fundamentals/viewport/change" element={<ViewportChangePage />} />
         <Route path="/fundamentals/viewport/center" element={<ViewportCenterPage />} />
-        <Route path="/fundamentals/viewport/coordinates" element={<ViewportCoordinatesPage />} />
         <Route path="/fundamentals/workspaces/switch" element={<WorkspacesSwitchPage />} />
         <Route path="/fundamentals/workspaces/crud" element={<WorkspacesCrudPage />} />
         <Route path="/fundamentals/persistence/local" element={<PersistenceLocalPage />} />

@@ -13,7 +13,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 In Kritzel, the Viewport represents the visible area of the canvas. Because Kritzel supports potentially infinite or bounded canvas structures, users need to pan and zoom to navigate different areas of their drawing.
 
-The Viewport API allows you to programmatically control the camera, read the current viewer state, and map coordinates between the device screen and the virtual canvas world.
+The Viewport API allows you to programmatically control the camera, read the current viewer state, and constrain navigation.
 
 ## Changing the Viewport
 
@@ -35,18 +35,6 @@ Kritzel provides built-in methods to quickly navigate back to content. You can c
   repoFiles={['src/pages/fundamentals/viewport/ViewportCenterPage.tsx']}
 />
 
-## Coordinate Mapping
-
-When interacting with the canvas directly or building custom overlays, you often need to convert between screen coordinates (pixels relative to the browser window or container) and world coordinates (the internal coordinate system of the drawing).
-
-Use `screenToWorld` and `worldToScreen` to bridge this gap.
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/viewport/coordinates"
-  repoFiles={['src/pages/fundamentals/viewport/ViewportCoordinatesPage.tsx']}
-/>
-
 ## Related API Methods
 
 The following methods are available on the Editor and Engine components for managing the viewport:
@@ -54,6 +42,5 @@ The following methods are available on the Editor and Engine components for mana
 - State reading (`getViewport()`)
 - Camera control (`setViewport()`, `panTo()`, `zoomTo()`)
 - Content centering (`centerObjectInViewport()`, `backToContent()`)
-- Coordinate mapping (`screenToWorld()`, `worldToScreen()`)
 
 For a comprehensive view, see the [API Reference](../api-reference/editor.md).

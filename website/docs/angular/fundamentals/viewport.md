@@ -11,23 +11,41 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Kritzel, the "Viewport" represents the visible area of the canvas. Because Kritzel supports an infinite canvas structure, users need to pan and zoom to navigate different areas of their drawing. 
+In Kritzel, the viewport defines the portion of the canvas world currently displayed to the user. It tracks the current pan offset, zoom scale, and visible dimensions, while objects retain their own world coordinates.
 
-The Viewport API allows you to programmatically control the camera, read the current viewer state, and map coordinates between the device screen and the virtual canvas world.
+The Viewport API lets you programmatically navigate the canvas, fit content into view, inspect and react to viewport changes, and constrain navigation.
 
-## Changing the Viewport
+## Panning
 
-You can programmatically set the viewport's pan and zoom using the `setViewport` method, or use animated transitions via `panTo` and `zoomTo`.
+Use `panTo` to move the viewport to a world coordinate while preserving the current zoom. Use `setViewport` when you need to center the viewport on a world coordinate and explicitly retain or set the scale.
+
+The demo moves the viewport between a few world positions while preserving the current scale.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/viewport/change"
-  repoFiles={['src/app/pages/fundamentals/viewport/viewport-change.component.ts']}
+  demoPath="/fundamentals/viewport/pan"
+  repoFiles={['src/app/pages/fundamentals/viewport/viewport-pan.component.ts']}
+/>
+
+## Zooming
+
+Use `zoomTo` to set an exact zoom scale, optionally anchoring the zoom around a world coordinate. For custom zoom controls, `zoomIn` and `zoomOut` apply a multiplicative zoom step around the current viewport center and support an animation duration.
+
+The demo includes step controls, an exact zoom level, and a zoom that stays anchored to a selected world position.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/viewport/zoom"
+  repoFiles={['src/app/pages/fundamentals/viewport/viewport-zoom.component.ts']}
 />
 
 ## Centering Content
 
-Kritzel provides built-in methods to quickly navigate back to the content. You can center individual objects using `centerObjectInViewport`, or reset the camera to view all currently drawn content via `backToContent`.
+Kritzel provides several ways to bring content into view. Use `panToObject` to move the viewport to an object without changing the current zoom. Use `centerObjects` to fit a specific set of objects, or `centerAllObjects` to fit all non-selection objects on the canvas.
+
+The `backToContent` method is optimized for recovery when the user has panned away from the drawing. It fits the nearest content objects, not necessarily every object in the workspace. If you specifically need an overview of everything, use `centerAllObjects`.
+
+`centerObjectInViewport` has a different purpose: it centers the object itself in the current viewport by updating the object, instead of panning the viewport. For navigation UI, prefer `panToObject` or `centerObjects`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -35,16 +53,40 @@ Kritzel provides built-in methods to quickly navigate back to the content. You c
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-center.component.ts']}
 />
 
-## Coordinate Mapping
+## Zoom Limits
 
-When interacting with the canvas directly or building custom overlays, you often need to convert between screen coordinates (pixels relative to the browser window or container) and world coordinates (the internal coordinate system of the drawing). 
+Use `scaleMin` and `scaleMax` to keep the viewport's zoom within a supported range. Kritzel applies these limits to both user input and programmatic zoom operations.
 
-Use `screenToWorld` and `worldToScreen` to bridge this gap.
+The demo provides 10% zoom-in and zoom-out steps. Continue selecting one direction to reach the configured limit; further selections keep the viewport at the clamped scale.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/viewport/coordinates"
-  repoFiles={['src/app/pages/fundamentals/viewport/viewport-coordinates.component.ts']}
+  demoPath="/fundamentals/viewport/limits"
+  repoFiles={['src/app/pages/fundamentals/viewport/viewport-limits.component.ts']}
+/>
+
+## Navigation Boundaries
+
+Set `viewportBoundaryLeft`, `viewportBoundaryRight`, `viewportBoundaryTop`, and `viewportBoundaryBottom` to keep panning inside a bounded world area. When finite boundaries are configured, Kritzel may raise the effective minimum scale so the viewport cannot zoom out far enough to reveal space beyond those boundaries.
+
+The demo provides four controls that move the viewport 100 world units up, down, left, or right. Continue selecting one direction to reach that boundary; further selections keep the viewport at the constrained position.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/viewport/boundaries"
+  repoFiles={['src/app/pages/fundamentals/viewport/viewport-boundaries.component.ts']}
+/>
+
+## Viewport Events
+
+Kritzel emits `viewportChange` whenever the viewport state changes. The event provides the current `translateX`, `translateY`, `scale`, `width`, and `height` values.
+
+The demo provides directional pan and zoom controls that emit `viewportChange`, then displays the event's `translateX`, `translateY`, and `scale` values in its toolbar.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/fundamentals/viewport/events"
+  repoFiles={['src/app/pages/fundamentals/viewport/viewport-events.component.ts']}
 />
 
 ## API Details
