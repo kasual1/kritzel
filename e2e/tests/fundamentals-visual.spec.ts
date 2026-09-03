@@ -28,7 +28,10 @@ const FUNDAMENTAL_ROUTES = [
   '/fundamentals/viewport/center',
   '/fundamentals/viewport/change',
   '/fundamentals/viewport/coordinates',
-  '/fundamentals/workspaces/crud',
+  '/fundamentals/workspaces/create',
+  '/fundamentals/workspaces/read',
+  '/fundamentals/workspaces/update',
+  '/fundamentals/workspaces/delete',
   '/fundamentals/workspaces/switch',
 ] as const;
 

@@ -65,7 +65,7 @@ The demo provides 10% zoom-in and zoom-out steps. Continue selecting one directi
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-limits.component.ts']}
 />
 
-## Navigation Boundaries
+## Boundaries
 
 Set `viewportBoundaryLeft`, `viewportBoundaryRight`, `viewportBoundaryTop`, and `viewportBoundaryBottom` to keep panning inside a bounded world area. When finite boundaries are configured, Kritzel may raise the effective minimum scale so the viewport cannot zoom out far enough to reveal space beyond those boundaries.
 
@@ -77,11 +77,9 @@ The demo provides four controls that move the viewport 100 world units up, down,
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-boundaries.component.ts']}
 />
 
-## Viewport Events
+## Events
 
-Kritzel emits `viewportChange` whenever the viewport state changes. The event provides the current `translateX`, `translateY`, `scale`, `width`, and `height` values.
-
-The demo provides directional pan and zoom controls that emit `viewportChange`, then displays the event's `translateX`, `translateY`, and `scale` values in its toolbar.
+Kritzel emits `viewportChange` with the latest position, scale, and dimensions whenever the view changes. The demo uses pan and zoom controls and displays the resulting viewport state in its toolbar.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

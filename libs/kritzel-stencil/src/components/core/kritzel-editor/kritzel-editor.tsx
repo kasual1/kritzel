@@ -1566,7 +1566,6 @@ export class KritzelEditor {
           <div class="bottom-left-buttons">
             <kritzel-zoom-panel
               visible={this.isZoomPanelVisible}
-              disabled={!this.isZoomingEnabled}
               zoomPercent={this.currentZoomPercent}
               terms={this.resolvedTerms}
               onZoomIn={() => this.zoomIn()}

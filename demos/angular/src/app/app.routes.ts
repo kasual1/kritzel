@@ -31,7 +31,10 @@ import { ViewportLimitsComponent } from './pages/fundamentals/viewport/viewport-
 import { ViewportBoundariesComponent } from './pages/fundamentals/viewport/viewport-boundaries.component';
 import { ViewportEventsComponent } from './pages/fundamentals/viewport/viewport-events.component';
 import { WorkspacesSwitchComponent } from './pages/fundamentals/workspaces/workspaces-switch.component';
-import { WorkspacesCrudComponent } from './pages/fundamentals/workspaces/workspaces-crud.component';
+import { WorkspacesCreateComponent } from './pages/fundamentals/workspaces/workspaces-create.component';
+import { WorkspacesReadComponent } from './pages/fundamentals/workspaces/workspaces-read.component';
+import { WorkspacesUpdateComponent } from './pages/fundamentals/workspaces/workspaces-update.component';
+import { WorkspacesDeleteComponent } from './pages/fundamentals/workspaces/workspaces-delete.component';
 import { PersistenceLocalComponent } from './pages/fundamentals/persistence/persistence-local.component';
 import { CollaborationLocalComponent } from './pages/advanced/collaboration/collaboration-local.component';
 import { CollaborationRealtimeComponent } from './pages/advanced/collaboration/collaboration-realtime.component';
@@ -117,7 +120,10 @@ export const routes: Routes = [
         path: 'workspaces',
         children: [
           { path: 'switch', component: WorkspacesSwitchComponent },
-          { path: 'crud', component: WorkspacesCrudComponent },
+          { path: 'create', component: WorkspacesCreateComponent },
+          { path: 'read', component: WorkspacesReadComponent },
+          { path: 'update', component: WorkspacesUpdateComponent },
+          { path: 'delete', component: WorkspacesDeleteComponent },
         ],
       },
       {
