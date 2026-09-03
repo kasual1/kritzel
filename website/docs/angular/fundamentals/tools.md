@@ -88,7 +88,7 @@ In order to disable a specific tool, set `isDisabled` on the corresponding entry
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Tool Management](../api-reference/editor.md#tool-management)
 - [Tools](../api-reference/tools.md)

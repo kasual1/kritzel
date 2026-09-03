@@ -27,6 +27,6 @@ You can register fonts declaratively via the `[customFonts]` binding on `<kritze
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Theming](../api-reference/editor.md#theming)

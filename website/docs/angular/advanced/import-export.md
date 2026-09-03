@@ -50,6 +50,6 @@ Call `importFromJson()` on the engine with a JSON string produced by `exportAsJs
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Export & Import](../api-reference/editor.md#export--import)

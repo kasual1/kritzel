@@ -37,6 +37,6 @@ You can add support for additional languages (such as Spanish `'es'`) or overrid
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Localization](../api-reference/editor.md#localization)

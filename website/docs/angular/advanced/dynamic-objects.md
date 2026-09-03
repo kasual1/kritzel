@@ -61,7 +61,7 @@ Always unregister the renderer, and detach/destroy any mounted component views, 
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Dynamic Object](../api-reference/objects.md#dynamic-object)
 - [Object](../api-reference/editor.md#object)

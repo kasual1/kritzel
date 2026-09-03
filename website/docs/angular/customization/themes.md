@@ -37,6 +37,6 @@ This example intentionally applies a strong, light-purple visual language and re
 
 ## API Details
 
-For the full list of available APIs, see the following reference sections.
+For the full list of related APIs, see the following reference sections.
 
 - [Theming](../api-reference/editor.md#theming)
