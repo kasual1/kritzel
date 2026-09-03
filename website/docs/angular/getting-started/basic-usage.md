@@ -121,6 +121,6 @@ Below is a complete example combining props, events, and public methods. It uses
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  repoFiles={['src/app/getting-started/basic-usage.component.ts']}
+  repoFiles={['src/app/pages/getting-started/basic-usage.component.ts']}
   demoPath="/getting-started/basic-usage"
 />

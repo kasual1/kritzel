@@ -25,7 +25,7 @@ Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor to render 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/advanced/import-export/viewport-export"
-  repoFiles={['src/app/advanced/import-export/import-export-viewport-export.component.ts']}
+  repoFiles={['src/app/pages/advanced/import-export/import-export-viewport-export.component.ts']}
 />
 
 ## Exporting the Workspace
@@ -35,7 +35,7 @@ Call `exportAsJson()` on the engine to serialize the active workspace — its me
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/advanced/import-export/workspace-export"
-  repoFiles={['src/app/advanced/import-export/import-export-workspace-export.component.ts']}
+  repoFiles={['src/app/pages/advanced/import-export/import-export-workspace-export.component.ts']}
 />
 
 ## Importing a Workspace
@@ -45,7 +45,7 @@ Call `importFromJson()` on the engine with a JSON string produced by `exportAsJs
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/advanced/import-export/workspace-import"
-  repoFiles={['src/app/advanced/import-export/import-export-workspace-import.component.ts']}
+  repoFiles={['src/app/pages/advanced/import-export/import-export-workspace-import.component.ts']}
 />
 
 ## API Details

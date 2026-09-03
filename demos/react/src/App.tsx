@@ -1,16 +1,14 @@
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QuickStartPage } from "./pages/getting-started/QuickStartPage";
 import { BasicUsagePage } from "./pages/getting-started/BasicUsagePage";
-import { ComponentsEditorPage } from "./pages/fundamentals/components/ComponentsEditorPage";
-import { ComponentsEditorUiPage } from "./pages/fundamentals/components/ComponentsEditorUiPage";
-import { ComponentsEnginePage } from "./pages/fundamentals/components/ComponentsEnginePage";
-import { UserManagementProvidersPage } from "./pages/fundamentals/components/UserManagementProvidersPage";
-import { UserManagementFlowPage } from "./pages/fundamentals/components/UserManagementFlowPage";
-import { ContextMenusCanvasQuickActionsPage } from "./pages/fundamentals/components/ContextMenusCanvasQuickActionsPage";
-import { ContextMenusClipboardActionsPage } from "./pages/fundamentals/components/ContextMenusClipboardActionsPage";
-import { ContextMenusSmartConditionalPage } from "./pages/fundamentals/components/ContextMenusSmartConditionalPage";
-import { ContextMenusObjectInspectorPage } from "./pages/fundamentals/components/ContextMenusObjectInspectorPage";
-import { NotificationsTriggerPage } from "./pages/fundamentals/components/NotificationsTriggerPage";
+import { UserManagementProvidersPage } from "./pages/advanced/user-management/UserManagementProvidersPage";
+import { UserManagementFlowPage } from "./pages/advanced/user-management/UserManagementFlowPage";
+import { ComponentsEditorUiPage } from "./pages/fundamentals/controls/ComponentsEditorUiPage";
+import { ContextMenusCanvasQuickActionsPage } from "./pages/fundamentals/controls/ContextMenusCanvasQuickActionsPage";
+import { ContextMenusClipboardActionsPage } from "./pages/fundamentals/controls/ContextMenusClipboardActionsPage";
+import { ContextMenusSmartConditionalPage } from "./pages/fundamentals/controls/ContextMenusSmartConditionalPage";
+import { ContextMenusObjectInspectorPage } from "./pages/fundamentals/controls/ContextMenusObjectInspectorPage";
+import { NotificationsTriggerPage } from "./pages/fundamentals/controls/NotificationsTriggerPage";
 import { ObjectsAddRemovePage } from "./pages/fundamentals/objects/ObjectsAddRemovePage";
 import { ObjectsQueryPage } from "./pages/fundamentals/objects/ObjectsQueryPage";
 import { ObjectsSelectionPage } from "./pages/fundamentals/objects/ObjectsSelectionPage";
@@ -59,16 +57,14 @@ function App() {
         <Route path="/getting-started/quick-start" element={<QuickStartPage />} />
         <Route path="/getting-started/basic-usage" element={<BasicUsagePage />} />
 
-        <Route path="/fundamentals/components/editor" element={<ComponentsEditorPage />} />
-        <Route path="/fundamentals/components/editor-ui" element={<ComponentsEditorUiPage />} />
-        <Route path="/fundamentals/components/engine" element={<ComponentsEnginePage />} />
-        <Route path="/fundamentals/components/user-management-providers" element={<UserManagementProvidersPage />} />
-        <Route path="/fundamentals/components/user-management-flow" element={<UserManagementFlowPage />} />
-        <Route path="/fundamentals/components/context-menus-canvas-quick-actions" element={<ContextMenusCanvasQuickActionsPage />} />
-        <Route path="/fundamentals/components/context-menus-clipboard-actions" element={<ContextMenusClipboardActionsPage />} />
-        <Route path="/fundamentals/components/context-menus-smart-conditional" element={<ContextMenusSmartConditionalPage />} />
-        <Route path="/fundamentals/components/context-menus-object-inspector" element={<ContextMenusObjectInspectorPage />} />
-        <Route path="/fundamentals/components/notifications-trigger" element={<NotificationsTriggerPage />} />
+        <Route path="/fundamentals/controls/editor-ui" element={<ComponentsEditorUiPage />} />
+        <Route path="/fundamentals/controls/context-menus-canvas-quick-actions" element={<ContextMenusCanvasQuickActionsPage />} />
+        <Route path="/fundamentals/controls/context-menus-clipboard-actions" element={<ContextMenusClipboardActionsPage />} />
+        <Route path="/fundamentals/controls/context-menus-smart-conditional" element={<ContextMenusSmartConditionalPage />} />
+        <Route path="/fundamentals/controls/context-menus-object-inspector" element={<ContextMenusObjectInspectorPage />} />
+        <Route path="/fundamentals/controls/notifications-trigger" element={<NotificationsTriggerPage />} />
+        <Route path="/advanced/user-management/providers" element={<UserManagementProvidersPage />} />
+        <Route path="/advanced/user-management/flow" element={<UserManagementFlowPage />} />
         <Route path="/fundamentals/objects/add-remove" element={<ObjectsAddRemovePage />} />
         <Route path="/fundamentals/objects/query" element={<ObjectsQueryPage />} />
         <Route path="/fundamentals/objects/selection" element={<ObjectsSelectionPage />} />

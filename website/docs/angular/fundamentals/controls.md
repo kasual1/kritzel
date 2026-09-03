@@ -19,8 +19,8 @@ The workspace manager in the top-left corner lets people switch between workspac
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/workspace-manager-open"
-  repoFiles={['src/app/fundamentals/components/workspace-manager-open.component.ts']}
+  demoPath="/fundamentals/controls/workspace-manager-open"
+  repoFiles={['src/app/pages/fundamentals/controls/workspace-manager-open.component.ts']}
 />
 
 ## More Menu
@@ -29,8 +29,8 @@ The more menu in the top-right corner groups secondary editor actions. Use `more
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/more-menu-open"
-  repoFiles={['src/app/fundamentals/components/more-menu-open.component.ts']}
+  demoPath="/fundamentals/controls/more-menu-open"
+  repoFiles={['src/app/pages/fundamentals/controls/more-menu-open.component.ts']}
 />
 
 ## Toolbar and Utility Panel
@@ -39,8 +39,8 @@ The toolbar provides the configured drawing and selection tools, while the utili
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/toolbar-utility-panel"
-  repoFiles={['src/app/fundamentals/components/toolbar-utility-panel.component.ts']}
+  demoPath="/fundamentals/controls/toolbar-utility-panel"
+  repoFiles={['src/app/pages/fundamentals/controls/toolbar-utility-panel.component.ts']}
 />
 
 ## Zoom Panel
@@ -49,8 +49,8 @@ The zoom panel shows the current zoom level and provides zoom-in and zoom-out bu
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/zoom-panel-toggle"
-  repoFiles={['src/app/fundamentals/components/zoom-panel-toggle.component.ts']}
+  demoPath="/fundamentals/controls/zoom-panel-toggle"
+  repoFiles={['src/app/pages/fundamentals/controls/zoom-panel-toggle.component.ts']}
 />
 
 ## Context Menu
@@ -59,32 +59,32 @@ The Editor separates right-click actions into two arrays: `globalContextMenuItem
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/context-menus-canvas-quick-actions"
-  repoFiles={['src/app/fundamentals/components/context-menus-canvas-quick-actions.component.ts']}
+  demoPath="/fundamentals/controls/context-menus-canvas-quick-actions"
+  repoFiles={['src/app/pages/fundamentals/controls/context-menus-canvas-quick-actions.component.ts']}
 />
 
 Items can also call into clipboard methods such as `copy`, `paste`, and `delete`, wiring the menu to the same actions available from keyboard shortcuts.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/context-menus-clipboard-actions"
-  repoFiles={['src/app/fundamentals/components/context-menus-clipboard-actions.component.ts']}
+  demoPath="/fundamentals/controls/context-menus-clipboard-actions"
+  repoFiles={['src/app/pages/fundamentals/controls/context-menus-clipboard-actions.component.ts']}
 />
 
 Use `group` to cluster related entries with a separator, and `children` to nest a submenu of arbitrary depth for actions that don't need a top-level entry.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/context-menus-object-inspector"
-  repoFiles={['src/app/fundamentals/components/context-menus-object-inspector.component.ts']}
+  demoPath="/fundamentals/controls/context-menus-object-inspector"
+  repoFiles={['src/app/pages/fundamentals/controls/context-menus-object-inspector.component.ts']}
 />
 
 The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling "Select All" when the viewport is empty.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/context-menus-smart-conditional"
-  repoFiles={['src/app/fundamentals/components/context-menus-smart-conditional.component.ts']}
+  demoPath="/fundamentals/controls/context-menus-smart-conditional"
+  repoFiles={['src/app/pages/fundamentals/controls/context-menus-smart-conditional.component.ts']}
 />
 
 ## Notifications
@@ -93,8 +93,8 @@ Call `triggerNotification()` to display a transient message in the editor. Notif
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/notifications-trigger"
-  repoFiles={['src/app/fundamentals/components/notifications-trigger.component.ts']}
+  demoPath="/fundamentals/controls/notifications-trigger"
+  repoFiles={['src/app/pages/fundamentals/controls/notifications-trigger.component.ts']}
 />
 
 ## API Details

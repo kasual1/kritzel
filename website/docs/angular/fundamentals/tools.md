@@ -34,7 +34,7 @@ You can adjust the toolbar by passing a custom `toolbarItems` array to `kritzel-
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/tools/toolbar"
-  repoFiles={['src/app/fundamentals/tools/tools-toolbar.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/tools/tools-toolbar.component.ts']}
 />
 
 
@@ -52,7 +52,7 @@ Add a toolbar item of type `config` to let users adjust the active tool at runti
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/tools/config"
-  repoFiles={['src/app/fundamentals/tools/tools-config.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/tools/tools-config.component.ts']}
 />
 
 ## Adding Custom Tools
@@ -62,7 +62,7 @@ You can register a custom tool configuration and then surface it in the toolbar 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/tools/register"
-  repoFiles={['src/app/fundamentals/tools/tools-register.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/tools/tools-register.component.ts']}
 />
 
 ## Changing the Active Tool
@@ -72,7 +72,7 @@ You can programmatically change the currently active tool by calling the `change
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/tools/change"
-  repoFiles={['src/app/fundamentals/tools/tools-change.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/tools/tools-change.component.ts']}
 />
 
 
@@ -83,7 +83,7 @@ In order to disable a specific tool, set `isDisabled` on the corresponding entry
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/tools/disable"
-  repoFiles={['src/app/fundamentals/tools/tools-disable.component.ts']}
+  repoFiles={['src/app/pages/fundamentals/tools/tools-disable.component.ts']}
 />
 
 ## API Details

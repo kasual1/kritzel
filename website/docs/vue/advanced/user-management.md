@@ -23,8 +23,8 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/components/user-management-providers"
-  repoFiles={['src/pages/fundamentals/components/UserManagementProvidersPage.vue']}
+  demoPath="/advanced/user-management/providers"
+  repoFiles={['src/pages/advanced/user-management/UserManagementProvidersPage.vue']}
 />
 
 ## Handling the Login Flow
@@ -38,8 +38,8 @@ Clicking a provider button puts that button into a loading state and emits the e
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/fundamentals/components/user-management-flow"
-  repoFiles={['src/pages/fundamentals/components/UserManagementFlowPage.vue']}
+  demoPath="/advanced/user-management/flow"
+  repoFiles={['src/pages/advanced/user-management/UserManagementFlowPage.vue']}
 />
 
 ## Theming the Dialog

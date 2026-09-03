@@ -23,8 +23,8 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components/user-management-providers"
-  repoFiles={['src/pages/fundamentals/components/UserManagementProvidersPage.tsx']}
+  demoPath="/advanced/user-management/providers"
+  repoFiles={['src/pages/advanced/user-management/UserManagementProvidersPage.tsx']}
 />
 
 ## Handling the Login Flow
@@ -38,8 +38,8 @@ Clicking a provider button puts that button into a loading state and fires the e
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/components/user-management-flow"
-  repoFiles={['src/pages/fundamentals/components/UserManagementFlowPage.tsx']}
+  demoPath="/advanced/user-management/flow"
+  repoFiles={['src/pages/advanced/user-management/UserManagementFlowPage.tsx']}
 />
 
 ## Theming the Dialog

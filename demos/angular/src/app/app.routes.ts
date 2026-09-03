@@ -1,58 +1,55 @@
 import { Routes } from '@angular/router';
-import { QuickStartComponent } from './getting-started/quick-start.component';
-import { BasicUsageComponent } from './getting-started/basic-usage.component';
-import { ComponentsEditorComponent } from './fundamentals/components/components-editor.component';
-import { ComponentsEditorUiComponent } from './fundamentals/components/components-editor-ui.component';
-import { ComponentsEngineComponent } from './fundamentals/components/components-engine.component';
-import { UserManagementProvidersComponent } from './fundamentals/components/user-management-providers.component';
-import { UserManagementFlowComponent } from './fundamentals/components/user-management-flow.component';
-import { ContextMenusCanvasQuickActionsComponent } from './fundamentals/components/context-menus-canvas-quick-actions.component';
-import { ContextMenusClipboardActionsComponent } from './fundamentals/components/context-menus-clipboard-actions.component';
-import { ContextMenusSmartConditionalComponent } from './fundamentals/components/context-menus-smart-conditional.component';
-import { ContextMenusObjectInspectorComponent } from './fundamentals/components/context-menus-object-inspector.component';
-import { NotificationsTriggerComponent } from './fundamentals/components/notifications-trigger.component';
-import { WorkspaceManagerOpenComponent } from './fundamentals/components/workspace-manager-open.component';
-import { MoreMenuOpenComponent } from './fundamentals/components/more-menu-open.component';
-import { ToolbarUtilityPanelComponent } from './fundamentals/components/toolbar-utility-panel.component';
-import { ZoomPanelToggleComponent } from './fundamentals/components/zoom-panel-toggle.component';
-import { ObjectsAddComponent } from './fundamentals/objects/objects-add.component';
-import { ObjectsRemoveComponent } from './fundamentals/objects/objects-remove.component';
-import { ObjectsUpdateComponent } from './fundamentals/objects/objects-update.component';
-import { ObjectsFilterComponent } from './fundamentals/objects/objects-filter.component';
-import { ObjectsSelectionComponent } from './fundamentals/objects/objects-selection.component';
-import { ObjectsGroupingComponent } from './fundamentals/objects/objects-grouping.component';
-import { ObjectsOrderingComponent } from './fundamentals/objects/objects-ordering.component';
-import { ToolsChangeComponent } from './fundamentals/tools/tools-change.component';
-import { ToolsToolbarComponent } from './fundamentals/tools/tools-toolbar.component';
-import { ToolsDisableComponent } from './fundamentals/tools/tools-disable.component';
-import { ToolsRegisterComponent } from './fundamentals/tools/tools-register.component';
-import { ToolsConfigComponent } from './fundamentals/tools/tools-config.component';
-import { ViewportChangeComponent } from './fundamentals/viewport/viewport-change.component';
-import { ViewportCenterComponent } from './fundamentals/viewport/viewport-center.component';
-import { ViewportCoordinatesComponent } from './fundamentals/viewport/viewport-coordinates.component';
-import { WorkspacesSwitchComponent } from './fundamentals/workspaces/workspaces-switch.component';
-import { WorkspacesCrudComponent } from './fundamentals/workspaces/workspaces-crud.component';
-import { PersistenceLocalComponent } from './fundamentals/persistence/persistence-local.component';
-import { CollaborationLocalComponent } from './advanced/collaboration/collaboration-local.component';
-import { CollaborationRealtimeComponent } from './advanced/collaboration/collaboration-realtime.component';
-import { DynamicObjectsHtmlComponent } from './advanced/dynamic-objects/dynamic-objects-html.component';
-import { DynamicObjectsComponentComponent } from './advanced/dynamic-objects/dynamic-objects-component.component';
-import { DynamicObjectsElementComponent } from './advanced/dynamic-objects/dynamic-objects-element.component';
-import { DynamicObjectsElementHtmlComponent } from './advanced/dynamic-objects/dynamic-objects-element-html.component';
-import { ImportExportViewportExportComponent } from './advanced/import-export/import-export-viewport-export.component';
-import { ImportExportWorkspaceExportComponent } from './advanced/import-export/import-export-workspace-export.component';
-import { ImportExportWorkspaceImportComponent } from './advanced/import-export/import-export-workspace-import.component';
-import { ThemingApplyComponent } from './customization/theming/theming-apply.component';
-import { ThemingCustomComponent } from './customization/theming/theming-custom.component';
-import { FontsRegisterComponent } from './customization/fonts/fonts-register.component';
-import { IconsRegisterComponent } from './customization/icons/icons-register.component';
-import { LocalizationSwitchComponent } from './customization/localization/localization-switch.component';
-import { LocalizationCustomComponent } from './customization/localization/localization-custom.component';
-import { ObjectExplorerComponent } from './examples/object-explorer.component';
-import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapper.component';
-import { SlideshowPresentationComponent } from './examples/slideshow-presentation.component';
-import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery.component';
-import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio.component';
+import { QuickStartComponent } from './pages/getting-started/quick-start.component';
+import { BasicUsageComponent } from './pages/getting-started/basic-usage.component';
+import { UserManagementProvidersComponent } from './pages/advanced/user-management/user-management-providers.component';
+import { UserManagementFlowComponent } from './pages/advanced/user-management/user-management-flow.component';
+import { ContextMenusCanvasQuickActionsComponent } from './pages/fundamentals/controls/context-menus-canvas-quick-actions.component';
+import { ContextMenusClipboardActionsComponent } from './pages/fundamentals/controls/context-menus-clipboard-actions.component';
+import { ContextMenusSmartConditionalComponent } from './pages/fundamentals/controls/context-menus-smart-conditional.component';
+import { ContextMenusObjectInspectorComponent } from './pages/fundamentals/controls/context-menus-object-inspector.component';
+import { NotificationsTriggerComponent } from './pages/fundamentals/controls/notifications-trigger.component';
+import { WorkspaceManagerOpenComponent } from './pages/fundamentals/controls/workspace-manager-open.component';
+import { MoreMenuOpenComponent } from './pages/fundamentals/controls/more-menu-open.component';
+import { ToolbarUtilityPanelComponent } from './pages/fundamentals/controls/toolbar-utility-panel.component';
+import { ZoomPanelToggleComponent } from './pages/fundamentals/controls/zoom-panel-toggle.component';
+import { ObjectsAddComponent } from './pages/fundamentals/objects/objects-add.component';
+import { ObjectsRemoveComponent } from './pages/fundamentals/objects/objects-remove.component';
+import { ObjectsUpdateComponent } from './pages/fundamentals/objects/objects-update.component';
+import { ObjectsFilterComponent } from './pages/fundamentals/objects/objects-filter.component';
+import { ObjectsSelectionComponent } from './pages/fundamentals/objects/objects-selection.component';
+import { ObjectsGroupingComponent } from './pages/fundamentals/objects/objects-grouping.component';
+import { ObjectsOrderingComponent } from './pages/fundamentals/objects/objects-ordering.component';
+import { ToolsChangeComponent } from './pages/fundamentals/tools/tools-change.component';
+import { ToolsToolbarComponent } from './pages/fundamentals/tools/tools-toolbar.component';
+import { ToolsDisableComponent } from './pages/fundamentals/tools/tools-disable.component';
+import { ToolsRegisterComponent } from './pages/fundamentals/tools/tools-register.component';
+import { ToolsConfigComponent } from './pages/fundamentals/tools/tools-config.component';
+import { ViewportChangeComponent } from './pages/fundamentals/viewport/viewport-change.component';
+import { ViewportCenterComponent } from './pages/fundamentals/viewport/viewport-center.component';
+import { ViewportCoordinatesComponent } from './pages/fundamentals/viewport/viewport-coordinates.component';
+import { WorkspacesSwitchComponent } from './pages/fundamentals/workspaces/workspaces-switch.component';
+import { WorkspacesCrudComponent } from './pages/fundamentals/workspaces/workspaces-crud.component';
+import { PersistenceLocalComponent } from './pages/fundamentals/persistence/persistence-local.component';
+import { CollaborationLocalComponent } from './pages/advanced/collaboration/collaboration-local.component';
+import { CollaborationRealtimeComponent } from './pages/advanced/collaboration/collaboration-realtime.component';
+import { DynamicObjectsHtmlComponent } from './pages/advanced/dynamic-objects/dynamic-objects-html.component';
+import { DynamicObjectsComponentComponent } from './pages/advanced/dynamic-objects/dynamic-objects-component.component';
+import { DynamicObjectsElementComponent } from './pages/advanced/dynamic-objects/dynamic-objects-element.component';
+import { DynamicObjectsElementHtmlComponent } from './pages/advanced/dynamic-objects/dynamic-objects-element-html.component';
+import { ImportExportViewportExportComponent } from './pages/advanced/import-export/import-export-viewport-export.component';
+import { ImportExportWorkspaceExportComponent } from './pages/advanced/import-export/import-export-workspace-export.component';
+import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-export/import-export-workspace-import.component';
+import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
+import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
+import { FontsRegisterComponent } from './pages/customization/fonts/fonts-register.component';
+import { IconsRegisterComponent } from './pages/customization/icons/icons-register.component';
+import { LocalizationSwitchComponent } from './pages/customization/localization/localization-switch.component';
+import { LocalizationCustomComponent } from './pages/customization/localization/localization-custom.component';
+import { ObjectExplorerComponent } from './pages/examples/object-explorer.component';
+import { BlueprintDefectMapperComponent } from './pages/examples/blueprint-defect-mapper.component';
+import { SlideshowPresentationComponent } from './pages/examples/slideshow-presentation.component';
+import { InfiniteCanvasGalleryComponent } from './pages/examples/infinite-canvas-gallery.component';
+import { ImageAnnotationStudioComponent } from './pages/examples/image-annotation-studio.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'getting-started/quick-start' },
@@ -67,13 +64,8 @@ export const routes: Routes = [
     path: 'fundamentals',
     children: [
       {
-        path: 'components',
+        path: 'controls',
         children: [
-          { path: 'editor', component: ComponentsEditorComponent },
-          { path: 'editor-ui', component: ComponentsEditorUiComponent },
-          { path: 'engine', component: ComponentsEngineComponent },
-          { path: 'user-management-providers', component: UserManagementProvidersComponent },
-          { path: 'user-management-flow', component: UserManagementFlowComponent },
           { path: 'context-menus-canvas-quick-actions', component: ContextMenusCanvasQuickActionsComponent },
           { path: 'context-menus-clipboard-actions', component: ContextMenusClipboardActionsComponent },
           { path: 'context-menus-smart-conditional', component: ContextMenusSmartConditionalComponent },
@@ -131,6 +123,13 @@ export const routes: Routes = [
   {
     path: 'advanced',
     children: [
+      {
+        path: 'user-management',
+        children: [
+          { path: 'providers', component: UserManagementProvidersComponent },
+          { path: 'flow', component: UserManagementFlowComponent },
+        ],
+      },
       {
         path: 'collaboration',
         children: [

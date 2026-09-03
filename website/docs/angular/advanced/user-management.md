@@ -39,8 +39,8 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/user-management-providers"
-  repoFiles={['src/app/fundamentals/components/user-management-providers.component.ts']}
+  demoPath="/advanced/user-management/providers"
+  repoFiles={['src/app/pages/advanced/user-management/user-management-providers.component.ts']}
 />
 
 ## Handling the Login Flow
@@ -54,8 +54,8 @@ Clicking a provider button puts that button into a loading state and emits the e
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/fundamentals/components/user-management-flow"
-  repoFiles={['src/app/fundamentals/components/user-management-flow.component.ts']}
+  demoPath="/advanced/user-management/flow"
+  repoFiles={['src/app/pages/advanced/user-management/user-management-flow.component.ts']}
 />
 
 ## API Details

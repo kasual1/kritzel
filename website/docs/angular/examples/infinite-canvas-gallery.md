@@ -35,7 +35,7 @@ Twenty artwork thumbnails — sourced from [placehold.co](https://placehold.co) 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/examples/infinite-canvas-gallery"
-  repoFiles={['src/app/examples/infinite-canvas-gallery.component.ts']}
+  repoFiles={['src/app/pages/examples/infinite-canvas-gallery.component.ts']}
 />
 
 The key detail: `maxWidth` and `maxHeight` on each `KritzelImage.fromUrl` call must match the intended display size. The default constraints are `300 × 300`, so images larger than that are silently scaled down unless overridden.

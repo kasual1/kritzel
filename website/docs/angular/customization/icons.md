@@ -22,7 +22,7 @@ The demo registers four application-specific SVG icons and passes them to the ed
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/customization/icons/register"
-  repoFiles={['src/app/customization/icons/icons-register.component.ts']}
+  repoFiles={['src/app/pages/customization/icons/icons-register.component.ts']}
 />
 
 ## Using Icons in Toolbar Items and Menus
