@@ -6,6 +6,26 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
 
 /**
+ * Configuration options for creating a KritzelImage instance.
+ */
+export interface KritzelImageConfig {
+  assetId?: string;
+  mimeType?: string;
+  src?: string;
+  x?: number;
+  y?: number;
+  translateX?: number;
+  translateY?: number;
+  rotation?: number;
+  scale?: number;
+  width?: number;
+  height?: number;
+  maxWidth?: number;
+  maxHeight?: number;
+  maxLoadAttempts?: number;
+}
+
+/**
  * Represents an image object on the canvas.
  *
  * Image bytes are NOT stored on this object or inside the Yjs document.
@@ -108,10 +128,10 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
   /**
    * Creates a new KritzelImage instance.
-   * @param config - Optional partial configuration object to initialize image properties
+   * @param config - Optional configuration object to initialize image properties
    *                 including assetId, src, position (x, y), translation, and scale.
    */
-  constructor(config?: Partial<KritzelImage>) {
+  constructor(config?: KritzelImageConfig) {
     super();
     this.assetId = config?.assetId || '';
     this.mimeType = config?.mimeType || '';

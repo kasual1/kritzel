@@ -8,6 +8,13 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelLine } from './line.class';
 
 /**
+ * Configuration options for creating a KritzelSelectionGroup instance.
+ */
+export interface KritzelSelectionGroupConfig {
+  rotation?: number;
+}
+
+/**
  * Represents a snapshot of an object's transform state at a specific point in time.
  * Used to preserve initial values during transform operations (rotate, resize)
  * to avoid compounding errors from incremental updates.
@@ -41,7 +48,7 @@ interface UnchangedObjectSnapshot {
 export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
   override __class__: string = 'KritzelSelectionGroup';
 
-  constructor(config?: { rotation?: number }) {
+  constructor(config?: KritzelSelectionGroupConfig) {
     super();
     this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
   }

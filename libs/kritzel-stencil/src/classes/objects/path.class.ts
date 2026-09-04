@@ -1,6 +1,5 @@
 import { getStroke } from 'perfect-freehand';
 import { KritzelMathHelper } from '../../helpers/math.helper';
-import { KritzelPathOptions } from '../../interfaces/path-options.interface';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
@@ -8,6 +7,23 @@ import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelCore } from '../core/core.class';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
+
+/**
+ * Configuration options for creating a KritzelPath instance.
+ */
+export interface KritzelPathConfig {
+  points?: number[][];
+  translateX?: number;
+  translateY?: number;
+  /** Rotation in degrees at initialization time. */
+  rotation?: number;
+  scale?: number;
+  stroke?: ThemeAwareColor;
+  strokeWidth?: number;
+  fill?: ThemeAwareColor;
+  opacity?: number;
+  lineSlack?: number;
+}
 
 export class KritzelPath extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelPath';
@@ -23,7 +39,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   height: number = 0;
   width: number = 0;
   scale: number = 1;
-  options: KritzelPathOptions | undefined;
+  options: KritzelPathConfig | undefined;
 
   isVisible: boolean = true;
   isDebugInfoVisible: boolean = true;
@@ -57,7 +73,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    * @param config.fill - Theme-aware fill color with light and dark variants
    * @param config.lineSlack - Additional padding for bounding box calculations (default: 0.5)
    */
-  constructor(config?: { points: number[][]; translateX?: number; translateY?: number; rotation?: number; scale?: number; strokeWidth?: number; fill?: ThemeAwareColor; lineSlack?: number }) {
+  constructor(config?: KritzelPathConfig) {
     super();
     this.options = config;
     this.points = config?.points ?? [];
@@ -78,7 +94,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    * @param options - Optional configuration options for the path
    * @returns A new KritzelPath instance configured with the provided options
    */
-  static override create(core: KritzelCore, options?: KritzelPathOptions): KritzelPath {
+  static override create(core: KritzelCore, options?: KritzelPathConfig): KritzelPath {
     const object = new KritzelPath();
 
     object._core = core;

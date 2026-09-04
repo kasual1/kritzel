@@ -5,6 +5,13 @@ import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /**
+ * Configuration options for creating a KritzelGroup instance.
+ */
+export interface KritzelGroupConfig {
+  rotation?: number;
+}
+
+/**
  * KritzelGroup represents a permanent grouping of objects that act as a single unit.
  * 
  * Unlike KritzelSelectionGroup (which is ephemeral and used for temporary multi-selection),
@@ -19,7 +26,7 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     override __class__: string = 'KritzelGroup';
 
-    constructor(config?: { rotation?: number }) {
+    constructor(config?: KritzelGroupConfig) {
         super();
         this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     }
