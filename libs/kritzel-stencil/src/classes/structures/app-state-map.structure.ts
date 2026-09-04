@@ -269,11 +269,11 @@ export class KritzelAppStateMap {
       };
     }
 
-    const workspace = new KritzelWorkspace(
-      serialized.id,
-      serialized.name,
-      viewport
-    );
+    const workspace = new KritzelWorkspace({
+      id: serialized.id,
+      name: serialized.name,
+      viewport,
+    });
     if (this._core) {
       workspace._core = this._core;
     }

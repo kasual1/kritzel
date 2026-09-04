@@ -27,7 +27,7 @@ import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelDynamicObject } from '../../../classes/objects/dynamic-object.class';
-import { KritzelWorkspace, WORKSPACE_EXPORT_VERSION } from '../../../classes/core/workspace.class';
+import { KritzelWorkspace, KritzelWorkspaceConfig, WORKSPACE_EXPORT_VERSION } from '../../../classes/core/workspace.class';
 import { KritzelReviver } from '../../../classes/core/reviver.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
@@ -1737,7 +1737,11 @@ export class KritzelEngine {
     const importedName = this.getImportedWorkspaceName(data.name);
     const importedViewport = this.getImportedWorkspaceViewport(data.viewport);
 
-    const newWorkspace = new KritzelWorkspace(newWorkspaceId, importedName, importedViewport);
+    const newWorkspace = new KritzelWorkspace({
+      id: newWorkspaceId,
+      name: importedName,
+      viewport: importedViewport,
+    });
 
     // Save the new workspace
     this.core.createWorkspace(newWorkspace);
@@ -2122,15 +2126,34 @@ export class KritzelEngine {
   }
 
   /**
+   * Switches the active workspace in the engine by ID.
+   * @param id - The unique ID of the workspace to activate
+   */
+  @Method()
+  async setActiveWorkspace(id: string): Promise<void> {
+    await this.core.setActiveWorkspace(id);
+    if (this.core.store.state.activeWorkspace) {
+      this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace);
+    }
+  }
+
+  /**
    * Creates a new workspace and emits a `workspacesChange` event.
-   * @param workspace - The workspace to create.
+   * Emits `activeWorkspaceChange` if the created workspace is activated.
+   * @param workspaceOrConfig - The workspace instance or configuration object to create.
    * @returns The created workspace.
    */
   @Method()
-  async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
-    await this.core.createWorkspace(workspace);
+  async createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig): Promise<KritzelWorkspace | null> {
+    const createdWorkspace = await this.core.createWorkspace(workspaceOrConfig);
     this.workspacesChange.emit(this.core.store.state.workspaces);
-    return workspace;
+
+    const activeWorkspace = this.core.store.state.activeWorkspace;
+    if (activeWorkspace && activeWorkspace.id === createdWorkspace.id) {
+      this.activeWorkspaceChange.emit(activeWorkspace);
+    }
+
+    return createdWorkspace;
   }
 
   /**
@@ -2192,7 +2215,7 @@ export class KritzelEngine {
     let workspace = this.core.getWorkspaces().find(w => w.id === workspaceId);
 
     if (!workspace) {
-      workspace = new KritzelWorkspace(workspaceId, 'Shared Workspace');
+      workspace = new KritzelWorkspace({ id: workspaceId, name: 'Shared Workspace' });
       workspace.isPublic = true;
       this.core.createWorkspace(workspace);
     } else {

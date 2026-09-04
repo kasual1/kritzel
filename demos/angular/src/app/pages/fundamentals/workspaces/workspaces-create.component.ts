@@ -71,11 +71,9 @@ export class WorkspacesCreateComponent {
 
   async createWorkspace() {
     const workspaceNumber = this.workspaces().length + 1;
-    const workspace = new KritzelWorkspace(
-      crypto.randomUUID(),
-      `Board ${workspaceNumber}`,
-    );
-    await this.editor.createWorkspace(workspace);
+    await this.editor.createWorkspace({
+      name: `Board ${workspaceNumber}`,
+    });
   }
 
   async refreshWorkspaces() {

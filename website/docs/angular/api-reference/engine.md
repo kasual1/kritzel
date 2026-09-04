@@ -320,12 +320,20 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 
 ### Methods
 
-#### createWorkspace
+#### setActiveWorkspace
 
-Creates a new workspace and emits a `workspacesChange` event.
+Switches the active workspace shown in the engine by ID.
 
 ```ts
-createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null>
+setActiveWorkspace(id: string): Promise<void>
+```
+
+#### createWorkspace
+
+Creates a new workspace and emits a `workspacesChange` event. Accepts either a `KritzelWorkspace` instance or a configuration object.
+
+```ts
+createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig): Promise<KritzelWorkspace | null>
 ```
 
 #### updateWorkspace

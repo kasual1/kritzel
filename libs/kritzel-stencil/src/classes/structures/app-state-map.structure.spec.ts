@@ -32,19 +32,19 @@ jest.mock('yjs', () => ({
 
 // --- Mock KritzelWorkspace ---
 jest.mock('../core/workspace.class', () => ({
-  KritzelWorkspace: jest.fn().mockImplementation((id: string, name: string, viewport: unknown) => ({
-    id,
-    name,
-    viewport: viewport ?? { centerWorldX: 0, centerWorldY: 0, scale: 1 },
+  KritzelWorkspace: jest.fn().mockImplementation((config: any) => ({
+    id: config?.id ?? 'generated-id',
+    name: config?.name ?? 'New Workspace',
+    viewport: config?.viewport ?? { centerWorldX: 0, centerWorldY: 0, scale: 1 },
     createdAt: new Date(),
     updatedAt: new Date(),
     _core: null,
     serialize: jest.fn().mockReturnValue({
-      id,
-      name,
+      id: config?.id ?? 'generated-id',
+      name: config?.name ?? 'New Workspace',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      viewport: viewport ?? { centerWorldX: 0, centerWorldY: 0, scale: 1 },
+      viewport: config?.viewport ?? { centerWorldX: 0, centerWorldY: 0, scale: 1 },
     }),
   })),
 }));

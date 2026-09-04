@@ -271,15 +271,16 @@ Type: `Promise<void>`
 
 
 
-### `createWorkspace(workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>`
+### `createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig) => Promise<KritzelWorkspace | null>`
 
 Creates a new workspace and emits a `workspacesChange` event.
+Emits `activeWorkspaceChange` if the created workspace is activated.
 
 #### Parameters
 
-| Name        | Type               | Description                |
-| ----------- | ------------------ | -------------------------- |
-| `workspace` | `KritzelWorkspace` | - The workspace to create. |
+| Name                | Type                                         | Description                                                 |
+| ------------------- | -------------------------------------------- | ----------------------------------------------------------- |
+| `workspaceOrConfig` | `KritzelWorkspace \| KritzelWorkspaceConfig` | - The workspace instance or configuration object to create. |
 
 #### Returns
 
@@ -962,6 +963,22 @@ Moves an object to the very back of the z-order.
 | Name     | Type                     | Description                                                         |
 | -------- | ------------------------ | ------------------------------------------------------------------- |
 | `object` | `KritzelBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setActiveWorkspace(id: string) => Promise<void>`
+
+Switches the active workspace in the engine by ID.
+
+#### Parameters
+
+| Name | Type     | Description                                  |
+| ---- | -------- | -------------------------------------------- |
+| `id` | `string` | - The unique ID of the workspace to activate |
 
 #### Returns
 

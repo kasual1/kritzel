@@ -29,7 +29,7 @@ import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangeEvent } from "./interfaces/share.interface";
-import { KritzelWorkspace } from "./classes/core/workspace.class";
+import { KritzelWorkspace, KritzelWorkspaceConfig } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
 import { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
@@ -75,7 +75,7 @@ export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangeEvent } from "./interfaces/share.interface";
-export { KritzelWorkspace } from "./classes/core/workspace.class";
+export { KritzelWorkspace, KritzelWorkspaceConfig } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
@@ -347,7 +347,7 @@ export namespace Components {
         "changeActiveTool": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
-        "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
+        "createWorkspace": (workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig) => Promise<KritzelWorkspace | null>;
         /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
@@ -511,6 +511,7 @@ export namespace Components {
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "setActiveWorkspace": (id: string) => Promise<void>;
         /**
           * Sets the active locale (language) and re-renders the UI.
           * @param code - The locale code to activate, e.g. 'de'.
@@ -651,11 +652,11 @@ export namespace Components {
          */
         "copy": () => Promise<void>;
         /**
-          * Creates a new workspace and emits a `workspacesChange` event.
-          * @param workspace - The workspace to create.
+          * Creates a new workspace and emits a `workspacesChange` event. Emits `activeWorkspaceChange` if the created workspace is activated.
+          * @param workspaceOrConfig - The workspace instance or configuration object to create.
           * @returns The created workspace.
          */
-        "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
+        "createWorkspace": (workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig) => Promise<KritzelWorkspace | null>;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */
@@ -978,6 +979,11 @@ export namespace Components {
           * @param object - The object to move. If omitted, applies to the current selection.
          */
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        /**
+          * Switches the active workspace in the engine by ID.
+          * @param id - The unique ID of the workspace to activate
+         */
+        "setActiveWorkspace": (id: string) => Promise<void>;
         /**
           * Sets the active locale (language) and re-renders the UI.
           * @param code - The locale code to activate, e.g. 'de'.

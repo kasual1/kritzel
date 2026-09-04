@@ -349,7 +349,7 @@ describe('KritzelCore', () => {
 
   describe('getWorkspaces', () => {
     it('should return workspaces from app state map', () => {
-      const ws = [new KritzelWorkspace('ws-1', 'Workspace 1')];
+      const ws = [new KritzelWorkspace({ id: 'ws-1', name: 'Workspace 1' })];
       mockAppStateMap.allWorkspaces.mockReturnValue(ws);
 
       expect(core.getWorkspaces()).toBe(ws);
@@ -357,30 +357,73 @@ describe('KritzelCore', () => {
   });
 
   describe('createWorkspace', () => {
-    it('should set core reference and dates on the workspace', () => {
-      const ws = new KritzelWorkspace('ws-new', 'New Workspace');
+    it('should set core reference and dates on the workspace', async () => {
+      const ws = new KritzelWorkspace({ id: 'ws-new', name: 'New Workspace' });
       const before = new Date();
 
-      core.createWorkspace(ws);
+      await core.createWorkspace(ws);
 
       expect(ws._core).toBe(core);
       expect(ws.createdAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
       expect(ws.updatedAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
     });
 
-    it('should save workspace to app state and refresh workspace list', () => {
-      const ws = new KritzelWorkspace('ws-new', 'New Workspace');
+    it('should save workspace to app state and refresh workspace list', async () => {
+      const ws = new KritzelWorkspace({ id: 'ws-new', name: 'New Workspace' });
 
-      core.createWorkspace(ws);
+      await core.createWorkspace(ws);
 
       // saveWorkspaceToAppState is private, but we can check insert/update was called
       expect(mockAppStateMap.insert).toHaveBeenCalled();
+    });
+
+    it('should support configuration object and auto-generate ID', async () => {
+      const created = await core.createWorkspace({ name: 'Config Workspace' });
+
+      expect(created).toBeInstanceOf(KritzelWorkspace);
+      expect(created.name).toBe('Config Workspace');
+      expect(created.id).toBeDefined();
+    });
+
+    it('should activate workspace when activate: true option is provided', async () => {
+      const setActiveSpy = jest.spyOn(core, 'setActiveWorkspace').mockResolvedValue(undefined);
+
+      const created = await core.createWorkspace({
+        name: 'Activated Workspace',
+        activate: true,
+      });
+
+      expect(created.name).toBe('Activated Workspace');
+      expect(setActiveSpy).toHaveBeenCalledWith(created.id);
+    });
+  });
+
+  describe('setActiveWorkspace', () => {
+    it('should switch to workspace by ID', async () => {
+      const ws = new KritzelWorkspace({ id: 'ws-target', name: 'Target Workspace' });
+      jest.spyOn(core, 'getWorkspaces').mockReturnValue([ws]);
+      const initSpy = jest.spyOn(core, 'initializeWorkspace').mockResolvedValue(undefined);
+
+      await core.setActiveWorkspace('ws-target');
+
+      expect(initSpy).toHaveBeenCalledWith(ws);
+    });
+
+    it('should warn and do nothing if workspace ID is not found', async () => {
+      jest.spyOn(core, 'getWorkspaces').mockReturnValue([]);
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const initSpy = jest.spyOn(core, 'initializeWorkspace');
+
+      await core.setActiveWorkspace('ws-unknown');
+
+      expect(warnSpy).toHaveBeenCalled();
+      expect(initSpy).not.toHaveBeenCalled();
     });
   });
 
   describe('updateWorkspace', () => {
     it('should update the updatedAt timestamp', () => {
-      const ws = new KritzelWorkspace('ws-1', 'Workspace');
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace' });
       const oldDate = new Date(2020, 0, 1);
       ws.updatedAt = oldDate;
 
@@ -392,7 +435,7 @@ describe('KritzelCore', () => {
     });
 
     it('should update the workspace in the workspaces array', () => {
-      const ws = new KritzelWorkspace('ws-1', 'Old Name');
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Old Name' });
       mockStore.state.workspaces = [ws];
 
       ws.name = 'New Name';
@@ -404,7 +447,7 @@ describe('KritzelCore', () => {
 
   describe('deleteWorkspace', () => {
     it('should remove workspace from app state', () => {
-      const ws = new KritzelWorkspace('ws-del', 'Delete Me');
+      const ws = new KritzelWorkspace({ id: 'ws-del', name: 'Delete Me' });
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
       core.deleteWorkspace(ws);
@@ -413,7 +456,7 @@ describe('KritzelCore', () => {
     });
 
     it('should destroy objects and cancel updates when deleting the active workspace', () => {
-      const ws = new KritzelWorkspace('ws-1', 'Active WS');
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Active WS' });
       mockStore.state.activeWorkspace = { id: 'ws-1' };
 
       core.deleteWorkspace(ws);
@@ -423,7 +466,7 @@ describe('KritzelCore', () => {
     });
 
     it('should delete the IndexedDB database for the workspace', () => {
-      const ws = new KritzelWorkspace('ws-db', 'DB Test');
+      const ws = new KritzelWorkspace({ id: 'ws-db', name: 'DB Test' });
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
       core.deleteWorkspace(ws);
@@ -437,7 +480,7 @@ describe('KritzelCore', () => {
       (coreWithId as any)._store = mockStore;
       mockStore.state.activeWorkspace = { id: 'ws-other' };
 
-      const ws = new KritzelWorkspace('ws-db', 'DB Test');
+      const ws = new KritzelWorkspace({ id: 'ws-db', name: 'DB Test' });
       coreWithId.deleteWorkspace(ws);
 
       expect(window.indexedDB.deleteDatabase).toHaveBeenCalledWith('kritzel-workspace-homepage-ws-db');
@@ -1487,7 +1530,7 @@ describe('KritzelCore', () => {
     const STORAGE_KEY = 'kritzel-active-workspace-id';
 
     function createWorkspace(id: string, name: string, createdAt: Date, updatedAt?: Date): KritzelWorkspace {
-      const ws = new KritzelWorkspace(id, name);
+      const ws = new KritzelWorkspace({ id, name });
       ws.createdAt = createdAt;
       ws.updatedAt = updatedAt ?? createdAt;
       return ws;

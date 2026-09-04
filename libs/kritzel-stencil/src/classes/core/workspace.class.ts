@@ -1,8 +1,30 @@
 import { KritzelSerializable } from "../../interfaces/serializable.interface";
+import { ObjectHelper } from "../../helpers/object.helper";
 import type { KritzelCore } from "./core.class";
+import type { KritzelBaseObject } from "../objects/base-object.class";
 
 /** Current version of the workspace export format */
 export const WORKSPACE_EXPORT_VERSION = '1.3.0';
+
+/**
+ * Configuration options for creating a KritzelWorkspace instance.
+ */
+export interface KritzelWorkspaceConfig {
+  /** Unique identifier for the workspace. Auto-generated if omitted. */
+  id?: string;
+  /** Display name of the workspace. Defaults to 'New Workspace' if omitted. */
+  name?: string;
+  /** Initial viewport configuration containing world-space center coordinates and scale */
+  viewport?: {
+    centerWorldX?: number;
+    centerWorldY?: number;
+    scale?: number;
+  };
+  /** Optional array of initial canvas objects to seed into this workspace */
+  objects?: KritzelBaseObject<any>[];
+  /** Whether to switch to and activate this workspace upon creation (default: false) */
+  activate?: boolean;
+}
 
 /**
  * Represents a workspace in the Kritzel canvas.
@@ -35,16 +57,18 @@ export class KritzelWorkspace implements KritzelSerializable {
 
   /**
    * Creates a new KritzelWorkspace instance.
-   * @param id - Unique identifier for the workspace
-   * @param name - Display name of the workspace
-   * @param viewport - Initial viewport state with centerWorldX, centerWorldY, and scale values
+   * @param config - Configuration options object for the workspace
    */
-  constructor(id: string, name: string, viewport: { centerWorldX: number; centerWorldY: number; scale: number } = { centerWorldX: 0, centerWorldY: 0, scale: 1 }) {
-    this.id = id;
-    this.name = name;
+  constructor(config?: KritzelWorkspaceConfig) {
+    this.id = config?.id ?? ObjectHelper.generateUUID();
+    this.name = config?.name ?? 'New Workspace';
     this.createdAt = new Date();
     this.updatedAt = new Date();
-    this.viewport = viewport;
+    this.viewport = {
+      centerWorldX: config?.viewport?.centerWorldX ?? 0,
+      centerWorldY: config?.viewport?.centerWorldY ?? 0,
+      scale: config?.viewport?.scale ?? 1,
+    };
     this.isPublic = false;
   }
 
@@ -55,7 +79,11 @@ export class KritzelWorkspace implements KritzelSerializable {
    * @returns A new KritzelWorkspace instance with the core reference set
    */
   static create(core: KritzelCore, obj: any): KritzelWorkspace {
-    const workspace = new KritzelWorkspace(obj.id, obj.name, obj.viewport);
+    const workspace = new KritzelWorkspace({
+      id: obj.id,
+      name: obj.name,
+      viewport: obj.viewport,
+    });
     workspace._core = core;
     return workspace;
   }

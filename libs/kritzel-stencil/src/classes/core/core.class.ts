@@ -1,7 +1,6 @@
 import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
 import { DEFAULT_ENGINE_CONFIG } from '../../configs/default-engine-config';
 import { AlignmentHelper } from '../../helpers/alignment.helper';
-import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelAlignment } from '../../enums/alignment.enum';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
@@ -10,7 +9,7 @@ import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelToolRegistry } from '../registries/tool.registry';
 import { KritzelStore } from './store.class';
-import { KritzelWorkspace } from './workspace.class';
+import { KritzelWorkspace, KritzelWorkspaceConfig } from './workspace.class';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
 import { KritzelAssetStorageConfig } from '../../interfaces/asset-storage-config.interface';
@@ -372,7 +371,7 @@ export class KritzelCore {
       return;
     } else {
       // Create fallback workspace
-      activeWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+      activeWorkspace = new KritzelWorkspace({ name: 'New Workspace' });
       activeWorkspace._core = this;
       this.saveWorkspaceToAppState(activeWorkspace);
     }
@@ -439,7 +438,7 @@ export class KritzelCore {
 
     if (!workspace) {
       // Create it if it doesn't exist locally
-      workspace = new KritzelWorkspace(workspaceId, name);
+      workspace = new KritzelWorkspace({ id: workspaceId, name });
       workspace.isPublic = true;
       this.createWorkspace(workspace);
     } else {
@@ -509,16 +508,65 @@ export class KritzelCore {
   }
 
   /**
-   * Creates a new workspace and saves it to the app state.
-   * Sets creation and update timestamps, and refreshes the workspaces list.
-   * @param workspace - The workspace to create
+   * Switches the active workspace in the editor by ID.
+   * @param workspaceId - The unique ID of the workspace to activate
    */
-  createWorkspace(workspace: KritzelWorkspace): void {
+  async setActiveWorkspace(workspaceId: string): Promise<void> {
+    const workspaces = this.getWorkspaces();
+    const target = workspaces.find(w => w.id === workspaceId);
+    if (!target) {
+      console.warn(`[KritzelCore] Cannot set active workspace: No workspace found with ID '${workspaceId}'`);
+      return;
+    }
+
+    this.beforeWorkspaceChange();
+    await this.initializeWorkspace(target);
+  }
+
+  /**
+   * Creates a new workspace and saves it to the app state.
+   * Accepts either a KritzelWorkspace instance or a configuration object.
+   * Optionally seeds initial objects and automatically activates the workspace.
+   * @param workspaceOrConfig - The workspace instance or configuration options
+   * @returns The created workspace instance
+   */
+  async createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig): Promise<KritzelWorkspace> {
+    const workspace = workspaceOrConfig instanceof KritzelWorkspace
+      ? workspaceOrConfig
+      : new KritzelWorkspace(workspaceOrConfig);
+
+    const config = workspaceOrConfig instanceof KritzelWorkspace
+      ? undefined
+      : workspaceOrConfig;
+
     workspace._core = this;
     workspace.createdAt = new Date();
     workspace.updatedAt = new Date();
     this.saveWorkspaceToAppState(workspace);
     this._store.state.workspaces = this.loadWorkspacesFromAppState();
+
+    const shouldActivate = config?.activate ?? false;
+    const seedObjects = config?.objects;
+
+    if (shouldActivate) {
+      await this.setActiveWorkspace(workspace.id);
+      if (seedObjects && seedObjects.length > 0) {
+        for (const obj of seedObjects) {
+          await this.engine.addObject(obj);
+        }
+      }
+    } else if (seedObjects && seedObjects.length > 0) {
+      // Seed objects into inactive workspace via a temporary KritzelObjectMap
+      const tempMap = new KritzelObjectMap();
+      await tempMap.initialize(this, workspace.id, this._syncConfig);
+      for (const obj of seedObjects) {
+        obj.workspaceId = workspace.id;
+        tempMap.insert(obj);
+      }
+      tempMap.destroy();
+    }
+
+    return workspace;
   }
 
   /**

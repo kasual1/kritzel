@@ -269,15 +269,15 @@ Type: `Promise<void>`
 
 
 
-### `createWorkspace(workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>`
+### `createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig) => Promise<KritzelWorkspace | null>`
 
 
 
 #### Parameters
 
-| Name        | Type               | Description |
-| ----------- | ------------------ | ----------- |
-| `workspace` | `KritzelWorkspace` |             |
+| Name                | Type                                         | Description |
+| ------------------- | -------------------------------------------- | ----------- |
+| `workspaceOrConfig` | `KritzelWorkspace \| KritzelWorkspaceConfig` |             |
 
 #### Returns
 
@@ -902,6 +902,22 @@ Type: `Promise<void>`
 | Name     | Type                     | Description |
 | -------- | ------------------------ | ----------- |
 | `object` | `KritzelBaseObject<any>` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setActiveWorkspace(id: string) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name | Type     | Description |
+| ---- | -------- | ----------- |
+| `id` | `string` |             |
 
 #### Returns
 

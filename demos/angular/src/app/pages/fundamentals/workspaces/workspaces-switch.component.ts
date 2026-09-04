@@ -85,7 +85,7 @@ export class WorkspacesSwitchComponent {
     this.activeWorkspaceId.set(event.detail.id);
   }
 
-  switchTo(workspace: KritzelWorkspace) {
-    this.activeWorkspaceId.set(workspace.id);
+  async switchTo(workspace: KritzelWorkspace) {
+    await this.editor.setActiveWorkspace(workspace.id);
   }
 }
