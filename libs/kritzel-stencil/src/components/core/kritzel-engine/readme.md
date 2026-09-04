@@ -271,16 +271,16 @@ Type: `Promise<void>`
 
 
 
-### `createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig) => Promise<KritzelWorkspace | null>`
+### `createWorkspace(workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>`
 
 Creates a new workspace and emits a `workspacesChange` event.
 Emits `activeWorkspaceChange` if the created workspace is activated.
 
 #### Parameters
 
-| Name                | Type                                         | Description                                                 |
-| ------------------- | -------------------------------------------- | ----------------------------------------------------------- |
-| `workspaceOrConfig` | `KritzelWorkspace \| KritzelWorkspaceConfig` | - The workspace instance or configuration object to create. |
+| Name        | Type               | Description                         |
+| ----------- | ------------------ | ----------------------------------- |
+| `workspace` | `KritzelWorkspace` | - The workspace instance to create. |
 
 #### Returns
 

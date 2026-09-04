@@ -19,14 +19,6 @@ Workspaces can either be created programmatically or managed through the built-i
 
 Workspaces can be created by passing a `KritzelWorkspaceConfig` options object (or an existing `KritzelWorkspace` instance) to `editor.createWorkspace()`. You can specify initial canvas `objects`, custom `viewport` settings, and set `activate: true` to automatically switch to the new workspace upon creation.
 
-```typescript
-await editor.createWorkspace({
-  name: 'New Board',
-  activate: true,
-  objects: [initialText, initialShape],
-});
-```
-
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/fundamentals/workspaces/create"

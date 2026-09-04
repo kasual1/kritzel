@@ -377,25 +377,6 @@ describe('KritzelCore', () => {
       expect(mockAppStateMap.insert).toHaveBeenCalled();
     });
 
-    it('should support configuration object and auto-generate ID', async () => {
-      const created = await core.createWorkspace({ name: 'Config Workspace' });
-
-      expect(created).toBeInstanceOf(KritzelWorkspace);
-      expect(created.name).toBe('Config Workspace');
-      expect(created.id).toBeDefined();
-    });
-
-    it('should activate workspace when activate: true option is provided', async () => {
-      const setActiveSpy = jest.spyOn(core, 'setActiveWorkspace').mockResolvedValue(undefined);
-
-      const created = await core.createWorkspace({
-        name: 'Activated Workspace',
-        activate: true,
-      });
-
-      expect(created.name).toBe('Activated Workspace');
-      expect(setActiveSpy).toHaveBeenCalledWith(created.id);
-    });
   });
 
   describe('setActiveWorkspace', () => {

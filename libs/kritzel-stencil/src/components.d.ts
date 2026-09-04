@@ -29,7 +29,7 @@ import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangeEvent } from "./interfaces/share.interface";
-import { KritzelWorkspace, KritzelWorkspaceConfig } from "./classes/core/workspace.class";
+import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
 import { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
@@ -75,7 +75,7 @@ export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangeEvent } from "./interfaces/share.interface";
-export { KritzelWorkspace, KritzelWorkspaceConfig } from "./classes/core/workspace.class";
+export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
@@ -347,7 +347,7 @@ export namespace Components {
         "changeActiveTool": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "copy": () => Promise<void>;
-        "createWorkspace": (workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig) => Promise<KritzelWorkspace | null>;
+        "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
         /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
@@ -653,10 +653,10 @@ export namespace Components {
         "copy": () => Promise<void>;
         /**
           * Creates a new workspace and emits a `workspacesChange` event. Emits `activeWorkspaceChange` if the created workspace is activated.
-          * @param workspaceOrConfig - The workspace instance or configuration object to create.
+          * @param workspace - The workspace instance to create.
           * @returns The created workspace.
          */
-        "createWorkspace": (workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig) => Promise<KritzelWorkspace | null>;
+        "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */

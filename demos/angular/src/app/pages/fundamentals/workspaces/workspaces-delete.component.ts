@@ -71,9 +71,7 @@ export class WorkspacesDeleteComponent {
     await this.refreshWorkspaces();
 
     if (this.workspaces().length < 2) {
-      await this.editor.createWorkspace({
-        name: 'Temporary Board',
-      });
+      await this.editor.createWorkspace(new KritzelWorkspace({ name: 'Temporary Board' }));
     }
 
     for (const object of createSeedObjects()) {
