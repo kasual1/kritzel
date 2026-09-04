@@ -46,10 +46,14 @@ async function onReady(event: CustomEvent<{ activeWorkspace: KritzelWorkspace }>
 async function createWorkspace() {
   workspaceCounter.value += 1
 
-  const workspace = new KritzelWorkspace(crypto.randomUUID(), `Board ${workspaceCounter.value}`)
-  await editor.value?.createWorkspace(workspace)
+  const created = await editor.value?.createWorkspace({
+    name: `Board ${workspaceCounter.value}`,
+    activate: true,
+  })
   await refreshWorkspaces()
-  activeWorkspaceId.value = workspace.id
+  if (created) {
+    activeWorkspaceId.value = created.id
+  }
 }
 
 async function deleteWorkspace(id: string) {

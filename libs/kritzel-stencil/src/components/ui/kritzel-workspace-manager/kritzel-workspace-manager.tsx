@@ -1,5 +1,4 @@
 import { KritzelWorkspace } from '../../../classes/core/workspace.class';
-import { ObjectHelper } from '../../../helpers/object.helper';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
 import { KritzelTermKey } from '../../../interfaces/localization.interface';
 import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen, Method } from '@stencil/core';
@@ -85,7 +84,7 @@ export class KritzelWorkspaceManager {
 
   private async add() {
     await this.splitButtonRef.open();
-    this.newWorkspace = new KritzelWorkspace(ObjectHelper.generateUUID(), 'New Workspace');
+    this.newWorkspace = new KritzelWorkspace({ name: 'New Workspace' });
     this.editingItemId = this.newWorkspace.id;
   }
 

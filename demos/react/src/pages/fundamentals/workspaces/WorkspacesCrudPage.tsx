@@ -43,10 +43,14 @@ export function WorkspacesCrudPage() {
     const nextCounter = workspaceCounter + 1;
     setWorkspaceCounter(nextCounter);
 
-    const workspace = new KritzelWorkspace(crypto.randomUUID(), `Board ${nextCounter}`);
-    await editorRef.current?.createWorkspace(workspace);
+    const created = await editorRef.current?.createWorkspace({
+      name: `Board ${nextCounter}`,
+      activate: true,
+    });
     await refreshWorkspaces();
-    setActiveWorkspaceId(workspace.id);
+    if (created) {
+      setActiveWorkspaceId(created.id);
+    }
   }
 
   async function deleteWorkspace(workspace: KritzelWorkspace) {

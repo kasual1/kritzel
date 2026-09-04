@@ -21,16 +21,30 @@ describe('KritzelWorkspace', () => {
   });
 
   describe('constructor', () => {
-    it('should create a workspace with id and name', () => {
-      const workspace = new KritzelWorkspace('ws-1', 'My Workspace');
+    it('should create a workspace from a KritzelWorkspaceConfig object', () => {
+      const workspace = new KritzelWorkspace({
+        name: 'Configured Workspace',
+        id: 'ws-config-1',
+        viewport: { centerWorldX: 10, centerWorldY: 20, scale: 1.5 },
+      });
 
-      expect(workspace.id).toBe('ws-1');
-      expect(workspace.name).toBe('My Workspace');
+      expect(workspace.id).toBe('ws-config-1');
+      expect(workspace.name).toBe('Configured Workspace');
+      expect(workspace.viewport).toEqual({ centerWorldX: 10, centerWorldY: 20, scale: 1.5 });
       expect(workspace.__class__).toBe('KritzelWorkspace');
     });
 
+    it('should auto-generate an ID if omitted in KritzelWorkspaceConfig', () => {
+      const workspace = new KritzelWorkspace({ name: 'Auto ID Workspace' });
+
+      expect(workspace.id).toBeDefined();
+      expect(typeof workspace.id).toBe('string');
+      expect(workspace.id.length).toBeGreaterThan(0);
+      expect(workspace.name).toBe('Auto ID Workspace');
+    });
+
     it('should set default viewport values when none provided', () => {
-      const workspace = new KritzelWorkspace('ws-1', 'Test');
+      const workspace = new KritzelWorkspace({ name: 'Test' });
 
       expect(workspace.viewport).toEqual({
         centerWorldX: 0,
@@ -39,16 +53,23 @@ describe('KritzelWorkspace', () => {
       });
     });
 
+    it('should set default name when none provided', () => {
+      const workspace = new KritzelWorkspace();
+
+      expect(workspace.name).toBe('New Workspace');
+      expect(workspace.id).toBeDefined();
+    });
+
     it('should accept custom viewport values', () => {
       const viewport = { centerWorldX: 100, centerWorldY: 200, scale: 2 };
-      const workspace = new KritzelWorkspace('ws-1', 'Test', viewport);
+      const workspace = new KritzelWorkspace({ name: 'Test', viewport });
 
       expect(workspace.viewport).toEqual(viewport);
     });
 
     it('should set createdAt and updatedAt to current dates', () => {
       const before = new Date();
-      const workspace = new KritzelWorkspace('ws-1', 'Test');
+      const workspace = new KritzelWorkspace({ name: 'Test' });
       const after = new Date();
 
       expect(workspace.createdAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
@@ -90,7 +111,7 @@ describe('KritzelWorkspace', () => {
 
   describe('serialize', () => {
     it('should return a serialized representation', () => {
-      const workspace = new KritzelWorkspace('ws-1', 'Test Workspace', { centerWorldX: 10, centerWorldY: 20, scale: 1.5 });
+      const workspace = new KritzelWorkspace({ id: 'ws-1', name: 'Test Workspace', viewport: { centerWorldX: 10, centerWorldY: 20, scale: 1.5 } });
       const serialized = workspace.serialize();
 
       expect(serialized.__class__).toBe('KritzelWorkspace');
@@ -100,7 +121,7 @@ describe('KritzelWorkspace', () => {
     });
 
     it('should serialize dates as ISO strings', () => {
-      const workspace = new KritzelWorkspace('ws-1', 'Test');
+      const workspace = new KritzelWorkspace({ id: 'ws-1', name: 'Test' });
       const serialized = workspace.serialize();
 
       expect(typeof serialized.createdAt).toBe('string');
@@ -112,7 +133,7 @@ describe('KritzelWorkspace', () => {
 
   describe('deserialize', () => {
     it('should restore workspace properties from a plain object', () => {
-      const workspace = new KritzelWorkspace('temp', 'temp');
+      const workspace = new KritzelWorkspace();
       const data = {
         id: 'ws-restored',
         name: 'Restored Workspace',
@@ -129,7 +150,7 @@ describe('KritzelWorkspace', () => {
     });
 
     it('should convert date strings back to Date objects', () => {
-      const workspace = new KritzelWorkspace('temp', 'temp');
+      const workspace = new KritzelWorkspace();
       const data = {
         createdAt: '2025-01-15T10:00:00.000Z',
         updatedAt: '2025-01-16T12:00:00.000Z',
@@ -144,7 +165,7 @@ describe('KritzelWorkspace', () => {
     });
 
     it('should return the workspace instance for chaining', () => {
-      const workspace = new KritzelWorkspace('temp', 'temp');
+      const workspace = new KritzelWorkspace();
       const result = workspace.deserialize({ createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
 
       expect(result).toBe(workspace);
@@ -153,10 +174,10 @@ describe('KritzelWorkspace', () => {
 
   describe('serialize/deserialize roundtrip', () => {
     it('should preserve data through a serialize-deserialize cycle', () => {
-      const original = new KritzelWorkspace('ws-round', 'Roundtrip', { centerWorldX: 5, centerWorldY: 10, scale: 3 });
+      const original = new KritzelWorkspace({ id: 'ws-round', name: 'Roundtrip', viewport: { centerWorldX: 5, centerWorldY: 10, scale: 3 } });
       const serialized = original.serialize();
 
-      const restored = new KritzelWorkspace('temp', 'temp');
+      const restored = new KritzelWorkspace();
       restored.deserialize(serialized);
 
       expect(restored.id).toBe(original.id);

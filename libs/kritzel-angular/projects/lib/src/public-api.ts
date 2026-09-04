@@ -59,6 +59,7 @@ export type {
     KritzelImageConfig,
     KritzelGroupConfig,
     KritzelDynamicObjectConfig,
+    KritzelWorkspaceConfig,
     KritzelFontDefinition,
     KritzelFontRegistration,
     KritzelRegisteredFont,

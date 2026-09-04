@@ -48,7 +48,7 @@ function onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>)
         v-for="workspace in workspaces"
         :key="workspace.id"
         :style="buttonStyle(activeWorkspaceId === workspace.id)"
-        @click="activeWorkspaceId = workspace.id"
+        @click="editor?.setActiveWorkspace(workspace.id)"
       >
         {{ workspace.name }}
       </button>

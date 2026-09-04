@@ -42,7 +42,7 @@ export function WorkspacesSwitchPage() {
           <button
             key={workspace.id}
             style={buttonStyle(activeWorkspaceId === workspace.id)}
-            onClick={() => setActiveWorkspaceId(workspace.id)}
+            onClick={() => editorRef.current?.setActiveWorkspace(workspace.id)}
           >
             {workspace.name}
           </button>

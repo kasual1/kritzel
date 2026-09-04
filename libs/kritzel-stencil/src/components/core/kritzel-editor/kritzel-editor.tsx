@@ -21,7 +21,7 @@ import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelSettingsConfig } from '../../../interfaces/settings.interface';
 import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
 import { IKritzelMenuItem } from '../../../interfaces/menu-item.interface';
-import { KritzelWorkspace } from '../../../classes/core/workspace.class';
+import { KritzelWorkspace, KritzelWorkspaceConfig } from '../../../classes/core/workspace.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../../helpers/devices.helper';
 import { KritzelSyncConfig, hasRemoteSyncProvider } from '../../../interfaces/sync-config.interface';
@@ -588,8 +588,13 @@ export class KritzelEditor {
   }
 
   @Method()
-  async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
-    return this.engineRef.createWorkspace(workspace);
+  async setActiveWorkspace(id: string): Promise<void> {
+    return this.engineRef.setActiveWorkspace(id);
+  }
+
+  @Method()
+  async createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig): Promise<KritzelWorkspace | null> {
+    return this.engineRef.createWorkspace(workspaceOrConfig);
   }
 
   @Method()

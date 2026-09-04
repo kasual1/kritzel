@@ -121,7 +121,8 @@ describe('KritzelEngine', () => {
     beforeWorkspaceChange: jest.fn(),
     initializeWorkspace: jest.fn().mockResolvedValue(undefined),
     initializeAssetStorage: jest.fn().mockResolvedValue(undefined),
-    createWorkspace: jest.fn().mockResolvedValue(undefined),
+    setActiveWorkspace: jest.fn().mockResolvedValue(undefined),
+    createWorkspace: jest.fn().mockImplementation(async (ws) => ws),
     updateWorkspace: jest.fn().mockResolvedValue(undefined),
     deleteWorkspace: jest.fn().mockResolvedValue(undefined),
     getWorkspaces: jest.fn().mockReturnValue([]),
@@ -1610,6 +1611,16 @@ describe('KritzelEngine', () => {
   });
 
   describe('workspace management', () => {
+    it('setActiveWorkspace delegates to core and emits activeWorkspaceChange', async () => {
+      const workspace = { id: 'w1', name: 'Test' } as KritzelWorkspace;
+      core.store.state.activeWorkspace = workspace;
+
+      await engine.setActiveWorkspace('w1');
+
+      expect(core.setActiveWorkspace).toHaveBeenCalledWith('w1');
+      expect((engine as any).activeWorkspaceChange.emit).toHaveBeenCalledWith(workspace);
+    });
+
     it('createWorkspace delegates to core and emits workspacesChange', async () => {
       const workspace = { id: 'w1', name: 'Test' } as KritzelWorkspace;
       core.store.state.workspaces = [workspace];

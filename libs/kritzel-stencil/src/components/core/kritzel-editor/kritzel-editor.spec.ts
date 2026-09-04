@@ -49,6 +49,7 @@ describe('KritzelEditor', () => {
       getViewport: jest.fn().mockResolvedValue({ x: 0, y: 0, scale: 1 }),
       screenToWorld: jest.fn().mockResolvedValue({ x: 0, y: 0 }),
       worldToScreen: jest.fn().mockResolvedValue({ x: 0, y: 0 }),
+      setActiveWorkspace: jest.fn().mockResolvedValue(undefined),
       createWorkspace: jest.fn().mockResolvedValue(null),
       updateWorkspace: jest.fn().mockResolvedValue(undefined),
       deleteWorkspace: jest.fn().mockResolvedValue(undefined),
@@ -139,6 +140,11 @@ describe('KritzelEditor', () => {
   });
 
   describe('Workspace Methods', () => {
+    it('should call setActiveWorkspace on engine', async () => {
+      await component.setActiveWorkspace('ws-1');
+      expect(mockEngine.setActiveWorkspace).toHaveBeenCalledWith('ws-1');
+    });
+
     it('should call createWorkspace on engine', async () => {
       const ws = { id: '1', name: 'ws' } as any;
       await component.createWorkspace(ws);
