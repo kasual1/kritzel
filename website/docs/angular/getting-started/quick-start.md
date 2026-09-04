@@ -6,6 +6,7 @@ keywords:
   - angular whiteboard
   - angular infinite canvas
   - kritzel
+toc_max_heading_level: 2
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -63,7 +64,7 @@ This renders the editor with all the default ui elements such as the toolbar, th
 
 ## Optional Enhancements
 
-### Persist Canvas State
+### Persisting Canvas State
 
 By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
 
@@ -86,7 +87,7 @@ export class EditorComponent {
 }
 ```
 
-### Apply Full Viewport Styling
+### Full Viewport Styling
 
 To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):
 
@@ -103,7 +104,7 @@ app-root {
 }
 ```
 
-### Include Mobile Viewport Meta Tag
+### Mobile Viewport Meta Tag
 
 For optimal rendering and responsiveness on mobile devices, add this meta tag within the `<head>` section of your `index.html`:
 
