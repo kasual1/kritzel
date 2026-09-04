@@ -17,6 +17,29 @@ import { KritzelColorHelper } from '../../helpers/color.helper';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
 
+/**
+ * Configuration options for creating a KritzelShape instance.
+ */
+export interface KritzelShapeConfig {
+  x?: number;
+  y?: number;
+  translateX?: number;
+  translateY?: number;
+  rotation?: number;
+  width?: number;
+  height?: number;
+  shapeType?: ShapeType;
+  fillColor?: ThemeAwareColor;
+  strokeColor?: ThemeAwareColor;
+  strokeWidth?: number;
+  fontSize?: number;
+  fontFamily?: string;
+  fontColor?: ThemeAwareColor;
+  scale?: number;
+  scaleX?: number;
+  scaleY?: number;
+}
+
 export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   override __class__: string = 'KritzelShape';
 
@@ -82,25 +105,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @param config.scaleX - Horizontal scale factor for transformations
    * @param config.scaleY - Vertical scale factor for transformations
    */
-  constructor(config?: {
-    x?: number;
-    y?: number;
-    translateX?: number;
-    translateY?: number;
-    rotation?: number;
-    width?: number;
-    height?: number;
-    shapeType?: ShapeType;
-    fillColor?: ThemeAwareColor;
-    strokeColor?: ThemeAwareColor;
-    strokeWidth?: number;
-    fontSize?: number;
-    fontFamily?: string;
-    fontColor?: ThemeAwareColor;
-    scale?: number;
-    scaleX?: number;
-    scaleY?: number;
-  }) {
+  constructor(config?: KritzelShapeConfig) {
     super();
 
     // Always create the editor so setContent() works immediately

@@ -1,4 +1,3 @@
-import { KritzelLineOptions } from '../../interfaces/line-options.interface';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
@@ -9,6 +8,32 @@ import { ArrowHeadStyle, LineArrowConfig } from '../../interfaces/arrow-head.int
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelColorHelper } from '../../helpers/color.helper';
 import { KritzelMathHelper } from '../../helpers/math.helper';
+
+/**
+ * Configuration options for creating a KritzelLine instance.
+ */
+export interface KritzelLineConfig {
+  startX: number;
+  startY: number;
+  endX: number;
+  endY: number;
+  controlX?: number;
+  controlY?: number;
+  translateX?: number;
+  translateY?: number;
+  /** Rotation in degrees at initialization time. */
+  rotation?: number;
+  scale?: number;
+  stroke?: ThemeAwareColor;
+  strokeWidth?: number;
+  opacity?: number;
+  /** Anchor connection for the start point */
+  startAnchor?: LineAnchor;
+  /** Anchor connection for the end point */
+  endAnchor?: LineAnchor;
+  /** Arrow head configuration for start and end of line */
+  arrows?: LineArrowConfig;
+}
 
 export class KritzelLine extends KritzelBaseObject<SVGElement> {
   override __class__: string = 'KritzelLine';
@@ -22,7 +47,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
   stroke: ThemeAwareColor;
   strokeWidth: number;
   scale: number = 1;
-  options: KritzelLineOptions | undefined;
+  options: KritzelLineConfig | undefined;
 
   /** Anchor connection for the start point of the line */
   startAnchor?: LineAnchor;
@@ -65,7 +90,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
    * @param config - Optional configuration options for the line including start/end points,
    *                 control point for curves, stroke settings, anchors, and arrow configuration
    */
-  constructor(config?: KritzelLineOptions) {
+  constructor(config?: KritzelLineConfig) {
     super();
     this.options = config;
     this.startX = config?.startX ?? 0;
@@ -93,7 +118,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
    * @param options - Optional configuration options for the line
    * @returns A fully initialized KritzelLine instance with generated ID and workspace assignment
    */
-  static override create(core: KritzelCore, options?: KritzelLineOptions): KritzelLine {
+  static override create(core: KritzelCore, options?: KritzelLineConfig): KritzelLine {
     const object = new KritzelLine();
 
     object._core = core;

@@ -15,6 +15,26 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelFontRegistry } from '../registries/font-registry.class';
 
 /**
+ * Configuration options for creating a KritzelText instance.
+ */
+export interface KritzelTextConfig {
+  text?: string;
+  translateX?: number;
+  translateY?: number;
+  fontSize?: number;
+  fontFamily?: string;
+  fontColor?: ThemeAwareColor;
+  height?: number;
+  width?: number;
+  scale?: number;
+  rotation?: number;
+  initialWidth?: number;
+  initialHeight?: number;
+  scaleX?: number;
+  scaleY?: number;
+}
+
+/**
  * Represents a text object on the canvas that supports rich text editing via ProseMirror.
  * Extends the base object class to inherit common object properties and behaviors.
  */
@@ -88,22 +108,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    * @param config.scaleX - Horizontal scale factor.
    * @param config.scaleY - Vertical scale factor.
    */
-  constructor(config?: {
-    text?: string;
-    translateX?: number;
-    translateY?: number;
-    fontSize?: number;
-    fontFamily?: string;
-    fontColor?: ThemeAwareColor;
-    height?: number;
-    width?: number;
-    scale?: number;
-    rotation?: number;
-    initialWidth?: number;
-    initialHeight?: number;
-    scaleX?: number;
-    scaleY?: number;
-  }) {
+  constructor(config?: KritzelTextConfig) {
     super();
 
     this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);

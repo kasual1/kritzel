@@ -4,6 +4,9 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
 import { KritzelHTMLHelper } from '../../helpers/html.helper';
 
+/**
+ * Configuration options for creating a KritzelDynamicObject instance.
+ */
 export interface KritzelDynamicObjectConfig {
   element?: HTMLElement;
   rendererKey?: string;
