@@ -6,6 +6,7 @@ keywords:
   - react whiteboard
   - react infinite canvas
   - kritzel
+toc_max_heading_level: 2
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
