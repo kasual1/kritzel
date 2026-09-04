@@ -27,7 +27,7 @@ import { KritzelEventHelper } from '../../../helpers/event.helper';
 import { KritzelClassHelper } from '../../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../../constants/engine.constants';
 import { KritzelDynamicObject } from '../../../classes/objects/dynamic-object.class';
-import { KritzelWorkspace, KritzelWorkspaceConfig, WORKSPACE_EXPORT_VERSION } from '../../../classes/core/workspace.class';
+import { KritzelWorkspace, WORKSPACE_EXPORT_VERSION } from '../../../classes/core/workspace.class';
 import { KritzelReviver } from '../../../classes/core/reviver.class';
 import { KritzelEngineState } from '../../../interfaces/engine-state.interface';
 import { KritzelDebugInfo } from '../../../interfaces/debug-info.interface';
@@ -2140,12 +2140,12 @@ export class KritzelEngine {
   /**
    * Creates a new workspace and emits a `workspacesChange` event.
    * Emits `activeWorkspaceChange` if the created workspace is activated.
-   * @param workspaceOrConfig - The workspace instance or configuration object to create.
+    * @param workspace - The workspace instance to create.
    * @returns The created workspace.
    */
   @Method()
-  async createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig): Promise<KritzelWorkspace | null> {
-    const createdWorkspace = await this.core.createWorkspace(workspaceOrConfig);
+  async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
+    const createdWorkspace = await this.core.createWorkspace(workspace);
     this.workspacesChange.emit(this.core.store.state.workspaces);
 
     const activeWorkspace = this.core.store.state.activeWorkspace;

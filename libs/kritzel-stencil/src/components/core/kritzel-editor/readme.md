@@ -269,15 +269,15 @@ Type: `Promise<void>`
 
 
 
-### `createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig) => Promise<KritzelWorkspace | null>`
+### `createWorkspace(workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>`
 
 
 
 #### Parameters
 
-| Name                | Type                                         | Description |
-| ------------------- | -------------------------------------------- | ----------- |
-| `workspaceOrConfig` | `KritzelWorkspace \| KritzelWorkspaceConfig` |             |
+| Name        | Type               | Description |
+| ----------- | ------------------ | ----------- |
+| `workspace` | `KritzelWorkspace` |             |
 
 #### Returns
 
