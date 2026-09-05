@@ -17,7 +17,7 @@ Workspaces can either be created programmatically or managed through the built-i
 
 ## Creating Workspaces
 
-Workspaces can be created by passing a `KritzelWorkspaceConfig` options object (or an existing `KritzelWorkspace` instance) to `editor.createWorkspace()`. You can specify initial canvas `objects`, custom `viewport` settings, and set `activate: true` to automatically switch to the new workspace upon creation.
+Workspaces can be created by instantiating a `KritzelWorkspace` object and passing it to `editor.createWorkspace()`. You can specify custom properties such as the workspace `name`, initial canvas `viewport` settings, or a custom `id`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

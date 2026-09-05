@@ -330,10 +330,10 @@ setActiveWorkspace(id: string): Promise<void>
 
 #### createWorkspace
 
-Creates a new workspace and emits a `workspacesChange` event. Accepts either a `KritzelWorkspace` instance or a configuration object.
+Creates a new workspace and emits a `workspacesChange` event. Accepts a `KritzelWorkspace` instance.
 
 ```ts
-createWorkspace(workspaceOrConfig: KritzelWorkspace | KritzelWorkspaceConfig): Promise<KritzelWorkspace | null>
+createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null>
 ```
 
 #### updateWorkspace
