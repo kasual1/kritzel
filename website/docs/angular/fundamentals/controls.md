@@ -11,11 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-The `<kritzel-editor>` includes a complete whiteboard interface, including toolbars, utility panels, context menus, and settings dialogs. You can selectively hide its built-in UI elements for a more focused experience, or replace the context-menu actions with controls tailored to your application.
+The `<kritzel-editor>` includes a complete set of whiteboard controls, including toolbars, utility panels, context menus, and settings dialogs. You can selectively hide them or adjust them to fit your applications behaviour.
 
 ## Workspace Manager
 
-The workspace manager in the top-left corner lets people switch between workspaces and create, rename, or delete them. Set `isWorkspaceManagerVisible` to `false` when your application provides workspace navigation elsewhere or presents a single document. Use `openWorkspaceManagerMenu()` when your application should open the built-in workspace menu programmatically.
+The workspace manager in the top-left corner lets people switch between workspaces and create, rename, or delete them. Set `isWorkspaceManagerVisible` to `false` in order to hide it. Call `openWorkspaceManagerMenu()` to programmatically open the workspace manager's menu.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -25,7 +25,7 @@ The workspace manager in the top-left corner lets people switch between workspac
 
 ## More Menu
 
-The more menu in the top-right corner groups secondary editor actions. Use `moreMenuItems` to provide its actions, and set `isMoreMenuVisible` to `false` when those actions belong in your application's own interface. Use `openMoreMenu()` to open the built-in More menu from a command palette, onboarding flow, or other application-level control.
+The more menu in the top-right corner groups secondary editor actions. Set `isMoreMenuVisible` to `false` in order to hide it. Call `openMoreMenu()` to programmatically open it. Pass an array of menu items to the `moreMenuItems` prop to dynamically configure the items shown in the menu.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -45,7 +45,7 @@ The toolbar provides the configured drawing and selection tools, while the utili
 
 ## Zoom Panel
 
-The zoom panel shows the current zoom level and provides zoom-in and zoom-out buttons. Set `isZoomPanelVisible` to `false` when viewport controls are supplied elsewhere in your application.
+The zoom panel shows the current zoom level and provides zoom-in and zoom-out buttons. Set `isZoomPanelVisible` to `false` in order to hide it. On small screens, the zoom panel is automatically hidden to save space.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
