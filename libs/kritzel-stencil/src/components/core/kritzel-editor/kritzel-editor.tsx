@@ -296,8 +296,8 @@ export class KritzelEditor {
   /** Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. */
   @Prop() activeWorkspaceId?: string;
 
-  /** Optional workspace to use during startup when no active workspace has been resolved yet. */
-  @Prop() initialWorkspace?: KritzelWorkspace;
+  /** Authoritative workspace catalog for this editor instance. When provided, provider-only workspaces are hidden but not deleted. */
+  @Prop() workspaces?: KritzelWorkspace[];
 
   @Event() isReady!: EventEmitter<EditorIsReadyEvent>;
   @Event() activeWorkspaceChange!: EventEmitter<ActiveWorkspaceChangeEvent>;
@@ -318,7 +318,7 @@ export class KritzelEditor {
   @State() isEngineReady: boolean = false;
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
-  @State() workspaces: KritzelWorkspace[] = [];
+  @State() availableWorkspaces: KritzelWorkspace[] = [];
   @State() activeWorkspace?: KritzelWorkspace;
   @State() isVirtualKeyboardOpen: boolean = false;
   @State() undoState: KritzelUndoState | null = null;
@@ -360,8 +360,8 @@ export class KritzelEditor {
     }
   }
 
-  @Watch('workspaces')
-  onWorkspacesChange(newWorkspaces: KritzelWorkspace[]) {
+  @Watch('availableWorkspaces')
+  onAvailableWorkspacesChange(newWorkspaces: KritzelWorkspace[]) {
     const activeWorkspace = this.activeWorkspace;
 
     if (activeWorkspace) {
@@ -416,11 +416,11 @@ export class KritzelEditor {
       return;
     }
     // If workspaces are not loaded yet, the watch will fire again once they are
-    if (this.workspaces.length === 0) {
+    if (this.availableWorkspaces.length === 0) {
       return;
     }
     // Find the workspace with the matching ID
-    const workspace = this.workspaces.find(ws => ws.id === newId);
+    const workspace = this.availableWorkspaces.find(ws => ws.id === newId);
     if (workspace) {
       // Only update if it's different from the current activeWorkspace
       if (workspace !== this.activeWorkspace) {
@@ -967,7 +967,7 @@ export class KritzelEditor {
     }
 
     this.activeWorkspace = event.detail.activeWorkspace;
-    this.workspaces = event.detail.workspaces;
+    this.availableWorkspaces = event.detail.workspaces;
     this.currentIsPublic = await this.engineRef.getIsPublic();
 
     await this.refreshLocalizedTerms();
@@ -980,7 +980,7 @@ export class KritzelEditor {
 
   handleWorkspacesChange(event: CustomEvent<KritzelWorkspace[]>) {
     event.stopPropagation();
-    this.workspaces = event.detail;
+    this.availableWorkspaces = event.detail;
   }
 
   async handleWorkspaceManagerChange(event: CustomEvent<KritzelWorkspace | null>) {
@@ -1472,7 +1472,7 @@ export class KritzelEditor {
                 }
               }}
               visible={this.isWorkspaceManagerVisible}
-              workspaces={this.workspaces}
+              workspaces={this.availableWorkspaces}
               activeWorkspace={this.activeWorkspace}
               terms={this.resolvedTerms}
               onWorkspaceChange={event => this.handleWorkspaceManagerChange(event)}
@@ -1524,7 +1524,7 @@ export class KritzelEditor {
                 this.engineRef = el;
               }
             }}
-            initialWorkspace={this.initialWorkspace}
+            workspaces={this.workspaces}
             activeWorkspaceId={this.activeWorkspaceId}
             editorId={this.editorId}
             syncConfig={this.syncConfig}

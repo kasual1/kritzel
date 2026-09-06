@@ -38,7 +38,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [theme]="'light'"
       [themes]="themes"
       [syncConfig]="syncConfig"
-      [initialWorkspace]="workspaces()[0]"
+      [workspaces]="workspaces()"
       [activeWorkspaceId]="activeWorkspaceId()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
@@ -70,7 +70,7 @@ export class WorkspacesCreateComponent {
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  workspaces = signal<KritzelWorkspace[]>([]);
+  workspaces = signal<KritzelWorkspace[]>([new KritzelWorkspace({ name: 'Board 1' })]);
   activeWorkspaceId = signal<string | undefined>(undefined);
 
   async onReady(event: CustomEvent<EditorIsReadyEvent>) {
@@ -91,7 +91,8 @@ export class WorkspacesCreateComponent {
     const workspace = await this.editor.createWorkspace(new KritzelWorkspace({ name: `Board ${workspaceNumber}` }));
 
     if (workspace) {
-      await this.switchTo(workspace);
+      this.workspaces.update(workspaces => [...workspaces, workspace]);
+      this.activeWorkspaceId.set(workspace.id);
     }
   }
 

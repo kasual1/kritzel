@@ -141,21 +141,24 @@ describe('KritzelEditor', () => {
   });
 
   describe('Workspace Methods', () => {
-    it('should store initialWorkspace separately from activeWorkspace', () => {
-      const initialWorkspace = new KritzelWorkspace({ id: 'initial-workspace', name: 'Initial Workspace' });
-      component.initialWorkspace = initialWorkspace;
+    it('should store provided workspaces separately from activeWorkspace', () => {
+      const workspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      component.workspaces = [workspace];
 
-      expect(component.initialWorkspace).toBe(initialWorkspace);
+      expect(component.workspaces).toEqual([workspace]);
       expect(component.activeWorkspace).toBeUndefined();
     });
 
-    it('should keep initialWorkspace after an active workspace is resolved', () => {
-      const initialWorkspace = new KritzelWorkspace({ id: 'initial-workspace', name: 'Initial Workspace' });
+    it('should keep public workspaces separate from availableWorkspaces state', () => {
+      const providedWorkspace = new KritzelWorkspace({ id: 'provided-workspace', name: 'Provided Workspace' });
+      const availableWorkspace = new KritzelWorkspace({ id: 'available-workspace', name: 'Available Workspace' });
       const activeWorkspace = new KritzelWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
-      component.initialWorkspace = initialWorkspace;
+      component.workspaces = [providedWorkspace];
+      component.availableWorkspaces = [availableWorkspace];
       component.activeWorkspace = activeWorkspace;
 
-      expect(component.initialWorkspace).toBe(initialWorkspace);
+      expect(component.workspaces).toEqual([providedWorkspace]);
+      expect(component.availableWorkspaces).toEqual([availableWorkspace]);
       expect(component.activeWorkspace).toBe(activeWorkspace);
     });
 

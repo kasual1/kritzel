@@ -28,7 +28,7 @@ All methods are async and return Promises. The `<KritzelEditor>` exposes all the
 | viewportBoundaryRight | number | Infinity | Right pan boundary |
 | viewportBoundaryTop | number | -Infinity | Top pan boundary |
 | viewportBoundaryBottom | number | Infinity | Bottom pan boundary |
-| workspace | KritzelWorkspace | undefined | The active workspace |
+| workspaces | KritzelWorkspace[] | undefined | Optional authoritative workspace catalog for this engine instance. Provider-only workspaces are hidden but not deleted. |
 
 ## Events
 

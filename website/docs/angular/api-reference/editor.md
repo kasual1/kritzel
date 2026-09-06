@@ -411,6 +411,7 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 | Property | Type | Description |
 |----------|------|-------------|
 | activeWorkspaceId | string | Optional workspace ID to set as active. If provided, the editor auto-activates that workspace. |
+| workspaces | KritzelWorkspace[] | Optional authoritative workspace catalog for this editor instance. Provider-only workspaces are hidden but not deleted. |
 
 ### Events
 

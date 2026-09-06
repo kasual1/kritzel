@@ -172,6 +172,7 @@ describe('KritzelEngine', () => {
         findById: jest.fn().mockReturnValue(null),
         destroy: jest.fn(),
         transaction: jest.fn().mockImplementation((cb: () => void) => cb()),
+        whenNetworkSynced: jest.fn().mockResolvedValue(undefined),
         undoState: { canUndo: false, canRedo: false, undoStackSize: 0, redoStackSize: 0 },
       },
       state: {
@@ -296,21 +297,76 @@ describe('KritzelEngine', () => {
   });
 
   describe('workspace syncing state', () => {
-    it('uses initialWorkspace during startup when workspace is not provided', () => {
-      const initialWorkspace = new KritzelWorkspace({ id: 'initial-workspace', name: 'Initial Workspace' });
-      engine.initialWorkspace = initialWorkspace;
+    it('uses provided workspaces as the visible catalog when controlled', async () => {
+      const workspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      const providerOnlyWorkspace = new KritzelWorkspace({ id: 'provider-only', name: 'Provider Only' });
+      engine.workspaces = [workspace];
+      core.getWorkspaces.mockReturnValue([workspace, providerOnlyWorkspace]);
 
-      expect((engine as any).resolveStartupWorkspace()).toBe(initialWorkspace);
+      await expect(engine.getWorkspaces()).resolves.toEqual([workspace]);
     });
 
-    it('prefers activeWorkspaceId over initialWorkspace during startup', () => {
-      const initialWorkspace = new KritzelWorkspace({ id: 'initial-workspace', name: 'Initial Workspace' });
-      const workspace = new KritzelWorkspace({ id: 'workspace', name: 'Workspace' });
-      core.getWorkspaces.mockReturnValue([workspace]);
-      engine.initialWorkspace = initialWorkspace;
-      engine.activeWorkspaceId = workspace.id;
+    it('creates provided workspaces that are missing from provider state', async () => {
+      const workspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      engine.workspaces = [workspace];
+      core.getWorkspaces.mockReturnValue([]);
 
-      expect((engine as any).resolveStartupWorkspace()).toBe(workspace);
+      await (engine as any).reconcileProvidedWorkspaces();
+
+      expect(core.createWorkspace).toHaveBeenCalledWith(workspace);
+    });
+
+    it('updates provider metadata when a provided workspace differs', async () => {
+      const existingWorkspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Old Name' });
+      const providedWorkspace = new KritzelWorkspace({ id: 'workspace-1', name: 'New Name' });
+      providedWorkspace.objects = [{ id: 'seed-object' }] as KritzelBaseObject<any>[];
+      engine.workspaces = [providedWorkspace];
+      core.getWorkspaces.mockReturnValue([existingWorkspace]);
+
+      await (engine as any).reconcileProvidedWorkspaces();
+
+      expect(core.updateWorkspace).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: providedWorkspace.id,
+          name: providedWorkspace.name,
+          objects: [],
+        }),
+      );
+    });
+
+    it('prefers activeWorkspaceId over the first provided workspace during startup', async () => {
+      const firstWorkspace = new KritzelWorkspace({ id: 'first-workspace', name: 'First Workspace' });
+      const activeWorkspace = new KritzelWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
+      engine.workspaces = [firstWorkspace, activeWorkspace];
+      engine.activeWorkspaceId = activeWorkspace.id;
+      core.getWorkspaces.mockReturnValue([firstWorkspace, activeWorkspace]);
+
+      await (engine as any).initializeStartupWorkspace();
+
+      expect(core.initializeWorkspace).toHaveBeenCalledWith(activeWorkspace, undefined);
+    });
+
+    it('does not create a fallback workspace for an empty controlled catalog', async () => {
+      engine.workspaces = [];
+
+      await (engine as any).initializeStartupWorkspace();
+
+      expect(core.initializeWorkspace).toHaveBeenCalledWith(undefined, { skipFallbackCreation: true });
+    });
+
+    it('rejects active workspace ids outside the controlled catalog', async () => {
+      const visibleWorkspace = new KritzelWorkspace({ id: 'visible-workspace', name: 'Visible Workspace' });
+      const hiddenWorkspace = new KritzelWorkspace({ id: 'hidden-workspace', name: 'Hidden Workspace' });
+      engine.workspaces = [visibleWorkspace];
+      core.getWorkspaces.mockReturnValue([visibleWorkspace, hiddenWorkspace]);
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+      await engine.setActiveWorkspace(hiddenWorkspace.id);
+
+      expect(core.initializeWorkspace).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(`[KritzelEngine] No workspace found with ID: ${hiddenWorkspace.id}`);
+
+      warnSpy.mockRestore();
     });
 
     it('does not emit syncing true while the browser is offline', async () => {
@@ -1628,19 +1684,24 @@ describe('KritzelEngine', () => {
   });
 
   describe('workspace management', () => {
-    it('setActiveWorkspace delegates to core and emits activeWorkspaceChange', async () => {
-      const workspace = { id: 'w1', name: 'Test' } as KritzelWorkspace;
-      core.store.state.activeWorkspace = workspace;
+    it('setActiveWorkspace initializes a visible workspace and emits activeWorkspaceChange', async () => {
+      const workspace = new KritzelWorkspace({ id: 'w1', name: 'Test' });
+      core.getWorkspaces.mockReturnValue([workspace]);
+      core.initializeWorkspace.mockImplementation(async (nextWorkspace: KritzelWorkspace) => {
+        core.store.state.activeWorkspace = nextWorkspace;
+      });
 
       await engine.setActiveWorkspace('w1');
 
-      expect(core.setActiveWorkspace).toHaveBeenCalledWith('w1');
+      expect(core.beforeWorkspaceChange).toHaveBeenCalledTimes(1);
+      expect(core.initializeWorkspace).toHaveBeenCalledWith(workspace, undefined);
       expect((engine as any).activeWorkspaceChange.emit).toHaveBeenCalledWith(workspace);
     });
 
     it('createWorkspace delegates to core and emits workspacesChange', async () => {
       const workspace = { id: 'w1', name: 'Test' } as KritzelWorkspace;
       core.store.state.workspaces = [workspace];
+      core.getWorkspaces.mockReturnValue([workspace]);
 
       const result = await engine.createWorkspace(workspace);
 
@@ -1652,6 +1713,7 @@ describe('KritzelEngine', () => {
     it('updateWorkspace delegates to core and emits workspacesChange', async () => {
       const workspace = { id: 'w1', name: 'Updated' } as KritzelWorkspace;
       core.store.state.workspaces = [workspace];
+      core.getWorkspaces.mockReturnValue([workspace]);
 
       await engine.updateWorkspace(workspace);
 
@@ -1662,6 +1724,7 @@ describe('KritzelEngine', () => {
     it('deleteWorkspace delegates to core and emits workspacesChange', async () => {
       const workspace = { id: 'w1', name: 'Doomed' } as KritzelWorkspace;
       core.store.state.workspaces = [];
+      core.getWorkspaces.mockReturnValue([]);
 
       await engine.deleteWorkspace(workspace);
 

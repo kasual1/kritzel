@@ -30,6 +30,7 @@ All methods are async and return Promises. The editor exposes all the same metho
 | isToolbarVisible | boolean | true | Show/hide the toolbar |
 | isUtilityPanelVisible | boolean | true | Show/hide the utility panel (undo/redo, zoom) |
 | syncConfig | KritzelSyncConfig | undefined | Sync provider configuration |
+| workspaces | KritzelWorkspace[] | undefined | Optional authoritative workspace catalog for this editor instance. Provider-only workspaces are hidden but not deleted. |
 
 ## Events
 

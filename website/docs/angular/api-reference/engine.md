@@ -303,7 +303,7 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 | Property | Type | Description |
 |----------|------|-------------|
 | activeWorkspaceId | string | Optional workspace ID to load. If provided, the engine automatically loads this workspace by ID. |
-| workspace | KritzelWorkspace | Active workspace to load and display. |
+| workspaces | KritzelWorkspace[] | Optional authoritative workspace catalog for this engine instance. Provider-only workspaces are hidden but not deleted. |
 | syncConfig | KritzelSyncConfig | Configuration for real-time synchronization providers (for example IndexedDB/WebSocket). |
 | user | IKritzelUser | Current user for awareness broadcasting (name, id, cursor position). |
 | isLoading | boolean | External loading state merged with internal workspace loading state. |

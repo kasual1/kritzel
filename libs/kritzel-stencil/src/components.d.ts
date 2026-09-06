@@ -412,10 +412,6 @@ export namespace Components {
         "hideContextMenu": () => Promise<void>;
         "importFromFile": () => Promise<void>;
         /**
-          * Optional workspace to use during startup when no active workspace has been resolved yet.
-         */
-        "initialWorkspace"?: KritzelWorkspace;
-        /**
           * Whether the editor is in a loading state. When true, a loading overlay is displayed.
           * @default false
          */
@@ -569,6 +565,10 @@ export namespace Components {
           * @default -Infinity
          */
         "viewportBoundaryTop": number;
+        /**
+          * Authoritative workspace catalog for this editor instance. When provided, provider-only workspaces are hidden but not deleted.
+         */
+        "workspaces"?: KritzelWorkspace[];
         "worldToScreen": (x: number, y: number) => Promise<{ x: number; y: number; }>;
         "zoomIn": (factor?: number, duration?: number) => Promise<void>;
         "zoomOut": (factor?: number, duration?: number) => Promise<void>;
@@ -832,10 +832,6 @@ export namespace Components {
          */
         "importFromJson": (json: string) => Promise<void>;
         /**
-          * Optional workspace to use during startup when no active workspace has been resolved yet.
-         */
-        "initialWorkspace"?: KritzelWorkspace;
-        /**
           * External loading state. Combined with internal workspace-loading state to drive the overlay.
           * @default false
          */
@@ -1071,6 +1067,10 @@ export namespace Components {
           * @default -Infinity
          */
         "viewportBoundaryTop": number;
+        /**
+          * Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted.
+         */
+        "workspaces"?: KritzelWorkspace[];
         /**
           * Converts world coordinates to screen-relative pixel coordinates.
           * @param x - X position in world coordinates.
@@ -2910,10 +2910,6 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * Optional workspace to use during startup when no active workspace has been resolved yet.
-         */
-        "initialWorkspace"?: KritzelWorkspace;
-        /**
           * Whether the editor is in a loading state. When true, a loading overlay is displayed.
           * @default false
          */
@@ -3028,6 +3024,10 @@ declare namespace LocalJSX {
           * @default -Infinity
          */
         "viewportBoundaryTop"?: number;
+        /**
+          * Authoritative workspace catalog for this editor instance. When provided, provider-only workspaces are hidden but not deleted.
+         */
+        "workspaces"?: KritzelWorkspace[];
     }
     interface KritzelEngine {
         /**
@@ -3059,10 +3059,6 @@ declare namespace LocalJSX {
           * Context menu items shown when right-clicking the canvas background.
          */
         "globalContextMenuItems"?: ContextMenuItem[];
-        /**
-          * Optional workspace to use during startup when no active workspace has been resolved yet.
-         */
-        "initialWorkspace"?: KritzelWorkspace;
         /**
           * External loading state. Combined with internal workspace-loading state to drive the overlay.
           * @default false
@@ -3219,6 +3215,10 @@ declare namespace LocalJSX {
           * @default -Infinity
          */
         "viewportBoundaryTop"?: number;
+        /**
+          * Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted.
+         */
+        "workspaces"?: KritzelWorkspace[];
     }
     interface KritzelExport {
         "onExportJson"?: (event: KritzelExportCustomEvent<string>) => void;
