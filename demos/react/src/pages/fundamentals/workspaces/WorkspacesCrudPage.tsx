@@ -45,7 +45,6 @@ export function WorkspacesCrudPage() {
 
     const created = await editorRef.current?.createWorkspace({
       name: `Board ${nextCounter}`,
-      activate: true,
     });
     await refreshWorkspaces();
     if (created) {

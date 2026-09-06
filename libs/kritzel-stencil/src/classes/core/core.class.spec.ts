@@ -78,6 +78,7 @@ describe('KritzelCore', () => {
       isReady: false,
       initialize: jest.fn().mockResolvedValue(undefined),
       insert: jest.fn().mockReturnValue(true),
+      findById: jest.fn(),
       update: jest.fn().mockReturnValue(true),
       remove: jest.fn(),
       filter: jest.fn().mockReturnValue([]),
@@ -1602,6 +1603,30 @@ describe('KritzelCore', () => {
       await core.initializeWorkspace(ws);
 
       expect(localStorage.getItem(STORAGE_KEY)).toBe('ws-persist');
+    });
+
+    it('should seed configured objects into an empty workspace object map', async () => {
+      const object = { id: 'seed-object', workspaceId: 'other-workspace' } as KritzelBaseObject<any>;
+      const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      mockAppStateMap.allWorkspaces.mockReturnValue([]);
+      mockAppStateMap.has.mockReturnValue(false);
+
+      await core.initializeWorkspace(ws);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(object);
+      expect(object.workspaceId).toBe('ws-seeded');
+    });
+
+    it('should not insert a configured object that already exists in the workspace map', async () => {
+      const object = { id: 'seed-object', workspaceId: 'ws-seeded' } as KritzelBaseObject<any>;
+      const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      mockAppStateMap.allWorkspaces.mockReturnValue([]);
+      mockAppStateMap.has.mockReturnValue(false);
+      mockObjectsMap.findById.mockReturnValue(object);
+
+      await core.initializeWorkspace(ws);
+
+      expect(mockObjectsMap.insert).not.toHaveBeenCalledWith(object);
     });
   });
 });

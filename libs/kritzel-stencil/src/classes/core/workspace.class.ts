@@ -22,8 +22,6 @@ export interface KritzelWorkspaceConfig {
   };
   /** Optional array of initial canvas objects to seed into this workspace */
   objects?: KritzelBaseObject<any>[];
-  /** Whether to switch to and activate this workspace upon creation (default: false) */
-  activate?: boolean;
 }
 
 /**
@@ -48,6 +46,8 @@ export class KritzelWorkspace implements KritzelSerializable {
     centerWorldY: number;
     scale: number;
   };
+  /** Initial canvas objects to insert when this workspace is first initialized. */
+  objects: KritzelBaseObject<any>[];
 
   /** Whether the workspace is publicly accessible via a share link */
   isPublic: boolean;
@@ -69,6 +69,7 @@ export class KritzelWorkspace implements KritzelSerializable {
       centerWorldY: config?.viewport?.centerWorldY ?? 0,
       scale: config?.viewport?.scale ?? 1,
     };
+    this.objects = config?.objects ?? [];
     this.isPublic = false;
   }
 
