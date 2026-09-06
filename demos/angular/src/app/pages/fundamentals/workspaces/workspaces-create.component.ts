@@ -38,6 +38,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [theme]="'light'"
       [themes]="themes"
       [syncConfig]="syncConfig"
+      [initialWorkspace]="workspaces()[0]"
       [activeWorkspaceId]="activeWorkspaceId()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"

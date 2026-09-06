@@ -296,6 +296,23 @@ describe('KritzelEngine', () => {
   });
 
   describe('workspace syncing state', () => {
+    it('uses initialWorkspace during startup when workspace is not provided', () => {
+      const initialWorkspace = new KritzelWorkspace({ id: 'initial-workspace', name: 'Initial Workspace' });
+      engine.initialWorkspace = initialWorkspace;
+
+      expect((engine as any).resolveStartupWorkspace()).toBe(initialWorkspace);
+    });
+
+    it('prefers activeWorkspaceId over initialWorkspace during startup', () => {
+      const initialWorkspace = new KritzelWorkspace({ id: 'initial-workspace', name: 'Initial Workspace' });
+      const workspace = new KritzelWorkspace({ id: 'workspace', name: 'Workspace' });
+      core.getWorkspaces.mockReturnValue([workspace]);
+      engine.initialWorkspace = initialWorkspace;
+      engine.activeWorkspaceId = workspace.id;
+
+      expect((engine as any).resolveStartupWorkspace()).toBe(workspace);
+    });
+
     it('does not emit syncing true while the browser is offline', async () => {
       const networkSyncPromise = new Promise<void>(() => {});
       core.store.objects = { whenNetworkSynced: () => networkSyncPromise };
