@@ -404,6 +404,7 @@ export class KritzelCore {
     this._store.state.scale = scale;
 
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
+    this.seedWorkspaceObjects(activeWorkspace, objectsMap);
 
     // Set local user in awareness after object map is initialized
     if (this._user) {
@@ -421,6 +422,27 @@ export class KritzelCore {
     this.engine.emitObjectsChange();
 
     this.rerender();
+  }
+
+  private seedWorkspaceObjects(workspace: KritzelWorkspace, objectsMap: KritzelObjectMap<KritzelBaseObject<any>>): void {
+    if (workspace.objects.length === 0) {
+      return;
+    }
+
+    objectsMap.transaction(() => {
+      for (const object of workspace.objects) {
+        if (objectsMap.findById(object.id)) {
+          continue;
+        }
+
+        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+          object.updateWorkspaceId(workspace.id);
+        } else {
+          object.workspaceId = workspace.id;
+        }
+        objectsMap.insert(object);
+      }
+    });
   }
 
   /**
