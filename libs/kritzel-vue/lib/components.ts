@@ -121,6 +121,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'activeWorkspaceId',
   'isReady',
   'activeWorkspaceChange',
+  'workspacesChange',
   'objectsChange',
   'objectsAdded',
   'objectsRemoved',
@@ -137,6 +138,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
 ], [
   'isReady',
   'activeWorkspaceChange',
+  'workspacesChange',
   'objectsChange',
   'objectsAdded',
   'objectsRemoved',

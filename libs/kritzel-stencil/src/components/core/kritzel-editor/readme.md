@@ -64,6 +64,7 @@
 | `themeChange`            |             | `CustomEvent<"dark" \| "light" \| string & {}>`               |
 | `undoStateChange`        |             | `CustomEvent<KritzelUndoState>`                               |
 | `viewportChange`         |             | `CustomEvent<KritzelViewportState>`                           |
+| `workspacesChange`       |             | `CustomEvent<KritzelWorkspace[]>`                             |
 
 
 ## Methods
