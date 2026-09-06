@@ -296,6 +296,9 @@ export class KritzelEditor {
   /** Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. */
   @Prop() activeWorkspaceId?: string;
 
+  /** Optional workspace to use during startup when no active workspace has been resolved yet. */
+  @Prop() initialWorkspace?: KritzelWorkspace;
+
   @Event() isReady!: EventEmitter<EditorIsReadyEvent>;
   @Event() activeWorkspaceChange!: EventEmitter<ActiveWorkspaceChangeEvent>;
   @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
@@ -980,6 +983,19 @@ export class KritzelEditor {
     this.workspaces = event.detail;
   }
 
+  async handleWorkspaceManagerChange(event: CustomEvent<KritzelWorkspace | null>) {
+    event.stopPropagation();
+
+    const workspace = event.detail;
+    this.activeWorkspace = workspace ?? undefined;
+
+    if (!workspace) {
+      return;
+    }
+
+    await this.engineRef.setActiveWorkspace(workspace.id);
+  }
+
   handleActiveWorkspaceChange(event: CustomEvent<KritzelWorkspace>) {
     event.stopPropagation();
 
@@ -1459,7 +1475,7 @@ export class KritzelEditor {
               workspaces={this.workspaces}
               activeWorkspace={this.activeWorkspace}
               terms={this.resolvedTerms}
-              onWorkspaceChange={event => (this.activeWorkspace = event.detail)}
+              onWorkspaceChange={event => this.handleWorkspaceManagerChange(event)}
               onIsWorkspaceManagerReady={() => (this.isWorkspaceManagerReady = true)}
             ></kritzel-workspace-manager>
 
@@ -1508,7 +1524,7 @@ export class KritzelEditor {
                 this.engineRef = el;
               }
             }}
-            workspace={this.activeWorkspace}
+            initialWorkspace={this.initialWorkspace}
             activeWorkspaceId={this.activeWorkspaceId}
             editorId={this.editorId}
             syncConfig={this.syncConfig}

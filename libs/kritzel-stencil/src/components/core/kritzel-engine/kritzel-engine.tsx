@@ -73,28 +73,8 @@ interface WorkspaceJsonExportPayload extends Record<string, unknown> {
 export class KritzelEngine {
   @Element() host!: HTMLElement;
 
-  /** The workspace to load and display. Changing this prop switches the active workspace. */
-  @Prop() workspace?: KritzelWorkspace;
-  @Watch('workspace')
-  async onWorkspaceChange(newWorkspace: KritzelWorkspace | null) {
-    const newWorkspaceId = newWorkspace?.id;
-
-    if (!newWorkspaceId) {
-      return;
-    }
-
-    // Let batched prop updates settle, then perform an idempotent re-check.
-    await Promise.resolve();
-
-    const currentWorkspaceId = this.core.store.state.activeWorkspace?.id;
-    if (currentWorkspaceId === newWorkspaceId) {
-      return;
-    }
-
-    this.core.beforeWorkspaceChange();
-    await this.initializeWorkspaceIfNeeded(newWorkspace);
-    this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace!);
-  }
+  /** Optional workspace to use during startup when no active workspace has been resolved yet. */
+  @Prop() initialWorkspace?: KritzelWorkspace;
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;
@@ -2695,7 +2675,7 @@ export class KritzelEngine {
       console.warn(`[KritzelEngine] No workspace found with ID: ${this.activeWorkspaceId}`);
     }
 
-    return this.workspace;
+    return this.initialWorkspace;
   }
 
   private tryResolveActiveWorkspaceFromId(): void {

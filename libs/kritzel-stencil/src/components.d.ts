@@ -22,9 +22,9 @@ import { KritzelFontMap } from "./interfaces/font.interface";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
+import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { EditorIsReadyEvent } from "./events/editor-is-ready.event";
 import { ActiveWorkspaceChangeEvent } from "./events/active-workspace-change.event";
-import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
@@ -68,9 +68,9 @@ export { KritzelFontMap } from "./interfaces/font.interface";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
+export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { EditorIsReadyEvent } from "./events/editor-is-ready.event";
 export { ActiveWorkspaceChangeEvent } from "./events/active-workspace-change.event";
-export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
@@ -411,6 +411,10 @@ export namespace Components {
         "group": () => Promise<void>;
         "hideContextMenu": () => Promise<void>;
         "importFromFile": () => Promise<void>;
+        /**
+          * Optional workspace to use during startup when no active workspace has been resolved yet.
+         */
+        "initialWorkspace"?: KritzelWorkspace;
         /**
           * Whether the editor is in a loading state. When true, a loading overlay is displayed.
           * @default false
@@ -828,6 +832,10 @@ export namespace Components {
          */
         "importFromJson": (json: string) => Promise<void>;
         /**
+          * Optional workspace to use during startup when no active workspace has been resolved yet.
+         */
+        "initialWorkspace"?: KritzelWorkspace;
+        /**
           * External loading state. Combined with internal workspace-loading state to drive the overlay.
           * @default false
          */
@@ -1063,10 +1071,6 @@ export namespace Components {
           * @default -Infinity
          */
         "viewportBoundaryTop": number;
-        /**
-          * The workspace to load and display. Changing this prop switches the active workspace.
-         */
-        "workspace"?: KritzelWorkspace;
         /**
           * Converts world coordinates to screen-relative pixel coordinates.
           * @param x - X position in world coordinates.
@@ -1973,7 +1977,6 @@ declare global {
     interface HTMLKritzelEditorElementEventMap {
         "isReady": EditorIsReadyEvent;
         "activeWorkspaceChange": ActiveWorkspaceChangeEvent;
-        "workspacesChange": KritzelWorkspace[];
         "objectsChange": KritzelBaseObject[];
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
@@ -2907,6 +2910,10 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
+          * Optional workspace to use during startup when no active workspace has been resolved yet.
+         */
+        "initialWorkspace"?: KritzelWorkspace;
+        /**
           * Whether the editor is in a loading state. When true, a loading overlay is displayed.
           * @default false
          */
@@ -2983,7 +2990,6 @@ declare namespace LocalJSX {
         "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState>) => void;
         "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
-        "onWorkspacesChange"?: (event: KritzelEditorCustomEvent<KritzelWorkspace[]>) => void;
         /**
           * @default 1000
          */
@@ -3053,6 +3059,10 @@ declare namespace LocalJSX {
           * Context menu items shown when right-clicking the canvas background.
          */
         "globalContextMenuItems"?: ContextMenuItem[];
+        /**
+          * Optional workspace to use during startup when no active workspace has been resolved yet.
+         */
+        "initialWorkspace"?: KritzelWorkspace;
         /**
           * External loading state. Combined with internal workspace-loading state to drive the overlay.
           * @default false
@@ -3209,10 +3219,6 @@ declare namespace LocalJSX {
           * @default -Infinity
          */
         "viewportBoundaryTop"?: number;
-        /**
-          * The workspace to load and display. Changing this prop switches the active workspace.
-         */
-        "workspace"?: KritzelWorkspace;
     }
     interface KritzelExport {
         "onExportJson"?: (event: KritzelExportCustomEvent<string>) => void;

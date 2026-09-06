@@ -1,5 +1,6 @@
 import { KritzelEditor } from './kritzel-editor';
 import { KritzelBaseObject } from '../../../classes/objects/base-object.class';
+import { KritzelWorkspace } from '../../../classes/core/workspace.class';
 import { KritzelFontRegistry } from '../../../classes/registries/font-registry.class';
 import { KritzelKeyboardHelper } from '../../../helpers/keyboard.helper';
 import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '../../../constants/text-tool-fonts.constants';
@@ -140,15 +141,65 @@ describe('KritzelEditor', () => {
   });
 
   describe('Workspace Methods', () => {
+    it('should store initialWorkspace separately from activeWorkspace', () => {
+      const initialWorkspace = new KritzelWorkspace({ id: 'initial-workspace', name: 'Initial Workspace' });
+      component.initialWorkspace = initialWorkspace;
+
+      expect(component.initialWorkspace).toBe(initialWorkspace);
+      expect(component.activeWorkspace).toBeUndefined();
+    });
+
+    it('should keep initialWorkspace after an active workspace is resolved', () => {
+      const initialWorkspace = new KritzelWorkspace({ id: 'initial-workspace', name: 'Initial Workspace' });
+      const activeWorkspace = new KritzelWorkspace({ id: 'active-workspace', name: 'Active Workspace' });
+      component.initialWorkspace = initialWorkspace;
+      component.activeWorkspace = activeWorkspace;
+
+      expect(component.initialWorkspace).toBe(initialWorkspace);
+      expect(component.activeWorkspace).toBe(activeWorkspace);
+    });
+
     it('should call setActiveWorkspace on engine', async () => {
       await component.setActiveWorkspace('ws-1');
       expect(mockEngine.setActiveWorkspace).toHaveBeenCalledWith('ws-1');
+    });
+
+    it('should switch the engine when workspace manager selects a workspace', async () => {
+      const workspace = new KritzelWorkspace({ id: 'ws-selected', name: 'Selected Workspace' });
+      const event = { stopPropagation: jest.fn(), detail: workspace } as any;
+
+      await component.handleWorkspaceManagerChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+      expect(component.activeWorkspace).toBe(workspace);
+      expect(mockEngine.setActiveWorkspace).toHaveBeenCalledWith(workspace.id);
+    });
+
+    it('should clear the active workspace when workspace manager emits no workspace', async () => {
+      component.activeWorkspace = new KritzelWorkspace({ id: 'ws-active', name: 'Active Workspace' });
+      const event = { stopPropagation: jest.fn(), detail: null } as any;
+
+      await component.handleWorkspaceManagerChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+      expect(component.activeWorkspace).toBeUndefined();
+      expect(mockEngine.setActiveWorkspace).not.toHaveBeenCalled();
     });
 
     it('should call createWorkspace on engine', async () => {
       const ws = { id: '1', name: 'ws' } as any;
       await component.createWorkspace(ws);
       expect(mockEngine.createWorkspace).toHaveBeenCalledWith(ws);
+    });
+
+    it('should pass configured workspace seed objects to the engine', async () => {
+      const object = { id: 'seed-object' } as KritzelBaseObject<any>;
+      const workspace = new KritzelWorkspace({ id: 'seeded-workspace', name: 'Seeded Workspace', objects: [object] });
+
+      await component.createWorkspace(workspace);
+
+      expect(mockEngine.createWorkspace).toHaveBeenCalledWith(workspace);
+      expect(workspace.objects).toEqual([object]);
     });
 
     it('should call updateWorkspace on engine', async () => {

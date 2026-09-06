@@ -119,9 +119,9 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isLoading',
   'editorId',
   'activeWorkspaceId',
+  'initialWorkspace',
   'isReady',
   'activeWorkspaceChange',
-  'workspacesChange',
   'objectsChange',
   'objectsAdded',
   'objectsRemoved',
@@ -138,7 +138,6 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
 ], [
   'isReady',
   'activeWorkspaceChange',
-  'workspacesChange',
   'objectsChange',
   'objectsAdded',
   'objectsRemoved',
@@ -156,7 +155,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
 
 
 export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__*/ defineContainer<JSX.KritzelEngine>('kritzel-engine', defineKritzelEngine, [
-  'workspace',
+  'initialWorkspace',
   'editorId',
   'activeWorkspaceId',
   'syncConfig',
