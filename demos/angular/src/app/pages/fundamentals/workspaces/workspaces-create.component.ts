@@ -6,7 +6,6 @@ import {
 } from '@angular/core';
 import {
   ActiveWorkspaceChangeEvent,
-  EditorIsReadyEvent,
   InMemorySyncProvider,
   KritzelEditor,
   KritzelSyncConfig,
@@ -44,7 +43,6 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
       (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
       (workspacesChange)="refreshWorkspaces()"
     ></kritzel-editor>
@@ -70,17 +68,11 @@ export class WorkspacesCreateComponent {
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
   };
-  workspaces = signal<KritzelWorkspace[]>([new KritzelWorkspace({ name: 'Board 1' })]);
-  activeWorkspaceId = signal<string | undefined>(undefined);
+  workspaces = signal<KritzelWorkspace[]>([
+    new KritzelWorkspace({ id: 'board-1', name: 'Board 1', objects: createSeedObjects() }),
+  ]);
+  activeWorkspaceId = signal<string | undefined>('board-1');
 
-  async onReady(event: CustomEvent<EditorIsReadyEvent>) {
-    await this.refreshWorkspaces();
-    this.activeWorkspaceId.set(event.detail.activeWorkspace.id);
-
-    for (const object of createSeedObjects()) {
-      await this.editor.addObject(object);
-    }
-  }
 
   onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
     this.activeWorkspaceId.set(event.detail.id);

@@ -241,6 +241,13 @@ describe('KritzelShape', () => {
       expect(configuredShape.scale).toBe(2);
     });
 
+    it('should default scale to 1 when config omits scale', () => {
+      const shape = new KritzelShape({ translateX: 20, translateY: -150, width: 120, height: 120 });
+
+      expect(shape.scale).toBe(1);
+      expect(shape.transformationMatrix).toBe('matrix(1, 0, 0, 1, 20, -150)');
+    });
+
     it('should set default property values', () => {
       expect(shapeObject.isDebugInfoVisible).toBe(true);
       expect(shapeObject.isEditable).toBe(true);
