@@ -73,8 +73,18 @@ interface WorkspaceJsonExportPayload extends Record<string, unknown> {
 export class KritzelEngine {
   @Element() host!: HTMLElement;
 
-  /** Optional workspace to use during startup when no active workspace has been resolved yet. */
-  @Prop() initialWorkspace?: KritzelWorkspace;
+  /** Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted. */
+  @Prop() workspaces?: KritzelWorkspace[];
+  @Watch('workspaces')
+  async onWorkspacesPropChange() {
+    if (!this._isYjsInitialized) {
+      return;
+    }
+
+    await this.reconcileProvidedWorkspaces();
+    await this.ensureActiveWorkspaceIsVisible();
+    this.workspacesChange.emit(this.getVisibleWorkspaces());
+  }
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;
@@ -1725,7 +1735,8 @@ export class KritzelEngine {
 
     // Save the new workspace
     this.core.createWorkspace(newWorkspace);
-    this.workspacesChange.emit(this.core.store.state.workspaces);
+    this.syncVisibleWorkspacesToState();
+    this.workspacesChange.emit(this.getVisibleWorkspaces());
 
     // Switch to the new workspace
     this.core.beforeWorkspaceChange();
@@ -2111,10 +2122,13 @@ export class KritzelEngine {
    */
   @Method()
   async setActiveWorkspace(id: string): Promise<void> {
-    await this.core.setActiveWorkspace(id);
-    if (this.core.store.state.activeWorkspace) {
-      this.activeWorkspaceChange.emit(this.core.store.state.activeWorkspace);
+    const workspace = this.findVisibleWorkspace(id);
+    if (!workspace) {
+      console.warn(`[KritzelEngine] No workspace found with ID: ${id}`);
+      return;
     }
+
+    await this.switchToWorkspaceById(id);
   }
 
   /**
@@ -2126,7 +2140,8 @@ export class KritzelEngine {
   @Method()
   async createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null> {
     const createdWorkspace = await this.core.createWorkspace(workspace);
-    this.workspacesChange.emit(this.core.store.state.workspaces);
+    this.syncVisibleWorkspacesToState();
+    this.workspacesChange.emit(this.getVisibleWorkspaces());
 
     const activeWorkspace = this.core.store.state.activeWorkspace;
     if (activeWorkspace && activeWorkspace.id === createdWorkspace.id) {
@@ -2142,8 +2157,14 @@ export class KritzelEngine {
    */
   @Method()
   async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
+      console.warn(`[KritzelEngine] Cannot update workspace outside the controlled catalog: ${workspace.id}`);
+      return;
+    }
+
     await this.core.updateWorkspace(workspace);
-    this.workspacesChange.emit(this.core.store.state.workspaces);
+    this.syncVisibleWorkspacesToState();
+    this.workspacesChange.emit(this.getVisibleWorkspaces());
   }
 
   /**
@@ -2152,14 +2173,20 @@ export class KritzelEngine {
    */
   @Method()
   async deleteWorkspace(workspace: KritzelWorkspace): Promise<void> {
+    if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
+      console.warn(`[KritzelEngine] Cannot delete workspace outside the controlled catalog: ${workspace.id}`);
+      return;
+    }
+
     await this.core.deleteWorkspace(workspace);
-    this.workspacesChange.emit(this.core.store.state.workspaces);
+    this.syncVisibleWorkspacesToState();
+    this.workspacesChange.emit(this.getVisibleWorkspaces());
   }
 
   /** Returns all available workspaces. */
   @Method()
   async getWorkspaces(): Promise<KritzelWorkspace[]> {
-    return await this.core.getWorkspaces();
+    return this.getVisibleWorkspaces();
   }
 
   /** Returns the currently active workspace. */
@@ -2202,7 +2229,13 @@ export class KritzelEngine {
       workspace.isPublic = true;
     }
 
-    this.workspacesChange.emit(this.core.store.state.workspaces);
+    this.syncVisibleWorkspacesToState();
+    this.workspacesChange.emit(this.getVisibleWorkspaces());
+
+    if (this.isWorkspaceCatalogControlled() && !this.findVisibleWorkspace(workspace.id)) {
+      console.warn(`[KritzelEngine] Cannot load shared workspace outside the controlled catalog: ${workspace.id}`);
+      return;
+    }
 
     this.core.beforeWorkspaceChange();
     await this.initializeWorkspaceIfNeeded(workspace);
@@ -2629,21 +2662,8 @@ export class KritzelEngine {
       await this.initializeAssetStorage();
     }
 
-    if (this.activeWorkspaceId) {
-      const startupWorkspace = this.core.getWorkspaces().find(ws => ws.id === this.activeWorkspaceId);
-
-      if (startupWorkspace) {
-        await this.initializeWorkspaceIfNeeded(startupWorkspace);
-      } else {
-        // Workspace ID was provided but not found – fall back to existing workspaces
-        // (last-active, then newest created) instead of leaving activeWorkspace null.
-        await this.initializeWorkspaceIfNeeded();
-      }
-    } else {
-      // Resolve startup workspace, preferring explicit workspace object when provided.
-      const startupWorkspace = this.resolveStartupWorkspace();
-      await this.initializeWorkspaceIfNeeded(startupWorkspace);
-    }
+    await this.reconcileProvidedWorkspaces();
+    await this.initializeStartupWorkspace();
 
     // Emit initial active workspace once startup initialization has completed
     const initialActiveWorkspace = this.core.store.state.activeWorkspace;
@@ -2654,7 +2674,8 @@ export class KritzelEngine {
     // Register callback for remote workspace changes (only once)
     if (!this._stateChangeListenersRegistered) {
       this.core.appStateMap.onRemoteChange(() => {
-        this.workspacesChange.emit(this.core.store.state.workspaces);
+        this.syncVisibleWorkspacesToState();
+        this.workspacesChange.emit(this.getVisibleWorkspaces());
         this.tryResolveActiveWorkspaceFromId();
       });
       this._registerStateChangeListeners();
@@ -2664,18 +2685,125 @@ export class KritzelEngine {
     this.tryResolveActiveWorkspaceFromId();
   }
 
-  private resolveStartupWorkspace(): KritzelWorkspace | undefined {
+  private async initializeStartupWorkspace(): Promise<void> {
+    if (this.isWorkspaceCatalogControlled()) {
+      const visibleWorkspaces = this.getVisibleWorkspaces();
+
+      if (this.activeWorkspaceId) {
+        const startupWorkspace = visibleWorkspaces.find(ws => ws.id === this.activeWorkspaceId);
+
+        if (startupWorkspace) {
+          await this.initializeWorkspaceIfNeeded(startupWorkspace);
+          this.syncVisibleWorkspacesToState();
+          return;
+        }
+
+        console.warn(`[KritzelEngine] No workspace found with ID: ${this.activeWorkspaceId}`);
+      }
+
+      if (visibleWorkspaces.length > 0) {
+        await this.initializeWorkspaceIfNeeded(visibleWorkspaces[0]);
+      } else {
+        await this.initializeWorkspaceIfNeeded(undefined, { skipFallbackCreation: true });
+      }
+
+      this.syncVisibleWorkspacesToState();
+      return;
+    }
+
     if (this.activeWorkspaceId) {
       const workspaceById = this.core.getWorkspaces().find(ws => ws.id === this.activeWorkspaceId);
 
       if (workspaceById) {
-        return workspaceById;
+        await this.initializeWorkspaceIfNeeded(workspaceById);
+        return;
       }
 
-      console.warn(`[KritzelEngine] No workspace found with ID: ${this.activeWorkspaceId}`);
+      // Workspace ID was provided but not found – fall back to existing workspaces
+      // (last-active, then newest created) instead of leaving activeWorkspace null.
+      await this.initializeWorkspaceIfNeeded();
+      return;
     }
 
-    return this.initialWorkspace;
+    await this.initializeWorkspaceIfNeeded();
+  }
+
+  private async ensureActiveWorkspaceIsVisible(): Promise<void> {
+    if (!this.isWorkspaceCatalogControlled()) {
+      return;
+    }
+
+    const activeWorkspaceId = this.core.store.state.activeWorkspace?.id;
+    if (activeWorkspaceId && this.findVisibleWorkspace(activeWorkspaceId)) {
+      this.syncVisibleWorkspacesToState();
+      return;
+    }
+
+    await this.initializeStartupWorkspace();
+  }
+
+  private async reconcileProvidedWorkspaces(): Promise<void> {
+    if (!this.isWorkspaceCatalogControlled()) {
+      return;
+    }
+
+    const providerWorkspaces = this.core.getWorkspaces();
+    for (const workspace of this.getProvidedWorkspaces()) {
+      const existingWorkspace = providerWorkspaces.find(existing => existing.id === workspace.id);
+
+      if (!existingWorkspace) {
+        await this.core.createWorkspace(workspace);
+        continue;
+      }
+
+      if (this.hasWorkspaceMetadataChanged(existingWorkspace, workspace)) {
+        await this.core.updateWorkspace(this.cloneWorkspaceMetadata(workspace));
+      }
+    }
+
+    this.syncVisibleWorkspacesToState();
+  }
+
+  private isWorkspaceCatalogControlled(): boolean {
+    return this.workspaces !== undefined;
+  }
+
+  private getProvidedWorkspaces(): KritzelWorkspace[] {
+    return this.workspaces ?? [];
+  }
+
+  private getVisibleWorkspaces(): KritzelWorkspace[] {
+    if (!this.isWorkspaceCatalogControlled()) {
+      return this.core.getWorkspaces();
+    }
+
+    const providerWorkspaces = this.core.getWorkspaces();
+
+    return this.getProvidedWorkspaces().map(workspace => providerWorkspaces.find(existing => existing.id === workspace.id) ?? workspace);
+  }
+
+  private findVisibleWorkspace(workspaceId: string): KritzelWorkspace | undefined {
+    return this.getVisibleWorkspaces().find(workspace => workspace.id === workspaceId);
+  }
+
+  private syncVisibleWorkspacesToState(): void {
+    this.core.store.state.workspaces = this.getVisibleWorkspaces();
+  }
+
+  private hasWorkspaceMetadataChanged(existingWorkspace: KritzelWorkspace, providedWorkspace: KritzelWorkspace): boolean {
+    return (
+      existingWorkspace.name !== providedWorkspace.name ||
+      existingWorkspace.isPublic !== providedWorkspace.isPublic ||
+      existingWorkspace.viewport.centerWorldX !== providedWorkspace.viewport.centerWorldX ||
+      existingWorkspace.viewport.centerWorldY !== providedWorkspace.viewport.centerWorldY ||
+      existingWorkspace.viewport.scale !== providedWorkspace.viewport.scale
+    );
+  }
+
+  private cloneWorkspaceMetadata(workspace: KritzelWorkspace): KritzelWorkspace {
+    const clonedWorkspace = workspace.clone();
+    clonedWorkspace.objects = [];
+    return clonedWorkspace;
   }
 
   private tryResolveActiveWorkspaceFromId(): void {
@@ -2694,7 +2822,7 @@ export class KritzelEngine {
   }
 
   private async switchToWorkspaceById(workspaceId: string, logIfMissing: boolean = true): Promise<void> {
-    const workspace = this.core.getWorkspaces().find(ws => ws.id === workspaceId);
+    const workspace = this.findVisibleWorkspace(workspaceId);
     if (!workspace) {
       if (logIfMissing) {
         console.warn(`[KritzelEngine] No workspace found with ID: ${workspaceId}`);
