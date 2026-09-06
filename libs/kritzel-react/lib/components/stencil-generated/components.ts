@@ -99,6 +99,7 @@ export const KritzelDialog: StencilReactComponent<KritzelDialogElement, KritzelD
 export type KritzelEditorEvents = {
     onIsReady: EventName<KritzelEditorCustomEvent<EditorIsReadyEvent>>,
     onActiveWorkspaceChange: EventName<KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>>,
+    onWorkspacesChange: EventName<KritzelEditorCustomEvent<KritzelWorkspace[]>>,
     onObjectsChange: EventName<KritzelEditorCustomEvent<KritzelBaseObject[]>>,
     onObjectsAdded: EventName<KritzelEditorCustomEvent<ObjectsAddedEvent>>,
     onObjectsRemoved: EventName<KritzelEditorCustomEvent<ObjectsRemovedEvent>>,
@@ -122,6 +123,7 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
     events: {
         onIsReady: 'isReady',
         onActiveWorkspaceChange: 'activeWorkspaceChange',
+        onWorkspacesChange: 'workspacesChange',
         onObjectsChange: 'objectsChange',
         onObjectsAdded: 'objectsAdded',
         onObjectsRemoved: 'objectsRemoved',

@@ -197,12 +197,13 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'workspacesChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
   @Output() isReady = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorEditorIsReadyEvent>>();
   @Output() activeWorkspaceChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorActiveWorkspaceChangeEvent>>();
+  @Output() workspacesChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelWorkspace[]>>();
   @Output() objectsChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelBaseObject[]>>();
   @Output() objectsAdded = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsAddedEvent>>();
   @Output() objectsRemoved = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorObjectsRemovedEvent>>();
@@ -226,6 +227,7 @@ export class KritzelEditor {
 import type { KritzelEditorCustomEvent } from 'kritzel-stencil/dist/components';
 import type { EditorIsReadyEvent as IKritzelEditorEditorIsReadyEvent } from 'kritzel-stencil/dist/components';
 import type { ActiveWorkspaceChangeEvent as IKritzelEditorActiveWorkspaceChangeEvent } from 'kritzel-stencil/dist/components';
+import type { KritzelWorkspace as IKritzelEditorKritzelWorkspace } from 'kritzel-stencil/dist/components';
 import type { KritzelBaseObject as IKritzelEditorKritzelBaseObject } from 'kritzel-stencil/dist/components';
 import type { ObjectsAddedEvent as IKritzelEditorObjectsAddedEvent } from 'kritzel-stencil/dist/components';
 import type { ObjectsRemovedEvent as IKritzelEditorObjectsRemovedEvent } from 'kritzel-stencil/dist/components';
@@ -242,6 +244,8 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   isReady: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorEditorIsReadyEvent>>;
 
   activeWorkspaceChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorActiveWorkspaceChangeEvent>>;
+
+  workspacesChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelWorkspace[]>>;
 
   objectsChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelBaseObject[]>>;
 

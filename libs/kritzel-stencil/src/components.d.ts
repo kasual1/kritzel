@@ -24,12 +24,12 @@ import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.int
 import { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 import { EditorIsReadyEvent } from "./events/editor-is-ready.event";
 import { ActiveWorkspaceChangeEvent } from "./events/active-workspace-change.event";
+import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { LoginEvent } from "./events/login.event";
 import { IKritzelIsPublicChangeEvent } from "./interfaces/share.interface";
-import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelBaseTool } from "./classes/tools/base-tool.class";
 import { KritzelAlignment } from "./enums/alignment.enum";
 import { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
@@ -70,12 +70,12 @@ export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.int
 export { KritzelLoginConfig, KritzelLoginProvider } from "./interfaces/login-config.interface";
 export { EditorIsReadyEvent } from "./events/editor-is-ready.event";
 export { ActiveWorkspaceChangeEvent } from "./events/active-workspace-change.event";
+export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from "./interfaces/object-change-event.interface";
 export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { LoginEvent } from "./events/login.event";
 export { IKritzelIsPublicChangeEvent } from "./interfaces/share.interface";
-export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelBaseTool } from "./classes/tools/base-tool.class";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
@@ -1973,6 +1973,7 @@ declare global {
     interface HTMLKritzelEditorElementEventMap {
         "isReady": EditorIsReadyEvent;
         "activeWorkspaceChange": ActiveWorkspaceChangeEvent;
+        "workspacesChange": KritzelWorkspace[];
         "objectsChange": KritzelBaseObject[];
         "objectsAdded": ObjectsAddedEvent;
         "objectsRemoved": ObjectsRemovedEvent;
@@ -2982,6 +2983,7 @@ declare namespace LocalJSX {
         "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState>) => void;
         "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
+        "onWorkspacesChange"?: (event: KritzelEditorCustomEvent<KritzelWorkspace[]>) => void;
         /**
           * @default 1000
          */
