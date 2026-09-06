@@ -1617,6 +1617,31 @@ describe('KritzelCore', () => {
       expect(object.workspaceId).toBe('ws-seeded');
     });
 
+    it('should initialize runtime fields on seeded objects like addObject does', async () => {
+      const object = { id: 'seed-object' } as KritzelBaseObject<any>;
+      const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', viewport: { scale: 2 }, objects: [object] });
+      mockAppStateMap.allWorkspaces.mockReturnValue([]);
+      mockAppStateMap.has.mockReturnValue(false);
+
+      await core.initializeWorkspace(ws);
+
+      expect(object._core).toBe(core);
+      expect(object.scale).toBe(2);
+      expect(object.zIndex).toBe(mockStore.currentZIndex);
+    });
+
+    it('should preserve an explicit scale on seeded objects', async () => {
+      const object = { id: 'seed-object', scale: 0.5 } as KritzelBaseObject<any>;
+      const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });
+      mockAppStateMap.allWorkspaces.mockReturnValue([]);
+      mockAppStateMap.has.mockReturnValue(false);
+      mockStore.state.scale = 2;
+
+      await core.initializeWorkspace(ws);
+
+      expect(object.scale).toBe(0.5);
+    });
+
     it('should not insert a configured object that already exists in the workspace map', async () => {
       const object = { id: 'seed-object', workspaceId: 'ws-seeded' } as KritzelBaseObject<any>;
       const ws = new KritzelWorkspace({ id: 'ws-seeded', name: 'Seeded', objects: [object] });

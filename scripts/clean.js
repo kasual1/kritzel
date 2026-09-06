@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const rimraf = require('rimraf');
-const { execSync } = require('child_process');
 
 // Project paths and generated folders to clean
 const cleanTargets = [
@@ -21,7 +19,7 @@ function deleteFolder(folderPath, subfolder) {
   const fullPath = path.resolve(__dirname, folderPath, subfolder);
   if (fs.existsSync(fullPath)) {
     console.log(`Deleting: ${fullPath}`);
-    rimraf.sync(fullPath); // Use rimraf's sync method
+    fs.rmSync(fullPath, { force: true, maxRetries: 3, recursive: true, retryDelay: 100 });
   } else {
     console.log(`No ${subfolder} found at: ${fullPath}`);
   }

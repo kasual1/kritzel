@@ -24,6 +24,7 @@ import { KritzelBrowserPermissionManager } from '../managers/browser-permission.
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
+import type { KritzelText } from '../objects/text.class';
 
 interface InitializeWorkspaceOptions {
   /**
@@ -433,6 +434,20 @@ export class KritzelCore {
       for (const object of workspace.objects) {
         if (objectsMap.findById(object.id)) {
           continue;
+        }
+
+        // Mirror engine.addObject() runtime initialization for consumer-constructed objects
+        object._core = this;
+        object.scale = object.scale ?? this._store.state.scale;
+        object.zIndex = this._store.currentZIndex;
+
+        // Recreate the text editor now that _core is available for persistence callbacks
+        if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+          const pendingContent = object.content;
+          object.editor = object.createEditor();
+          if (pendingContent) {
+            object.setContent(pendingContent);
+          }
         }
 
         if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {

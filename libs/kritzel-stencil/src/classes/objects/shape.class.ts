@@ -126,7 +126,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
       this.fontSize = config.fontSize ?? 16;
       this.fontFamily = config.fontFamily ?? 'Arial';
       this.fontColor = config.fontColor ?? KritzelColorHelper.determineTextColor(this.fillColor);
-      this.scale = config.scale;
+      this.scale = config.scale ?? 1;
       this.scaleFactor = config.scaleX ?? 1;
     }
   }
