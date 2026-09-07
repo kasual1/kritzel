@@ -368,6 +368,16 @@ Type: `Promise<void>`
 
 
 
+### `exportAsJson() => Promise<string>`
+
+
+
+#### Returns
+
+Type: `Promise<string>`
+
+
+
 ### `exportSelectedObject(format: KritzelObjectExportFormat) => Promise<void>`
 
 
@@ -598,6 +608,22 @@ Type: `Promise<void>`
 ### `importFromFile() => Promise<void>`
 
 
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `importFromJson(json: string) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name   | Type     | Description |
+| ------ | -------- | ----------- |
+| `json` | `string` |             |
 
 #### Returns
 

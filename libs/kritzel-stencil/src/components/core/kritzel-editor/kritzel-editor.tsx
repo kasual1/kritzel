@@ -752,6 +752,16 @@ export class KritzelEditor {
   }
 
   @Method()
+  async exportAsJson(): Promise<string> {
+    return this.engineRef.exportAsJson();
+  }
+
+  @Method()
+  async importFromJson(json: string): Promise<void> {
+    return this.engineRef.importFromJson(json);
+  }
+
+  @Method()
   async downloadAsJson(filename?: string): Promise<void> {
     return this.engineRef.downloadAsJson(filename);
   }
