@@ -439,6 +439,18 @@ describe('KritzelCore', () => {
       expect(mockStore.state.workspaces[0].name).toBe('New Name');
     });
 
+    it('should update the active workspace metadata when the active workspace is updated', async () => {
+      mockStore.state.activeWorkspace = new KritzelWorkspace({ id: 'ws-1', name: 'Old Name' });
+      mockStore.state.workspaces = [mockStore.state.activeWorkspace];
+      const ws = mockStore.state.activeWorkspace.clone();
+
+      ws.name = 'New Name';
+      await core.updateWorkspace(ws);
+
+      expect(mockStore.state.activeWorkspace.name).toBe('New Name');
+      expect(mockStore.state.activeWorkspace._core).toBe(core);
+    });
+
     it('should leave objects untouched when no object set is declared', async () => {
       const existing = createStubObject('obj-1');
       mockObjectsMap.allObjects.mockReturnValue([existing]);

@@ -687,6 +687,8 @@ export class KritzelCore {
     const isActive = this._store.state.activeWorkspace?.id === workspace.id;
     const desiredObjects = workspace.objects;
 
+    workspace._core = this;
+
     // Never persist the declared object set into the app state entry
     workspace.objects = undefined;
 
@@ -708,6 +710,7 @@ export class KritzelCore {
 
     if (isActive) {
       this.applyWorkspaceViewport(workspace);
+      this._store.state.activeWorkspace = workspace;
     }
 
     if (!desiredObjects) {
