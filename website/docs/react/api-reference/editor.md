@@ -251,7 +251,7 @@ createWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspace | null>
 
 #### updateWorkspace
 
-Updates an existing workspace's metadata and emits a `workspacesChange` event.
+Applies a workspace as declared and emits a `workspacesChange` event. Metadata and viewport are always applied. When `workspace.objects` is set it is treated as the complete desired object set: objects are matched by ID, unknown IDs are added, known IDs are updated, and objects missing from the list are removed. Leave `objects` `undefined` to keep the current objects, or pass `[]` to remove them all. Updating the objects of a workspace that is not currently active requires a configured sync provider.
 
 ```ts
 updateWorkspace(workspace: KritzelWorkspace): Promise<void>

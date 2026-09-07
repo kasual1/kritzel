@@ -43,6 +43,12 @@ describe('KritzelWorkspace', () => {
       expect(workspace.name).toBe('Auto ID Workspace');
     });
 
+    it('should leave objects undefined when none are declared', () => {
+      const workspace = new KritzelWorkspace({ name: 'No Objects' });
+
+      expect(workspace.objects).toBeUndefined();
+    });
+
     it('should set default viewport values when none provided', () => {
       const workspace = new KritzelWorkspace({ name: 'Test' });
 

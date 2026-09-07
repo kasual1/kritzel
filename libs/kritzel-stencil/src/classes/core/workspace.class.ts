@@ -20,7 +20,10 @@ export interface KritzelWorkspaceConfig {
     centerWorldY?: number;
     scale?: number;
   };
-  /** Optional array of initial canvas objects to seed into this workspace */
+  /**
+   * Canvas objects for this workspace. Seeded on first initialization, and treated as the
+   * desired object set by `updateWorkspace()`. Omit to leave existing objects untouched.
+   */
   objects?: KritzelBaseObject<any>[];
 }
 
@@ -46,8 +49,11 @@ export class KritzelWorkspace implements KritzelSerializable {
     centerWorldY: number;
     scale: number;
   };
-  /** Initial canvas objects to insert when this workspace is first initialized. */
-  objects: KritzelBaseObject<any>[];
+  /**
+   * Desired canvas objects. Seeded when the workspace is first initialized and applied as the
+   * full desired set by `updateWorkspace()`: `undefined` leaves objects untouched, `[]` removes all.
+   */
+  objects?: KritzelBaseObject<any>[];
 
   /** Whether the workspace is publicly accessible via a share link */
   isPublic: boolean;
@@ -69,7 +75,7 @@ export class KritzelWorkspace implements KritzelSerializable {
       centerWorldY: config?.viewport?.centerWorldY ?? 0,
       scale: config?.viewport?.scale ?? 1,
     };
-    this.objects = config?.objects ?? [];
+    this.objects = config?.objects;
     this.isPublic = false;
   }
 

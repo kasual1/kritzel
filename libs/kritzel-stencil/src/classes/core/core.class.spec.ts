@@ -404,26 +404,169 @@ describe('KritzelCore', () => {
   });
 
   describe('updateWorkspace', () => {
-    it('should update the updatedAt timestamp', () => {
+    const createStubObject = (id: string, zIndex = 0) =>
+      ({
+        id,
+        zIndex,
+        scale: 1,
+        isMounted: true,
+        workspaceId: 'ws-1',
+        generateId: jest.fn().mockReturnValue(`generated-${id}`),
+      }) as unknown as KritzelBaseObject<any>;
+
+    const removeCallsFor = (object: KritzelBaseObject<any>) =>
+      (mockObjectsMap.remove.mock.calls as [(o: any) => boolean][]).filter(([predicate]) => predicate(object));
+
+    it('should update the updatedAt timestamp', async () => {
       const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace' });
       const oldDate = new Date(2020, 0, 1);
       ws.updatedAt = oldDate;
 
       mockStore.state.workspaces = [ws];
 
-      core.updateWorkspace(ws);
+      await core.updateWorkspace(ws);
 
       expect(ws.updatedAt.getTime()).toBeGreaterThan(oldDate.getTime());
     });
 
-    it('should update the workspace in the workspaces array', () => {
+    it('should update the workspace in the workspaces array', async () => {
       const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Old Name' });
       mockStore.state.workspaces = [ws];
 
       ws.name = 'New Name';
-      core.updateWorkspace(ws);
+      await core.updateWorkspace(ws);
 
       expect(mockStore.state.workspaces[0].name).toBe('New Name');
+    });
+
+    it('should leave objects untouched when no object set is declared', async () => {
+      const existing = createStubObject('obj-1');
+      mockObjectsMap.allObjects.mockReturnValue([existing]);
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Renamed' });
+
+      const diff = await core.updateWorkspace(ws);
+
+      expect(diff).toBeNull();
+      expect(mockObjectsMap.insert).not.toHaveBeenCalled();
+      expect(mockObjectsMap.remove).not.toHaveBeenCalled();
+    });
+
+    it('should remove all objects when an empty object set is declared', async () => {
+      const existing = createStubObject('obj-1');
+      mockObjectsMap.allObjects.mockReturnValue([existing]);
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [] });
+
+      const diff = await core.updateWorkspace(ws);
+
+      expect(removeCallsFor(existing)).toHaveLength(1);
+      expect(diff?.removed).toEqual([existing]);
+    });
+
+    it('should add declared objects that are missing, preserving their ids', async () => {
+      mockObjectsMap.allObjects.mockReturnValue([]);
+      const incoming = createStubObject('obj-new');
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+
+      const diff = await core.updateWorkspace(ws);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(incoming);
+      expect(incoming.id).toBe('obj-new');
+      expect(incoming.workspaceId).toBe('ws-1');
+      expect(diff?.added).toEqual([incoming]);
+    });
+
+    it('should update objects passed by the same instance reference', async () => {
+      const existing = createStubObject('obj-1');
+      mockObjectsMap.allObjects.mockReturnValue([existing]);
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [existing] });
+
+      const diff = await core.updateWorkspace(ws);
+
+      expect(mockObjectsMap.update).toHaveBeenCalledWith(existing);
+      expect(removeCallsFor(existing)).toHaveLength(0);
+      expect(diff?.updated).toEqual([existing]);
+    });
+
+    it('should replace the live instance when a different object with the same id is declared', async () => {
+      const existing = createStubObject('obj-1');
+      const incoming = createStubObject('obj-1', 7);
+      mockObjectsMap.allObjects.mockReturnValue([existing]);
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+
+      const diff = await core.updateWorkspace(ws);
+
+      expect(removeCallsFor(existing)).toHaveLength(1);
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(incoming);
+      expect(incoming.zIndex).toBe(7);
+      expect(diff?.updated).toEqual([incoming]);
+    });
+
+    it('should rebuild the anchor index after reconciling the active workspace', async () => {
+      mockObjectsMap.allObjects.mockReturnValue([]);
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
+
+      await core.updateWorkspace(ws);
+
+      expect(mockAnchorManager.rebuildIndex).toHaveBeenCalled();
+    });
+
+    it('should clear the declared object set so it is not re-seeded later', async () => {
+      mockObjectsMap.allObjects.mockReturnValue([]);
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
+
+      await core.updateWorkspace(ws);
+
+      expect(ws.objects).toBeUndefined();
+    });
+
+    it('should apply the declared viewport to the active workspace', async () => {
+      mockStore.state.workspaces = [];
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 100, centerWorldY: 50, scale: 2 } });
+
+      await core.updateWorkspace(ws);
+
+      expect(mockEngine.viewport.cancelPendingUpdates).toHaveBeenCalled();
+      expect(mockStore.state.scale).toBe(2);
+      expect(mockStore.state.translateX).toBe(1000 / 2 - 100 * 2);
+      expect(mockStore.state.translateY).toBe(800 / 2 - 50 * 2);
+    });
+
+    it('should not touch the viewport when the workspace is passed back unchanged', async () => {
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', viewport: { centerWorldX: 0, centerWorldY: 0, scale: 1 } });
+
+      await core.updateWorkspace(ws);
+
+      expect(mockEngine.viewport.cancelPendingUpdates).not.toHaveBeenCalled();
+    });
+
+    it('should warn and skip object changes for a non-active workspace without a sync provider', async () => {
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      const ws = new KritzelWorkspace({ id: 'ws-other', name: 'Other', objects: [createStubObject('obj-new')] });
+
+      const diff = await core.updateWorkspace(ws);
+
+      expect(warnSpy).toHaveBeenCalled();
+      expect(diff).toBeNull();
+      expect(mockObjectsMap.insert).not.toHaveBeenCalled();
+      warnSpy.mockRestore();
+    });
+
+    it('should reconcile a non-active workspace through a headless object map when a provider is configured', async () => {
+      const syncConfig = { providers: [jest.fn() as any] };
+      core.setSyncConfig(syncConfig);
+
+      const headlessMap = { ...mockObjectsMap, whenNetworkSynced: jest.fn().mockResolvedValue(undefined) };
+      jest.mocked(KritzelObjectMap).mockImplementationOnce(() => headlessMap);
+
+      const incoming = createStubObject('obj-new');
+      const ws = new KritzelWorkspace({ id: 'ws-other', name: 'Other', objects: [incoming] });
+
+      const diff = await core.updateWorkspace(ws);
+
+      expect(headlessMap.initialize).toHaveBeenCalledWith(core, 'ws-other', syncConfig, { headless: true, workspaceName: 'Other' });
+      expect(headlessMap.insert).toHaveBeenCalledWith(incoming);
+      expect(headlessMap.destroy).toHaveBeenCalled();
+      expect(diff?.added).toEqual([incoming]);
     });
   });
 

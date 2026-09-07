@@ -2154,8 +2154,11 @@ export class KritzelEngine {
   }
 
   /**
-   * Updates an existing workspace's metadata and emits a `workspacesChange` event.
-   * @param workspace - The workspace with updated properties.
+   * Applies a workspace as declared and emits a `workspacesChange` event.
+   * Metadata and viewport are always applied. When `workspace.objects` is set it is treated as the
+   * complete desired object set (`undefined` leaves objects untouched, `[]` removes them all);
+   * updating objects of a non-active workspace requires a configured sync provider.
+   * @param workspace - The workspace describing the desired state.
    */
   @Method()
   async updateWorkspace(workspace: KritzelWorkspace): Promise<void> {
@@ -2164,9 +2167,27 @@ export class KritzelEngine {
       return;
     }
 
-    await this.core.updateWorkspace(workspace);
+    const isActive = this.core.store.state.activeWorkspace?.id === workspace.id;
+    const objectsDiff = await this.core.updateWorkspace(workspace);
     this.syncVisibleWorkspacesToState();
     this.workspacesChange.emit(this.getVisibleWorkspaces());
+
+    if (!objectsDiff || !isActive) {
+      return;
+    }
+
+    if (objectsDiff.added.length > 0) {
+      this.emitObjectsAdded(objectsDiff.added);
+    }
+    if (objectsDiff.removed.length > 0) {
+      this.emitObjectsRemoved(objectsDiff.removed);
+    }
+    if (objectsDiff.updated.length > 0) {
+      this.emitObjectsUpdated(objectsDiff.updated.map(object => ({ object, changedProperties: [] })));
+    }
+    if (objectsDiff.added.length > 0 || objectsDiff.removed.length > 0 || objectsDiff.updated.length > 0) {
+      this.emitObjectsChange();
+    }
   }
 
   /**
@@ -2804,7 +2825,7 @@ export class KritzelEngine {
 
   private cloneWorkspaceMetadata(workspace: KritzelWorkspace): KritzelWorkspace {
     const clonedWorkspace = workspace.clone();
-    clonedWorkspace.objects = [];
+    clonedWorkspace.objects = undefined;
     return clonedWorkspace;
   }
 
