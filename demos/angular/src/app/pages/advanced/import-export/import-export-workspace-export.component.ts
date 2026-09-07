@@ -1,11 +1,14 @@
-import { Component, ChangeDetectionStrategy, ElementRef, CUSTOM_ELEMENTS_SCHEMA, signal, viewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
+import { KritzelEditor, KritzelWorkspace } from 'kritzel-angular';
+import { InfoPanelComponent } from '../../../components/info-panel.component';
+import { angularThemeDark } from '../../../const/angular-theme-dark';
+import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-import-export-workspace-export',
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-  imports: [ToolbarComponent],
+  imports: [InfoPanelComponent, KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
@@ -14,10 +17,22 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       <button (click)="downloadJson()">Download JSON</button>
     </app-toolbar>
     <div class="content">
-      <div class="engine-wrap">
-        <kritzel-engine #engine [isPanningEnabled]="false" [isZoomingEnabled]="false" (isEngineReady)="onReady()"></kritzel-engine>
+      <div class="editor-wrap">
+        <kritzel-editor
+          editorId="import-export-workspace-export"
+          [theme]="'light'"
+          [themes]="themes"
+          [workspaces]="workspaces"
+          [isPanningEnabled]="false"
+          [isZoomingEnabled]="false"
+          [isMoreMenuVisible]="false"
+          [isWorkspaceManagerVisible]="false"
+        ></kritzel-editor>
       </div>
-      <pre class="json-preview">{{ jsonPreview() }}</pre>
+      <app-info-panel>
+        <h3>Exported Workspace</h3>
+        <pre>{{ jsonPreview() }}</pre>
+      </app-info-panel>
     </div>
   `,
   styles: [
@@ -33,45 +48,49 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         display: flex;
         min-height: 0;
       }
-      .engine-wrap {
+      .editor-wrap {
         flex: 1 1 60%;
         position: relative;
       }
-      .json-preview {
-        flex: 1 1 40%;
+      kritzel-editor {
+        display: block;
+        height: 100%;
+      }
+      app-info-panel {
+        --demo-info-panel-width: 300px;
+      }
+      pre {
         margin: 0;
-        padding: 12px;
-        overflow: auto;
+        overflow-wrap: anywhere;
+        white-space: pre-wrap;
+        font-family: monospace;
         font-size: 11px;
-        line-height: 1.4;
-        background: #1e1e1e;
-        color: #d4d4d4;
-        border-left: 1px solid #e0e0e0;
+        line-height: 1.45;
       }
     `,
   ],
 })
 export class ImportExportWorkspaceExportComponent {
-  engineRef = viewChild<ElementRef<HTMLElement>>('engine');
+  editor = viewChild(KritzelEditor);
 
   jsonPreview = signal('Click "Preview as JSON" to see the exported workspace.');
-
-  private get engine(): any {
-    return this.engineRef()?.nativeElement;
-  }
-
-  async onReady(): Promise<void> {
-    for (const obj of createSeedObjects()) {
-      await this.engine.addObject(obj);
-    }
-  }
+  themes = [angularThemeLight, angularThemeDark];
+  workspaces = [
+    new KritzelWorkspace({
+      id: 'workspace-export',
+      name: 'Workspace Export',
+      objects: createSeedObjects(),
+    }),
+  ];
 
   async previewJson(): Promise<void> {
-    const json = await this.engine.exportAsJson();
+    const json = await this.editor()?.exportAsJson();
+    if (!json) return;
+
     this.jsonPreview.set(json);
   }
 
   async downloadJson(): Promise<void> {
-    await this.engine.downloadAsJson();
+    await this.editor()?.downloadAsJson();
   }
 }

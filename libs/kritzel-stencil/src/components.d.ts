@@ -376,6 +376,7 @@ export namespace Components {
         "editorId"?: string;
         "enable": () => Promise<void>;
         "endSceneBootstrap": () => Promise<void>;
+        "exportAsJson": () => Promise<string>;
         "exportSelectedObject": (format: KritzelObjectExportFormat) => Promise<void>;
         "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
         "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
@@ -411,6 +412,7 @@ export namespace Components {
         "group": () => Promise<void>;
         "hideContextMenu": () => Promise<void>;
         "importFromFile": () => Promise<void>;
+        "importFromJson": (json: string) => Promise<void>;
         /**
           * Whether the editor is in a loading state. When true, a loading overlay is displayed.
           * @default false
