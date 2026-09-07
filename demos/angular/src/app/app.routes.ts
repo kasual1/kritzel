@@ -36,6 +36,10 @@ import { WorkspacesReadComponent } from './pages/fundamentals/workspaces/workspa
 import { WorkspacesUpdateComponent } from './pages/fundamentals/workspaces/workspaces-update.component';
 import { WorkspacesDeleteComponent } from './pages/fundamentals/workspaces/workspaces-delete.component';
 import { PersistenceLocalComponent } from './pages/fundamentals/persistence/persistence-local.component';
+import { PersistenceMemoryComponent } from './pages/fundamentals/persistence/persistence-memory.component';
+import { PersistenceBroadcastComponent } from './pages/fundamentals/persistence/persistence-broadcast.component';
+import { PersistenceWebsocketComponent } from './pages/fundamentals/persistence/persistence-websocket.component';
+import { PersistenceHocuspocusComponent } from './pages/fundamentals/persistence/persistence-hocuspocus.component';
 import { CollaborationLocalComponent } from './pages/advanced/collaboration/collaboration-local.component';
 import { CollaborationRealtimeComponent } from './pages/advanced/collaboration/collaboration-realtime.component';
 import { DynamicObjectsHtmlComponent } from './pages/advanced/dynamic-objects/dynamic-objects-html.component';
@@ -128,7 +132,13 @@ export const routes: Routes = [
       },
       {
         path: 'persistence',
-        children: [{ path: 'local', component: PersistenceLocalComponent }],
+        children: [
+          { path: 'memory', component: PersistenceMemoryComponent },
+          { path: 'local', component: PersistenceLocalComponent },
+          { path: 'broadcast', component: PersistenceBroadcastComponent },
+          { path: 'websocket', component: PersistenceWebsocketComponent },
+          { path: 'hocuspocus', component: PersistenceHocuspocusComponent },
+        ],
       },
     ],
   },

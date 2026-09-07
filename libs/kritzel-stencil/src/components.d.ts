@@ -654,6 +654,11 @@ export namespace Components {
          */
         "clearSelection": () => Promise<void>;
         /**
+          * Declaratively configures the full locale catalog, replacing the available locale set. Pass `undefined` to restore the built-in locales (en/de/fr).
+          * @param locales - The full locale catalog, or `undefined` for built-ins.
+         */
+        "configureLocales": (locales?: KritzelLocale[]) => Promise<void>;
+        /**
           * Copies the currently selected objects to the internal clipboard.
          */
         "copy": () => Promise<void>;
@@ -875,7 +880,7 @@ export namespace Components {
          */
         "locale": LocaleCode;
         /**
-          * An array of available locale definitions (with optional partial term overrides).
+          * An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.
          */
         "locales"?: KritzelLocale[];
         /**
@@ -3086,7 +3091,7 @@ declare namespace LocalJSX {
          */
         "locale"?: LocaleCode;
         /**
-          * An array of available locale definitions (with optional partial term overrides).
+          * An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.
          */
         "locales"?: KritzelLocale[];
         /**

@@ -238,14 +238,12 @@ export class KritzelEngine {
     this.core.localizationManager.setLocale(newValue);
   }
 
-  /** An array of available locale definitions (with optional partial term overrides). */
+  /** An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty. */
   @Prop() locales?: KritzelLocale[];
   @Watch('locales')
   onLocalesChange(newValue?: KritzelLocale[]) {
-    if (newValue && newValue.length > 0) {
-      this.core.localizationManager.registerLocales(newValue);
-      this.core.localizationManager.setLocale(this.locale);
-    }
+    this.core.localizationManager.configureLocales(newValue);
+    this.core.localizationManager.setLocale(this.core.localizationManager.resolveActiveLocale(this.locale));
   }
 
   /** The locale used to resolve terms missing from the active locale. */
@@ -2323,6 +2321,17 @@ export class KritzelEngine {
   }
 
   /**
+   * Declaratively configures the full locale catalog, replacing the available
+   * locale set. Pass `undefined` to restore the built-in locales (en/de/fr).
+   * @param locales - The full locale catalog, or `undefined` for built-ins.
+   */
+  @Method()
+  async configureLocales(locales?: KritzelLocale[]): Promise<void> {
+    this.core.localizationManager.configureLocales(locales);
+    this.core.localizationManager.setLocale(this.core.localizationManager.resolveActiveLocale(this.locale));
+  }
+
+  /**
    * Sets the active locale (language) and re-renders the UI.
    * @param code - The locale code to activate, e.g. 'de'.
    */
@@ -2547,11 +2556,9 @@ export class KritzelEngine {
     const editorElement = this.host.closest('kritzel-editor') as HTMLElement;
     this.core.themeManager.injectThemeEarly(editorElement || this.host);
 
-    if (this.locales && this.locales.length > 0) {
-      this.core.localizationManager.registerLocales(this.locales);
-    }
+    this.core.localizationManager.configureLocales(this.locales);
     this.core.localizationManager.setFallbackLocale(this.fallbackLocale);
-    this.core.localizationManager.setLocale(this.locale);
+    this.core.localizationManager.setLocale(this.core.localizationManager.resolveActiveLocale(this.locale));
 
     this.core.licenseManager.validate(this.licenseKey);
     this.core.licenseManager.startPeriodicValidation();
