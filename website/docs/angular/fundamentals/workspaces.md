@@ -37,11 +37,7 @@ Use `getWorkspaces()` to retrieve the complete workspace collection and `getActi
 
 ## Updating Workspaces
 
-Pass a workspace to `updateWorkspace()` describing how you want it to look. Name, visibility and viewport are applied, and if you set `objects` it becomes the workspace's complete object set — objects are matched by ID, so new entries are added, existing ones are updated, and anything you leave out is removed. Leave `objects` `undefined` (the default) to change metadata only, or pass `[]` to clear the canvas. Clone the current workspace before modifying it so Angular and Kritzel receive a new object reference. The demo renames the active workspace.
-
-:::note
-Changing the objects of a workspace that is not currently active requires a configured sync provider, because the change is written directly to that workspace's document.
-:::
+Pass a workspace to `updateWorkspace()` describing how you want it to look. Name, visibility and viewport are applied, and if you set `objects` it becomes the workspace's complete object set — objects are matched by ID, so new entries are added, existing ones are updated, and anything you leave out is removed. Leave `objects` `undefined` (the default) to change metadata only, or pass `[]` to clear the canvas.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
