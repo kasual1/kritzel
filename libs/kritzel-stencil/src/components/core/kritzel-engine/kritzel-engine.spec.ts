@@ -329,7 +329,7 @@ describe('KritzelEngine', () => {
         expect.objectContaining({
           id: providedWorkspace.id,
           name: providedWorkspace.name,
-          objects: [],
+          objects: undefined,
         }),
       );
     });

@@ -34,6 +34,13 @@ interface InitializeWorkspaceOptions {
   skipFallbackCreation?: boolean;
 }
 
+/** Objects affected by reconciling a workspace's declared object set. */
+export interface KritzelWorkspaceObjectsDiff {
+  added: KritzelBaseObject<any>[];
+  updated: KritzelBaseObject<any>[];
+  removed: KritzelBaseObject<any>[];
+}
+
 /**
  * Central orchestrator class for the Kritzel canvas system.
  * Manages workspaces, objects, selection, clipboard operations, and coordinates
@@ -426,38 +433,131 @@ export class KritzelCore {
   }
 
   private seedWorkspaceObjects(workspace: KritzelWorkspace, objectsMap: KritzelObjectMap<KritzelBaseObject<any>>): void {
-    if (workspace.objects.length === 0) {
+    if (!workspace.objects?.length) {
       return;
     }
 
     objectsMap.transaction(() => {
-      for (const object of workspace.objects) {
+      for (const object of workspace.objects!) {
         if (objectsMap.findById(object.id)) {
           continue;
         }
 
-        // Mirror engine.addObject() runtime initialization for consumer-constructed objects
-        object._core = this;
-        object.scale = object.scale ?? this._store.state.scale;
-        object.zIndex = this._store.currentZIndex;
-
-        // Recreate the text editor now that _core is available for persistence callbacks
-        if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
-          const pendingContent = object.content;
-          object.editor = object.createEditor();
-          if (pendingContent) {
-            object.setContent(pendingContent);
-          }
-        }
-
-        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
-          object.updateWorkspaceId(workspace.id);
-        } else {
-          object.workspaceId = workspace.id;
-        }
+        this.prepareObjectForWorkspace(object, workspace.id, this._store.currentZIndex, this._store.state.scale);
         objectsMap.insert(object);
       }
     });
+  }
+
+  /**
+   * Mirrors engine.addObject() runtime initialization for consumer-constructed objects.
+   */
+  private prepareObjectForWorkspace(object: KritzelBaseObject<any>, workspaceId: string, zIndex: number, scaleFallback: number): void {
+    object._core = this;
+    object.scale = object.scale ?? scaleFallback;
+    object.zIndex = zIndex;
+
+    // Recreate the text editor now that _core is available for persistence callbacks
+    if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+      const pendingContent = object.content;
+      object.editor = object.createEditor();
+      if (pendingContent) {
+        object.setContent(pendingContent);
+      }
+    }
+
+    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+      object.updateWorkspaceId(workspaceId);
+    } else {
+      object.workspaceId = workspaceId;
+    }
+  }
+
+  /**
+   * Applies `desiredObjects` as the complete object set of an object map.
+   * Objects are matched by ID: unknown IDs are added, known IDs are updated (replacing the live
+   * instance when a different one is passed), and objects absent from the list are removed.
+   * @param objectsMap - The map to reconcile
+   * @param workspaceId - The workspace the objects belong to
+   * @param desiredObjects - The desired object set
+   * @param nextZIndex - Supplies the z-index for newly added objects
+   * @param scaleFallback - Scale applied to objects that do not define one
+   * @returns The objects that were added, updated and removed
+   */
+  private reconcileWorkspaceObjects(
+    objectsMap: KritzelObjectMap<KritzelBaseObject<any>>,
+    workspaceId: string,
+    desiredObjects: KritzelBaseObject<any>[],
+    nextZIndex: () => number,
+    scaleFallback: number,
+  ): KritzelWorkspaceObjectsDiff {
+    const existingObjects = objectsMap.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
+    const existingById = new Map(existingObjects.map(object => [object.id, object]));
+    const desiredIds = new Set<string>();
+    const diff: KritzelWorkspaceObjectsDiff = { added: [], updated: [], removed: [] };
+
+    objectsMap.transaction(() => {
+      for (const object of desiredObjects) {
+        if (!object.id) {
+          object.id = object.generateId();
+        }
+        desiredIds.add(object.id);
+
+        const existingObject = existingById.get(object.id);
+
+        if (!existingObject) {
+          this.prepareObjectForWorkspace(object, workspaceId, nextZIndex(), scaleFallback);
+          objectsMap.insert(object);
+          diff.added.push(object);
+          continue;
+        }
+
+        if (existingObject === object) {
+          objectsMap.update(object);
+          diff.updated.push(object);
+          continue;
+        }
+
+        // Same ID but a different instance: swap the live object for the incoming one
+        this.detachObject(existingObject);
+        objectsMap.remove(o => o.id === object.id);
+        this.prepareObjectForWorkspace(object, workspaceId, object.zIndex ?? nextZIndex(), scaleFallback);
+        objectsMap.insert(object);
+        diff.updated.push(object);
+      }
+
+      for (const object of existingObjects) {
+        if (desiredIds.has(object.id)) {
+          continue;
+        }
+
+        this.detachObject(object);
+        objectsMap.remove(o => o.id === object.id);
+        diff.removed.push(object);
+      }
+    });
+
+    return diff;
+  }
+
+  /**
+   * Releases runtime resources held by an object that is about to leave the canvas.
+   * Unlike removeObject() this never cascades into group children, so the reconciled
+   * object set stays exactly what the caller declared.
+   */
+  private detachObject(object: KritzelBaseObject<any>): void {
+    if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
+      (object as any).unmount();
+    }
+    object.isMounted = false;
+  }
+
+  /**
+   * Returns the next free z-index within an object map.
+   */
+  private nextZIndexOf(objectsMap: KritzelObjectMap<KritzelBaseObject<any>>): number {
+    const objects = objectsMap.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
+    return Math.max(0, ...objects.map(o => o.zIndex)) + 1;
   }
 
   /**
@@ -576,16 +676,25 @@ export class KritzelCore {
   }
 
   /**
-   * Updates an existing workspace in the app state.
-   * Sets the update timestamp and refreshes the local workspaces list.
-   * @param workspace - The workspace with updated properties
+   * Applies a workspace as declared: metadata, viewport, and — when `workspace.objects` is set —
+   * the complete object set. A `undefined` object list leaves existing objects untouched, an empty
+   * list removes them all. Objects of non-active workspaces are written through a background
+   * object map and therefore require a configured sync provider.
+   * @param workspace - The workspace describing the desired state
+   * @returns The object changes that were applied, or null if objects were not touched
    */
-  updateWorkspace(workspace: KritzelWorkspace): void {
+  async updateWorkspace(workspace: KritzelWorkspace): Promise<KritzelWorkspaceObjectsDiff | null> {
+    const isActive = this._store.state.activeWorkspace?.id === workspace.id;
+    const desiredObjects = workspace.objects;
+
+    // Never persist the declared object set into the app state entry
+    workspace.objects = undefined;
+
     workspace.updatedAt = new Date();
     this.saveWorkspaceToAppState(workspace);
 
     // Keep metadata map in sync when the active workspace's name changes
-    if (this._store.state.activeWorkspace?.id === workspace.id) {
+    if (isActive) {
       this._store.objects?.setWorkspaceName(workspace.name);
     }
 
@@ -595,6 +704,90 @@ export class KritzelCore {
     if (index !== -1) {
       workspaces[index] = workspace;
       this._store.state.workspaces = workspaces;
+    }
+
+    if (isActive) {
+      this.applyWorkspaceViewport(workspace);
+    }
+
+    if (!desiredObjects) {
+      return null;
+    }
+
+    return isActive ? this.applyObjectsToActiveWorkspace(workspace, desiredObjects) : this.applyObjectsToInactiveWorkspace(workspace, desiredObjects);
+  }
+
+  /**
+   * Moves the live viewport to the workspace's declared viewport.
+   * Compared against the persisted viewport rather than the live one, so a workspace that was
+   * read and passed back unchanged (e.g. a rename) never snaps the canvas.
+   */
+  private applyWorkspaceViewport(workspace: KritzelWorkspace): void {
+    const viewport = workspace.viewport;
+    if (!viewport) {
+      return;
+    }
+
+    const scale = viewport.scale ?? 1;
+    const centerWorldX = viewport.centerWorldX ?? 0;
+    const centerWorldY = viewport.centerWorldY ?? 0;
+
+    const persistedViewport = this._store.state.activeWorkspace?.viewport;
+    if (persistedViewport && persistedViewport.scale === scale && persistedViewport.centerWorldX === centerWorldX && persistedViewport.centerWorldY === centerWorldY) {
+      return;
+    }
+
+    // Drop the debounced save of the outgoing viewport so it cannot overwrite the new one
+    this._kritzelEngine?.viewport?.cancelPendingUpdates();
+
+    this._store.state.translateX = this._store.state.viewportWidth / 2 - centerWorldX * scale;
+    this._store.state.translateY = this._store.state.viewportHeight / 2 - centerWorldY * scale;
+    this._store.state.scale = scale;
+
+    const activeWorkspace = this._store.state.activeWorkspace;
+    if (activeWorkspace) {
+      activeWorkspace.viewport = { centerWorldX, centerWorldY, scale };
+    }
+  }
+
+  private applyObjectsToActiveWorkspace(workspace: KritzelWorkspace, desiredObjects: KritzelBaseObject<any>[]): KritzelWorkspaceObjectsDiff | null {
+    const objectsMap = this._store.objects;
+    if (!objectsMap) {
+      return null;
+    }
+
+    this.clearSelection();
+
+    const diff = this.reconcileWorkspaceObjects(objectsMap, workspace.id, desiredObjects, () => this._store.currentZIndex, this._store.state.scale);
+
+    this._anchorManager.rebuildIndex();
+    this.rerender();
+
+    return diff;
+  }
+
+  /**
+   * Applies objects to a workspace that is not currently open by loading its document into a
+   * background object map, reconciling, and disposing it again.
+   */
+  private async applyObjectsToInactiveWorkspace(workspace: KritzelWorkspace, desiredObjects: KritzelBaseObject<any>[]): Promise<KritzelWorkspaceObjectsDiff | null> {
+    if (!this._syncConfig?.providers?.length) {
+      console.warn(
+        `[KritzelCore] Cannot update the objects of workspace '${workspace.id}' because it is not active and no sync provider is configured. ` +
+          'Configure a sync provider, or activate the workspace before updating its objects.',
+      );
+      return null;
+    }
+
+    const objectsMap = new KritzelObjectMap<KritzelBaseObject<any>>();
+
+    try {
+      await objectsMap.initialize(this, workspace.id, this._syncConfig, { headless: true, workspaceName: workspace.name });
+      await objectsMap.whenNetworkSynced();
+
+      return this.reconcileWorkspaceObjects(objectsMap, workspace.id, desiredObjects, () => this.nextZIndexOf(objectsMap), this._store.state.scale);
+    } finally {
+      objectsMap.destroy();
     }
   }
 

@@ -1058,13 +1058,16 @@ Type: `Promise<T>`
 
 ### `updateWorkspace(workspace: KritzelWorkspace) => Promise<void>`
 
-
+Applies a workspace as declared. Metadata and viewport are always applied. When
+`workspace.objects` is set it is treated as the complete desired object set — `undefined`
+leaves objects untouched, `[]` removes them all. Updating objects of a non-active workspace
+requires a configured sync provider.
 
 #### Parameters
 
-| Name        | Type               | Description |
-| ----------- | ------------------ | ----------- |
-| `workspace` | `KritzelWorkspace` |             |
+| Name        | Type               | Description                                   |
+| ----------- | ------------------ | --------------------------------------------- |
+| `workspace` | `KritzelWorkspace` | - The workspace describing the desired state. |
 
 #### Returns
 

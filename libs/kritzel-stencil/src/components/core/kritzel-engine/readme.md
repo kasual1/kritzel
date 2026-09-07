@@ -1086,13 +1086,16 @@ The updated object.
 
 ### `updateWorkspace(workspace: KritzelWorkspace) => Promise<void>`
 
-Updates an existing workspace's metadata and emits a `workspacesChange` event.
+Applies a workspace as declared and emits a `workspacesChange` event.
+Metadata and viewport are always applied. When `workspace.objects` is set it is treated as the
+complete desired object set (`undefined` leaves objects untouched, `[]` removes them all);
+updating objects of a non-active workspace requires a configured sync provider.
 
 #### Parameters
 
-| Name        | Type               | Description                              |
-| ----------- | ------------------ | ---------------------------------------- |
-| `workspace` | `KritzelWorkspace` | - The workspace with updated properties. |
+| Name        | Type               | Description                                   |
+| ----------- | ------------------ | --------------------------------------------- |
+| `workspace` | `KritzelWorkspace` | - The workspace describing the desired state. |
 
 #### Returns
 

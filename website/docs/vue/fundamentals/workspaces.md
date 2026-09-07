@@ -29,7 +29,13 @@ By default, Kritzel provides a built-in UI for managing multiple workspaces. How
 
 ## Managing Workspaces (Create, Read, Update, Delete)
 
-Kritzel allows you to fully manage the lifecycle of workspaces. You can create new blank canvases, update metadata (like custom names), or delete them entirely via the editor's asynchronous workspace API (`createWorkspace()`, `updateWorkspace()`, `deleteWorkspace()`). The component emits changes whenever the overall collection updates, so your custom UI stays in sync.
+Kritzel allows you to fully manage the lifecycle of workspaces. You can create new blank canvases, update them, or delete them entirely via the editor's asynchronous workspace API (`createWorkspace()`, `updateWorkspace()`, `deleteWorkspace()`). The component emits changes whenever the overall collection updates, so your custom UI stays in sync.
+
+`updateWorkspace()` applies the workspace you pass in as the desired state. Name, visibility and viewport are always applied, and if you set `objects` it becomes the workspace's complete object set — objects are matched by ID, so new entries are added, existing ones are updated, and anything you leave out is removed. Leave `objects` `undefined` (the default) to change metadata only, or pass `[]` to clear the canvas.
+
+:::note
+Changing the objects of a workspace that is not currently active requires a configured sync provider, because the change is written directly to that workspace's document.
+:::
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"

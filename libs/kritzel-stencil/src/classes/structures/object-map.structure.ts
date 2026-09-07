@@ -39,6 +39,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _idMap: Map<string, T> = new Map();
   private _awareness: Awareness | null = null;
   private _networkSyncPromise: Promise<void> | null = null;
+  /** When true this map is a background worker: it never renders, emits, or wires awareness. */
+  private _headless: boolean = false;
 
   // Store observer/listener references for cleanup
   private _objectsObserver: ((event: Y.YMapEvent<any>) => void) | null = null;
@@ -79,6 +81,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    */
   whenNetworkSynced(): Promise<void> {
     return this._networkSyncPromise ?? Promise.resolve();
+  }
+
+  /**
+   * Whether this map runs detached from the rendered canvas.
+   */
+  get isHeadless(): boolean {
+    return this._headless;
   }
 
   /**
@@ -224,8 +233,16 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     if (orphanedGroups.length > 0) {
       this._core?.store.invalidateSelectionCache();
-      this._core?.rerender();
+      this.requestRerender();
     }
+  }
+
+  /** Rerenders the canvas unless this map is running headless. */
+  private requestRerender(): void {
+    if (this._headless) {
+      return;
+    }
+    this._core?.rerender();
   }
 
   /**
@@ -323,11 +340,20 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    * @param core - The KritzelCore instance that owns this object map
    * @param workspaceId - A unique identifier for the workspace, used to namespace the Yjs document
    * @param config - Optional sync configuration; defaults to DEFAULT_SYNC_CONFIG if not provided
+   * @param options - Optional behavior flags
+   * @param options.headless - Run detached from the rendered canvas (no rerenders, events, or awareness)
+   * @param options.workspaceName - Workspace name to write into document metadata; defaults to the active workspace's name
    * @returns A promise that resolves when all providers are connected and the map is ready
    */
-  async initialize(core: KritzelCore, workspaceId: string, config?: KritzelSyncConfig): Promise<void> {
+  async initialize(
+    core: KritzelCore,
+    workspaceId: string,
+    config?: KritzelSyncConfig,
+    options?: { headless?: boolean; workspaceName?: string },
+  ): Promise<void> {
     this._core = core;
     this._workspaceId = workspaceId;
+    this._headless = options?.headless ?? false;
     this._reviver = new KritzelReviver(core);
 
     // Create a dedicated Y.Doc for this workspace
@@ -442,7 +468,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
 
     // Subscribe to awareness changes
-    if (this._awareness) {
+    if (this._awareness && !this._headless) {
       this._awarenessChangeHandler = (change: { added: number[]; updated: number[]; removed: number[] }) => {
         // Clean up selection groups belonging to disconnected users
         if (change.removed.length > 0) {
@@ -485,7 +511,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
 
     // Initialize document metadata (only if not already set by a previous client)
-    const workspaceName = core.store?.state?.activeWorkspace?.name ?? '';
+    const workspaceName = options?.workspaceName ?? core.store?.state?.activeWorkspace?.name ?? '';
     this.initializeMetadata('workspace', workspaceId, workspaceName);
 
     // Run any pending schema migrations before loading data
@@ -507,7 +533,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // Skip Map updates for local changes (already done), but still trigger re-render
     // 'temporary' is also a local change that shouldn't be re-deserialized
     if (event.transaction.origin === 'local' || event.transaction.origin === 'temporary') {
-      this._core?.rerender();
+      this.requestRerender();
       return;
     }
 
@@ -641,6 +667,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
           this.quadtree.reindex(selectionGroup as unknown as T);
         }
       }
+    }
+
+    if (this._headless) {
+      return;
     }
 
     // Rebuild the anchor index if any line anchor connections may have changed, so that
