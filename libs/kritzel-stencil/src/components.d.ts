@@ -547,10 +547,6 @@ export namespace Components {
         "undo": () => Promise<void>;
         "ungroup": () => Promise<void>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
-        /**
-          * Applies a workspace as declared. Metadata and viewport are always applied. When `workspace.objects` is set it is treated as the complete desired object set — `undefined` leaves objects untouched, `[]` removes them all. Updating objects of a non-active workspace requires a configured sync provider.
-          * @param workspace - The workspace describing the desired state.
-         */
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "user"?: IKritzelUser;
         /**
