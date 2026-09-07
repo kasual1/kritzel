@@ -454,6 +454,13 @@ export class KritzelEditor {
     }
   }
 
+  @Watch('locales')
+  onLocalesChange(newValue?: KritzelLocale[]) {
+    if (this.engineRef) {
+      void this.engineRef.configureLocales(newValue).then(() => this.refreshLocalizedTerms());
+    }
+  }
+
   /**
    * Refreshes the editor-owned localized strings (e.g. the more menu and the
    * strings forwarded to child UI components) from the engine's localization
@@ -462,6 +469,12 @@ export class KritzelEditor {
   private async refreshLocalizedTerms(): Promise<void> {
     if (!this.engineRef) {
       return;
+    }
+    const resolvedLocale = await this.engineRef.getLocale();
+    if (resolvedLocale !== this.locale) {
+      // Auto-selected because the previous locale isn't in the (possibly replaced) available set.
+      this.locale = resolvedLocale;
+      this.localeChange.emit(resolvedLocale);
     }
     this.resolvedTerms = await this.engineRef.getResolvedTerms();
     this.availableLocaleOptions = await this.engineRef.getAvailableLocaleOptions();

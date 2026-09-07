@@ -131,4 +131,58 @@ describe('KritzelLocalizationManager', () => {
       expect(options).toEqual(expect.arrayContaining([{ code: 'de', label: 'Deutsch' }]));
     });
   });
+
+  describe('configureLocales', () => {
+    it('should keep the built-in locales available when called with undefined', () => {
+      manager.configureLocales(undefined);
+
+      expect(manager.getAvailableLocales()).toEqual(expect.arrayContaining(['en', 'de', 'fr']));
+    });
+
+    it('should restrict availability to just English when configured with an empty array', () => {
+      manager.configureLocales([]);
+
+      expect(manager.getAvailableLocales()).toEqual(['en']);
+    });
+
+    it('should restrict availability to only the configured locales', () => {
+      manager.configureLocales([{ code: 'es', label: 'Español', terms: {} }]);
+
+      expect(manager.getAvailableLocales()).toEqual(['es']);
+    });
+
+    it('should still fall back to built-in terms for keys a configured locale omits', () => {
+      manager.configureLocales([{ code: 'es', terms: { 'menu.copy': 'Copiar' } }]);
+      manager.setLocale('es');
+
+      expect(manager.translate('menu.copy')).toBe('Copiar');
+      expect(manager.translate('menu.paste')).toBe('Paste');
+    });
+
+    it('should replace a previously configured catalog rather than merge with it', () => {
+      manager.configureLocales([{ code: 'es', terms: {} }]);
+      manager.configureLocales([{ code: 'fr', terms: {} }]);
+
+      expect(manager.getAvailableLocales()).toEqual(['fr']);
+    });
+
+    it('should restore built-in availability when reconfigured with undefined', () => {
+      manager.configureLocales([{ code: 'es', terms: {} }]);
+      manager.configureLocales(undefined);
+
+      expect(manager.getAvailableLocales()).toEqual(expect.arrayContaining(['en', 'de', 'fr']));
+    });
+  });
+
+  describe('resolveActiveLocale', () => {
+    it('should return the requested locale when it is available', () => {
+      expect(manager.resolveActiveLocale('de')).toBe('de');
+    });
+
+    it('should fall back to the first available locale when the requested one is not available', () => {
+      manager.configureLocales([{ code: 'es', terms: {} }]);
+
+      expect(manager.resolveActiveLocale('en')).toBe('es');
+    });
+  });
 });

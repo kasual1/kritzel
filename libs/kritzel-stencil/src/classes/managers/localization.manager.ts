@@ -39,6 +39,8 @@ export class KritzelLocalizationManager {
 
   private _currentLocale: LocaleCode = DEFAULT_LOCALE;
   private _fallbackLocale: LocaleCode = DEFAULT_LOCALE;
+  /** Whether the consumer explicitly configured a locale catalog (even an empty one) via `configureLocales`. */
+  private _explicitLocales = false;
 
   /**
    * Creates a new KritzelLocalizationManager instance.
@@ -96,6 +98,36 @@ export class KritzelLocalizationManager {
   }
 
   /**
+   * Declaratively configures the full locale catalog, replacing any previously
+   * configured or registered custom locales. Unlike {@link registerLocales},
+   * this determines which locales are considered "available" (e.g. for a
+   * settings selector): passing `undefined` restores the built-in set
+   * (en/de/fr); passing an array (even empty) makes that array's codes the
+   * exclusive available set, falling back to `en` only if the array is empty.
+   * Built-in term fallback for missing keys is unaffected either way.
+   *
+   * @param locales - The full locale catalog, or `undefined` to use built-ins
+   */
+  configureLocales(locales?: KritzelLocale[]): void {
+    this._customLocales.clear();
+    this._explicitLocales = locales !== undefined;
+    if (locales) {
+      this.registerLocales(locales);
+    }
+  }
+
+  /**
+   * Resolves the locale code that should actually be activated, falling back
+   * to the first available locale when the requested one isn't available.
+   *
+   * @param requested - The locale code the consumer asked to activate
+   */
+  resolveActiveLocale(requested: LocaleCode): LocaleCode {
+    const available = this.getAvailableLocales();
+    return available.includes(requested) ? requested : available[0];
+  }
+
+  /**
    * Sets the active locale and triggers a re-render so UI strings update.
    *
    * @param code - The locale code to activate
@@ -106,9 +138,16 @@ export class KritzelLocalizationManager {
   }
 
   /**
-   * Gets the list of available locale codes (built-in and registered).
+   * Gets the list of available locale codes. When a locale catalog was
+   * explicitly configured via {@link configureLocales}, only those codes are
+   * returned (or `[DEFAULT_LOCALE]` if the catalog is empty); otherwise the
+   * built-in and registered codes are combined.
    */
   getAvailableLocales(): LocaleCode[] {
+    if (this._explicitLocales) {
+      const codes = Array.from(this._customLocales.keys());
+      return codes.length > 0 ? codes : [DEFAULT_LOCALE];
+    }
     return Array.from(new Set([...this._builtinLocales.keys(), ...this._customLocales.keys()]));
   }
 
@@ -209,5 +248,6 @@ export class KritzelLocalizationManager {
    */
   cleanup(): void {
     this._customLocales.clear();
+    this._explicitLocales = false;
   }
 }

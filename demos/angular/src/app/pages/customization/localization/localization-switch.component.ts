@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, LocaleCode, KritzelTheme, lightTheme } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent, LocaleCode } from 'kritzel-angular';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
+import { angularThemeLight } from '../../../const/angular-theme-light';
+import { angularThemeDark } from '../../../const/angular-theme-dark';
 
 @Component({
   selector: 'app-localization-switch',
@@ -9,10 +11,9 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
-      <span class="label">Locale:</span>
-      <button [class.active]="activeLocale() === 'en'" (click)="setLocale('en')">English (en)</button>
-      <button [class.active]="activeLocale() === 'de'" (click)="setLocale('de')">German (de)</button>
-      <button [class.active]="activeLocale() === 'fr'" (click)="setLocale('fr')">French (fr)</button>
+      <button [class.active]="activeLocale() === 'en'" (click)="setLocale('en')">English</button>
+      <button [class.active]="activeLocale() === 'de'" (click)="setLocale('de')">German</button>
+      <button [class.active]="activeLocale() === 'fr'" (click)="setLocale('fr')">French</button>
     </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
@@ -28,9 +29,6 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         (localeChange)="onLocaleChange($event)"
       ></kritzel-editor>
     </div>
-    <div class="status-bar">
-      <span>Active Locale: {{ activeLocale() }}</span>
-    </div>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
@@ -41,7 +39,8 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
 export class LocalizationSwitchComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes: KritzelTheme[] = [lightTheme];
+  themes = [angularThemeLight, angularThemeDark];
+  
   activeLocale = signal<LocaleCode>('en');
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {

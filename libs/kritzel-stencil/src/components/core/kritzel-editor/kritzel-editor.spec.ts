@@ -94,6 +94,12 @@ describe('KritzelEditor', () => {
       endSceneBootstrap: jest.fn().mockResolvedValue(undefined),
       getDisplayableShortcuts: jest.fn().mockResolvedValue([]),
       getIsPublic: jest.fn().mockResolvedValue(false),
+      getLocale: jest.fn().mockResolvedValue('en'),
+      setLocale: jest.fn().mockResolvedValue(undefined),
+      configureLocales: jest.fn().mockResolvedValue(undefined),
+      getResolvedTerms: jest.fn().mockResolvedValue({}),
+      getAvailableLocaleOptions: jest.fn().mockResolvedValue([{ code: 'en', label: 'English' }]),
+      saveSettings: jest.fn().mockResolvedValue(undefined),
     };
     
     component.engineRef = mockEngine as any;
@@ -613,6 +619,23 @@ describe('KritzelEditor', () => {
       customElementsSpy.mockRestore();
       waitForFontsSpy.mockRestore();
       keyboardSpy.mockRestore();
+    });
+
+    it('should reconfigure locales on the engine and refresh state when the locales prop changes after init', async () => {
+      component.locale = 'en';
+      component.localeChange = { emit: jest.fn() } as any;
+      mockEngine.getLocale.mockResolvedValue('es');
+      mockEngine.getAvailableLocaleOptions.mockResolvedValue([{ code: 'es', label: 'Español' }]);
+
+      const spanishLocale = { code: 'es', label: 'Español', terms: {} };
+      component.onLocalesChange([spanishLocale]);
+      await new Promise(resolve => setTimeout(resolve, 0));
+
+      expect(mockEngine.configureLocales).toHaveBeenCalledWith([spanishLocale]);
+      // Auto-selected because 'en' is no longer available once locales replaces the built-ins.
+      expect(component.locale).toBe('es');
+      expect(component.localeChange.emit).toHaveBeenCalledWith('es');
+      expect(component.availableLocaleOptions).toEqual([{ code: 'es', label: 'Español' }]);
     });
   });
 

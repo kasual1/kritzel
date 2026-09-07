@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, KritzelLocale, LocaleCode, KritzelTheme, lightTheme } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent, KritzelLocale, LocaleCode } from 'kritzel-angular';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
+import { angularThemeDark } from '../../../const/angular-theme-dark';
+import { angularThemeLight } from '../../../const/angular-theme-light';
 
 const spanishLocale: KritzelLocale = {
   code: 'es',
@@ -33,9 +35,8 @@ const spanishLocale: KritzelLocale = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
-      <span class="label">Custom Locale:</span>
-      <button [class.active]="activeLocale() === 'es'" (click)="setLocale('es')">Español (es)</button>
-      <button [class.active]="activeLocale() === 'en'" (click)="setLocale('en')">English (en)</button>
+      <button [class.active]="activeLocale() === 'es'" (click)="setLocale('es')">Español</button>
+      <button [class.active]="activeLocale() === 'en'" (click)="setLocale('en')">English</button>
     </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
@@ -51,10 +52,6 @@ const spanishLocale: KritzelLocale = {
         (isReady)="onReady($event)"
       ></kritzel-editor>
     </div>
-    <div class="status-bar">
-      <span>Active Locale: {{ activeLocale() }}</span>
-      <span>Registered Locales: es, en, de, fr</span>
-    </div>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
@@ -65,8 +62,10 @@ const spanishLocale: KritzelLocale = {
 export class LocalizationCustomComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
-  themes: KritzelTheme[] = [lightTheme];
+  themes = [angularThemeLight, angularThemeDark];
+  
   customLocales: KritzelLocale[] = [spanishLocale];
+  
   activeLocale = signal<LocaleCode>('es');
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
