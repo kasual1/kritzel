@@ -21,7 +21,7 @@
 | `isZoomingEnabled`       | `is-zooming-enabled`       | When false, Ctrl+wheel events do not zoom the viewport.                                                                                                                                                                                                                                                                                                                                               | `boolean`                             | `true`      |
 | `licenseKey`             | `license-key`              | License key that, when valid, removes the "Powered by Kritzel" watermark.                                                                                                                                                                                                                                                                                                                             | `string`                              | `undefined` |
 | `locale`                 | `locale`                   | The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.                                                                                                                                                                                                                                                                                                                     | `"de" \| "en" \| "fr" \| string & {}` | `'en'`      |
-| `locales`                | --                         | An array of available locale definitions (with optional partial term overrides).                                                                                                                                                                                                                                                                                                                      | `KritzelLocale[]`                     | `undefined` |
+| `locales`                | --                         | An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.                                                                                                                                                                                                                                            | `KritzelLocale[]`                     | `undefined` |
 | `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                                                                                                                                                                                                                                                                                                                          | `boolean`                             | `true`      |
 | `objectContextMenuItems` | --                         | Context menu items shown when right-clicking a selected object.                                                                                                                                                                                                                                                                                                                                       | `ContextMenuItem[]`                   | `undefined` |
 | `scaleMax`               | `scale-max`                | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                              | `1000`      |
@@ -254,6 +254,23 @@ Type: `Promise<void>`
 ### `clearSelection() => Promise<void>`
 
 Deselects all currently selected objects.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `configureLocales(locales?: KritzelLocale[]) => Promise<void>`
+
+Declaratively configures the full locale catalog, replacing the available
+locale set. Pass `undefined` to restore the built-in locales (en/de/fr).
+
+#### Parameters
+
+| Name      | Type              | Description                                              |
+| --------- | ----------------- | -------------------------------------------------------- |
+| `locales` | `KritzelLocale[]` | - The full locale catalog, or `undefined` for built-ins. |
 
 #### Returns
 
