@@ -2694,6 +2694,23 @@ export class KritzelEngine {
 
     await this.reconcileProvidedWorkspaces();
     await this.initializeStartupWorkspace();
+    await this.waitForRemoteAppStateIfEmpty();
+
+    if (this.activeWorkspaceId) {
+      const startupWorkspace = this.core.getWorkspaces().find(ws => ws.id === this.activeWorkspaceId);
+
+      if (startupWorkspace) {
+        await this.initializeWorkspaceIfNeeded(startupWorkspace);
+      } else {
+        // Workspace ID was provided but not found – fall back to existing workspaces
+        // (last-active, then newest created) instead of leaving activeWorkspace null.
+        await this.initializeWorkspaceIfNeeded();
+      }
+    } else {
+      // Resolve startup workspace, preferring explicit workspace object when provided.
+      const startupWorkspace = await this.resolveStartupWorkspace();
+      await this.initializeWorkspaceIfNeeded(startupWorkspace);
+    }
 
     // Emit initial active workspace once startup initialization has completed
     const initialActiveWorkspace = this.core.store.state.activeWorkspace;
@@ -2740,7 +2757,33 @@ export class KritzelEngine {
       this.syncVisibleWorkspacesToState();
       return;
     }
+  }
 
+/**
+   * On a cold start the remote workspace list may still be in flight; creating a
+   * fallback workspace before it arrives would pollute the synced app state.
+   */
+  private async waitForRemoteAppStateIfEmpty(): Promise<void> {
+    if (this.core.getWorkspaces().length > 0) {
+      return;
+    }
+
+    if (!this.core.appStateMap.hasNetworkSyncProvider || !this.isNetworkAvailable()) {
+      return;
+    }
+
+    this._isWorkspaceLoading = true;
+    this.syncLoadingState();
+
+    try {
+      await this.core.appStateMap.whenNetworkSynced();
+    } finally {
+      this._isWorkspaceLoading = false;
+      this.syncLoadingState();
+    }
+  }
+
+  private async resolveStartupWorkspace(): Promise<KritzelWorkspace> {
     if (this.activeWorkspaceId) {
       const workspaceById = this.core.getWorkspaces().find(ws => ws.id === this.activeWorkspaceId);
 
@@ -2757,6 +2800,7 @@ export class KritzelEngine {
 
     await this.initializeWorkspaceIfNeeded();
   }
+
 
   private async ensureActiveWorkspaceIsVisible(): Promise<void> {
     if (!this.isWorkspaceCatalogControlled()) {

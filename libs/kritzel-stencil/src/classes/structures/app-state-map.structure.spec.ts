@@ -178,6 +178,55 @@ describe('KritzelAppStateMap', () => {
     });
   });
 
+  describe('whenNetworkSynced', () => {
+    const createMockNetworkProvider = (connect: jest.Mock) => ({
+      type: 'network' as const,
+      connect,
+      disconnect: jest.fn(),
+      reconnect: jest.fn().mockResolvedValue(undefined),
+      destroy: jest.fn(),
+    });
+
+    it('should resolve immediately when no network providers are configured', async () => {
+      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });
+
+      await expect(appStateMap.whenNetworkSynced()).resolves.toBeUndefined();
+    });
+
+    it('should stay pending until the network provider finishes connecting', async () => {
+      let resolveConnect!: () => void;
+      const connect = jest.fn().mockReturnValue(
+        new Promise<void>(resolve => {
+          resolveConnect = resolve;
+        }),
+      );
+      const provider = createMockNetworkProvider(connect);
+
+      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [{ create: () => provider as never }] });
+
+      let isSynced = false;
+      const syncPromise = appStateMap.whenNetworkSynced().then(() => {
+        isSynced = true;
+      });
+
+      await Promise.resolve();
+      expect(isSynced).toBe(false);
+
+      resolveConnect();
+      await syncPromise;
+
+      expect(isSynced).toBe(true);
+    });
+
+    it('should settle even when the network provider fails to connect', async () => {
+      const provider = createMockNetworkProvider(jest.fn().mockRejectedValue(new Error('connection timeout')));
+
+      await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [{ create: () => provider as never }] });
+
+      await expect(appStateMap.whenNetworkSynced()).resolves.toBeUndefined();
+    });
+  });
+
   describe('initialize', () => {
     it('should set isReady to true after initialization', async () => {
       await appStateMap.initialize(mockCore as unknown as KritzelCore, { providers: [] });

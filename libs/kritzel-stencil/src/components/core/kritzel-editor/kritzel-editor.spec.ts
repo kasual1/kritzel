@@ -109,6 +109,14 @@ describe('KritzelEditor', () => {
     it('should be created correctly', () => {
       expect(component).toBeTruthy();
     });
+
+    it('should emit logout when the current user dialog requests it', () => {
+      component.logout = { emit: jest.fn() } as any;
+
+      (component as unknown as { handleCurrentUserLogout: () => void }).handleCurrentUserLogout();
+
+      expect(component.logout.emit).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('Object Manipulation Methods', () => {
