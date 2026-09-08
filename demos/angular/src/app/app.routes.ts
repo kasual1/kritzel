@@ -117,6 +117,11 @@ export const routes: Routes = [
   {
     path: 'advanced-concepts',
     children: [
+      { path: 'collaboration-local', component: CollaborationLocalComponent },
+      {
+        path: 'collaboration-realtime',
+        component: CollaborationRealtimeComponent,
+      },
       {
         path: 'customization',
         children: [

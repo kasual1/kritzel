@@ -2,8 +2,8 @@ import { test, expect } from '../fixtures/editor.fixture';
 import type { Locator } from '@playwright/test';
 
 const CONCEPT_ROUTES = [
-  '/concepts/collaboration-local',
-  '/concepts/collaboration-realtime',
+  '/advanced-concepts/collaboration-local',
+  '/advanced-concepts/collaboration-realtime',
   '/concepts/components-editor',
   '/concepts/components-editor-ui',
   '/concepts/components-engine',
@@ -19,8 +19,8 @@ const CONCEPT_ROUTES = [
   '/concepts/objects-query',
   '/concepts/objects-selection',
   '/concepts/persistence-local',
-  '/concepts/theming-apply',
-  '/concepts/theming-custom',
+  '/advanced-concepts/customization/theming-apply',
+  '/advanced-concepts/customization/theming-custom',
   '/concepts/tools-change',
   '/concepts/tools-controls',
   '/concepts/tools-disable',
@@ -31,6 +31,11 @@ const CONCEPT_ROUTES = [
   '/concepts/workspaces-crud',
   '/concepts/workspaces-switch',
 ] as const;
+
+function getRouteName(route: string): string {
+  const segments = route.split('/').filter(Boolean);
+  return segments[segments.length - 1];
+}
 
 async function waitForConceptPage(editorPage: { page: import('@playwright/test').Page; waitForReady: () => Promise<void> }) {
   const { page } = editorPage;
@@ -65,7 +70,7 @@ async function getPrimaryCanvas(editorPage: { page: import('@playwright/test').P
 
 test.describe('Concept Pages Visual Regression', () => {
   for (const route of CONCEPT_ROUTES) {
-    const routeName = route.replace('/concepts/', '');
+    const routeName = getRouteName(route);
 
     test(`should match screenshot for ${routeName}`, async ({ editorPage }) => {
       await editorPage.goto(route);
