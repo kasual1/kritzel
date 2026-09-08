@@ -1577,11 +1577,11 @@ export class KritzelEditor {
                 ref={el => {
                   if (el) {
                     this.currentUserDialogRef = el;
-                    this.currentUserDialogRef.addEventListener('logoutRequest', this.handleCurrentUserLogout);
                   }
                 }}
                 user={this.user}
                 terms={this.resolvedTerms}
+                onLogoutRequest={this.handleCurrentUserLogout}
               ></kritzel-current-user-dialog>
             )}
 
