@@ -26,6 +26,7 @@ export class KritzelAppStateMap {
   private _isReady: boolean = false;
   private _onRemoteChangeCallback: (() => void) | null = null;
   private _workspacesObserver: ((event: Y.YMapEvent<any>) => void) | null = null;
+  private _networkSyncPromise: Promise<void> | null = null;
 
   /**
    * Indicates whether the app state map has been initialized and is ready for use.
@@ -33,6 +34,14 @@ export class KritzelAppStateMap {
    */
   get isReady(): boolean {
     return this._isReady;
+  }
+
+  /**
+   * Settles when network providers finish their initial sync (or fail/time out).
+   * Resolves immediately when no network providers are configured.
+   */
+  whenNetworkSynced(): Promise<void> {
+    return this._networkSyncPromise ?? Promise.resolve();
   }
 
   /**
@@ -132,13 +141,18 @@ export class KritzelAppStateMap {
     if (showSyncProviderInfo && networkProviders.length > 0) {
       console.info(`[Kritzel] App-state network providers connecting in background: ${networkProviders.length}`);
     }
-    for (const provider of networkProviders) {
+    const networkConnectPromises = networkProviders.map(provider =>
       provider.connect().catch(err => {
         if (showSyncProviderInfo) {
           console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
         }
-      });
+      }),
+    );
+
+    if (networkConnectPromises.length > 0) {
+      this._networkSyncPromise = Promise.allSettled(networkConnectPromises).then(() => undefined);
     }
+
     this._isReady = true;
 
     // Run any pending schema migrations before loading data
@@ -519,6 +533,7 @@ export class KritzelAppStateMap {
     // Clear remaining references
     this._core = null;
     this._onRemoteChangeCallback = null;
+    this._networkSyncPromise = null;
     this._isReady = false;
   }
 }
