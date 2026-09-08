@@ -36,7 +36,6 @@ const spanishLocale: KritzelLocale = {
   template: `
     <app-toolbar>
       <button [class.active]="activeLocale() === 'es'" (click)="setLocale('es')">Español</button>
-      <button [class.active]="activeLocale() === 'en'" (click)="setLocale('en')">English</button>
     </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
