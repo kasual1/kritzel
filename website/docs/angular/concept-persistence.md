@@ -27,7 +27,7 @@ Configure `IndexedDBSyncProvider` in `syncConfig.providers` to make object state
 
 ## Related API Methods
 
-- Sync configuration (`[syncConfig]`, `KritzelSyncConfig`)
+- Sync configuration ([syncConfig](api-reference-editor.md#props), `KritzelSyncConfig`)
 - Local persistence provider (`IndexedDBSyncProvider`)
 - Provider list (`syncConfig.providers`)
 
