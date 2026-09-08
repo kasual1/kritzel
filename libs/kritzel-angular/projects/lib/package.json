@@ -1,6 +1,6 @@
 {
   "name": "kritzel-angular",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite canvas experiences with Angular.",
   "keywords": [
@@ -14,7 +14,7 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
-    "kritzel-stencil": "^0.4.11"
+    "kritzel-stencil": "^0.4.12"
   },
   "dependencies": {
     "tslib": "^2.3.0"
