@@ -5,8 +5,8 @@ import { EditorHocuspocusPage } from "./pages/e2e/EditorHocuspocusPage";
 import { MultiEditorPage } from "./pages/e2e/MultiEditorPage";
 import { WrappedEditorPage } from "./pages/e2e/WrappedEditorPage";
 import { BasicUsagePage } from "./pages/basic-usage/BasicUsagePage";
-import { CollaborationLocalPage } from "./pages/concepts/collaboration/CollaborationLocalPage";
-import { CollaborationRealtimePage } from "./pages/concepts/collaboration/CollaborationRealtimePage";
+import { CollaborationLocalPage } from "./pages/advanced-concepts/collaboration/CollaborationLocalPage";
+import { CollaborationRealtimePage } from "./pages/advanced-concepts/collaboration/CollaborationRealtimePage";
 import { ComponentsEditorPage } from "./pages/concepts/components/ComponentsEditorPage";
 import { ComponentsEditorUiPage } from "./pages/concepts/components/ComponentsEditorUiPage";
 import { ComponentsEnginePage } from "./pages/concepts/components/ComponentsEnginePage";
@@ -22,8 +22,8 @@ import { ObjectsSelectionPage } from "./pages/concepts/objects/ObjectsSelectionP
 import { ObjectsGroupingPage } from "./pages/concepts/objects/ObjectsGroupingPage";
 import { ObjectsOrderingPage } from "./pages/concepts/objects/ObjectsOrderingPage";
 import { PersistenceLocalPage } from "./pages/concepts/persistence/PersistenceLocalPage";
-import { ThemingApplyPage } from "./pages/concepts/theming/ThemingApplyPage";
-import { ThemingCustomPage } from "./pages/concepts/theming/ThemingCustomPage";
+import { ThemingApplyPage } from "./pages/advanced-concepts/customization/theming/ThemingApplyPage";
+import { ThemingCustomPage } from "./pages/advanced-concepts/customization/theming/ThemingCustomPage";
 import { ToolsDisablePage } from "./pages/concepts/tools/ToolsDisablePage";
 import { ToolsControlsPage } from "./pages/concepts/tools/ToolsControlsPage";
 import { ToolsRegisterPage } from "./pages/concepts/tools/ToolsRegisterPage";
@@ -41,6 +41,12 @@ import { InfiniteCanvasGalleryPage } from "./pages/examples/infinite-canvas-gall
 import { ImageAnnotationStudioPage } from "./pages/examples/image-annotation-studio/ImageAnnotationStudioPage";
 import { WebsiteHeroPage } from "./pages/website/WebsiteHeroPage";
 import { WebsiteHeroPageMobile } from "./pages/website/WebsiteHeroPageMobile";
+import { LocalizationSwitchPage } from "./pages/advanced-concepts/localization/LocalizationSwitchPage";
+import { LocalizationCustomPage } from "./pages/advanced-concepts/localization/LocalizationCustomPage";
+import { FontsRegisterPage } from "./pages/advanced-concepts/customization/fonts/FontsRegisterPage";
+import { CustomIconsRegisterPage } from "./pages/advanced-concepts/customization/custom-icons/CustomIconsRegisterPage";
+import { LoginDialogProvidersPage } from "./pages/advanced-concepts/login-dialog/LoginDialogProvidersPage";
+import { LoginDialogFlowPage } from "./pages/advanced-concepts/login-dialog/LoginDialogFlowPage";
 
 function App() {
   return (
@@ -52,8 +58,14 @@ function App() {
         <Route path="/e2e/multi-editor" element={<MultiEditorPage />} />
         <Route path="/e2e/wrapped-editor" element={<WrappedEditorPage />} />
         <Route path="/basic-usage" element={<BasicUsagePage />} />
-        <Route path="/concepts/collaboration-local" element={<CollaborationLocalPage />} />
-        <Route path="/concepts/collaboration-realtime" element={<CollaborationRealtimePage />} />
+        <Route path="/advanced-concepts/localization-switch" element={<LocalizationSwitchPage />} />
+        <Route path="/advanced-concepts/localization-custom" element={<LocalizationCustomPage />} />
+        <Route path="/advanced-concepts/customization/fonts-register" element={<FontsRegisterPage />} />
+        <Route path="/advanced-concepts/customization/custom-icons" element={<CustomIconsRegisterPage />} />
+        <Route path="/advanced-concepts/login-dialog-providers" element={<LoginDialogProvidersPage />} />
+        <Route path="/advanced-concepts/login-dialog-flow" element={<LoginDialogFlowPage />} />
+        <Route path="/advanced-concepts/collaboration-local" element={<CollaborationLocalPage />} />
+        <Route path="/advanced-concepts/collaboration-realtime" element={<CollaborationRealtimePage />} />
         <Route path="/concepts/components-editor" element={<ComponentsEditorPage />} />
         <Route path="/concepts/components-editor-ui" element={<ComponentsEditorUiPage />} />
         <Route path="/concepts/components-engine" element={<ComponentsEnginePage />} />
@@ -69,8 +81,8 @@ function App() {
         <Route path="/concepts/objects-grouping" element={<ObjectsGroupingPage />} />
         <Route path="/concepts/objects-ordering" element={<ObjectsOrderingPage />} />
         <Route path="/concepts/persistence-local" element={<PersistenceLocalPage />} />
-        <Route path="/concepts/theming-apply" element={<ThemingApplyPage />} />
-        <Route path="/concepts/theming-custom" element={<ThemingCustomPage />} />
+        <Route path="/advanced-concepts/customization/theming-apply" element={<ThemingApplyPage />} />
+        <Route path="/advanced-concepts/customization/theming-custom" element={<ThemingCustomPage />} />
         <Route path="/concepts/tools-disable" element={<ToolsDisablePage />} />
         <Route path="/concepts/tools-controls" element={<ToolsControlsPage />} />
         <Route path="/concepts/tools-register" element={<ToolsRegisterPage />} />

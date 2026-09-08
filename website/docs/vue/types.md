@@ -38,7 +38,7 @@ interface KritzelUndoState {
 
 ### `KritzelSyncConfig`
 
-Passed to the `syncConfig` prop. See [Sync & Collaboration](concept-collaboration.md).
+Passed to the `syncConfig` prop. See [Sync & Collaboration](advanced-concepts/concept-collaboration.md).
 
 ```ts
 interface KritzelSyncConfig {
@@ -183,7 +183,7 @@ interface KritzelTheme {
 }
 ```
 
-See [Theming](concept-theming.md) for details.
+See [Theming](advanced-concepts/customization/concept-theming.md) for details.
 
 ---
 

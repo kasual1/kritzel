@@ -14,10 +14,10 @@ import { BlueprintDefectMapperComponent } from './examples/blueprint-defect-mapp
 import { SlideshowPresentationComponent } from './examples/slideshow-presentation/slideshow-presentation.component';
 import { InfiniteCanvasGalleryComponent } from './examples/infinite-canvas-gallery/infinite-canvas-gallery.component';
 import { ImageAnnotationStudioComponent } from './examples/image-annotation-studio/image-annotation-studio.component';
-import { ThemingApplyComponent } from './concepts/theming/theming-apply.component';
-import { ThemingCustomComponent } from './concepts/theming/theming-custom.component';
-import { CollaborationLocalComponent } from './concepts/collaboration/collaboration-local.component';
-import { CollaborationRealtimeComponent } from './concepts/collaboration/collaboration-realtime.component';
+import { ThemingApplyComponent } from './advanced-concepts/customization/theming/theming-apply.component';
+import { ThemingCustomComponent } from './advanced-concepts/customization/theming/theming-custom.component';
+import { CollaborationLocalComponent } from './advanced-concepts/collaboration/collaboration-local.component';
+import { CollaborationRealtimeComponent } from './advanced-concepts/collaboration/collaboration-realtime.component';
 import { CollaborationLocalComponent as PersistenceLocalComponent } from './concepts/persistence/persistence-local.component';
 import { ComponentsEditorComponent } from './concepts/components/components-editor.component';
 import { ComponentsEditorUiComponent } from './concepts/components/components-editor-ui.component';
@@ -39,6 +39,12 @@ import { ObjectsOrderingComponent } from './concepts/objects/objects-ordering.co
 import { BasicUsageComponent } from './basic-usage/basic-usage.component';
 import { EditorPageCustomElementComponent } from './concepts/custom-elements/editor-page-custom-element.component';
 import { EditorPageCustomElementHtmlComponent } from './concepts/custom-elements/editor-page-custom-element-html.component';
+import { LocalizationSwitchComponent } from './advanced-concepts/localization/localization-switch.component';
+import { LocalizationCustomComponent } from './advanced-concepts/localization/localization-custom.component';
+import { FontsRegisterComponent } from './advanced-concepts/customization/fonts/fonts-register.component';
+import { CustomIconsRegisterComponent } from './advanced-concepts/customization/custom-icons/custom-icons-register.component';
+import { LoginDialogProvidersComponent } from './advanced-concepts/login-dialog/login-dialog-providers.component';
+import { LoginDialogFlowComponent } from './advanced-concepts/login-dialog/login-dialog-flow.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'e2e/editor' },
@@ -62,8 +68,6 @@ export const routes: Routes = [
   {
     path: 'concepts',
     children: [
-      { path: 'theming-apply', component: ThemingApplyComponent },
-      { path: 'theming-custom', component: ThemingCustomComponent },
       { path: 'collaboration-local', component: CollaborationLocalComponent },
       { path: 'persistence-local', component: PersistenceLocalComponent },
       {
@@ -108,6 +112,29 @@ export const routes: Routes = [
         path: 'context-menus-object-inspector',
         component: CustomContextMenuObjectInspectorComponent,
       },
+    ],
+  },
+  {
+    path: 'advanced-concepts',
+    children: [
+      { path: 'collaboration-local', component: CollaborationLocalComponent },
+      {
+        path: 'collaboration-realtime',
+        component: CollaborationRealtimeComponent,
+      },
+      {
+        path: 'customization',
+        children: [
+          { path: 'theming-apply', component: ThemingApplyComponent },
+          { path: 'theming-custom', component: ThemingCustomComponent },
+          { path: 'fonts-register', component: FontsRegisterComponent },
+          { path: 'custom-icons', component: CustomIconsRegisterComponent },
+        ],
+      },
+      { path: 'localization-switch', component: LocalizationSwitchComponent },
+      { path: 'localization-custom', component: LocalizationCustomComponent },
+      { path: 'login-dialog-providers', component: LoginDialogProvidersComponent },
+      { path: 'login-dialog-flow', component: LoginDialogFlowComponent },
     ],
   },
   {
