@@ -137,6 +137,8 @@ describe('KritzelEngine', () => {
     },
     appStateMap: {
       destroy: jest.fn(),
+      hasNetworkSyncProvider: false,
+      whenNetworkSynced: jest.fn().mockResolvedValue(undefined),
     },
     cursorManager: {
       setTargetElement: jest.fn(),
@@ -337,6 +339,81 @@ describe('KritzelEngine', () => {
       } else {
         delete (global as { navigator?: unknown }).navigator;
       }
+    });
+  });
+
+  describe('remote app state startup', () => {
+    const withNavigatorOnline = async (isOnline: boolean, run: () => Promise<void>): Promise<void> => {
+      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: isOnline } });
+
+      try {
+        await run();
+      } finally {
+        if (navigatorDescriptor) {
+          Object.defineProperty(global, 'navigator', navigatorDescriptor);
+        } else {
+          delete (global as { navigator?: unknown }).navigator;
+        }
+      }
+    };
+
+    it('waits for the remote workspace list before resolving a startup workspace on a cold start', async () => {
+      let resolveNetworkSync!: () => void;
+      const networkSyncPromise = new Promise<void>(resolve => {
+        resolveNetworkSync = resolve;
+      });
+      const remoteWorkspace = new KritzelWorkspace('remote-workspace', 'Remote');
+
+      core.appStateMap.hasNetworkSyncProvider = true;
+      core.appStateMap.whenNetworkSynced.mockReturnValue(networkSyncPromise);
+      core.getWorkspaces.mockReturnValue([]);
+
+      await withNavigatorOnline(true, async () => {
+        const waitPromise = (engine as any).waitForRemoteAppStateIfEmpty();
+
+        await Promise.resolve();
+        expect(core.initializeWorkspace).not.toHaveBeenCalled();
+
+        core.getWorkspaces.mockReturnValue([remoteWorkspace]);
+        resolveNetworkSync();
+        await waitPromise;
+
+        expect((engine as any).core.getWorkspaces()).toEqual([remoteWorkspace]);
+      });
+    });
+
+    it('does not wait when workspaces are already available locally', async () => {
+      core.appStateMap.hasNetworkSyncProvider = true;
+      core.getWorkspaces.mockReturnValue([new KritzelWorkspace('cached-workspace', 'Cached')]);
+
+      await withNavigatorOnline(true, async () => {
+        await (engine as any).waitForRemoteAppStateIfEmpty();
+      });
+
+      expect(core.appStateMap.whenNetworkSynced).not.toHaveBeenCalled();
+    });
+
+    it('does not wait when no network sync provider is configured', async () => {
+      core.appStateMap.hasNetworkSyncProvider = false;
+      core.getWorkspaces.mockReturnValue([]);
+
+      await withNavigatorOnline(true, async () => {
+        await (engine as any).waitForRemoteAppStateIfEmpty();
+      });
+
+      expect(core.appStateMap.whenNetworkSynced).not.toHaveBeenCalled();
+    });
+
+    it('does not wait while the browser is offline', async () => {
+      core.appStateMap.hasNetworkSyncProvider = true;
+      core.getWorkspaces.mockReturnValue([]);
+
+      await withNavigatorOnline(false, async () => {
+        await (engine as any).waitForRemoteAppStateIfEmpty();
+      });
+
+      expect(core.appStateMap.whenNetworkSynced).not.toHaveBeenCalled();
     });
   });
 

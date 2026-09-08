@@ -2661,6 +2661,8 @@ export class KritzelEngine {
       await this.initializeAssetStorage();
     }
 
+    await this.waitForRemoteAppStateIfEmpty();
+
     if (this.activeWorkspaceId) {
       const startupWorkspace = this.core.getWorkspaces().find(ws => ws.id === this.activeWorkspaceId);
 
@@ -2694,6 +2696,30 @@ export class KritzelEngine {
     }
 
     this.tryResolveActiveWorkspaceFromId();
+  }
+
+  /**
+   * On a cold start the remote workspace list may still be in flight; creating a
+   * fallback workspace before it arrives would pollute the synced app state.
+   */
+  private async waitForRemoteAppStateIfEmpty(): Promise<void> {
+    if (this.core.getWorkspaces().length > 0) {
+      return;
+    }
+
+    if (!this.core.appStateMap.hasNetworkSyncProvider || !this.isNetworkAvailable()) {
+      return;
+    }
+
+    this._isWorkspaceLoading = true;
+    this.syncLoadingState();
+
+    try {
+      await this.core.appStateMap.whenNetworkSynced();
+    } finally {
+      this._isWorkspaceLoading = false;
+      this.syncLoadingState();
+    }
   }
 
   private resolveStartupWorkspace(): KritzelWorkspace | undefined {
