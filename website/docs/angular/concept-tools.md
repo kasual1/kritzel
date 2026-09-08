@@ -58,8 +58,8 @@ You can programmatically change the currently active tool using the API. This is
 
 ## Related API Methods
 
-- Tool activation (`changeActiveTool()`)
-- Tool configuration (`registerTool()`)
-- Tool interaction (`enable()`, `disable()`)
+- Tool activation ([changeActiveTool](api-reference-editor.md#changeactivetool))
+- Tool configuration ([registerTool](api-reference-editor.md#registertool))
+- Tool interaction ([enable](api-reference-editor.md#enable), [disable](api-reference-editor.md#disable))
 
 For a comprehensive view, see the [API Reference](api-reference-editor.md).
