@@ -76,10 +76,11 @@ Unlike the Editor, the Engine **does not register any drawing tools by default**
 ## Related API Methods
 
 Since both components share the same API surface for interacting with the whiteboard state, you can use these methods and properties on both:
-- Viewport and boundaries (`viewportBoundaryLeft`, `viewportBoundaryRight`, `scaleMin`, `scaleMax`)
-- Theme management (`theme` property)
-- Context menu configuration (`globalContextMenuItems`, `objectContextMenuItems`)
-- Editor-specific options like `isControlsVisible` or `isUtilityPanelVisible` (Editor only)
+- Tool registration and selection ([registerTool](api-reference-editor.md#registertool), [changeActiveTool](api-reference-editor.md#changeactivetool), [changeActiveToolByName](api-reference-editor.md#changeactivetoolbyname))
+- Viewport and boundaries ([viewportBoundaryLeft](api-reference-editor.md#props), [viewportBoundaryRight](api-reference-editor.md#props), [scaleMin](api-reference-editor.md#props), [scaleMax](api-reference-editor.md#props))
+- Theme management ([theme](api-reference-editor.md#props) property)
+- Context menu configuration ([globalContextMenuItems](api-reference-editor.md#props), [objectContextMenuItems](api-reference-editor.md#props))
+- Editor-specific options like [isControlsVisible](api-reference-editor.md#props) or [isUtilityPanelVisible](api-reference-editor.md#props) (Editor only)
 
 For a comprehensive view, see the [API Reference](api-reference-editor.md).
 

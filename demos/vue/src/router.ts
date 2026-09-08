@@ -4,8 +4,8 @@ import EditorHocuspocusPage from './pages/e2e/EditorHocuspocusPage.vue'
 import MultiEditorPage from './pages/e2e/MultiEditorPage.vue'
 import WrappedEditorPage from './pages/e2e/WrappedEditorPage.vue'
 import BasicUsagePage from './pages/basic-usage/BasicUsagePage.vue'
-import CollaborationLocalPage from './pages/concepts/collaboration/CollaborationLocalPage.vue'
-import CollaborationRealtimePage from './pages/concepts/collaboration/CollaborationRealtimePage.vue'
+import CollaborationLocalPage from './pages/advanced-concepts/collaboration/CollaborationLocalPage.vue'
+import CollaborationRealtimePage from './pages/advanced-concepts/collaboration/CollaborationRealtimePage.vue'
 import ComponentsEditorPage from './pages/concepts/components/ComponentsEditorPage.vue'
 import ComponentsEditorUiPage from './pages/concepts/components/ComponentsEditorUiPage.vue'
 import ComponentsEnginePage from './pages/concepts/components/ComponentsEnginePage.vue'
@@ -21,8 +21,8 @@ import ObjectsSelectionPage from './pages/concepts/objects/ObjectsSelectionPage.
 import ObjectsGroupingPage from './pages/concepts/objects/ObjectsGroupingPage.vue'
 import ObjectsOrderingPage from './pages/concepts/objects/ObjectsOrderingPage.vue'
 import PersistenceLocalPage from './pages/concepts/persistence/PersistenceLocalPage.vue'
-import ThemingApplyPage from './pages/concepts/theming/ThemingApplyPage.vue'
-import ThemingCustomPage from './pages/concepts/theming/ThemingCustomPage.vue'
+import ThemingApplyPage from './pages/advanced-concepts/customization/theming/ThemingApplyPage.vue'
+import ThemingCustomPage from './pages/advanced-concepts/customization/theming/ThemingCustomPage.vue'
 import ToolsDisablePage from './pages/concepts/tools/ToolsDisablePage.vue'
 import ToolsControlsPage from './pages/concepts/tools/ToolsControlsPage.vue'
 import ToolsRegisterPage from './pages/concepts/tools/ToolsRegisterPage.vue'
@@ -38,6 +38,12 @@ import SlideshowPresentationPage from './pages/examples/slideshow-presentation/S
 import InfiniteCanvasGalleryPage from './pages/examples/infinite-canvas-gallery/InfiniteCanvasGalleryPage.vue'
 import ImageAnnotationStudioPage from './pages/examples/image-annotation-studio/ImageAnnotationStudioPage.vue'
 import QuickstartPage from './pages/getting-started/QuickstartPage.vue'
+import LocalizationSwitchPage from './pages/advanced-concepts/localization/LocalizationSwitchPage.vue'
+import LocalizationCustomPage from './pages/advanced-concepts/localization/LocalizationCustomPage.vue'
+import FontsRegisterPage from './pages/advanced-concepts/customization/fonts/FontsRegisterPage.vue'
+import CustomIconsRegisterPage from './pages/advanced-concepts/customization/custom-icons/CustomIconsRegisterPage.vue'
+import LoginDialogProvidersPage from './pages/advanced-concepts/login-dialog/LoginDialogProvidersPage.vue'
+import LoginDialogFlowPage from './pages/advanced-concepts/login-dialog/LoginDialogFlowPage.vue'
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -57,10 +63,28 @@ export const router = createRouter({
       component: BasicUsagePage,
     },
     {
-      path: '/concepts',
+      path: '/advanced-concepts',
       children: [
         { path: 'collaboration-local', component: CollaborationLocalPage },
         { path: 'collaboration-realtime', component: CollaborationRealtimePage },
+        { path: 'localization-switch', component: LocalizationSwitchPage },
+        { path: 'localization-custom', component: LocalizationCustomPage },
+        { path: 'login-dialog-providers', component: LoginDialogProvidersPage },
+        { path: 'login-dialog-flow', component: LoginDialogFlowPage },
+        {
+          path: 'customization',
+          children: [
+            { path: 'theming-apply', component: ThemingApplyPage },
+            { path: 'theming-custom', component: ThemingCustomPage },
+            { path: 'fonts-register', component: FontsRegisterPage },
+            { path: 'custom-icons', component: CustomIconsRegisterPage },
+          ],
+        },
+      ],
+    },
+    {
+      path: '/concepts',
+      children: [
         { path: 'components-editor', component: ComponentsEditorPage },
         { path: 'components-editor-ui', component: ComponentsEditorUiPage },
         { path: 'components-engine', component: ComponentsEnginePage },
@@ -94,8 +118,6 @@ export const router = createRouter({
         { path: 'objects-grouping', component: ObjectsGroupingPage },
         { path: 'objects-ordering', component: ObjectsOrderingPage },
         { path: 'persistence-local', component: PersistenceLocalPage },
-        { path: 'theming-apply', component: ThemingApplyPage },
-        { path: 'theming-custom', component: ThemingCustomPage },
         { path: 'tools-disable', component: ToolsDisablePage },
         { path: 'tools-controls', component: ToolsControlsPage },
         { path: 'tools-register', component: ToolsRegisterPage },
