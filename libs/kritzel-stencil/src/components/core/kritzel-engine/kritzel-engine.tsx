@@ -2838,6 +2838,14 @@ export class KritzelEngine {
 
         this.syncSyncingState(true);
       });
+
+      // The network provider may have already applied remote changes between
+      // object-map initialization and this subscription (e.g. an already-connected
+      // shared socket resolves the sync handshake almost immediately). Without this
+      // check that update is missed entirely and the indicator never appears.
+      if (initializedObjects.hasAppliedRemoteChanges) {
+        this.syncSyncingState(true);
+      }
     } else {
       // Custom providers without an update origin cannot be diffed, so fall back to reporting the whole handshake.
       this.syncSyncingState(true);
