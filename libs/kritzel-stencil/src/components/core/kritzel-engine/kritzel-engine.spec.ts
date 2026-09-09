@@ -297,112 +297,48 @@ describe('KritzelEngine', () => {
   });
 
   describe('workspace syncing state', () => {
-    const withNavigatorOnline = async (isOnline: boolean, run: () => Promise<void>): Promise<void> => {
-      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
-      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: isOnline } });
-
-      try {
-        await run();
-      } finally {
-        if (navigatorDescriptor) {
-          Object.defineProperty(global, 'navigator', navigatorDescriptor);
-        } else {
-          delete (global as { navigator?: unknown }).navigator;
-        }
-      }
-    };
-
-    beforeEach(() => {
-      jest.useFakeTimers();
-    });
-
-    afterEach(() => {
-      jest.clearAllTimers();
-      jest.useRealTimers();
-    });
-
     it('does not emit syncing true while the browser is offline', async () => {
       const networkSyncPromise = new Promise<void>(() => {});
       core.store.objects = { whenNetworkSynced: () => networkSyncPromise };
+      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: false } });
 
-      await withNavigatorOnline(false, async () => {
-        await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
-      });
+      await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
 
-      expect((engine as any).syncingChange.emit).not.toHaveBeenCalled();
+      expect((engine as any).syncingChange.emit).not.toHaveBeenCalledWith(true);
+      expect((engine as any).syncingChange.emit).toHaveBeenCalledWith(false);
+
+      if (navigatorDescriptor) {
+        Object.defineProperty(global, 'navigator', navigatorDescriptor);
+      } else {
+        delete (global as { navigator?: unknown }).navigator;
+      }
     });
 
-    it('does not emit syncing events when synchronization completes before the display delay', async () => {
+    it('emits syncing true while network synchronization is pending and the browser is online', async () => {
       let resolveNetworkSync!: () => void;
       const networkSyncPromise = new Promise<void>(resolve => {
         resolveNetworkSync = resolve;
       });
       core.store.objects = { whenNetworkSynced: () => networkSyncPromise };
+      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: true } });
 
-      await withNavigatorOnline(true, async () => {
-        await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
+      await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
 
-        resolveNetworkSync();
-        await networkSyncPromise;
-        await Promise.resolve();
-        jest.advanceTimersByTime(300);
-      });
+      expect((engine as any).syncingChange.emit).toHaveBeenCalledWith(true);
 
-      expect((engine as any).syncingChange.emit).not.toHaveBeenCalled();
-      expect(engine.isSyncing).toBe(false);
-    });
+      resolveNetworkSync();
+      await networkSyncPromise;
+      await Promise.resolve();
 
-    it('delays syncing display and keeps it visible for the minimum duration', async () => {
-      let resolveNetworkSync!: () => void;
-      const networkSyncPromise = new Promise<void>(resolve => {
-        resolveNetworkSync = resolve;
-      });
-      core.store.objects = { whenNetworkSynced: () => networkSyncPromise };
-
-      await withNavigatorOnline(true, async () => {
-        await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
-
-        jest.advanceTimersByTime(299);
-        expect((engine as any).syncingChange.emit).not.toHaveBeenCalled();
-
-        jest.advanceTimersByTime(1);
-        expect((engine as any).syncingChange.emit).toHaveBeenCalledTimes(1);
-        expect((engine as any).syncingChange.emit).toHaveBeenLastCalledWith(true);
-
-        resolveNetworkSync();
-        await networkSyncPromise;
-        await Promise.resolve();
-
-        jest.advanceTimersByTime(499);
-        expect((engine as any).syncingChange.emit).toHaveBeenCalledTimes(1);
-
-        jest.advanceTimersByTime(1);
-      });
-
-      expect((engine as any).syncingChange.emit).toHaveBeenCalledTimes(2);
       expect((engine as any).syncingChange.emit).toHaveBeenLastCalledWith(false);
-      expect(engine.isSyncing).toBe(false);
-    });
 
-    it('ignores stale syncing requests after a newer workspace takes ownership', () => {
-      const firstRequestId = (engine as any).beginSyncingRequest();
-      (engine as any).syncSyncingState(true, firstRequestId);
-      const secondRequestId = (engine as any).beginSyncingRequest();
-      (engine as any).syncSyncingState(true, secondRequestId);
-
-      jest.advanceTimersByTime(300);
-      expect((engine as any).syncingChange.emit).toHaveBeenCalledTimes(1);
-      expect((engine as any).syncingChange.emit).toHaveBeenLastCalledWith(true);
-
-      (engine as any).syncSyncingState(false, firstRequestId);
-      expect((engine as any).syncingChange.emit).toHaveBeenCalledTimes(1);
-
-      (engine as any).syncSyncingState(false, secondRequestId);
-      (engine as any).syncSyncingState(false, secondRequestId);
-      jest.advanceTimersByTime(500);
-
-      expect((engine as any).syncingChange.emit).toHaveBeenCalledTimes(2);
-      expect((engine as any).syncingChange.emit).toHaveBeenLastCalledWith(false);
+      if (navigatorDescriptor) {
+        Object.defineProperty(global, 'navigator', navigatorDescriptor);
+      } else {
+        delete (global as { navigator?: unknown }).navigator;
+      }
     });
   });
 
