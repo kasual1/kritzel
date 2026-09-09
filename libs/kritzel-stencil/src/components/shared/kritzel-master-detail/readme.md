@@ -20,6 +20,8 @@
 | `itemSelect` | Emitted when an item is selected | `CustomEvent<IKritzelMasterDetailSelectEvent>` |
 
 
+
+
 ## Dependencies
 
 ### Used by

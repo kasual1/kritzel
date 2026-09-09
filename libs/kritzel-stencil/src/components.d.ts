@@ -1538,18 +1538,6 @@ export namespace Components {
          */
         "sizes": number[];
     }
-    interface KritzelSyncIndicator {
-        /**
-          * The text displayed next to the spinner.
-          * @default 'Syncing...'
-         */
-        "text": string;
-        /**
-          * Whether the indicator is visible.
-          * @default false
-         */
-        "visible": boolean;
-    }
     interface KritzelToolConfig {
         "engine": HTMLElement;
         /**
@@ -2036,7 +2024,6 @@ declare global {
         "notificationsChange": KritzelNotification;
         "contextMenuStateChange": KritzelContextMenuState;
         "loadingChange": boolean;
-        "syncingChange": boolean;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2458,12 +2445,6 @@ declare global {
         prototype: HTMLKritzelStrokeSizeElement;
         new (): HTMLKritzelStrokeSizeElement;
     };
-    interface HTMLKritzelSyncIndicatorElement extends Components.KritzelSyncIndicator, HTMLStencilElement {
-    }
-    var HTMLKritzelSyncIndicatorElement: {
-        prototype: HTMLKritzelSyncIndicatorElement;
-        new (): HTMLKritzelSyncIndicatorElement;
-    };
     interface HTMLKritzelToolConfigElementEventMap {
         "toolChange": ConfigurableTool;
         "displayValuesChange": ToolDisplayValues;
@@ -2610,7 +2591,6 @@ declare global {
         "kritzel-slide-toggle": HTMLKritzelSlideToggleElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
-        "kritzel-sync-indicator": HTMLKritzelSyncIndicatorElement;
         "kritzel-tool-config": HTMLKritzelToolConfigElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
         "kritzel-utility-panel": HTMLKritzelUtilityPanelElement;
@@ -3185,10 +3165,6 @@ declare namespace LocalJSX {
          */
         "onObjectsUpdated"?: (event: KritzelEngineCustomEvent<ObjectsUpdatedEvent>) => void;
         /**
-          * Emitted when remote workspace synchronization is in progress.
-         */
-        "onSyncingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
-        /**
           * Emitted when the undo/redo state changes, providing current undo availability.
          */
         "onUndoStateChange"?: (event: KritzelEngineCustomEvent<KritzelUndoState>) => void;
@@ -3716,18 +3692,6 @@ declare namespace LocalJSX {
          */
         "sizes"?: number[];
     }
-    interface KritzelSyncIndicator {
-        /**
-          * The text displayed next to the spinner.
-          * @default 'Syncing...'
-         */
-        "text"?: string;
-        /**
-          * Whether the indicator is visible.
-          * @default false
-         */
-        "visible"?: boolean;
-    }
     interface KritzelToolConfig {
         "engine"?: HTMLElement;
         /**
@@ -4037,10 +4001,6 @@ declare namespace LocalJSX {
     interface KritzelStrokeSizeAttributes {
         "selectedSize": number | null;
     }
-    interface KritzelSyncIndicatorAttributes {
-        "visible": boolean;
-        "text": string;
-    }
     interface KritzelToolConfigAttributes {
         "isExpanded": boolean;
         "theme": ThemeName;
@@ -4103,7 +4063,6 @@ declare namespace LocalJSX {
         "kritzel-slide-toggle": Omit<KritzelSlideToggle, keyof KritzelSlideToggleAttributes> & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes]?: KritzelSlideToggle[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `attr:${K}`]?: KritzelSlideToggleAttributes[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `prop:${K}`]?: KritzelSlideToggle[K] };
         "kritzel-split-button": Omit<KritzelSplitButton, keyof KritzelSplitButtonAttributes> & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes]?: KritzelSplitButton[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `attr:${K}`]?: KritzelSplitButtonAttributes[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `prop:${K}`]?: KritzelSplitButton[K] };
         "kritzel-stroke-size": Omit<KritzelStrokeSize, keyof KritzelStrokeSizeAttributes> & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes]?: KritzelStrokeSize[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `attr:${K}`]?: KritzelStrokeSizeAttributes[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `prop:${K}`]?: KritzelStrokeSize[K] };
-        "kritzel-sync-indicator": Omit<KritzelSyncIndicator, keyof KritzelSyncIndicatorAttributes> & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes]?: KritzelSyncIndicator[K] } & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes as `attr:${K}`]?: KritzelSyncIndicatorAttributes[K] } & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes as `prop:${K}`]?: KritzelSyncIndicator[K] };
         "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
         "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
         "kritzel-utility-panel": KritzelUtilityPanel;
@@ -4167,7 +4126,6 @@ declare module "@stencil/core" {
             "kritzel-slide-toggle": LocalJSX.IntrinsicElements["kritzel-slide-toggle"] & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
             "kritzel-split-button": LocalJSX.IntrinsicElements["kritzel-split-button"] & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.IntrinsicElements["kritzel-stroke-size"] & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
-            "kritzel-sync-indicator": LocalJSX.IntrinsicElements["kritzel-sync-indicator"] & JSXBase.HTMLAttributes<HTMLKritzelSyncIndicatorElement>;
             "kritzel-tool-config": LocalJSX.IntrinsicElements["kritzel-tool-config"] & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;
             "kritzel-tooltip": LocalJSX.IntrinsicElements["kritzel-tooltip"] & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
             "kritzel-utility-panel": LocalJSX.IntrinsicElements["kritzel-utility-panel"] & JSXBase.HTMLAttributes<HTMLKritzelUtilityPanelElement>;

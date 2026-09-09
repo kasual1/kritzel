@@ -56,7 +56,6 @@
 | `objectsRemoved`          | Emitted when one or more objects are removed from the canvas.                                              | `CustomEvent<ObjectsRemovedEvent>`                            |
 | `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                          | `CustomEvent<void>`                                           |
 | `objectsUpdated`          | Emitted when one or more objects are updated on the canvas.                                                | `CustomEvent<ObjectsUpdatedEvent>`                            |
-| `syncingChange`           | Emitted when remote workspace synchronization is in progress.                                              | `CustomEvent<boolean>`                                        |
 | `undoStateChange`         | Emitted when the undo/redo state changes, providing current undo availability.                             | `CustomEvent<KritzelUndoState>`                               |
 | `viewportChange`          | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).        | `CustomEvent<KritzelViewportState>`                           |
 | `workspacesChange`        | Emitted when workspaces are created, updated, or deleted.                                                  | `CustomEvent<KritzelWorkspace[]>`                             |

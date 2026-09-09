@@ -22,6 +22,8 @@
 | `close` |             | `CustomEvent<void>` |
 
 
+
+
 ## Dependencies
 
 ### Used by

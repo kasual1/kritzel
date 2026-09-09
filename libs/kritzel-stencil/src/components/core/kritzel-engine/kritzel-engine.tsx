@@ -375,11 +375,7 @@ export class KritzelEngine {
   /** Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes. */
   @Event() loadingChange!: EventEmitter<boolean>;
 
-  /** Emitted when remote workspace synchronization is in progress. */
-  @Event() syncingChange!: EventEmitter<boolean>;
-
   @State() forceUpdate: number = 0;
-  @State() isSyncing: boolean = false;
 
   /** Manually triggers the `objectsSelectionChange` event. */
   @Method()
@@ -2367,11 +2363,6 @@ export class KritzelEngine {
     this.loadingChange.emit(this.core.store.state.isLoading);
   }
 
-  private syncSyncingState(isSyncing: boolean): void {
-    this.isSyncing = isSyncing;
-    this.syncingChange.emit(isSyncing);
-  }
-
   private isNetworkAvailable(): boolean {
     return typeof navigator !== 'undefined' && navigator.onLine;
   }
@@ -2792,21 +2783,6 @@ export class KritzelEngine {
     try {
       await initializationPromise;
 
-      // Track remote sync in the background without blocking the loading overlay.
-      const initializedObjects = this.core.store.objects;
-      const networkSyncPromise = initializedObjects?.whenNetworkSynced();
-
-      if (networkSyncPromise && this.isNetworkAvailable()) {
-        this.syncSyncingState(true);
-        void networkSyncPromise.finally(() => {
-          // Only clear syncing for the currently active object map.
-          if (this.core.store.objects === initializedObjects) {
-            this.syncSyncingState(false);
-          }
-        });
-      } else {
-        this.syncSyncingState(false);
-      }
     } finally {
       // Only the most recent init clears loading state to prevent race conditions
       if (this._workspaceInitializationPromise === initializationPromise) {
