@@ -34,12 +34,22 @@ const mockYdocGetMap = jest.fn().mockReturnValue({
   forEach: mockMapForEach,
 });
 const mockYdocDestroy = jest.fn();
+const mockYdocOn = jest.fn();
+const mockYdocOff = jest.fn();
+
+/** Invokes the `update` listener the object map registered on the Y.Doc. */
+const emitDocUpdate = (origin: unknown): void => {
+  const registration = mockYdocOn.mock.calls.find(([event]) => event === 'update');
+  registration?.[1](new Uint8Array(), origin);
+};
 
 jest.mock('yjs', () => ({
   Doc: jest.fn().mockImplementation(() => ({
     transact: mockYdocTransact,
     getMap: mockYdocGetMap,
     destroy: mockYdocDestroy,
+    on: mockYdocOn,
+    off: mockYdocOff,
   })),
   UndoManager: jest.fn().mockImplementation(() => ({
     on: mockUndoManagerOn,
@@ -145,6 +155,8 @@ interface MockProvider {
   disconnect: jest.Mock<void>;
   reconnect: jest.Mock<Promise<void>>;
   destroy: jest.Mock<void>;
+  whenSynced?: jest.Mock<Promise<void>>;
+  updateOrigin?: unknown;
   awareness?: any;
 }
 
@@ -154,6 +166,12 @@ const createMockProvider = (type: 'local' | 'network' = 'local'): MockProvider =
   disconnect: jest.fn(),
   reconnect: jest.fn().mockResolvedValue(undefined),
   destroy: jest.fn(),
+});
+
+const createMockNetworkProvider = (updateOrigin: unknown = { provider: 'remote' }): MockProvider => ({
+  ...createMockProvider('network'),
+  whenSynced: jest.fn().mockResolvedValue(undefined),
+  updateOrigin,
 });
 
 const createMockObject = (id: string, opts: { isSelectionBox?: boolean } = {}): any => {
@@ -354,6 +372,125 @@ describe('KritzelObjectMap', () => {
       await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
 
       expect(objectMap.isReady).toBe(true);
+    });
+
+    it('stays pending until the Yjs sync handshake completes', async () => {
+      let resolveSynced!: () => void;
+      const provider = createMockNetworkProvider();
+      provider.whenSynced!.mockReturnValue(
+        new Promise<void>(res => {
+          resolveSynced = res;
+        }),
+      );
+      const factory = { create: jest.fn().mockReturnValue(provider) };
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      let settled = false;
+      const syncPromise = objectMap.whenNetworkSynced().then(() => {
+        settled = true;
+      });
+
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(settled).toBe(false);
+
+      resolveSynced();
+      await syncPromise;
+      expect(settled).toBe(true);
+    });
+  });
+
+  describe('remote change detection', () => {
+    it('reports no network sync provider when only local providers are configured', async () => {
+      const factory = { create: jest.fn().mockReturnValue(createMockProvider('local')) };
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      expect(objectMap.hasNetworkSyncProvider).toBe(false);
+      expect(objectMap.supportsRemoteChangeDetection).toBe(false);
+    });
+
+    it('supports detection when every network provider exposes an update origin', async () => {
+      const factory = { create: jest.fn().mockReturnValue(createMockNetworkProvider()) };
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      expect(objectMap.hasNetworkSyncProvider).toBe(true);
+      expect(objectMap.supportsRemoteChangeDetection).toBe(true);
+    });
+
+    it('does not support detection when a network provider omits its update origin', async () => {
+      const factory = { create: jest.fn().mockReturnValue(createMockProvider('network')) };
+
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      expect(objectMap.hasNetworkSyncProvider).toBe(true);
+      expect(objectMap.supportsRemoteChangeDetection).toBe(false);
+    });
+
+    it('flags remote changes and notifies subscribers for updates from a network provider', async () => {
+      const updateOrigin = { provider: 'remote' };
+      const factory = { create: jest.fn().mockReturnValue(createMockNetworkProvider(updateOrigin)) };
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const callback = jest.fn();
+      objectMap.onRemoteChangesApplied(callback);
+
+      emitDocUpdate(updateOrigin);
+
+      expect(objectMap.hasAppliedRemoteChanges).toBe(true);
+      expect(callback).toHaveBeenCalledTimes(1);
+    });
+
+    it('ignores updates originating from local writes', async () => {
+      const factory = { create: jest.fn().mockReturnValue(createMockNetworkProvider()) };
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const callback = jest.fn();
+      objectMap.onRemoteChangesApplied(callback);
+
+      emitDocUpdate('local');
+      emitDocUpdate('temporary');
+      emitDocUpdate(null);
+
+      expect(objectMap.hasAppliedRemoteChanges).toBe(false);
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('ignores updates originating from a local provider hydrating the document', async () => {
+      const localProvider = createMockProvider('local');
+      localProvider.updateOrigin = { provider: 'indexeddb' };
+      const factory = { create: jest.fn().mockReturnValue(localProvider) };
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const callback = jest.fn();
+      objectMap.onRemoteChangesApplied(callback);
+
+      emitDocUpdate(localProvider.updateOrigin);
+
+      expect(objectMap.hasAppliedRemoteChanges).toBe(false);
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('stops notifying after unsubscribing', async () => {
+      const updateOrigin = { provider: 'remote' };
+      const factory = { create: jest.fn().mockReturnValue(createMockNetworkProvider(updateOrigin)) };
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+      const callback = jest.fn();
+      const unsubscribe = objectMap.onRemoteChangesApplied(callback);
+
+      unsubscribe();
+      emitDocUpdate(updateOrigin);
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('detaches the document update listener on destroy', async () => {
+      const factory = { create: jest.fn().mockReturnValue(createMockNetworkProvider()) };
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [factory] });
+
+      objectMap.destroy();
+
+      expect(mockYdocOff).toHaveBeenCalledWith('update', expect.any(Function));
+      expect(objectMap.hasAppliedRemoteChanges).toBe(false);
     });
   });
 

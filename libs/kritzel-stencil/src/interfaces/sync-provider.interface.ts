@@ -27,9 +27,24 @@ export interface ISyncProvider {
   readonly awareness?: Awareness | null;
 
   /**
+   * The object this provider passes as the Yjs transaction origin when it applies
+   * updates it received from its peer. Consumers use it to tell remote-originated
+   * changes apart from local writes. Providers that cannot expose it opt out of
+   * remote-change detection.
+   */
+  readonly updateOrigin?: unknown;
+
+  /**
    * Initialize and connect the provider
    */
   connect(): Promise<void>;
+
+  /**
+   * Resolves once the Yjs sync handshake with the peer has completed, which is
+   * later than `connect()` for providers that resolve on transport connection.
+   * Never rejects.
+   */
+  whenSynced?(): Promise<void>;
 
   /**
    * Disconnect the provider (can be reconnected later)

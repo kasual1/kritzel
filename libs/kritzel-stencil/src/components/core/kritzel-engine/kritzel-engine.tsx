@@ -375,7 +375,7 @@ export class KritzelEngine {
   /** Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes. */
   @Event() loadingChange!: EventEmitter<boolean>;
 
-  /** Emitted when remote workspace synchronization is in progress. */
+  /** Emitted while remote changes are being applied to the active workspace. Stays silent when the remote holds nothing new. */
   @Event() syncingChange!: EventEmitter<boolean>;
 
   @State() forceUpdate: number = 0;
@@ -2349,6 +2349,7 @@ export class KritzelEngine {
   private _sceneBootstrapOpacity: number = 1;
   private _sceneBootstrapTransitionEnabled: boolean = false;
   private _sceneBootstrapTransitionTimer: ReturnType<typeof setTimeout> | null = null;
+  private _remoteChangesUnsubscribe: (() => void) | null = null;
   private readonly _defaultUndoState: KritzelUndoState = {
     canUndo: false,
     canRedo: false,
@@ -2368,8 +2369,17 @@ export class KritzelEngine {
   }
 
   private syncSyncingState(isSyncing: boolean): void {
+    if (this.isSyncing === isSyncing) {
+      return;
+    }
+
     this.isSyncing = isSyncing;
     this.syncingChange.emit(isSyncing);
+  }
+
+  private clearRemoteChangesSubscription(): void {
+    this._remoteChangesUnsubscribe?.();
+    this._remoteChangesUnsubscribe = null;
   }
 
   private isNetworkAvailable(): boolean {
@@ -2482,6 +2492,7 @@ export class KritzelEngine {
   disconnectedCallback() {
     this.throttledPointerMoveMulti.cancel();
     this._revealedImageKeys.clear();
+    this.clearRemoteChangesSubscription();
 
     if (this._sceneBootstrapTransitionTimer !== null) {
       clearTimeout(this._sceneBootstrapTransitionTimer);
@@ -2792,21 +2803,7 @@ export class KritzelEngine {
     try {
       await initializationPromise;
 
-      // Track remote sync in the background without blocking the loading overlay.
-      const initializedObjects = this.core.store.objects;
-      const networkSyncPromise = initializedObjects?.whenNetworkSynced();
-
-      if (networkSyncPromise && this.isNetworkAvailable()) {
-        this.syncSyncingState(true);
-        void networkSyncPromise.finally(() => {
-          // Only clear syncing for the currently active object map.
-          if (this.core.store.objects === initializedObjects) {
-            this.syncSyncingState(false);
-          }
-        });
-      } else {
-        this.syncSyncingState(false);
-      }
+      this.trackRemoteSynchronization();
     } finally {
       // Only the most recent init clears loading state to prevent race conditions
       if (this._workspaceInitializationPromise === initializationPromise) {
@@ -2816,6 +2813,44 @@ export class KritzelEngine {
         this.syncLoadingState();
       }
     }
+  }
+
+  /**
+   * Reports syncing only while remote data is actually being reconciled into the
+   * active workspace. Yjs suppresses updates that carry nothing new, so a workspace
+   * that already matches the remote never reports syncing at all.
+   */
+  private trackRemoteSynchronization(): void {
+    this.clearRemoteChangesSubscription();
+    this.syncSyncingState(false);
+
+    const initializedObjects = this.core.store.objects;
+
+    if (!initializedObjects?.hasNetworkSyncProvider || !this.isNetworkAvailable()) {
+      return;
+    }
+
+    if (initializedObjects.supportsRemoteChangeDetection) {
+      this._remoteChangesUnsubscribe = initializedObjects.onRemoteChangesApplied(() => {
+        if (this.core.store.objects !== initializedObjects) {
+          return;
+        }
+
+        this.syncSyncingState(true);
+      });
+    } else {
+      // Custom providers without an update origin cannot be diffed, so fall back to reporting the whole handshake.
+      this.syncSyncingState(true);
+    }
+
+    void initializedObjects.whenNetworkSynced().finally(() => {
+      if (this.core.store.objects !== initializedObjects) {
+        return;
+      }
+
+      this.clearRemoteChangesSubscription();
+      this.syncSyncingState(false);
+    });
   }
 
   emitObjectsChange() {

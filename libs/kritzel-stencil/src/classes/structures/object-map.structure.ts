@@ -47,6 +47,10 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _awarenessChangeHandler: ((change: { added: number[]; updated: number[]; removed: number[] }, origin: string) => void) | null = null;
   private _awarenessChangeCallbacks: ((states: Map<number, Record<string, any>>) => void)[] = [];
   private _objectsChangeCallbacks: (() => void)[] = [];
+  private _remoteChangesCallbacks: (() => void)[] = [];
+  private _docUpdateHandler: ((update: Uint8Array, origin: unknown) => void) | null = null;
+  private _remoteOrigins: Set<unknown> = new Set();
+  private _appliedRemoteChanges: boolean = false;
   private _lastAwarenessEmitTime: number = 0;
   private _awarenessEmitTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly AWARENESS_THROTTLE_INTERVAL = 100; // milliseconds
@@ -74,11 +78,55 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
-   * Promise that settles when network providers finish connecting.
-   * Resolves immediately if no network providers. Awaited by the loading overlay.
+   * Promise that settles when network providers finish connecting and complete
+   * their Yjs sync handshake. Resolves immediately if no network providers.
    */
   whenNetworkSynced(): Promise<void> {
     return this._networkSyncPromise ?? Promise.resolve();
+  }
+
+  /**
+   * Whether any configured provider synchronizes over the network.
+   */
+  get hasNetworkSyncProvider(): boolean {
+    return this._providers.some(provider => provider.type === 'network');
+  }
+
+  /**
+   * Whether remote-originated changes can be told apart from local writes.
+   * Requires every network provider to expose its Yjs update origin.
+   */
+  get supportsRemoteChangeDetection(): boolean {
+    const networkProviders = this._providers.filter(provider => provider.type === 'network');
+    return networkProviders.length > 0 && networkProviders.every(provider => provider.updateOrigin !== undefined);
+  }
+
+  /**
+   * Whether at least one update originating from a network provider has been
+   * applied to this document. Stays `false` when the remote held no data the
+   * local document was missing, because Yjs suppresses empty updates.
+   */
+  get hasAppliedRemoteChanges(): boolean {
+    return this._appliedRemoteChanges;
+  }
+
+  /**
+   * Registers a callback invoked whenever a network provider applies changes to this document.
+   * @returns A function that unregisters the callback.
+   */
+  onRemoteChangesApplied(callback: () => void): () => void {
+    this._remoteChangesCallbacks.push(callback);
+
+    return () => {
+      this._remoteChangesCallbacks = this._remoteChangesCallbacks.filter(registered => registered !== callback);
+    };
+  }
+
+  /**
+   * Whether this map runs detached from the rendered canvas.
+   */
+  get isHeadless(): boolean {
+    return this._headless;
   }
 
   /**
@@ -361,6 +409,25 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       console.info(`[Kritzel] Workspace sync providers initialized for ${docName}: ${providerList || 'none'}`);
     }
 
+    // Registered before any provider connects so no remote update can be missed.
+    for (const provider of this._providers) {
+      if (provider.type === 'network' && provider.updateOrigin !== undefined) {
+        this._remoteOrigins.add(provider.updateOrigin);
+      }
+    }
+
+    this._docUpdateHandler = (_update, origin) => {
+      if (!this._remoteOrigins.has(origin)) {
+        return;
+      }
+
+      this._appliedRemoteChanges = true;
+      for (const callback of [...this._remoteChangesCallbacks]) {
+        callback();
+      }
+    };
+    this._ydoc.on('update', this._docUpdateHandler);
+
     // captureTimeout is effectively infinite — undo-step boundaries are
     // marked explicitly via markUndoBoundary() in insert/remove/reset and
     // at stroke/gesture boundaries in the tools. This prevents a single
@@ -422,13 +489,16 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       console.info(`[Kritzel] Workspace network providers connecting in background: ${networkProviders.length}`);
     }
     const networkConnectPromises = networkProviders.map(provider =>
-      provider.connect().catch(err => {
-        if (showSyncProviderInfo) {
-          console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
-        }
-      }),
+      provider
+        .connect()
+        .then(() => provider.whenSynced?.())
+        .catch(err => {
+          if (showSyncProviderInfo) {
+            console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
+          }
+        }),
     );
-    // Network sync awaited by loading overlay to show remote workspace hydration
+    // Settles once remote data has been reconciled, not merely once the transport connected
     this._networkSyncPromise = networkConnectPromises.length > 0 ? Promise.allSettled(networkConnectPromises).then(() => undefined) : null;
     this._isReady = true;
 
@@ -1174,6 +1244,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this._objectsMap.unobserve(this._objectsObserver);
       this._objectsObserver = null;
     }
+
+    if (this._ydoc && this._docUpdateHandler) {
+      this._ydoc.off('update', this._docUpdateHandler);
+    }
+    this._docUpdateHandler = null;
+    this._remoteOrigins.clear();
+    this._remoteChangesCallbacks = [];
+    this._appliedRemoteChanges = false;
 
     // Remove undo manager event listeners
     if (this._undoManager) {

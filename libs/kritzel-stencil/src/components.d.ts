@@ -2003,6 +2003,8 @@ declare global {
         "login": LoginEvent;
         "isPublicChange": IKritzelIsPublicChangedEvent;
         "awarenessChange": Map<number, Record<string, any>>;
+        "syncingChange": boolean;
+        "loadingChange": boolean;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -3011,6 +3013,7 @@ declare namespace LocalJSX {
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
         "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>) => void;
         "onIsReady"?: (event: KritzelEditorCustomEvent<EditorIsReadyEvent>) => void;
+        "onLoadingChange"?: (event: KritzelEditorCustomEvent<boolean>) => void;
         "onLocaleChange"?: (event: KritzelEditorCustomEvent<LocaleCode>) => void;
         "onLogin"?: (event: KritzelEditorCustomEvent<LoginEvent>) => void;
         "onLogout"?: (event: KritzelEditorCustomEvent<void>) => void;
@@ -3018,6 +3021,10 @@ declare namespace LocalJSX {
         "onObjectsChange"?: (event: KritzelEditorCustomEvent<KritzelBaseObject[]>) => void;
         "onObjectsRemoved"?: (event: KritzelEditorCustomEvent<ObjectsRemovedEvent>) => void;
         "onObjectsUpdated"?: (event: KritzelEditorCustomEvent<ObjectsUpdatedEvent>) => void;
+        /**
+          * Emitted while remote changes are being applied to the active workspace. Stays silent when the remote holds nothing new.
+         */
+        "onSyncingChange"?: (event: KritzelEditorCustomEvent<boolean>) => void;
         "onThemeChange"?: (event: KritzelEditorCustomEvent<ThemeName>) => void;
         "onUndoStateChange"?: (event: KritzelEditorCustomEvent<KritzelUndoState1>) => void;
         "onViewportChange"?: (event: KritzelEditorCustomEvent<KritzelViewportState>) => void;
@@ -3185,7 +3192,7 @@ declare namespace LocalJSX {
          */
         "onObjectsUpdated"?: (event: KritzelEngineCustomEvent<ObjectsUpdatedEvent>) => void;
         /**
-          * Emitted when remote workspace synchronization is in progress.
+          * Emitted while remote changes are being applied to the active workspace. Stays silent when the remote holds nothing new.
          */
         "onSyncingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
         /**

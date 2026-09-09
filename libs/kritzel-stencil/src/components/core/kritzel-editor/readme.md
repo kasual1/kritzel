@@ -47,22 +47,25 @@
 
 ## Events
 
-| Event                   | Description | Type                                                          |
-| ----------------------- | ----------- | ------------------------------------------------------------- |
-| `activeWorkspaceChange` |             | `CustomEvent<ActiveWorkspaceChangeEvent>`                     |
-| `awarenessChange`       |             | `CustomEvent<Map<number, Record<string, any>>>`               |
-| `isPublicChange`        |             | `CustomEvent<IKritzelIsPublicChangedEvent>`                   |
-| `isReady`               |             | `CustomEvent<EditorIsReadyEvent>`                             |
-| `localeChange`          |             | `CustomEvent<"de" \| "en" \| "fr" \| string & {}>`            |
-| `login`                 |             | `CustomEvent<LoginEvent>`                                     |
-| `logout`                |             | `CustomEvent<void>`                                           |
-| `objectsAdded`          |             | `CustomEvent<ObjectsAddedEvent>`                              |
-| `objectsChange`         |             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsRemoved`        |             | `CustomEvent<ObjectsRemovedEvent>`                            |
-| `objectsUpdated`        |             | `CustomEvent<ObjectsUpdatedEvent>`                            |
-| `themeChange`           |             | `CustomEvent<"dark" \| "light" \| string & {}>`               |
-| `undoStateChange`       |             | `CustomEvent<KritzelUndoState>`                               |
-| `viewportChange`        |             | `CustomEvent<KritzelViewportState>`                           |
+| Event                    | Description                                                                                                             | Type                                                          |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `activeWorkspaceChange`  |                                                                                                                         | `CustomEvent<ActiveWorkspaceChangeEvent>`                     |
+| `awarenessChange`        |                                                                                                                         | `CustomEvent<Map<number, Record<string, any>>>`               |
+| `isPublicChange`         |                                                                                                                         | `CustomEvent<IKritzelIsPublicChangeEvent>`                    |
+| `isReady`                |                                                                                                                         | `CustomEvent<EditorIsReadyEvent>`                             |
+| `loadingChange`          |                                                                                                                         | `CustomEvent<boolean>`                                        |
+| `localeChange`           |                                                                                                                         | `CustomEvent<"de" \| "en" \| "fr" \| string & {}>`            |
+| `login`                  |                                                                                                                         | `CustomEvent<LoginEvent>`                                     |
+| `logout`                 |                                                                                                                         | `CustomEvent<void>`                                           |
+| `objectsAdded`           |                                                                                                                         | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsChange`          |                                                                                                                         | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsRemoved`         |                                                                                                                         | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsSelectionChange` |                                                                                                                         | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsUpdated`         |                                                                                                                         | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `syncingChange`          | Emitted while remote changes are being applied to the active workspace. Stays silent when the remote holds nothing new. | `CustomEvent<boolean>`                                        |
+| `themeChange`            |                                                                                                                         | `CustomEvent<"dark" \| "light" \| string & {}>`               |
+| `undoStateChange`        |                                                                                                                         | `CustomEvent<KritzelUndoState>`                               |
+| `viewportChange`         |                                                                                                                         | `CustomEvent<KritzelViewportState>`                           |
 
 
 ## Methods

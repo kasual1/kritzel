@@ -196,8 +196,8 @@ export declare interface KritzelDialog extends Components.KritzelDialog {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'controls', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isControlsVisible', 'isLoading', 'isMoreMenuVisible', 'isObjectDistanceFadingActive', 'isPanningEnabled', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange'],
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isLoading', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'syncingChange', 'loadingChange'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
@@ -215,6 +215,8 @@ export class KritzelEditor {
   @Output() login = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorLoginEvent>>();
   @Output() isPublicChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangedEvent>>();
   @Output() awarenessChange = new EventEmitter<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>();
+  @Output() syncingChange = new EventEmitter<KritzelEditorCustomEvent<boolean>>();
+  @Output() loadingChange = new EventEmitter<KritzelEditorCustomEvent<boolean>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -265,6 +267,12 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
   isPublicChange: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangedEvent>>;
 
   awarenessChange: EventEmitter<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>;
+  /**
+   * Emitted while remote changes are being applied to the active workspace. Stays silent when the remote holds nothing new.
+   */
+  syncingChange: EventEmitter<KritzelEditorCustomEvent<boolean>>;
+
+  loadingChange: EventEmitter<KritzelEditorCustomEvent<boolean>>;
 }
 
 
@@ -392,7 +400,7 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
    */
   loadingChange: EventEmitter<KritzelEngineCustomEvent<boolean>>;
   /**
-   * Emitted when remote workspace synchronization is in progress.
+   * Emitted while remote changes are being applied to the active workspace. Stays silent when the remote holds nothing new.
    */
   syncingChange: EventEmitter<KritzelEngineCustomEvent<boolean>>;
 }
