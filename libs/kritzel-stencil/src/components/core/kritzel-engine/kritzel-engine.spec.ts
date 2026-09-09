@@ -245,7 +245,6 @@ describe('KritzelEngine', () => {
       'notificationsChange',
       'contextMenuStateChange',
       'loadingChange',
-      'syncingChange',
     ];
     for (const field of emitterFields) {
       (engine as any)[field] = { emit: jest.fn() };
@@ -293,52 +292,6 @@ describe('KritzelEngine', () => {
       engine.onLicenseKeyChange(undefined);
 
       expect(core.licenseManager.validate).toHaveBeenCalledWith(undefined);
-    });
-  });
-
-  describe('workspace syncing state', () => {
-    it('does not emit syncing true while the browser is offline', async () => {
-      const networkSyncPromise = new Promise<void>(() => {});
-      core.store.objects = { whenNetworkSynced: () => networkSyncPromise };
-      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
-      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: false } });
-
-      await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
-
-      expect((engine as any).syncingChange.emit).not.toHaveBeenCalledWith(true);
-      expect((engine as any).syncingChange.emit).toHaveBeenCalledWith(false);
-
-      if (navigatorDescriptor) {
-        Object.defineProperty(global, 'navigator', navigatorDescriptor);
-      } else {
-        delete (global as { navigator?: unknown }).navigator;
-      }
-    });
-
-    it('emits syncing true while network synchronization is pending and the browser is online', async () => {
-      let resolveNetworkSync!: () => void;
-      const networkSyncPromise = new Promise<void>(resolve => {
-        resolveNetworkSync = resolve;
-      });
-      core.store.objects = { whenNetworkSynced: () => networkSyncPromise };
-      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
-      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: true } });
-
-      await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
-
-      expect((engine as any).syncingChange.emit).toHaveBeenCalledWith(true);
-
-      resolveNetworkSync();
-      await networkSyncPromise;
-      await Promise.resolve();
-
-      expect((engine as any).syncingChange.emit).toHaveBeenLastCalledWith(false);
-
-      if (navigatorDescriptor) {
-        Object.defineProperty(global, 'navigator', navigatorDescriptor);
-      } else {
-        delete (global as { navigator?: unknown }).navigator;
-      }
     });
   });
 

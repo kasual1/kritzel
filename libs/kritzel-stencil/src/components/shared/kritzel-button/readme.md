@@ -21,6 +21,8 @@
 | `buttonClick` | Emitted when the button is clicked | `CustomEvent<void>` |
 
 
+
+
 ## Dependencies
 
 ### Used by
