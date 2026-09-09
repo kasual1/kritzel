@@ -151,9 +151,15 @@ export class HocuspocusSyncProvider implements ISyncProvider {
   private _connectionStatus: ConnectionStatus = 'disconnected';
   private visibilityHandler: (() => void) | null = null;
   private onlineHandler: (() => void) | null = null;
+  private syncedResolvers: (() => void)[] = [];
 
   get awareness(): Awareness | null {
     return this.provider.awareness;
+  }
+
+  /** HocuspocusProvider applies remote updates with itself as the Yjs transaction origin. */
+  get updateOrigin(): unknown {
+    return this.provider;
   }
 
   get connectionStatus(): ConnectionStatus {
@@ -214,6 +220,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
       }
       this.isSynced = true;
       this._connectionStatus = 'synced';
+      this.releaseSyncedWaiters();
       if (!options?.quiet) {
         console.info(`Hocuspocus synced: ${name}`);
       }
@@ -462,6 +469,22 @@ export class HocuspocusSyncProvider implements ISyncProvider {
     return this.connect();
   }
 
+  private releaseSyncedWaiters(): void {
+    const resolvers = this.syncedResolvers;
+    this.syncedResolvers = [];
+    resolvers.forEach(resolve => resolve());
+  }
+
+  async whenSynced(): Promise<void> {
+    if (this.isSynced || this.isDestroyed || this.provider.isSynced) {
+      return;
+    }
+
+    return new Promise<void>(resolve => {
+      this.syncedResolvers.push(resolve);
+    });
+  }
+
   disconnect(): void {
     // Cancel any pending connection attempt
     if (this.connectTimeout) {
@@ -483,6 +506,7 @@ export class HocuspocusSyncProvider implements ISyncProvider {
     this.isConnected = false;
     this.isSynced = false;
     this._connectionStatus = 'disconnected';
+    this.releaseSyncedWaiters();
   }
 
   destroy(): void {
@@ -506,5 +530,6 @@ export class HocuspocusSyncProvider implements ISyncProvider {
     this.isConnected = false;
     this.isSynced = false;
     this._connectionStatus = 'disconnected';
+    this.releaseSyncedWaiters();
   }
 }

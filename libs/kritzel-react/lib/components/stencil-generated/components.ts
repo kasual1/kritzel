@@ -110,7 +110,9 @@ export type KritzelEditorEvents = {
     onLogout: EventName<KritzelEditorCustomEvent<void>>,
     onLogin: EventName<KritzelEditorCustomEvent<LoginEvent>>,
     onIsPublicChange: EventName<KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>>,
-    onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>
+    onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>,
+    onSyncingChange: EventName<KritzelEditorCustomEvent<boolean>>,
+    onLoadingChange: EventName<KritzelEditorCustomEvent<boolean>>
 };
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor>({
@@ -132,7 +134,9 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
         onLogout: 'logout',
         onLogin: 'login',
         onIsPublicChange: 'isPublicChange',
-        onAwarenessChange: 'awarenessChange'
+        onAwarenessChange: 'awarenessChange',
+        onSyncingChange: 'syncingChange',
+        onLoadingChange: 'loadingChange'
     } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
 });

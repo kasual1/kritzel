@@ -142,11 +142,14 @@ export class KritzelAppStateMap {
       console.info(`[Kritzel] App-state network providers connecting in background: ${networkProviders.length}`);
     }
     const networkConnectPromises = networkProviders.map(provider =>
-      provider.connect().catch(err => {
-        if (showSyncProviderInfo) {
-          console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
-        }
-      }),
+      provider
+        .connect()
+        .then(() => provider.whenSynced?.())
+        .catch(err => {
+          if (showSyncProviderInfo) {
+            console.error(`[Kritzel] Network sync provider "${provider.constructor.name}" failed to connect:`, err);
+          }
+        }),
     );
 
     if (networkConnectPromises.length > 0) {

@@ -173,6 +173,10 @@ describe('KritzelEngine', () => {
         findById: jest.fn().mockReturnValue(null),
         destroy: jest.fn(),
         transaction: jest.fn().mockImplementation((cb: () => void) => cb()),
+        whenNetworkSynced: jest.fn().mockResolvedValue(undefined),
+        hasNetworkSyncProvider: false,
+        supportsRemoteChangeDetection: false,
+        onRemoteChangesApplied: jest.fn().mockReturnValue(() => {}),
         undoState: { canUndo: false, canRedo: false, undoStackSize: 0, redoStackSize: 0 },
       },
       state: {
@@ -299,14 +303,18 @@ describe('KritzelEngine', () => {
   describe('workspace syncing state', () => {
     it('does not emit syncing true while the browser is offline', async () => {
       const networkSyncPromise = new Promise<void>(() => {});
-      core.store.objects = { whenNetworkSynced: () => networkSyncPromise };
+      core.store.objects = {
+        whenNetworkSynced: () => networkSyncPromise,
+        hasNetworkSyncProvider: true,
+        supportsRemoteChangeDetection: true,
+        onRemoteChangesApplied: jest.fn().mockReturnValue(() => {}),
+      };
       const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
       Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: false } });
 
       await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
 
-      expect((engine as any).syncingChange.emit).not.toHaveBeenCalledWith(true);
-      expect((engine as any).syncingChange.emit).toHaveBeenCalledWith(false);
+      expect((engine as any).syncingChange.emit).not.toHaveBeenCalled();
 
       if (navigatorDescriptor) {
         Object.defineProperty(global, 'navigator', navigatorDescriptor);
@@ -315,12 +323,85 @@ describe('KritzelEngine', () => {
       }
     });
 
-    it('emits syncing true while network synchronization is pending and the browser is online', async () => {
+    it('does not emit syncing when the remote holds no changes the local document is missing', async () => {
       let resolveNetworkSync!: () => void;
       const networkSyncPromise = new Promise<void>(resolve => {
         resolveNetworkSync = resolve;
       });
-      core.store.objects = { whenNetworkSynced: () => networkSyncPromise };
+      core.store.objects = {
+        whenNetworkSynced: () => networkSyncPromise,
+        hasNetworkSyncProvider: true,
+        supportsRemoteChangeDetection: true,
+        onRemoteChangesApplied: jest.fn().mockReturnValue(() => {}),
+      };
+      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: true } });
+
+      await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
+
+      resolveNetworkSync();
+      await networkSyncPromise;
+      await Promise.resolve();
+
+      expect((engine as any).syncingChange.emit).not.toHaveBeenCalled();
+
+      if (navigatorDescriptor) {
+        Object.defineProperty(global, 'navigator', navigatorDescriptor);
+      } else {
+        delete (global as { navigator?: unknown }).navigator;
+      }
+    });
+
+    it('emits syncing true once remote changes are applied and false when synchronization settles', async () => {
+      let resolveNetworkSync!: () => void;
+      const networkSyncPromise = new Promise<void>(resolve => {
+        resolveNetworkSync = resolve;
+      });
+      let notifyRemoteChanges!: () => void;
+      core.store.objects = {
+        whenNetworkSynced: () => networkSyncPromise,
+        hasNetworkSyncProvider: true,
+        supportsRemoteChangeDetection: true,
+        onRemoteChangesApplied: jest.fn().mockImplementation((callback: () => void) => {
+          notifyRemoteChanges = callback;
+          return () => {};
+        }),
+      };
+      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: true } });
+
+      await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
+
+      expect((engine as any).syncingChange.emit).not.toHaveBeenCalledWith(true);
+
+      notifyRemoteChanges();
+
+      expect((engine as any).syncingChange.emit).toHaveBeenCalledWith(true);
+
+      resolveNetworkSync();
+      await networkSyncPromise;
+      await Promise.resolve();
+
+      expect((engine as any).syncingChange.emit).toHaveBeenLastCalledWith(false);
+
+      if (navigatorDescriptor) {
+        Object.defineProperty(global, 'navigator', navigatorDescriptor);
+      } else {
+        delete (global as { navigator?: unknown }).navigator;
+      }
+    });
+
+    it('emits syncing true immediately when providers cannot report remote changes', async () => {
+      let resolveNetworkSync!: () => void;
+      const networkSyncPromise = new Promise<void>(resolve => {
+        resolveNetworkSync = resolve;
+      });
+      core.store.objects = {
+        whenNetworkSynced: () => networkSyncPromise,
+        hasNetworkSyncProvider: true,
+        supportsRemoteChangeDetection: false,
+        onRemoteChangesApplied: jest.fn().mockReturnValue(() => {}),
+      };
       const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
       Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: true } });
 
@@ -333,6 +414,36 @@ describe('KritzelEngine', () => {
       await Promise.resolve();
 
       expect((engine as any).syncingChange.emit).toHaveBeenLastCalledWith(false);
+
+      if (navigatorDescriptor) {
+        Object.defineProperty(global, 'navigator', navigatorDescriptor);
+      } else {
+        delete (global as { navigator?: unknown }).navigator;
+      }
+    });
+
+    it('ignores remote changes reported by a superseded object map', async () => {
+      const networkSyncPromise = new Promise<void>(() => {});
+      let notifyRemoteChanges!: () => void;
+      const staleObjects = {
+        whenNetworkSynced: () => networkSyncPromise,
+        hasNetworkSyncProvider: true,
+        supportsRemoteChangeDetection: true,
+        onRemoteChangesApplied: jest.fn().mockImplementation((callback: () => void) => {
+          notifyRemoteChanges = callback;
+          return () => {};
+        }),
+      };
+      core.store.objects = staleObjects;
+      const navigatorDescriptor = Object.getOwnPropertyDescriptor(global, 'navigator');
+      Object.defineProperty(global, 'navigator', { configurable: true, value: { onLine: true } });
+
+      await (engine as any).initializeWorkspaceIfNeeded({ id: 'workspace-1' });
+
+      core.store.objects = { ...staleObjects };
+      notifyRemoteChanges();
+
+      expect((engine as any).syncingChange.emit).not.toHaveBeenCalledWith(true);
 
       if (navigatorDescriptor) {
         Object.defineProperty(global, 'navigator', navigatorDescriptor);

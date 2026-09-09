@@ -308,6 +308,9 @@ export class KritzelEditor {
   @Event() login!: EventEmitter<LoginEvent>;
   @Event() isPublicChange!: EventEmitter<IKritzelIsPublicChangedEvent>;
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
+  /** Emitted while remote changes are being applied to the active workspace. Stays silent when the remote holds nothing new. */
+  @Event() syncingChange!: EventEmitter<boolean>;
+  @Event() loadingChange!: EventEmitter<boolean>;
 
   @State() isEngineReady: boolean = false;
   @State() isControlsReady: boolean = false;
