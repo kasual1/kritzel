@@ -103,6 +103,13 @@ Type: `Promise<void>`
 
 
 
+## Slots
+
+| Slot       | Description      |
+| ---------- | ---------------- |
+|            | The default slot |
+| `"footer"` |                  |
+| `"header"` |                  |
 
 
 ## Dependencies

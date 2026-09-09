@@ -156,6 +156,10 @@ export class HocuspocusSyncProvider implements ISyncProvider {
     return this.provider.awareness;
   }
 
+  get rawProvider(): unknown {
+    return this.provider;
+  }
+
   get connectionStatus(): ConnectionStatus {
     return this._connectionStatus;
   }
