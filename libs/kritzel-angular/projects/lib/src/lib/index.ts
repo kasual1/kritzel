@@ -20,6 +20,7 @@ export const DIRECTIVES = [
   d.KritzelOpacitySlider,
   d.KritzelPillTabs,
   d.KritzelSettings,
+  d.KritzelSyncIndicator,
   d.KritzelWatermark,
   d.KritzelZoomPanel
 ];
