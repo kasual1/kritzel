@@ -314,6 +314,8 @@ export class KritzelEditor {
   @Event() login!: EventEmitter<LoginEvent>;
   @Event() isPublicChange!: EventEmitter<IKritzelIsPublicChangeEvent>;
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
+  @Event() syncingChange!: EventEmitter<boolean>;
+  @Event() loadingChange!: EventEmitter<boolean>;
 
   @State() isEngineReady: boolean = false;
   @State() isToolbarReady: boolean = false;
@@ -1096,6 +1098,18 @@ export class KritzelEditor {
     this.awarenessChange.emit(event.detail);
   }
 
+  handleSyncingChange(event: CustomEvent<boolean>) {
+    event.stopPropagation();
+    this.isSyncing = event.detail;
+    this.syncingChange.emit(event.detail);
+  }
+
+  handleLoadingChange(event: CustomEvent<boolean>) {
+    event.stopPropagation();
+    this.isLoadingOverlayVisible = event.detail;
+    this.loadingChange.emit(event.detail);
+  }
+
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
     event.stopPropagation();
     this.clearNotificationDismissAnimationTimer();
@@ -1587,8 +1601,8 @@ export class KritzelEditor {
             onAwarenessChange={event => this.handleAwarenessChange(event)}
             onNotificationsChange={event => this.handleNotificationsChange(event)}
             onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
-            onSyncingChange={event => (this.isSyncing = event.detail)}
-            onLoadingChange={event => (this.isLoadingOverlayVisible = event.detail)}
+            onSyncingChange={event => this.handleSyncingChange(event)}
+            onLoadingChange={event => this.handleLoadingChange(event)}
           ></kritzel-engine>
 
           <kritzel-toolbar
