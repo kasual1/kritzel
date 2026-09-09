@@ -21,13 +21,6 @@
 | `buttonClick` | Emitted when the button is clicked | `CustomEvent<void>` |
 
 
-## Slots
-
-| Slot | Description      |
-| ---- | ---------------- |
-|      | The default slot |
-
-
 ## Dependencies
 
 ### Used by
