@@ -123,13 +123,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
-   * Whether this map runs detached from the rendered canvas.
-   */
-  get isHeadless(): boolean {
-    return this._headless;
-  }
-
-  /**
    * Returns the Yjs Awareness instance, if a network provider is available.
    */
   get awareness(): Awareness | null {

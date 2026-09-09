@@ -109,7 +109,7 @@ export type KritzelEditorEvents = {
     onViewportChange: EventName<KritzelEditorCustomEvent<KritzelViewportState>>,
     onLogout: EventName<KritzelEditorCustomEvent<void>>,
     onLogin: EventName<KritzelEditorCustomEvent<LoginEvent>>,
-    onIsPublicChange: EventName<KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>>,
+    onIsPublicChange: EventName<KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>>,
     onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>,
     onSyncingChange: EventName<KritzelEditorCustomEvent<boolean>>,
     onLoadingChange: EventName<KritzelEditorCustomEvent<boolean>>
