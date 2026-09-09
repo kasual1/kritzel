@@ -2343,6 +2343,12 @@ export class KritzelEngine {
   private _syncConfigRevision: number = 0;
   private _assetStorageConfigRevision: number = 0;
   private _isWorkspaceLoading: boolean = false;
+  private _syncingRequestId: number = 0;
+  private _syncingShowTimeout: ReturnType<typeof setTimeout> | null = null;
+  private _syncingHideTimeout: ReturnType<typeof setTimeout> | null = null;
+  private _syncingVisibleSince: number | null = null;
+  private readonly _syncingShowDelayMs = 300;
+  private readonly _syncingMinimumVisibleMs = 500;
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
   private _previousVisibleCustomElements: Set<string> = new Set();
   private _revealedImageKeys: Set<string> = new Set();
@@ -2367,9 +2373,78 @@ export class KritzelEngine {
     this.loadingChange.emit(this.core.store.state.isLoading);
   }
 
-  private syncSyncingState(isSyncing: boolean): void {
-    this.isSyncing = isSyncing;
-    this.syncingChange.emit(isSyncing);
+  private beginSyncingRequest(): number {
+    this._syncingRequestId++;
+    this.clearSyncingShowTimeout();
+    this.clearSyncingHideTimeout();
+    return this._syncingRequestId;
+  }
+
+  private syncSyncingState(isSyncing: boolean, requestId: number): void {
+    if (requestId !== this._syncingRequestId) {
+      return;
+    }
+
+    if (isSyncing) {
+      this.clearSyncingHideTimeout();
+
+      if (this.isSyncing || this._syncingShowTimeout !== null) {
+        return;
+      }
+
+      this._syncingShowTimeout = setTimeout(() => {
+        this._syncingShowTimeout = null;
+        if (requestId !== this._syncingRequestId || this.isSyncing) {
+          return;
+        }
+
+        this.isSyncing = true;
+        this._syncingVisibleSince = Date.now();
+        this.syncingChange.emit(true);
+      }, this._syncingShowDelayMs);
+      return;
+    }
+
+    this.clearSyncingShowTimeout();
+
+    if (!this.isSyncing) {
+      return;
+    }
+
+    this.clearSyncingHideTimeout();
+    const elapsedMs = Date.now() - (this._syncingVisibleSince ?? Date.now());
+    const remainingVisibleMs = Math.max(0, this._syncingMinimumVisibleMs - elapsedMs);
+    if (remainingVisibleMs === 0) {
+      this.finishSyncingState(requestId);
+      return;
+    }
+
+    this._syncingHideTimeout = setTimeout(() => this.finishSyncingState(requestId), remainingVisibleMs);
+  }
+
+  private finishSyncingState(requestId: number): void {
+    this._syncingHideTimeout = null;
+    if (requestId !== this._syncingRequestId || !this.isSyncing) {
+      return;
+    }
+
+    this.isSyncing = false;
+    this._syncingVisibleSince = null;
+    this.syncingChange.emit(false);
+  }
+
+  private clearSyncingShowTimeout(): void {
+    if (this._syncingShowTimeout !== null) {
+      clearTimeout(this._syncingShowTimeout);
+      this._syncingShowTimeout = null;
+    }
+  }
+
+  private clearSyncingHideTimeout(): void {
+    if (this._syncingHideTimeout !== null) {
+      clearTimeout(this._syncingHideTimeout);
+      this._syncingHideTimeout = null;
+    }
   }
 
   private isNetworkAvailable(): boolean {
@@ -2482,6 +2557,7 @@ export class KritzelEngine {
   disconnectedCallback() {
     this.throttledPointerMoveMulti.cancel();
     this._revealedImageKeys.clear();
+    this.beginSyncingRequest();
 
     if (this._sceneBootstrapTransitionTimer !== null) {
       clearTimeout(this._sceneBootstrapTransitionTimer);
@@ -2784,6 +2860,7 @@ export class KritzelEngine {
 
     this._isWorkspaceLoading = true;
     this.syncLoadingState();
+    const syncingRequestId = this.beginSyncingRequest();
 
     const initializationPromise = this.core.initializeWorkspace(workspace, options);
     this._workspaceInitializationPromise = initializationPromise;
@@ -2797,15 +2874,15 @@ export class KritzelEngine {
       const networkSyncPromise = initializedObjects?.whenNetworkSynced();
 
       if (networkSyncPromise && this.isNetworkAvailable()) {
-        this.syncSyncingState(true);
+        this.syncSyncingState(true, syncingRequestId);
         void networkSyncPromise.finally(() => {
           // Only clear syncing for the currently active object map.
           if (this.core.store.objects === initializedObjects) {
-            this.syncSyncingState(false);
+            this.syncSyncingState(false, syncingRequestId);
           }
         });
       } else {
-        this.syncSyncingState(false);
+        this.syncSyncingState(false, syncingRequestId);
       }
     } finally {
       // Only the most recent init clears loading state to prevent race conditions
