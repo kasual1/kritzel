@@ -91,6 +91,7 @@ describe('KritzelCore', () => {
       totalCount: 0,
       setWorkspaceName: jest.fn(),
       onAwarenessChange: jest.fn(),
+      onSyncingChange: jest.fn(),
       setLocalSelectionBox: jest.fn(),
       clearLocalSelectionBox: jest.fn(),
       setLocalUser: jest.fn(),
