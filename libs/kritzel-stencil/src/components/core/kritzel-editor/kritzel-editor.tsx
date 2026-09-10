@@ -1033,6 +1033,7 @@ export class KritzelEditor {
   }
 
   handleIsLoadingChange(event: CustomEvent<boolean>) {
+    console.log('isLoadingChange event:', event.detail);
     event.stopPropagation();
     this.isLoadingOverlayVisible = event.detail;
   }
