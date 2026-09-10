@@ -1,5 +1,4 @@
 import { test, expect } from '../../fixtures/editor.fixture';
-import type { Locator } from '@playwright/test';
 
 async function waitForExamplePage(editorPage: { page: import('@playwright/test').Page; waitForReady: () => Promise<void> }) {
   const { page } = editorPage;
@@ -68,17 +67,11 @@ async function waitForVisualSettle(page: import('@playwright/test').Page) {
   await page.waitForTimeout(400);
 }
 
-async function getPrimaryCanvas(editorPage: { page: import('@playwright/test').Page }): Promise<Locator> {
-  if ((await editorPage.page.locator('kritzel-editor').count()) > 0) {
-    return editorPage.page.locator('kritzel-editor').first();
-  }
-
-  return editorPage.page.locator('kritzel-engine').first();
-}
-
 // Shared body for each example's screenshot test, invoked individually below so every page has its own, independently runnable test.
+// Captures the whole viewport (not just the kritzel-editor/engine element) because these example pages
+// pair the canvas with a sidebar/info panel, and the full layout is what should be regression-tested.
 async function expectExampleScreenshot(
-  editorPage: Parameters<typeof waitForExamplePage>[0] & Parameters<typeof getPrimaryCanvas>[0],
+  editorPage: Parameters<typeof waitForExamplePage>[0],
   route: string,
   routeName: string,
 ) {
@@ -86,8 +79,7 @@ async function expectExampleScreenshot(
   await waitForExamplePage(editorPage);
   await waitForVisualSettle(editorPage.page);
 
-  const canvas = await getPrimaryCanvas(editorPage);
-  await expect(canvas).toHaveScreenshot(`example-${routeName}.png`);
+  await expect(editorPage.page).toHaveScreenshot(`example-${routeName}.png`);
 }
 
 test.describe('Example Pages Visual Regression', () => {
