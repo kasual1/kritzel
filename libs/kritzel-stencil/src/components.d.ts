@@ -453,10 +453,6 @@ export namespace Components {
          */
         "isMoreMenuVisible": boolean;
         /**
-          * @default false
-         */
-        "isObjectDistanceFadingActive": boolean;
-        /**
           * @default true
          */
         "isPanningEnabled": boolean;
@@ -2920,10 +2916,6 @@ declare namespace LocalJSX {
          */
         "isMoreMenuVisible"?: boolean;
         /**
-          * @default false
-         */
-        "isObjectDistanceFadingActive"?: boolean;
-        /**
           * @default true
          */
         "isPanningEnabled"?: boolean;
@@ -3864,7 +3856,6 @@ declare namespace LocalJSX {
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
         "isZoomPanelVisible": boolean;
-        "isObjectDistanceFadingActive": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
     }
