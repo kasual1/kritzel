@@ -78,7 +78,7 @@ export default defineConfig({
     // Visual regression specs run against the docs-facing demo apps.
     // Named to match the pre-existing screenshot baseline paths (e2e/screenshots/<name>/**).
     {
-      name: 'angular',
+      name: 'demo-angular',
       testDir: './tests',
       testMatch: [VISUAL_SPEC_PATTERN],
       use: {
@@ -87,7 +87,7 @@ export default defineConfig({
       },
     },
     {
-      name: 'react',
+      name: 'demo-react',
       testDir: './tests',
       testMatch: [VISUAL_SPEC_PATTERN],
       use: {
@@ -96,7 +96,7 @@ export default defineConfig({
       },
     },
     {
-      name: 'vue',
+      name: 'demo-vue',
       testDir: './tests',
       testMatch: [VISUAL_SPEC_PATTERN],
       use: {
@@ -129,21 +129,21 @@ export default defineConfig({
       cwd: '..',
     },
     {
-      project: 'angular',
+      project: 'demo-angular',
       command: 'npm run start:e2e:prod -w demos/angular',
       port: ANGULAR_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
-      project: 'react',
+      project: 'demo-react',
       command: 'npm run start:e2e:prod -w demos/react',
       port: REACT_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
-      project: 'vue',
+      project: 'demo-vue',
       command: 'npm run start:e2e:prod -w demos/vue',
       port: VUE_PORT,
       reuseExistingServer: !process.env.CI,
