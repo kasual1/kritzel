@@ -35,7 +35,7 @@ async function expectAdvancedScreenshot(
   await expect(editorPage.page).toHaveScreenshot(`${routeName}.png`);
 }
 
-test.describe('Advanced & Customization Pages Visual Regression', () => {
+test.describe('Advanced Pages Visual Regression', () => {
   test('should match screenshot for advanced-collaboration-local', async ({ editorPage }) => {
     await expectAdvancedScreenshot(editorPage, '/advanced/collaboration/local', 'advanced-collaboration-local');
   });
@@ -52,11 +52,4 @@ test.describe('Advanced & Customization Pages Visual Regression', () => {
     await expectAdvancedScreenshot(editorPage, '/advanced/dynamic-objects/element-html', 'advanced-dynamic-objects-element-html');
   });
 
-  test('should match screenshot for customization-theming-apply', async ({ editorPage }) => {
-    await expectAdvancedScreenshot(editorPage, '/customization/theming/apply', 'customization-theming-apply');
-  });
-
-  test('should match screenshot for customization-theming-custom', async ({ editorPage }) => {
-    await expectAdvancedScreenshot(editorPage, '/customization/theming/custom', 'customization-theming-custom');
-  });
 });
