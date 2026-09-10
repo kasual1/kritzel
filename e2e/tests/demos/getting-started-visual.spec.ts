@@ -1,7 +1,5 @@
 import { test, expect } from '../../fixtures/editor.fixture';
 
-const ROUTE = '/getting-started/quick-start';
-
 async function waitForPageReady(editorPage: { page: import('@playwright/test').Page; waitForReady: () => Promise<void> }) {
   const { page } = editorPage;
 
@@ -69,10 +67,18 @@ async function waitForVisualSettle(page: import('@playwright/test').Page) {
 
 test.describe('Getting Started Visual Regression', () => {
   test('should match screenshot for getting started page', async ({ editorPage }) => {
-    await editorPage.goto(ROUTE);
+    await editorPage.goto('/getting-started/quick-start');
     await waitForPageReady(editorPage);
     await waitForVisualSettle(editorPage.page);
 
     await expect(editorPage.page).toHaveScreenshot('getting-started.png');
+  });
+
+  test('should match screenshot for basic usage page', async ({ editorPage }) => {
+    await editorPage.goto('/getting-started/basic-usage');
+    await waitForPageReady(editorPage);
+    await waitForVisualSettle(editorPage.page);
+
+    await expect(editorPage.page).toHaveScreenshot('basic-usage.png');
   });
 });
