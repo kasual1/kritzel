@@ -42,7 +42,6 @@ import LocalizationCustomPage from './pages/customization/localization/Localizat
 import ObjectExplorerPage from './pages/examples/ObjectExplorerPage.vue'
 import BlueprintDefectMapperPage from './pages/examples/BlueprintDefectMapperPage.vue'
 import SlideshowPresentationPage from './pages/examples/SlideshowPresentationPage.vue'
-import InfiniteCanvasGalleryPage from './pages/examples/InfiniteCanvasGalleryPage.vue'
 import ImageAnnotationStudioPage from './pages/examples/ImageAnnotationStudioPage.vue'
 
 export const router = createRouter({
@@ -179,7 +178,6 @@ export const router = createRouter({
         { path: 'object-explorer', component: ObjectExplorerPage },
         { path: 'blueprint-defect-mapper', component: BlueprintDefectMapperPage },
         { path: 'slideshow-presentation', component: SlideshowPresentationPage },
-        { path: 'infinite-canvas-gallery', component: InfiniteCanvasGalleryPage },
         { path: 'image-annotation-studio', component: ImageAnnotationStudioPage },
       ],
     },
