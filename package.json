@@ -33,7 +33,7 @@
     "license:sign": "node ./scripts/license/sign-license.js",
     "license:verify": "node ./scripts/license/verify-license.js",
     "test": "npm run test -w libs/kritzel-stencil",
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build -w libs/kritzel-stencil && npm run build -w libs/kritzel-angular && npm run build -w libs/kritzel-react && npm run build -w libs/kritzel-vue",
     "publish": "npm run release --workspaces --if-present",
     "start": "npm run start -w libs/kritzel-stencil",
     "ngrok:stencil": "node ./ngrok/start.js --port=3333 --name=stencil-lib",
