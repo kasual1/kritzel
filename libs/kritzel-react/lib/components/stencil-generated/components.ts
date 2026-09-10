@@ -31,7 +31,6 @@ import { KritzelNumericInput as KritzelNumericInputElement, defineCustomElement 
 import { KritzelOpacitySlider as KritzelOpacitySliderElement, defineCustomElement as defineKritzelOpacitySlider } from "../../../../kritzel-stencil/dist/components/kritzel-opacity-slider.js";
 import { KritzelPillTabs as KritzelPillTabsElement, defineCustomElement as defineKritzelPillTabs } from "../../../../kritzel-stencil/dist/components/kritzel-pill-tabs.js";
 import { KritzelSettings as KritzelSettingsElement, defineCustomElement as defineKritzelSettings } from "../../../../kritzel-stencil/dist/components/kritzel-settings.js";
-import { KritzelSyncIndicator as KritzelSyncIndicatorElement, defineCustomElement as defineKritzelSyncIndicator } from "../../../../kritzel-stencil/dist/components/kritzel-sync-indicator.js";
 import { KritzelWatermark as KritzelWatermarkElement, defineCustomElement as defineKritzelWatermark } from "../../../../kritzel-stencil/dist/components/kritzel-watermark.js";
 import { KritzelZoomPanel as KritzelZoomPanelElement, defineCustomElement as defineKritzelZoomPanel } from "../../../../kritzel-stencil/dist/components/kritzel-zoom-panel.js";
 
@@ -110,8 +109,7 @@ export type KritzelEditorEvents = {
     onLogout: EventName<KritzelEditorCustomEvent<void>>,
     onLogin: EventName<KritzelEditorCustomEvent<LoginEvent>>,
     onIsPublicChange: EventName<KritzelEditorCustomEvent<IKritzelIsPublicChangedEvent>>,
-    onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>,
-    onIsSyncing: EventName<KritzelEditorCustomEvent<boolean>>
+    onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>
 };
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor>({
@@ -133,8 +131,7 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
         onLogout: 'logout',
         onLogin: 'login',
         onIsPublicChange: 'isPublicChange',
-        onAwarenessChange: 'awarenessChange',
-        onIsSyncing: 'isSyncing'
+        onAwarenessChange: 'awarenessChange'
     } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
 });
@@ -154,7 +151,6 @@ export type KritzelEngineEvents = {
     onObjectsInViewportChange: EventName<KritzelEngineCustomEvent<ObjectsInViewportChangeEvent>>,
     onViewportChange: EventName<KritzelEngineCustomEvent<KritzelViewportState>>,
     onAwarenessChange: EventName<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>,
-    onIsSyncing: EventName<KritzelEngineCustomEvent<boolean>>,
     onNotificationsChange: EventName<KritzelEngineCustomEvent<KritzelNotification>>,
     onContextMenuStateChange: EventName<KritzelEngineCustomEvent<KritzelContextMenuState>>,
     onLoadingChange: EventName<KritzelEngineCustomEvent<boolean>>
@@ -180,7 +176,6 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
         onObjectsInViewportChange: 'objectsInViewportChange',
         onViewportChange: 'viewportChange',
         onAwarenessChange: 'awarenessChange',
-        onIsSyncing: 'isSyncing',
         onNotificationsChange: 'notificationsChange',
         onContextMenuStateChange: 'contextMenuStateChange',
         onLoadingChange: 'loadingChange'
@@ -327,17 +322,6 @@ export const KritzelSettings: StencilReactComponent<KritzelSettingsElement, Krit
     react: React,
     events: { onSettingsChange: 'settingsChange' } as KritzelSettingsEvents,
     defineCustomElement: defineKritzelSettings
-});
-
-export type KritzelSyncIndicatorEvents = NonNullable<unknown>;
-
-export const KritzelSyncIndicator: StencilReactComponent<KritzelSyncIndicatorElement, KritzelSyncIndicatorEvents, Components.KritzelSyncIndicator> = /*@__PURE__*/ createComponent<KritzelSyncIndicatorElement, KritzelSyncIndicatorEvents, Components.KritzelSyncIndicator>({
-    tagName: 'kritzel-sync-indicator',
-    elementClass: KritzelSyncIndicatorElement,
-    // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
-    react: React,
-    events: {} as KritzelSyncIndicatorEvents,
-    defineCustomElement: defineKritzelSyncIndicator
 });
 
 export type KritzelWatermarkEvents = NonNullable<unknown>;
