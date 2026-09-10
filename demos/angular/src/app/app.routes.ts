@@ -58,7 +58,6 @@ import { LocalizationCustomComponent } from './pages/customization/localization/
 import { ObjectExplorerComponent } from './pages/examples/object-explorer.component';
 import { BlueprintDefectMapperComponent } from './pages/examples/blueprint-defect-mapper.component';
 import { SlideshowPresentationComponent } from './pages/examples/slideshow-presentation.component';
-import { InfiniteCanvasGalleryComponent } from './pages/examples/infinite-canvas-gallery.component';
 import { ImageAnnotationStudioComponent } from './pages/examples/image-annotation-studio.component';
 
 export const routes: Routes = [
@@ -216,7 +215,6 @@ export const routes: Routes = [
       { path: 'object-explorer', component: ObjectExplorerComponent },
       { path: 'blueprint-defect-mapper', component: BlueprintDefectMapperComponent },
       { path: 'slideshow-presentation', component: SlideshowPresentationComponent },
-      { path: 'infinite-canvas-gallery', component: InfiniteCanvasGalleryComponent },
       { path: 'image-annotation-studio', component: ImageAnnotationStudioComponent },
     ],
   },

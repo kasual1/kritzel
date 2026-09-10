@@ -42,7 +42,6 @@ import { LocalizationCustomPage } from "./pages/customization/localization/Local
 import { ObjectExplorerPage } from "./pages/examples/ObjectExplorerPage";
 import { BlueprintDefectMapperPage } from "./pages/examples/BlueprintDefectMapperPage";
 import { SlideshowPresentationPage } from "./pages/examples/SlideshowPresentationPage";
-import { InfiniteCanvasGalleryPage } from "./pages/examples/InfiniteCanvasGalleryPage";
 import { ImageAnnotationStudioPage } from "./pages/examples/ImageAnnotationStudioPage";
 import { WebsiteHeroPage } from "./pages/website/WebsiteHeroPage";
 import { WebsiteHeroPageMobile } from "./pages/website/WebsiteHeroPageMobile";
@@ -100,7 +99,6 @@ function App() {
         <Route path="/examples/object-explorer" element={<ObjectExplorerPage />} />
         <Route path="/examples/blueprint-defect-mapper" element={<BlueprintDefectMapperPage />} />
         <Route path="/examples/slideshow-presentation" element={<SlideshowPresentationPage />} />
-        <Route path="/examples/infinite-canvas-gallery" element={<InfiniteCanvasGalleryPage />} />
         <Route path="/examples/image-annotation-studio" element={<ImageAnnotationStudioPage />} />
 
         <Route path="/website/hero" element={<WebsiteHeroPage />} />
