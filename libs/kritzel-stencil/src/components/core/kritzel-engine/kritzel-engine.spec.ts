@@ -172,12 +172,14 @@ describe('KritzelEngine', () => {
         clearCursorPosition: jest.fn(),
         findById: jest.fn().mockReturnValue(null),
         destroy: jest.fn(),
+        whenNetworkSynced: jest.fn().mockResolvedValue(undefined),
         transaction: jest.fn().mockImplementation((cb: () => void) => cb()),
         undoState: { canUndo: false, canRedo: false, undoStackSize: 0, redoStackSize: 0 },
       },
       state: {
         isEnabled: true,
         isReady: true,
+        isLoading: false,
         isContextMenuVisible: false,
         contextMenuItems: [],
         contextMenuX: 0,
@@ -244,7 +246,7 @@ describe('KritzelEngine', () => {
       'awarenessChange',
       'notificationsChange',
       'contextMenuStateChange',
-      'loadingChange',
+      'isLoadingChange',
     ];
     for (const field of emitterFields) {
       (engine as any)[field] = { emit: jest.fn() };
@@ -367,6 +369,100 @@ describe('KritzelEngine', () => {
       });
 
       expect(core.appStateMap.whenNetworkSynced).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('loading lifecycle', () => {
+    it('does not emit loading while waiting for the workspace list', async () => {
+      let resolveNetworkSync!: () => void;
+      const networkSyncPromise = new Promise<void>(resolve => {
+        resolveNetworkSync = resolve;
+      });
+
+      core.appStateMap.hasNetworkSyncProvider = true;
+      core.appStateMap.whenNetworkSynced.mockReturnValue(networkSyncPromise);
+      core.getWorkspaces.mockReturnValue([]);
+
+      const waitPromise = (engine as any).waitForRemoteAppStateIfEmpty();
+
+      await Promise.resolve();
+      expect((engine as any).isLoadingChange.emit).not.toHaveBeenCalled();
+
+      resolveNetworkSync();
+      await waitPromise;
+
+      expect((engine as any).isLoadingChange.emit).not.toHaveBeenCalled();
+    });
+
+    it('emits loading until the selected workspace object map is synchronized', async () => {
+      let resolveObjectSync!: () => void;
+      const objectSyncPromise = new Promise<void>(resolve => {
+        resolveObjectSync = resolve;
+      });
+      core.store.objects.whenNetworkSynced.mockReturnValue(objectSyncPromise);
+
+      const initializationPromise = (engine as any).initializeWorkspaceIfNeeded(new KritzelWorkspace('workspace-1', 'Workspace 1'));
+
+      await Promise.resolve();
+      expect((engine as any).isLoadingChange.emit).toHaveBeenCalledWith(true);
+      expect((engine as any).isLoadingChange.emit).toHaveBeenCalledTimes(1);
+      expect(core.store.objects.whenNetworkSynced).toHaveBeenCalledTimes(1);
+
+      resolveObjectSync();
+      await initializationPromise;
+
+      expect((engine as any).isLoadingChange.emit).toHaveBeenLastCalledWith(false);
+      expect((engine as any).isLoadingChange.emit).toHaveBeenCalledTimes(2);
+    });
+
+    it('does not let a stale workspace initialization clear loading for a newer workspace', async () => {
+      let resolveInitializationA!: () => void;
+      let resolveInitializationB!: () => void;
+      let resolveObjectSyncA!: () => void;
+      let resolveObjectSyncB!: () => void;
+      const objectMapA = {
+        whenNetworkSynced: jest.fn(() => new Promise<void>(resolve => {
+          resolveObjectSyncA = resolve;
+        })),
+      };
+      const objectMapB = {
+        whenNetworkSynced: jest.fn(() => new Promise<void>(resolve => {
+          resolveObjectSyncB = resolve;
+        })),
+      };
+
+      core.initializeWorkspace
+        .mockImplementationOnce(() => {
+          core.store.objects = objectMapA;
+          return new Promise<void>(resolve => {
+            resolveInitializationA = resolve;
+          });
+        })
+        .mockImplementationOnce(() => {
+          core.store.objects = objectMapB;
+          return new Promise<void>(resolve => {
+            resolveInitializationB = resolve;
+          });
+        });
+
+      const initializationA = (engine as any).initializeWorkspaceIfNeeded(new KritzelWorkspace('workspace-a', 'Workspace A'));
+      const initializationB = (engine as any).initializeWorkspaceIfNeeded(new KritzelWorkspace('workspace-b', 'Workspace B'));
+
+      resolveInitializationA();
+      await Promise.resolve();
+      resolveObjectSyncA();
+      await Promise.resolve();
+
+      expect((engine as any).isLoadingChange.emit).toHaveBeenCalledTimes(1);
+      expect((engine as any).isLoadingChange.emit).toHaveBeenLastCalledWith(true);
+
+      resolveInitializationB();
+  await Promise.resolve();
+      resolveObjectSyncB();
+      await Promise.all([initializationA, initializationB]);
+
+      expect((engine as any).isLoadingChange.emit).toHaveBeenLastCalledWith(false);
+      expect((engine as any).isLoadingChange.emit).toHaveBeenCalledTimes(2);
     });
   });
 

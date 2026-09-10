@@ -23,6 +23,14 @@
 | `valueChanged` |             | `CustomEvent<string>` |
 
 
+## Slots
+
+| Slot       | Description |
+| ---------- | ----------- |
+| `"prefix"` |             |
+| `"suffix"` |             |
+
+
 ## Dependencies
 
 ### Used by

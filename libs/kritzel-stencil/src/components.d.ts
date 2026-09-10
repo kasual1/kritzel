@@ -449,11 +449,6 @@ export namespace Components {
          */
         "isControlsVisible": boolean;
         /**
-          * Whether the editor is in a loading state. When true, a loading overlay is displayed.
-          * @default false
-         */
-        "isLoading": boolean;
-        /**
           * @default true
          */
         "isMoreMenuVisible": boolean;
@@ -862,11 +857,6 @@ export namespace Components {
           * @throws Error if the JSON is invalid or the format version is incompatible.
          */
         "importFromJson": (json: string) => Promise<void>;
-        /**
-          * External loading state. Combined with internal workspace-loading state to drive the overlay.
-          * @default false
-         */
-        "isLoading": boolean;
         /**
           * When true, objects fade based on distance to the viewport center.
           * @default false
@@ -2023,7 +2013,7 @@ declare global {
         "awarenessChange": Map<number, Record<string, any>>;
         "notificationsChange": KritzelNotification;
         "contextMenuStateChange": KritzelContextMenuState;
-        "loadingChange": boolean;
+        "isLoadingChange": boolean;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2926,11 +2916,6 @@ declare namespace LocalJSX {
          */
         "isControlsVisible"?: boolean;
         /**
-          * Whether the editor is in a loading state. When true, a loading overlay is displayed.
-          * @default false
-         */
-        "isLoading"?: boolean;
-        /**
           * @default true
          */
         "isMoreMenuVisible"?: boolean;
@@ -3067,11 +3052,6 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * External loading state. Combined with internal workspace-loading state to drive the overlay.
-          * @default false
-         */
-        "isLoading"?: boolean;
-        /**
           * When true, objects fade based on distance to the viewport center.
           * @default false
          */
@@ -3129,9 +3109,9 @@ declare namespace LocalJSX {
          */
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
         /**
-          * Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes.
+          * Emitted while the selected workspace's objects are being initialized and synchronized.
          */
-        "onLoadingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
+        "onIsLoadingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
         /**
           * Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.
          */
@@ -3885,7 +3865,6 @@ declare namespace LocalJSX {
         "isMoreMenuVisible": boolean;
         "isZoomPanelVisible": boolean;
         "isObjectDistanceFadingActive": boolean;
-        "isLoading": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
     }
@@ -3906,7 +3885,6 @@ declare namespace LocalJSX {
         "viewportBoundaryBottom": number;
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
-        "isLoading": boolean;
     }
     interface KritzelExportAttributes {
         "workspaceName": string;

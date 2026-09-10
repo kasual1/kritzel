@@ -317,13 +317,6 @@ export class KritzelEngine {
   /** When false, Ctrl+wheel events do not zoom the viewport. */
   @Prop() isZoomingEnabled: boolean = true;
 
-  /** External loading state. Combined with internal workspace-loading state to drive the overlay. */
-  @Prop() isLoading: boolean = false;
-  @Watch('isLoading')
-  onIsLoadingChange() {
-    this.syncLoadingState();
-  }
-
   /** Emitted when the engine has fully initialized and is ready for interaction. */
   @Event() isEngineReady!: EventEmitter<KritzelEngineState>;
 
@@ -372,8 +365,8 @@ export class KritzelEngine {
   /** Emitted when context-menu visibility, items, or position changes. */
   @Event() contextMenuStateChange!: EventEmitter<KritzelContextMenuState>;
 
-  /** Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes. */
-  @Event() loadingChange!: EventEmitter<boolean>;
+  /** Emitted while the selected workspace's objects are being initialized and synchronized. */
+  @Event() isLoadingChange!: EventEmitter<boolean>;
 
   @State() forceUpdate: number = 0;
 
@@ -2338,7 +2331,6 @@ export class KritzelEngine {
   private _syncInitPromise: Promise<void> | null = null;
   private _syncConfigRevision: number = 0;
   private _assetStorageConfigRevision: number = 0;
-  private _isWorkspaceLoading: boolean = false;
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
   private _previousVisibleCustomElements: Set<string> = new Set();
   private _revealedImageKeys: Set<string> = new Set();
@@ -2358,9 +2350,13 @@ export class KritzelEngine {
   private readonly _objectDistanceFadeCloseMaxScale = 4;
   private readonly _objectDistanceFadeCloseMinOpacity = 0;
 
-  private syncLoadingState(): void {
-    this.core.store.state.isLoading = this._isWorkspaceLoading || this.isLoading;
-    this.loadingChange.emit(this.core.store.state.isLoading);
+  private setLoadingState(isLoading: boolean): void {
+    if (this.core.store.state.isLoading === isLoading) {
+      return;
+    }
+
+    this.core.store.state.isLoading = isLoading;
+    this.isLoadingChange.emit(isLoading);
   }
 
   private isNetworkAvailable(): boolean {
@@ -2535,8 +2531,6 @@ export class KritzelEngine {
       this.core.store.state.debugInfo = this.debugInfo;
       this.core.assetResolver.setShowInfo(this.debugInfo.showAssetResolverInfo);
     }
-    this._isWorkspaceLoading = true;
-    this.syncLoadingState();
   }
 
   async componentDidLoad() {
@@ -2702,15 +2696,7 @@ export class KritzelEngine {
       return;
     }
 
-    this._isWorkspaceLoading = true;
-    this.syncLoadingState();
-
-    try {
-      await this.core.appStateMap.whenNetworkSynced();
-    } finally {
-      this._isWorkspaceLoading = false;
-      this.syncLoadingState();
-    }
+    await this.core.appStateMap.whenNetworkSynced();
   }
 
   private resolveStartupWorkspace(): KritzelWorkspace | undefined {
@@ -2773,23 +2759,22 @@ export class KritzelEngine {
       return;
     }
 
-    this._isWorkspaceLoading = true;
-    this.syncLoadingState();
-
+    this.setLoadingState(true);
     const initializationPromise = this.core.initializeWorkspace(workspace, options);
+    const objectsMap = this.core.store.objects;
     this._workspaceInitializationPromise = initializationPromise;
     this._workspaceInitializationTargetKey = targetKey;
 
     try {
       await initializationPromise;
+      await objectsMap?.whenNetworkSynced();
 
     } finally {
       // Only the most recent init clears loading state to prevent race conditions
       if (this._workspaceInitializationPromise === initializationPromise) {
         this._workspaceInitializationPromise = null;
         this._workspaceInitializationTargetKey = null;
-        this._isWorkspaceLoading = false;
-        this.syncLoadingState();
+        this.setLoadingState(false);
       }
     }
   }
