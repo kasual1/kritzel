@@ -366,9 +366,6 @@ export class KritzelEngine {
   /** Emitted when the awareness state changes (remote user cursors, presence). */
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
 
-  /** Emitted when a remote sync starts (`true`, data differs from the local copy) or finishes (`false`). */
-  @Event() isSyncing!: EventEmitter<boolean>;
-
   /** Emitted when notifications change. */
   @Event() notificationsChange!: EventEmitter<KritzelNotification>;
 
@@ -2838,10 +2835,6 @@ export class KritzelEngine {
 
   emitAwarenessChange(states: Map<number, Record<string, any>>) {
     this.awarenessChange.emit(states);
-  }
-
-  emitIsSyncing(isSyncing: boolean) {
-    this.isSyncing.emit(isSyncing);
   }
 
   emitObjectsInViewportChange() {
