@@ -34,12 +34,16 @@ const mockYdocGetMap = jest.fn().mockReturnValue({
   forEach: mockMapForEach,
 });
 const mockYdocDestroy = jest.fn();
+const mockYdocOn = jest.fn();
+const mockYdocOff = jest.fn();
 
 jest.mock('yjs', () => ({
   Doc: jest.fn().mockImplementation(() => ({
     transact: mockYdocTransact,
     getMap: mockYdocGetMap,
     destroy: mockYdocDestroy,
+    on: mockYdocOn,
+    off: mockYdocOff,
   })),
   UndoManager: jest.fn().mockImplementation(() => ({
     on: mockUndoManagerOn,

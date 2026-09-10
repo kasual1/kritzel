@@ -23,7 +23,6 @@ import { defineCustomElement as defineKritzelNumericInput } from '../../kritzel-
 import { defineCustomElement as defineKritzelOpacitySlider } from '../../kritzel-stencil/dist/components/kritzel-opacity-slider.js';
 import { defineCustomElement as defineKritzelPillTabs } from '../../kritzel-stencil/dist/components/kritzel-pill-tabs.js';
 import { defineCustomElement as defineKritzelSettings } from '../../kritzel-stencil/dist/components/kritzel-settings.js';
-import { defineCustomElement as defineKritzelSyncIndicator } from '../../kritzel-stencil/dist/components/kritzel-sync-indicator.js';
 import { defineCustomElement as defineKritzelWatermark } from '../../kritzel-stencil/dist/components/kritzel-watermark.js';
 import { defineCustomElement as defineKritzelZoomPanel } from '../../kritzel-stencil/dist/components/kritzel-zoom-panel.js';
 
@@ -116,7 +115,6 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'assetStorageConfig',
   'cursorTarget',
   'loginConfig',
-  'isLoading',
   'editorId',
   'activeWorkspaceId',
   'workspaces',
@@ -180,7 +178,6 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'debugInfo',
   'isPanningEnabled',
   'isZoomingEnabled',
-  'isLoading',
   'isEngineReady',
   'activeToolChange',
   'workspacesChange',
@@ -197,8 +194,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'awarenessChange',
   'notificationsChange',
   'contextMenuStateChange',
-  'loadingChange',
-  'syncingChange'
+  'isLoadingChange'
 ], [
   'isEngineReady',
   'activeToolChange',
@@ -216,8 +212,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'awarenessChange',
   'notificationsChange',
   'contextMenuStateChange',
-  'loadingChange',
-  'syncingChange'
+  'isLoadingChange'
 ]);
 
 
@@ -338,12 +333,6 @@ export const KritzelSettings: StencilVueComponent<JSX.KritzelSettings> = /*@__PU
   'settingsChange'
 ], [
   'settingsChange'
-]);
-
-
-export const KritzelSyncIndicator: StencilVueComponent<JSX.KritzelSyncIndicator> = /*@__PURE__*/ defineContainer<JSX.KritzelSyncIndicator>('kritzel-sync-indicator', defineKritzelSyncIndicator, [
-  'visible',
-  'text'
 ]);
 
 

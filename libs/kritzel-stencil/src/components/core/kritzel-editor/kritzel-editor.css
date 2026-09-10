@@ -33,7 +33,7 @@ kritzel-editor{
 
 kritzel-toolbar {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   left: 0;
   right: 0;
   margin-inline: auto;
@@ -49,7 +49,7 @@ kritzel-toolbar.keyboard-open {
 
 .top-left-buttons {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   top: var(--kritzel-editor-top-left-buttons-top, 14px);
   left: var(--kritzel-editor-top-left-buttons-left, 14px);
   display: flex;
@@ -112,7 +112,7 @@ kritzel-toolbar.keyboard-open {
 
 .top-right-buttons {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   top: var(--kritzel-editor-top-right-buttons-top, 14px);
   right: var(--kritzel-editor-top-right-buttons-right, 14px);
   display: flex;
@@ -122,7 +122,7 @@ kritzel-toolbar.keyboard-open {
 
 .bottom-left-buttons {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   left: var(--kritzel-editor-top-left-buttons-left, 14px);
   bottom: var(--kritzel-editor-toolbar-bottom, 14px);
   display: flex;

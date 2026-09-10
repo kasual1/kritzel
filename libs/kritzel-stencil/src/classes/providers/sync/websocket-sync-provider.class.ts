@@ -62,6 +62,10 @@ export class WebSocketSyncProvider implements ISyncProvider {
     return this.provider.awareness;
   }
 
+  get rawProvider(): unknown {
+    return this.provider;
+  }
+
   constructor(docName: string, doc: Y.Doc, options?: WebSocketOptions) {
     const url = options?.url || 'ws://localhost:1234';
     const roomName = options?.roomName || docName;

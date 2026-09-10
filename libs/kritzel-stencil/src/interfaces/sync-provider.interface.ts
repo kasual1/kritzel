@@ -27,6 +27,14 @@ export interface ISyncProvider {
   readonly awareness?: Awareness | null;
 
   /**
+   * The underlying third-party provider instance (e.g. `WebsocketProvider`, `HocuspocusProvider`)
+   * used as the Yjs transaction origin for updates it applies. Exposed so callers can
+   * distinguish genuine remote-origin transactions from local-only providers (IndexedDB,
+   * BroadcastChannel), which don't tag their transactions with a recognizable origin.
+   */
+  readonly rawProvider?: unknown;
+
+  /**
    * Initialize and connect the provider
    */
   connect(): Promise<void>;

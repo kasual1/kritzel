@@ -697,4 +697,93 @@ describe('KritzelEditor', () => {
       expect((component as any).resolvedMoreMenuItems).toStrictEqual(customItems);
     });
   });
+
+  describe('Loading Overlay State Handling', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      component.disconnectedCallback();
+      jest.useRealTimers();
+    });
+
+    it('does not set isLoadingOverlayVisible to true immediately', () => {
+      const event = { stopPropagation: jest.fn(), detail: true } as any;
+
+      component.handleIsLoadingChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+      expect(component.isLoadingOverlayVisible).toBe(false);
+    });
+
+    it('sets isLoadingOverlayVisible to true after 300ms', () => {
+      const event = { stopPropagation: jest.fn(), detail: true } as any;
+
+      component.handleIsLoadingChange(event);
+      jest.advanceTimersByTime(299);
+      expect(component.isLoadingOverlayVisible).toBe(false);
+
+      jest.advanceTimersByTime(1);
+      expect(component.isLoadingOverlayVisible).toBe(true);
+    });
+
+    it('does not set isLoadingOverlayVisible to true if false is emitted within 300ms', () => {
+      const trueEvent = { stopPropagation: jest.fn(), detail: true } as any;
+      const falseEvent = { stopPropagation: jest.fn(), detail: false } as any;
+
+      component.handleIsLoadingChange(trueEvent);
+      jest.advanceTimersByTime(200);
+
+      component.handleIsLoadingChange(falseEvent);
+      expect(component.isLoadingOverlayVisible).toBe(false);
+
+      jest.advanceTimersByTime(500);
+      expect(component.isLoadingOverlayVisible).toBe(false);
+    });
+
+    it('keeps isLoadingOverlayVisible true for at least 400ms once visible', () => {
+      const trueEvent = { stopPropagation: jest.fn(), detail: true } as any;
+      const falseEvent = { stopPropagation: jest.fn(), detail: false } as any;
+
+      component.handleIsLoadingChange(trueEvent);
+      jest.advanceTimersByTime(300);
+      expect(component.isLoadingOverlayVisible).toBe(true);
+
+      // Loading finishes after 100ms of display time
+      jest.advanceTimersByTime(100);
+      component.handleIsLoadingChange(falseEvent);
+      expect(component.isLoadingOverlayVisible).toBe(true);
+
+      jest.advanceTimersByTime(299);
+      expect(component.isLoadingOverlayVisible).toBe(true);
+
+      jest.advanceTimersByTime(1);
+      expect(component.isLoadingOverlayVisible).toBe(false);
+    });
+
+    it('sets isLoadingOverlayVisible to false immediately if false is emitted after 400ms has elapsed', () => {
+      const trueEvent = { stopPropagation: jest.fn(), detail: true } as any;
+      const falseEvent = { stopPropagation: jest.fn(), detail: false } as any;
+
+      component.handleIsLoadingChange(trueEvent);
+      jest.advanceTimersByTime(300);
+      expect(component.isLoadingOverlayVisible).toBe(true);
+
+      jest.advanceTimersByTime(400);
+
+      component.handleIsLoadingChange(falseEvent);
+      expect(component.isLoadingOverlayVisible).toBe(false);
+    });
+
+    it('clears scheduled loading overlay timer on disconnectedCallback', () => {
+      const trueEvent = { stopPropagation: jest.fn(), detail: true } as any;
+
+      component.handleIsLoadingChange(trueEvent);
+      component.disconnectedCallback();
+
+      jest.advanceTimersByTime(500);
+      expect(component.isLoadingOverlayVisible).toBe(false);
+    });
+  });
 });

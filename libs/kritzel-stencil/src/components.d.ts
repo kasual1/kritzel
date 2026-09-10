@@ -414,11 +414,6 @@ export namespace Components {
         "importFromFile": () => Promise<void>;
         "importFromJson": (json: string) => Promise<void>;
         /**
-          * Whether the editor is in a loading state. When true, a loading overlay is displayed.
-          * @default false
-         */
-        "isLoading": boolean;
-        /**
           * @default true
          */
         "isMoreMenuVisible": boolean;
@@ -522,7 +517,7 @@ export namespace Components {
         "setLoginLoading": (provider: string | null) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
-          * @default {   providers: [], }
+          * @default {   providers: [IndexedDBSyncProvider], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -838,11 +833,6 @@ export namespace Components {
           * @throws Error if the JSON is invalid or the format version is incompatible.
          */
         "importFromJson": (json: string) => Promise<void>;
-        /**
-          * External loading state. Combined with internal workspace-loading state to drive the overlay.
-          * @default false
-         */
-        "isLoading": boolean;
         /**
           * When false, non-modified wheel events do not pan the viewport.
           * @default true
@@ -1515,18 +1505,6 @@ export namespace Components {
          */
         "sizes": number[];
     }
-    interface KritzelSyncIndicator {
-        /**
-          * The text displayed next to the spinner.
-          * @default 'Syncing...'
-         */
-        "text": string;
-        /**
-          * Whether the indicator is visible.
-          * @default false
-         */
-        "visible": boolean;
-    }
     interface KritzelToolConfig {
         "engine": HTMLElement;
         /**
@@ -2029,8 +2007,7 @@ declare global {
         "awarenessChange": Map<number, Record<string, any>>;
         "notificationsChange": KritzelNotification;
         "contextMenuStateChange": KritzelContextMenuState;
-        "loadingChange": boolean;
-        "syncingChange": boolean;
+        "isLoadingChange": boolean;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2452,12 +2429,6 @@ declare global {
         prototype: HTMLKritzelStrokeSizeElement;
         new (): HTMLKritzelStrokeSizeElement;
     };
-    interface HTMLKritzelSyncIndicatorElement extends Components.KritzelSyncIndicator, HTMLStencilElement {
-    }
-    var HTMLKritzelSyncIndicatorElement: {
-        prototype: HTMLKritzelSyncIndicatorElement;
-        new (): HTMLKritzelSyncIndicatorElement;
-    };
     interface HTMLKritzelToolConfigElementEventMap {
         "toolChange": ConfigurableTool;
         "displayValuesChange": ToolDisplayValues;
@@ -2620,7 +2591,6 @@ declare global {
         "kritzel-slide-toggle": HTMLKritzelSlideToggleElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
-        "kritzel-sync-indicator": HTMLKritzelSyncIndicatorElement;
         "kritzel-tool-config": HTMLKritzelToolConfigElement;
         "kritzel-toolbar": HTMLKritzelToolbarElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
@@ -2917,11 +2887,6 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * Whether the editor is in a loading state. When true, a loading overlay is displayed.
-          * @default false
-         */
-        "isLoading"?: boolean;
-        /**
           * @default true
          */
         "isMoreMenuVisible"?: boolean;
@@ -3002,7 +2967,7 @@ declare namespace LocalJSX {
          */
         "scaleMin"?: number;
         /**
-          * @default {   providers: [], }
+          * @default {   providers: [IndexedDBSyncProvider], }
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
@@ -3067,11 +3032,6 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * External loading state. Combined with internal workspace-loading state to drive the overlay.
-          * @default false
-         */
-        "isLoading"?: boolean;
-        /**
           * When false, non-modified wheel events do not pan the viewport.
           * @default true
          */
@@ -3124,9 +3084,9 @@ declare namespace LocalJSX {
          */
         "onIsEngineReady"?: (event: KritzelEngineCustomEvent<KritzelEngineState>) => void;
         /**
-          * Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes.
+          * Emitted while the selected workspace's objects are being initialized and synchronized.
          */
-        "onLoadingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
+        "onIsLoadingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
         /**
           * Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.
          */
@@ -3159,10 +3119,6 @@ declare namespace LocalJSX {
           * Emitted when one or more objects are updated on the canvas.
          */
         "onObjectsUpdated"?: (event: KritzelEngineCustomEvent<ObjectsUpdatedEvent>) => void;
-        /**
-          * Emitted when remote workspace synchronization is in progress.
-         */
-        "onSyncingChange"?: (event: KritzelEngineCustomEvent<boolean>) => void;
         /**
           * Emitted when the undo/redo state changes, providing current undo availability.
          */
@@ -3691,18 +3647,6 @@ declare namespace LocalJSX {
          */
         "sizes"?: number[];
     }
-    interface KritzelSyncIndicator {
-        /**
-          * The text displayed next to the spinner.
-          * @default 'Syncing...'
-         */
-        "text"?: string;
-        /**
-          * Whether the indicator is visible.
-          * @default false
-         */
-        "visible"?: boolean;
-    }
     interface KritzelToolConfig {
         "engine"?: HTMLElement;
         /**
@@ -3922,7 +3866,6 @@ declare namespace LocalJSX {
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
         "isZoomPanelVisible": boolean;
-        "isLoading": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
     }
@@ -3942,7 +3885,6 @@ declare namespace LocalJSX {
         "viewportBoundaryBottom": number;
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
-        "isLoading": boolean;
     }
     interface KritzelExportAttributes {
         "workspaceName": string;
@@ -4037,10 +3979,6 @@ declare namespace LocalJSX {
     interface KritzelStrokeSizeAttributes {
         "selectedSize": number | null;
     }
-    interface KritzelSyncIndicatorAttributes {
-        "visible": boolean;
-        "text": string;
-    }
     interface KritzelToolConfigAttributes {
         "isExpanded": boolean;
         "theme": ThemeName;
@@ -4107,7 +4045,6 @@ declare namespace LocalJSX {
         "kritzel-slide-toggle": Omit<KritzelSlideToggle, keyof KritzelSlideToggleAttributes> & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes]?: KritzelSlideToggle[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `attr:${K}`]?: KritzelSlideToggleAttributes[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `prop:${K}`]?: KritzelSlideToggle[K] };
         "kritzel-split-button": Omit<KritzelSplitButton, keyof KritzelSplitButtonAttributes> & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes]?: KritzelSplitButton[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `attr:${K}`]?: KritzelSplitButtonAttributes[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `prop:${K}`]?: KritzelSplitButton[K] };
         "kritzel-stroke-size": Omit<KritzelStrokeSize, keyof KritzelStrokeSizeAttributes> & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes]?: KritzelStrokeSize[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `attr:${K}`]?: KritzelStrokeSizeAttributes[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `prop:${K}`]?: KritzelStrokeSize[K] };
-        "kritzel-sync-indicator": Omit<KritzelSyncIndicator, keyof KritzelSyncIndicatorAttributes> & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes]?: KritzelSyncIndicator[K] } & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes as `attr:${K}`]?: KritzelSyncIndicatorAttributes[K] } & { [K in keyof KritzelSyncIndicator & keyof KritzelSyncIndicatorAttributes as `prop:${K}`]?: KritzelSyncIndicator[K] };
         "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
         "kritzel-toolbar": Omit<KritzelToolbar, keyof KritzelToolbarAttributes> & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes]?: KritzelToolbar[K] } & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes as `attr:${K}`]?: KritzelToolbarAttributes[K] } & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes as `prop:${K}`]?: KritzelToolbar[K] };
         "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
@@ -4171,7 +4108,6 @@ declare module "@stencil/core" {
             "kritzel-slide-toggle": LocalJSX.IntrinsicElements["kritzel-slide-toggle"] & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
             "kritzel-split-button": LocalJSX.IntrinsicElements["kritzel-split-button"] & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.IntrinsicElements["kritzel-stroke-size"] & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
-            "kritzel-sync-indicator": LocalJSX.IntrinsicElements["kritzel-sync-indicator"] & JSXBase.HTMLAttributes<HTMLKritzelSyncIndicatorElement>;
             "kritzel-tool-config": LocalJSX.IntrinsicElements["kritzel-tool-config"] & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;
             "kritzel-toolbar": LocalJSX.IntrinsicElements["kritzel-toolbar"] & JSXBase.HTMLAttributes<HTMLKritzelToolbarElement>;
             "kritzel-tooltip": LocalJSX.IntrinsicElements["kritzel-tooltip"] & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;
