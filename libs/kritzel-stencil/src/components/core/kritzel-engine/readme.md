@@ -47,7 +47,6 @@
 | `awarenessChange`         | Emitted when the awareness state changes (remote user cursors, presence).                                  | `CustomEvent<Map<number, Record<string, any>>>`               |
 | `contextMenuStateChange`  | Emitted when context-menu visibility, items, or position changes.                                          | `CustomEvent<KritzelContextMenuState>`                        |
 | `isEngineReady`           | Emitted when the engine has fully initialized and is ready for interaction.                                | `CustomEvent<KritzelEngineState>`                             |
-| `isSyncing`               | Emitted when a remote sync starts (`true`, data differs from the local copy) or finishes (`false`).        | `CustomEvent<boolean>`                                        |
 | `loadingChange`           | Emitted when the combined loading state (external `isLoading` prop or internal workspace loading) changes. | `CustomEvent<boolean>`                                        |
 | `longpress`               | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                      | `CustomEvent<PointerEvent>`                                   |
 | `notificationsChange`     | Emitted when notifications change.                                                                         | `CustomEvent<KritzelNotification>`                            |
