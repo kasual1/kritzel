@@ -285,9 +285,6 @@ export class KritzelEditor {
   /** Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. */
   @Prop() loginConfig?: KritzelLoginConfig;
 
-  /** Whether the editor is in a loading state. When true, a loading overlay is displayed. */
-  @Prop() isLoading: boolean = false;
-
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
   @Prop() editorId?: string;
 
@@ -1035,6 +1032,11 @@ export class KritzelEditor {
     this.contextMenuState = event.detail.isVisible ? event.detail : undefined;
   }
 
+  handleIsLoadingChange(event: CustomEvent<boolean>) {
+    event.stopPropagation();
+    this.isLoadingOverlayVisible = event.detail;
+  }
+
   private handleContextMenuActionSelected(event: CustomEvent<ContextMenuItem>): void {
     const contextMenuState = this.contextMenuState;
     if (!contextMenuState || !event.detail.action) {
@@ -1476,7 +1478,6 @@ export class KritzelEditor {
             isObjectDistanceFadingActive={this.isObjectDistanceFadingActive}
             scaleMin={this.scaleMin}
             cursorTarget={this.cursorTarget}
-            isLoading={this.isLoading}
             viewportBoundaryLeft={this.viewportBoundaryLeft}
             viewportBoundaryRight={this.viewportBoundaryRight}
             viewportBoundaryTop={this.viewportBoundaryTop}
@@ -1505,7 +1506,7 @@ export class KritzelEditor {
             onAwarenessChange={event => this.handleAwarenessChange(event)}
             onNotificationsChange={event => this.handleNotificationsChange(event)}
             onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
-            onLoadingChange={event => (this.isLoadingOverlayVisible = event.detail)}
+            onIsLoadingChange={event => this.handleIsLoadingChange(event)}
           ></kritzel-engine>
 
           <kritzel-controls
