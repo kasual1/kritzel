@@ -8,8 +8,6 @@ const E2E_ANGULAR_PORT = 4300;
 const E2E_REACT_PORT = 5273;
 const E2E_VUE_PORT = 5274;
 
-const VISUAL_SPEC_PATTERN = /.*-visual\.spec\.ts$/;
-
 const E2E_PROJECT = process.env.E2E_PROJECT;
 const SELECTED_PROJECTS = new Set(
   [
@@ -33,7 +31,6 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   outputDir: './test-results',
   reporter: [['line'], ['html', { open: 'never', outputFolder: './playwright-report' }]],
-  snapshotPathTemplate: '{testDir}/../screenshots/{projectName}/{testFilePath}/{arg}{ext}',
   expect: {
     toHaveScreenshot: { maxDiffPixelRatio: 0.005 }, // Screenshots will always have some minor pixel differences, so we set a small tolerance to avoid false positives
   },
@@ -46,30 +43,27 @@ export default defineConfig({
   projects: [
     // Functional specs run against the standalone e2e harness apps.
     {
-      name: 'e2e-angular',
-      testDir: './tests',
-      testMatch: ['*.spec.ts'],
-      testIgnore: [VISUAL_SPEC_PATTERN],
+      name: 'core-angular',
+      testDir: './tests/core',
+      snapshotPathTemplate: '{testDir}/../../screenshots/core/angular/{testFilePath}/{arg}{ext}',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${E2E_ANGULAR_PORT}`,
       },
     },
     {
-      name: 'e2e-react',
-      testDir: './tests',
-      testMatch: ['*.spec.ts'],
-      testIgnore: [VISUAL_SPEC_PATTERN],
+      name: 'core-react',
+      testDir: './tests/core',
+      snapshotPathTemplate: '{testDir}/../../screenshots/core/react/{testFilePath}/{arg}{ext}',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${E2E_REACT_PORT}`,
       },
     },
     {
-      name: 'e2e-vue',
-      testDir: './tests',
-      testMatch: ['*.spec.ts'],
-      testIgnore: [VISUAL_SPEC_PATTERN],
+      name: 'core-vue',
+      testDir: './tests/core',
+      snapshotPathTemplate: '{testDir}/../../screenshots/core/vue/{testFilePath}/{arg}{ext}',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${E2E_VUE_PORT}`,
@@ -78,27 +72,27 @@ export default defineConfig({
     // Visual regression specs run against the docs-facing demo apps.
     // Named to match the pre-existing screenshot baseline paths (e2e/screenshots/<name>/**).
     {
-      name: 'demo-angular',
-      testDir: './tests',
-      testMatch: [VISUAL_SPEC_PATTERN],
+      name: 'demos-angular',
+      testDir: './tests/demos',
+      snapshotPathTemplate: '{testDir}/../../screenshots/demos/angular/{testFilePath}/{arg}{ext}',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${ANGULAR_PORT}`,
       },
     },
     {
-      name: 'demo-react',
-      testDir: './tests',
-      testMatch: [VISUAL_SPEC_PATTERN],
+      name: 'demos-react',
+      testDir: './tests/demos',
+      snapshotPathTemplate: '{testDir}/../../screenshots/demos/react/{testFilePath}/{arg}{ext}',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${REACT_PORT}`,
       },
     },
     {
-      name: 'demo-vue',
-      testDir: './tests',
-      testMatch: [VISUAL_SPEC_PATTERN],
+      name: 'demos-vue',
+      testDir: './tests/demos',
+      snapshotPathTemplate: '{testDir}/../../screenshots/demos/vue/{testFilePath}/{arg}{ext}',
       use: {
         ...devices['Desktop Chrome'],
         baseURL: `http://localhost:${VUE_PORT}`,
@@ -108,42 +102,42 @@ export default defineConfig({
 
   webServer: [
     {
-      project: 'e2e-angular',
+      project: 'core-angular',
       command: 'npm run start:e2e:prod -w e2e/apps/angular',
       port: E2E_ANGULAR_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
-      project: 'e2e-react',
+      project: 'core-react',
       command: 'npm run start:e2e:prod -w e2e/apps/react',
       port: E2E_REACT_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
-      project: 'e2e-vue',
+      project: 'core-vue',
       command: 'npm run start:e2e:prod -w e2e/apps/vue',
       port: E2E_VUE_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
-      project: 'demo-angular',
+      project: 'demos-angular',
       command: 'npm run start:e2e:prod -w demos/angular',
       port: ANGULAR_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
-      project: 'demo-react',
+      project: 'demos-react',
       command: 'npm run start:e2e:prod -w demos/react',
       port: REACT_PORT,
       reuseExistingServer: !process.env.CI,
       cwd: '..',
     },
     {
-      project: 'demo-vue',
+      project: 'demos-vue',
       command: 'npm run start:e2e:prod -w demos/vue',
       port: VUE_PORT,
       reuseExistingServer: !process.env.CI,
