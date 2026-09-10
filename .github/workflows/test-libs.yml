@@ -114,9 +114,9 @@ jobs:
           E2E_PROJECT: e2e-${{ matrix.project }}
 
       - name: Run visual regression tests (${{ matrix.project }})
-        run: npx playwright test --config=e2e/playwright.config.ts --project=${{ matrix.project }}
+        run: npx playwright test --config=e2e/playwright.config.ts --project=demo-${{ matrix.project }}
         env:
-          E2E_PROJECT: ${{ matrix.project }}
+          E2E_PROJECT: demo-${{ matrix.project }}
 
       - name: Upload Playwright report
         if: failure()
