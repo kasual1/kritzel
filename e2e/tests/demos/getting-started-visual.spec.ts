@@ -1,5 +1,4 @@
 import { test, expect } from '../../fixtures/editor.fixture';
-import type { Locator } from '@playwright/test';
 
 const ROUTE = '/getting-started/quick-start';
 
@@ -68,21 +67,12 @@ async function waitForVisualSettle(page: import('@playwright/test').Page) {
   await page.waitForTimeout(400);
 }
 
-async function getPrimaryCanvas(editorPage: { page: import('@playwright/test').Page }): Promise<Locator> {
-  if ((await editorPage.page.locator('kritzel-editor').count()) > 0) {
-    return editorPage.page.locator('kritzel-editor').first();
-  }
-
-  return editorPage.page.locator('kritzel-engine').first();
-}
-
 test.describe('Getting Started Visual Regression', () => {
   test('should match screenshot for getting started page', async ({ editorPage }) => {
     await editorPage.goto(ROUTE);
     await waitForPageReady(editorPage);
     await waitForVisualSettle(editorPage.page);
 
-    const canvas = await getPrimaryCanvas(editorPage);
-    await expect(canvas).toHaveScreenshot('getting-started.png');
+    await expect(editorPage.page).toHaveScreenshot('getting-started.png');
   });
 });
