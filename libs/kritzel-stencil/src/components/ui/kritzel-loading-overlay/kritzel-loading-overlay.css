@@ -21,12 +21,18 @@
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
+  transition:
+    opacity 300ms ease,
+    visibility 0s linear 300ms;
 }
 
 .loading-overlay.visible {
+  opacity: 1;
   pointer-events: all;
   visibility: visible;
-  animation: kritzel-loading-fade-in 200ms ease-out var(--kritzel-editor-loading-overlay-delay, 300ms) forwards;
+  transition:
+    opacity 300ms ease,
+    visibility 0s linear 0s;
 }
 
 .loading-spinner {
@@ -44,11 +50,5 @@
 @keyframes kritzel-loading-spin {
   to {
     transform: rotate(360deg);
-  }
-}
-
-@keyframes kritzel-loading-fade-in {
-  to {
-    opacity: 1;
   }
 }
