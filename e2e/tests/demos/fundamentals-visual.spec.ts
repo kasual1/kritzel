@@ -1,5 +1,4 @@
 import { test, expect } from '../../fixtures/editor.fixture';
-import type { Locator } from '@playwright/test';
 
 async function waitForFundamentalPage(editorPage: { page: import('@playwright/test').Page; waitForReady: () => Promise<void> }) {
   const { page } = editorPage;
@@ -24,25 +23,16 @@ async function waitForFundamentalPage(editorPage: { page: import('@playwright/te
   );
 }
 
-async function getPrimaryCanvas(editorPage: { page: import('@playwright/test').Page }): Promise<Locator> {
-  if ((await editorPage.page.locator('kritzel-editor').count()) > 0) {
-    return editorPage.page.locator('kritzel-editor').first();
-  }
-
-  return editorPage.page.locator('kritzel-engine').first();
-}
-
 // Shared body for each route's screenshot test, invoked individually below so every page has its own, independently runnable test.
 async function expectFundamentalScreenshot(
-  editorPage: Parameters<typeof waitForFundamentalPage>[0] & Parameters<typeof getPrimaryCanvas>[0],
+  editorPage: Parameters<typeof waitForFundamentalPage>[0],
   route: string,
   routeName: string,
 ) {
   await editorPage.goto(route);
   await waitForFundamentalPage(editorPage);
 
-  const canvas = await getPrimaryCanvas(editorPage);
-  await expect(canvas).toHaveScreenshot(`${routeName}.png`);
+  await expect(editorPage.page).toHaveScreenshot(`${routeName}.png`);
 }
 
 test.describe('Fundamentals Pages Visual Regression', () => {
