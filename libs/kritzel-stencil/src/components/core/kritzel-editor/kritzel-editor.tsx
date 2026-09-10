@@ -308,8 +308,6 @@ export class KritzelEditor {
   @Event() login!: EventEmitter<LoginEvent>;
   @Event() isPublicChange!: EventEmitter<IKritzelIsPublicChangedEvent>;
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
-  @Event() isSyncing!: EventEmitter<boolean>;
-
   @State() isEngineReady: boolean = false;
   @State() isControlsReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
@@ -332,8 +330,6 @@ export class KritzelEditor {
   @State() normalizedControls: KritzelToolbarControl[] = [];
   @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
   @State() isLoadingOverlayVisible: boolean = false;
-  @State() isSyncingIndicatorVisible: boolean = false;
-
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
   private readonly notificationDisplayDurationMs = 5000;
@@ -1025,12 +1021,6 @@ export class KritzelEditor {
     this.awarenessChange.emit(event.detail);
   }
 
-  handleIsSyncingChange(event: CustomEvent<boolean>) {
-    event.stopPropagation();
-    this.isSyncingIndicatorVisible = event.detail;
-    this.isSyncing.emit(event.detail);
-  }
-
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
     event.stopPropagation();
     this.clearNotificationDismissAnimationTimer();
@@ -1467,7 +1457,6 @@ export class KritzelEditor {
             ></kritzel-context-menu>
           )}
 
-          <kritzel-sync-indicator visible={this.isSyncingIndicatorVisible} text="Syncing..."></kritzel-sync-indicator>
           <kritzel-loading-overlay visible={this.isLoadingOverlayVisible} text={this.resolvedTerms['editor.loading'] ?? 'Loading...'}></kritzel-loading-overlay>
 
           <kritzel-engine
@@ -1514,7 +1503,6 @@ export class KritzelEditor {
             onObjectsInViewportChange={event => this.handleObjectsInViewportChange(event)}
             onViewportChange={event => this.handleViewportChange(event)}
             onAwarenessChange={event => this.handleAwarenessChange(event)}
-            onIsSyncing={event => this.handleIsSyncingChange(event)}
             onNotificationsChange={event => this.handleNotificationsChange(event)}
             onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
             onLoadingChange={event => (this.isLoadingOverlayVisible = event.detail)}

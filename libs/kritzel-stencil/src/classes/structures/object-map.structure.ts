@@ -51,15 +51,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _awarenessEmitTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly AWARENESS_THROTTLE_INTERVAL = 100; // milliseconds
 
-  // Identities of the raw network-provider instances (e.g. WebsocketProvider, HocuspocusProvider)
-  // that Yjs tags as transaction origin for remote updates; local providers (IndexedDB,
-  // BroadcastChannel) never appear here, so their transactions never toggle isSyncing.
-  private _networkTransactionOrigins: Set<unknown> = new Set();
-  private _isSyncing: boolean = false;
-  private _syncingChangeCallbacks: ((isSyncing: boolean) => void)[] = [];
-  private _beforeTransactionHandler: ((transaction: Y.Transaction) => void) | null = null;
-  private _afterAllTransactionsHandler: ((doc: Y.Doc, transactions: Y.Transaction[]) => void) | null = null;
-
   /**
    * When true, update() only modifies local state (quadtree + idMap)
    * without writing to Yjs. Used during drag operations to avoid
@@ -263,25 +254,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
-   * Whether the local copy currently differs from data a remote peer is in the process of merging in.
-   */
-  get isSyncing(): boolean {
-    return this._isSyncing;
-  }
-
-  /**
-   * Registers a callback invoked when a remote sync starts (`true`) or finishes (`false`).
-   * "Starts" fires from `beforeTransaction`, before the incoming remote update is merged.
-   */
-  onSyncingChange(callback: (isSyncing: boolean) => void): () => void {
-    this._syncingChangeCallbacks.push(callback);
-
-    return () => {
-      this._syncingChangeCallbacks = this._syncingChangeCallbacks.filter(existingCallback => existingCallback !== callback);
-    };
-  }
-
-  /**
    * Returns the Yjs UndoManager instance for managing undo/redo operations.
    * @returns The UndoManager instance, or `null` if not initialized
    */
@@ -388,42 +360,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       const providerList = this._providers.map(p => `${p.constructor.name} (${p.type})`).join(', ');
       console.info(`[Kritzel] Workspace sync providers initialized for ${docName}: ${providerList || 'none'}`);
     }
-
-    // Only network providers (WebSocket, Hocuspocus) represent a genuine remote peer;
-    // local providers (IndexedDB, BroadcastChannel) never appear as a transaction origin here,
-    // so loading from IndexedDB or a same-device tab never toggles isSyncing.
-    this._networkTransactionOrigins = new Set(
-      this._providers
-        .filter(p => p.type === 'network')
-        .map(p => p.rawProvider)
-        .filter((origin): origin is NonNullable<typeof origin> => origin != null),
-    );
-
-    // Fires before a remote-origin transaction integrates its update, so this always
-    // precedes any local/remote reconciliation for that update.
-    this._beforeTransactionHandler = transaction => {
-      if (this._isSyncing || !this._networkTransactionOrigins.has(transaction.origin)) {
-        return;
-      }
-      this._isSyncing = true;
-      this._syncingChangeCallbacks.forEach(callback => callback(true));
-    };
-
-    // Fires once a batch of transactions (possibly several remote updates) has fully settled.
-    this._afterAllTransactionsHandler = (_doc, transactions) => {
-      if (!this._isSyncing) {
-        return;
-      }
-      const hadRemoteTransaction = transactions.some(transaction => this._networkTransactionOrigins.has(transaction.origin));
-      if (!hadRemoteTransaction) {
-        return;
-      }
-      this._isSyncing = false;
-      this._syncingChangeCallbacks.forEach(callback => callback(false));
-    };
-
-    this._ydoc.on('beforeTransaction', this._beforeTransactionHandler);
-    this._ydoc.on('afterAllTransactions', this._afterAllTransactionsHandler);
 
     // captureTimeout is effectively infinite — undo-step boundaries are
     // marked explicitly via markUndoBoundary() in insert/remove/reset and
@@ -1274,7 +1210,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       p.destroy();
     });
     this._providers = [];
-    this._networkTransactionOrigins = new Set();
 
     // Clear object map references
     this._objectsMap = null;
@@ -1282,14 +1217,6 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     // Destroy Y.Doc
     if (this._ydoc) {
-      if (this._beforeTransactionHandler) {
-        this._ydoc.off('beforeTransaction', this._beforeTransactionHandler);
-        this._beforeTransactionHandler = null;
-      }
-      if (this._afterAllTransactionsHandler) {
-        this._ydoc.off('afterAllTransactions', this._afterAllTransactionsHandler);
-        this._afterAllTransactionsHandler = null;
-      }
       this._ydoc.destroy();
       this._ydoc = null;
     }
@@ -1300,7 +1227,5 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this._workspaceId = null;
     this._isReady = false;
     this._temporaryItemsCount = 0;
-    this._isSyncing = false;
-    this._syncingChangeCallbacks = [];
   }
 }

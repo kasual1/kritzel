@@ -416,11 +416,6 @@ export class KritzelCore {
       this.engine.emitAwarenessChange(states);
     });
 
-    // Forward remote sync start/finish to the engine as events
-    objectsMap.onSyncingChange(isSyncing => {
-      this.engine.emitIsSyncing(isSyncing);
-    });
-
     // Rebuild anchor index after loading objects
     this._anchorManager.rebuildIndex();
 
