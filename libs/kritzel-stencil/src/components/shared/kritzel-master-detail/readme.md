@@ -20,13 +20,6 @@
 | `itemSelect` | Emitted when an item is selected | `CustomEvent<IKritzelMasterDetailSelectEvent>` |
 
 
-## Slots
-
-| Slot | Description      |
-| ---- | ---------------- |
-|      | The default slot |
-
-
 ## Dependencies
 
 ### Used by
