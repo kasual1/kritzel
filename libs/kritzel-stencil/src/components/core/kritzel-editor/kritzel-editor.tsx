@@ -329,7 +329,7 @@ export class KritzelEditor {
   private loadingOverlayShowTimeout?: ReturnType<typeof setTimeout>;
   private loadingOverlayHideTimeout?: ReturnType<typeof setTimeout>;
   private loadingOverlayShownTimestamp?: number;
-  private readonly loadingOverlayDelayMs = 300;
+  private readonly loadingOverlayDelayMs = 150;
   private readonly loadingOverlayMinDisplayDurationMs = 400;
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
