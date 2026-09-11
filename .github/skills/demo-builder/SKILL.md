@@ -19,7 +19,7 @@ argument-hint: "Describe the demo page or demo feature to create or update"
 This skill owns demo implementation patterns for files under `apps/demos/**`.
 
 It complements docs-builder:
-- docs-builder owns markdown authoring in `website/docs/**`
+- docs-builder owns markdown authoring in `apps/website/docs/**`
 - demo-builder owns runnable demo source in `apps/demos/**`
 
 ## Project Layout

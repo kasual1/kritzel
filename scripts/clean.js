@@ -14,7 +14,7 @@ const cleanTargets = [
   { path: '../libs/kritzel-stencil', folders: ['node_modules', 'dist'] },
   { path: '../libs/kritzel-vue', folders: ['node_modules', 'dist'] },
   { path: '../server/websocket-demo', folders: ['node_modules', 'dist'] },
-  { path: '../website', folders: ['node_modules', 'build', '.docusaurus'] },
+  { path: '../apps/website', folders: ['node_modules', 'build', '.docusaurus'] },
 ];
 
 // Helper function to delete a folder

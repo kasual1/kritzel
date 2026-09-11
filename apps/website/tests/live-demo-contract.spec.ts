@@ -15,6 +15,7 @@ interface LiveDemoBlock {
 const currentFilePath = fileURLToPath(import.meta.url);
 const currentDir = path.dirname(currentFilePath);
 const websiteRoot = path.resolve(currentDir, '..');
+const repositoryRoot = path.resolve(websiteRoot, '..', '..');
 const docsRoot = path.join(websiteRoot, 'docs');
 
 const frameworkConfigs: Record<Framework, { docsDir: string; repoUrl: string; repoFilePrefix: string; repoFileExtension: string }> = {
@@ -110,7 +111,7 @@ describe('LiveDemo contract checks', () => {
     });
 
     test(`${framework} docs reference demo sources that exist on disk`, () => {
-      const demoRoot = path.resolve(websiteRoot, '..', 'apps', 'demos', framework);
+      const demoRoot = path.join(repositoryRoot, 'apps', 'demos', framework);
       const missing = getAllLiveDemoBlocks(framework)
         .flatMap((block) => block.repoFiles.map((repoFile) => ({ block, repoFile })))
         .filter(({ repoFile }) => !fs.existsSync(path.join(demoRoot, repoFile)))

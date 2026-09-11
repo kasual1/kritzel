@@ -8,8 +8,8 @@ Angular remains the source of truth. React and Vue pages should preserve meaning
 
 ## Scope
 
-- Source: website/docs/angular/*.md
-- Targets: website/docs/react/*.md, website/docs/vue/*.md
+- Source: apps/website/docs/angular/*.md
+- Targets: apps/website/docs/react/*.md, apps/website/docs/vue/*.md
 - Typical pages: getting-started/*.md, fundamentals/*.md, fundamentals/components/*.md, advanced/*.md, customization/*.md, examples/*.md, api-reference/*.md
 
 ## Core Porting Rules
@@ -70,7 +70,7 @@ When adding or porting <LiveDemo> blocks:
 7. Keep `demoPath`, router registration, and local docs config aligned.
 - The target demo app must register the matching route.
 - `repoFiles` must match the real file location in the demo project.
-- For local docs preview, verify `website/docusaurus.config.ts` points to the framework's actual dev server port.
+- For local docs preview, verify `apps/website/docusaurus.config.ts` points to the framework's actual dev server port.
 
 8. Prefer `demoPath` for framework-relative previews.
 - Use `demoPath` with framework-aware base URLs unless an explicit absolute `iframeUrl` is required.
@@ -105,7 +105,7 @@ After porting, verify:
 4. All intra-doc links resolve to existing pages.
 5. <LiveDemo> blocks use correct framework repo URLs and file extensions.
 6. Every `<LiveDemo demoPath="...">` resolves in the framework router.
-7. `website/docusaurus.config.ts` local `demoBaseUrls` values match currently used framework dev ports.
+7. `apps/website/docusaurus.config.ts` local `demoBaseUrls` values match currently used framework dev ports.
 8. `repoFiles` paths exist and reflect current folder structure (no stale `examples/` paths after moves).
 9. For dynamic object demos, each framework documents equivalent renderer lifecycle behavior; Vue docs include explicit note about custom-element encapsulation strategy when relevant.
 
