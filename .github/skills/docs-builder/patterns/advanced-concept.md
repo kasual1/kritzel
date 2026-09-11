@@ -41,9 +41,9 @@ Keep examples focused. Do not turn an Advanced page into a complete application 
 
 - Every `<LiveDemo>` must have descriptive text explaining the focused behavior it demonstrates.
 - Use the framework-specific demo repository URL and source path.
-- Angular demos belong under `demos/angular/src/app/advanced/<concept>/` and use kebab-case `.component.ts` filenames.
-- React demos belong under `demos/react/src/pages/advanced/<concept>/` and use PascalCase `Page.tsx` filenames.
-- Vue demos belong under `demos/vue/src/pages/advanced/<concept>/` and use PascalCase `Page.vue` filenames.
+- Angular demos belong under `apps/demos/angular/src/app/advanced/<concept>/` and use kebab-case `.component.ts` filenames.
+- React demos belong under `apps/demos/react/src/pages/advanced/<concept>/` and use PascalCase `Page.tsx` filenames.
+- Vue demos belong under `apps/demos/vue/src/pages/advanced/<concept>/` and use PascalCase `Page.vue` filenames.
 - Demo routes must use `/advanced/<concept>-<focus>` and be registered in the matching framework router.
 - `repoFiles` must point to files that exist at the current path. Never leave references to the old `concepts/` directories after moving a page.
 - Do not duplicate the demo source in a Markdown code block below `<LiveDemo>`.
@@ -80,9 +80,9 @@ Keep examples focused. Do not turn an Advanced page into a complete application 
 
 ## Framework Integration
 
-- Angular routes belong in `demos/angular/src/app/app.routes.ts` under the `advanced` route group.
-- React routes belong in `demos/react/src/App.tsx` with matching imports and `/advanced/...` paths.
-- Vue routes belong in `demos/vue/src/router.ts` with matching imports and `/advanced/...` paths.
+- Angular routes belong in `apps/demos/angular/src/app/app.routes.ts` under the `advanced` route group.
+- React routes belong in `apps/demos/react/src/App.tsx` with matching imports and `/advanced/...` paths.
+- Vue routes belong in `apps/demos/vue/src/router.ts` with matching imports and `/advanced/...` paths.
 - React and Vue prose should refer to `<KritzelEditor>`, not `<kritzel-editor>`.
 - Vue documentation snippets that show component or template markup use `html` fences.
 - Keep Angular as the source of truth, then port structure and meaning to React and Vue with framework-specific syntax.

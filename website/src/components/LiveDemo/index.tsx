@@ -89,7 +89,7 @@ function buildRawBaseCandidates(repoUrl: string, framework: DemoFramework): stri
     bases.push(`https://raw.githubusercontent.com/${owner}/${repo}/${currentBranch}/${path}/`);
 
     if (repo === 'kritzel-demos') {
-      bases.push(`https://raw.githubusercontent.com/${owner}/kritzel/${currentBranch}/demos/${framework}/`);
+      bases.push(`https://raw.githubusercontent.com/${owner}/kritzel/${currentBranch}/apps/demos/${framework}/`);
     }
   }
 

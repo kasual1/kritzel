@@ -76,7 +76,7 @@ Each example includes a `<LiveDemo>` block that renders an iframe preview and fe
 The actual Angular components backing each example live in:
 
 ```
-demos/angular/src/app/examples/<feature>/
+apps/demos/angular/src/app/examples/<feature>/
 ├── <feature>-<example-name>.component.ts
 ├── <feature>-<example-name>.component.ts
 └── ...
@@ -168,7 +168,7 @@ When editing an existing example page:
 
 1. Read the current page to understand the existing scenarios.
 2. Identify whether the new content fits as a new scenario (append) or refines an existing one (edit in place).
-3. Ensure corresponding demo components exist in `demos/angular/src/app/examples/<feature>/`.
+3. Ensure corresponding demo components exist in `apps/demos/angular/src/app/examples/<feature>/`.
 4. Verify routes are registered in the Angular demo's router config.
 5. Each example component file should be named after the scenario slug, not a number (e.g., `custom-toolbar-annotation.component.ts` not `custom-toolbar-1.component.ts`). During the transition period, numbered files are acceptable.
 

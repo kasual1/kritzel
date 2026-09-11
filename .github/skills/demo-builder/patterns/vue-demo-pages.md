@@ -2,15 +2,15 @@
 
 ## Overview
 
-Vue demo pages are SFC route components in `demos/vue/src/pages/`. They support direct demo usage and docs `<LiveDemo>` embeds.
+Vue demo pages are SFC route components in `apps/demos/vue/src/pages/`. They support direct demo usage and docs `<LiveDemo>` embeds.
 
 ## File Location
 
 | Category | Path template |
 |---|---|
-| Example demos | `demos/vue/src/pages/examples/<ExampleName>Page.vue` |
-| Fundamentals demos | `demos/vue/src/pages/fundamentals/<topic>/<TopicFocus>Page.vue` |
-| Other guides | `demos/vue/src/pages/<guide>/<GuidePage>.vue` |
+| Example demos | `apps/demos/vue/src/pages/examples/<ExampleName>Page.vue` |
+| Fundamentals demos | `apps/demos/vue/src/pages/fundamentals/<topic>/<TopicFocus>Page.vue` |
+| Other guides | `apps/demos/vue/src/pages/<guide>/<GuidePage>.vue` |
 
 Follow existing folder conventions in the target area.
 
@@ -24,7 +24,7 @@ Examples:
 
 ## Routing Registration
 
-Register every new demo route in `demos/vue/src/router.ts`.
+Register every new demo route in `apps/demos/vue/src/router.ts`.
 
 1. Import page component.
 2. Add route entry.
@@ -45,7 +45,7 @@ Use `<KritzelEditor>` from `kritzel-vue`. Do not use `<kritzel-editor>` directly
 
 Apply Vue framework theme by default:
 
-1. Import `customVueTheme` from `demos/vue/src/const/custom-vue-theme.ts`.
+1. Import `customVueTheme` from `apps/demos/vue/src/const/custom-vue-theme.ts`.
 2. Set `theme="vue-theme"`.
 3. Set `:themes="[customVueTheme]"`.
 
@@ -74,6 +74,6 @@ When a page uses `KritzelDynamicObject`:
 
 If the demo is embedded in docs:
 
-1. `demoPath` must match `demos/vue/src/router.ts` route.
+1. `demoPath` must match `apps/demos/vue/src/router.ts` route.
 2. `repoFiles` must match real file locations.
 3. Use `.vue` file paths in docs.

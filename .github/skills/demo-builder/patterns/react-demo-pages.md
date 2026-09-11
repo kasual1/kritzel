@@ -2,15 +2,15 @@
 
 ## Overview
 
-React demo pages are route components in `demos/react/src/pages/`. They support direct demo app usage and docs `<LiveDemo>` embeds.
+React demo pages are route components in `apps/demos/react/src/pages/`. They support direct demo app usage and docs `<LiveDemo>` embeds.
 
 ## File Location
 
 | Category | Path template |
 |---|---|
-| Example demos | `demos/react/src/pages/examples/<ExampleName>Page.tsx` |
-| Fundamentals demos | `demos/react/src/pages/fundamentals/<topic>/<TopicFocus>Page.tsx` |
-| Other guides | `demos/react/src/pages/<guide>/<GuidePage>.tsx` |
+| Example demos | `apps/demos/react/src/pages/examples/<ExampleName>Page.tsx` |
+| Fundamentals demos | `apps/demos/react/src/pages/fundamentals/<topic>/<TopicFocus>Page.tsx` |
+| Other guides | `apps/demos/react/src/pages/<guide>/<GuidePage>.tsx` |
 
 Follow existing folder conventions in the target area.
 
@@ -24,7 +24,7 @@ Examples:
 
 ## Routing Registration
 
-Register every new demo route in `demos/react/src/App.tsx`.
+Register every new demo route in `apps/demos/react/src/App.tsx`.
 
 1. Import page component.
 2. Add matching `<Route path="..." element={<... />} />`.
@@ -42,7 +42,7 @@ Register every new demo route in `demos/react/src/App.tsx`.
 
 Apply React framework theme by default:
 
-1. Import `customReactTheme` from `demos/react/src/const/custom-react-theme.ts`.
+1. Import `customReactTheme` from `apps/demos/react/src/const/custom-react-theme.ts`.
 2. Set `theme="react-theme"`.
 3. Set `themes={[customReactTheme]}`.
 
@@ -69,6 +69,6 @@ When a page uses `KritzelDynamicObject`:
 
 If the demo is embedded in docs:
 
-1. `demoPath` must match `demos/react/src/App.tsx` route.
+1. `demoPath` must match `apps/demos/react/src/App.tsx` route.
 2. `repoFiles` must match real file locations.
 3. Use `.tsx` file paths in docs.

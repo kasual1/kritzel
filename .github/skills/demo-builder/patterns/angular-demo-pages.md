@@ -2,15 +2,15 @@
 
 ## Overview
 
-Angular demo pages are standalone Angular components that back demo routes in `demos/angular`. These routes are used directly by local demo development and by docs `<LiveDemo>` embeds.
+Angular demo pages are standalone Angular components that back demo routes in `apps/demos/angular`. These routes are used directly by local demo development and by docs `<LiveDemo>` embeds.
 
 ## File Location
 
 | Category | Path template |
 |---|---|
-| Example demos | `demos/angular/src/app/examples/<example-name>.component.ts` |
-| Fundamentals demos | `demos/angular/src/app/fundamentals/<topic>/<topic>-<focus>.component.ts` |
-| Other guides | Follow existing folder conventions under `demos/angular/src/app/` |
+| Example demos | `apps/demos/angular/src/app/examples/<example-name>.component.ts` |
+| Fundamentals demos | `apps/demos/angular/src/app/fundamentals/<topic>/<topic>-<focus>.component.ts` |
+| Other guides | Follow existing folder conventions under `apps/demos/angular/src/app/` |
 
 ## Naming Convention
 
@@ -22,7 +22,7 @@ Examples:
 
 ## Routing Registration
 
-Every new Angular demo component must be registered in `demos/angular/src/app/app.routes.ts`.
+Every new Angular demo component must be registered in `apps/demos/angular/src/app/app.routes.ts`.
 
 1. Import the component.
 2. Add it to the correct `children` route group.
@@ -59,7 +59,7 @@ Use `viewChild` + `ElementRef` for direct API calls.
 
 ## Seeding Objects
 
-When demos need preloaded canvas content, prefer `createSeedObjects()` from `demos/angular/src/app/const/seed-objects.ts` for visual consistency across demos.
+When demos need preloaded canvas content, prefer `createSeedObjects()` from `apps/demos/angular/src/app/const/seed-objects.ts` for visual consistency across demos.
 
 ## Dynamic Objects
 

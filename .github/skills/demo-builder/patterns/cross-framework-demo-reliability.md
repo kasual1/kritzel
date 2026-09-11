@@ -36,9 +36,9 @@ Use this pattern whenever demo pages are created, moved, or ported across Angula
 - Vue: use `getEditorRef` / `getEngineRef` from `kritzel-vue`
 
 3. Router locations:
-- Angular: `demos/angular/src/app/app.routes.ts`
-- React: `demos/react/src/App.tsx`
-- Vue: `demos/vue/src/router.ts`
+- Angular: `apps/demos/angular/src/app/app.routes.ts`
+- React: `apps/demos/react/src/App.tsx`
+- Vue: `apps/demos/vue/src/router.ts`
 
 ## Docs Integration Checks
 

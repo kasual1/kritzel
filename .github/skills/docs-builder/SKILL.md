@@ -20,7 +20,7 @@ argument-hint: "Describe the doc page to create or edit"
 When working with docs-builder:
 
 1. Write and refine content for Angular exclusively.
-2. Reference Angular demo components in `demos/angular/src/app/examples/`.
+2. Reference Angular demo components in `apps/demos/angular/src/app/examples/`.
 3. Use Angular-specific code snippets, imports, and patterns.
 4. Do **not** attempt to create or update React/Vue docs — that is handled by a dedicated translation step.
 
@@ -35,7 +35,7 @@ This separation ensures consistency: one authoritative source is written once, t
 | `website/docs/vue/` | Vue docs (translated from Angular — do not edit directly) |
 | `website/sidebars.ts` | Sidebar navigation config |
 | `website/src/components/LiveDemo/` | `<LiveDemo>` component for embedded previews |
-| `demos/angular/src/app/examples/` | Actual Angular example source code |
+| `apps/demos/angular/src/app/examples/` | Actual Angular example source code |
 
 ## Documentation Categories
 
@@ -62,7 +62,7 @@ Detailed conventions for each documentation category live in the `patterns/` sub
 - [`patterns/framework-porting.md`](patterns/framework-porting.md) — How to port Angular source docs to React and Vue consistently
 - [`patterns/dynamic-objects.md`](patterns/dynamic-objects.md) — How to document and demo `KritzelDynamicObject` lifecycle, renderer state persistence, wheel behavior, and Vue-specific embedding constraints
 
-For runnable demo implementation under `demos/**`, use the `demo-builder` skill:
+For runnable demo implementation under `apps/demos/**`, use the `demo-builder` skill:
 
 - `.github/skills/demo-builder/patterns/angular-demo-pages.md`
 - `.github/skills/demo-builder/patterns/react-demo-pages.md`
