@@ -104,6 +104,10 @@ test.describe('Fundamentals Pages Visual Regression', () => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/tools/change', 'fundamentals-tools-change');
   });
 
+  test('should match screenshot for fundamentals-tools-config', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/tools/config', 'fundamentals-tools-config');
+  });
+
   test('should match screenshot for fundamentals-tools-disable', async ({ editorPage }) => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/tools/disable', 'fundamentals-tools-disable');
   });
