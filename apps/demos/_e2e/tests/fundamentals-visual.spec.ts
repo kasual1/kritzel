@@ -68,6 +68,46 @@ test.describe('Fundamentals Pages Visual Regression', () => {
     );
   });
 
+  test('should match screenshot for fundamentals-controls-workspace-manager-open', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(
+      editorPage,
+      '/fundamentals/controls/workspace-manager-open',
+      'fundamentals-controls-workspace-manager-open',
+    );
+  });
+
+  test('should match screenshot for fundamentals-controls-more-menu-open', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(
+      editorPage,
+      '/fundamentals/controls/more-menu-open',
+      'fundamentals-controls-more-menu-open',
+    );
+  });
+
+  test('should match screenshot for fundamentals-controls-toolbar-utility-panel', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(
+      editorPage,
+      '/fundamentals/controls/toolbar-utility-panel',
+      'fundamentals-controls-toolbar-utility-panel',
+    );
+  });
+
+  test('should match screenshot for fundamentals-controls-zoom-panel-toggle', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(
+      editorPage,
+      '/fundamentals/controls/zoom-panel-toggle',
+      'fundamentals-controls-zoom-panel-toggle',
+    );
+  });
+
+  test('should match screenshot for fundamentals-controls-notifications-trigger', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(
+      editorPage,
+      '/fundamentals/controls/notifications-trigger',
+      'fundamentals-controls-notifications-trigger',
+    );
+  });
+
   test('should match screenshot for fundamentals-objects-add', async ({ editorPage }) => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/objects/add', 'fundamentals-objects-add');
   });
@@ -118,6 +158,26 @@ test.describe('Fundamentals Pages Visual Regression', () => {
 
   test('should match screenshot for fundamentals-tools-toolbar', async ({ editorPage }) => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/tools/toolbar', 'fundamentals-tools-toolbar');
+  });
+
+  test('should match screenshot for fundamentals-viewport-pan', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/viewport/pan', 'fundamentals-viewport-pan');
+  });
+
+  test('should match screenshot for fundamentals-viewport-zoom', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/viewport/zoom', 'fundamentals-viewport-zoom');
+  });
+
+  test('should match screenshot for fundamentals-viewport-limits', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/viewport/limits', 'fundamentals-viewport-limits');
+  });
+
+  test('should match screenshot for fundamentals-viewport-boundaries', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/viewport/boundaries', 'fundamentals-viewport-boundaries');
+  });
+
+  test('should match screenshot for fundamentals-viewport-events', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/viewport/events', 'fundamentals-viewport-events');
   });
 
   test('should match screenshot for fundamentals-viewport-center', async ({ editorPage }) => {
