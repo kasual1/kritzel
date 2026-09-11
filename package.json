@@ -12,8 +12,7 @@
     "apps/core/angular",
     "apps/core/react",
     "apps/core/vue",
-    "apps/website",
-    "websocket"
+    "apps/website"
   ],
   "devDependencies": {
     "@angular/common": "^22.0.0",
@@ -41,7 +40,6 @@
     "demo:angular": "npm run start -w apps/demos/angular",
     "demo:react": "npm run start -w apps/demos/react",
     "demo:vue": "npm run start -w apps/demos/vue",
-    "ws": "npm run start -w websocket",
     "e2e": "npm run e2e:core && npm run e2e:demos",
     "e2e:core": "npx playwright test --config=apps/core/_e2e/playwright.config.ts",
     "e2e:demos": "npx playwright test --config=apps/demos/_e2e/playwright.config.ts",

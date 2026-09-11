@@ -13,7 +13,6 @@ const cleanTargets = [
   { path: '../libs/kritzel-react', folders: ['node_modules', 'dist'] },
   { path: '../libs/kritzel-stencil', folders: ['node_modules', 'dist'] },
   { path: '../libs/kritzel-vue', folders: ['node_modules', 'dist'] },
-  { path: '../server/websocket-demo', folders: ['node_modules', 'dist'] },
   { path: '../apps/website', folders: ['node_modules', 'build', '.docusaurus'] },
 ];
 
