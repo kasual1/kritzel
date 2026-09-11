@@ -8,7 +8,7 @@ on:
     paths:
       - 'package.json'
       - 'package-lock.json'
-      - 'website/**'
+      - 'apps/website/**'
       - '.github/workflows/test-website.yml'
   workflow_dispatch:
 
@@ -32,4 +32,4 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Run website tests
-        run: npm run test -w website
+        run: npm run test -w apps/website

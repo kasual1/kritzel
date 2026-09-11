@@ -8,8 +8,8 @@ These pages bridge the gap between abstract architectural concepts and practical
 
 ## File Naming & Location
 
-- File: `website/docs/angular/fundamentals/<concept>.md` (or the corresponding framework directory)
-- Sidebar registration: add page ID `fundamentals/<concept>` to the `Fundamentals` category in `website/sidebars.ts`
+- File: `apps/website/docs/angular/fundamentals/<concept>.md` (or the corresponding framework directory)
+- Sidebar registration: add page ID `fundamentals/<concept>` to the `Fundamentals` category in `apps/website/sidebars.ts`
 
 ## Frontmatter
 

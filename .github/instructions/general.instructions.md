@@ -9,7 +9,7 @@ Kritzel is a monorepo containing the core library and its framework-specific wra
 - **`libs/kritzel-angular`**, **`libs/kritzel-react`**, **`libs/kritzel-vue`**: Framework-specific wrapper libraries.
 - **`apps/demos/*`**: Demo applications for each framework, useful for testing and showcasing features.
 - **`apps/core/*`**: Core harness applications for e2e testing framework integrations.
-- **`website`**: The Docusaurus-based documentation website.
+- **`apps/website`**: The Docusaurus-based documentation website.
 - **`server/websocket-demo`**: A NestJS-based WebSocket server for demoing real-time collaboration features.
 
 ### Stencil Folder Structure

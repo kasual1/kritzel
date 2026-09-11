@@ -51,7 +51,7 @@ When a docs page embeds a demo:
 - React `.tsx`
 - Vue `.vue`
 
-4. For local docs previews, verify `website/docusaurus.config.ts` `customFields.demoBaseUrls` points to running demo dev servers.
+4. For local docs previews, verify `apps/website/docusaurus.config.ts` `customFields.demoBaseUrls` points to running demo dev servers.
 
 ## Dynamic Object Reliability Checks
 

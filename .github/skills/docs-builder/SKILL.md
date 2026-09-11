@@ -1,6 +1,6 @@
 ---
 name: docs-builder
-description: "Create, edit, and maintain Docusaurus documentation pages for the Kritzel website. Covers example pages, API reference pages, and conceptual docs. Use when iterating on content inside website/docs/."
+description: "Create, edit, and maintain Docusaurus documentation pages for the Kritzel website. Covers example pages, API reference pages, and conceptual docs. Use when iterating on content inside apps/website/docs/."
 argument-hint: "Describe the doc page to create or edit"
 ---
 
@@ -8,14 +8,14 @@ argument-hint: "Describe the doc page to create or edit"
 
 ## When to Use
 
-- Creating or editing any `.md` page inside `website/docs/`
+- Creating or editing any `.md` page inside `apps/website/docs/`
 - Adding a new example page, concept page, or API reference page
 - Reviewing whether a doc follows project conventions
 - Registering pages in sidebars
 
 ## Important: Angular-First Workflow
 
-**All documentation is authored targeting the Angular implementation only.** The `website/docs/angular/` folder is the source of truth. A separate skill (`kritzel-docs-example` or a future translation skill) handles porting content to `website/docs/react/` and `website/docs/vue/`.
+**All documentation is authored targeting the Angular implementation only.** The `apps/website/docs/angular/` folder is the source of truth. A separate skill (`kritzel-docs-example` or a future translation skill) handles porting content to `apps/website/docs/react/` and `apps/website/docs/vue/`.
 
 When working with docs-builder:
 
@@ -30,11 +30,11 @@ This separation ensures consistency: one authoritative source is written once, t
 
 | Path | Purpose |
 |------|---------|
-| `website/docs/angular/` | Angular documentation pages (source of truth) |
-| `website/docs/react/` | React docs (translated from Angular — do not edit directly) |
-| `website/docs/vue/` | Vue docs (translated from Angular — do not edit directly) |
-| `website/sidebars.ts` | Sidebar navigation config |
-| `website/src/components/LiveDemo/` | `<LiveDemo>` component for embedded previews |
+| `apps/website/docs/angular/` | Angular documentation pages (source of truth) |
+| `apps/website/docs/react/` | React docs (translated from Angular — do not edit directly) |
+| `apps/website/docs/vue/` | Vue docs (translated from Angular — do not edit directly) |
+| `apps/website/sidebars.ts` | Sidebar navigation config |
+| `apps/website/src/components/LiveDemo/` | `<LiveDemo>` component for embedded previews |
 | `apps/demos/angular/src/app/examples/` | Actual Angular example source code |
 
 ## Documentation Categories
@@ -82,7 +82,7 @@ Apply these rules whenever docs include `<LiveDemo>` (especially during Angular 
 - Never leave stale `repoFiles` paths after restructuring demo source.
 
 3. Validate local preview base URLs used by Docusaurus.
-- `<LiveDemo demoPath="...">` resolves via `website/docusaurus.config.ts` (`customFields.demoBaseUrls`).
+- `<LiveDemo demoPath="...">` resolves via `apps/website/docusaurus.config.ts` (`customFields.demoBaseUrls`).
 - During local development, ensure each framework's base URL points to the actual running dev server port.
 
 4. Prefer explicit framework parity checks after porting.
@@ -105,8 +105,8 @@ Apply these rules whenever docs include `<LiveDemo>` (especially during Angular 
 
 1. Identify which category the page belongs to.
 2. Read the relevant pattern file from `patterns/`.
-3. Author or edit the `.md` file in `website/docs/angular/`.
-4. Register the page in `website/sidebars.ts` if it is new.
+3. Author or edit the `.md` file in `apps/website/docs/angular/`.
+4. Register the page in `apps/website/sidebars.ts` if it is new.
 5. Verify `LiveDemo` references point to existing demo components.
 
 ## Translation Workflow (When Explicitly Requested)

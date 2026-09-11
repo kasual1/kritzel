@@ -12,7 +12,7 @@
     "apps/core/angular",
     "apps/core/react",
     "apps/core/vue",
-    "website",
+    "apps/website",
     "websocket"
   ],
   "devDependencies": {
@@ -51,9 +51,9 @@
     "e2e:update-screenshots": "npx playwright test --config=apps/core/_e2e/playwright.config.ts --update-snapshots=all && npx playwright test --config=apps/demos/_e2e/playwright.config.ts --update-snapshots=all",
     "e2e:core:report": "npx playwright show-report apps/core/_e2e/playwright-report",
     "e2e:demos:report": "npx playwright show-report apps/demos/_e2e/playwright-report",
-    "docs:start": "cd website && npm run start",
-    "docs:build": "cd website && npm run build",
-    "docs:serve": "cd website && npm run serve"
+    "docs:start": "cd apps/website && npm run start",
+    "docs:build": "cd apps/website && npm run build",
+    "docs:serve": "cd apps/website && npm run serve"
   },
   "overrides": {
     "axios": "^0.30.0",

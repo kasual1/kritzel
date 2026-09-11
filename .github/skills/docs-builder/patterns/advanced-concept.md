@@ -6,10 +6,10 @@ Advanced pages explain specialized Kritzel integrations and capabilities that bu
 
 ## File Naming & Location
 
-- Angular source page: `website/docs/angular/advanced/<concept>.md`.
-- React translation: `website/docs/react/advanced/<concept>.md`.
-- Vue translation: `website/docs/vue/advanced/<concept>.md`.
-- Sidebar registration: add the document ID `advanced/<concept>` to the `Advanced` category in `website/sidebars.ts`.
+- Angular source page: `apps/website/docs/angular/advanced/<concept>.md`.
+- React translation: `apps/website/docs/react/advanced/<concept>.md`.
+- Vue translation: `apps/website/docs/vue/advanced/<concept>.md`.
+- Sidebar registration: add the document ID `advanced/<concept>` to the `Advanced` category in `apps/website/sidebars.ts`.
 - Keep the document path, sidebar ID, demo route, and demo source directory aligned for every framework.
 
 ## Frontmatter
@@ -89,7 +89,7 @@ Keep examples focused. Do not turn an Advanced page into a complete application 
 
 ## Validation Checklist
 
-1. The page exists under `website/docs/<framework>/advanced/`.
+1. The page exists under `apps/website/docs/<framework>/advanced/`.
 2. The sidebar contains `advanced/<concept>` for every configured docs plugin.
 3. Every LiveDemo route exists in the target framework router.
 4. Every `repoFiles` path exists in the target demo project.
