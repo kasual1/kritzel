@@ -3,9 +3,12 @@ const path = require('path');
 
 // Project paths and generated folders to clean
 const cleanTargets = [
-  { path: '../demos/angular', folders: ['node_modules', 'dist'] },
-  { path: '../demos/react', folders: ['node_modules', 'dist'] },
-  { path: '../demos/vue', folders: ['node_modules', 'dist'] },
+  { path: '../apps/demos/angular', folders: ['node_modules', 'dist', '.angular'] },
+  { path: '../apps/demos/react', folders: ['node_modules', 'dist'] },
+  { path: '../apps/demos/vue', folders: ['node_modules', 'dist'] },
+  { path: '../apps/core/angular', folders: ['node_modules', 'dist', '.angular'] },
+  { path: '../apps/core/react', folders: ['node_modules', 'dist'] },
+  { path: '../apps/core/vue', folders: ['node_modules', 'dist'] },
   { path: '../libs/kritzel-angular', folders: ['node_modules', 'dist'] },
   { path: '../libs/kritzel-react', folders: ['node_modules', 'dist'] },
   { path: '../libs/kritzel-stencil', folders: ['node_modules', 'dist'] },

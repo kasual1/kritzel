@@ -110,7 +110,7 @@ describe('LiveDemo contract checks', () => {
     });
 
     test(`${framework} docs reference demo sources that exist on disk`, () => {
-      const demoRoot = path.resolve(websiteRoot, '..', 'demos', framework);
+      const demoRoot = path.resolve(websiteRoot, '..', 'apps', 'demos', framework);
       const missing = getAllLiveDemoBlocks(framework)
         .flatMap((block) => block.repoFiles.map((repoFile) => ({ block, repoFile })))
         .filter(({ repoFile }) => !fs.existsSync(path.join(demoRoot, repoFile)))

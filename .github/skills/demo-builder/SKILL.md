@@ -1,6 +1,6 @@
 ---
 name: demo-builder
-description: "Create, edit, and maintain runnable Kritzel demo pages in demos/angular, demos/react, and demos/vue. Covers routing, framework themes, editor/engine refs, and docs LiveDemo compatibility. Use when implementing demo components under demos/."
+description: "Create, edit, and maintain runnable Kritzel demo pages in apps/demos/angular, apps/demos/react, and apps/demos/vue. Covers routing, framework themes, editor/engine refs, and docs LiveDemo compatibility. Use when implementing demo components under apps/demos/."
 argument-hint: "Describe the demo page or demo feature to create or update"
 ---
 
@@ -8,7 +8,7 @@ argument-hint: "Describe the demo page or demo feature to create or update"
 
 ## When to Use
 
-- Creating or editing runnable demo pages in `demos/angular/`, `demos/react/`, or `demos/vue/`
+- Creating or editing runnable demo pages in `apps/demos/angular/`, `apps/demos/react/`, or `apps/demos/vue/`
 - Registering new demo routes in Angular, React, or Vue routers
 - Aligning demo paths and source files with docs `<LiveDemo>` embeds
 - Porting equivalent demos across frameworks while preserving behavior
@@ -16,24 +16,24 @@ argument-hint: "Describe the demo page or demo feature to create or update"
 
 ## Scope
 
-This skill owns demo implementation patterns for files under `demos/**`.
+This skill owns demo implementation patterns for files under `apps/demos/**`.
 
 It complements docs-builder:
 - docs-builder owns markdown authoring in `website/docs/**`
-- demo-builder owns runnable demo source in `demos/**`
+- demo-builder owns runnable demo source in `apps/demos/**`
 
 ## Project Layout
 
 | Framework | Demo root | Route registry |
 |---|---|---|
-| Angular | `demos/angular/src/app/` | `demos/angular/src/app/app.routes.ts` |
-| React | `demos/react/src/pages/` | `demos/react/src/App.tsx` |
-| Vue | `demos/vue/src/pages/` | `demos/vue/src/router.ts` |
+| Angular | `apps/demos/angular/src/app/` | `apps/demos/angular/src/app/app.routes.ts` |
+| React | `apps/demos/react/src/pages/` | `apps/demos/react/src/App.tsx` |
+| Vue | `apps/demos/vue/src/pages/` | `apps/demos/vue/src/router.ts` |
 
 ## Categories and Routes
 
 Demo folders mirror the documentation categories, and **the route is the folder path**:
-`demos/<fw>/<root>/fundamentals/tools/<file>` is served at `/fundamentals/tools/<name>`.
+`apps/demos/<fw>/<root>/fundamentals/tools/<file>` is served at `/fundamentals/tools/<name>`.
 
 | Category | Folder | Example route |
 |---|---|---|

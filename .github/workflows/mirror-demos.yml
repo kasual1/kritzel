@@ -1,4 +1,4 @@
-# Mirrors the demos/ folder to kasual1/kritzel-demos, replacing local file:
+# Mirrors the apps/demos/ folder to kasual1/kritzel-demos, replacing local file:
 # dependencies in each package.json with the published npm package version.
 # We do this in order to serve the demos from a public repository so that it
 # can be accessed via stackblitz for free.
@@ -38,7 +38,7 @@ jobs:
               --exclude='local-libs/' \
               --exclude='node_modules/' \
               --exclude='.angular/' \
-              demos/$demo/ demos-repo/$demo/
+                apps/demos/$demo/ demos-repo/$demo/
           done
 
       - name: "Replace file: dependencies with npm versions"

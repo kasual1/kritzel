@@ -41,8 +41,8 @@ The examples on a Fundamentals page are **smaller** and **less detailed** than t
 - Focus on **"How to do ONE specific thing."**
 - **Descriptive Text is Required:** Every section containing a `<LiveDemo>` MUST include descriptive text explaining the purpose of the demo.
 - **Strict `<LiveDemo>` Usage:** NEVER use raw inline markdown code blocks (e.g., \`\`\`typescript\`) to demonstrate API usage. ALWAYS use the `<LiveDemo>` component to embed a working example.
-- **Proactive Demo Creation:** If the underlying Angular component required for the `<LiveDemo>` does not exist in `demos/angular/src/app/...`, you MUST proactively create it. Do not fall back to inline code simply because the demo file is missing.
-- **Demo Routing Registration:** Whenever you create a new concept demo component, you must also register its route in the application's routing (`demos/angular/src/app/app.routes.ts`) so the `iframeUrl` correctly resolves and the demo loads on the site.
+- **Proactive Demo Creation:** If the underlying Angular component required for the `<LiveDemo>` does not exist in `apps/demos/angular/src/app/...`, you MUST proactively create it. Do not fall back to inline code simply because the demo file is missing.
+- **Demo Routing Registration:** Whenever you create a new concept demo component, you must also register its route in the application's routing (`apps/demos/angular/src/app/app.routes.ts`) so the `iframeUrl` correctly resolves and the demo loads on the site.
 - **No Duplicate Source Code:** Do not add raw code blocks below a `<LiveDemo>` embed. The `<LiveDemo>` component securely tracks and references the hosted code on GitHub.
 - Do not build full, robust applications here; emphasize simplicity and clarity.
 - **Do not** write extensive step-by-step tutorials here.
@@ -106,8 +106,8 @@ Based on past learnings, always strictly follow these operational rules when upd
 1. **Safe File Editing:** If a documentation file already exists, **NEVER** use terminal shell commands (like PowerShell's `Set-Content` or `echo`) to rewrite or overwrite the file. Shell escaping frequently corrupts Markdown syntax (e.g., turning ``` `method()` ``` into `\method()\`). Always use the system's native `replace_string_in_file` or edit tools to safely update file contents.
 2. **Strict Markdown Formatting:** Ensure all methods, variable names, bindings, and components mentioned in paragraph text are properly wrapped in backticks (e.g., `` `[activeWorkspaceId]` ``). Do NOT escape backticks.
 3. **Demo Component Integration:** Creating demo components requires a full loop:
-  - Create the `<concept>-<focus>.component.ts` file in `demos/angular/src/app/fundamentals/<concept>/`.
-  - Update `demos/angular/src/app/app.routes.ts` to import the file and add its route to the `fundamentals` children array.
+  - Create the `<concept>-<focus>.component.ts` file in `apps/demos/angular/src/app/fundamentals/<concept>/`.
+  - Update `apps/demos/angular/src/app/app.routes.ts` to import the file and add its route to the `fundamentals` children array.
    - Without the route, the `<LiveDemo>` iframe will fail to load the preview.
 - **Relevant Usage:** (CSS Variable mapping and toolbar configuration objects).
 
