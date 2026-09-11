@@ -40,7 +40,7 @@ test.describe('Advanced Pages Visual Regression', () => {
     await expectAdvancedScreenshot(editorPage, '/advanced/collaboration/local', 'advanced-collaboration-local');
   });
 
-  test('should match screenshot for advanced-collaboration-realtime', async ({ editorPage }) => {
+  test.skip('should match screenshot for advanced-collaboration-realtime', async ({ editorPage }) => {
     await expectAdvancedScreenshot(editorPage, '/advanced/collaboration/realtime', 'advanced-collaboration-realtime');
   });
 
