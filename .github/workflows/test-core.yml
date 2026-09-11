@@ -1,5 +1,5 @@
-# Builds the Stencil library, then runs unit tests and e2e tests in parallel.
-name: Run tests
+# Builds the core libraries, then runs unit tests and core e2e tests in parallel.
+name: Run core tests
 
 on:
   push:
@@ -68,7 +68,7 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
-  # --- Run E2E Tests (after Stencil build, parallel with unit tests) ---
+  # --- Run Core E2E Tests (after Stencil build, parallel with unit tests) ---
   test-e2e:
     runs-on: ubuntu-latest
     needs: build-stencil
@@ -108,26 +108,19 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run functional e2e tests (${{ matrix.project }})
-        run: npx playwright test --config=e2e/playwright.config.ts --project=e2e-${{ matrix.project }}
-        env:
-          E2E_PROJECT: e2e-${{ matrix.project }}
-
-      - name: Run visual regression tests (${{ matrix.project }})
-        run: npx playwright test --config=e2e/playwright.config.ts --project=demo-${{ matrix.project }}
-        env:
-          E2E_PROJECT: demo-${{ matrix.project }}
+      - name: Run core e2e tests (${{ matrix.project }})
+        run: npx playwright test --config=apps/core/_e2e/playwright.config.ts --project=core-${{ matrix.project }}
 
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v6
         with:
           name: playwright-report-${{ matrix.project }}
-          path: e2e/playwright-report/
+          path: apps/core/_e2e/playwright-report/
 
       - name: Upload test results (screenshot diffs)
         if: failure()
         uses: actions/upload-artifact@v6
         with:
           name: test-results-${{ matrix.project }}
-          path: e2e/test-results/
+          path: apps/core/_e2e/test-results/
