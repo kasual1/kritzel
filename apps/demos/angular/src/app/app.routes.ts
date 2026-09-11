@@ -44,8 +44,6 @@ import { CollaborationLocalComponent } from './pages/advanced/collaboration/coll
 import { CollaborationRealtimeComponent } from './pages/advanced/collaboration/collaboration-realtime.component';
 import { DynamicObjectsHtmlComponent } from './pages/advanced/dynamic-objects/dynamic-objects-html.component';
 import { DynamicObjectsComponentComponent } from './pages/advanced/dynamic-objects/dynamic-objects-component.component';
-import { DynamicObjectsElementComponent } from './pages/advanced/dynamic-objects/dynamic-objects-element.component';
-import { DynamicObjectsElementHtmlComponent } from './pages/advanced/dynamic-objects/dynamic-objects-element-html.component';
 import { ImportExportViewportExportComponent } from './pages/advanced/import-export/import-export-viewport-export.component';
 import { ImportExportWorkspaceExportComponent } from './pages/advanced/import-export/import-export-workspace-export.component';
 import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-export/import-export-workspace-import.component';
@@ -168,8 +166,6 @@ export const routes: Routes = [
         children: [
           { path: 'html', component: DynamicObjectsHtmlComponent },
           { path: 'component', component: DynamicObjectsComponentComponent },
-          { path: 'element', component: DynamicObjectsElementComponent },
-          { path: 'element-html', component: DynamicObjectsElementHtmlComponent },
         ],
       },
       {
