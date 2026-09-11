@@ -44,12 +44,12 @@ test.describe('Advanced Pages Visual Regression', () => {
     await expectAdvancedScreenshot(editorPage, '/advanced/collaboration/realtime', 'advanced-collaboration-realtime');
   });
 
-  test('should match screenshot for advanced-dynamic-objects-element', async ({ editorPage }) => {
-    await expectAdvancedScreenshot(editorPage, '/advanced/dynamic-objects/element', 'advanced-dynamic-objects-element');
+  test('should match screenshot for advanced-dynamic-objects-html', async ({ editorPage }) => {
+    await expectAdvancedScreenshot(editorPage, '/advanced/dynamic-objects/html', 'advanced-dynamic-objects-html');
   });
 
-  test('should match screenshot for advanced-dynamic-objects-element-html', async ({ editorPage }) => {
-    await expectAdvancedScreenshot(editorPage, '/advanced/dynamic-objects/element-html', 'advanced-dynamic-objects-element-html');
+  test('should match screenshot for advanced-dynamic-objects-component', async ({ editorPage }) => {
+    await expectAdvancedScreenshot(editorPage, '/advanced/dynamic-objects/component', 'advanced-dynamic-objects-component');
   });
 
 });
