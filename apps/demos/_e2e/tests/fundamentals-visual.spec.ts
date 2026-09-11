@@ -92,6 +92,10 @@ test.describe('Fundamentals Pages Visual Regression', () => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/objects/selection', 'fundamentals-objects-selection');
   });
 
+  test('should match screenshot for fundamentals-objects-update', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/objects/update', 'fundamentals-objects-update');
+  });
+
   test('should match screenshot for fundamentals-persistence-local', async ({ editorPage }) => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/persistence/local', 'fundamentals-persistence-local');
   });
