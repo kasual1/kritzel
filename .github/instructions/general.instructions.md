@@ -40,11 +40,11 @@ The core Stencil library follows a structured approach to organize its component
 - Unit test files use the `.spec.ts` extension and should be placed in the same directory as the file they are testing (e.g., `my-class.ts` and `my-class.spec.ts` should be in the same folder).
 
 ### E2E Testing
-- E2E test files use the `.e2e.ts` extension and are placed inside `src/e2e/tests`.
+- Core e2e tests live in `apps/core/_e2e/tests`; docs-facing demo e2e tests live in `apps/demos/_e2e/tests`.
+- Screenshot baselines live beside their owning e2e project under `apps/core/_e2e/screenshots` or `apps/demos/_e2e/screenshots`.
 - Tests use the Page Object Model (POM) pattern.
-- Page object classes live under `src/e2e/pages` and have the `.page.ts` extension.
 - Tests exclusively use page object classes to interact with the application.
-- E2E tests have a strong focus on screenshot testing using Stencil's `compareScreenshot` API.
+- E2E tests have a strong focus on Playwright screenshot testing.
 
 ### Theming
 Kritzel uses a CSS custom property (CSS variables) based theming system. All themeable properties are defined as `--kritzel-*` CSS variables in component stylesheets.

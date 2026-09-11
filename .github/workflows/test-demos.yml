@@ -1,0 +1,97 @@
+# Builds the core libraries, then runs docs-facing demo e2e tests.
+name: Run demo tests
+
+on:
+  push:
+    branches-ignore:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-stencil:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.18.0"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build Kritzel Stencil components
+        run: npm run build -w libs/kritzel-stencil
+
+      - name: Build Kritzel Angular library
+        run: npm run build -w libs/kritzel-angular
+
+      - name: Upload Stencil and Angular dist
+        uses: actions/upload-artifact@v6
+        with:
+          name: stencil-dist
+          path: |
+            libs/kritzel-stencil/dist
+            libs/kritzel-stencil/loader
+            libs/kritzel-angular/dist/lib
+
+  test-demos:
+    runs-on: ubuntu-latest
+    needs: build-stencil
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [angular, react, vue]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.18.0"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Download Stencil dist
+        uses: actions/download-artifact@v6
+        with:
+          name: stencil-dist
+          path: libs
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build Kritzel React library
+        if: matrix.project == 'react'
+        run: npm run build -w libs/kritzel-react
+
+      - name: Build Kritzel Vue library
+        if: matrix.project == 'vue'
+        run: npm run build -w libs/kritzel-vue
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run demo e2e tests (${{ matrix.project }})
+        run: npx playwright test --config=apps/demos/_e2e/playwright.config.ts --project=demos-${{ matrix.project }}
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: apps/demos/_e2e/playwright-report/
+
+      - name: Upload test results (screenshot diffs)
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: test-results-${{ matrix.project }}
+          path: apps/demos/_e2e/test-results/
