@@ -20,6 +20,6 @@ export class EditorHocuspocusPageComponent {
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
-    providers: [HocuspocusSyncProvider.with({ url: 'wss://your-hocuspocus-server.com' })],
+    providers: [HocuspocusSyncProvider.with({ url: 'wss://your-hocuspocus-server.com', connectionTimeout: 2000 })],
   };
 }

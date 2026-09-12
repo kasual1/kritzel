@@ -4,7 +4,7 @@ import { vueThemeLight } from '../../const/vue-theme-light'
 import { vueThemeDark } from '../../const/vue-theme-dark'
 
 const syncConfig = {
-  providers: [HocuspocusSyncProvider.with({ url: 'wss://your-hocuspocus-server.com' })],
+  providers: [HocuspocusSyncProvider.with({ url: 'wss://your-hocuspocus-server.com', connectionTimeout: 2000 })],
 }
 </script>
 
