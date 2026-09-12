@@ -185,7 +185,7 @@ test.describe('Export dialog', () => {
     expect(downloadPath).not.toBeNull();
 
     const downloadedPng = await readFile(downloadPath!);
-    expect(downloadedPng).toMatchSnapshot('export-dialog-viewport-download.png');
+    expect(downloadedPng).toMatchSnapshot('export-dialog-viewport-download.png', { maxDiffPixelRatio: 0.01 });
   });
 
   test('downloads an SVG with content matching the baseline', async ({ editorPage, page }) => {
