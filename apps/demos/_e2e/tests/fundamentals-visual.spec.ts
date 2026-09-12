@@ -28,11 +28,14 @@ async function expectFundamentalScreenshot(
   editorPage: Parameters<typeof waitForFundamentalPage>[0],
   route: string,
   routeName: string,
+  target: 'page' | 'editor' = 'page',
 ) {
   await editorPage.goto(route);
   await waitForFundamentalPage(editorPage);
 
-  await expect(editorPage.page).toHaveScreenshot(`${routeName}.png`);
+  const screenshotTarget = target === 'editor' ? editorPage.page.locator('kritzel-editor').first() : editorPage.page;
+
+  await expect(screenshotTarget).toHaveScreenshot(`${routeName}.png`);
 }
 
 test.describe('Fundamentals Pages Visual Regression', () => {
@@ -188,12 +191,12 @@ test.describe('Fundamentals Pages Visual Regression', () => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/create', 'fundamentals-workspaces-create');
   });
 
-  test.skip('should match screenshot for fundamentals-workspaces-read', async ({ editorPage }) => {
-    await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/read', 'fundamentals-workspaces-read');
+  test('should match screenshot for fundamentals-workspaces-read', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/read', 'fundamentals-workspaces-read', 'editor');
   });
 
   test('should match screenshot for fundamentals-workspaces-update', async ({ editorPage }) => {
-    await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/update', 'fundamentals-workspaces-update');
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/update', 'fundamentals-workspaces-update', 'editor');
   });
 
   test('should match screenshot for fundamentals-workspaces-delete', async ({ editorPage }) => {
@@ -201,6 +204,6 @@ test.describe('Fundamentals Pages Visual Regression', () => {
   });
 
   test('should match screenshot for fundamentals-workspaces-switch', async ({ editorPage }) => {
-    await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/switch', 'fundamentals-workspaces-switch');
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/switch', 'fundamentals-workspaces-switch', 'editor');
   });
 });
