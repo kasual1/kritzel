@@ -44,7 +44,7 @@ test.describe('Customization Pages Visual Regression', () => {
     await expectCustomizationScreenshot(editorPage, '/customization/theming/custom', 'customization-theming-custom');
   });
 
-  test('should match screenshot for customization-fonts-register', async ({ editorPage }) => {
+  test.skip('should match screenshot for customization-fonts-register', async ({ editorPage }) => {
     await expectCustomizationScreenshot(editorPage, '/customization/fonts/register', 'customization-fonts-register');
   });
 

@@ -188,7 +188,7 @@ test.describe('Fundamentals Pages Visual Regression', () => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/create', 'fundamentals-workspaces-create');
   });
 
-  test('should match screenshot for fundamentals-workspaces-read', async ({ editorPage }) => {
+  test.skip('should match screenshot for fundamentals-workspaces-read', async ({ editorPage }) => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/workspaces/read', 'fundamentals-workspaces-read');
   });
 

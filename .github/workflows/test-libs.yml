@@ -33,7 +33,7 @@ jobs:
         run: npm run build -w libs/kritzel-angular
 
       - name: Upload Stencil and Angular dist
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: stencil-dist
           path: |
@@ -58,7 +58,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: stencil-dist
           path: libs
@@ -90,7 +90,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: stencil-dist
           path: libs
@@ -114,14 +114,14 @@ jobs:
 
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-core-${{ matrix.project }}
           path: apps/core/_e2e/playwright-report/
 
       - name: Upload test results (screenshot diffs)
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-core-${{ matrix.project }}
           path: apps/core/_e2e/test-results/
@@ -147,7 +147,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: stencil-dist
           path: libs
@@ -171,14 +171,14 @@ jobs:
 
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report-demos-${{ matrix.project }}
           path: apps/demos/_e2e/playwright-report/
 
       - name: Upload test results (screenshot diffs)
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: test-results-demos-${{ matrix.project }}
           path: apps/demos/_e2e/test-results/
