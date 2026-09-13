@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { EditorIsReadyEvent, KritzelEditor } from 'kritzel-angular';
+import { EditorIsReadyEvent, KritzelEditor, KritzelLoginConfig } from 'kritzel-angular';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -20,10 +20,6 @@ const providerIcons: Record<string, string> = {
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar-note">
-      <strong>Login Providers:</strong>
-      <span>Each entry in loginConfig.providers becomes a button in the dialog.</span>
-    </div>
     <kritzel-editor
       editorId="user-management-providers"
       [loginConfig]="loginConfig"
@@ -73,14 +69,12 @@ export class UserManagementProvidersComponent {
 
   providerIcons = providerIcons;
 
-  loginConfig = {
+  loginConfig: KritzelLoginConfig = {
     title: 'Sign in to Kritzel',
-    subtitle: 'Choose a provider to continue to your workspace.',
     providers: [
-      { name: 'google', label: 'Continue with Google', icon: 'auth-google' },
-      { name: 'github', label: 'Continue with GitHub', icon: 'auth-github' },
-      { name: 'microsoft', label: 'Continue with Microsoft', icon: 'auth-microsoft' },
-      { name: 'email', label: 'Continue with Email', icon: 'auth-email' },
+      { name: 'google', icon: 'google', label: 'Continue with Google' },
+      { name: 'facebook', icon: 'facebook', label: 'Continue with Facebook' },
+      { name: 'github', icon: 'github', label: 'Continue with GitHub'},
     ],
   };
 

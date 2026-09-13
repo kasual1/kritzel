@@ -11,15 +11,17 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel uses [Yjs](https://yjs.dev/) CRDTs under the hood for all data synchronization and persistence. Every canvas object lives inside a Yjs document (`Y.Doc`), which means changes merge conflict-free across any number of clients — whether they are browser tabs on the same machine or users on opposite sides of the world.
+Collaboration in Kritzel is built on sync providers, the same mechanism used for persistence. Register collaboration providers through the editor's `syncConfig` prop to control *where* and *how* document state is shared across tabs and users. Providers are composable and can combine local browser channels with network transport.
 
-You configure collaboration through the `syncConfig` prop on `<kritzel-editor>` (or `<kritzel-engine>`). This prop accepts a list of **providers** that control *where* and *how* document state is shared. Providers are composable and can combine local browser channels with network transport.
+Kritzel comes with the following built-in collaboration providers:
+
+- [BroadcastChannel Provider](../api-reference/providers.md#broadcastchannel-provider)
+- [WebSocket Provider](../api-reference/providers.md#websocket-provider)
+- [Hocuspocus Provider](../api-reference/providers.md#hocuspocus-provider)
 
 ## Cross-Tab Sync
 
-For same-device collaboration across multiple browser tabs, use `BroadcastSyncProvider`. It synchronizes document updates in real time through the BroadcastChannel API.
-
-This is useful when users open the same board in multiple tabs and expect immediate consistency.
+Use `BroadcastSyncProvider` to synchronize document updates across browser tabs on the same device through the BroadcastChannel API.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -29,22 +31,13 @@ This is useful when users open the same board in multiple tabs and expect immedi
 
 ## Real-Time Multi-User Sync
 
-To collaborate across devices or users, add a network provider. Kritzel supports two WebSocket-based providers:
-
-- `WebSocketSyncProvider` — connects to any [y-websocket](https://github.com/yjs/y-websocket)-compatible server.
-- `HocuspocusSyncProvider` — connects to a [Hocuspocus](https://tiptap.dev/hocuspocus) server with built-in support for authentication tokens and multiplexed connections.
-
-A common production pattern combines local persistence (for offline resilience) with a network provider (for real-time sync):
+To collaborate across devices or users, combine local persistence with a network provider. A common production pattern uses `IndexedDBSyncProvider` for offline resilience together with `HocuspocusSyncProvider` (or `WebSocketSyncProvider`) for real-time sync. The `HocuspocusSyncProvider` also supports connection multiplexing for managing multiple documents efficiently.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/advanced/collaboration/realtime"
   repoFiles={['src/app/pages/advanced/collaboration/collaboration-realtime.component.ts']}
 />
-
-## Multiplexing Connections
-
-When your application manages multiple documents simultaneously (e.g. a workspace switcher), the `HocuspocusSyncProvider` supports multiplexing — sharing a single WebSocket connection for all documents. This reduces connection overhead, avoids redundant authentication handshakes, and makes document switching instantaneous since the connection is already established.
 
 ## API Details
 

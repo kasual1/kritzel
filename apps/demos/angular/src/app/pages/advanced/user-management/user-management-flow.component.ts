@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewChild, signal } from '@angular/core';
-import { EditorIsReadyEvent, IKritzelUser, KritzelEditor, LoginEvent } from 'kritzel-angular';
+import { EditorIsReadyEvent, IKritzelUser, KritzelEditor, KritzelLoginConfig, LoginEvent } from 'kritzel-angular';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -96,12 +96,13 @@ export class UserManagementFlowComponent {
 
   status = signal('Signed out');
 
-  loginConfig = {
+  loginConfig: KritzelLoginConfig = {
     title: 'Sign in',
     subtitle: 'Authentication is handled by your application.',
     providers: [
-      { name: 'google', label: 'Continue with Google' },
-      { name: 'github', label: 'Continue with GitHub' },
+      { name: 'google', icon: 'google', label: 'Continue with Google' },
+      { name: 'google', icon: 'facebook', label: 'Continue with Google' },
+      { name: 'github', icon: 'github', label: 'Continue with GitHub' },
     ],
   };
 

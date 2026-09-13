@@ -10,6 +10,13 @@ export const angularThemeLight: KritzelTheme = {
     primaryTextColor: '#ffffff',
     focusRingColor: 'rgba(221, 0, 48, 0.2)',
   },
+  button: {
+    ...lightTheme.button,
+    primaryBackgroundColor: '#dd0031',
+    primaryHoverBackgroundColor: '#b70028',
+    primaryActiveBackgroundColor: '#9f0023',
+    primaryColor: '#ffffff',
+  },
   selection: {
     ...lightTheme.selection,
     borderColor: '#dd0031',
