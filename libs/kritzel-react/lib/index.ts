@@ -73,6 +73,8 @@ export type {
     KritzelTerms,
     KritzelTermKey,
     KritzelTermVars,
+    KritzelLoginConfig,
+    KritzelLoginProvider,
     LoginEvent,
     EditorIsReadyEvent,
     ActiveWorkspaceChangeEvent,
