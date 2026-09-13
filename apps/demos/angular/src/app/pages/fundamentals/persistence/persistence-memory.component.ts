@@ -1,5 +1,11 @@
-import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
-import { KritzelEditor, InMemorySyncProvider, KritzelSyncConfig, EditorIsReadyEvent } from 'kritzel-angular';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import {
+  ActiveWorkspaceChangeEvent,
+  InMemorySyncProvider,
+  KritzelEditor,
+  KritzelSyncConfig,
+  KritzelWorkspace,
+} from 'kritzel-angular';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -11,13 +17,21 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
-      <span class="label">Persistence Provider:</span>
-      <span class="status">In-Memory enabled</span>
+      @for (workspace of workspaces(); track workspace.id) {
+        <button
+          [class.active]="workspace.id === activeWorkspaceId()"
+          (click)="switchTo(workspace)"
+        >
+          {{ workspace.name }}
+        </button>
+      }
     </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
         editorId="persistence-memory"
         [syncConfig]="syncConfig"
+        [workspaces]="workspaces()"
+        [activeWorkspaceId]="activeWorkspaceId()"
         [theme]="'light'"
         [themes]="themes"
         [loginConfig]="undefined"
@@ -25,7 +39,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady($event)"
+        (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
       ></kritzel-editor>
     </div>
   `,
@@ -61,22 +75,24 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   ],
 })
 export class PersistenceMemoryComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length > 0) {
-      return;
-    }
+  workspaces = signal<KritzelWorkspace[]>([
+    new KritzelWorkspace({ id: 'board-1', name: 'Board 1', objects: createSeedObjects() }),
+    new KritzelWorkspace({ id: 'board-2', name: 'Board 2', objects: createSeedObjects() }),
+    new KritzelWorkspace({ id: 'board-3', name: 'Board 3', objects: createSeedObjects() }),
+  ]);
+  activeWorkspaceId = signal<string | undefined>('board-1');
 
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
+  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
+    this.activeWorkspaceId.set(event.detail.id);
+  }
+
+  switchTo(workspace: KritzelWorkspace) {
+    this.activeWorkspaceId.set(workspace.id);
   }
 }
