@@ -1,28 +1,26 @@
-import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import {
+  ActiveWorkspaceChangeEvent,
   KritzelEditor,
   IndexedDBSyncProvider,
   KritzelSyncConfig,
-  EditorIsReadyEvent,
+  KritzelWorkspace,
 } from 'kritzel-angular';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
-import { ToolbarComponent } from '../../../components/toolbar.component';
 
 @Component({
   selector: 'app-persistence-local',
-  imports: [KritzelEditor, ToolbarComponent],
+  imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <app-toolbar>
-      <span class="label">Persistence Provider:</span>
-      <span class="status">IndexedDB enabled</span>
-    </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
         editorId="persistence-local"
         [syncConfig]="syncConfig"
+        [workspaces]="workspaces()"
+        [activeWorkspaceId]="activeWorkspaceId()"
         [theme]="'light'"
         [themes]="themes"
         [loginConfig]="undefined"
@@ -30,7 +28,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady($event)"
+        (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
       ></kritzel-editor>
     </div>
   `,
@@ -86,22 +84,23 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   ],
 })
 export class PersistenceLocalComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
     providers: [IndexedDBSyncProvider],
+    appStateId: 'persistence-local',
   };
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length > 0) {
-      return;
-    }
+  workspaces = signal<KritzelWorkspace[]>([
+    new KritzelWorkspace({
+      id: 'persistence-local-board',
+      name: 'Local Board',
+      objects: createSeedObjects(),
+    }),
+  ]);
+  activeWorkspaceId = signal<string | undefined>('persistence-local-board');
 
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
+  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
+    this.activeWorkspaceId.set(event.detail.id);
   }
 }
