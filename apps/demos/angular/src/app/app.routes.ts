@@ -2,7 +2,9 @@ import { Routes } from '@angular/router';
 import { QuickStartComponent } from './pages/getting-started/quick-start.component';
 import { BasicUsageComponent } from './pages/getting-started/basic-usage.component';
 import { UserManagementProvidersComponent } from './pages/advanced/user-management/user-management-providers.component';
-import { UserManagementFlowComponent } from './pages/advanced/user-management/user-management-flow.component';
+import { UserManagementLoginComponent } from './pages/advanced/user-management/user-management-login.component';
+import { UserManagementUsersComponent } from './pages/advanced/user-management/user-management-users.component';
+import { UserManagementLogoutComponent } from './pages/advanced/user-management/user-management-logout.component';
 import { ContextMenusCanvasQuickActionsComponent } from './pages/fundamentals/controls/context-menus-canvas-quick-actions.component';
 import { ContextMenusClipboardActionsComponent } from './pages/fundamentals/controls/context-menus-clipboard-actions.component';
 import { ContextMenusSmartConditionalComponent } from './pages/fundamentals/controls/context-menus-smart-conditional.component';
@@ -57,6 +59,10 @@ import { ImageAnnotationStudioComponent } from './pages/examples/image-annotatio
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'getting-started/quick-start' },
+  {
+    path: 'demos',
+    loadComponent: () => import('./pages/demo-index.component').then(module => module.DemoIndexComponent),
+  },
   {
     path: 'getting-started',
     children: [
@@ -145,7 +151,9 @@ export const routes: Routes = [
         path: 'user-management',
         children: [
           { path: 'providers', component: UserManagementProvidersComponent },
-          { path: 'flow', component: UserManagementFlowComponent },
+          { path: 'login', component: UserManagementLoginComponent },
+          { path: 'users', component: UserManagementUsersComponent },
+          { path: 'logout', component: UserManagementLogoutComponent },
         ],
       },
       {

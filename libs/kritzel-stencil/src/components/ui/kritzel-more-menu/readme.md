@@ -60,6 +60,16 @@ A button component that displays a dropdown menu when clicked. Commonly used for
 
 ## Methods
 
+### `close() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `open() => Promise<void>`
 
 

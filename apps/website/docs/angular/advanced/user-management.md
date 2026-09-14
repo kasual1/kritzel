@@ -11,31 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel ships a presentational login dialog (`kritzel-login-dialog`) that `<kritzel-editor>` renders as soon as a `[loginConfig]` is supplied. The dialog only displays provider buttons and emits events - the actual authentication is always performed by your application.
-
-Providing a `loginConfig` has two effects: a **Sign in** button appears in the editor header while no authenticated user is set, and features that require an account (such as sharing a workspace) open the dialog instead of failing.
-
-The configuration object has the following shape:
-
-```ts
-interface KritzelLoginConfig {
-  providers: KritzelLoginProvider[];
-  title?: string;
-  subtitle?: string;
-}
-
-interface KritzelLoginProvider {
-  name: string;
-  label: string;
-  icon?: string;
-}
-```
+Kritzel comes with a whole set of user management features, such as configurable login dialogs and user profile handling. While the editor provides the UI and event hooks, your application is responsible for performing the actual authentication and managing user state.
 
 ## Configuring Providers
 
-Every entry in `providers` becomes one button in the dialog, in declaration order. The `name` is the identifier your application receives when the button is clicked, while `label` controls the visible text. The optional `icon` references a name resolved through the shared `KritzelIconRegistry`, so provider marks are registered with the `[customSvgIcons]` binding just like any other custom icon.
-
-`title` and `subtitle` override the localized defaults of the dialog header. When `title` is omitted, the active locale's `login.dialogTitle` term is used.
+To enable Kritzel's user management features, you need to provide a `loginConfig` with at least one authentication provider. This will render the login button at the top right of the editor and display the login dialog with a button of the corresponding provider.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -43,19 +23,34 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
   repoFiles={['src/app/pages/advanced/user-management/user-management-providers.component.ts']}
 />
 
-## Handling the Login Flow
+## Handling the Login
 
-Clicking a provider button puts that button into a loading state and emits the editor's `(login)` output with a `LoginEvent` containing the provider `name`. Your application performs the sign-in and then reports the result back to the editor:
-
-- Call `setLoginLoading(provider)` while authentication is pending and `setLoginLoading(null)` when it settles.
-- Set the `[user]` binding to an `IKritzelUser` once authentication succeeds. A user with `isGuest: false` replaces the Sign in button with the current-user avatar.
-- Handle the `(logout)` output to clear the user again.
-- Call `openLoginDialog()` to open the dialog from your own UI, for example from an application menu.
+Clicking a provider button puts that button into a loading state and emits the editor's `LoginEvent`. Your application performs the sign-in and then sets the current user accordingly.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  demoPath="/advanced/user-management/flow"
-  repoFiles={['src/app/pages/advanced/user-management/user-management-flow.component.ts']}
+  demoPath="/advanced/user-management/login"
+  repoFiles={['src/app/pages/advanced/user-management/user-management-login.component.ts']}
+/>
+
+## Handling the Logout
+
+When the user selects the logout action, the editor emits the logout event. Your application then should clear the current user and update its authentication state.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/advanced/user-management/logout"
+  repoFiles={['src/app/pages/advanced/user-management/user-management-logout.component.ts']}
+/>
+
+## Setting the User
+
+Use `[user]` for the logged-in user and `[activeUsers]` for workspace collaborators. The current user drives the account UI and awareness metadata, while active users appear as avatars in the editor header; both bindings update at runtime, so clearing `[user]` signs out and replacing `[activeUsers]` refreshes the collaborator list.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/advanced/user-management/users"
+  repoFiles={['src/app/pages/advanced/user-management/user-management-users.component.ts']}
 />
 
 ## API Details
