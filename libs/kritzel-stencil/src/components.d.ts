@@ -346,6 +346,10 @@ export namespace Components {
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         "changeActiveTool": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
+        "closeLoginDialog": () => Promise<void>;
+        "closeMoreMenu": () => Promise<void>;
+        "closeUserDialog": () => Promise<void>;
+        "closeWorkspaceManagerMenu": () => Promise<void>;
         "copy": () => Promise<void>;
         "createWorkspace": (workspace: KritzelWorkspace) => Promise<KritzelWorkspace | null>;
         /**
@@ -475,6 +479,7 @@ export namespace Components {
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
         "openLoginDialog": () => Promise<void>;
         "openMoreMenu": () => Promise<void>;
+        "openUserDialog": () => Promise<void>;
         "openWorkspaceManagerMenu": () => Promise<void>;
         "panTo": (x: number, y: number) => Promise<void>;
         "panToObject": (object: KritzelBaseObject) => Promise<void>;
@@ -1267,6 +1272,7 @@ export namespace Components {
         "parent": IKritzelMenuItem;
     }
     interface KritzelMoreMenu {
+        "close": () => Promise<void>;
         /**
           * The icon to display on the button
           * @default 'ellipsis-vertical'
@@ -1476,6 +1482,7 @@ export namespace Components {
           * @default 'plus'
          */
         "buttonIcon": string;
+        "close": () => Promise<void>;
         /**
           * @default 'chevron-down'
          */
@@ -1597,6 +1604,7 @@ export namespace Components {
     }
     interface KritzelWorkspaceManager {
         "activeWorkspace": KritzelWorkspace;
+        "close": () => Promise<void>;
         "open": () => Promise<void>;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.

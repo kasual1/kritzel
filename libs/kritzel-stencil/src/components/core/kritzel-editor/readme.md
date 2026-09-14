@@ -259,6 +259,46 @@ Type: `Promise<void>`
 
 
 
+### `closeLoginDialog() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `closeMoreMenu() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `closeUserDialog() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `closeWorkspaceManagerMenu() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `copy() => Promise<void>`
 
 
@@ -689,6 +729,16 @@ Type: `Promise<void>`
 
 
 ### `openMoreMenu() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `openUserDialog() => Promise<void>`
 
 
 

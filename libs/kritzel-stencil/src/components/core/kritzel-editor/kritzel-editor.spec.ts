@@ -255,6 +255,15 @@ describe('KritzelEditor', () => {
 
       expect(open).not.toHaveBeenCalled();
     });
+
+    it('should close the workspace manager menu', async () => {
+      const close = jest.fn().mockResolvedValue(undefined);
+      component.workspaceManagerRef = { close } as any;
+
+      await component.closeWorkspaceManagerMenu();
+
+      expect(close).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('More Menu Methods', () => {
@@ -276,6 +285,15 @@ describe('KritzelEditor', () => {
       await component.openMoreMenu();
 
       expect(open).not.toHaveBeenCalled();
+    });
+
+    it('should close the more menu', async () => {
+      const close = jest.fn().mockResolvedValue(undefined);
+      component.moreMenuRef = { close } as any;
+
+      await component.closeMoreMenu();
+
+      expect(close).toHaveBeenCalledTimes(1);
     });
   });
 

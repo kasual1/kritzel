@@ -32,6 +32,16 @@
 
 ## Methods
 
+### `close() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `focusMenu() => Promise<void>`
 
 

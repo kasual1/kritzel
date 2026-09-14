@@ -69,6 +69,11 @@ export class KritzelMoreMenu {
     await this.resolveVisibleItems();
   }
 
+  @Method()
+  async close(): Promise<void> {
+    this.closeMenu();
+  }
+
   componentWillLoad() {
     void this.resolveVisibleItems();
   }

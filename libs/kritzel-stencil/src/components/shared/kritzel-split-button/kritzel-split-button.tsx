@@ -43,6 +43,11 @@ export class KritzelSplitButton {
   }
 
   @Method()
+  async close(): Promise<void> {
+    this.closeMenu();
+  }
+
+  @Method()
   async focusMenu() {
     if (this.menuRef) {
       await this.menuRef.setFocus();

@@ -828,12 +828,32 @@ export class KritzelEditor {
   }
 
   @Method()
+  async closeWorkspaceManagerMenu(): Promise<void> {
+    await this.workspaceManagerRef?.close();
+  }
+
+  @Method()
   async openMoreMenu(): Promise<void> {
     if (!this.isMoreMenuVisible) {
       return;
     }
 
     await this.moreMenuRef?.open();
+  }
+
+  @Method()
+  async closeMoreMenu(): Promise<void> {
+    await this.moreMenuRef?.close();
+  }
+
+  @Method()
+  async openUserDialog(): Promise<void> {
+    await this.currentUserDialogRef?.open();
+  }
+
+  @Method()
+  async closeUserDialog(): Promise<void> {
+    await this.currentUserDialogRef?.close();
   }
 
   @Method()
@@ -1319,6 +1339,11 @@ export class KritzelEditor {
   @Method()
   async openLoginDialog(): Promise<void> {
     this.loginDialogRef?.open();
+  }
+
+  @Method()
+  async closeLoginDialog(): Promise<void> {
+    this.loginDialogRef?.close();
   }
 
   @Method()

@@ -25,6 +25,16 @@
 
 ## Methods
 
+### `close() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `open() => Promise<void>`
 
 

@@ -58,6 +58,11 @@ export class KritzelWorkspaceManager {
     await this.splitButtonRef?.open();
   }
 
+  @Method()
+  async close(): Promise<void> {
+    await this.splitButtonRef?.close();
+  }
+
   private async initializeEngine() {
     await customElements.whenDefined('kritzel-engine');
     // Search for kritzel-engine in the closest kritzel-editor ancestor
