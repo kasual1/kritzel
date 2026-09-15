@@ -3,11 +3,11 @@ const path = require('path');
 
 // Paths to the package.json files
 const paths = {
-  stencil: path.resolve(__dirname, '../libs/kritzel-stencil/package.json'),
-  angular: path.resolve(__dirname, '../libs/kritzel-angular/projects/lib/package.json'),
-  react: path.resolve(__dirname, '../libs/kritzel-react/package.json'),
-  vue: path.resolve(__dirname, '../libs/kritzel-vue/package.json'),
-  version: path.resolve(__dirname, '../libs/kritzel-stencil/src/constants/version.ts'),
+  stencil: path.resolve(__dirname, '../libs/engine/core/package.json'),
+  angular: path.resolve(__dirname, '../libs/editor/angular/projects/lib/package.json'),
+  react: path.resolve(__dirname, '../libs/editor/react/package.json'),
+  vue: path.resolve(__dirname, '../libs/editor/vue/package.json'),
+  version: path.resolve(__dirname, '../libs/engine/core/src/constants/version.ts'),
 };
 
 // Helper function to read and parse a JSON file
@@ -38,12 +38,12 @@ export const KRITZEL_VERSION = '${version}';
   fs.writeFileSync(paths.version, content, 'utf8');
 }
 
-// Step 1: Bump the version of kritzel-stencil
-const stencilPackage = readJson(paths.stencil);
-const newVersion = bumpVersion(stencilPackage.version);
-stencilPackage.version = newVersion;
-writeJson(paths.stencil, stencilPackage);
-console.log(`Bumped kritzel-stencil version to ${newVersion}`);
+// Step 1: Bump the version of @kritzel/engine
+const enginePackage = readJson(paths.stencil);
+const newVersion = bumpVersion(enginePackage.version);
+enginePackage.version = newVersion;
+writeJson(paths.stencil, enginePackage);
+console.log(`Bumped @kritzel/engine version to ${newVersion}`);
 
 // Step 2: Update the version constant file
 updateVersionFile(newVersion);
@@ -59,11 +59,11 @@ otherPackages.forEach((pkg) => {
   // Bump the version of the package
   packageJson.version = bumpVersion(packageJson.version);
 
-  // Update the peerDependencies.kritzel-stencil to the new version
-  if (packageJson.peerDependencies && packageJson.peerDependencies['kritzel-stencil']) {
-    packageJson.peerDependencies['kritzel-stencil'] = `^${newVersion}`;
+  // Update the peerDependencies.@kritzel/engine to the new version
+  if (packageJson.peerDependencies && packageJson.peerDependencies['@kritzel/engine']) {
+    packageJson.peerDependencies['@kritzel/engine'] = `^${newVersion}`;
   }
 
   writeJson(packagePath, packageJson);
-  console.log(`Updated ${pkg} package: version bumped to ${packageJson.version}, peerDependencies.kritzel-stencil set to ^${newVersion}`);
+  console.log(`Updated ${pkg} package: version bumped to ${packageJson.version}, peerDependencies.@kritzel/engine set to ^${newVersion}`);
 });

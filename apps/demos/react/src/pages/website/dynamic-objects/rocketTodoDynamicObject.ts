@@ -1,5 +1,5 @@
 import { KritzelDynamicObject } from "kritzel-react";
-import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-react";
 
 export const ROCKET_TODO_RENDERER_KEY = "website-hero-rocket-todo";
 

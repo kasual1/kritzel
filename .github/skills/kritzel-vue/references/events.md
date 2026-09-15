@@ -128,7 +128,7 @@ Use the granular triplet instead of `@objectsChange` when maintaining your own m
 
 ## Import sources for event payload types
 
-All common payload types are re-exported by `kritzel-vue`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `kritzel-vue`, not `kritzel-stencil`.
+All common payload types are re-exported by `kritzel-vue`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `kritzel-vue`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

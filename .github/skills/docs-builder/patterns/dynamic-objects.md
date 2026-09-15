@@ -4,7 +4,7 @@
 
 Use this pattern when documenting `KritzelDynamicObject` behavior, authoring dynamic object concept demos, or porting dynamic object demos across Angular, React, and Vue.
 
-This pattern is derived from `libs/kritzel-stencil/src/classes/objects/dynamic-object.class.ts` and reflects the runtime contract maintainers must preserve.
+This pattern is derived from `libs/engine/core/src/classes/objects/dynamic-object.class.ts` and reflects the runtime contract maintainers must preserve.
 
 ## Core Runtime Contract
 

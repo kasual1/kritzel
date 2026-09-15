@@ -297,7 +297,7 @@ const config: Config = {
               html: '<a href="https://github.com/kritzelapp" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub</a>',
             },
             {
-              html: '<a href="https://www.npmjs.com/package/kritzel-stencil" target="_blank" rel="noopener noreferrer" class="footer__link-item">NPM</a>',
+              html: '<a href="https://www.npmjs.com/package/@kritzel/engine" target="_blank" rel="noopener noreferrer" class="footer__link-item">NPM</a>',
             },
           ],
         },

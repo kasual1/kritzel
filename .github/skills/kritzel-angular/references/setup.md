@@ -6,7 +6,7 @@
 npm install kritzel-angular
 ```
 
-`kritzel-angular` wraps the core `kritzel-stencil` web components in typed Angular standalone proxy components and re-exports all classes/types you need â€” import everything from `kritzel-angular`, never from `kritzel-stencil` directly in an Angular app.
+`kritzel-angular` wraps the core `@kritzel/engine` web components in typed Angular standalone proxy components and re-exports all classes/types you need â€” import everything from `kritzel-angular`, or from `@kritzel/engine` when intentionally building an engine-only integration.
 
 ## Application config
 

@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/classes/providers/`
+`libs/engine/core/src/classes/providers/`
 
 Organized into:
 - `assets/` — Asset storage/retrieval (images, files)

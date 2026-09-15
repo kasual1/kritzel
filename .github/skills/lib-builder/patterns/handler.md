@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/classes/handlers/`
+`libs/engine/core/src/classes/handlers/`
 
 ## Base Class
 

@@ -103,7 +103,7 @@ onUpdated(e: CustomEvent<ObjectsUpdatedEvent>) { this.tree.update(e.detail.objec
 
 ## Import sources for event payload types
 
-All common payload types are re-exported by `kritzel-angular`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`. Import them from `kritzel-angular`, not `kritzel-stencil`.
+All common payload types are re-exported by `kritzel-angular`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`. Import them from `kritzel-angular`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 
