@@ -11,9 +11,9 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel's visual appearance is fully controlled through the `KritzelTheme` interface — a structured TypeScript object that maps design tokens to every component in the editor. Each token is grouped by component category (e.g. `toolbar`, `contextMenu`, `selection`, `button`), giving you precise control over colors, borders, shadows, and typography without touching CSS directly.
+Kritzel uses the `KritzelTheme` interface to group customizable design tokens by component, including the toolbar, menus, buttons, and selection controls. See the [theming API reference](../api-reference/theming.md) for the complete property list.
 
-Kritzel ships two built-in themes (`lightTheme` and `darkTheme`) which serve as solid defaults or safe base objects to extend. You pass one or more `KritzelTheme` instances via the `[themes]` binding and activate one by name through the `[theme]` binding.
+Kritzel includes built-in `lightTheme` and `darkTheme` presets. Pass themes through the `[themes]` binding and select the active theme with `[theme]`.
 
 ## Applying a Built-in Theme
 
@@ -39,4 +39,4 @@ This example intentionally applies a strong, light-purple visual language and re
 
 For the full list of related APIs, see the following reference sections.
 
-- [Theming](../api-reference/editor.md#theming)
+- [Theming](../api-reference/theming.md)
