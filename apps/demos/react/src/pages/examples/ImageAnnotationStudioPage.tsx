@@ -305,7 +305,7 @@ export function ImageAnnotationStudioPage() {
   }
 
   async function download() {
-    await editorRef.current?.exportViewportAsPng({ includeBackground: false });
+    await editorRef.current?.exportViewportAsPng();
   }
 
   return (

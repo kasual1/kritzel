@@ -20,7 +20,7 @@ Two surfaces expose these capabilities:
 
 ## Exporting the Viewport
 
-Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor ref to render the current viewport and trigger a browser download. Both methods accept an optional `includeBackground` flag to control whether the canvas background is included in the exported image.
+Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor ref to render the current viewport and trigger a browser download.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"

@@ -11,7 +11,6 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
-      <span class="label">Viewport Export</span>
       <button (click)="exportAsPng()">Export as PNG</button>
       <button (click)="exportAsSvg()">Export as SVG</button>
     </app-toolbar>

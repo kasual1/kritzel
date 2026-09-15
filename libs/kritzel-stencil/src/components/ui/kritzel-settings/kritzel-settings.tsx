@@ -176,6 +176,11 @@ export class KritzelSettings {
     this.isDialogOpen = true;
   }
 
+  @Method()
+  async close(): Promise<void> {
+    this.closeDialog();
+  }
+
   private closeDialog = (): void => {
     this.isDialogOpen = false;
   };

@@ -734,18 +734,18 @@ export class KritzelEditor {
   }
 
   @Method()
-  async getScreenshot(format: 'png' | 'svg' = 'png', options?: { includeBackground?: boolean }): Promise<string | null> {
-    return this.engineRef.getScreenshot(format, options);
+  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string | null> {
+    return this.engineRef.getScreenshot(format);
   }
 
   @Method()
-  async exportViewportAsPng(options?: { includeBackground?: boolean }): Promise<void> {
-    return this.engineRef.exportViewportAsPng(options);
+  async exportViewportAsPng(): Promise<void> {
+    return this.engineRef.exportViewportAsPng();
   }
 
   @Method()
-  async exportViewportAsSvg(options?: { includeBackground?: boolean }): Promise<void> {
-    return this.engineRef.exportViewportAsSvg(options);
+  async exportViewportAsSvg(): Promise<void> {
+    return this.engineRef.exportViewportAsSvg();
   }
 
   @Method()
@@ -854,6 +854,47 @@ export class KritzelEditor {
   @Method()
   async closeUserDialog(): Promise<void> {
     await this.currentUserDialogRef?.close();
+  }
+
+  @Method()
+  async openExportDialog(): Promise<void> {
+    const preview = await this.engineRef.getScreenshot('png');
+    await this.exportRef?.open(preview ?? undefined);
+  }
+
+  @Method()
+  async closeExportDialog(): Promise<void> {
+    await this.exportRef?.close();
+  }
+
+  @Method()
+  async openImportDialog(): Promise<void> {
+    await this.engineRef.importFromFile();
+  }
+
+  @Method()
+  async closeImportDialog(): Promise<void> {
+    await this.engineRef.cancelImportFromFile();
+  }
+
+  @Method()
+  async openSettingsDialog(): Promise<void> {
+    await this.settingsRef?.open();
+  }
+
+  @Method()
+  async closeSettingsDialog(): Promise<void> {
+    await this.settingsRef?.close();
+  }
+
+  @Method()
+  async openShareDialog(): Promise<void> {
+    await this.shareDialogRef?.open();
+  }
+
+  @Method()
+  async closeShareDialog(): Promise<void> {
+    await this.shareDialogRef?.close();
   }
 
   @Method()

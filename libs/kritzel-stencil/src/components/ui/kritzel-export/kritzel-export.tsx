@@ -52,6 +52,11 @@ export class KritzelExport {
     this.isDialogOpen = true;
   }
 
+  @Method()
+  async close(): Promise<void> {
+    this.closeDialog();
+  }
+
   private generateDefaultFilename(): string {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     return `${this.workspaceName}-${timestamp}`;
