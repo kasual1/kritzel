@@ -346,8 +346,12 @@ export namespace Components {
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         "changeActiveTool": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
+        "closeExportDialog": () => Promise<void>;
+        "closeImportDialog": () => Promise<void>;
         "closeLoginDialog": () => Promise<void>;
         "closeMoreMenu": () => Promise<void>;
+        "closeSettingsDialog": () => Promise<void>;
+        "closeShareDialog": () => Promise<void>;
         "closeUserDialog": () => Promise<void>;
         "closeWorkspaceManagerMenu": () => Promise<void>;
         "copy": () => Promise<void>;
@@ -382,8 +386,8 @@ export namespace Components {
         "endSceneBootstrap": () => Promise<void>;
         "exportAsJson": () => Promise<string>;
         "exportSelectedObject": (format: KritzelObjectExportFormat) => Promise<void>;
-        "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
-        "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
+        "exportViewportAsPng": () => Promise<void>;
+        "exportViewportAsSvg": () => Promise<void>;
         /**
           * The locale used to resolve terms missing from the active locale.
           * @default 'en'
@@ -404,7 +408,7 @@ export namespace Components {
         "getObjectById": <T extends KritzelBaseObject>(id: string) => Promise<T | null>;
         "getObjectsInViewport": () => Promise<KritzelBaseObject[]>;
         "getObjectsTotalCount": () => Promise<number>;
-        "getScreenshot": (format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>;
+        "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
         "getSelectedObjectSupportedExportFormats": () => Promise<KritzelObjectExportFormat[]>;
         "getSelectedObjects": () => Promise<KritzelBaseObject[]>;
         "getViewport": () => Promise<KritzelViewportState>;
@@ -477,8 +481,12 @@ export namespace Components {
          */
         "objectContextMenuItems": ContextMenuItem[];
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
+        "openExportDialog": () => Promise<void>;
+        "openImportDialog": () => Promise<void>;
         "openLoginDialog": () => Promise<void>;
         "openMoreMenu": () => Promise<void>;
+        "openSettingsDialog": () => Promise<void>;
+        "openShareDialog": () => Promise<void>;
         "openUserDialog": () => Promise<void>;
         "openWorkspaceManagerMenu": () => Promise<void>;
         "panTo": (x: number, y: number) => Promise<void>;
@@ -626,6 +634,10 @@ export namespace Components {
          */
         "canExportSelectedObjectAs": (format: KritzelObjectExportFormat) => Promise<boolean>;
         /**
+          * Cancels an active file picker opened by importFromFile.
+         */
+        "cancelImportFromFile": () => Promise<void>;
+        /**
           * Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered. Calculates the combined bounding box of all objects and centers the viewport to show them.
           * @param animate - Whether to animate the viewport transition (default: true).
           * @returns `true` if objects were found and the viewport was adjusted, `false` otherwise.
@@ -721,16 +733,12 @@ export namespace Components {
         "exportSelectedObject": (format: KritzelObjectExportFormat) => Promise<void>;
         /**
           * Exports the current viewport as a PNG file and triggers a browser download.
-          * @param options - Optional export settings.
-          * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
          */
-        "exportViewportAsPng": (options?: { includeBackground?: boolean; }) => Promise<void>;
+        "exportViewportAsPng": () => Promise<void>;
         /**
           * Exports the current viewport as an SVG file and triggers a browser download.
-          * @param options - Optional export settings.
-          * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
          */
-        "exportViewportAsSvg": (options?: { includeBackground?: boolean; }) => Promise<void>;
+        "exportViewportAsSvg": () => Promise<void>;
         /**
           * The locale used to resolve terms missing from the active locale.
           * @default 'en'
@@ -793,11 +801,9 @@ export namespace Components {
         /**
           * Captures a screenshot of the current viewport as a data URL.
           * @param format - The image format: `'png'` (default) or `'svg'`.
-          * @param options - Optional screenshot settings.
-          * @param options.includeBackground - Whether to include the canvas background in the export. Defaults to `true`. Set to `false` for a transparent background.
           * @returns A data URL string of the captured image.
          */
-        "getScreenshot": (format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>;
+        "getScreenshot": (format?: "png" | "svg") => Promise<string | null>;
         /**
           * Returns export formats supported by the currently selected object. Only returns formats when exactly one object is selected.
          */
@@ -1101,6 +1107,7 @@ export namespace Components {
         "zoomTo": (scale: number, worldX?: number, worldY?: number) => Promise<void>;
     }
     interface KritzelExport {
+        "close": () => Promise<void>;
         "open": (previewUrl?: string) => Promise<void>;
         /**
           * Resolved localized strings keyed by term key, supplied by the editor.
@@ -1409,6 +1416,7 @@ export namespace Components {
           * @default ['light', 'dark']
          */
         "availableThemes": string[];
+        "close": () => Promise<void>;
         "open": () => Promise<void>;
         /**
           * Current settings values. Used to initialize and sync the component's internal state.

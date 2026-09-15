@@ -10,6 +10,8 @@ import { ContextMenusClipboardActionsComponent } from './pages/fundamentals/cont
 import { ContextMenusSmartConditionalComponent } from './pages/fundamentals/controls/context-menus-smart-conditional.component';
 import { ContextMenusObjectInspectorComponent } from './pages/fundamentals/controls/context-menus-object-inspector.component';
 import { NotificationsTriggerComponent } from './pages/fundamentals/controls/notifications-trigger.component';
+import { ExportDialogComponent } from './pages/fundamentals/controls/export-dialog.component';
+import { ImportDialogComponent } from './pages/fundamentals/controls/import-dialog.component';
 import { WorkspaceManagerOpenComponent } from './pages/fundamentals/controls/workspace-manager-open.component';
 import { MoreMenuOpenComponent } from './pages/fundamentals/controls/more-menu-open.component';
 import { ToolbarUtilityPanelComponent } from './pages/fundamentals/controls/toolbar-utility-panel.component';
@@ -81,6 +83,8 @@ export const routes: Routes = [
           { path: 'context-menus-smart-conditional', component: ContextMenusSmartConditionalComponent },
           { path: 'context-menus-object-inspector', component: ContextMenusObjectInspectorComponent },
           { path: 'notifications-trigger', component: NotificationsTriggerComponent },
+          { path: 'export-dialog', component: ExportDialogComponent },
+          { path: 'import-dialog', component: ImportDialogComponent },
           { path: 'workspace-manager-open', component: WorkspaceManagerOpenComponent },
           { path: 'more-menu-open', component: MoreMenuOpenComponent },
           { path: 'toolbar-utility-panel', component: ToolbarUtilityPanelComponent },

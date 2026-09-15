@@ -11,16 +11,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel exposes editor and engine methods for moving data in and out of a workspace without going through the built-in export/import menu. You can trigger a PNG or SVG download of the current viewport, obtain the entire workspace as a JSON string, and feed a JSON string back in to recreate a workspace — all from your own application code.
+Kritzel lets you export the current viewport as PNG or SVG and lets you export and import workspaces as JSON. This is useful when you want to save a visual snapshot, preserve an editable canvas state, or move a workspace between environments. 
 
-Two surfaces expose these capabilities:
-
-- **`KritzelEditor`** exposes `exportViewportAsPng`, `exportViewportAsSvg`, `downloadAsJson`, `importFromFile`, and `loadObjectsFromJson` for browser-download and file-picker driven flows.
-- **`KritzelEngine`** additionally exposes `exportAsJson` and `importFromJson`, which work with in-memory JSON strings instead of files — useful when you want to send workspace data to a server, store it yourself, or generate it without any file dialog.
+You can either use the dedicated [export dialog](../fundamentals/controls.md#export-dialog) and [import dialog](../fundamentals/controls.md#import-dialog), or handle these operations programmatically from code.
 
 ## Exporting the Viewport
 
-Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor to render the current viewport and trigger a browser download. Both methods accept an optional `includeBackground` flag to control whether the canvas background is included in the exported image.
+Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor to export the current viewport and trigger a browser download.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -30,7 +27,7 @@ Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor to render 
 
 ## Exporting the Workspace
 
-Call `exportAsJson()` on the engine to serialize the active workspace — its metadata and every object it contains — into a JSON string you can inspect, transmit, or store yourself. If you just need a file download instead of the raw string, call `downloadAsJson()` on either the editor or the engine.
+Call `exportAsJson()` on the engine to serialize the active workspace into a JSON string. If you just need a file download instead of the raw string, call `downloadAsJson()`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -40,7 +37,7 @@ Call `exportAsJson()` on the engine to serialize the active workspace — its me
 
 ## Importing a Workspace
 
-Call `importFromJson()` on the engine with a JSON string produced by `exportAsJson()` to recreate the workspace. Kritzel creates a **new** workspace with a fresh id, revives all objects into it, and switches the active workspace to it. If you instead want to merge objects into the *current* workspace without creating a new one, use `loadObjectsFromJson()` on the editor or engine.
+To import a previously exported workspace, use `importFromJson()`. This will create a new workspace with the imported data and automaticallyswitch to it.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

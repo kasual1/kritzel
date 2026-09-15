@@ -727,7 +727,7 @@ No export/import-specific events.
 Captures a screenshot of the current viewport as a data URL or blob.
 
 ```ts
-getScreenshot(format?: "png" | "svg", options?: { includeBackground?: boolean }): Promise<string | null>
+getScreenshot(format?: "png" | "svg"): Promise<string | null>
 ```
 
 #### exportViewportAsPng
@@ -735,7 +735,7 @@ getScreenshot(format?: "png" | "svg", options?: { includeBackground?: boolean })
 Exports the current viewport as a PNG file and triggers a browser download.
 
 ```ts
-exportViewportAsPng(options?: { includeBackground?: boolean }): Promise<void>
+exportViewportAsPng(): Promise<void>
 ```
 
 #### exportViewportAsSvg
@@ -743,7 +743,7 @@ exportViewportAsPng(options?: { includeBackground?: boolean }): Promise<void>
 Exports the current viewport as an SVG file and triggers a browser download.
 
 ```ts
-exportViewportAsSvg(options?: { includeBackground?: boolean }): Promise<void>
+exportViewportAsSvg(): Promise<void>
 ```
 
 #### canExportSelectedObjectAs

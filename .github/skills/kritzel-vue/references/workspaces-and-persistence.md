@@ -115,8 +115,8 @@ const json = await engine.value?.exportAsJson();           // serialize active w
 await engine.value?.importFromJson(json);                  // import as a NEW workspace and switch to it
 
 // Images
-const dataUrl = await editor.value?.getScreenshot('png', { includeBackground: true }); // data URL or null
-await editor.value?.exportViewportAsPng({ includeBackground: false });  // triggers download
+const dataUrl = await editor.value?.getScreenshot('png'); // data URL or null
+await editor.value?.exportViewportAsPng();  // triggers download
 await editor.value?.exportViewportAsSvg();
 ```
 

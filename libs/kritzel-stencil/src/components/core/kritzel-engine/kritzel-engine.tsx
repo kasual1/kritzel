@@ -73,6 +73,9 @@ interface WorkspaceJsonExportPayload extends Record<string, unknown> {
 export class KritzelEngine {
   @Element() host!: HTMLElement;
 
+  private activeImportFileInput?: HTMLInputElement;
+  private cancelActiveImport?: () => void;
+
   /** Authoritative workspace catalog for this engine instance. When provided, provider-only workspaces are hidden but not deleted. */
   @Prop() workspaces?: KritzelWorkspace[];
   @Watch('workspaces')
@@ -1482,15 +1485,11 @@ export class KritzelEngine {
   /**
    * Captures a screenshot of the current viewport as a data URL.
    * @param format - The image format: `'png'` (default) or `'svg'`.
-   * @param options - Optional screenshot settings.
-   * @param options.includeBackground - Whether to include the canvas background in the export. Defaults to `true`. Set to `false` for a transparent background.
    * @returns A data URL string of the captured image.
    */
   @Method()
-  async getScreenshot(format: 'png' | 'svg' = 'png', options?: { includeBackground?: boolean }): Promise<string | null> {
+  async getScreenshot(format: 'png' | 'svg' = 'png'): Promise<string | null> {
     if (!this.host) return null;
-
-    const includeBackground = options?.includeBackground ?? true;
 
     // Save critical state before screenshot to restore after
     const savedState = {
@@ -1520,17 +1519,12 @@ export class KritzelEngine {
       },
     };
 
-    if (!includeBackground) {
-      screenshotOptions.backgroundColor = 'transparent';
-    }
-
-    let result: string;
     try {
       if (format === 'svg') {
-        result = await toSvg(this.host, screenshotOptions);
-      } else {
-        result = await toPng(this.host, screenshotOptions);
+        return await toSvg(this.host, screenshotOptions);
       }
+
+      return await toPng(this.host, screenshotOptions);
     } finally {
       // Restore state after screenshot in case cloning caused any side effects
       this.core.store.state.objects = savedState.objects;
@@ -1543,24 +1537,20 @@ export class KritzelEngine {
       this.core.store.state.scale = savedState.scale;
       this.core.rerender();
     }
-
-    return result;
   }
 
   /**
    * Exports the current viewport as a PNG file and triggers a browser download.
-   * @param options - Optional export settings.
-   * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
    */
   @Method()
-  async exportViewportAsPng(options?: { includeBackground?: boolean }): Promise<void> {
+  async exportViewportAsPng(): Promise<void> {
     try {
       const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
       // timestamp format: YYYY-MM-DDTHH-mm-ss-sssZ, clearing colons/dots for safe filename
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${activeWorkspaceName}-${timestamp}.png`;
 
-      const dataUrl = await this.getScreenshot('png', options);
+      const dataUrl = await this.getScreenshot('png');
       if (!dataUrl) {
         console.error('Failed to export viewport as PNG: screenshot could not be generated');
         return;
@@ -1574,18 +1564,16 @@ export class KritzelEngine {
 
   /**
    * Exports the current viewport as an SVG file and triggers a browser download.
-   * @param options - Optional export settings.
-   * @param options.includeBackground - Whether to include the canvas background. Defaults to `true`.
    */
   @Method()
-  async exportViewportAsSvg(options?: { includeBackground?: boolean }): Promise<void> {
+  async exportViewportAsSvg(): Promise<void> {
     try {
       const activeWorkspaceName = this.core.store.state?.activeWorkspace?.name || 'workspace';
       // timestamp format: YYYY-MM-DDTHH-mm-ss-sssZ, clearing colons/dots for safe filename
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `${activeWorkspaceName}-${timestamp}.svg`;
 
-      const dataUrl = await this.getScreenshot('svg', options);
+      const dataUrl = await this.getScreenshot('svg');
       if (!dataUrl) {
         console.error('Failed to export viewport as SVG: screenshot could not be generated');
         return;
@@ -2046,14 +2034,19 @@ export class KritzelEngine {
   async importFromFile(): Promise<void> {
     return new Promise((resolve, reject) => {
       const fileInput = document.createElement('input');
+      this.activeImportFileInput = fileInput;
       fileInput.type = 'file';
       fileInput.accept = '.json,application/json';
       fileInput.style.display = 'none';
 
       const cleanup = () => {
+        if (this.activeImportFileInput === fileInput) {
+          this.activeImportFileInput = undefined;
+          this.cancelActiveImport = undefined;
+        }
         fileInput.removeEventListener('change', handleChange);
         fileInput.removeEventListener('cancel', handleCancel);
-        document.body.removeChild(fileInput);
+        fileInput.remove();
       };
 
       const handleChange = async (event: Event) => {
@@ -2098,11 +2091,22 @@ export class KritzelEngine {
         resolve();
       };
 
+      this.cancelActiveImport = handleCancel;
+
       fileInput.addEventListener('change', handleChange);
       fileInput.addEventListener('cancel', handleCancel);
       document.body.appendChild(fileInput);
       fileInput.click();
     });
+  }
+
+  /** Cancels an active file picker opened by importFromFile. */
+  @Method()
+  async cancelImportFromFile(): Promise<void> {
+    this.cancelActiveImport?.();
+    this.activeImportFileInput?.remove();
+    this.activeImportFileInput = undefined;
+    this.cancelActiveImport = undefined;
   }
 
   /**

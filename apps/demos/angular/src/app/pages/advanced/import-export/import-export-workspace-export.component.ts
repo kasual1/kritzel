@@ -12,7 +12,6 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
-      <span class="label">Workspace Export</span>
       <button (click)="previewJson()">Preview as JSON</button>
       <button (click)="downloadJson()">Download JSON</button>
     </app-toolbar>

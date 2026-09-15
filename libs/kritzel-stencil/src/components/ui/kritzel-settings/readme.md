@@ -46,6 +46,16 @@ A settings button component that opens a settings dialog when clicked.
 
 ## Methods
 
+### `close() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `open() => Promise<void>`
 
 

@@ -438,9 +438,7 @@ export class ImageAnnotationStudioComponent {
   }
 
   async download() {
-    await this.editor.exportViewportAsPng({
-      includeBackground: false
-    });
+    await this.editor.exportViewportAsPng();
   }
 
   async redo() {

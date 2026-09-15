@@ -259,6 +259,26 @@ Type: `Promise<void>`
 
 
 
+### `closeExportDialog() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `closeImportDialog() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `closeLoginDialog() => Promise<void>`
 
 
@@ -270,6 +290,26 @@ Type: `Promise<void>`
 
 
 ### `closeMoreMenu() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `closeSettingsDialog() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `closeShareDialog() => Promise<void>`
 
 
 
@@ -433,15 +473,9 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsPng(options?: { includeBackground?: boolean; }) => Promise<void>`
+### `exportViewportAsPng() => Promise<void>`
 
 
-
-#### Parameters
-
-| Name      | Type                               | Description |
-| --------- | ---------------------------------- | ----------- |
-| `options` | `{ includeBackground?: boolean; }` |             |
 
 #### Returns
 
@@ -449,15 +483,9 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsSvg(options?: { includeBackground?: boolean; }) => Promise<void>`
+### `exportViewportAsSvg() => Promise<void>`
 
 
-
-#### Parameters
-
-| Name      | Type                               | Description |
-| --------- | ---------------------------------- | ----------- |
-| `options` | `{ includeBackground?: boolean; }` |             |
 
 #### Returns
 
@@ -567,16 +595,15 @@ Type: `Promise<number>`
 
 
 
-### `getScreenshot(format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>`
+### `getScreenshot(format?: "png" | "svg") => Promise<string | null>`
 
 
 
 #### Parameters
 
-| Name      | Type                               | Description |
-| --------- | ---------------------------------- | ----------- |
-| `format`  | `"svg" \| "png"`                   |             |
-| `options` | `{ includeBackground?: boolean; }` |             |
+| Name     | Type             | Description |
+| -------- | ---------------- | ----------- |
+| `format` | `"svg" \| "png"` |             |
 
 #### Returns
 
@@ -718,6 +745,26 @@ Type: `Promise<void>`
 
 
 
+### `openExportDialog() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `openImportDialog() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `openLoginDialog() => Promise<void>`
 
 
@@ -729,6 +776,26 @@ Type: `Promise<void>`
 
 
 ### `openMoreMenu() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `openSettingsDialog() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `openShareDialog() => Promise<void>`
 
 
 

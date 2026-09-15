@@ -182,6 +182,16 @@ Type: `Promise<boolean>`
 
 
 
+### `cancelImportFromFile() => Promise<void>`
+
+Cancels an active file picker opened by importFromFile.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `centerAllObjects(animate?: boolean) => Promise<boolean>`
 
 Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered.
@@ -413,15 +423,9 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsPng(options?: { includeBackground?: boolean; }) => Promise<void>`
+### `exportViewportAsPng() => Promise<void>`
 
 Exports the current viewport as a PNG file and triggers a browser download.
-
-#### Parameters
-
-| Name      | Type                               | Description                 |
-| --------- | ---------------------------------- | --------------------------- |
-| `options` | `{ includeBackground?: boolean; }` | - Optional export settings. |
 
 #### Returns
 
@@ -429,15 +433,9 @@ Type: `Promise<void>`
 
 
 
-### `exportViewportAsSvg(options?: { includeBackground?: boolean; }) => Promise<void>`
+### `exportViewportAsSvg() => Promise<void>`
 
 Exports the current viewport as an SVG file and triggers a browser download.
-
-#### Parameters
-
-| Name      | Type                               | Description                 |
-| --------- | ---------------------------------- | --------------------------- |
-| `options` | `{ includeBackground?: boolean; }` | - Optional export settings. |
 
 #### Returns
 
@@ -579,16 +577,15 @@ Type: `Promise<Partial<Record<keyof KritzelTerms, string>>>`
 
 
 
-### `getScreenshot(format?: "png" | "svg", options?: { includeBackground?: boolean; }) => Promise<string | null>`
+### `getScreenshot(format?: "png" | "svg") => Promise<string | null>`
 
 Captures a screenshot of the current viewport as a data URL.
 
 #### Parameters
 
-| Name      | Type                               | Description                                       |
-| --------- | ---------------------------------- | ------------------------------------------------- |
-| `format`  | `"svg" \| "png"`                   | - The image format: `'png'` (default) or `'svg'`. |
-| `options` | `{ includeBackground?: boolean; }` | - Optional screenshot settings.                   |
+| Name     | Type             | Description                                       |
+| -------- | ---------------- | ------------------------------------------------- |
+| `format` | `"svg" \| "png"` | - The image format: `'png'` (default) or `'svg'`. |
 
 #### Returns
 
