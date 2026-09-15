@@ -1,6 +1,6 @@
 import { ModelViewerElement } from "@google/model-viewer";
 import { KritzelDynamicObject } from "kritzel-react";
-import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-react";
 
 // <model-viewer> throttles its render resolution down to 50% whenever the page drops
 // frames, and the auto-rotating scene never goes idle, so it never recovers full

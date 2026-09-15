@@ -1,5 +1,5 @@
 import { KritzelDynamicObject } from "kritzel-react";
-import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObjectRendererRegistry } from "kritzel-react";
 
 export const VIDEO_RENDERER_KEY = "website-hero-video";
 const VIDEO_Z_INDEX = 12;

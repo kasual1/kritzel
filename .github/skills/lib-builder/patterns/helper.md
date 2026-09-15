@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/helpers/`
+`libs/engine/core/src/helpers/`
 
 ## Structure
 

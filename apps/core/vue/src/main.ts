@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import { ComponentLibrary, KritzelPath, KritzelImage, KritzelText } from 'kritzel-vue'
-import { KritzelLine, KritzelShape, KritzelGroup, KritzelDynamicObject, ShapeType } from 'kritzel-stencil'
+import { ComponentLibrary, KritzelPath, KritzelImage, KritzelText, KritzelLine, KritzelShape, KritzelGroup, KritzelDynamicObject, ShapeType } from 'kritzel-vue'
 import { router } from './router'
 import './index.css'
 
