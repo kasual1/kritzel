@@ -45,6 +45,7 @@
   ],
   "scripts": {
     "build": "stencil build",
+    "dev": "stencil build --dev --watch --serve",
     "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --maxWorkers=2",
     "generate": "stencil generate",
