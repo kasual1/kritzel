@@ -36,12 +36,7 @@ const INTERNAL_COMPONENTS = [
   'kritzel-opacity-slider',
   'kritzel-pill-tabs',
   'kritzel-portal',
-  'kritzel-settings',
-  'kritzel-shape-fill',
-  'kritzel-share-dialog',
   'kritzel-slide-toggle',
-  'kritzel-split-button',
-  'kritzel-stroke-size',
   'kritzel-tool-config',
   'kritzel-toolbar',
   'kritzel-tooltip',
@@ -52,39 +47,47 @@ const INTERNAL_COMPONENTS = [
   'kritzel-engine',
 ];
 
+const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');
+
 export const config: Config = {
   namespace: 'kritzel-editor',
   minifyJs: false,
-  rollupConfig: {
-    inputOptions: {
-      external: ['@kritzel/engine', '@kritzel/engine/loader', '@kritzel/engine/dist/components'],
-    },
-  },
-  outputTargets: [
-    { type: 'dist', esmLoaderPath: '../loader' },
-    { type: 'docs-readme' },
-    { type: 'dist-custom-elements', externalRuntime: false, customElementsExportBehavior: 'single-export-module' },
-    angularOutputTarget({
-      componentCorePackage: '@kritzel/editor',
-      directivesProxyFile: '../angular/projects/lib/src/lib/proxy.ts',
-      directivesArrayFile: '../angular/projects/lib/src/lib/index.ts',
-      outputType: 'standalone',
-      customElementsDir: 'dist/components',
-      excludeComponents: INTERNAL_COMPONENTS,
-    }),
-    reactOutputTarget({
-      outDir: '../react/lib/components/stencil-generated/',
-      stencilPackageName: '@kritzel/editor',
-      excludeComponents: INTERNAL_COMPONENTS,
-    }),
-    vueOutputTarget({
-      componentCorePackage: '@kritzel/editor',
-      proxiesFile: '../vue/lib/components.ts',
-      includeImportCustomElements: true,
-      customElementsDir: 'dist/components',
-      excludeComponents: INTERNAL_COMPONENTS,
-    }),
-  ],
+  ...(isDev
+    ? {}
+    : {
+        rollupConfig: {
+          inputOptions: {
+            external: ['@kritzel/engine', '@kritzel/engine/loader', '@kritzel/engine/dist/components'],
+          },
+        },
+      }),
+  outputTargets: isDev
+    ? [{ type: 'www', dir: '.stencil/www', serviceWorker: null }]
+    : [
+        { type: 'dist', esmLoaderPath: '../loader' },
+        { type: 'docs-readme' },
+        { type: 'dist-custom-elements', externalRuntime: false, customElementsExportBehavior: 'single-export-module' },
+        angularOutputTarget({
+          componentCorePackage: '@kritzel/editor',
+          directivesProxyFile: '../angular/projects/lib/src/lib/proxy.ts',
+          directivesArrayFile: '../angular/projects/lib/src/lib/index.ts',
+          outputType: 'standalone',
+          customElementsDir: 'dist/components',
+          excludeComponents: INTERNAL_COMPONENTS,
+        }),
+        reactOutputTarget({
+          outDir: '../react/lib/components/stencil-generated/',
+          stencilPackageName: '@kritzel/editor',
+          excludeComponents: INTERNAL_COMPONENTS,
+        }),
+        vueOutputTarget({
+          componentCorePackage: '@kritzel/editor',
+          proxiesFile: '../vue/lib/components.ts',
+          includeImportCustomElements: true,
+          customElementsDir: 'dist/components',
+          excludeComponents: INTERNAL_COMPONENTS,
+        }),
+      ],
   testing: {
     browserHeadless: 'shell',
     transform: { '^.+\\.(ts|tsx)$': 'ts-jest' },
