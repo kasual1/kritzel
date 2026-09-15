@@ -11,6 +11,7 @@ const INTERNAL_COMPONENTS = [
 ];
 
 const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');
+const isEditorDevBuild = process.env.npm_lifecycle_event === 'build:editor-dev';
 
 export const config: Config = {
   namespace: 'stencil',
@@ -28,29 +29,33 @@ export const config: Config = {
   }),
   outputTargets: [
     { type: 'dist', esmLoaderPath: '../loader' },
-    { type: 'docs-readme' },
-    { type: 'www', serviceWorker: null },
     { type: 'dist-custom-elements', externalRuntime: false, customElementsExportBehavior: 'single-export-module' },
-    angularOutputTarget({
-      componentCorePackage: '@kritzel/engine',
-      directivesProxyFile: '../angular/projects/lib/src/lib/proxy.ts',
-      directivesArrayFile: '../angular/projects/lib/src/lib/index.ts',
-      outputType: 'standalone',
-      customElementsDir: 'dist/components',
-      excludeComponents: INTERNAL_COMPONENTS,
-    }),
-    reactOutputTarget({
-      outDir: '../react/lib/components/stencil-generated/',
-      stencilPackageName: '@kritzel/engine',
-      excludeComponents: INTERNAL_COMPONENTS,
-    }),
-    vueOutputTarget({
-      componentCorePackage: '@kritzel/engine',
-      proxiesFile: '../vue/lib/components.ts',
-      includeImportCustomElements: true,
-      customElementsDir: 'dist/components',
-      excludeComponents: INTERNAL_COMPONENTS,
-    }),
+    ...(isEditorDevBuild
+      ? []
+      : [
+          { type: 'docs-readme' as const },
+          { type: 'www' as const, serviceWorker: null },
+          angularOutputTarget({
+            componentCorePackage: '@kritzel/engine',
+            directivesProxyFile: '../angular/projects/lib/src/lib/proxy.ts',
+            directivesArrayFile: '../angular/projects/lib/src/lib/index.ts',
+            outputType: 'standalone',
+            customElementsDir: 'dist/components',
+            excludeComponents: INTERNAL_COMPONENTS,
+          }),
+          reactOutputTarget({
+            outDir: '../react/lib/components/stencil-generated/',
+            stencilPackageName: '@kritzel/engine',
+            excludeComponents: INTERNAL_COMPONENTS,
+          }),
+          vueOutputTarget({
+            componentCorePackage: '@kritzel/engine',
+            proxiesFile: '../vue/lib/components.ts',
+            includeImportCustomElements: true,
+            customElementsDir: 'dist/components',
+            excludeComponents: INTERNAL_COMPONENTS,
+          }),
+        ]),
   ],
   testing: {
     browserHeadless: 'shell',
