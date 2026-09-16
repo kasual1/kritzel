@@ -23,7 +23,7 @@ jobs:
 
       - name: Get version
         id: version
-        run: echo "version=$(node -p 'require("./libs/kritzel-stencil/package.json").version')" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(node -p 'require("./libs/engine/core/package.json").version')" >> "$GITHUB_OUTPUT"
 
       - name: Clone demos repository
         run: |
