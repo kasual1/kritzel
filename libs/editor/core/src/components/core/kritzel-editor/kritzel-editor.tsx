@@ -917,6 +917,77 @@ export class KritzelEditor {
     return this.engineRef.getDisplayableShortcuts();
   }
 
+  @Method()
+  async openLoginDialog(): Promise<void> {
+    this.loginDialogRef?.open();
+  }
+
+  @Method()
+  async closeLoginDialog(): Promise<void> {
+    this.loginDialogRef?.close();
+  }
+
+  @Method()
+  async setLoginLoading(provider: string | null): Promise<void> {
+    this.loginDialogRef?.setLoading(provider);
+  }
+
+  /**
+   * Sets the active locale (language) and re-renders the UI.
+   * @param code - The locale code to activate, e.g. 'de'.
+   */
+  @Method()
+  async setLocale(code: LocaleCode): Promise<void> {
+    this.locale = code;
+    await this.engineRef?.setLocale(code);
+  }
+
+  /**
+   * Gets the currently active locale code.
+   */
+  @Method()
+  async getLocale(): Promise<LocaleCode> {
+    return this.engineRef ? this.engineRef.getLocale() : this.locale;
+  }
+
+  /**
+   * Gets the list of available locale codes (built-in and registered).
+   */
+  @Method()
+  async getAvailableLocales(): Promise<LocaleCode[]> {
+    return this.engineRef ? this.engineRef.getAvailableLocales() : [];
+  }
+
+  /**
+   * Registers additional locale definitions (with optional partial term overrides).
+   * @param locales - The locale definitions to register.
+   */
+  @Method()
+  async registerLocales(locales: KritzelLocale[]): Promise<void> {
+    await this.engineRef?.registerLocales(locales);
+  }
+
+  /**
+   * Registers custom fonts for the editor runtime.
+   * @param fonts - Mapping from font keys to family names or font definitions.
+   * @remarks This no longer controls the text-tool config tooltip font options.
+  * Configure tooltip fonts via toolbarItems[].config.availableFonts.
+   */
+  @Method()
+  async registerFonts(fonts: KritzelFontMap): Promise<void> {
+    await this.registerCustomFonts(fonts);
+  }
+
+  /**
+   * Resolves a term key to its translated string for the active locale.
+   * @param key - The term key to resolve.
+   * @param vars - Optional values for `{placeholder}` interpolation.
+   */
+  @Method()
+  async t(key: KritzelTermKey, vars?: KritzelTermVars): Promise<string> {
+    return this.engineRef ? this.engineRef.t(key, vars) : key;
+  }
+
   /**
    * Triggers a UI notification programmatically.
    * @param notification - Notification payload. `id` and `timestamp` are optional.
@@ -1375,77 +1446,6 @@ export class KritzelEditor {
     }
 
     return null;
-  }
-
-  @Method()
-  async openLoginDialog(): Promise<void> {
-    this.loginDialogRef?.open();
-  }
-
-  @Method()
-  async closeLoginDialog(): Promise<void> {
-    this.loginDialogRef?.close();
-  }
-
-  @Method()
-  async setLoginLoading(provider: string | null): Promise<void> {
-    this.loginDialogRef?.setLoading(provider);
-  }
-
-  /**
-   * Sets the active locale (language) and re-renders the UI.
-   * @param code - The locale code to activate, e.g. 'de'.
-   */
-  @Method()
-  async setLocale(code: LocaleCode): Promise<void> {
-    this.locale = code;
-    await this.engineRef?.setLocale(code);
-  }
-
-  /**
-   * Gets the currently active locale code.
-   */
-  @Method()
-  async getLocale(): Promise<LocaleCode> {
-    return this.engineRef ? this.engineRef.getLocale() : this.locale;
-  }
-
-  /**
-   * Gets the list of available locale codes (built-in and registered).
-   */
-  @Method()
-  async getAvailableLocales(): Promise<LocaleCode[]> {
-    return this.engineRef ? this.engineRef.getAvailableLocales() : [];
-  }
-
-  /**
-   * Registers additional locale definitions (with optional partial term overrides).
-   * @param locales - The locale definitions to register.
-   */
-  @Method()
-  async registerLocales(locales: KritzelLocale[]): Promise<void> {
-    await this.engineRef?.registerLocales(locales);
-  }
-
-  /**
-   * Registers custom fonts for the editor runtime.
-   * @param fonts - Mapping from font keys to family names or font definitions.
-   * @remarks This no longer controls the text-tool config tooltip font options.
-  * Configure tooltip fonts via toolbarItems[].config.availableFonts.
-   */
-  @Method()
-  async registerFonts(fonts: KritzelFontMap): Promise<void> {
-    await this.registerCustomFonts(fonts);
-  }
-
-  /**
-   * Resolves a term key to its translated string for the active locale.
-   * @param key - The term key to resolve.
-   * @param vars - Optional values for `{placeholder}` interpolation.
-   */
-  @Method()
-  async t(key: KritzelTermKey, vars?: KritzelTermVars): Promise<string> {
-    return this.engineRef ? this.engineRef.t(key, vars) : key;
   }
 
   private getSettingsStorageKey(): string {

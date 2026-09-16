@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getEngineRef, KritzelEngine, type HTMLKritzelEngineElement } from 'kritzel-vue'
+import { getEngineRef, KritzelEngine, type HTMLKritzelEngineElement } from '@kritzel/vue-engine'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 
 const engine = getEngineRef('engine')
