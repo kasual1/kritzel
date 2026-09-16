@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { KritzelEngine, type HTMLKritzelEngineElement } from "kritzel-react";
+import { KritzelEngine, type HTMLKritzelEngineElement } from "@kritzel/react-engine";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 
 export function ImportExportWorkspaceImportPage() {
