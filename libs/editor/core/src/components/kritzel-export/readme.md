@@ -1,0 +1,81 @@
+# kritzel-export
+
+
+
+<!-- Auto Generated Below -->
+
+
+## Properties
+
+| Property        | Attribute        | Description                                                           | Type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Default       |
+| --------------- | ---------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| `terms`         | --               | Resolved localized strings keyed by term key, supplied by the editor. | `"backToContent.label" \| "currentUser.dialogTitle" \| "editor.loading" \| "export.dialogTitle" \| "export.exportButton" \| "export.filename.label" \| "export.filename.placeholder" \| "export.format.label" \| "export.tabs.viewport" \| "export.tabs.workspace" \| "login.dialogTitle" \| "menu.align" \| "menu.alignBottom" \| "menu.alignCenterHorizontal" \| "menu.alignCenterVertical" \| "menu.alignLeft" \| "menu.alignRight" \| "menu.alignTop" \| "menu.bringToFront" \| "menu.copy" \| "menu.cut" \| "menu.delete" \| "menu.export" \| "menu.exportAsPng" \| "menu.exportAsSvg" \| "menu.group" \| "menu.import" \| "menu.logout" \| "menu.moveDown" \| "menu.moveUp" \| "menu.order" \| "menu.paste" \| "menu.selectAll" \| "menu.sendToBack" \| "menu.settings" \| "menu.share" \| "menu.ungroup" \| "moreMenu.ariaLabel" \| "settings.about.description" \| "settings.about.title" \| "settings.categories.about" \| "settings.categories.developer" \| "settings.categories.general" \| "settings.categories.shortcuts" \| "settings.categories.viewport" \| "settings.developer.showMigrationInfo.description" \| "settings.developer.showMigrationInfo.label" \| "settings.developer.showObjectInfo.description" \| "settings.developer.showObjectInfo.label" \| "settings.developer.showSyncProviderInfo.description" \| "settings.developer.showSyncProviderInfo.label" \| "settings.developer.showViewportInfo.description" \| "settings.developer.showViewportInfo.label" \| "settings.developer.title" \| "settings.dialogTitle" \| "settings.general.language.description" \| "settings.general.language.label" \| "settings.general.lockDrawingScale.description" \| "settings.general.lockDrawingScale.label" \| "settings.general.theme.description" \| "settings.general.theme.label" \| "settings.general.title" \| "settings.shortcuts.title" \| "settings.viewport.boundaryBottom.description" \| "settings.viewport.boundaryBottom.label" \| "settings.viewport.boundaryLeft.description" \| "settings.viewport.boundaryLeft.label" \| "settings.viewport.boundaryPlaceholder" \| "settings.viewport.boundaryRight.description" \| "settings.viewport.boundaryRight.label" \| "settings.viewport.boundaryTop.description" \| "settings.viewport.boundaryTop.label" \| "settings.viewport.maxZoom.description" \| "settings.viewport.maxZoom.label" \| "settings.viewport.minZoom.description" \| "settings.viewport.minZoom.label" \| "settings.viewport.title" \| "share.copyLink.copied" \| "share.copyLink.title" \| "share.dialogTitle" \| "share.linkSharing.disabledDescription" \| "share.linkSharing.enabledDescription" \| "share.linkSharing.label" \| "share.linkSharing.toggleLabel" \| "toolConfig.collapse" \| "toolConfig.expand" \| "utility.delete" \| "utility.redo" \| "utility.undo" \| "watermark.poweredBy" \| "workspace.delete" \| "workspace.rename" \| "workspace.sharedTooltip" \| "zoom.zoomIn" \| "zoom.zoomOut" \| string` | `{}`          |
+| `workspaceName` | `workspace-name` | The name of the current workspace, used as default filename           | `string`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `'workspace'` |
+
+
+## Events
+
+| Event        | Description | Type                  |
+| ------------ | ----------- | --------------------- |
+| `exportJson` |             | `CustomEvent<string>` |
+| `exportPng`  |             | `CustomEvent<void>`   |
+| `exportSvg`  |             | `CustomEvent<void>`   |
+
+
+## Methods
+
+### `close() => Promise<void>`
+
+
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `open(previewUrl?: string) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name         | Type     | Description |
+| ------------ | -------- | ----------- |
+| `previewUrl` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
+## Dependencies
+
+### Used by
+
+ - [kritzel-editor](../kritzel-editor)
+
+### Depends on
+
+- [kritzel-input](../kritzel-input)
+- [kritzel-dropdown](../kritzel-dropdown)
+- [kritzel-dialog](../kritzel-dialog)
+- [kritzel-pill-tabs](../kritzel-pill-tabs)
+
+### Graph
+```mermaid
+graph TD;
+  kritzel-export --> kritzel-input
+  kritzel-export --> kritzel-dropdown
+  kritzel-export --> kritzel-dialog
+  kritzel-export --> kritzel-pill-tabs
+  kritzel-pill-tabs --> kritzel-icon
+  kritzel-editor --> kritzel-export
+  style kritzel-export fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

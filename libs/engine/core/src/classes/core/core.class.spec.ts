@@ -21,7 +21,7 @@ import { ShapeType } from '../../enums/shape-type.enum';
 // Mock the asset resolver so `initializeYjs` doesn't hit the real IndexedDB
 // provider during unit tests (jsdom does not expose a global `indexedDB`).
 jest.mock('../providers/assets/asset-resolver.class');
-jest.mock('../../components/core/kritzel-engine/kritzel-engine', () => ({
+jest.mock('../../components/kritzel-engine/kritzel-engine', () => ({
   KritzelEngine: jest.fn(),
 }));
 jest.mock('../structures/object-map.structure');

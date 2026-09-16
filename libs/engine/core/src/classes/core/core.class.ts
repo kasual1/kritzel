@@ -1,4 +1,4 @@
-import { KritzelEngine } from '../../components/core/kritzel-engine/kritzel-engine';
+import { KritzelEngine } from '../../components/kritzel-engine/kritzel-engine';
 import { DEFAULT_ENGINE_CONFIG } from '../../configs/default-engine-config';
 import { AlignmentHelper } from '../../helpers/alignment.helper';
 import { KritzelAlignment } from '../../enums/alignment.enum';

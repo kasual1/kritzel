@@ -6,21 +6,21 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectExportFormat, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
-import { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
-import { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
+import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 import { Element } from "@stencil/core";
-import { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
-import { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
-import { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
-import { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
+import { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
+import { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
+import { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs";
+import { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
 export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectExportFormat, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
-export { BrushStyleOption } from "./components/shared/kritzel-brush-style/kritzel-brush-style";
-export { DropdownOption } from "./components/shared/kritzel-dropdown/kritzel-dropdown";
+export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
+export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 export { Element } from "@stencil/core";
-export { FontOption } from "./components/shared/kritzel-font-family/kritzel-font-family";
-export { LineEndingType } from "./components/shared/kritzel-line-endings/kritzel-line-endings";
-export { KritzelPillTab } from "./components/shared/kritzel-pill-tabs/kritzel-pill-tabs";
-export { ShapeFillType } from "./components/shared/kritzel-shape-fill/kritzel-shape-fill";
+export { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
+export { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
+export { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs";
+export { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
 export namespace Components {
     interface KritzelActiveUsers {
         /**
