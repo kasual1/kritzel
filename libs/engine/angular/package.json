@@ -1,5 +1,5 @@
 {
-  "name": "@kritzel/angular-engine",
+  "name": "@kritzel/angular-engine-workspace",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
