@@ -3,7 +3,7 @@
 import {
   KritzelEditor,
   type ContextMenuItem,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../../shared/demo-shared'
 

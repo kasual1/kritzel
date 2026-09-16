@@ -11,7 +11,7 @@ Kritzel handles the hard parts of canvas-based applications — infinite pan and
 ## Installation
 
 ```bash
-npm install kritzel-vue
+npm install @kritzel/vue-editor
 ```
 
 ## Setup
@@ -20,7 +20,7 @@ Render Kritzel in your component:
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor } from 'kritzel-vue'
+import { KritzelEditor } from '@kritzel/vue-editor'
 </script>
 
 <template>
@@ -38,7 +38,7 @@ By default, the editor uses an empty sync provider list, so canvas state is rese
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor, IndexedDBSyncProvider } from 'kritzel-vue'
+import { KritzelEditor, IndexedDBSyncProvider } from '@kritzel/vue-editor'
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider],

@@ -4,7 +4,7 @@ import {
   KritzelPath,
   KritzelShape,
   ShapeType,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 
 export function createSeedObjects(): KritzelBaseObject[] {
   return [

@@ -13,7 +13,7 @@ overrides for one part of the editor. All values are strings so that colors, len
 font declarations, shadows, and CSS expressions can be supplied as needed.
 
 ```ts
-import type { KritzelTheme } from 'kritzel-angular';
+import type { KritzelTheme } from '@kritzel/angular-editor';
 
 const customTheme: KritzelTheme = {
   name: 'custom',

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, KritzelLocale, LocaleCode } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent, KritzelLocale, LocaleCode } from '@kritzel/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';

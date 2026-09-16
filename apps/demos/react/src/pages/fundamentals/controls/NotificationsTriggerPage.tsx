@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { HTMLKritzelEditorElement, KritzelEditor } from "kritzel-react";
+import { HTMLKritzelEditorElement, KritzelEditor } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
 

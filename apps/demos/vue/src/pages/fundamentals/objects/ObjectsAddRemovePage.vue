@@ -7,7 +7,7 @@ import {
   KritzelShape,
   ShapeType,
   type KritzelBaseObject,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   buttonStyle,

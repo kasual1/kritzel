@@ -5,18 +5,18 @@ description: Build infinite-canvas experiences in Vue with the Kritzel library (
 
 # Kritzel in Vue
 
-Kritzel is an infinite-canvas drawing library built with Stencil, consumed in Vue 3 through the `kritzel-vue` wrapper package. It ships two components:
+Kritzel is an infinite-canvas drawing library built with Stencil, consumed in Vue 3 through the `@kritzel/vue-editor` wrapper package. It ships two components:
 
 - **`<KritzelEditor>`** — the full experience: canvas + toolbar, workspace manager, settings, context menus, export dialogs. **Default choice.**
 - **`<KritzelEngine>`** — the headless canvas only. No UI, **no tools registered by default**. Use when you build your own UI around the canvas.
 
 ## Golden rules (always apply)
 
-1. **Setup is just an import.** `import { KritzelEditor } from 'kritzel-vue'` and render it in the template. No plugin, no `app.use`, no manual `defineCustomElements` — the wrapper registers the custom elements lazily on first render.
+1. **Setup is just an import.** `import { KritzelEditor } from '@kritzel/vue-editor'` and render it in the template. No plugin, no `app.use`, no manual `defineCustomElements` — the wrapper registers the custom elements lazily on first render.
 2. **The host element needs explicit size.** `style="display: block; width: 100%; height: 100vh"` (or `flex: 1; min-height: 0; display: block` inside a flex column). Without it nothing renders.
 3. **Wait for readiness before any method call.** Bind `@isReady` on `<KritzelEditor>` (or `@isEngineReady` on `<KritzelEngine>`) and only call API methods after it fires. Calling earlier fails.
 4. **Every API method is async.** Always `await` calls; never fire-and-forget when order matters. `@click` handlers may be `async` functions directly.
-5. **Get the element via the `getEditorRef` composable, not a raw template ref.** A template ref on `<KritzelEditor>` points at the Vue component instance, not the DOM element. Bind `ref="editor"` in the template and resolve with `const editor = getEditorRef('editor')` (argument = the template-ref *name*; call at the top level of `<script setup>`). It returns a computed ref to the native `HTMLKritzelEditorElement` — call all methods through it: `await editor.value?.addObject(...)`. Use `getEngineRef` for `<KritzelEngine>`. Both composables and the element types are exported from `kritzel-vue`.
+5. **Get the element via the `getEditorRef` composable, not a raw template ref.** A template ref on `<KritzelEditor>` points at the Vue component instance, not the DOM element. Bind `ref="editor"` in the template and resolve with `const editor = getEditorRef('editor')` (argument = the template-ref *name*; call at the top level of `<script setup>`). It returns a computed ref to the native `HTMLKritzelEditorElement` — call all methods through it: `await editor.value?.addObject(...)`. Use `getEngineRef` for `<KritzelEngine>`. Both composables and the element types are exported from `@kritzel/vue-editor`.
 6. **Events are camelCase `@` bindings carrying `CustomEvent<T>`; the payload is always `event.detail`.** Handlers receive a plain `Event` — cast: `(event as CustomEvent<KritzelBaseObject[]>).detail`.
 7. **Define object/array props as consts in `<script setup>`.** `toolbarItems`, `syncConfig`, `themes`, `globalContextMenuItems`, `objectContextMenuItems`, etc. are assigned to the web component by reference — inline object literals in the template are recreated on every render and re-trigger the component's prop setters. Bind with `:toolbarItems="toolbarItems"`; bind numbers/booleans with `:` too (`:isPanningEnabled="false" :isZoomingEnabled="false"`).
 8. **Create objects with constructors, position with `translateX`/`translateY` (world coordinates), insert with `addObject`/`addObjects`.** Use `addObjects` for batches (single transaction).
@@ -33,7 +33,7 @@ Kritzel is an infinite-canvas drawing library built with Stencil, consumed in Vu
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, KritzelText, getEditorRef } from 'kritzel-vue'
+import { KritzelEditor, KritzelText, getEditorRef } from '@kritzel/vue-editor'
 
 const editor = getEditorRef('editor')
 

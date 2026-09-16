@@ -11,7 +11,7 @@ Kritzel handles the hard parts of canvas-based applications — infinite pan/zoo
 ## Installation
 
 ```bash
-npm install kritzel-angular
+npm install @kritzel/angular-editor
 ```
 
 ## Setup
@@ -20,7 +20,7 @@ Register Kritzel in your application config:
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
-import { provideKritzel } from 'kritzel-angular';
+import { provideKritzel } from '@kritzel/angular-editor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,7 +34,7 @@ Then use the component in your template:
 
 ```ts
 import { Component } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
+import { KritzelEditor } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-editor',
@@ -55,7 +55,7 @@ By default, the editor uses an empty sync provider list, so canvas state is rese
 
 ```ts
 import { Component } from '@angular/core';
-import { IndexedDBSyncProvider, KritzelEditor, KritzelSyncConfig } from 'kritzel-angular';
+import { IndexedDBSyncProvider, KritzelEditor, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-editor',

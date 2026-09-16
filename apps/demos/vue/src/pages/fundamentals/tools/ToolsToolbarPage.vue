@@ -6,7 +6,7 @@ import {
   KritzelSelectionTool,
   KritzelTextTool,
   type KritzelToolbarItem,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../../shared/demo-shared'
 

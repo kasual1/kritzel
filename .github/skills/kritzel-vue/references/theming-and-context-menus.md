@@ -14,7 +14,7 @@ Spread a built-in theme and override sections; **give it a `name`, pass it via `
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, lightTheme, type KritzelTheme } from 'kritzel-vue'
+import { KritzelEditor, lightTheme, type KritzelTheme } from '@kritzel/vue-editor'
 
 const brandLight: KritzelTheme = {
   ...lightTheme,
@@ -61,7 +61,7 @@ Supplying these **replaces** the defaults (the editor ships sensible defaults: p
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, getEditorRef, type ContextMenuItem } from 'kritzel-vue'
+import { KritzelEditor, getEditorRef, type ContextMenuItem } from '@kritzel/vue-editor'
 
 const editor = getEditorRef('editor')   // argument = template-ref NAME
 

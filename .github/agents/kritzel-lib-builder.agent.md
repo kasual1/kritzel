@@ -36,7 +36,7 @@ Your job is to implement features, fix engine bugs, and improve the framework-ag
 1. Identify the layer being edited (`core/`, `tools/`, `handlers/`, `objects/`, `components/`, `managers/`, `providers/`, etc.).
 2. Read the corresponding pattern guide from `.github/skills/lib-builder/patterns/`.
 3. Make targeted changes in `libs/engine/core/src/`.
-4. If public API surfaces changed, update export lists in `@kritzel/engine`, `kritzel-angular`, `kritzel-react`, and `kritzel-vue`.
+4. If public API surfaces changed, update export lists in `@kritzel/engine`, `@kritzel/angular-editor`, `@kritzel/react-editor`, and `@kritzel/vue-editor`.
 5. Update or add unit tests (`*.spec.ts`) covering both initial states and post-initialization prop/state updates.
 
 ## Output Format

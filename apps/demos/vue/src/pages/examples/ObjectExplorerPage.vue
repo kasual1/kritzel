@@ -8,7 +8,7 @@ import {
   type ObjectsRemovedEvent,
   type ObjectsUpdatedEvent,
   ShapeType,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from '../getting-started/seed-objects'
 

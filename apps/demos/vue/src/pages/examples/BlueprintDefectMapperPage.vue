@@ -6,7 +6,7 @@ import {
   KritzelImage,
   KritzelShape,
   ShapeType,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 
 type DefectStatus = 'Outstanding' | 'In Progress' | 'Resolved'

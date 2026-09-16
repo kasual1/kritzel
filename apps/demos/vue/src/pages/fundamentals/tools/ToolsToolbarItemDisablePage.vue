@@ -6,7 +6,7 @@ import {
   KritzelEraserTool,
   KritzelSelectionTool,
   type KritzelToolbarItem,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   buttonStyle,

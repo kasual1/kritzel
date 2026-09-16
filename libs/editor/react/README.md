@@ -11,7 +11,7 @@ Kritzel handles the hard parts of canvas-based applications — infinite pan and
 ## Installation
 
 ```bash
-npm install kritzel-react
+npm install @kritzel/react-editor
 ```
 
 ## Setup
@@ -19,7 +19,7 @@ npm install kritzel-react
 Render Kritzel in your component:
 
 ```tsx
-import { KritzelEditor } from 'kritzel-react';
+import { KritzelEditor } from '@kritzel/react-editor';
 
 export function Editor() {
   return <KritzelEditor style={{ display: 'block', width: '100%', height: '100vh' }} />;
@@ -35,7 +35,7 @@ This renders the editor with the **full default toolbar**: selection, brush, era
 By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
 
 ```tsx
-import { KritzelEditor, IndexedDBSyncProvider } from 'kritzel-react';
+import { KritzelEditor, IndexedDBSyncProvider } from '@kritzel/react-editor';
 
 export function Editor() {
   const syncConfig = {

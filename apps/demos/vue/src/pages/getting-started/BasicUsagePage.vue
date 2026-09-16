@@ -7,7 +7,7 @@ import {
   KritzelEditor,
   type KritzelSyncConfig,
   KritzelText,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from './seed-objects'
 

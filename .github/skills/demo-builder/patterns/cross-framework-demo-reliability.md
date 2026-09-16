@@ -33,7 +33,7 @@ Use this pattern whenever demo pages are created, moved, or ported across Angula
 2. Ref access conventions:
 - Angular: direct via `viewChild`/`ElementRef`
 - React: direct via `useRef<HTMLKritzelEditorElement | null>`
-- Vue: use `getEditorRef` / `getEngineRef` from `kritzel-vue`
+- Vue: use `getEditorRef` / `getEngineRef` from `@kritzel/vue-editor`
 
 3. Router locations:
 - Angular: `apps/demos/angular/src/app/app.routes.ts`

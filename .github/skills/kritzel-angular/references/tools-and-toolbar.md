@@ -70,7 +70,7 @@ Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€�
 The most common customization: several variants of a built-in tool under distinct names (e.g. color-locked brushes driven by your own UI):
 
 ```ts
-import { KritzelBrushTool, KritzelBrushToolConfig } from 'kritzel-angular';
+import { KritzelBrushTool, KritzelBrushToolConfig } from '@kritzel/angular-editor';
 
 async onReady() {
   const red: KritzelBrushToolConfig = {
@@ -92,7 +92,7 @@ Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`:
 ```ts
 import {
   KritzelToolbarItem, KritzelSelectionTool, KritzelBrushTool, KritzelTextTool, ShapeType,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 
 readonly toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
@@ -142,10 +142,10 @@ To hide the toolbar entirely and drive tools from your own Angular UI: `[isToolb
 
 ## Fully custom tool classes
 
-For new interaction behavior, extend `KritzelBaseTool` (exported from `kritzel-angular`) and override the lifecycle/pointer hooks:
+For new interaction behavior, extend `KritzelBaseTool` (exported from `@kritzel/angular-editor`) and override the lifecycle/pointer hooks:
 
 ```ts
-import { KritzelBaseTool } from 'kritzel-angular';
+import { KritzelBaseTool } from '@kritzel/angular-editor';
 
 export class StampTool extends KritzelBaseTool {
   override onActivate(): void {}

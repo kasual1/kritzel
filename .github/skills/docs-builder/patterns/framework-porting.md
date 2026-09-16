@@ -84,9 +84,9 @@ When adding or porting <LiveDemo> blocks:
 ## Quick Mapping Reference
 
 - Package imports:
-  - Angular: kritzel-angular
-  - React: kritzel-react
-  - Vue: kritzel-vue
+  - Angular: @kritzel/angular-editor
+  - React: @kritzel/react-editor
+  - Vue: @kritzel/vue-editor
 
 - Root app container in quick-start CSS examples:
   - React: #root
@@ -116,4 +116,4 @@ After porting, verify:
 - Find Vue fence usage in Vue docs:
   - ```vue
 - Find Angular package references in React/Vue docs:
-  - kritzel-angular
+  - @kritzel/angular-editor

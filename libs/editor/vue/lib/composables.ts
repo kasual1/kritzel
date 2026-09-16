@@ -15,7 +15,7 @@ import {
  * @example
  * ```vue
  * <script setup lang="ts">
- * import { KritzelEditor, getEditorRef } from 'kritzel-vue'
+ * import { KritzelEditor, getEditorRef } from '@kritzel/vue-editor'
  * import { ref, type ComponentPublicInstance } from 'vue'
  *
  * const editorComponent = ref<ComponentPublicInstance | null>(null)

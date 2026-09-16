@@ -5,7 +5,7 @@
 A workspace is a complete document: its objects, view state, and metadata. The editor always has one active workspace (one is created automatically on first run).
 
 ```ts
-import { getEditorRef, KritzelWorkspace } from 'kritzel-vue';
+import { getEditorRef, KritzelWorkspace } from '@kritzel/vue-editor';
 
 const editor = getEditorRef('editor'); // top level of <script setup>; 'editor' = template ref name
 
@@ -27,7 +27,7 @@ Drive the active workspace via the `:activeWorkspaceId` prop backed by a `ref`, 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { KritzelEditor, type ActiveWorkspaceChangeEvent, type KritzelWorkspace } from 'kritzel-vue';
+import { KritzelEditor, type ActiveWorkspaceChangeEvent, type KritzelWorkspace } from '@kritzel/vue-editor';
 
 const activeWorkspaceId = ref<string | undefined>(undefined);
 
@@ -58,7 +58,7 @@ Kritzel state lives in a Yjs document; sync providers decide where it goes. **De
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, IndexedDBSyncProvider, type KritzelSyncConfig } from 'kritzel-vue';
+import { KritzelEditor, IndexedDBSyncProvider, type KritzelSyncConfig } from '@kritzel/vue-editor';
 
 const syncConfig: KritzelSyncConfig = {
   providers: [IndexedDBSyncProvider],   // local persistence, restored on reload
@@ -72,7 +72,7 @@ const syncConfig: KritzelSyncConfig = {
 
 **Always define `syncConfig` as a const in `<script setup>` (or module scope)** — never inline an object literal in the template, which would create a new object every render and churn the prop on the web component.
 
-Available providers (all exported from `kritzel-vue`):
+Available providers (all exported from `@kritzel/vue-editor`):
 
 | Provider | Persists/Syncs to | Use |
 |---|---|---|

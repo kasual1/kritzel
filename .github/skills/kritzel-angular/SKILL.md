@@ -5,7 +5,7 @@ description: Build infinite-canvas experiences in Angular with the Kritzel libra
 
 # Kritzel in Angular
 
-Kritzel is an infinite-canvas drawing library built with Stencil, consumed in Angular through the `kritzel-angular` wrapper package. It ships two components:
+Kritzel is an infinite-canvas drawing library built with Stencil, consumed in Angular through the `@kritzel/angular-editor` wrapper package. It ships two components:
 
 - **`<kritzel-editor>`** — the full experience: canvas + toolbar, workspace manager, settings, context menus, export dialogs. **Default choice.**
 - **`<kritzel-engine>`** — the headless canvas only. No UI, **no tools registered by default**. Use when you build your own UI around the canvas.
@@ -32,7 +32,7 @@ Kritzel is an infinite-canvas drawing library built with Stencil, consumed in An
 
 ```ts
 import { ChangeDetectionStrategy, Component, ViewChild, signal } from '@angular/core';
-import { KritzelEditor, KritzelText, EditorIsReadyEvent } from 'kritzel-angular';
+import { KritzelEditor, KritzelText, EditorIsReadyEvent } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-canvas',
@@ -62,7 +62,7 @@ export class CanvasComponent {
 And in `app.config.ts`:
 
 ```ts
-import { provideKritzel } from 'kritzel-angular';
+import { provideKritzel } from '@kritzel/angular-editor';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideKritzel()],

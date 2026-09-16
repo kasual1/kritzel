@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement, type EditorIsReadyEvent } from "kritzel-react";
+import { KritzelEditor, type HTMLKritzelEditorElement, type EditorIsReadyEvent } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { createSeedObjects } from "../../getting-started/seed-objects";

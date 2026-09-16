@@ -1,4 +1,4 @@
-import { KritzelTheme } from "kritzel-react";
+import { KritzelTheme } from "@kritzel/react-editor";
 
 export const reactThemeLight: KritzelTheme = {
   name: 'light',

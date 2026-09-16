@@ -1,4 +1,4 @@
-import { HocuspocusSyncProvider, KritzelEditor } from "kritzel-react";
+import { HocuspocusSyncProvider, KritzelEditor } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { reactThemeDark } from "../../const/react-theme-dark";
 

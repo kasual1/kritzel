@@ -5,7 +5,7 @@
 A workspace is a complete document: its objects, view state, and metadata. The editor always has one active workspace (one is created automatically on first run).
 
 ```tsx
-import { KritzelWorkspace } from 'kritzel-react';
+import { KritzelWorkspace } from '@kritzel/react-editor';
 
 const workspaces = await editor.getWorkspaces();
 const active = await editor.getActiveWorkspace();
@@ -40,7 +40,7 @@ Kritzel state lives in a Yjs document; sync providers decide where it goes. **De
 
 ```tsx
 import { useMemo } from 'react';
-import { IndexedDBSyncProvider, type KritzelSyncConfig } from 'kritzel-react';
+import { IndexedDBSyncProvider, type KritzelSyncConfig } from '@kritzel/react-editor';
 
 const syncConfig = useMemo<KritzelSyncConfig>(
   () => ({ providers: [IndexedDBSyncProvider] }),   // local persistence, restored on reload
@@ -52,7 +52,7 @@ const syncConfig = useMemo<KritzelSyncConfig>(
 
 **Always memoize (or module-scope) `syncConfig`** — a new object every render churns the prop on the web component.
 
-Available providers (all exported from `kritzel-react`):
+Available providers (all exported from `@kritzel/react-editor`):
 
 | Provider | Persists/Syncs to | Use |
 |---|---|---|

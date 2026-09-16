@@ -1,13 +1,13 @@
 # Objects: Create, Update, Query, Organize
 
-All canvas content is a `KritzelBaseObject` subclass. Import all classes from `kritzel-vue`:
+All canvas content is a `KritzelBaseObject` subclass. Import all classes from `@kritzel/vue-editor`:
 `KritzelPath`, `KritzelLine`, `KritzelShape`, `KritzelText`, `KritzelImage`, `KritzelGroup`, plus `ShapeType` and `KritzelAlignment` enums.
 
 In the snippets below, `editor` is the computed ref to the native element, resolved once at the top level of `<script setup>`:
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, getEditorRef } from 'kritzel-vue'
+import { KritzelEditor, getEditorRef } from '@kritzel/vue-editor'
 
 const editor = getEditorRef('editor') // argument = template-ref NAME
 </script>
@@ -57,7 +57,7 @@ await editor.value?.addObject(text);
 ### Shape (rectangle / ellipse / triangle)
 
 ```ts
-import { ShapeType } from 'kritzel-vue';
+import { ShapeType } from '@kritzel/vue-editor';
 
 const shape = new KritzelShape({
   translateX: 20,
@@ -160,7 +160,7 @@ Mirror query results into Vue state for templates:
 
 ```ts
 import { ref } from 'vue';
-import type { KritzelBaseObject } from 'kritzel-vue';
+import type { KritzelBaseObject } from '@kritzel/vue-editor';
 
 const objects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([]);
 
@@ -192,7 +192,7 @@ await editor.value?.sendToBack();
 await editor.value?.bringForward();
 await editor.value?.sendBackward();
 
-import { KritzelAlignment } from 'kritzel-vue';
+import { KritzelAlignment } from '@kritzel/vue-editor';
 await editor.value?.alignObjects(KritzelAlignment.CenterHorizontal); // needs ≥ 2 selected
 ```
 

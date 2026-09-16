@@ -6,7 +6,7 @@ import {
   HTMLKritzelEditorElement,
   type KritzelSyncConfig,
   type KritzelWorkspace,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,

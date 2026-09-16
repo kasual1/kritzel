@@ -4,7 +4,7 @@ import {
   KritzelPath,
   KritzelShape,
   ShapeType,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 
 export function createSeedObjects(): KritzelBaseObject[] {
   return [

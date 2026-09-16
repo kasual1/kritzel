@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import type { KritzelBaseObject } from "kritzel-react";
+import type { KritzelBaseObject } from "@kritzel/react-editor";
 import { createSeedObjects } from "../getting-started/seed-objects";
 
 export const hostStyle: CSSProperties = {

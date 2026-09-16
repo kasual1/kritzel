@@ -6,7 +6,7 @@ import {
   IndexedDBSyncProvider,
   KritzelEditor,
   type KritzelSyncConfig,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   accentDark,

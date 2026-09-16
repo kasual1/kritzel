@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelEditor } from 'kritzel-vue'
+import { getEditorRef, KritzelEditor } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
 

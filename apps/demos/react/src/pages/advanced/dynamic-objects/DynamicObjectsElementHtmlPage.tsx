@@ -3,8 +3,8 @@ import {
   KritzelDynamicObject,
   KritzelEditor,
   type HTMLKritzelEditorElement,
-} from "kritzel-react";
-import { KritzelDynamicObjectRendererRegistry } from "kritzel-react";
+} from "@kritzel/react-editor";
+import { KritzelDynamicObjectRendererRegistry } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
 

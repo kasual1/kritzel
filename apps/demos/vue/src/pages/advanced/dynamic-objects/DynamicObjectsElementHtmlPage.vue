@@ -6,7 +6,7 @@ import {
   KritzelDynamicObjectRendererRegistry,
   KritzelEditor,
   type HTMLKritzelEditorElement,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { EditorIsReadyEvent, KritzelEditor, KritzelLoginConfig } from 'kritzel-angular';
+import { EditorIsReadyEvent, KritzelEditor, KritzelLoginConfig } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';

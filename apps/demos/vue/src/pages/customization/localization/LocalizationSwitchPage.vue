@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { KritzelEditor } from 'kritzel-vue'
+import { KritzelEditor } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 
 const locale = ref('en')

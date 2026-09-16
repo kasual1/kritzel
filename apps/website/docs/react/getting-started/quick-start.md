@@ -18,7 +18,7 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 ## Installation
 
 ```bash
-npm install kritzel-react
+npm install @kritzel/react-editor
 ```
 
 ## Setup
@@ -26,7 +26,7 @@ npm install kritzel-react
 Render Kritzel in your component:
 
 ```tsx title="Editor.tsx"
-import { KritzelEditor } from 'kritzel-react';
+import { KritzelEditor } from '@kritzel/react-editor';
 
 export function Editor() {
   return <KritzelEditor style={{ display: 'block', width: '100%', height: '100vh' }} />;
@@ -50,7 +50,7 @@ By default, the editor uses an empty sync provider list, so canvas state is rese
 For provider behavior details and persistence guidance, see the [Persistence concept](../fundamentals/persistence.md).
 
 ```tsx title="Editor.tsx"
-import { KritzelEditor, IndexedDBSyncProvider } from 'kritzel-react';
+import { KritzelEditor, IndexedDBSyncProvider } from '@kritzel/react-editor';
 
 export function Editor() {
   const syncConfig = {

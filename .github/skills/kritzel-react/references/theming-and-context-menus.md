@@ -13,7 +13,7 @@ Kritzel theming is a `KritzelTheme` object of design tokens (mapped to `--kritze
 Spread a built-in theme and override sections; **give it a `name`, pass it via `themes` (an array), and select it by name with `theme`.** Define theme objects and the array at module scope (identity-stable):
 
 ```tsx
-import { lightTheme, darkTheme, type KritzelTheme } from 'kritzel-react';
+import { lightTheme, darkTheme, type KritzelTheme } from '@kritzel/react-editor';
 
 export const brandLight: KritzelTheme = {
   ...lightTheme,
@@ -58,7 +58,7 @@ Supplying these **replaces** the defaults (the editor ships sensible defaults: p
 
 ```tsx
 import { useMemo, useRef } from 'react';
-import { KritzelEditor, type ContextMenuItem, type HTMLKritzelEditorElement } from 'kritzel-react';
+import { KritzelEditor, type ContextMenuItem, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
 
 const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
 

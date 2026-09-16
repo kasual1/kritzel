@@ -7,7 +7,7 @@ import {
   KritzelTextTool,
   type HTMLKritzelEditorElement,
   type KritzelTheme,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 
 type AnnotationMode = "sketch" | "text";
 

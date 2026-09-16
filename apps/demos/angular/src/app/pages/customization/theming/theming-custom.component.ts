@@ -3,7 +3,7 @@ import {
   KritzelEditor,
   KritzelTheme,
   lightTheme,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 
 const brandPurple = '#7c3aed';

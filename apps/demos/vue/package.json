@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@kritzel/vue-engine": "file:../../../libs/engine/vue/dist",
-    "kritzel-vue": "file:../../../libs/editor/vue/dist",
+    "@kritzel/vue-editor": "file:../../../libs/editor/vue/dist",
     "vue": "^3.5.26",
     "vue-router": "^5.0.7"
   },

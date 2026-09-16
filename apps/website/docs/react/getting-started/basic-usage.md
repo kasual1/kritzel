@@ -17,7 +17,7 @@ Before making API calls, you must wait for the editor to fully initialize. The `
 
 ```tsx
 import { useEffect, useRef } from 'react';
-import { KritzelEditor, EditorIsReadyEvent } from 'kritzel-react';
+import { KritzelEditor, EditorIsReadyEvent } from '@kritzel/react-editor';
 
 export function App() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -64,7 +64,7 @@ Kritzel elements on the canvas, such as shapes, text, and drawings, are represen
 For instance, adding a text element programmatically:
 
 ```tsx
-import { KritzelText } from 'kritzel-react';
+import { KritzelText } from '@kritzel/react-editor';
 
 async function addText(editor: HTMLKritzelEditorElement | null) {
   if (!editor) return;
@@ -107,7 +107,7 @@ Bind to DOM events on the custom element `<KritzelEditor>` to stay updated on ca
 
 ```tsx
 import { useEffect, useRef } from 'react';
-import { KritzelEditor, KritzelBaseObject } from 'kritzel-react';
+import { KritzelEditor, KritzelBaseObject } from '@kritzel/react-editor';
 
 export function CanvasStatus() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);

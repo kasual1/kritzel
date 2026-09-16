@@ -18,7 +18,7 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 ## Installation
 
 ```bash
-npm install kritzel-vue
+npm install @kritzel/vue-editor
 ```
 
 ## Setup
@@ -27,7 +27,7 @@ Render Kritzel in your component:
 
 ```html title="Editor.vue"
 <script setup lang="ts">
-import { KritzelEditor } from 'kritzel-vue'
+import { KritzelEditor } from '@kritzel/vue-editor'
 </script>
 
 <template>
@@ -53,7 +53,7 @@ For provider behavior details and persistence guidance, see the [Persistence con
 
 ```html title="Editor.vue"
 <script setup lang="ts">
-import { KritzelEditor, IndexedDBSyncProvider } from 'kritzel-vue'
+import { KritzelEditor, IndexedDBSyncProvider } from '@kritzel/vue-editor'
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider],

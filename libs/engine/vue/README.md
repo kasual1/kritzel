@@ -1,4 +1,4 @@
-# Kritzel for Vue
+# Kritzel Engine for Vue
 
 Build infinite canvas and collaborative whiteboard experiences in Vue with Kritzel's native wrapper and TypeScript-first API.
 
@@ -11,7 +11,7 @@ Kritzel handles the hard parts of canvas-based applications — infinite pan and
 ## Installation
 
 ```bash
-npm install kritzel-vue
+npm install @kritzel/vue-engine
 ```
 
 ## Setup
@@ -20,25 +20,25 @@ Render Kritzel in your component:
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor } from 'kritzel-vue'
+import { KritzelEngine } from '@kritzel/vue-engine'
 </script>
 
 <template>
-  <KritzelEditor style="display: block; width: 100%; height: 100vh" />
+  <KritzelEngine style="display: block; width: 100%; height: 100vh" />
 </template>
 ```
 
-This renders the editor with the **full default toolbar**: selection, brush, eraser, line, shape, text, and image tools.
+This renders the lower-level engine canvas without the editor toolbar shell.
 
 ## Optional Enhancements
 
 ### Persist Canvas State
 
-By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
+By default, the engine uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
 
 ```html
 <script setup lang="ts">
-import { KritzelEditor, IndexedDBSyncProvider } from 'kritzel-vue'
+import { KritzelEngine, IndexedDBSyncProvider } from '@kritzel/vue-engine'
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider],
@@ -46,13 +46,13 @@ const syncConfig = {
 </script>
 
 <template>
-  <KritzelEditor :syncConfig="syncConfig" style="display: block; width: 100%; height: 100vh" />
+  <KritzelEngine :syncConfig="syncConfig" style="display: block; width: 100%; height: 100vh" />
 </template>
 ```
 
 ### Apply Full Viewport Styling
 
-To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
+To ensure the Kritzel engine occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
 
 ```css
 html,

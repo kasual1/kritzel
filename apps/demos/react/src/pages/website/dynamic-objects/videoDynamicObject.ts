@@ -1,5 +1,5 @@
-import { KritzelDynamicObject } from "kritzel-react";
-import { KritzelDynamicObjectRendererRegistry } from "kritzel-react";
+import { KritzelDynamicObject } from "@kritzel/react-editor";
+import { KritzelDynamicObjectRendererRegistry } from "@kritzel/react-editor";
 
 export const VIDEO_RENDERER_KEY = "website-hero-video";
 const VIDEO_Z_INDEX = 12;

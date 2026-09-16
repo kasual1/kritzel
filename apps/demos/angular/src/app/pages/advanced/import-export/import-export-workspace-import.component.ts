@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
-import { EditorIsReadyEvent, KritzelBaseObject, KritzelEditor, KritzelLine, KritzelPath, KritzelShape, KritzelWorkspace, ShapeType } from 'kritzel-angular';
+import { EditorIsReadyEvent, KritzelBaseObject, KritzelEditor, KritzelLine, KritzelPath, KritzelShape, KritzelWorkspace, ShapeType } from '@kritzel/angular-editor';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';

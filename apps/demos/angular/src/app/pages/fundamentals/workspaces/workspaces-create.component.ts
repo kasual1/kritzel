@@ -10,7 +10,7 @@ import {
   KritzelEditor,
   KritzelSyncConfig,
   KritzelWorkspace,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';

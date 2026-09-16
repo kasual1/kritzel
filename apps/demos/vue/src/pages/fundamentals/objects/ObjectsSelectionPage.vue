@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { KritzelEditor, type KritzelBaseObject } from 'kritzel-vue'
+import { KritzelEditor, type KritzelBaseObject } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   buttonStyle,

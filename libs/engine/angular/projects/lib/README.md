@@ -1,4 +1,4 @@
-# Kritzel for Angular
+# Kritzel Engine for Angular
 
 Build infinite canvas and collaborative whiteboard experiences in Angular with Kritzel's native wrapper and TypeScript-first API.
 
@@ -11,7 +11,7 @@ Kritzel handles the hard parts of canvas-based applications — infinite pan/zoo
 ## Installation
 
 ```bash
-npm install kritzel-angular
+npm install @kritzel/angular-engine
 ```
 
 ## Setup
@@ -20,7 +20,7 @@ Register Kritzel in your application config:
 
 ```ts
 import { ApplicationConfig } from '@angular/core';
-import { provideKritzel } from 'kritzel-angular';
+import { provideKritzel } from '@kritzel/angular-engine';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -34,34 +34,34 @@ Then use the component in your template:
 
 ```ts
 import { Component } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
+import { KritzelEngine } from '@kritzel/angular-engine';
 
 @Component({
   selector: 'app-editor',
-  imports: [KritzelEditor],
-  template: `<kritzel-editor></kritzel-editor>`,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
+  imports: [KritzelEngine],
+  template: `<kritzel-engine></kritzel-engine>`,
+  styles: [`kritzel-engine { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {}
 ```
 
-This renders the editor with the **full default toolbar** — selection, brush, eraser, line, shape, text, and image tools.
+This renders the lower-level engine canvas without the editor toolbar shell.
 
 ## Optional Enhancements
 
 ### Persist Canvas State
 
-By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
+By default, the engine uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
 
 ```ts
 import { Component } from '@angular/core';
-import { IndexedDBSyncProvider, KritzelEditor, KritzelSyncConfig } from 'kritzel-angular';
+import { IndexedDBSyncProvider, KritzelEngine, KritzelSyncConfig } from '@kritzel/angular-engine';
 
 @Component({
   selector: 'app-editor',
-  imports: [KritzelEditor],
-  template: `<kritzel-editor [syncConfig]="syncConfig"></kritzel-editor>`,
-  styles: [`kritzel-editor { display: block; width: 100%; height: 100vh; }`],
+  imports: [KritzelEngine],
+  template: `<kritzel-engine [syncConfig]="syncConfig"></kritzel-engine>`,
+  styles: [`kritzel-engine { display: block; width: 100%; height: 100vh; }`],
 })
 export class EditorComponent {
   readonly syncConfig: KritzelSyncConfig = {
@@ -72,7 +72,7 @@ export class EditorComponent {
 
 ### Apply Full Viewport Styling
 
-To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
+To ensure the Kritzel engine occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g. `styles.css`):
 
 ```css
 html,
