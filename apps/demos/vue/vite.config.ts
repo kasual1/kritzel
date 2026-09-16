@@ -17,7 +17,7 @@ export default defineConfig({
     port: 5174,
   },
   build: {
-    chunkSizeWarningLimit: 1500,
+    chunkSizeWarningLimit: 5000,
   },
   resolve: {
     alias: {
