@@ -14,7 +14,7 @@ import {
   KritzelTextTool,
   KritzelTheme,
   KritzelViewportState,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import {
   LucideMinus,
   LucidePlus,

@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement } from "kritzel-react";
+import { KritzelEditor, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 
 const providerIcons = {

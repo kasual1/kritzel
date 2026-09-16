@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { EditorIsReadyEvent, KritzelEditor, KritzelViewportState } from 'kritzel-angular';
+import { EditorIsReadyEvent, KritzelEditor, KritzelViewportState } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { KritzelEditor, type KritzelLocale } from "kritzel-react";
+import { KritzelEditor, type KritzelLocale } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 
 const spanishLocale: KritzelLocale = {

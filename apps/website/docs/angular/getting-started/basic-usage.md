@@ -51,7 +51,7 @@ Props are the declarative way to configure the editor. Use props such as `theme`
 
 ```ts
 import { Component } from '@angular/core';
-import { KritzelEditor, KritzelSyncConfig } from 'kritzel-angular';
+import { KritzelEditor, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-canvas',
@@ -79,7 +79,7 @@ Events are the way the editor reports state changes. Bind custom-element events 
 ```
 
 ```ts
-import { KritzelBaseObject, KritzelViewportState } from 'kritzel-angular';
+import { KritzelBaseObject, KritzelViewportState } from '@kritzel/angular-editor';
 
 onObjectsChange(event: Event) {
   const objects = (event as CustomEvent<KritzelBaseObject[]>).detail;
@@ -99,7 +99,7 @@ The `isReady` event is also an event you can listen to. Treat it as the point at
 Public methods are the imperative way to control the editor canvas and query its state. Kritzel methods are asynchronous and return Promises, so call them from an `async` function and `await` their results. The element reference must be ready before these calls are made. The following example demonstrates adding a text object programmatically.
 
 ```ts
-import { KritzelText } from 'kritzel-angular';
+import { KritzelText } from '@kritzel/angular-editor';
 
 async addText() {
   await this.editor.addObject(new KritzelText({

@@ -20,7 +20,7 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 Run the following command to install Kritzel and add it as a project dependency.
 
 ```bash
-npm install kritzel-angular
+npm install @kritzel/angular-editor
 ```
 
 ## Setup
@@ -29,7 +29,7 @@ Register Kritzel in your application config:
 
 ```ts title="app.config.ts"
 import { ApplicationConfig } from '@angular/core';
-import { provideKritzel } from 'kritzel-angular';
+import { provideKritzel } from '@kritzel/angular-editor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -43,7 +43,7 @@ Then use the component in your template:
 
 ```ts title="editor.component.ts"
 import { Component } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
+import { KritzelEditor } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-editor',
@@ -72,7 +72,7 @@ For provider behavior details and persistence guidance, take a look at [Persiste
 
 ```ts title="editor.component.ts"
 import { Component } from '@angular/core';
-import { IndexedDBSyncProvider, KritzelEditor, KritzelSyncConfig } from 'kritzel-angular';
+import { IndexedDBSyncProvider, KritzelEditor, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-editor',

@@ -6,7 +6,7 @@ import {
   KritzelShape,
   KritzelText,
   ShapeType,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 
 interface Slide {

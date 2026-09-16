@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
+import { KritzelEditor } from '@kritzel/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';

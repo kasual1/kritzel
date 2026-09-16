@@ -24,7 +24,7 @@ My primary goal with Kritzel is to make infinite canvas technology accessible to
 
 Instead of forcing you to solve the same complex UI patterns from scratch, Kritzel gives you the reliable building blocks for your next spatial app:
 
-- **Framework Agnosticism:** Built on top of Web Components, Kritzel ships with dedicated wrappers for React (`kritzel-react`), Vue (`kritzel-vue`), and Angular (`kritzel-angular`). You get an idiomatic experience regardless of your stack.
+- **Framework Agnosticism:** Built on top of Web Components, Kritzel ships with dedicated wrappers for React (`@kritzel/react-editor`), Vue (`@kritzel/vue-editor`), and Angular (`@kritzel/angular-editor`). You get an idiomatic experience regardless of your stack.
 - **Spatial UI Support:** Instead of flattening everything into static pixels on a `<canvas>`, Kritzel treats the canvas as a spatial DOM. You can embed interactive elements—like text inputs or custom framework components—directly into the workspace.
 - **Optimized Rendering:** To handle large numbers of objects, Kritzel uses spatial indexing (Quadtrees) to render only what is currently visible in the viewport, which helps maintain a steady frame rate during zooming and panning across devices.
 - **Collaboration API:** If you are building a multiplayer whiteboard, Kritzel provides hooks to integrate with sync engines like Yjs or Hocuspocus to help manage distributed state.

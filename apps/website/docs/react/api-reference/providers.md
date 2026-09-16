@@ -42,7 +42,7 @@ The generated document name is passed to the provider as `docName`.
 | appStateId | string | Shared identifier for the app-state document. When omitted, a browser-local persisted instance id is used, which is stable across reloads but not shared across devices |
 
 ```tsx
-import { IndexedDBSyncProvider } from 'kritzel-react';
+import { IndexedDBSyncProvider } from '@kritzel/react-editor';
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider],
@@ -144,7 +144,7 @@ static clear(name?: string): void
 ```
 
 ```tsx
-import { InMemorySyncProvider } from 'kritzel-react';
+import { InMemorySyncProvider } from '@kritzel/react-editor';
 
 const syncConfig = {
   providers: [InMemorySyncProvider],
@@ -168,7 +168,7 @@ const syncConfig = {
 `connect` resolves once the persisted state has been loaded into the document. `disconnect` is a no-op because IndexedDB has no connection to close.
 
 ```tsx
-import { IndexedDBSyncProvider } from 'kritzel-react';
+import { IndexedDBSyncProvider } from '@kritzel/react-editor';
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider],
@@ -184,7 +184,7 @@ const syncConfig = {
 The channel name is the `docName`, so the same document is shared across tabs automatically. The provider takes no options.
 
 ```tsx
-import { BroadcastSyncProvider, IndexedDBSyncProvider } from 'kritzel-react';
+import { BroadcastSyncProvider, IndexedDBSyncProvider } from '@kritzel/react-editor';
 
 const syncConfig = {
   providers: [IndexedDBSyncProvider, BroadcastSyncProvider],
@@ -225,7 +225,7 @@ static with(options?: WebSocketOptions): ProviderFactory
 ```
 
 ```tsx
-import { IndexedDBSyncProvider, WebSocketSyncProvider } from 'kritzel-react';
+import { IndexedDBSyncProvider, WebSocketSyncProvider } from '@kritzel/react-editor';
 
 const syncConfig = {
   providers: [
@@ -314,7 +314,7 @@ static destroySharedWebSocket(): void
 ```
 
 ```tsx
-import { HocuspocusSyncProvider, IndexedDBSyncProvider } from 'kritzel-react';
+import { HocuspocusSyncProvider, IndexedDBSyncProvider } from '@kritzel/react-editor';
 
 const syncConfig = {
   appStateId: 'account-42',

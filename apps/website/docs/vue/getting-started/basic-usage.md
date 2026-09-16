@@ -18,7 +18,7 @@ Before making API calls, you must wait for the editor to fully initialize. The `
 ```html
 <script setup lang="ts">
 
-import { KritzelEditor, type EditorIsReadyEvent } from 'kritzel-vue'
+import { KritzelEditor, type EditorIsReadyEvent } from '@kritzel/vue-editor'
 
 const editor = ref<HTMLKritzelEditorElement | null>(null)
 
@@ -59,7 +59,7 @@ For instance, adding a text element programmatically:
 
 ```html
 <script setup lang="ts">
-import { KritzelText } from 'kritzel-vue'
+import { KritzelText } from '@kritzel/vue-editor'
 
 async function addText(editor: HTMLKritzelEditorElement | null) {
   if (!editor) return
@@ -109,7 +109,7 @@ Bind to DOM events on the custom element `<KritzelEditor>` to stay updated on ca
 ```
 
 ```ts
-import { KritzelBaseObject } from 'kritzel-vue'
+import { KritzelBaseObject } from '@kritzel/vue-editor'
 
 function onObjectsChange(event: Event) {
   const objects = (event as CustomEvent<KritzelBaseObject[]>).detail

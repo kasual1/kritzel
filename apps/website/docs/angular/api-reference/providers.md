@@ -42,7 +42,7 @@ The generated document name is passed to the provider as `docName`.
 | appStateId | string | Shared identifier for the app-state document. When omitted, a browser-local persisted instance id is used, which is stable across reloads but not shared across devices |
 
 ```ts
-import { IndexedDBSyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { IndexedDBSyncProvider, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 syncConfig: KritzelSyncConfig = {
   providers: [IndexedDBSyncProvider],
@@ -144,7 +144,7 @@ static clear(name?: string): void
 ```
 
 ```ts
-import { InMemorySyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { InMemorySyncProvider, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 syncConfig: KritzelSyncConfig = {
   providers: [InMemorySyncProvider],
@@ -168,7 +168,7 @@ syncConfig: KritzelSyncConfig = {
 `connect` resolves once the persisted state has been loaded into the document. `disconnect` is a no-op because IndexedDB has no connection to close.
 
 ```ts
-import { IndexedDBSyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { IndexedDBSyncProvider, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 syncConfig: KritzelSyncConfig = {
   providers: [IndexedDBSyncProvider],
@@ -184,7 +184,7 @@ syncConfig: KritzelSyncConfig = {
 The channel name is the `docName`, so the same document is shared across tabs automatically. The provider takes no options.
 
 ```ts
-import { BroadcastSyncProvider, IndexedDBSyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { BroadcastSyncProvider, IndexedDBSyncProvider, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 syncConfig: KritzelSyncConfig = {
   providers: [IndexedDBSyncProvider, BroadcastSyncProvider],
@@ -225,7 +225,7 @@ static with(options?: WebSocketOptions): ProviderFactory
 ```
 
 ```ts
-import { IndexedDBSyncProvider, KritzelSyncConfig, WebSocketSyncProvider } from 'kritzel-angular';
+import { IndexedDBSyncProvider, KritzelSyncConfig, WebSocketSyncProvider } from '@kritzel/angular-editor';
 
 syncConfig: KritzelSyncConfig = {
   providers: [
@@ -314,7 +314,7 @@ static destroySharedWebSocket(): void
 ```
 
 ```ts
-import { HocuspocusSyncProvider, IndexedDBSyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { HocuspocusSyncProvider, IndexedDBSyncProvider, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 syncConfig: KritzelSyncConfig = {
   appStateId: 'account-42',

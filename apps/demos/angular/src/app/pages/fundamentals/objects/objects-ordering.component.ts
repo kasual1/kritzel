@@ -9,7 +9,7 @@ import {
   EditorIsReadyEvent,
   KritzelBaseObject,
   KritzelSyncConfig,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';

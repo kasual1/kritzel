@@ -6,7 +6,7 @@ import {
   type ActiveWorkspaceChangeEvent,
   type KritzelSyncConfig,
   type KritzelWorkspace,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   buttonStyle,

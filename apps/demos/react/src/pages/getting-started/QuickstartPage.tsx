@@ -1,5 +1,5 @@
 import { CSSProperties, useCallback, useRef } from "react";
-import { KritzelEditor } from "kritzel-react";
+import { KritzelEditor } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { seedEditor } from "../shared/demo-shared";
 

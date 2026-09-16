@@ -1,5 +1,5 @@
 {
-  "name": "kritzel-react",
+  "name": "@kritzel/react-editor",
   "version": "0.4.30",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite canvas experiences with React.",

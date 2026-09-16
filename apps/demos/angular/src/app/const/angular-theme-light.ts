@@ -1,4 +1,4 @@
-import { lightTheme, KritzelTheme } from "kritzel-angular";
+import { lightTheme, KritzelTheme } from "@kritzel/angular-editor";
 
 export const angularThemeLight: KritzelTheme = {
   ...lightTheme,

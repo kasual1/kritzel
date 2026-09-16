@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { KritzelEditor } from 'kritzel-angular';
+import { KritzelEditor } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../const/angular-theme-light';
 import { angularThemeDark } from '../const/angular-theme-dark';
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
-import { HocuspocusSyncProvider, KritzelEditor, KritzelSyncConfig } from 'kritzel-angular';
+import { HocuspocusSyncProvider, KritzelEditor, KritzelSyncConfig } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../const/angular-theme-light';
 import { angularThemeDark } from '../const/angular-theme-dark';
 

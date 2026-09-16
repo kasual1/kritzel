@@ -6,7 +6,7 @@ import {
   ShapeType,
   type HTMLKritzelEditorElement,
   type ThemeAwareColor,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 
 type DefectStatus = "Outstanding" | "In Progress" | "Resolved";

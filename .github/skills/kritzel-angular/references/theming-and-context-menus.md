@@ -13,7 +13,7 @@ Kritzel theming is a `KritzelTheme` object of design tokens (mapped to `--kritze
 Spread a built-in theme and override sections; **give it a `name` and pass it via `[themes]` (an array), selecting it by name with `[theme]`:**
 
 ```ts
-import { lightTheme, darkTheme, KritzelTheme } from 'kritzel-angular';
+import { lightTheme, darkTheme, KritzelTheme } from '@kritzel/angular-editor';
 
 export const brandLight: KritzelTheme = {
   ...lightTheme,
@@ -58,7 +58,7 @@ Two independent surfaces, both inputs of editor and engine:
 Supplying these **replaces** the defaults (the editor ships sensible defaults: paste/select-all globally; copy/cut/paste, order, align, group, export, delete on objects).
 
 ```ts
-import { ContextMenuItem } from 'kritzel-angular';
+import { ContextMenuItem } from '@kritzel/angular-editor';
 
 readonly globalItems: ContextMenuItem[] = [
   {

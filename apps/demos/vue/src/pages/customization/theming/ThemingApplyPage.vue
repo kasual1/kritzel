@@ -3,7 +3,7 @@
 import {
   KritzelEditor,
   getEditorRef,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import {

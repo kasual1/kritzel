@@ -7,7 +7,7 @@ import {
   KritzelImage,
   KritzelTextTool,
   type KritzelTheme,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 
 type AnnotationMode = 'sketch' | 'text'

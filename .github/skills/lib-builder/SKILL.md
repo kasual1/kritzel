@@ -91,7 +91,7 @@ To expose a class, function, interface, or constant publicly, it must be exporte
 3. **`libs/editor/react/lib/index.ts`** — re-exports from `@kritzel/engine`
 4. **`libs/editor/vue/lib/index.ts`** — re-exports from `@kritzel/engine`
 
-All three framework wrappers explicitly re-export symbols from `@kritzel/engine` so that consuming applications (e.g. the demos) only need a single import source — `kritzel-angular`, `kritzel-react`, or `kritzel-vue` — unless they are intentionally building against the engine package directly.
+All three framework wrappers explicitly re-export symbols from `@kritzel/engine` so that consuming applications (e.g. the demos) only need a single import source — `@kritzel/angular-editor`, `@kritzel/react-editor`, or `@kritzel/vue-editor` — unless they are intentionally building against the engine package directly.
 
 **Keep the export lists consistent across all three wrappers.** When adding a new public symbol, add it to all four files.
 
