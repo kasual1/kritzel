@@ -23,7 +23,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 - [Tools](/docs/react/fundamentals/tools) - registering multiple brush tools with fixed colors and switching between them programmatically
 - [Objects](/docs/react/fundamentals/objects) - seeding a centered background image as non-interactive scenery
-- [Tools](/docs/react/fundamentals/tools) - driving editor behavior from a custom external toolbar via `changeActiveTool()`
+- [Tools](/docs/react/fundamentals/tools) - driving editor behavior from a custom external toolbar via `setActiveTool()`
 
 ---
 
@@ -37,4 +37,4 @@ Users pick a color from a row of circular swatches in a custom bottom toolbar, t
   repoFiles={['src/pages/examples/ImageAnnotationStudioPage.tsx']}
 />
 
-The background image is loaded once in `onReady()` using `KritzelImage.fromUrl()` and centered on the canvas. It is marked non-editable with `isEditable = false` so annotations always remain the primary interaction layer. Each color swatch registers a separate brush tool with a fixed stroke color, and clicking a swatch calls `changeActiveTool(...)` to activate the corresponding tool without any built-in UI involvement.
+The background image is loaded once in `onReady()` using `KritzelImage.fromUrl()` and centered on the canvas. It is marked non-editable with `isEditable = false` so annotations always remain the primary interaction layer. Each color swatch registers a separate brush tool with a fixed stroke color, and clicking a swatch calls `setActiveTool(...)` to activate the corresponding tool without any built-in UI involvement.

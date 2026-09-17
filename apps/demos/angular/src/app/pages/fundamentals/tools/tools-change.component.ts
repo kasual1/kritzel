@@ -69,6 +69,6 @@ export class ToolsChangeComponent {
 
   async setTool(name: ToolName) {
     this.activeTool.set(name);
-    await this.editor.changeActiveTool(name);
+    await this.editor.setActiveTool(name);
   }
 }

@@ -642,8 +642,6 @@ export class KritzelEditor {
     return this.engineRef.reinitSync();
   }
 
-  // â”€â”€ Tool management â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
   @Method()
   async registerTool(
     toolName: string,
@@ -654,8 +652,8 @@ export class KritzelEditor {
   }
 
   @Method()
-  async changeActiveTool(toolName: string): Promise<void> {
-    return this.engineRef.changeActiveTool(toolName);
+  async setActiveTool(toolName: string): Promise<void> {
+    return this.engineRef.setActiveTool(toolName);
   }
 
   @Method()

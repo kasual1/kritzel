@@ -67,7 +67,7 @@ You can register a custom tool configuration and then surface it in the toolbar 
 
 ## Changing the Active Tool
 
-You can programmatically change the currently active tool by calling the `changeActiveTool` method with the name of the tool on the editor instance.
+You can programmatically change the currently active tool by calling the `setActiveTool` method with the name of the tool on the editor instance.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

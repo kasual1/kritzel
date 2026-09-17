@@ -41,18 +41,18 @@ export function App() {
 
 ## Changing Tools Programmatically
 
-The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `changeActiveTool` method — the name must match the tool's registered name (the `name` of the corresponding `toolbarItems` entry when you customize the toolbar). All editor mutations are asynchronous.
+The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `setActiveTool` method — the name must match the tool's registered name (the `name` of the corresponding `toolbarItems` entry when you customize the toolbar). All editor mutations are asynchronous.
 
 ```tsx
 async function setBrushTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.changeActiveTool('brush');
+    await editor.setActiveTool('brush');
   }
 }
 
 async function setSelectionTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.changeActiveTool('selection');
+    await editor.setActiveTool('selection');
   }
 }
 ```

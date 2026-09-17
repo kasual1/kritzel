@@ -147,11 +147,6 @@ export namespace Components {
          */
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
-          * Switches the active drawing tool by its registered name.
-          * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
-         */
-        "changeActiveTool": (toolName: string) => Promise<void>;
-        /**
           * Deselects all currently selected objects.
          */
         "clearSelection": () => Promise<void>;
@@ -481,6 +476,11 @@ export namespace Components {
           * @param object - The object to move. If omitted, applies to the current selection.
          */
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        /**
+          * Switches the active drawing tool by its registered name.
+          * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
+         */
+        "setActiveTool": (toolName: string) => Promise<void>;
         /**
           * Switches the active workspace in the engine by ID.
           * @param id - The unique ID of the workspace to activate

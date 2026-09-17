@@ -67,7 +67,7 @@ You can programmatically change the currently active tool using the API. This is
 
 ## Related API Methods
 
-- Tool activation (`changeActiveTool()`)
+- Tool activation (`setActiveTool()`)
 - Tool configuration (`registerTool()`)
 - Tool interaction (`enable()`, `disable()`)
 

@@ -336,7 +336,7 @@ export function BlueprintDefectMapperPage() {
     setPlacingMode(newMode);
     if (newMode) {
       // Force the selection tool to prevent drawing marks while dropping a pin
-      void editorRef.current?.changeActiveTool("select");
+      void editorRef.current?.setActiveTool("select");
     }
   }
 

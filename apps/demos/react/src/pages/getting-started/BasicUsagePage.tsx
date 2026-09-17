@@ -55,7 +55,7 @@ export function BasicUsagePage() {
     }
 
     setActiveTool("brush");
-    await editor.changeActiveTool("brush");
+    await editor.setActiveTool("brush");
   }
 
   async function setSelectTool() {
@@ -65,7 +65,7 @@ export function BasicUsagePage() {
     }
 
     setActiveTool("select");
-    await editor.changeActiveTool("select");
+    await editor.setActiveTool("select");
   }
 
   async function addText() {

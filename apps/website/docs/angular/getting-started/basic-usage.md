@@ -38,12 +38,12 @@ export class AppComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   onReady() {
-    this.editor.changeActiveTool('brush');
+    this.editor.setActiveTool('brush');
   }
 }
 ```
 
-Only call methods such as `changeActiveTool` after the editor has emitted the `isReady` event.
+Only call methods such as `setActiveTool` after the editor has emitted the `isReady` event.
 
 ## Setting Props
 
