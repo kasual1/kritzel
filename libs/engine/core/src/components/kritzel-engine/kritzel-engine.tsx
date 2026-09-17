@@ -54,6 +54,7 @@ import { resolveTextToolAvailableFonts } from '../../constants/text-tool-fonts.c
 import { KritzelContextMenuState } from '../../interfaces/context-menu-state.interface';
 import { KritzelExportable, KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
 import { KritzelSvgExportHelper } from '../../helpers/svg-export.helper';
+import { KritzelToolDefinition } from '../../interfaces/tool.interface';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
 
@@ -153,6 +154,14 @@ export class KritzelEngine {
   @Watch('user')
   onUserChange(newValue: IKritzelUser | undefined) {
     this.core.setUser(newValue);
+  }
+
+  /** Tool definitions to register with this engine instance. */
+  @Prop() tools: KritzelToolDefinition[] = [];
+  @Watch('tools')
+  onToolsChange() {
+    this._toolsRevision++;
+    void this.registerConfiguredTools();
   }
 
   /** Context menu items shown when right-clicking the canvas background. */
@@ -2391,6 +2400,8 @@ export class KritzelEngine {
   private _workspaceInitializationPromise: Promise<void> | null = null;
   private _workspaceInitializationTargetKey: string | null = null;
   private _syncInitPromise: Promise<void> | null = null;
+  private _toolsInitPromise: Promise<void> | null = null;
+  private _toolsRevision: number = 0;
   private _syncConfigRevision: number = 0;
   private _assetStorageConfigRevision: number = 0;
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
@@ -2405,6 +2416,43 @@ export class KritzelEngine {
     undoStackSize: 0,
     redoStackSize: 0,
   };
+
+  /** Returns a tool registered in this engine instance. */
+  @Method()
+  async getTool(toolName: string): Promise<KritzelBaseTool | null> {
+    await this.registerConfiguredTools();
+    return this.core.toolRegistry.getTool(toolName);
+  }
+
+  private async registerConfiguredTools(): Promise<void> {
+    if (this._toolsInitPromise) {
+      return this._toolsInitPromise;
+    }
+
+    this._toolsInitPromise = (async () => {
+      do {
+        const revision = this._toolsRevision;
+        for (const definition of this.tools) {
+          let toolClass = definition.tool;
+          if (typeof toolClass !== 'function') {
+            toolClass = toolClass.constructor as KritzelToolDefinition['tool'];
+          }
+
+          await this.registerTool(definition.name, toolClass, definition.config);
+        }
+
+        if (revision === this._toolsRevision) {
+          break;
+        }
+      } while (true);
+    })();
+
+    try {
+      await this._toolsInitPromise;
+    } finally {
+      this._toolsInitPromise = null;
+    }
+  }
 
   private setLoadingState(isLoading: boolean): void {
     if (this.core.store.state.isLoading === isLoading) {
@@ -2540,6 +2588,8 @@ export class KritzelEngine {
   }
 
   componentWillLoad() {
+    this._toolsRevision++;
+    void this.registerConfiguredTools();
     this.core.setEditorId(this.editorId);
     if (this.themes && this.themes.length > 0) {
       this.core.themeManager.registerThemes(this.themes);
@@ -2587,6 +2637,7 @@ export class KritzelEngine {
       this.core.themeManager.setTargetElement(editorElement || this.host);
 
       // Initialize sync config and Yjs
+      await this.registerConfiguredTools();
       await this.initializeSyncAndWorkspace();
 
       if (this.core.store.state.isReady === false) {

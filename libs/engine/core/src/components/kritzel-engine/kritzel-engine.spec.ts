@@ -2193,6 +2193,22 @@ describe('KritzelEngine', () => {
   });
 
   describe('registerTool', () => {
+    it('registers declarative tools and exposes them through getTool', async () => {
+      const registeredTool = { name: 'custom' };
+      (core.toolRegistry.hasTool as jest.Mock).mockReturnValue(false);
+      (core.toolRegistry.registerTool as jest.Mock).mockReturnValue(registeredTool);
+
+      class CustomTool extends MockKritzelBaseTool {}
+      engine.tools = [{ name: 'custom', tool: CustomTool as unknown as typeof engine.tools[number]['tool'] }];
+      (engine as any)._toolsRevision++;
+
+      await (engine as any).registerConfiguredTools();
+
+      expect(core.toolRegistry.registerTool).toHaveBeenCalledWith('custom', CustomTool);
+      (core.toolRegistry.getTool as jest.Mock).mockReturnValue(registeredTool);
+      await expect(engine.getTool('custom')).resolves.toBe(registeredTool);
+    });
+
     it('returns null and logs error when toolClass is not a function', async () => {
       const spy = jest.spyOn(console, 'error').mockImplementation();
 

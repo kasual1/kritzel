@@ -41,8 +41,6 @@ export class ToolsToolbarComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  
-
   toolbarItems: KritzelToolbarItem[] = [
     {
       name: 'selection',

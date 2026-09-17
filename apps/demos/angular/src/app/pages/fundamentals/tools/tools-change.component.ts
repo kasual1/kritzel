@@ -48,8 +48,6 @@ export class ToolsChangeComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  
-
   activeTool = signal<ToolName>('select');
 
   tools: { name: ToolName; label: string }[] = [
