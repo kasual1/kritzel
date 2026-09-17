@@ -11,10 +11,19 @@ export const lightTheme: KritzelTheme = {
     dividerColor: '#e0e0e0',
     focusColor: '#333333',
     focusRingColor: '#333333',
+    fontFamily: 'sans-serif',
     iconColor: 'currentColor',
     scrollbarThumbColor: '#ebebeb',
     textPrimary: '#000000',
     textSecondary: '#333333',
+  },
+
+  activeUsers: {
+    fontFamily: 'sans-serif',
+  },
+
+  awareness: {
+    fontFamily: 'sans-serif',
   },
 
   pillTabs: {
@@ -65,6 +74,10 @@ export const lightTheme: KritzelTheme = {
     hoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
   },
 
+  button: {
+    fontFamily: 'sans-serif',
+  },
+
   colorPalette: {
     circleBorderColor: '#dddcdc',
     hoverBackgroundColor: '#ebebeb',
@@ -76,6 +89,7 @@ export const lightTheme: KritzelTheme = {
     border: '1px solid #ebebeb',
     boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12)',
     dividerColor: 'rgba(0, 0, 0, 0.1)',
+    fontFamily: 'sans-serif',
     itemActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
     itemColor: '#333333',
     itemDisabledColor: '#aaaaaa',
@@ -148,11 +162,6 @@ export const lightTheme: KritzelTheme = {
     loadingOverlayColor: '#333333',
     loadingOverlaySpinnerActiveColor: '#333333',
     loadingOverlaySpinnerColor: '#cccccc',
-    syncIndicatorBackground: 'rgba(255, 255, 255, 0.92)',
-    syncIndicatorColor: '#334155',
-    syncIndicatorSpinnerColor: '#007AFF',
-    syncIndicatorSpinnerTrack: 'rgba(148, 163, 184, 0.35)',
-    syncIndicatorZIndex: '10001',
   },
 
   snap: {
@@ -203,6 +212,7 @@ export const lightTheme: KritzelTheme = {
     itemChildOpenBackgroundColor: 'hsl(0, 0%, 0%, 3%)',
     itemColor: '#333333',
     itemEditingBackgroundColor: '#f0f0f0',
+    fontFamily: 'sans-serif',
     itemInputBorder: '1px solid #333333',
     itemInputBorderColorOnSelected: '#ffffff',
     itemInputCaretColor: '#333333',

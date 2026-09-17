@@ -9,7 +9,7 @@
   gap: 16px;
   height: var(--kritzel-menu-item-height, 40px);
   min-height: var(--kritzel-menu-item-min-height, 40px);
-  font-family: sans-serif;
+  font-family: var(--kritzel-menu-font-family, var(--kritzel-font-family, sans-serif));
   font-size: var(--kritzel-menu-item-font-size, 14px);
   color: var(--kritzel-menu-item-color, #333333);
   border-radius: var(--kritzel-menu-item-border-radius, 12px);

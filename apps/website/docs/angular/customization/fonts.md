@@ -11,9 +11,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Typography plays a critical role in canvas-based applications, vector design tools, and document annotators. Kritzel includes a dedicated font management system (`KritzelFontRegistry`) that allows developers to register custom web fonts (such as Google Fonts, Adobe Fonts, or self-hosted `@font-face` definitions) for canvas text objects and tool panels.
-
-When custom fonts are registered, Kritzel automatically injects the stylesheet URLs into the document, waits for font assets to load via the Browser Font Loading API (`document.fonts`), and populates the font family selection dropdown in the text tool configuration panel.
+Kritzel lets you use custom web fonts in canvas text objects and tool panels. You can add fonts from services such as Google Fonts or Adobe Fonts, or use self-hosted fonts. Once registered, they are available in the text tool for use on canvas text.
 
 ## Registering and Using Custom Fonts
 

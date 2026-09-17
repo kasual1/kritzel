@@ -31,7 +31,7 @@
   padding: 4px 8px;
   background-color: var(--kritzel-active-users-tooltip-background, #333333);
   color: var(--kritzel-active-users-tooltip-color, #ffffff);
-  font-family: sans-serif;
+  font-family: var(--kritzel-active-users-font-family, var(--kritzel-font-family, sans-serif));
   font-size: 12px;
   font-weight: 500;
   border-radius: 4px;
@@ -50,7 +50,7 @@
 .overflow-count {
   position: relative;
   margin-left: 8px;
-  font-family: sans-serif;
+  font-family: var(--kritzel-active-users-font-family, var(--kritzel-font-family, sans-serif));
   font-size: var(--kritzel-active-users-overflow-font-size, 14px);
   font-weight: 500;
   color: var(--kritzel-active-users-overflow-color, #666666);
