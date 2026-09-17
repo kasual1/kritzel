@@ -14,7 +14,7 @@ import {
   KritzelTextTool,
   KritzelTheme,
   KritzelViewportState,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import {
   LucideMinus,
   LucidePlus,
@@ -418,7 +418,7 @@ export class ImageAnnotationStudioComponent {
     this.activeSketchTool.set(toolName);
     this.activeMode.set('sketch');
     await this.syncTextColorToActiveSketchTool();
-    await this.editor.changeActiveTool(toolName);
+    await this.editor.setActiveTool(toolName);
   }
 
   async activateMode(mode: AnnotationMode) {
@@ -426,11 +426,11 @@ export class ImageAnnotationStudioComponent {
 
     if (mode === 'text') {
       await this.syncTextColorToActiveSketchTool();
-      await this.editor.changeActiveTool('text');
+      await this.editor.setActiveTool('text');
       return;
     }
 
-    await this.editor.changeActiveTool(this.activeSketchTool());
+    await this.editor.setActiveTool(this.activeSketchTool());
   }
 
   async undo() {

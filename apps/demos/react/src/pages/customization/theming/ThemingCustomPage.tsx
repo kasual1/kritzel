@@ -4,7 +4,7 @@ import {
   lightTheme,
   HTMLKritzelEditorElement,
   type KritzelTheme,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { seedEditor } from "../../shared/demo-shared";
 
 const brandPurple = "#7c3aed";

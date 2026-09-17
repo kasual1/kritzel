@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 
-import { EditorIsReadyEvent, KritzelDynamicObject, KritzelEditor } from 'kritzel-angular';
+import { EditorIsReadyEvent, KritzelDynamicObject, KritzelEditor } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getEditorRef, KritzelEditor, type IKritzelUser } from 'kritzel-vue'
+import { getEditorRef, KritzelEditor, type IKritzelUser } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 
 const editor = getEditorRef('editor')

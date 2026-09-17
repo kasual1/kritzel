@@ -1,0 +1,34 @@
+{
+  "name": "@kritzel/angular-editor",
+  "version": "0.4.31",
+  "homepage": "https://kritzel.io/",
+  "description": "Kritzel helps you build infinite canvas experiences with Angular.",
+  "keywords": [
+    "infinite canvas",
+    "collaboration",
+    "whiteboard",
+    "drawing",
+    "angular"
+  ],
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "peerDependencies": {
+    "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
+    "@kritzel/editor": "^0.4.31",
+    "@kritzel/engine": "^0.4.31"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kasual1/kritzel.git"
+  },
+  "scripts": {
+    "bump": "npm version patch"
+  }
+}

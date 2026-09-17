@@ -7,7 +7,7 @@ import {
   KritzelTextTool,
   type HTMLKritzelEditorElement,
   type KritzelTheme,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 
 type AnnotationMode = "sketch" | "text";
 
@@ -257,7 +257,7 @@ export function ImageAnnotationStudioPage() {
     setActiveSketchTool(toolName);
     setActiveMode("sketch");
     await syncTextColorToActiveSketchTool(toolName);
-    await editor.changeActiveTool(toolName);
+    await editor.setActiveTool(toolName);
   }
 
   async function activateMode(mode: AnnotationMode) {
@@ -270,11 +270,11 @@ export function ImageAnnotationStudioPage() {
 
     if (mode === "text") {
       await syncTextColorToActiveSketchTool(activeSketchTool);
-      await editor.changeActiveTool("text");
+      await editor.setActiveTool("text");
       return;
     }
 
-    await editor.changeActiveTool(activeSketchTool);
+    await editor.setActiveTool(activeSketchTool);
   }
 
   async function onReady() {

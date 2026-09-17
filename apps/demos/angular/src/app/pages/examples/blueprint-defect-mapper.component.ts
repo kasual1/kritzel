@@ -10,7 +10,7 @@ import {
   KritzelShape,
   KritzelImage,
   ShapeType,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { InfoPanelComponent } from '../../components/info-panel.component';
@@ -633,7 +633,7 @@ export class BlueprintDefectMapperComponent {
     this.placingMode.set(newMode);
     if (newMode) {
       // Force change editor selection tool to prevent drawing marks while dropping pin
-      this.editor.changeActiveTool('select');
+      this.editor.setActiveTool('select');
     }
   }
 

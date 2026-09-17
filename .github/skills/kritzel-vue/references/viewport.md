@@ -61,7 +61,7 @@ Pointer/DOM events give **screen pixels**; the canvas uses **world coordinates**
 
 ```vue
 <script setup lang="ts">
-import { KritzelEditor, KritzelShape, ShapeType, getEditorRef } from 'kritzel-vue';
+import { KritzelEditor, KritzelShape, ShapeType, getEditorRef } from '@kritzel/vue-editor';
 
 const editor = getEditorRef('editor');
 
@@ -120,7 +120,7 @@ Mirror viewport state into a Vue `ref()` from the `@viewportChange` event; the p
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { KritzelEditor, getEditorRef, type KritzelViewportState } from 'kritzel-vue';
+import { KritzelEditor, getEditorRef, type KritzelViewportState } from '@kritzel/vue-editor';
 
 const editor = getEditorRef('editor');
 const viewport = ref<KritzelViewportState | null>(null);

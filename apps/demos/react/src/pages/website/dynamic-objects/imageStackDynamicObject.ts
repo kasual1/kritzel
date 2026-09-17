@@ -1,5 +1,5 @@
-import { KritzelDynamicObject } from "kritzel-react";
-import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObject } from "@kritzel/react-editor";
+import { KritzelDynamicObjectRendererRegistry } from "@kritzel/react-editor";
 
 export const IMAGE_STACK_RENDERER_KEY = "website-hero-image-stack";
 export const IMAGE_STACK_OBJECT_SIZE = 255;

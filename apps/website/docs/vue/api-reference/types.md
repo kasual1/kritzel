@@ -5,7 +5,7 @@ description: "TypeScript types and interfaces exposed by the Kritzel library for
 ---
 # Types & Interfaces Reference
 
-All types below are exported from `kritzel-stencil`.
+All types below are exported from `@kritzel/engine`.
 
 ## Interfaces
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { KritzelEditor } from 'kritzel-vue'
+import { KritzelEditor } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
   buttonStyle,
@@ -29,7 +29,7 @@ const activeTool = ref<ToolName>('select')
 
 async function setTool(name: ToolName) {
   activeTool.value = name
-  await editor.value?.changeActiveTool(name)
+  await editor.value?.setActiveTool(name)
 }
 
 async function onReady() {

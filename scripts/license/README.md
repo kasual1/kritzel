@@ -18,7 +18,7 @@ This folder contains the local tooling to issue and validate Kritzel license key
    npm run license:keygen
    ```
 2. Keep `scripts/license/keys/private.pem` secure and backed up.
-3. Ensure the generated public key is the one embedded in `KRITZEL_LICENSE_PUBLIC_KEY` at `libs/kritzel-stencil/src/constants/license.constants.ts`.
+3. Ensure the generated public key is the one embedded in `KRITZEL_LICENSE_PUBLIC_KEY` at `libs/engine/core/src/constants/license.constants.ts`.
 
 ## Issue a License
 

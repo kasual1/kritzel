@@ -63,14 +63,14 @@ interface KritzelTextToolConfig {
 }
 ```
 
-All config types are exported from `kritzel-react`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
+All config types are exported from `@kritzel/react-editor`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
 
 ## Registering preconfigured tool variants
 
 The most common customization: several variants of a built-in tool under distinct names (e.g. color-locked brushes driven by your own UI):
 
 ```tsx
-import { KritzelBrushTool, type KritzelBrushToolConfig } from 'kritzel-react';
+import { KritzelBrushTool, type KritzelBrushToolConfig } from '@kritzel/react-editor';
 
 async function onReady() {
   const editor = editorRef.current;
@@ -96,7 +96,7 @@ Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`. **Define t
 import {
   KritzelSelectionTool, KritzelBrushTool, KritzelTextTool,
   type KritzelToolbarItem,
-} from 'kritzel-react';
+} from '@kritzel/react-editor';
 
 const toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
@@ -145,10 +145,10 @@ To hide the toolbar entirely and drive tools from your own React UI: `isToolbarV
 
 ## Fully custom tool classes
 
-For new interaction behavior, extend `KritzelBaseTool` (exported from `kritzel-react`) and override the lifecycle/pointer hooks:
+For new interaction behavior, extend `KritzelBaseTool` (exported from `@kritzel/react-editor`) and override the lifecycle/pointer hooks:
 
 ```tsx
-import { KritzelBaseTool } from 'kritzel-react';
+import { KritzelBaseTool } from '@kritzel/react-editor';
 
 export class StampTool extends KritzelBaseTool {
   override onActivate(): void {}

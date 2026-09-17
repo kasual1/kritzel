@@ -3,17 +3,17 @@
 ## Installation
 
 ```bash
-npm install kritzel-angular
+npm install @kritzel/angular-editor
 ```
 
-`kritzel-angular` wraps the core `kritzel-stencil` web components in typed Angular standalone proxy components and re-exports all classes/types you need â€” import everything from `kritzel-angular`, never from `kritzel-stencil` directly in an Angular app.
+`@kritzel/angular-editor` wraps the core `@kritzel/engine` web components in typed Angular standalone proxy components and re-exports all classes/types you need â€” import everything from `@kritzel/angular-editor`, or from `@kritzel/engine` when intentionally building an engine-only integration.
 
 ## Application config
 
 ```ts
 // app.config.ts
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideKritzel } from 'kritzel-angular';
+import { provideKritzel } from '@kritzel/angular-editor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -76,7 +76,7 @@ For mobile, add to `index.html`:
 
 ```ts
 import { ChangeDetectionStrategy, Component, ViewChild, signal } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-board',
@@ -104,7 +104,7 @@ The engine registers **no tools** â€” without registration the canvas accep
 
 ```ts
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEngine, KritzelBrushTool, KritzelSelectionTool, KritzelEraserTool } from 'kritzel-angular';
+import { KritzelEngine, KritzelBrushTool, KritzelSelectionTool, KritzelEraserTool } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-headless-canvas',

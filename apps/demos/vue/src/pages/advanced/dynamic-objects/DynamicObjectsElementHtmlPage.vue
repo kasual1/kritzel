@@ -3,10 +3,10 @@ import { onBeforeUnmount, ref } from 'vue'
 import {
   getEditorRef,
   KritzelDynamicObject,
+  KritzelDynamicObjectRendererRegistry,
   KritzelEditor,
   type HTMLKritzelEditorElement,
-} from 'kritzel-vue'
-import { KritzelDynamicObjectRendererRegistry } from 'kritzel-stencil'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 

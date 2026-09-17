@@ -32,7 +32,7 @@ Register every new demo route in `apps/demos/vue/src/router.ts`.
 
 ## Component Tag Rule
 
-Use `<KritzelEditor>` from `kritzel-vue`. Do not use `<kritzel-editor>` directly in Vue demo pages.
+Use `<KritzelEditor>` from `@kritzel/vue-editor`. Do not use `<kritzel-editor>` directly in Vue demo pages.
 
 ## Component Baseline
 
@@ -53,7 +53,7 @@ Skip only for intentionally neutral/theming-baseline demos.
 
 ## Editor / Engine Ref Access (Vue-specific)
 
-Use `getEditorRef` / `getEngineRef` from `kritzel-vue`.
+Use `getEditorRef` / `getEngineRef` from `@kritzel/vue-editor`.
 
 Vue template refs on wrapper components point at component instances, not directly at native custom elements. The composables resolve native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` safely.
 

@@ -1,4 +1,4 @@
-import type { KritzelTheme } from "kritzel-vue";
+import type { KritzelTheme } from "@kritzel/vue-editor";
 
 export const vueThemeLight: KritzelTheme = {
   name: 'light',

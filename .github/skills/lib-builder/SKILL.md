@@ -1,14 +1,14 @@
 ---
 name: lib-builder
-description: "Add features, fix bugs, or edit existing code in the kritzel-stencil core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/kritzel-stencil/src/."
+description: "Add features, fix bugs, or edit existing code in the Kritzel engine core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/engine/core/src/."
 argument-hint: "Describe the feature, bug fix, or change to make in the stencil core"
 ---
 
-# Lib Builder — kritzel-stencil Core Library
+# Lib Builder — Kritzel Engine Core Library
 
 ## When to Use
 
-- Adding or editing a tool, handler, manager, object, component, provider, or helper in `libs/kritzel-stencil/src/`
+- Adding or editing a tool, handler, manager, object, component, provider, or helper in `libs/engine/core/src/`
 - Fixing a bug in the core rendering engine or state management
 - Adding or modifying CSS variables / theming
 - Integrating a new sync or asset provider
@@ -86,33 +86,33 @@ Select the relevant pattern based on what you're working on:
 
 To expose a class, function, interface, or constant publicly, it must be exported in **four** places:
 
-1. **`libs/kritzel-stencil/src/index.ts`** — the stencil core barrel file
-2. **`libs/kritzel-angular/projects/lib/src/public-api.ts`** — re-exports from `kritzel-stencil`
-3. **`libs/kritzel-react/lib/index.ts`** — re-exports from `kritzel-stencil`
-4. **`libs/kritzel-vue/lib/index.ts`** — re-exports from `kritzel-stencil`
+1. **`libs/engine/core/src/index.ts`** — the engine core barrel file
+2. **`libs/editor/angular/projects/lib/src/public-api.ts`** — re-exports from `@kritzel/engine`
+3. **`libs/editor/react/lib/index.ts`** — re-exports from `@kritzel/engine`
+4. **`libs/editor/vue/lib/index.ts`** — re-exports from `@kritzel/engine`
 
-All three framework wrappers explicitly re-export symbols from `kritzel-stencil` so that consuming applications (e.g. the demos) only need a single import source — `kritzel-angular`, `kritzel-react`, or `kritzel-vue` — without ever importing `kritzel-stencil` directly.
+All three framework wrappers explicitly re-export symbols from `@kritzel/engine` so that consuming applications (e.g. the demos) only need a single import source — `@kritzel/angular-editor`, `@kritzel/react-editor`, or `@kritzel/vue-editor` — unless they are intentionally building against the engine package directly.
 
 **Keep the export lists consistent across all three wrappers.** When adding a new public symbol, add it to all four files.
 
 Example (adding `KritzelFoo`):
 
 ```typescript
-// libs/kritzel-stencil/src/index.ts
+// libs/engine/core/src/index.ts
 export * from './classes/objects/foo.class';
 
-// libs/kritzel-angular/projects/lib/src/public-api.ts
-// libs/kritzel-react/lib/index.ts
-// libs/kritzel-vue/lib/index.ts
+// libs/editor/angular/projects/lib/src/public-api.ts
+// libs/editor/react/lib/index.ts
+// libs/editor/vue/lib/index.ts
 export {
     // ... existing exports ...
     KritzelFoo,
-} from 'kritzel-stencil';
+} from '@kritzel/engine';
 ```
 
 ## General Rules
 
-1. **No framework code** — kritzel-stencil is framework-agnostic; never import Angular/React/Vue
+1. **No framework code** — `@kritzel/engine` is framework-agnostic; never import Angular/React/Vue
 2. **Serialization** — objects that persist must implement `serialize()` / `deserialize()` and set `__class__`
 3. **State changes** — go through `KritzelStore`; never mutate state directly
 4. **CSS variables** — prefix all with `--kritzel-`; run `node scripts/generate-theme-interface.js` after adding new ones

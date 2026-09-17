@@ -7,7 +7,7 @@ import {
   KritzelEditor,
   type KritzelSyncConfig,
   KritzelText,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from './seed-objects'
 
@@ -54,7 +54,7 @@ async function setBrushTool() {
   }
 
   activeTool.value = 'brush'
-  await editor.value.changeActiveTool('brush')
+  await editor.value.setActiveTool('brush')
 }
 
 async function setSelectTool() {
@@ -63,7 +63,7 @@ async function setSelectTool() {
   }
 
   activeTool.value = 'select'
-  await editor.value.changeActiveTool('select')
+  await editor.value.setActiveTool('select')
 }
 
 async function addText() {

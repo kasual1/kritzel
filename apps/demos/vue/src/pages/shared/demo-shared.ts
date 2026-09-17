@@ -1,6 +1,6 @@
 import { type CSSProperties } from 'vue'
-import type { KritzelBaseObject } from 'kritzel-vue'
-import { getEditorRef } from 'kritzel-vue'
+import type { KritzelBaseObject } from '@kritzel/vue-editor'
+import { getEditorRef } from '@kritzel/vue-editor'
 import { createSeedObjects } from '../getting-started/seed-objects'
 
 export { getEditorRef }

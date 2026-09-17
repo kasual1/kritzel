@@ -81,7 +81,7 @@ When the theme switches, all objects and tools automatically resolve to the appr
 The `KritzelTheme` interface defines CSS variables for every component section. You can import and customize the built-in themes:
 
 ```ts
-import { lightTheme, darkTheme } from 'kritzel-stencil';
+import { lightTheme, darkTheme } from '@kritzel/engine';
 ```
 
 Theme sections include: `global`, `engine`, `toolbar`, `selection`, `dialog`, `contextMenu`, `utilityPanel`, `tooltip`, `menu`, `dropdown`, `portal`, `settings`, `splitButton`, `moreMenu`, and more.

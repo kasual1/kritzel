@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { KritzelDynamicObject, KritzelEditor, type HTMLKritzelEditorElement } from "kritzel-react";
+import { KritzelDynamicObject, KritzelEditor, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 
 function createHtmlCounterElement(): HTMLElement {

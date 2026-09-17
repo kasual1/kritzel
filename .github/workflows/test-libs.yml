@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  # --- Build Stencil Library ---
+  # --- Build Libraries ---
   build-stencil:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -26,20 +26,24 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build Kritzel Stencil components
-        run: npm run build -w libs/kritzel-stencil
+      - name: Build Kritzel libraries
+        run: npm run build
 
-      - name: Build Kritzel Angular library
-        run: npm run build -w libs/kritzel-angular
-
-      - name: Upload Stencil and Angular dist
+      - name: Upload library dist
         uses: actions/upload-artifact@v7
         with:
           name: stencil-dist
           path: |
-            libs/kritzel-stencil/dist
-            libs/kritzel-stencil/loader
-            libs/kritzel-angular/dist/lib
+            libs/engine/core/dist
+            libs/engine/core/loader
+            libs/engine/angular/dist/lib
+            libs/engine/react/dist
+            libs/engine/vue/dist
+            libs/editor/core/dist
+            libs/editor/core/loader
+            libs/editor/angular/dist/lib
+            libs/editor/react/dist
+            libs/editor/vue/dist
 
   # --- Run Unit Tests (after Stencil build) ---
   test-unit:
@@ -100,11 +104,11 @@ jobs:
 
       - name: Build Kritzel React library
         if: matrix.project == 'react'
-        run: npm run build -w libs/kritzel-react
+        run: npm run build -w libs/editor/react
 
       - name: Build Kritzel Vue library
         if: matrix.project == 'vue'
-        run: npm run build -w libs/kritzel-vue
+        run: npm run build -w libs/editor/vue
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -157,11 +161,11 @@ jobs:
 
       - name: Build Kritzel React library
         if: matrix.project == 'react'
-        run: npm run build -w libs/kritzel-react
+        run: npm run build -w libs/editor/react
 
       - name: Build Kritzel Vue library
         if: matrix.project == 'vue'
-        run: npm run build -w libs/kritzel-vue
+        run: npm run build -w libs/editor/vue
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

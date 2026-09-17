@@ -11,7 +11,7 @@ import {
   KritzelEditor,
   KritzelSyncConfig,
   KritzelWorkspace,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import {
   InfoPanelComponent,
   InfoPanelToggleComponent,

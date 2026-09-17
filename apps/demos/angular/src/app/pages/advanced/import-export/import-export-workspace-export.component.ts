@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
-import { KritzelEditor, KritzelWorkspace } from 'kritzel-angular';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';

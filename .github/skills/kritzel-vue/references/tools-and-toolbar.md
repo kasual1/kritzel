@@ -71,7 +71,7 @@ interface KritzelTextToolConfig {
 }
 ```
 
-All config types are exported from `kritzel-vue`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
+All config types are exported from `@kritzel/vue-editor`. Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
 
 ## Registering preconfigured tool variants
 
@@ -79,7 +79,7 @@ The most common customization: several variants of a built-in tool under distinc
 
 ```vue
 <script setup lang="ts">
-import { KritzelBrushTool, KritzelEditor, getEditorRef, type KritzelBrushToolConfig } from 'kritzel-vue'
+import { KritzelBrushTool, KritzelEditor, getEditorRef, type KritzelBrushToolConfig } from '@kritzel/vue-editor'
 
 const editor = getEditorRef('editor')
 
@@ -112,7 +112,7 @@ Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`. **Define t
 import {
   KritzelEditor, KritzelSelectionTool, KritzelBrushTool, KritzelTextTool,
   type KritzelToolbarItem,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 
 const toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
@@ -164,7 +164,7 @@ To hide the toolbar entirely and drive tools from your own Vue UI: `:isToolbarVi
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { KritzelEditor, getEditorRef } from 'kritzel-vue'
+import { KritzelEditor, getEditorRef } from '@kritzel/vue-editor'
 
 const editor = getEditorRef('editor')
 const activeTool = ref('select')
@@ -186,10 +186,10 @@ async function setTool(name: string) {
 
 ## Fully custom tool classes
 
-For new interaction behavior, extend `KritzelBaseTool` (exported from `kritzel-vue`) and override the lifecycle/pointer hooks:
+For new interaction behavior, extend `KritzelBaseTool` (exported from `@kritzel/vue-editor`) and override the lifecycle/pointer hooks:
 
 ```ts
-import { KritzelBaseTool } from 'kritzel-vue';
+import { KritzelBaseTool } from '@kritzel/vue-editor';
 
 export class StampTool extends KritzelBaseTool {
   override onActivate(): void {}

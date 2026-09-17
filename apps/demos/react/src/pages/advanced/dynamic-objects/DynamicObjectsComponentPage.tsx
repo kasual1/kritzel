@@ -4,8 +4,8 @@ import {
   KritzelDynamicObject,
   KritzelEditor,
   type HTMLKritzelEditorElement,
-} from "kritzel-react";
-import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
+} from "@kritzel/react-editor";
+import { KritzelDynamicObjectRendererRegistry } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { CounterWidget, createCounterWidgetInitialState, type CounterWidgetState } from "./CounterWidget";
 

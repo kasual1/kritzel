@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelBrushTool, KritzelEditor, KritzelSelectionTool, KritzelTextTool, type KritzelToolbarItem } from 'kritzel-vue'
+import { getEditorRef, KritzelBrushTool, KritzelEditor, KritzelSelectionTool, KritzelTextTool, type KritzelToolbarItem } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 
 const editor = getEditorRef('editor')

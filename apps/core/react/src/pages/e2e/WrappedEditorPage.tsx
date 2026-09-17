@@ -1,4 +1,4 @@
-import { KritzelEditor } from "kritzel-react";
+import { KritzelEditor } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { useSearchParams } from "react-router-dom";
 
