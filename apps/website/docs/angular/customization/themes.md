@@ -11,13 +11,15 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel uses the `KritzelTheme` interface to group customizable design tokens by component, including the toolbar, menus, buttons, and selection controls. See the [theming API reference](../api-reference/theming.md) for the complete property list.
+Kritzel allows you to fully customize the appearance of the editor by providing a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can either choose one of the built-in themes or create your own.
 
-Kritzel includes built-in `lightTheme` and `darkTheme` presets. Pass themes through the `[themes]` binding and select the active theme with `[theme]`.
+Kritzel comes with two built-in themes, `lightTheme` and `darkTheme`, and offers the `KritzelTheme` interface for creating custom themes.
+
+The full list of customizable properties can be found in the [API Reference](../api-reference/theming.md).
 
 ## Applying a Built-in Theme
 
-The simplest entry point is switching between the two built-in themes. Pass `lightTheme` and `darkTheme` in the `[themes]` array and toggle the active theme name with `[theme]`.
+In order to toggle between the default light and dark theme, pass the respective theme name to the `[theme]` binding.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -27,7 +29,7 @@ The simplest entry point is switching between the two built-in themes. Pass `lig
 
 ## Creating a Custom Theme
 
-This example intentionally applies a strong, light-purple visual language and removes rounding across the UI (`borderRadius: 0`) to demonstrate how far Kritzel can be customized. It starts from `lightTheme`, then overrides multiple `KritzelTheme` groups (`engine`, `toolbar`, `menu`, `contextMenu`, `button`, and more) so the editor background, toolbar, menus, and actions all follow one coherent branded style.
+Create a custom theme by overriding the groups and properties of `KritzelTheme`, and providing it as part of the editor's `[themes]` array . Similar to toggling the default themes, activate it by setting its name through the `[theme]` binding.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"

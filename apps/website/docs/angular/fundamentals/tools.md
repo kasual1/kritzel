@@ -57,7 +57,7 @@ Add a toolbar item of type `config` to let users adjust the active tool at runti
 
 ## Adding Custom Tools
 
-You can register a custom tool configuration and then surface it in the toolbar panel. This example registers a custom highlighter built from `KritzelBrushTool` and adds it to the toolbar alongside `selection`, `pen`, and `text`.
+To add a custom tool, include it as an item in the `toolbarItems` array. Kritzel registers the tool automatically and renders it in the toolbar. This example adds a highlighter built from `KritzelBrushTool` alongside `selection`, `pen`, and `text`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
