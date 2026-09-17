@@ -796,7 +796,7 @@ export class KritzelEngine {
    * @param toolName - The name the tool was registered with (e.g., 'brush', 'eraser').
    */
   @Method()
-  async changeActiveTool(toolName: string): Promise<void> {
+  async setActiveTool(toolName: string): Promise<void> {
     const tool = this.core.toolRegistry.getTool(toolName);
     if (!tool) {
       console.warn(`[KritzelEngine] No tool registered with name: ${toolName}`);

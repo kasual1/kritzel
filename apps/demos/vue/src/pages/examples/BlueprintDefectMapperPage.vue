@@ -208,7 +208,7 @@ function togglePlacingMode() {
   placingMode.value = newMode
   if (newMode) {
     // Force the selection tool so clicks place a pin instead of drawing marks.
-    editor.value?.changeActiveTool('select')
+    editor.value?.setActiveTool('select')
   }
 }
 

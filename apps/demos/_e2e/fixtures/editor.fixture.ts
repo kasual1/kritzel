@@ -564,8 +564,8 @@ export class EditorPage {
   }
 
   /** Change the active tool by name via the editor's public API (bypasses controls UI). */
-  async changeActiveTool(toolName: string) {
-    return this.callMethod('changeActiveTool', toolName);
+  async setActiveTool(toolName: string) {
+    return this.callMethod('setActiveTool', toolName);
   }
 
   // --- Utility Panel (Undo / Redo / Delete buttons) ---

@@ -233,22 +233,6 @@ Type: `Promise<boolean>`
 
 
 
-### `changeActiveTool(toolName: string) => Promise<void>`
-
-
-
-#### Parameters
-
-| Name       | Type     | Description |
-| ---------- | -------- | ----------- |
-| `toolName` | `string` |             |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
 ### `clearSelection() => Promise<void>`
 
 
@@ -1045,6 +1029,22 @@ Type: `Promise<void>`
 | Name     | Type                     | Description |
 | -------- | ------------------------ | ----------- |
 | `object` | `KritzelBaseObject<any>` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setActiveTool(toolName: string) => Promise<void>`
+
+
+
+#### Parameters
+
+| Name       | Type     | Description |
+| ---------- | -------- | ----------- |
+| `toolName` | `string` |             |
 
 #### Returns
 

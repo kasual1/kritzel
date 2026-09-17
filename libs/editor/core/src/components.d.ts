@@ -254,7 +254,6 @@ export namespace Components {
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
-        "changeActiveTool": (toolName: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "closeExportDialog": () => Promise<void>;
         "closeImportDialog": () => Promise<void>;
@@ -431,6 +430,7 @@ export namespace Components {
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
+        "setActiveTool": (toolName: string) => Promise<void>;
         "setActiveWorkspace": (id: string) => Promise<void>;
         /**
           * Sets the active locale (language) and re-renders the UI.

@@ -633,7 +633,7 @@ export class BlueprintDefectMapperComponent {
     this.placingMode.set(newMode);
     if (newMode) {
       // Force change editor selection tool to prevent drawing marks while dropping pin
-      this.editor.changeActiveTool('select');
+      this.editor.setActiveTool('select');
     }
   }
 

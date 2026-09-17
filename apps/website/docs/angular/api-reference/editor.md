@@ -506,12 +506,12 @@ registerTool(
 ): Promise<KritzelBaseTool | null>
 ```
 
-#### changeActiveTool
+#### setActiveTool
 
 Switches the active drawing tool by its registered name.
 
 ```ts
-changeActiveTool(toolName: string): Promise<void>
+setActiveTool(toolName: string): Promise<void>
 ```
 
 #### disable

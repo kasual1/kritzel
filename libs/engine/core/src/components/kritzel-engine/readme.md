@@ -243,22 +243,6 @@ Type: `Promise<boolean>`
 
 `true` if objects were provided and the viewport was adjusted, `false` otherwise.
 
-### `changeActiveTool(toolName: string) => Promise<void>`
-
-Switches the active drawing tool by its registered name.
-
-#### Parameters
-
-| Name       | Type     | Description                                                        |
-| ---------- | -------- | ------------------------------------------------------------------ |
-| `toolName` | `string` | - The name the tool was registered with (e.g., 'brush', 'eraser'). |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
 ### `clearSelection() => Promise<void>`
 
 Deselects all currently selected objects.
@@ -975,6 +959,22 @@ Moves an object to the very back of the z-order.
 | Name     | Type                     | Description                                                         |
 | -------- | ------------------------ | ------------------------------------------------------------------- |
 | `object` | `KritzelBaseObject<any>` | - The object to move. If omitted, applies to the current selection. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setActiveTool(toolName: string) => Promise<void>`
+
+Switches the active drawing tool by its registered name.
+
+#### Parameters
+
+| Name       | Type     | Description                                                        |
+| ---------- | -------- | ------------------------------------------------------------------ |
+| `toolName` | `string` | - The name the tool was registered with (e.g., 'brush', 'eraser'). |
 
 #### Returns
 

@@ -226,7 +226,7 @@ export class KritzelToolbar {
       }
 
       if (c.type === 'tool' && c.isDefault && !this.isControlDisabled(c) && c.tool) {
-        await this.kritzelEngine!.changeActiveTool(c.name);
+        await this.kritzelEngine!.setActiveTool(c.name);
         this.activeControl = c;
         this.updateDisplayValues(c.tool as KritzelBaseTool);
         hasDefault = true;
@@ -247,7 +247,7 @@ export class KritzelToolbar {
     if (!hasDefault) {
       const firstTool = this.internalToolbar.find(c => c.type === 'tool' && c.tool && !this.isControlDisabled(c));
       if (firstTool) {
-        await this.kritzelEngine!.changeActiveTool(firstTool.name);
+        await this.kritzelEngine!.setActiveTool(firstTool.name);
         this.activeControl = firstTool;
         this.updateDisplayValues(firstTool.tool as KritzelBaseTool);
       }
@@ -290,13 +290,13 @@ export class KritzelToolbar {
 
     if (this.activeControl.type === 'tool') {
       this.updateDisplayValues(this.activeControl.tool as KritzelBaseTool);
-      await this.kritzelEngine.changeActiveTool(this.activeControl.name);
+      await this.kritzelEngine.setActiveTool(this.activeControl.name);
     }
   }
 
   private async handleToolChange(event: CustomEvent) {
     this.activeControl = { ...this.activeControl, tool: event.detail };
-    await this.kritzelEngine.changeActiveTool(this.activeControl.name);
+    await this.kritzelEngine.setActiveTool(this.activeControl.name);
   }
 
   /**
