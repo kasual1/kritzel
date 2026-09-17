@@ -7,735 +7,473 @@ toc_max_heading_level: 2
 
 # Theming
 
-`KritzelTheme` is the complete theme definition used to customize Kritzel. The `name`
-property identifies the theme, and each optional group contains CSS custom property
-overrides for one part of the editor. All values are strings so that colors, lengths,
-font declarations, shadows, and CSS expressions can be supplied as needed.
+This is the API reference for the `KritzelTheme`. It lists the
+theme groups and their light and dark default values. Override selected values by spreading an existing preset and replacing only the properties you want to customize.
 
 ```ts
-import type { KritzelTheme } from '@kritzel/angular-editor';
+import { KritzelTheme, lightTheme } from '@kritzel/angular-editor';
 
 const customTheme: KritzelTheme = {
-  name: 'custom',
-  global: {
-    primaryColor: '#0f766e',
-    textPrimary: '#17211f',
-  },
-  engine: {
-    backgroundColor: '#f7faf9',
-  },
+	...lightTheme,
+	name: 'branded-purple-flat',
+	global: {
+		...lightTheme.global,
+		primaryColor: '#7c3aed',
+		textPrimary: '#3b2a66',
+	},
+	engine: {
+		...lightTheme.engine,
+		backgroundColor: 'transparent',
+	},
+	toolbar: {
+		...lightTheme.toolbar,
+		backgroundColor: '#f8f2ff',
+		borderRadius: '0px',
+		controlSelectedBackgroundColor: '#7c3aed',
+	},
 };
 ```
 
-## Theme identity
-
-| Property | Type |
-|----------|------|
-| `name` | `ThemeName` (`'light'`, `'dark'`, or a custom string) |
-
 ## Global
 
-`global` contains values shared by the editor and its controls.
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| borderColor | #ebebeb | #3a3a3a |
+| dividerColor | #e0e0e0 | #3a3a3a |
+| focusColor | #333333 | #ffffff |
+| focusRingColor | #333333 | #ffffff |
+| iconColor | currentColor | currentColor |
+| scrollbarThumbColor | #ebebeb | #555555 |
+| textPrimary | #000000 | #ffffff |
+| textSecondary | #333333 | #e0e0e0 |
 
-```ts
-global?: {
-  cursorTrailColor?: string;
-  cursorTrailOpacity?: string;
-  dividerColor?: string;
-  focusColor?: string;
-  fontFamily?: string;
-  borderColor?: string;
-  focusRingColor?: string;
-  iconColor?: string;
-  pointerCursor?: string;
-  primaryColor?: string;
-  primaryHoverColor?: string;
-  primaryTextColor?: string;
-  scrollbarThumbColor?: string;
-  textPrimary?: string;
-  textSecondary?: string;
-  name?: string;
-}
-```
+## Back To Content
 
-## Active users
-
-```ts
-activeUsers?: {
-  avatarBorderColor?: string;
-  overflowColor?: string;
-  overflowFontSize?: string;
-  tooltipBackground?: string;
-  tooltipColor?: string;
-}
-```
-
-## Avatar
-
-```ts
-avatar?: {
-  border?: string;
-  defaultBackground?: string;
-  defaultColor?: string;
-  initialsColor?: string;
-  initialsFontFamily?: string;
-  initialsFontWeight?: string;
-}
-```
-
-## Awareness
-
-```ts
-awareness?: {
-  cursorLabelFontSize?: string;
-  cursorLabelTextColor?: string;
-  cursorTransitionDuration?: string;
-}
-```
-
-## Back to content
-
-```ts
-backToContent?: {
-  activeBackgroundColor?: string;
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  color?: string;
-  fontSize?: string;
-  fontWeight?: string;
-  gap?: string;
-  height?: string;
-  hoverBackgroundColor?: string;
-  padding?: string;
-  zIndex?: string;
-}
-```
-
-## Button
-
-```ts
-button?: {
-  borderRadius?: string;
-  fontSize?: string;
-  fontWeight?: string;
-  padding?: string;
-  primaryActiveBackgroundColor?: string;
-  primaryBackgroundColor?: string;
-  primaryColor?: string;
-  primaryHoverBackgroundColor?: string;
-  secondaryActiveBackgroundColor?: string;
-  secondaryBackgroundColor?: string;
-  secondaryColor?: string;
-  secondaryHoverBackgroundColor?: string;
-  textActiveBackgroundColor?: string;
-  textColor?: string;
-  textHoverBackgroundColor?: string;
-  width?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| activeBackgroundColor | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| boxShadow | 0 0 3px rgba(0, 0, 0, 0.08) | 0 0 6px rgba(0, 0, 0, 0.3) |
+| color | #000000 | #ffffff |
+| hoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
 
 ## Checkerboard
 
-```ts
-checkerboard?: {
-  colorDark?: string;
-  colorLight?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| colorDark | #cccccc | #4a4a4a |
+| colorLight | #ffffff | #3a3a3a |
 
-## Color palette
+## Color Palette
 
-```ts
-colorPalette?: {
-  circleBorderColor?: string;
-  hoverBackgroundColor?: string;
-  selectedBackgroundColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| circleBorderColor | #dddcdc | #4a4a4a |
+| hoverBackgroundColor | #ebebeb | #3a3a3a |
+| selectedBackgroundColor | #ebebeb | #3a3a3a |
 
-## Context menu
+## Context Menu
 
-```ts
-contextMenu?: {
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  dividerColor?: string;
-  dividerMargin?: string;
-  itemActiveBackgroundColor?: string;
-  itemBorderRadius?: string;
-  itemColor?: string;
-  itemDisabledColor?: string;
-  itemFontSize?: string;
-  itemGap?: string;
-  itemHoverBackgroundColor?: string;
-  itemPadding?: string;
-  itemSpacing?: string;
-  minWidth?: string;
-  padding?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| boxShadow | 0 1px 6px rgba(0, 0, 0, 0.12) | 0 1px 8px rgba(0, 0, 0, 0.4) |
+| dividerColor | rgba(0, 0, 0, 0.1) | rgba(255, 255, 255, 0.1) |
+| itemActiveBackgroundColor | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
+| itemColor | #333333 | #e0e0e0 |
+| itemDisabledColor | #aaaaaa | #666666 |
+| itemHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
 
-## Current user dialog
+## Current User Dialog
 
-```ts
-currentUserDialog?: {
-  emailColor?: string;
-  logoutButtonActiveBackgroundColor?: string;
-  logoutButtonBackgroundColor?: string;
-  logoutButtonColor?: string;
-  logoutButtonHoverBackgroundColor?: string;
-  nameColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| emailColor | #666666 | #999999 |
+| nameColor | #333333 | #ffffff |
 
 ## Dialog
 
-```ts
-dialog?: {
-  backdropColor?: string;
-  backgroundColor?: string;
-  bodyPadding?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  closeButtonActiveBackground?: string;
-  closeButtonBackground?: string;
-  closeButtonBorderRadius?: string;
-  closeButtonColor?: string;
-  closeButtonHoverBackground?: string;
-  closeButtonHoverColor?: string;
-  fontFamily?: string;
-  footerBorder?: string;
-  footerGap?: string;
-  footerPadding?: string;
-  headerBorder?: string;
-  headerPadding?: string;
-  heightLarge?: string;
-  heightMedium?: string;
-  heightSmall?: string;
-  maxHeight?: string;
-  maxWidth?: string;
-  titleColor?: string;
-  titleFontSize?: string;
-  titleFontWeight?: string;
-  widthLarge?: string;
-  widthMedium?: string;
-  widthSmall?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backdropColor | rgba(0, 0, 0, 0.4) | rgba(0, 0, 0, 0.6) |
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| boxShadow | 0 4px 24px rgba(0, 0, 0, 0.15) | 0 4px 24px rgba(0, 0, 0, 0.5) |
+| closeButtonActiveBackground | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
+| closeButtonBackground | transparent | transparent |
+| closeButtonColor | #333333 | #e0e0e0 |
+| closeButtonHoverBackground | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| closeButtonHoverColor | #000000 | #ffffff |
+| fontFamily | inherit | - |
+| footerBorder | 1px solid #ebebeb | 1px solid #3a3a3a |
+| headerBorder | 1px solid #ebebeb | 1px solid #3a3a3a |
+| titleColor | #000000 | #ffffff |
 
 ## Dropdown
 
-```ts
-dropdown?: {
-  accentColor?: string;
-  background?: string;
-  borderColor?: string;
-  borderRadius?: string;
-  hoverBackgroundColor?: string;
-  hoverBorderColor?: string;
-  menuBorderRadius?: string;
-  selectedBackgroundColor?: string;
-  textColor?: string;
-  triggerFontSize?: string;
-  triggerPadding?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| accentColor | #007bff | #0A84FF |
+| background | #ffffff | #1a1a1a |
+| borderColor | #dbdbdb | #4a4a4a |
+| borderRadius | 6px | 6px |
+| hoverBackgroundColor | #f0f0f0 | #3a3a3a |
+| hoverBorderColor | #cccccc | #5a5a5a |
+| menuBorderRadius | 6px | 6px |
+| selectedBackgroundColor | #007bff1a | rgba(10, 132, 255, 0.2) |
+| textColor | #333333 | #e0e0e0 |
 
 ## Editor
 
-```ts
-editor?: {
-  loadingOverlayBackground?: string;
-  loadingOverlayColor?: string;
-  loadingOverlayDelay?: string;
-  loadingOverlaySpinnerActiveColor?: string;
-  loadingOverlaySpinnerColor?: string;
-  loadingOverlayZIndex?: string;
-  notificationAnimationDuration?: string;
-  notificationAnimationEasing?: string;
-  notificationDismissAnimationDuration?: string;
-  notificationDismissAnimationEasing?: string;
-  syncIndicatorBackground?: string;
-  syncIndicatorColor?: string;
-  syncIndicatorSpinnerColor?: string;
-  syncIndicatorSpinnerTrack?: string;
-  syncIndicatorZIndex?: string;
-  toolbarBottom?: string;
-  toolbarTransform?: string;
-  toolbarTransition?: string;
-  toolbarTransitionDuration?: string;
-  topCenterNotificationTop?: string;
-  topCenterNotificationZIndex?: string;
-  topLeftButtonsLeft?: string;
-  topLeftButtonsTop?: string;
-  topRightButtonsRight?: string;
-  topRightButtonsTop?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| loadingOverlayBackground | rgba(255, 255, 255, 0.85) | rgba(26, 26, 26, 0.85) |
+| loadingOverlayColor | #333333 | #e0e0e0 |
+| loadingOverlaySpinnerActiveColor | #333333 | #e0e0e0 |
+| loadingOverlaySpinnerColor | #cccccc | #555555 |
+| syncIndicatorBackground | rgba(255, 255, 255, 0.92) | rgba(30, 30, 30, 0.95) |
+| syncIndicatorColor | #334155 | #e0e0e0 |
+| syncIndicatorSpinnerColor | #007AFF | #0A84FF |
+| syncIndicatorSpinnerTrack | rgba(148, 163, 184, 0.35) | rgba(160, 160, 160, 0.3) |
+| syncIndicatorZIndex | 10001 | 10001 |
 
 ## Engine
 
-```ts
-engine?: {
-  backgroundColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #1a1a1a |
 
-## Font size
+## Font Size
 
-```ts
-fontSize?: {
-  hoverBackgroundColor?: string;
-  selectedBackgroundColor?: string;
-  textColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| hoverBackgroundColor | #ebebeb | #3a3a3a |
+| selectedBackgroundColor | #ebebeb | #3a3a3a |
+| textColor | #333333 | #e0e0e0 |
 
-## Line endings
+## Line Endings
 
-```ts
-lineEndings?: {
-  hoverBackgroundColor?: string;
-  labelColor?: string;
-  optionBackground?: string;
-  selectedBackgroundColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| hoverBackgroundColor | #ebebeb | #3a3a3a |
+| labelColor | #666666 | #999999 |
+| optionBackground | #ffffff | #2a2a2a |
+| selectedBackgroundColor | #ebebeb | #3a3a3a |
 
-## Login dialog
+## Login Dialog
 
-```ts
-loginDialog?: {
-  buttonActiveBackground?: string;
-  buttonBackground?: string;
-  buttonBorderColor?: string;
-  buttonHoverBackground?: string;
-  buttonHoverBorderColor?: string;
-  buttonTextColor?: string;
-  spinnerActiveColor?: string;
-  spinnerColor?: string;
-  subtitleColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| buttonActiveBackground | #ebebeb | #444444 |
+| buttonBackground | #ffffff | #2a2a2a |
+| buttonBorderColor | #e0e0e0 | #4a4a4a |
+| buttonHoverBackground | #f5f5f5 | #3a3a3a |
+| buttonHoverBorderColor | #cccccc | #5a5a5a |
+| buttonTextColor | #333333 | #e0e0e0 |
+| spinnerActiveColor | #333333 | #ffffff |
+| spinnerColor | #cccccc | #555555 |
+| subtitleColor | #666666 | #999999 |
 
-## Master detail
+## Master Detail
 
-```ts
-masterDetail?: {
-  backButtonColor?: string;
-  backgroundColor?: string;
-  detailBackgroundColor?: string;
-  detailFocusOutline?: string;
-  detailFocusOutlineOffset?: string;
-  detailPadding?: string;
-  gap?: string;
-  menuBackgroundColor?: string;
-  menuBorderRight?: string;
-  menuGap?: string;
-  menuItemActiveBackgroundColor?: string;
-  menuItemBackgroundColor?: string;
-  menuItemBorderRadius?: string;
-  menuItemChevronColor?: string;
-  menuItemColor?: string;
-  menuItemDisabledColor?: string;
-  menuItemFocusOutline?: string;
-  menuItemFocusOutlineOffset?: string;
-  menuItemFontSize?: string;
-  menuItemFontWeight?: string;
-  menuItemGap?: string;
-  menuItemHoverBackgroundColor?: string;
-  menuItemPadding?: string;
-  menuItemSelectedBackgroundColor?: string;
-  menuItemSelectedColor?: string;
-  menuItemSelectedFontWeight?: string;
-  menuItemSelectedHoverBackgroundColor?: string;
-  menuMinWidth?: string;
-  menuPadding?: string;
-  menuWidth?: string;
-  minHeight?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backButtonColor | #333333 | #e0e0e0 |
+| backgroundColor | #ffffff | #2a2a2a |
+| detailBackgroundColor | #ffffff | #2a2a2a |
+| detailFocusOutline | 2px solid #333333 | 2px solid #ffffff |
+| menuBackgroundColor | #ffffff | #2a2a2a |
+| menuBorderRight | 1px solid #ebebeb | 1px solid #3a3a3a |
+| menuItemActiveBackgroundColor | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
+| menuItemBackgroundColor | transparent | transparent |
+| menuItemChevronColor | #aaaaaa | #666666 |
+| menuItemColor | #333333 | #e0e0e0 |
+| menuItemDisabledColor | #aaaaaa | #666666 |
+| menuItemFocusOutline | 2px solid #333333 | 2px solid #ffffff |
+| menuItemHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| menuItemSelectedBackgroundColor | #007AFF | #0A84FF |
+| menuItemSelectedColor | #ffffff | #ffffff |
+| menuItemSelectedHoverBackgroundColor | #007AFF | #0A84FF |
 
 ## Menu
 
-```ts
-menu?: {
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  gap?: string;
-  itemBorderRadius?: string;
-  itemButtonHoverBackgroundColor?: string;
-  itemChildOpenBackgroundColor?: string;
-  itemColor?: string;
-  itemEditingBackgroundColor?: string;
-  itemFontSize?: string;
-  itemHeight?: string;
-  itemInputBorder?: string;
-  itemInputBorderColorOnSelected?: string;
-  itemInputCaretColor?: string;
-  itemInputCaretColorOnSelected?: string;
-  itemInputHeight?: string;
-  itemInputSelectionColor?: string;
-  itemInputSelectionColorOnSelected?: string;
-  itemInputSelectionTextColor?: string;
-  itemInputSelectionTextColorOnSelected?: string;
-  itemMinHeight?: string;
-  itemOverlayBackgroundColor?: string;
-  itemPadding?: string;
-  itemSelectedBackgroundColor?: string;
-  itemSelectedColor?: string;
-  padding?: string;
-  width?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| boxShadow | 0 0 3px rgba(0, 0, 0, 0.08) | 0 0 6px rgba(0, 0, 0, 0.3) |
+| itemButtonHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| itemChildOpenBackgroundColor | hsl(0, 0%, 0%, 3%) | hsl(0, 0%, 100%, 6%) |
+| itemColor | #333333 | #e0e0e0 |
+| itemEditingBackgroundColor | #f0f0f0 | #3a3a3a |
+| itemInputBorder | 1px solid #333333 | 1px solid #ffffff |
+| itemInputBorderColorOnSelected | #ffffff | #ffffff |
+| itemInputCaretColor | #333333 | #e0e0e0 |
+| itemInputCaretColorOnSelected | #ffffff | #ffffff |
+| itemInputSelectionColor | #007aff | #b0b0b0 |
+| itemInputSelectionColorOnSelected | rgba(255, 255, 255, 0.55) | rgba(255, 255, 255, 0.35) |
+| itemInputSelectionTextColor | #ffffff | #ffffff |
+| itemInputSelectionTextColorOnSelected | #ffffff | #ffffff |
+| itemOverlayBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| itemSelectedBackgroundColor | #007aff | #0A84FF |
+| itemSelectedColor | #ffffff | #ffffff |
 
-## More menu
+## More Menu
 
-```ts
-moreMenu?: {
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  buttonActiveBackgroundColor?: string;
-  buttonColor?: string;
-  buttonHeight?: string;
-  buttonHoverBackgroundColor?: string;
-  buttonWidth?: string;
-  innerBorderRadius?: string;
-  padding?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| borderRadius | 12px | 12px |
+| boxShadow | 0 0 3px rgba(0, 0, 0, 0.08) | 0 0 6px rgba(0, 0, 0, 0.3) |
+| buttonActiveBackgroundColor | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
+| buttonColor | #000000 | #ffffff |
+| buttonHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| innerBorderRadius | 12px | 12px |
 
-## Notification card
+## Notification Card
 
-```ts
-notificationCard?: {
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  color?: string;
-  dismissButtonActiveBackgroundColor?: string;
-  dismissButtonBackgroundColor?: string;
-  dismissButtonBorderRadius?: string;
-  dismissButtonColor?: string;
-  dismissButtonHoverBackgroundColor?: string;
-  dismissButtonSize?: string;
-  errorPillBackgroundColor?: string;
-  errorPillColor?: string;
-  headerGap?: string;
-  headerMarginBottom?: string;
-  headerRightGap?: string;
-  infoPillBackgroundColor?: string;
-  infoPillColor?: string;
-  maxWidth?: string;
-  messageColor?: string;
-  messageFontSize?: string;
-  messageLineHeight?: string;
-  padding?: string;
-  pillBackgroundColor?: string;
-  pillBorderRadius?: string;
-  pillColor?: string;
-  pillFontSize?: string;
-  pillFontWeight?: string;
-  pillHeight?: string;
-  pillPadding?: string;
-  timestampColor?: string;
-  timestampFontSize?: string;
-  warningPillBackgroundColor?: string;
-  warningPillColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #e5e7eb | 1px solid #3a3a3a |
+| borderRadius | 12px | 12px |
+| boxShadow | 0 8px 20px rgba(15, 23, 42, 0.08) | 0 8px 20px rgba(0, 0, 0, 0.35) |
+| color | #111827 | #e0e0e0 |
+| dismissButtonActiveBackgroundColor | #e5e7eb | hsl(0, 0%, 100%, 12%) |
+| dismissButtonBackgroundColor | transparent | transparent |
+| dismissButtonBorderRadius | 6px | 6px |
+| dismissButtonColor | #4b5563 | #c7c7c7 |
+| dismissButtonHoverBackgroundColor | #f3f4f6 | hsl(0, 0%, 100%, 8%) |
+| dismissButtonSize | 24px | 24px |
+| errorPillBackgroundColor | #fef2f2 | #4d1f24 |
+| errorPillColor | #b91c1c | #ff9aa2 |
+| headerGap | 8px | 8px |
+| headerMarginBottom | 8px | 8px |
+| headerRightGap | 6px | 6px |
+| infoPillBackgroundColor | #eff6ff | #1f2f4a |
+| infoPillColor | #1d4ed8 | #8bb7ff |
+| maxWidth | 360px | 360px |
+| messageColor | inherit | inherit |
+| messageFontSize | 14px | 14px |
+| messageLineHeight | 1.45 | 1.45 |
+| padding | 12px 14px | 12px 14px |
+| pillBackgroundColor | #eff6ff | #1f2f4a |
+| pillBorderRadius | 999px | 999px |
+| pillColor | #1d4ed8 | #8bb7ff |
+| pillFontSize | 12px | 12px |
+| pillFontWeight | 600 | 600 |
+| pillHeight | 22px | 22px |
+| pillPadding | 0 8px | 0 8px |
+| timestampColor | #6b7280 | #a0a0a0 |
+| timestampFontSize | 12px | 12px |
+| warningPillBackgroundColor | #fff7ed | #4a341f |
+| warningPillColor | #b45309 | #ffd29a |
 
-## Numeric input
+## Numeric Input
 
-```ts
-numericInput?: {
-  borderColor?: string;
-  borderRadius?: string;
-  focusBorderColor?: string;
-  hoverBorderColor?: string;
-  inputBackground?: string;
-  labelColor?: string;
-  selectionBackground?: string;
-  selectionColor?: string;
-  spinnerActiveBackground?: string;
-  spinnerBackground?: string;
-  spinnerBorderRadius?: string;
-  spinnerColor?: string;
-  spinnerHoverBackground?: string;
-  textColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| borderColor | #dbdbdb | #4a4a4a |
+| borderRadius | 6px | 6px |
+| focusBorderColor | #333333 | #ffffff |
+| hoverBorderColor | #cccccc | #5a5a5a |
+| inputBackground | #ffffff | #1a1a1a |
+| labelColor | #666666 | #999999 |
+| selectionBackground | #007AFF | #0A84FF |
+| selectionColor | #ffffff | #ffffff |
+| spinnerActiveBackground | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
+| spinnerBackground | transparent | transparent |
+| spinnerBorderRadius | 5px | 5px |
+| spinnerColor | #333333 | #e0e0e0 |
+| spinnerHoverBackground | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| textColor | #333333 | #e0e0e0 |
 
-## Opacity slider
+## Opacity Slider
 
-```ts
-opacitySlider?: {
-  activeColor?: string;
-  thumbBorderColor?: string;
-  thumbColor?: string;
-  trackColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| activeColor | #007AFF | #0A84FF |
+| thumbBorderColor | #007AFF | #0A84FF |
+| thumbColor | #ffffff | #ffffff |
+| trackColor | #e0e0e0 | #4a4a4a |
 
-## Pill tabs
+## Pill Tabs
 
-```ts
-pillTabs?: {
-  background?: string;
-  borderRadius?: string;
-  tabBackground?: string;
-  tabBackgroundHover?: string;
-  tabBackgroundSelected?: string;
-  tabBorderRadius?: string;
-  tabLabelMaxWidth?: string;
-  tabShadowSelected?: string;
-  tabTextColor?: string;
-  tabTextColorSelected?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| background | #f0f0f0 | #3a3a3a |
+| tabBackground | transparent | transparent |
+| tabBackgroundHover | rgba(0, 0, 0, 0.05) | rgba(255, 255, 255, 0.08) |
+| tabBackgroundSelected | #ffffff | #2a2a2a |
+| tabLabelMaxWidth | 10rem | 10rem |
+| tabShadowSelected | 0 1px 3px rgba(0, 0, 0, 0.1) | 0 1px 3px rgba(0, 0, 0, 0.3) |
+| tabTextColor | #666666 | #999999 |
+| tabTextColorSelected | #000000 | #ffffff |
 
-## Portal
-
-```ts
-portal?: {
-  maxHeight?: string;
-}
-```
 
 ## Selection
 
-```ts
-selection?: {
-  borderColor?: string;
-  borderWidth?: string;
-  boxBackgroundColor?: string;
-  boxBorderColor?: string;
-  handleColor?: string;
-  handleSize?: string;
-  handleStrokeColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| borderColor | #007AFF | #0A84FF |
+| boxBackgroundColor | rgba(0, 122, 255, 0.2) | rgba(10, 132, 255, 0.2) |
+| boxBorderColor | rgba(0, 122, 255, 0.5) | rgba(10, 132, 255, 0.5) |
+| handleColor | #ffffff | #1a1a1a |
+| handleStrokeColor | #007AFF | #0A84FF |
 
 ## Settings
 
-```ts
-settings?: {
-  contentHeadingColor?: string;
-  contentTextColor?: string;
-  descriptionColor?: string;
-  labelColor?: string;
-  shortcutItemBg?: string;
-  shortcutKeyBg?: string;
-  shortcutKeyBorder?: string;
-  shortcutKeyColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| contentHeadingColor | #000000 | #ffffff |
+| contentTextColor | #333333 | #e0e0e0 |
+| descriptionColor | #666666 | #999999 |
+| labelColor | #333333 | #e0e0e0 |
+| shortcutItemBg | #f8f8f8 | #3a3a3a |
+| shortcutKeyBg | #ffffff | #2a2a2a |
+| shortcutKeyBorder | #e0e0e0 | #4a4a4a |
+| shortcutKeyColor | #555555 | #e0e0e0 |
 
-## Shape fill
+## Shape Fill
 
-```ts
-shapeFill?: {
-  hoverBackgroundColor?: string;
-  optionBackground?: string;
-  selectedBackgroundColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| hoverBackgroundColor | #ebebeb | #3a3a3a |
+| optionBackground | #ffffff | #2a2a2a |
+| selectedBackgroundColor | #ebebeb | #3a3a3a |
 
-## Share dialog
+## Share Dialog
 
-```ts
-shareDialog?: {
-  borderColor?: string;
-  copyButtonBackground?: string;
-  copyButtonColor?: string;
-  copyButtonHoverBackground?: string;
-  copyButtonHoverColor?: string;
-  copySuccessBackground?: string;
-  copySuccessColor?: string;
-  descriptionColor?: string;
-  inputBackground?: string;
-  inputBorderColor?: string;
-  inputTextColor?: string;
-  labelColor?: string;
-  qrBackground?: string;
-  qrBorderColor?: string;
-  revokeButtonBorderColor?: string;
-  revokeButtonColor?: string;
-  revokeButtonHoverBackground?: string;
-  revokeButtonHoverColor?: string;
-  selectionColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| borderColor | #e5e5e5 | - |
+| copyButtonBackground | #ffffff | #2a2a2a |
+| copyButtonColor | #666666 | #e0e0e0 |
+| copyButtonHoverBackground | #e8e8e8 | #3a3a3a |
+| copyButtonHoverColor | #333333 | #ffffff |
+| copySuccessBackground | #d4edda | #28a745 |
+| copySuccessColor | #28a745 | #ffffff |
+| descriptionColor | #666666 | #e0e0e0 |
+| inputBackground | #f5f5f5 | #1a1a1a |
+| inputBorderColor | #e0e0e0 | #4a4a4a |
+| inputTextColor | #333333 | #e0e0e0 |
+| labelColor | #333333 | #e0e0e0 |
+| revokeButtonBorderColor | #dc3545 | - |
+| revokeButtonColor | #dc3545 | - |
+| revokeButtonHoverBackground | #dc3545 | - |
+| revokeButtonHoverColor | #ffffff | - |
+| selectionColor | #cce5ff | #0A84FF |
 
-## Slide toggle
+## Slide Toggle
 
-```ts
-slideToggle?: {
-  borderRadius?: string;
-  height?: string;
-  thumbColor?: string;
-  thumbSize?: string;
-  trackCheckedColor?: string;
-  trackColor?: string;
-  transitionDuration?: string;
-  width?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| thumbColor | #fff | #ffffff |
+| thumbSize | 18px | - |
+| trackCheckedColor | #007AFF | #0A84FF |
+| trackColor | #ccc | #4a4a4a |
+| transitionDuration | - | 0.2s |
 
 ## Snap
 
-```ts
-snap?: {
-  indicatorFill?: string;
-  indicatorFillInactive?: string;
-  indicatorStroke?: string;
-  indicatorStrokeInactive?: string;
-  lineStroke?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| indicatorFill | rgba(59, 130, 246, 0.3) | rgba(10, 132, 255, 0.35) |
+| indicatorFillInactive | rgba(59, 130, 246, 0.18) | rgba(10, 132, 255, 0.2) |
+| indicatorStroke | #007bff | #0A84FF |
+| indicatorStrokeInactive | rgba(59, 130, 246, 0.5) | rgba(255, 255, 255, 0.45) |
+| lineStroke | rgba(0, 0, 0, 0.2) | rgba(255, 255, 255, 0.35) |
 
-## Split button
+## Split Button
 
-```ts
-splitButton?: {
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  color?: string;
-  dividerBackgroundColor?: string;
-  dividerWidth?: string;
-  fontSize?: string;
-  gap?: string;
-  hoverBackgroundColor?: string;
-  padding?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| boxShadow | 0 0 3px rgba(0, 0, 0, 0.08) | 0 0 6px rgba(0, 0, 0, 0.3) |
+| color | #000000 | #ffffff |
+| dividerBackgroundColor | #ebebeb | #3a3a3a |
+| hoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
 
-## Stroke size
+## Stroke Size
 
-```ts
-strokeSize?: {
-  hoverBackgroundColor?: string;
-  selectedBackgroundColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| hoverBackgroundColor | #ebebeb | #3a3a3a |
+| selectedBackgroundColor | #ebebeb | #3a3a3a |
 
-## Submenu
+## Text Input
 
-```ts
-submenu?: {
-  gap?: string;
-}
-```
-
-## Text input
-
-```ts
-textInput?: {
-  background?: string;
-  borderColor?: string;
-  borderRadius?: string;
-  focusBorderColor?: string;
-  hoverBorderColor?: string;
-  labelColor?: string;
-  placeholderColor?: string;
-  selectionBackground?: string;
-  selectionColor?: string;
-  suffixBackground?: string;
-  suffixColor?: string;
-  textColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| background | #ffffff | #1a1a1a |
+| borderColor | #dbdbdb | #4a4a4a |
+| borderRadius | 6px | 6px |
+| focusBorderColor | #333333 | #ffffff |
+| hoverBorderColor | #cccccc | #5a5a5a |
+| labelColor | #333333 | #e0e0e0 |
+| placeholderColor | #999999 | #777777 |
+| selectionBackground | #007AFF | #0A84FF |
+| selectionColor | #ffffff | #ffffff |
+| suffixBackground | #f5f5f5 | #3a3a3a |
+| suffixColor | #666666 | #aaaaaa |
+| textColor | #333333 | #e0e0e0 |
 
 ## Toolbar
 
-```ts
-toolbar?: {
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  controlActiveBackgroundColor?: string;
-  controlBorderRadius?: string;
-  controlColor?: string;
-  controlHoverBackgroundColor?: string;
-  controlPadding?: string;
-  controlSelectedBackgroundColor?: string;
-  controlSelectedColor?: string;
-  gap?: string;
-  padding?: string;
-  separatorColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| boxShadow | 0 0 3px rgba(0, 0, 0, 0.08) | 0 0 6px rgba(0, 0, 0, 0.3) |
+| controlActiveBackgroundColor | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
+| controlColor | #000000 | #ffffff |
+| controlHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| controlSelectedBackgroundColor | #007AFF | #0A84FF |
+| controlSelectedColor | #ffffff | #ffffff |
+| separatorColor | #ebebeb | #3a3a3a |
 
 ## Tooltip
 
-```ts
-tooltip?: {
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  color?: string;
-  padding?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| boxShadow | 0 1px 6px rgba(0, 0, 0, 0.12) | 0 1px 8px rgba(0, 0, 0, 0.4) |
+| color | #000000 | #ffffff |
 
-## Utility panel
+## Utility Panel
 
-```ts
-utilityPanel?: {
-  backgroundColor?: string;
-  buttonBorderRadius?: string;
-  buttonColor?: string;
-  buttonHoverBackgroundColor?: string;
-  separatorColor?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #e2e2e2 | #3a3a3a |
+| buttonColor | #333333 | #e0e0e0 |
+| buttonHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| separatorColor | hsl(0, 0%, 0%, 8%) | hsl(0, 0%, 100%, 12%) |
 
 ## Watermark
 
-```ts
-watermark?: {
-  background?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  color?: string;
-  fontSize?: string;
-  offsetBottom?: string;
-  offsetRight?: string;
-  opacity?: string;
-}
-```
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| background | rgba(255, 255, 255, 0.6) | rgba(40, 40, 40, 0.6) |
+| boxShadow | 0 1px 2px rgba(0, 0, 0, 0.12) | 0 1px 2px rgba(0, 0, 0, 0.35) |
+| color | rgba(60, 60, 60, 0.75) | rgba(220, 220, 220, 0.8) |
 
-## Zoom panel
+## Zoom Panel
 
-```ts
-zoomPanel?: {
-  backgroundColor?: string;
-  border?: string;
-  borderRadius?: string;
-  boxShadow?: string;
-  buttonActiveBackgroundColor?: string;
-  buttonBorderRadius?: string;
-  buttonHoverBackgroundColor?: string;
-  buttonSize?: string;
-  gap?: string;
-  iconColor?: string;
-  padding?: string;
-}
-```
-
-The interface is generated from Kritzel's theme variables. When new theme variables are
-introduced in the library, regenerate `theme.interface.ts` and update this reference.
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| borderRadius | 12px | 12px |
+| boxShadow | 0 0 3px rgba(0, 0, 0, 0.08) | 0 0 3px rgba(0, 0, 0, 0.4) |
+| buttonActiveBackgroundColor | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
+| buttonBorderRadius | 8px | 8px |
+| buttonHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| buttonSize | 32px | 32px |
+| gap | 4px | 4px |
+| iconColor | #000000 | #e0e0e0 |
+| padding | 4px | 4px |

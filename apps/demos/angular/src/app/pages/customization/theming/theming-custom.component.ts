@@ -295,8 +295,6 @@ export class ThemingCustomComponent {
 
   themes: KritzelTheme[] = [brandedPurpleFlatTheme];
 
-  
-
   async onIsReady(_event: CustomEvent) {
     for (const obj of createSeedObjects()) {
       await this.editor.addObject(obj);
