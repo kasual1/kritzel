@@ -11,7 +11,7 @@ import {
   KritzelEditor,
   KritzelSyncConfig,
   KritzelText,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { createSeedObjects } from '../../const/seed-objects';
@@ -153,12 +153,12 @@ export class BasicUsageComponent {
 
   async setBrushTool() {
     this.activeTool.set('brush');
-    await this.editor.changeActiveTool('brush');
+    await this.editor.setActiveTool('brush');
   }
 
   async setSelectTool() {
     this.activeTool.set('selection');
-    await this.editor.changeActiveTool('selection');
+    await this.editor.setActiveTool('selection');
   }
 
   async addText() {

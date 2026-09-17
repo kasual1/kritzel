@@ -1,6 +1,6 @@
 # Objects: Create, Update, Query, Organize
 
-All canvas content is a `KritzelBaseObject` subclass. Import all classes from `kritzel-react`:
+All canvas content is a `KritzelBaseObject` subclass. Import all classes from `@kritzel/react-editor`:
 `KritzelPath`, `KritzelLine`, `KritzelShape`, `KritzelText`, `KritzelImage`, `KritzelGroup`, plus `ShapeType` and `KritzelAlignment` enums.
 
 In the snippets below, `editor` is the ref element (`const editor = editorRef.current; if (!editor) return;`).
@@ -43,7 +43,7 @@ await editor.addObject(text);
 ### Shape (rectangle / ellipse / triangle)
 
 ```tsx
-import { ShapeType } from 'kritzel-react';
+import { ShapeType } from '@kritzel/react-editor';
 
 const shape = new KritzelShape({
   translateX: 20,
@@ -164,7 +164,7 @@ await editor.sendToBack();
 await editor.bringForward();
 await editor.sendBackward();
 
-import { KritzelAlignment } from 'kritzel-react';
+import { KritzelAlignment } from '@kritzel/react-editor';
 await editor.alignObjects(KritzelAlignment.CenterHorizontal); // needs ≥ 2 selected
 ```
 

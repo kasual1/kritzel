@@ -1,5 +1,5 @@
-import { KritzelDynamicObject } from "kritzel-react";
-import { KritzelDynamicObjectRendererRegistry } from "kritzel-stencil";
+import { KritzelDynamicObject } from "@kritzel/react-editor";
+import { KritzelDynamicObjectRendererRegistry } from "@kritzel/react-editor";
 
 export const CORE_STAGE_DASHBOARD_RENDERER_KEY = "website-hero-core-stage-dashboard";
 const CORE_STAGE_DASHBOARD_Z_INDEX = 14;

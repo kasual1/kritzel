@@ -18,7 +18,7 @@ Before making API calls, you must wait for the editor to fully initialize. The `
 ```html
 <script setup lang="ts">
 
-import { KritzelEditor, type EditorIsReadyEvent } from 'kritzel-vue'
+import { KritzelEditor, type EditorIsReadyEvent } from '@kritzel/vue-editor'
 
 const editor = ref<HTMLKritzelEditorElement | null>(null)
 
@@ -35,18 +35,18 @@ function onReady(event: Event) {
 
 ## Changing Tools Programmatically
 
-The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `changeActiveTool` method — the name must match the tool's registered name (the `name` of the corresponding `toolbarItems` entry when you customize the toolbar). All editor mutations are asynchronous.
+The default editor toolbar registers these built-in tools: `selection`, `brush`, `eraser`, `line`, `shape`, `text`, and `image`. You can programmatically switch between them using the `setActiveTool` method — the name must match the tool's registered name (the `name` of the corresponding `toolbarItems` entry when you customize the toolbar). All editor mutations are asynchronous.
 
 ```ts
 async function setBrushTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.changeActiveTool('brush')
+    await editor.setActiveTool('brush')
   }
 }
 
 async function setSelectionTool(editor: HTMLKritzelEditorElement | null) {
   if (editor) {
-    await editor.changeActiveTool('selection')
+    await editor.setActiveTool('selection')
   }
 }
 ```
@@ -59,7 +59,7 @@ For instance, adding a text element programmatically:
 
 ```html
 <script setup lang="ts">
-import { KritzelText } from 'kritzel-vue'
+import { KritzelText } from '@kritzel/vue-editor'
 
 async function addText(editor: HTMLKritzelEditorElement | null) {
   if (!editor) return
@@ -109,7 +109,7 @@ Bind to DOM events on the custom element `<KritzelEditor>` to stay updated on ca
 ```
 
 ```ts
-import { KritzelBaseObject } from 'kritzel-vue'
+import { KritzelBaseObject } from '@kritzel/vue-editor'
 
 function onObjectsChange(event: Event) {
   const objects = (event as CustomEvent<KritzelBaseObject[]>).detail

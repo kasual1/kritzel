@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import {
   KritzelEditor,
   HTMLKritzelEditorElement,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
@@ -30,7 +30,7 @@ export function ToolsChangePage() {
 
   async function setTool(name: ToolName) {
     setActiveTool(name);
-    await editorRef.current?.changeActiveTool(name);
+    await editorRef.current?.setActiveTool(name);
   }
 
   return (

@@ -6,7 +6,7 @@ import {
   ShapeType,
   type HTMLKritzelEditorElement,
   type ThemeAwareColor,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 
 type DefectStatus = "Outstanding" | "In Progress" | "Resolved";
@@ -336,7 +336,7 @@ export function BlueprintDefectMapperPage() {
     setPlacingMode(newMode);
     if (newMode) {
       // Force the selection tool to prevent drawing marks while dropping a pin
-      void editorRef.current?.changeActiveTool("select");
+      void editorRef.current?.setActiveTool("select");
     }
   }
 

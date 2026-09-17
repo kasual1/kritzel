@@ -5,8 +5,10 @@ It is built with Stencil and has wrappers for Angular, React, and Vue.
 ### General Folder Structure
 Kritzel is a monorepo containing the core library and its framework-specific wrappers. The core functionality is built with Stencil, and wrappers are provided for Angular, React, and Vue.
 
-- **`libs/kritzel-stencil`**: The core Stencil library where most of the business logic resides.
-- **`libs/kritzel-angular`**, **`libs/kritzel-react`**, **`libs/kritzel-vue`**: Framework-specific wrapper libraries.
+- **`libs/engine/core`**: The engine Stencil library where most business logic, canvas entities, providers, managers, and the engine component reside.
+- **`libs/engine/angular`**, **`libs/engine/react`**, **`libs/engine/vue`**: Framework-specific wrapper package slots for engine-only consumption.
+- **`libs/editor/core`**: The editor package slot for the higher-level UI shell.
+- **`libs/editor/angular`**, **`libs/editor/react`**, **`libs/editor/vue`**: Framework-specific wrapper libraries for editor consumption.
 - **`apps/demos/*`**: Demo applications for each framework, useful for testing and showcasing features.
 - **`apps/core/*`**: Core harness applications for e2e testing framework integrations.
 - **`apps/website`**: The Docusaurus-based documentation website.
@@ -33,7 +35,7 @@ The core Stencil library follows a structured approach to organize its component
 
 ### Coding Conventions
 - Follow consistent naming conventions for files, classes, methods, and variables.
-- All classes inside `libs/kritzel-stencil` should be prefixed with `Kritzel` but their filenames should not have the prefix.
+- All classes inside `libs/engine/core` should be prefixed with `Kritzel` but their filenames should not have the prefix.
 
 ### Unit Testing
 - Unit test files use the `.spec.ts` extension and should be placed in the same directory as the file they are testing (e.g., `my-class.ts` and `my-class.spec.ts` should be in the same folder).

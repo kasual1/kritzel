@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, KritzelSyncConfig } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent, KritzelSyncConfig } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -69,6 +69,6 @@ export class ToolsChangeComponent {
 
   async setTool(name: ToolName) {
     this.activeTool.set(name);
-    await this.editor.changeActiveTool(name);
+    await this.editor.setActiveTool(name);
   }
 }

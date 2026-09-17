@@ -4,7 +4,7 @@ import {
   KritzelPath,
   KritzelShape,
   ShapeType,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 
 export function createSeedObjects(): KritzelBaseObject[] {
   return [

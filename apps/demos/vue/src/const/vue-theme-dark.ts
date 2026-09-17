@@ -1,4 +1,4 @@
-import { darkTheme, type KritzelTheme } from "kritzel-vue";
+import { darkTheme, type KritzelTheme } from "@kritzel/vue-editor";
 
 export const vueThemeDark: KritzelTheme = {
   ...darkTheme,

@@ -6,7 +6,7 @@ import {
   ShapeType,
   HTMLKritzelEditorElement,
   type KritzelBaseObject,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,

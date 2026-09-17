@@ -9,7 +9,7 @@ Hide the built-in toolbar, load a background image users can't move, register on
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
-import { getEditorRef, KritzelBrushTool, KritzelEditor, KritzelImage } from 'kritzel-vue';
+import { getEditorRef, KritzelBrushTool, KritzelEditor, KritzelImage } from '@kritzel/vue-editor';
 
 const COLORS = [
   { name: 'red',    hex: '#ff0000', dark: '#ff6666' },
@@ -189,7 +189,7 @@ async function goToSlide(i: number) {
 Mirror the canvas into your own model via the granular events; navigate and edit from the panel:
 
 ```ts
-import type { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from 'kritzel-vue';
+import type { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent } from '@kritzel/vue-editor';
 
 // template: @objectsAdded / @objectsRemoved / @objectsUpdated â†’ update your tree ref
 const allObjects = ref<KritzelBaseObject[]>([]);
@@ -255,7 +255,7 @@ await editor.value.centerAllObjects(false);
 <script setup lang="ts">
 import { ref } from 'vue';
 import { getEditorRef, KritzelEditor,
-  type KritzelUndoState, type KritzelViewportState } from 'kritzel-vue';
+  type KritzelUndoState, type KritzelViewportState } from '@kritzel/vue-editor';
 
 const editor = getEditorRef('editor');
 const undoState = ref<KritzelUndoState | null>(null);

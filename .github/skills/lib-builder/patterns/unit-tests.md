@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/**/*.spec.ts`
+`libs/engine/core/src/**/*.spec.ts`
 
 ## Purpose
 
@@ -10,7 +10,7 @@ Provide reliable, maintainable Jest tests for core library logic while staying r
 
 ## How to Run Tests
 
-- In this repository, do not rely on targeted single-file spec runs for `kritzel-stencil` (for example passing specific `*.spec.ts` paths).
+- In this repository, do not rely on targeted single-file spec runs for `@kritzel/engine` (for example passing specific `*.spec.ts` paths).
 - Run tests from the repository root using `npm run test`.
 - Treat root-level `npm run test` as the authoritative verification path.
 

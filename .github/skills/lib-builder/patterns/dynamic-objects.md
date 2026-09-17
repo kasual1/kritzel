@@ -5,11 +5,11 @@
 Use this pattern when maintaining dynamic object behavior across core and wrappers.
 
 Primary touchpoints:
-- `libs/kritzel-stencil/src/classes/objects/dynamic-object.class.ts`
-- `libs/kritzel-stencil/src/components/core/kritzel-engine/kritzel-engine.tsx`
-- `libs/kritzel-stencil/src/helpers/wheel.helper.ts`
-- `libs/kritzel-stencil/src/classes/registries/dynamic-object-renderer.registry.ts`
-- Wrapper helpers such as `libs/kritzel-vue/lib/vue-dynamic-object-renderer.ts`
+- `libs/engine/core/src/classes/objects/dynamic-object.class.ts`
+- `libs/engine/core/src/components/core/kritzel-engine/kritzel-engine.tsx`
+- `libs/engine/core/src/helpers/wheel.helper.ts`
+- `libs/engine/core/src/classes/registries/dynamic-object-renderer.registry.ts`
+- Wrapper helpers such as `libs/editor/vue/lib/vue-dynamic-object-renderer.ts`
 
 ## Maintainer Mental Model
 

@@ -6,7 +6,7 @@ import {
   KritzelEditor,
   registerVueDynamicObjectRenderer,
   type HTMLKritzelEditorElement,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light.ts'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import TodoListCustomElement from './TodoListCustomElement.ce.vue'
@@ -43,7 +43,7 @@ const TODO_RENDERER_KEY = 'vue-todo-list'
 const editor = getEditorRef('customElementsEditor')
 const hasAddedInitialDynamicObject = ref(false)
 const unregisterTodoRenderer = registerVueDynamicObjectRenderer(TODO_RENDERER_KEY, {
-  tagName: 'kritzel-vue-todo-list',
+  tagName: '@kritzel/vue-editor-todo-list',
   component: TodoListCustomElement,
   createInitialState: createTodoListInitialState,
 })

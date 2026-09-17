@@ -5,7 +5,7 @@ import {
   KritzelEditor,
   lightTheme,
   type KritzelTheme,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { seedEditor } from '../../shared/demo-shared'
 
 const brandPurple = '#7c3aed'

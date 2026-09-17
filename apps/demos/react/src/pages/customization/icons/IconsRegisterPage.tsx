@@ -6,7 +6,7 @@ import {
   KritzelTextTool,
   type KritzelToolbarItem,
   type HTMLKritzelEditorElement,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
 
 const customSvgIcons = {

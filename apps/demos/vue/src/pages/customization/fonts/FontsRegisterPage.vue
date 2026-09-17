@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { KritzelEditor, type KritzelFontMap } from 'kritzel-vue'
+import { KritzelEditor, type KritzelFontMap } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 
 const fonts: KritzelFontMap = {

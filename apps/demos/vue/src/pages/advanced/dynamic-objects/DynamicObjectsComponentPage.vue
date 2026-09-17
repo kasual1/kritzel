@@ -6,7 +6,7 @@ import {
   KritzelEditor,
   registerVueDynamicObjectRenderer,
   type HTMLKritzelEditorElement,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import CounterWidget from './CounterWidget.ce.vue'
 
@@ -23,7 +23,7 @@ const COUNTER_RENDERER_KEY = 'vue-dynamic-object-counter'
 const editor = getEditorRef('editor')
 const hasAddedInitialDynamicObject = ref(false)
 const unregisterCounterRenderer = registerVueDynamicObjectRenderer(COUNTER_RENDERER_KEY, {
-  tagName: 'kritzel-vue-counter-widget',
+  tagName: '@kritzel/vue-editor-counter-widget',
   component: CounterWidget,
   createInitialState: createCounterWidgetInitialState,
 })

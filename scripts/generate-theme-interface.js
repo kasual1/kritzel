@@ -1,5 +1,5 @@
 /**
- * Script to find all CSS variables (--kritzel-*) in the kritzel-stencil component CSS files
+ * Script to find all CSS variables (--kritzel-*) in the engine/editor component CSS files
  * and generate/update the theme.interface.ts file.
  *
  * Usage: node scripts/generate-theme-interface.js
@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const SOURCE_DIR = path.join(__dirname, '../libs/kritzel-stencil/src');
+const SOURCE_DIR = path.join(__dirname, '../libs/engine/core/src');
 const THEME_INTERFACE_PATH = path.join(SOURCE_DIR, 'interfaces', 'theme.interface.ts');
 const CSS_FILE_PATTERN = /\.(css|tsx|ts)$/;
 const CSS_VARIABLE_PATTERN = /--kritzel-([a-zA-Z0-9-]+)/g;

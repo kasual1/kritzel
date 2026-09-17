@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, KritzelFontMap, KritzelTheme, KritzelText, lightTheme } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent, KritzelFontMap, KritzelTheme, KritzelText, lightTheme } from '@kritzel/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 
 const customFontConfig: KritzelFontMap = {

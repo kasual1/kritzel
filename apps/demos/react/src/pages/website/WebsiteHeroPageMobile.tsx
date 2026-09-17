@@ -14,7 +14,7 @@ import {
   type HTMLKritzelEditorElement,
   type KritzelToolbarItem,
   type KritzelViewportState,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { setupImageStackRenderer } from "./dynamic-objects/imageStackDynamicObject";
 import { setupRocketTodoRenderer } from "./dynamic-objects/rocketTodoDynamicObject";
 import { setupCoreStageDashboardRenderer } from "./dynamic-objects/coreStageDashboardDynamicObject";

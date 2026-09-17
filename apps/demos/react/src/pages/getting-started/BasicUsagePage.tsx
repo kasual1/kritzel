@@ -5,7 +5,7 @@ import {
   KritzelEditor,
   KritzelSyncConfig,
   KritzelText,
-} from "kritzel-react";
+} from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { createSeedObjects } from "./seed-objects";
 
@@ -55,7 +55,7 @@ export function BasicUsagePage() {
     }
 
     setActiveTool("brush");
-    await editor.changeActiveTool("brush");
+    await editor.setActiveTool("brush");
   }
 
   async function setSelectTool() {
@@ -65,7 +65,7 @@ export function BasicUsagePage() {
     }
 
     setActiveTool("select");
-    await editor.changeActiveTool("select");
+    await editor.setActiveTool("select");
   }
 
   async function addText() {

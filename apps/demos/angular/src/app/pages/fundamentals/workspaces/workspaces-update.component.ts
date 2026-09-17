@@ -16,7 +16,7 @@ import {
   KritzelSyncConfig,
   KritzelWorkspace,
   ShapeType,
-} from 'kritzel-angular';
+} from '@kritzel/angular-editor';
 import { InfoPanelComponent } from '../../../components/info-panel.component';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';

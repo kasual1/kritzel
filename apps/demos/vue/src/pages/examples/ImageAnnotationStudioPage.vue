@@ -7,7 +7,7 @@ import {
   KritzelImage,
   KritzelTextTool,
   type KritzelTheme,
-} from 'kritzel-vue'
+} from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
 
 type AnnotationMode = 'sketch' | 'text'
@@ -58,7 +58,7 @@ async function activateColorTool(toolName: string) {
   activeSketchTool.value = toolName
   activeMode.value = 'sketch'
   await syncTextColorToActiveSketchTool()
-  await editor.value?.changeActiveTool(toolName)
+  await editor.value?.setActiveTool(toolName)
 }
 
 async function activateMode(mode: AnnotationMode) {
@@ -66,11 +66,11 @@ async function activateMode(mode: AnnotationMode) {
 
   if (mode === 'text') {
     await syncTextColorToActiveSketchTool()
-    await editor.value?.changeActiveTool('text')
+    await editor.value?.setActiveTool('text')
     return
   }
 
-  await editor.value?.changeActiveTool(activeSketchTool.value)
+  await editor.value?.setActiveTool(activeSketchTool.value)
 }
 
 async function undo() {

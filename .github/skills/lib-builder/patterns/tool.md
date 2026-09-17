@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/classes/tools/`
+`libs/engine/core/src/classes/tools/`
 
 ## Base Class
 
