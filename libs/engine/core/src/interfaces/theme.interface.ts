@@ -33,6 +33,7 @@ export interface KritzelTheme {
   /** Active users variables */
   activeUsers?: {
     avatarBorderColor?: string;
+    fontFamily?: string;
     overflowColor?: string;
     overflowFontSize?: string;
     tooltipBackground?: string;
@@ -54,6 +55,7 @@ export interface KritzelTheme {
     cursorLabelFontSize?: string;
     cursorLabelTextColor?: string;
     cursorTransitionDuration?: string;
+    fontFamily?: string;
   };
 
   /** Back to content variables */
@@ -76,6 +78,7 @@ export interface KritzelTheme {
   /** Button variables */
   button?: {
     borderRadius?: string;
+    fontFamily?: string;
     fontSize?: string;
     fontWeight?: string;
     padding?: string;
@@ -114,6 +117,7 @@ export interface KritzelTheme {
     boxShadow?: string;
     dividerColor?: string;
     dividerMargin?: string;
+    fontFamily?: string;
     itemActiveBackgroundColor?: string;
     itemBorderRadius?: string;
     itemColor?: string;
@@ -189,7 +193,6 @@ export interface KritzelTheme {
   editor?: {
     loadingOverlayBackground?: string;
     loadingOverlayColor?: string;
-    loadingOverlayDelay?: string;
     loadingOverlaySpinnerActiveColor?: string;
     loadingOverlaySpinnerColor?: string;
     loadingOverlayZIndex?: string;
@@ -197,11 +200,6 @@ export interface KritzelTheme {
     notificationAnimationEasing?: string;
     notificationDismissAnimationDuration?: string;
     notificationDismissAnimationEasing?: string;
-    syncIndicatorBackground?: string;
-    syncIndicatorColor?: string;
-    syncIndicatorSpinnerColor?: string;
-    syncIndicatorSpinnerTrack?: string;
-    syncIndicatorZIndex?: string;
     toolbarBottom?: string;
     toolbarTransform?: string;
     toolbarTransition?: string;
@@ -288,6 +286,7 @@ export interface KritzelTheme {
     border?: string;
     borderRadius?: string;
     boxShadow?: string;
+    fontFamily?: string;
     gap?: string;
     itemBorderRadius?: string;
     itemButtonHoverBackgroundColor?: string;

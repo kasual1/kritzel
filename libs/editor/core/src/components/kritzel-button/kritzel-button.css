@@ -1,6 +1,6 @@
 :host {
   display: inline-block;
-  font-family: sans-serif;
+  font-family: var(--kritzel-button-font-family, var(--kritzel-font-family, sans-serif));
 }
 
 button {
