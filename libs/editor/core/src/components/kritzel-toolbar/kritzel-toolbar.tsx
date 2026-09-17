@@ -214,12 +214,7 @@ export class KritzelToolbar {
 
     for (const c of newToolbar) {
       if (c.type === 'tool' && c.tool) {
-        let toolConstructor = c.tool;
-        if (typeof toolConstructor !== 'function') {
-           toolConstructor = (toolConstructor as any).constructor;
-        }
-
-        const registered = await this.kritzelEngine!.registerTool(c.name, toolConstructor as any, c.config);
+        const registered = await this.kritzelEngine!.getTool(c.name);
         if (registered) {
           c.tool = registered;
         }

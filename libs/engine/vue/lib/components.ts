@@ -15,6 +15,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'syncConfig',
   'assetStorageConfig',
   'user',
+  'tools',
   'globalContextMenuItems',
   'objectContextMenuItems',
   'scaleMax',

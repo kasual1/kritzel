@@ -28,6 +28,7 @@
 | `syncConfig`             | --                         | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                                                                                                                                                                                                                                                                                                                   | `KritzelSyncConfig`                   | `undefined` |
 | `theme`                  | `theme`                    | The current theme to apply to the editor                                                                                                                                                                                                                                                                                                                                                              | `"dark" \| "light" \| string & {}`    | `'light'`   |
 | `themes`                 | --                         | An array of available themes for the editor.                                                                                                                                                                                                                                                                                                                                                          | `KritzelTheme[]`                      | `undefined` |
+| `tools`                  | --                         | Tool definitions to register with this engine instance.                                                                                                                                                                                                                                                                                                                                               | `KritzelToolDefinition[]`             | `[]`        |
 | `user`                   | --                         | The current user for awareness broadcasting (name, id, cursor position).                                                                                                                                                                                                                                                                                                                              | `IKritzelUser`                        | `undefined` |
 | `viewportBoundaryBottom` | `viewport-boundary-bottom` | Bottom boundary of the viewport in world coordinates. Objects beyond this Y position cannot be panned to.                                                                                                                                                                                                                                                                                             | `number`                              | `Infinity`  |
 | `viewportBoundaryLeft`   | `viewport-boundary-left`   | Left boundary of the viewport in world coordinates. Objects beyond this X position cannot be panned to.                                                                                                                                                                                                                                                                                               | `number`                              | `-Infinity` |
@@ -595,6 +596,22 @@ Returns the currently selected objects. Returns an empty array if nothing is sel
 #### Returns
 
 Type: `Promise<KritzelBaseObject<any>[]>`
+
+
+
+### `getTool(toolName: string) => Promise<KritzelBaseTool | null>`
+
+Returns a tool registered in this engine instance.
+
+#### Parameters
+
+| Name       | Type     | Description |
+| ---------- | -------- | ----------- |
+| `toolName` | `string` |             |
+
+#### Returns
+
+Type: `Promise<KritzelBaseTool>`
 
 
 

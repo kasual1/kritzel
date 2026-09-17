@@ -45,6 +45,7 @@ export type { HTMLKritzelEditorElement } from '@kritzel/editor';
 
 export type {
     HTMLKritzelEngineElement,
+    KritzelToolDefinition,
     KritzelToolbarItem,
     KritzelBrushToolConfig,
     KritzelLineToolConfig,

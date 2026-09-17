@@ -1,6 +1,7 @@
 ﻿import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '@kritzel/engine';
 import { KritzelToolbarItem } from '@kritzel/engine';
+import { KritzelToolDefinition } from '@kritzel/engine';
 import { ShapeType } from '@kritzel/engine';
 import { KritzelAlignment } from '@kritzel/engine';
 import { KritzelBaseObject } from '@kritzel/engine';
@@ -1028,6 +1029,8 @@ export class KritzelEditor {
 
   private lastToolbarItemsRef: KritzelToolbarItem[] | null = null;
   private lastNormalizedToolbarItems: KritzelToolbarItem[] = [];
+  private lastToolsSource: KritzelToolbarItem[] | null = null;
+  private lastTools: KritzelToolDefinition[] = [];
 
   private getNormalizedToolbarItems(): KritzelToolbarItem[] {
     if (this.toolbarItems !== this.lastToolbarItemsRef) {
@@ -1035,6 +1038,17 @@ export class KritzelEditor {
       this.lastNormalizedToolbarItems = this.normalizeToolbar(this.toolbarItems);
     }
     return this.lastNormalizedToolbarItems;
+  }
+
+  private getTools(): KritzelToolDefinition[] {
+    const normalizedToolbarItems = this.getNormalizedToolbarItems();
+    if (normalizedToolbarItems !== this.lastToolsSource) {
+      this.lastToolsSource = normalizedToolbarItems;
+      this.lastTools = normalizedToolbarItems
+        .filter(item => item.type === 'tool' && !!item.tool)
+        .map(item => ({ name: item.name, tool: item.tool!, config: item.config }));
+    }
+    return this.lastTools;
   }
 
   private normalizeToolbar(toolbarItems: KritzelToolbarItem[]): KritzelToolbarItem[] {
@@ -1589,6 +1603,7 @@ export class KritzelEditor {
     const shouldShowCurrentUser = isLoggedIn;
     const shouldShowLoginButton = this.isReady && !!this.loginConfig && !isLoggedIn;
     const normalizedToolbarItems = this.getNormalizedToolbarItems();
+    const tools = this.getTools();
 
     return (
       <Host>
@@ -1684,6 +1699,7 @@ export class KritzelEditor {
             debugInfo={this.debugInfo}
             globalContextMenuItems={this.globalContextMenuItems}
             objectContextMenuItems={this.objectContextMenuItems}
+            tools={tools}
             onIsEngineReady={event => this.onEngineReady(event)}
             onWorkspacesChange={event => this.handleWorkspacesChange(event)}
             onActiveWorkspaceChange={event => this.handleActiveWorkspaceChange(event)}

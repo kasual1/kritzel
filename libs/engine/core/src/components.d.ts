@@ -10,6 +10,7 @@ import { KritzelWorkspace } from "./classes/core/workspace.class";
 import { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 import { IKritzelUser } from "./interfaces/user.interface";
+import { KritzelToolDefinition } from "./interfaces/tool.interface";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
@@ -37,6 +38,7 @@ export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
 export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.interface";
 export { IKritzelUser } from "./interfaces/user.interface";
+export { KritzelToolDefinition } from "./interfaces/tool.interface";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
@@ -298,6 +300,10 @@ export namespace Components {
          */
         "getSelectedObjects": () => Promise<KritzelBaseObject<any>[]>;
         /**
+          * Returns a tool registered in this engine instance.
+         */
+        "getTool": (toolName: string) => Promise<KritzelBaseTool | null>;
+        /**
           * Returns the current viewport state including position, scale, and dimensions.
           * @returns The current viewport state.
          */
@@ -517,6 +523,11 @@ export namespace Components {
           * An array of available themes for the editor.
          */
         "themes"?: KritzelTheme[];
+        /**
+          * Tool definitions to register with this engine instance.
+          * @default []
+         */
+        "tools": KritzelToolDefinition[];
         /**
           * Manually triggers the `objectsSelectionChange` event.
          */
@@ -867,6 +878,11 @@ declare namespace LocalJSX {
           * An array of available themes for the editor.
          */
         "themes"?: KritzelTheme[];
+        /**
+          * Tool definitions to register with this engine instance.
+          * @default []
+         */
+        "tools"?: KritzelToolDefinition[];
         /**
           * The current user for awareness broadcasting (name, id, cursor position).
          */

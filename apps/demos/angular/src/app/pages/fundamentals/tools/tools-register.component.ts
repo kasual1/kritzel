@@ -1,8 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ViewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import {
   KritzelBrushTool,
   KritzelEditor,
@@ -114,20 +110,13 @@ export class ToolsRegisterComponent {
     },
     {
       name: 'config',
-      type: 'config'
-    }
+      type: 'config',
+    },
   ];
-
-  
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     for (const obj of createSeedObjects()) {
-        await this.editor.addObject(obj);
-      }
-
-    await this.editor.registerTool(
-      'highlighter',
-      KritzelBrushTool,
-    );
+      await this.editor.addObject(obj);
+    }
   }
 }

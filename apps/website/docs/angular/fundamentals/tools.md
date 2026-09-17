@@ -65,7 +65,7 @@ You can register a custom tool configuration and then surface it in the toolbar 
   repoFiles={['src/app/pages/fundamentals/tools/tools-register.component.ts']}
 />
 
-## Changing the Active Tool
+## Switching the Active Tool
 
 You can programmatically change the currently active tool by calling the `setActiveTool` method with the name of the tool on the editor instance.
 

@@ -64,6 +64,7 @@ export * from './classes/registries/font-registry.class';
 export * from './classes/registries/icon-registry.class';
 
 export * from './interfaces/toolbar-item.interface';
+export * from './interfaces/tool.interface';
 export * from './interfaces/menu-item.interface';
 export * from './interfaces/object-export.interface';
 export * from './interfaces/object-change-event.interface';
