@@ -1,9 +1,5 @@
 import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
-import {
-  KritzelEditor,
-  KritzelTheme,
-  KritzelSyncConfig,
-} from '@kritzel/angular-editor';
+import { KritzelEditor, KritzelTheme } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -59,9 +55,8 @@ export class ThemingApplyComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes: KritzelTheme[] = [angularThemeLight, angularThemeDark];
-  activeName: string = 'light';
 
-  
+  activeName: string = 'light';
 
   async onIsReady(_event: CustomEvent) {
     for (const obj of createSeedObjects()) {

@@ -18,14 +18,6 @@ export const darkTheme: KritzelTheme = {
     textSecondary: '#e0e0e0',
   },
 
-  activeUsers: {
-    fontFamily: 'sans-serif',
-  },
-
-  awareness: {
-    fontFamily: 'sans-serif',
-  },
-
   pillTabs: {
     background: '#3a3a3a',
     tabBackground: 'transparent',
@@ -74,10 +66,6 @@ export const darkTheme: KritzelTheme = {
     hoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
   },
 
-  button: {
-    fontFamily: 'sans-serif',
-  },
-
   colorPalette: {
     circleBorderColor: '#4a4a4a',
     hoverBackgroundColor: '#3a3a3a',
@@ -89,7 +77,6 @@ export const darkTheme: KritzelTheme = {
     border: '1px solid #3a3a3a',
     boxShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
     dividerColor: 'rgba(255, 255, 255, 0.1)',
-    fontFamily: 'sans-serif',
     itemActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
     itemColor: '#e0e0e0',
     itemDisabledColor: '#666666',
@@ -211,7 +198,6 @@ export const darkTheme: KritzelTheme = {
     itemChildOpenBackgroundColor: 'hsl(0, 0%, 100%, 6%)',
     itemColor: '#e0e0e0',
     itemEditingBackgroundColor: '#3a3a3a',
-    fontFamily: 'sans-serif',
     itemInputBorder: '1px solid #ffffff',
     itemInputBorderColorOnSelected: '#ffffff',
     itemInputCaretColor: '#e0e0e0',

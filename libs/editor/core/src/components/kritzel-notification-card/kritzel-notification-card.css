@@ -7,7 +7,7 @@
   width: 100%;
   max-width: var(--kritzel-notification-card-max-width, 360px);
   margin-inline: auto;
-  font-family: var(--kritzel-font-family, sans-serif);
+  font-family: var(--kritzel-global-font-family, sans-serif);
   padding: var(--kritzel-notification-card-padding, 12px 14px);
   border: var(--kritzel-notification-card-border, 1px solid #e5e7eb);
   border-radius: var(--kritzel-notification-card-border-radius, 12px);

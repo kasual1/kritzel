@@ -42,7 +42,7 @@
   transition:
     transform 200ms ease-out,
     opacity 200ms ease-out;
-  font-family: var(--kritzel-dialog-font-family, sans-serif);
+  font-family: var(--kritzel-dialog-font-family, var(--kritzel-global-font-family, sans-serif));
 }
 
 .dialog-content.is-animating {
