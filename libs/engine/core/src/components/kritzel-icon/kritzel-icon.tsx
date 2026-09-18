@@ -1,4 +1,4 @@
-import { Component, h, Prop, Host } from '@stencil/core';
+import { Component, h, Prop, Host, forceUpdate } from '@stencil/core';
 import { KritzelIconRegistry } from '../../classes/registries/icon-registry.class';
 
 @Component({
@@ -10,6 +10,23 @@ export class KritzelIcon {
   @Prop() name: string;
   @Prop() label?: string;
   @Prop() size: number = 24;
+
+  private unsubscribe?: () => void;
+
+  connectedCallback() {
+    this.unsubscribe?.();
+    this.unsubscribe = KritzelIconRegistry.subscribe(name => {
+      if (name === this.name) {
+        forceUpdate(this);
+      }
+    });
+    forceUpdate(this);
+  }
+
+  disconnectedCallback() {
+    this.unsubscribe?.();
+    this.unsubscribe = undefined;
+  }
 
   render() {
     const svgContent = KritzelIconRegistry.get(this.name);

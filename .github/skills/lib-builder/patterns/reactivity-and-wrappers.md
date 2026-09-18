@@ -48,6 +48,14 @@ For dynamic object renderers, wrapper abstractions may legitimately handle frame
 - Persist latest normalized state on unmount when renderer state is user-editable
 - Preserve wheel pass-through semantics so non-scrollable custom content does not block viewport navigation
 
+## Icon Registry Lifecycle
+
+- Register initial `customSvgIcons` in the editor's `componentWillLoad`, before child icons render, and bridge later prop replacements with `@Watch('customSvgIcons')`.
+- Wrapper inputs applied during custom-element upgrade can miss the initial watcher. Reconcile `customSvgIcons` in `componentWillRender` too, caching the last map reference to avoid repeated registrations.
+- Public engine imports and Stencil custom-element bundles can contain separate registry class instances. Share icon storage and notifications through `globalThis`, as with the font registry, and do not overwrite existing entries when seeding built-in icons.
+- Mounted icon components must refresh when their named registry entry changes. Subscribe in `connectedCallback`, unsubscribe in `disconnectedCallback`, and refresh on reconnect to pick up changes made while detached.
+- Test initial registration, late registration and replacement, separate module instances, and disconnect/reconnect behavior.
+
 ## Review Checklist
 
 - No stale snapshots of reactive props in long-lived runtime instances

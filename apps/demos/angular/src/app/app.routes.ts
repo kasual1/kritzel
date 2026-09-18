@@ -53,6 +53,7 @@ import { ThemingCustomComponent } from './pages/customization/theming/theming-cu
 import { FontsRegisterComponent } from './pages/customization/fonts/fonts-register.component';
 import { FontsUiFontFamilyComponent } from './pages/customization/fonts/fonts-ui-font-family.component';
 import { IconsRegisterComponent } from './pages/customization/icons/icons-register.component';
+import { IconsRegisterNewComponent } from './pages/customization/icons/icons-register-new.component';
 import { LocalizationSwitchComponent } from './pages/customization/localization/localization-switch.component';
 import { LocalizationCustomComponent } from './pages/customization/localization/localization-custom.component';
 import { ObjectExplorerComponent } from './pages/examples/object-explorer.component';
@@ -204,7 +205,10 @@ export const routes: Routes = [
       },
       {
         path: 'icons',
-        children: [{ path: 'register', component: IconsRegisterComponent }],
+        children: [
+          { path: 'register', component: IconsRegisterComponent },
+          { path: 'register-new', component: IconsRegisterNewComponent },
+        ],
       },
       {
         path: 'localization',

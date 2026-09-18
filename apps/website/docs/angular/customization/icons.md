@@ -15,9 +15,9 @@ Kritzel's icon system uses named SVG definitions. Built-in toolbar and menus res
 
 Register custom icons with the `[customSvgIcons]` binding on `<kritzel-editor>`. The value is a `Record<string, string>` whose keys are the icon names and whose values are SVG markup strings. Use the same names anywhere Kritzel accepts an `icon`, including `ContextMenuItem` definitions and `KritzelToolbarItem` configurations.
 
-## Registering Custom SVG Icons
+## Overriding Existing Icons
 
-The demo registers four application-specific SVG icons and passes them to the editor. The custom names are then assigned to toolbar items and global or object context-menu items. Context-menu actions remain ordinary callbacks; the icon name only controls the visual marker rendered beside the label.
+The simplest way to customize Kritzel's built-in UI is to register SVG markup under the existing icon names. The editor's default toolbar and panels already refer to keys such as `cursor`, `pen`, `shape-rectangle`, `undo`, `redo`, and `delete`, so overriding those keys changes the artwork without redefining `toolbarItems` or replacing the built-in actions.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -25,11 +25,17 @@ The demo registers four application-specific SVG icons and passes them to the ed
   repoFiles={['src/app/pages/customization/icons/icons-register.component.ts']}
 />
 
-## Using Icons in Toolbar Items and Menus
+## Registering Brand-New Icons
 
-Toolbar items use the `icon` property on `KritzelToolbarItem`. Context-menu entries use the `icon` property on `ContextMenuItem`. Both properties contain the key from the `[customSvgIcons]` map, and both can be mixed with Kritzel's built-in icon names.
+Use a new name for an application-specific action or tool. This demo registers `brand-export` and uses it in custom context-menu entries.
 
-Keep SVG definitions self-contained and use `currentColor` for strokes or fills when the icon should follow the active theme's control color. Register each name before the component renders the control or menu that references it.
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/customization/icons/register-new"
+  repoFiles={['src/app/pages/customization/icons/icons-register-new.component.ts']}
+/>
+
+Use `currentColor` when the SVG should follow the control color. Reference the new key from a `KritzelToolbarItem` or `ContextMenuItem` to display it.
 
 ## API Details
 

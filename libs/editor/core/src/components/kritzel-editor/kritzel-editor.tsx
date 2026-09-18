@@ -389,6 +389,11 @@ export class KritzelEditor {
     void this.registerCustomFonts(newValue);
   }
 
+  @Watch('customSvgIcons')
+  onCustomSvgIconsChange(newValue: Record<string, string> | undefined) {
+    this.registerCustomSvgIcons(newValue);
+  }
+
   @Watch('moreMenuItems')
   onMoreMenuItemsChange() {
     this.recomputeMoreMenuItems();
@@ -1018,9 +1023,14 @@ export class KritzelEditor {
   currentUserDialogRef!: HTMLKritzelCurrentUserDialogElement;
 
   componentWillLoad() {
+    this.registerCustomSvgIcons(this.customSvgIcons);
     this.recomputeMoreMenuItems();
     this.loadSettingsFromStorage();
     this.applyTheme();
+  }
+
+  componentWillRender() {
+    this.registerCustomSvgIcons(this.customSvgIcons);
   }
 
   private isTextToolConfig(config?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig): config is KritzelTextToolConfig {
@@ -1084,7 +1094,6 @@ export class KritzelEditor {
   }
 
   componentDidLoad() {
-    this.registerCustomSvgIcons();
     this.registerCustomFonts();
     this.listenForMobileKeyboard();
     this.setOsSpecificCssVariables();
@@ -1528,10 +1537,14 @@ export class KritzelEditor {
     return objects.filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox));
   }
 
-  private registerCustomSvgIcons() {
-    for (const [name, svg] of Object.entries(this.customSvgIcons)) {
-      KritzelIconRegistry.register(name, svg);
+  private lastCustomSvgIcons?: Record<string, string>;
+
+  private registerCustomSvgIcons(icons: Record<string, string> | undefined) {
+    if (icons === this.lastCustomSvgIcons) {
+      return;
     }
+    this.lastCustomSvgIcons = icons;
+    KritzelIconRegistry.registerIcons(icons ?? {});
   }
 
   private async registerCustomFonts(fonts: KritzelFontMap = this.customFonts): Promise<void> {

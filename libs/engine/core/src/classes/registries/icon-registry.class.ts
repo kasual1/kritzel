@@ -1,10 +1,45 @@
+type KritzelIconRegistryStore = {
+  icons: Map<string, string>;
+  listeners: Set<(name: string) => void>;
+};
+
+const KRITZEL_ICON_REGISTRY_KEY = '__kritzelIconRegistry__';
+
+const getGlobalRegistryStore = (): KritzelIconRegistryStore => {
+  const globalScope = globalThis as unknown as Record<string, unknown>;
+  const existing = globalScope[KRITZEL_ICON_REGISTRY_KEY] as KritzelIconRegistryStore | undefined;
+  if (existing) {
+    return existing;
+  }
+
+  const created: KritzelIconRegistryStore = {
+    icons: new Map<string, string>(),
+    listeners: new Set<(name: string) => void>(),
+  };
+  globalScope[KRITZEL_ICON_REGISTRY_KEY] = created;
+  return created;
+};
+
 /**
  * A static registry for managing SVG icons throughout the Kritzel library.
  * Icons are stored as name-to-SVG-content mappings and can be retrieved by name.
  */
 export class KritzelIconRegistry {
   /** Internal storage for registered icons, mapping icon names to their SVG content. */
-  private static registry = new Map<string, string>();
+  private static get registry(): Map<string, string> {
+    return getGlobalRegistryStore().icons;
+  }
+
+  private static get listeners(): Set<(name: string) => void> {
+    return getGlobalRegistryStore().listeners;
+  }
+
+  public static subscribe(listener: (name: string) => void): () => void {
+    this.listeners.add(listener);
+    return () => {
+      this.listeners.delete(listener);
+    };
+  }
 
   /**
    * Registers a single icon with the given name and SVG content.
@@ -18,6 +53,9 @@ export class KritzelIconRegistry {
       console.warn(`[IconRegistry] Icon "${name}" is already registered. It will be overwritten.`);
     }
     this.registry.set(name, svgContent);
+    for (const listener of this.listeners) {
+      listener(name);
+    }
   }
 
   /**
@@ -55,7 +93,7 @@ export class KritzelIconRegistry {
   }
 }
 
-KritzelIconRegistry.registerIcons({
+const defaultIcons: Record<string, string> = {
   'cursor': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z"/></svg>',
   'pen': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg>',
   'arrow': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="19" x2="19" y2="5"/><path d="M15 5h4v4"/></svg>',
@@ -120,4 +158,10 @@ KritzelIconRegistry.registerIcons({
   'github': '<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z" transform="scale(64)" fill="#1B1F23"/></svg>',
   'braces': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-braces-icon lucide-braces"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg>',
   'heart': '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-heart-icon lucide-heart"><path d="M2 9.5a5.5 5.5 0 0 1 9.591-3.676.56.56 0 0 0 .818 0A5.49 5.49 0 0 1 22 9.5c0 2.29-1.5 4-3 5.5l-5.492 5.313a2 2 0 0 1-3 .019L5 15c-1.5-1.5-3-3.2-3-5.5"/></svg>'
-});
+};
+
+for (const [name, svg] of Object.entries(defaultIcons)) {
+  if (!KritzelIconRegistry.has(name)) {
+    KritzelIconRegistry.register(name, svg);
+  }
+}
