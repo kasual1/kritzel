@@ -17,7 +17,7 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 
 ## Installation
 
-Run the following command to install Kritzel and add it as a project dependency.
+Run the following command to install the Kritzel editor in your project.
 
 ```bash
 npm install @kritzel/angular-editor
@@ -39,7 +39,7 @@ export const appConfig: ApplicationConfig = {
 };
 ```
 
-Then use the component in your template:
+Then use the `<kritzel-editor>` component in your template:
 
 ```ts title="editor.component.ts"
 import { Component } from '@angular/core';

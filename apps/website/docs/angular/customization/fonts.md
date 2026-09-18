@@ -11,16 +11,28 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel lets you use custom web fonts in canvas text objects and tool panels. You can add fonts from services such as Google Fonts or Adobe Fonts, or use self-hosted fonts. Once registered, they are available in the text tool for use on canvas text.
+Kritzel comes with a dedicated system for managing custom fonts, allowing you to easily integrate web fonts as part of text based objects in the canvas or in the editor's UI.
 
-## Registering and Using Custom Fonts
+## Registering Custom Fonts
 
-You can register fonts declaratively via the `[customFonts]` binding on `<kritzel-editor>` or programmatically using `registerFonts()`. Font registrations map font keys to `KritzelFontDefinition` objects containing font family names, display labels, CSS font family stacks, and remote stylesheet URLs.
+You can register fonts declaratively via the `[customFonts]` binding on `<kritzel-editor>` or programmatically using `registerFonts()`. Registered fonts come immediately available as options in the text tool and can be applied to the editor's UI.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
   demoPath="/customization/fonts/register"
   repoFiles={['src/app/pages/customization/fonts/fonts-register.component.ts']}
+/>
+
+## Using a Custom Font in the UI
+
+To make use of a custom font in the editor's controls, you first have to register the custom font and then set `global.fontFamily` in a theme to apply a font to menus, dialogs, buttons, and other UI elements.
+
+To override only specifc UI elements, set the font family on the relevant component-specific theme property, such as `dialog.fontFamily` or `contextMenu.fontFamily`.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/customization/fonts/ui-font-family"
+  repoFiles={['src/app/pages/customization/fonts/fonts-ui-font-family.component.ts']}
 />
 
 ## API Details

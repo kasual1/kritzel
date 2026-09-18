@@ -51,6 +51,7 @@ import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-ex
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
 import { FontsRegisterComponent } from './pages/customization/fonts/fonts-register.component';
+import { FontsUiFontFamilyComponent } from './pages/customization/fonts/fonts-ui-font-family.component';
 import { IconsRegisterComponent } from './pages/customization/icons/icons-register.component';
 import { LocalizationSwitchComponent } from './pages/customization/localization/localization-switch.component';
 import { LocalizationCustomComponent } from './pages/customization/localization/localization-custom.component';
@@ -196,7 +197,10 @@ export const routes: Routes = [
       },
       {
         path: 'fonts',
-        children: [{ path: 'register', component: FontsRegisterComponent }],
+        children: [
+          { path: 'register', component: FontsRegisterComponent },
+          { path: 'ui-font-family', component: FontsUiFontFamilyComponent },
+        ],
       },
       {
         path: 'icons',

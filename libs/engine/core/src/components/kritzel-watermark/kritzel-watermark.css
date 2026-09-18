@@ -12,7 +12,7 @@
   align-items: center;
   padding: 4px 8px;
   border-radius: var(--kritzel-watermark-border-radius, 6px);
-  font-family: var(--kritzel-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
+  font-family: var(--kritzel-global-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
   font-size: var(--kritzel-watermark-font-size, 11px);
   line-height: 1;
   text-decoration: none;

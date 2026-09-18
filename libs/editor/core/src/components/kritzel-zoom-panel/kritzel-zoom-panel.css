@@ -29,7 +29,7 @@
   justify-content: center;
   min-width: 46px;
   color: var(--kritzel-zoom-panel-icon-color, #000000);
-  font-family: var(--kritzel-font-family, sans-serif);
+  font-family: var(--kritzel-global-font-family, sans-serif);
   font-size: 12px;
   font-weight: 500;
   line-height: 1;
