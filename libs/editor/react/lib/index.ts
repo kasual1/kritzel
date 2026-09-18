@@ -38,6 +38,7 @@ export {
     FR_LOCALE,
     DEFAULT_BRUSH_CONFIG,
     DEFAULT_TEXT_CONFIG,
+    DEFAULT_SHAPE_CONFIG,
     hasRemoteSyncProvider,
 } from '@kritzel/engine';
 

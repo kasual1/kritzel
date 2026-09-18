@@ -25,10 +25,12 @@
     "@playwright/test": "^1.58.2",
     "@types/node": "^22.14.1",
     "dotenv": "^17.2.2",
+    "svgo": "^4.1.0",
     "typescript": "~6.0.0"
   },
   "scripts": {
     "clean": "node ./scripts/clean.js",
+    "generate:icons": "node ./scripts/generate-google-font-icons.js",
     "bump-patch": "node ./scripts/bump-patch.js",
     "bump-minor": "node ./scripts/bump-minor.js",
     "bump-major": "node ./scripts/bump-major.js",

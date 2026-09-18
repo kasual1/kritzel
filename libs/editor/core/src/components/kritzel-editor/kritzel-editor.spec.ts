@@ -2,6 +2,7 @@
 import { KritzelBaseObject } from '@kritzel/engine';
 import { KritzelWorkspace } from '@kritzel/engine';
 import { KritzelFontRegistry } from '@kritzel/engine';
+import { KritzelIconRegistry } from '@kritzel/engine';
 import { KritzelKeyboardHelper } from '@kritzel/engine';
 import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@kritzel/engine';
 
@@ -116,6 +117,51 @@ describe('KritzelEditor', () => {
       (component as unknown as { handleCurrentUserLogout: () => void }).handleCurrentUserLogout();
 
       expect(component.logout.emit).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('Custom Icons', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('registers initial icons before child components render', () => {
+      const svg = '<svg viewBox="0 0 24 24"><path d="M2 2L22 22"/></svg>';
+      component.customSvgIcons = { 'editor-initial-icon': svg };
+
+      component.componentWillLoad();
+
+      expect(KritzelIconRegistry.get('editor-initial-icon')).toBe(svg);
+    });
+
+    it('registers and replaces icons supplied after initialization', () => {
+      jest.spyOn(console, 'warn').mockImplementation(() => {});
+      component.componentWillLoad();
+      component.onCustomSvgIconsChange({ 'editor-late-icon': '<svg/>' });
+      expect(KritzelIconRegistry.get('editor-late-icon')).toBe('<svg/>');
+
+      const replacement = '<svg><path d="M1 1L2 2"/></svg>';
+      component.onCustomSvgIconsChange({ 'editor-late-icon': replacement });
+      expect(KritzelIconRegistry.get('editor-late-icon')).toBe(replacement);
+    });
+
+    it('accepts undefined custom icons without removing existing registry entries', () => {
+      component.onCustomSvgIconsChange({ 'editor-retained-icon': '<svg/>' });
+
+      expect(() => component.onCustomSvgIconsChange(undefined)).not.toThrow();
+      expect(KritzelIconRegistry.get('editor-retained-icon')).toBe('<svg/>');
+    });
+
+    it('registers upgrade-time inputs before rendering even when the watcher did not run', () => {
+      component.componentWillLoad();
+      const register = jest.spyOn(KritzelIconRegistry, 'registerIcons');
+      component.customSvgIcons = { 'editor-upgrade-icon': '<svg/>' };
+
+      component.componentWillRender();
+      component.componentWillRender();
+
+      expect(KritzelIconRegistry.get('editor-upgrade-icon')).toBe('<svg/>');
+      expect(register).toHaveBeenCalledTimes(1);
     });
   });
 
