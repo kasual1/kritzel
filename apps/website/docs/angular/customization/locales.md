@@ -11,11 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel provides a comprehensive internationalization (i18n) framework built directly into the editor and core engine. Every user-visible text element — from context menu actions and toolbar button tooltips to settings dialogs, zoom panels, utility controls, and export dialogs — is managed dynamically through a centralized localization manager (`KritzelLocalizationManager`).
+Kritzel comes with built-in support for multiple languages and allows you to override or extend the default translations with custom locales.
 
-Kritzel ships with built-in translations for English (`'en'`), German (`'de'`), and French (`'fr'`). You can switch active languages at runtime, define custom locale packages, or partially override specific UI string keys. All missing terms automatically fall back through a flexible resolution chain down to the configurable fallback locale (defaulting to `'en'`).
+Take a look at the [Localization Terms](../api-reference/localization-terms.md) to see all available localization keys.
 
-## Switching Built-in Locales
+## Switching the Locale
 
 To change the active interface language, bind the `[locale]` property on `<kritzel-editor>` or call the asynchronous `setLocale()` method. The editor instantly updates all UI controls and context menus without requiring a page reload.
 
@@ -25,7 +25,17 @@ To change the active interface language, bind the `[locale]` property on `<kritz
   repoFiles={['src/app/pages/customization/localization/localization-switch.component.ts']}
 />
 
-## Registering Custom Locales & Term Overrides
+## Listening for Locale Changes
+
+Listen for the `localeChange` event to react when the active locale changes, for example to sync a UI status label, persist the selected language, or update a custom settings panel.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/customization/localization/listen"
+  repoFiles={['src/app/pages/customization/localization/localization-listen.component.ts']}
+/>
+
+## Registering Custom Locales
 
 You can add support for additional languages (such as Spanish `'es'`) or override individual term keys (such as `menu.copy` or `settings.dialogTitle`) by providing a `KritzelLocale` definition. Pass custom locales to the `[locales]` binding or register them dynamically using `registerLocales()`.
 
@@ -39,4 +49,5 @@ You can add support for additional languages (such as Spanish `'es'`) or overrid
 
 For the full list of related APIs, see the following reference sections.
 
-- [Localization](../api-reference/editor.md#localization)
+- [Editor](../api-reference/editor.md#localization)
+- [Localization Terms](../api-reference/localization-terms.md)

@@ -50,12 +50,14 @@ import { ImportExportWorkspaceExportComponent } from './pages/advanced/import-ex
 import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-export/import-export-workspace-import.component';
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
+import { ThemingListenComponent } from './pages/customization/theming/theming-listen.component';
 import { FontsRegisterComponent } from './pages/customization/fonts/fonts-register.component';
 import { FontsUiFontFamilyComponent } from './pages/customization/fonts/fonts-ui-font-family.component';
 import { IconsRegisterComponent } from './pages/customization/icons/icons-register.component';
 import { IconsRegisterNewComponent } from './pages/customization/icons/icons-register-new.component';
 import { LocalizationSwitchComponent } from './pages/customization/localization/localization-switch.component';
 import { LocalizationCustomComponent } from './pages/customization/localization/localization-custom.component';
+import { LocalizationListenComponent } from './pages/customization/localization/localization-listen.component';
 import { ObjectExplorerComponent } from './pages/examples/object-explorer.component';
 import { BlueprintDefectMapperComponent } from './pages/examples/blueprint-defect-mapper.component';
 import { SlideshowPresentationComponent } from './pages/examples/slideshow-presentation.component';
@@ -194,6 +196,7 @@ export const routes: Routes = [
         children: [
           { path: 'apply', component: ThemingApplyComponent },
           { path: 'custom', component: ThemingCustomComponent },
+          { path: 'listen', component: ThemingListenComponent },
         ],
       },
       {
@@ -215,6 +218,7 @@ export const routes: Routes = [
         children: [
           { path: 'switch', component: LocalizationSwitchComponent },
           { path: 'custom', component: LocalizationCustomComponent },
+          { path: 'listen', component: LocalizationListenComponent },
         ],
       },
     ],

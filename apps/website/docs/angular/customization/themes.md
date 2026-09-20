@@ -17,7 +17,7 @@ Kritzel comes with two built-in themes, `lightTheme` and `darkTheme`, and offers
 
 The full list of customizable properties can be found in the [API Reference](../api-reference/theming.md).
 
-## Applying a Built-in Theme
+## Switching the Theme
 
 In order to toggle between the default light and dark theme, pass the respective theme name to the `[theme]` binding.
 
@@ -26,6 +26,18 @@ In order to toggle between the default light and dark theme, pass the respective
   demoPath="/customization/theming/apply"
   repoFiles={['src/app/pages/customization/theming/theming-apply.component.ts']}
 />
+
+
+## Listening for Theme Changes
+
+Listen for the `themeChange` event to react whenever the active theme changes. The event provides the new theme name as its detail.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/customization/theming/listen"
+  repoFiles={['src/app/pages/customization/theming/theming-listen.component.ts']}
+/>
+
 
 ## Creating a Custom Theme
 
