@@ -146,6 +146,7 @@ describe('KritzelEngine', () => {
       cleanup: jest.fn(),
     },
     themeManager: {
+      setTargetElement: jest.fn(),
       setTheme: jest.fn(),
       getStoredTheme: jest.fn().mockReturnValue('light'),
       cleanup: jest.fn(),
@@ -284,6 +285,55 @@ describe('KritzelEngine', () => {
     jest.clearAllMocks();
   });
 
+  describe('startup readiness', () => {
+    it('emits isEngineReady after the initialized workspace has rendered', async () => {
+      jest.useFakeTimers();
+      const frameCallbacks: FrameRequestCallback[] = [];
+      const animationFrameSpy = jest
+        .spyOn(globalThis, 'requestAnimationFrame')
+        .mockImplementation(callback => {
+          frameCallbacks.push(callback);
+          return frameCallbacks.length;
+        });
+      const workspace = new KritzelWorkspace({ id: 'seeded-workspace' });
+      const seedObject = { id: 'seed-object' };
+      let resolveReady!: () => void;
+      const readyPromise = new Promise<void>(resolve => {
+        resolveReady = resolve;
+      });
+
+      core.store.state.isReady = false;
+      (engine as any).isEngineReady.emit.mockImplementation(resolveReady);
+      jest.spyOn(engine as any, 'registerConfiguredTools').mockResolvedValue(undefined);
+      jest.spyOn(engine as any, 'initializeSyncAndWorkspace').mockImplementation(async () => {
+        core.store.state.activeWorkspace = workspace;
+        core.store.allObjects = [seedObject];
+      });
+
+      engine.componentDidLoad();
+      jest.runOnlyPendingTimers();
+      for (let index = 0; index < 4; index++) {
+        await Promise.resolve();
+      }
+
+      expect((engine as any).isEngineReady.emit).not.toHaveBeenCalled();
+      expect(frameCallbacks).toHaveLength(1);
+
+      frameCallbacks.shift()!(0);
+      expect((engine as any).isEngineReady.emit).not.toHaveBeenCalled();
+      expect(frameCallbacks).toHaveLength(1);
+
+      frameCallbacks.shift()!(0);
+  await readyPromise;
+
+      expect(core.store.allObjects).toEqual([seedObject]);
+      expect((engine as any).isEngineReady.emit).toHaveBeenCalledWith(core.store.state);
+
+      animationFrameSpy.mockRestore();
+      jest.useRealTimers();
+    });
+  });
+
   describe('license key watcher', () => {
     it('validates the license key when the prop changes after initialization', () => {
       engine.onLicenseKeyChange('new-license-key');
@@ -316,6 +366,19 @@ describe('KritzelEngine', () => {
       await (engine as any).reconcileProvidedWorkspaces();
 
       expect(core.createWorkspace).toHaveBeenCalledWith(workspace);
+    });
+
+    it('reconciles and activates workspaces provided after initialization', async () => {
+      const workspace = new KritzelWorkspace({ id: 'workspace-1', name: 'Workspace 1' });
+      engine.workspaces = [workspace];
+      core.getWorkspaces.mockReturnValue([]);
+      (engine as any)._isYjsInitialized = true;
+
+      await engine.onWorkspacesPropChange();
+
+      expect(core.createWorkspace).toHaveBeenCalledWith(workspace);
+      expect(core.initializeWorkspace).toHaveBeenCalledWith(workspace, undefined);
+      expect((engine as any).workspacesChange.emit).toHaveBeenCalledWith([workspace]);
     });
 
     it('updates provider metadata when a provided workspace differs', async () => {

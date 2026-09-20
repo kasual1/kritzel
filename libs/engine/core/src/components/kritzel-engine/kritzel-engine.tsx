@@ -81,13 +81,28 @@ export class KritzelEngine {
   @Prop() workspaces?: KritzelWorkspace[];
   @Watch('workspaces')
   async onWorkspacesPropChange() {
-    if (!this._isYjsInitialized) {
+    this._workspacesRevision++;
+
+    if (!this._isYjsInitialized || this._syncInitPromise) {
       return;
     }
 
-    await this.reconcileProvidedWorkspaces();
-    await this.ensureActiveWorkspaceIsVisible();
-    this.workspacesChange.emit(this.getVisibleWorkspaces());
+    const previousReconciliation = this._workspacePropReconciliationPromise;
+    const reconciliationPromise = (async () => {
+      await previousReconciliation;
+      await this.reconcileProvidedWorkspaces();
+      await this.ensureActiveWorkspaceIsVisible();
+      this.workspacesChange.emit(this.getVisibleWorkspaces());
+    })();
+    this._workspacePropReconciliationPromise = reconciliationPromise;
+
+    try {
+      await reconciliationPromise;
+    } finally {
+      if (this._workspacePropReconciliationPromise === reconciliationPromise) {
+        this._workspacePropReconciliationPromise = null;
+      }
+    }
   }
 
   /** Optional unique identifier for namespacing storage keys across multiple editor instances. */
@@ -2399,11 +2414,13 @@ export class KritzelEngine {
   private _stateChangeListenersRegistered: boolean = false;
   private _workspaceInitializationPromise: Promise<void> | null = null;
   private _workspaceInitializationTargetKey: string | null = null;
+  private _workspacePropReconciliationPromise: Promise<void> | null = null;
   private _syncInitPromise: Promise<void> | null = null;
   private _toolsInitPromise: Promise<void> | null = null;
   private _toolsRevision: number = 0;
   private _syncConfigRevision: number = 0;
   private _assetStorageConfigRevision: number = 0;
+  private _workspacesRevision: number = 0;
   private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
   private _previousVisibleDynamicObjects: Set<string> = new Set();
   private _revealedImageKeys: Set<string> = new Set();
@@ -2639,6 +2656,7 @@ export class KritzelEngine {
       // Initialize sync config and Yjs
       await this.registerConfiguredTools();
       await this.initializeSyncAndWorkspace();
+      await this.waitForWorkspaceAndSceneReady();
 
       if (this.core.store.state.isReady === false) {
         this.core.store.state.isReady = true;
@@ -2662,6 +2680,25 @@ export class KritzelEngine {
     } finally {
       this._syncInitPromise = null;
     }
+  }
+
+  private async waitForSceneRender(): Promise<void> {
+    await new Promise<void>(resolve => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
+  }
+
+  private async waitForWorkspaceAndSceneReady(): Promise<void> {
+    let observedRevision: number;
+
+    do {
+      observedRevision = this._workspacesRevision;
+      await this._workspacePropReconciliationPromise;
+      await this.waitForSceneRender();
+    } while (
+      observedRevision !== this._workspacesRevision ||
+      this._workspacePropReconciliationPromise
+    );
   }
 
   /**

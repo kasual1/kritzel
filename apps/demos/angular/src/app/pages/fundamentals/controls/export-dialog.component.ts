@@ -5,7 +5,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import {
-  KritzelBaseObject,
   KritzelEditor,
   KritzelWorkspace,
 } from '@kritzel/angular-editor';
@@ -35,7 +34,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isWorkspaceManagerVisible]="false"
       [isMoreMenuVisible]="false"
       [isZoomPanelVisible]="false"
-      (objectsChange)="onObjectsChange($event)"
+      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: `
@@ -50,14 +49,8 @@ export class ExportDialogComponent {
 
   workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
-  private hasOpenedDialog = false;
-
-  async onObjectsChange(event: CustomEvent<KritzelBaseObject[]>): Promise<void> {
-    if (this.hasOpenedDialog || event.detail.length === 0) return;
-
-    this.hasOpenedDialog = true;
-    await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
-    await this.openDialog();
+  async onReady(): Promise<void> {
+    setTimeout(async () => await this.openDialog(), 100); // Ensure the dialog opens after seed objects are created
   }
 
   async openDialog(): Promise<void> {

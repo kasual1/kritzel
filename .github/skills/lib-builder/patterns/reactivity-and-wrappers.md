@@ -40,6 +40,12 @@ Always treat this as cross-framework behavior, not framework-specific behavior:
 
 If the bug appears in one wrapper demo, validate the core fix in Stencil and avoid wrapper-only workarounds.
 
+## Readiness Contract
+
+`isReady` must only emit after the initial workspace is initialized, its seed objects are loaded, and the resulting scene has completed its first render. Consumers must be able to call selection, context-menu, and screenshot/export APIs directly from an `isReady` handler.
+
+Do not make demos wait for `objectsChange`, arbitrary timers, or animation frames to compensate for startup ordering. Fix readiness sequencing in the core component and add a regression test that covers the render boundary.
+
 ## Dynamic Object Runtime Note
 
 For dynamic object renderers, wrapper abstractions may legitimately handle framework-specific runtime behavior (for example style encapsulation and mount strategy), but they must not change the core lifecycle contract:
