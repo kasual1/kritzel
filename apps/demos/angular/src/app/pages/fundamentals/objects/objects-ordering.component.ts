@@ -118,7 +118,6 @@ export class ObjectsOrderingComponent {
   objects = signal<KritzelBaseObject[]>(this.seedObjects);
 
   async handleObjectSelectionChange() {
-    console.log('Object selection changed');
     this.refreshObjects();
   }
 
