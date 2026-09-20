@@ -9,6 +9,7 @@ import {
   KritzelEditor,
   EditorIsReadyEvent,
   KritzelBaseObject,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -37,6 +38,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         editorId="objects-update"
         [theme]="'light'"
         [themes]="themes"
+        [workspaces]="workspaces()"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
@@ -111,16 +113,12 @@ export class ObjectsUpdateComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   selected = signal<KritzelBaseObject | null>(null);
   selectionCount = signal(0);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      for (const obj of createSeedObjects()) {
-        await this.editor.addObject(obj);
-      }
-    }
     await this.onSelectionChange();
   }
 

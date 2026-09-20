@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -19,13 +19,13 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       editorId="viewport-limits"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [scaleMin]="0.5"
       [scaleMax]="2"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: [`
@@ -40,11 +40,7 @@ export class ViewportLimitsComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   async zoomIn() {
     await this.editor.zoomIn(this.zoomFactor, 200);

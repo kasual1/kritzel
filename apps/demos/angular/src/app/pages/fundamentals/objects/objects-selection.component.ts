@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
   KritzelEditor,
-  EditorIsReadyEvent,
   IndexedDBSyncProvider,
   KritzelBaseObject,
   KritzelSyncConfig,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -31,11 +31,11 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         editorId="objects-selection"
         [theme]="'light'"
         [themes]="themes"
+        [workspaces]="workspaces()"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady()"
         (objectsSelectionChange)="refreshSelection()"
       ></kritzel-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
@@ -70,6 +70,8 @@ export class ObjectsSelectionComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   syncConfig: KritzelSyncConfig = {
     providers: [IndexedDBSyncProvider],
     
@@ -77,15 +79,6 @@ export class ObjectsSelectionComponent {
   };
 
   selectedObjects = signal<KritzelBaseObject[]>([]);
-
-  async onReady() {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      for (const obj of createSeedObjects()) {
-        await this.editor.addObject(obj);
-      }
-    }
-  }
 
   async selectAll() {
     const all = await this.editor.getAllObjects();

@@ -1,6 +1,10 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 
-import { EditorIsReadyEvent, KritzelDynamicObject, KritzelEditor } from '@kritzel/angular-editor';
+import {
+  KritzelDynamicObject,
+  KritzelEditor,
+  KritzelWorkspace,
+} from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 
@@ -86,7 +90,7 @@ function createHtmlCounterElement(): HTMLElement {
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
+      [workspaces]="workspaces()"
     ></kritzel-editor>
   `,
   styles: [`
@@ -98,23 +102,12 @@ function createHtmlCounterElement(): HTMLElement {
   `],
 })
 export class DynamicObjectsHtmlComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
-  private hasAddedInitialDynamicObject = false;
+  workspaces = signal([
+    new KritzelWorkspace({ objects: [this.createInitialDynamicObject()] }),
+  ]);
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>): Promise<void> {
-    if (this.hasAddedInitialDynamicObject) {
-      return;
-    }
-
-    const objectCount = await this.editor.getObjectsTotalCount();
-    if (objectCount > 0) {
-      return;
-    }
-
-    this.hasAddedInitialDynamicObject = true;
-
+  private createInitialDynamicObject(): KritzelDynamicObject {
     const dynamicObject = new KritzelDynamicObject({
       element: createHtmlCounterElement(),
       translateX: -150,
@@ -125,6 +118,6 @@ export class DynamicObjectsHtmlComponent {
 
     dynamicObject.isRotatable = false;
 
-    await this.editor.addObject(dynamicObject);
+    return dynamicObject;
   }
 }

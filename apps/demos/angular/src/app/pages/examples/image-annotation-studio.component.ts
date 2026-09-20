@@ -14,6 +14,7 @@ import {
   KritzelTextTool,
   KritzelTheme,
   KritzelViewportState,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import {
   LucideMinus,
@@ -38,22 +39,25 @@ type ColorTool = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="annotation-page">
-      <kritzel-editor
-        #editorHost
-        editorId="image-annotation-studio"
-        [themes]="themes"
-        [theme]="'dark'"
-        [scaleMax]="10"
-        [scaleMin]="0.1"
-        [isPanningEnabled]="false"
-        [isZoomingEnabled]="false"
-        [isToolbarVisible]="false"
-        [isMoreMenuVisible]="false"
-        [isWorkspaceManagerVisible]="false"
-        [isUtilityPanelVisible]="false"
-        [isZoomPanelVisible]="false"
-        (isReady)="onReady($event)"
-      ></kritzel-editor>
+      @if (workspaces().length > 0) {
+        <kritzel-editor
+          #editorHost
+          editorId="image-annotation-studio"
+          [themes]="themes"
+          [theme]="'dark'"
+          [scaleMax]="10"
+          [scaleMin]="0.1"
+          [isPanningEnabled]="false"
+          [isZoomingEnabled]="false"
+          [isToolbarVisible]="false"
+          [isMoreMenuVisible]="false"
+          [isWorkspaceManagerVisible]="false"
+          [isUtilityPanelVisible]="false"
+          [isZoomPanelVisible]="false"
+          [workspaces]="workspaces()"
+          (isReady)="onReady($event)"
+        ></kritzel-editor>
+      }
 
       <div class="action-bar">
         <button
@@ -405,12 +409,14 @@ export class ImageAnnotationStudioComponent {
 
   readonly activeMode = signal<AnnotationMode>('sketch');
   readonly activeSketchTool = signal<string>('ink-red');
+  readonly workspaces = signal<KritzelWorkspace[]>([]);
 
-  private imageObjectId = 'annotation-scene-image';
+  constructor() {
+    void this.initializeWorkspace();
+  }
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
     await this.registerColorTools();
-    await this.ensureSeedImage();
     await this.activateColorTool(this.activeSketchTool());
   }
 
@@ -495,7 +501,7 @@ export class ImageAnnotationStudioComponent {
     await this.editor.registerTool('text', KritzelTextTool, textToolConfig);
   }
 
-  private async ensureSeedImage() {
+  private async initializeWorkspace(): Promise<void> {
     const image = await KritzelImage.fromUrl(
       'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80',
       {
@@ -507,6 +513,6 @@ export class ImageAnnotationStudioComponent {
     image.translateX = -image.width / 2;
     image.translateY = (-image.height / 2) - 50;
 
-    await this.editor.addObject(image);
+    this.workspaces.set([new KritzelWorkspace({ objects: [image] })]);
   }
 }

@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
-import { KritzelEditor } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -23,11 +23,11 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="toolbar-utility-panel"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isToolbarVisible]="isToolbarVisible()"
       [isUtilityPanelVisible]="isUtilityPanelVisible()"
-      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: `
@@ -38,18 +38,12 @@ import { createSeedObjects } from '../../../const/seed-objects';
   `,
 })
 export class ToolbarUtilityPanelComponent {
-  editor = viewChild(KritzelEditor);
-
   isToolbarVisible = signal(true);
   isUtilityPanelVisible = signal(true);
 
   themes = [angularThemeLight, angularThemeDark];
 
-  async onReady(): Promise<void> {
-    for (const obj of createSeedObjects()) {
-      await this.editor()?.addObject(obj);
-    }
-  }
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   setToolbarVisible(event: Event): void {
     this.isToolbarVisible.set((event.target as HTMLInputElement).checked);

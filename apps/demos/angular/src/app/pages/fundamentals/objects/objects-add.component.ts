@@ -10,6 +10,7 @@ import {
   KritzelBaseObject,
   KritzelShape,
   KritzelPath,
+  KritzelWorkspace,
   ShapeType,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -31,6 +32,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       editorId="objects-add"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
@@ -57,13 +59,11 @@ export class ObjectsAddComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   objects = signal<KritzelBaseObject[]>([]);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-
     this.objects.set(await this.editor.getAllObjects());
   }
 

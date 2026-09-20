@@ -6,9 +6,8 @@ import {
 } from '@angular/core';
 import {
   KritzelEditor,
-  EditorIsReadyEvent,
   KritzelBaseObject,
-  KritzelSyncConfig,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -18,6 +17,14 @@ import {
   InfoPanelToggleComponent,
 } from '../../../components/info-panel.component';
 import { ToolbarComponent } from '../../../components/toolbar.component';
+
+function createOverlappingSeedObjects(): KritzelBaseObject[] {
+  return createSeedObjects().map((object) => {
+    object.translateX -= object.centerX;
+    object.translateY -= object.centerY;
+    return object;
+  });
+}
 
 @Component({
   selector: 'app-objects-ordering',
@@ -38,11 +45,11 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         editorId="objects-ordering"
         [theme]="'light'"
         [themes]="themes"
+        [workspaces]="workspaces()"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady()"
         (objectSelectionChange)="handleObjectSelectionChange()"
       ></kritzel-editor>
       <app-info-panel #infoPanel [hasToolbarToggle]="true">
@@ -106,22 +113,9 @@ export class ObjectsOrderingComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  
-
-  objects = signal<KritzelBaseObject[]>([]);
-
-  async onReady() {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      for (const obj of createSeedObjects()) {
-        await this.editor.addObject(obj);
-      }
-
-      await this.positionSeedObjectsWithOverlap();
-    }
-
-    await this.refreshObjects();
-  }
+  private readonly seedObjects = createOverlappingSeedObjects();
+  workspaces = signal([new KritzelWorkspace({ objects: this.seedObjects })]);
+  objects = signal<KritzelBaseObject[]>(this.seedObjects);
 
   async handleObjectSelectionChange() {
     console.log('Object selection changed');
@@ -156,18 +150,5 @@ export class ObjectsOrderingComponent {
   private async refreshObjects() {
     const all = await this.editor.findObjects(obj => obj.__class__ !== 'KritzelSelectionBox');
     this.objects.set([...all].sort((a, b) => a.zIndex - b.zIndex));
-  }
-
-  private async positionSeedObjectsWithOverlap() {
-    const all = await this.editor.getAllObjects();
-
-    await Promise.all(
-      all.map((obj) =>
-        this.editor.updateObject(obj, {
-          translateX: obj.translateX - obj.centerX,
-          translateY: obj.translateY - obj.centerY,
-        })
-      )
-    );
   }
 }

@@ -1,11 +1,11 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
   KritzelBrushTool,
   KritzelEditor,
   KritzelSelectionTool,
-  EditorIsReadyEvent,
   KritzelTextTool,
   KritzelToolbarItem,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -20,12 +20,12 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="tools-register"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [toolbarItems]="toolbarItems"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: [
@@ -52,9 +52,9 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class ToolsRegisterComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   toolbarItems: KritzelToolbarItem[] = [
     {
@@ -114,9 +114,4 @@ export class ToolsRegisterComponent {
     },
   ];
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 }

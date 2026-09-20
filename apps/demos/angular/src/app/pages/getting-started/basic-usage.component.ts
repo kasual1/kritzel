@@ -11,6 +11,7 @@ import {
   KritzelEditor,
   KritzelSyncConfig,
   KritzelText,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
@@ -45,6 +46,7 @@ import { createSeedObjects } from '../../const/seed-objects';
       editorId="basic-usage"
       #editor
       [syncConfig]="syncConfig"
+      [workspaces]="workspaces()"
       [theme]="'light'"
       [themes]="themes"
       [loginConfig]="undefined"
@@ -125,6 +127,8 @@ export class BasicUsageComponent {
   };
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   isReady = signal<boolean>(false);
   activeTool = signal<'brush' | 'selection'>('selection');
   objectsCount = signal<number>(0);
@@ -138,10 +142,6 @@ export class BasicUsageComponent {
   });
 
   async onReady() {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-
     this.isReady.set(true);
   }
 

@@ -5,16 +5,16 @@ import {
   ComponentRef,
   EnvironmentInjector,
   OnDestroy,
-  ViewChild,
   createComponent,
   inject,
+  signal,
 } from '@angular/core';
 
 import {
-  EditorIsReadyEvent,
   KritzelDynamicObject,
   KritzelDynamicObjectRendererRegistry,
   KritzelEditor,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -45,7 +45,7 @@ type CounterRendererContext = {
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
+      [workspaces]="workspaces()"
     ></kritzel-editor>
   `,
   styles: [`
@@ -57,14 +57,14 @@ type CounterRendererContext = {
   `],
 })
 export class DynamicObjectsComponentComponent implements OnDestroy {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   private readonly appRef = inject(ApplicationRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
   private readonly mountedCounters = new Map<string, ComponentRef<CounterWidgetComponent>>();
-  private hasAddedInitialDynamicObject = false;
 
   themes = [angularThemeLight, angularThemeDark];
+  workspaces = signal([
+    new KritzelWorkspace({ objects: [this.createInitialDynamicObject()] }),
+  ]);
 
   constructor() {
     KritzelDynamicObjectRendererRegistry.register(COUNTER_RENDERER_KEY, {
@@ -114,18 +114,7 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
     });
   }
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>): Promise<void> {
-    if (this.hasAddedInitialDynamicObject) {
-      return;
-    }
-
-    const objectCount = await this.editor.getObjectsTotalCount();
-    if (objectCount > 0) {
-      return;
-    }
-
-    this.hasAddedInitialDynamicObject = true;
-
+  private createInitialDynamicObject(): KritzelDynamicObject {
     const placeholder = document.createElement('div');
     placeholder.textContent = 'Loading Counter...';
 
@@ -141,7 +130,7 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
 
     dynamicObject.isRotatable = false;
 
-    await this.editor.addObject(dynamicObject);
+    return dynamicObject;
   }
 
   ngOnDestroy(): void {

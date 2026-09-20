@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, signal, computed, ViewChild, ElementRef } from '@angular/core';
-import { 
-  KritzelEditor, 
-  EditorIsReadyEvent, 
-  KritzelSyncConfig, 
-  KritzelShape, 
-  KritzelText, 
-  ShapeType 
+import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import {
+  KritzelEditor,
+  KritzelShape,
+  KritzelText,
+  KritzelWorkspace,
+  ShapeType,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
@@ -60,6 +59,7 @@ interface Slide {
         [isToolbarVisible]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
+        [workspaces]="workspaces()"
         (isReady)="onReady()"
       ></kritzel-editor>
     </div>
@@ -173,8 +173,9 @@ export class SlideshowPresentationComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-
-  
+  workspaces = signal([
+    new KritzelWorkspace({ objects: this.createSeedSlides() }),
+  ]);
 
   slides: Slide[] = [
     { title: '1. Welcome to Kritzel', centerX: 0, centerY: 0 },
@@ -185,17 +186,11 @@ export class SlideshowPresentationComponent {
   currentSlideIndex = signal<number>(0);
 
   async onReady() {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      await this.seedSlides();
-    }
-    // Navigate to the initial slide coordinates
     await this.navigateToSlide(0);
   }
 
-  async seedSlides() {
-    // Slide 1 Background Frame and Content
-    await this.editor.addObject(
+  private createSeedSlides(): Array<KritzelShape | KritzelText> {
+    return [
       new KritzelShape({
         translateX: -400,
         translateY: -225,
@@ -205,31 +200,21 @@ export class SlideshowPresentationComponent {
         fillColor: { light: '#ffffff', dark: '#1b1b1e' },
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
-      })
-    );
-
-    await this.editor.addObject(
+      }),
       new KritzelText({
         text: 'Welcome to Kritzel',
         translateX: -350,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
-      })
-    );
-
-    await this.editor.addObject(
+      }),
       new KritzelText({
         text: 'A modern vector drawing component for web builders. This workspace demonstrates Slideshow Mode, spacing slide sheets on a virtual horizontal track.\n\nUse the presentation controls above to glide smoothly between slides!',
         translateX: -350,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
-      })
-    );
-
-    // Decorative shape Slide 1
-    await this.editor.addObject(
+      }),
       new KritzelShape({
         translateX: 200,
         translateY: 50,
@@ -239,11 +224,7 @@ export class SlideshowPresentationComponent {
         fillColor: { light: '#e3f2fd', dark: '#1a237e' },
         strokeColor: { light: '#1565c0', dark: '#90caf9' },
         strokeWidth: 2,
-      })
-    );
-
-    // Slide 2 Background Frame and Content
-    await this.editor.addObject(
+      }),
       new KritzelShape({
         translateX: 800,
         translateY: -225,
@@ -253,31 +234,21 @@ export class SlideshowPresentationComponent {
         fillColor: { light: '#ffffff', dark: '#1b1b1e' },
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
-      })
-    );
-
-    await this.editor.addObject(
+      }),
       new KritzelText({
         text: 'Core Frontend Power',
         translateX: 850,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
-      })
-    );
-
-    await this.editor.addObject(
+      }),
       new KritzelText({
         text: 'â€¢ Offline-First Canvas Persistence\nâ€¢ Dynamic Viewport & Navigation Helpers\nâ€¢ Tailored Custom Color Tool Palettes\nâ€¢ Entirely Interactive Drawing Tools',
         translateX: 850,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
-      })
-    );
-
-    // Decorative shape Slide 2
-    await this.editor.addObject(
+      }),
       new KritzelShape({
         translateX: 1400,
         translateY: 50,
@@ -287,11 +258,7 @@ export class SlideshowPresentationComponent {
         fillColor: { light: '#fce4ec', dark: '#880e4f' },
         strokeColor: { light: '#c62828', dark: '#ef9a9a' },
         strokeWidth: 2,
-      })
-    );
-
-    // Slide 3 Background Frame and Content
-    await this.editor.addObject(
+      }),
       new KritzelShape({
         translateX: 2000,
         translateY: -225,
@@ -301,31 +268,21 @@ export class SlideshowPresentationComponent {
         fillColor: { light: '#ffffff', dark: '#1b1b1e' },
         strokeColor: { light: '#dd0031', dark: '#b30027' },
         strokeWidth: 4,
-      })
-    );
-
-    await this.editor.addObject(
+      }),
       new KritzelText({
         text: 'Seamless Bounded Layouts',
         translateX: 2050,
         translateY: -150,
         fontSize: 36,
         fontColor: { light: '#dd0031', dark: '#ff4d6d' },
-      })
-    );
-
-    await this.editor.addObject(
+      }),
       new KritzelText({
         text: 'By setting finite limits on the viewport bounds, the user can draw and interact inside the slide card, but cannot pan away to empty space.\n\nCombined with pan animation flows, this makes a wonderful presentation experience.',
         translateX: 2050,
         translateY: -50,
         fontSize: 20,
         fontColor: { light: '#333333', dark: '#eeeeee' },
-      })
-    );
-
-    // Decorative shape Slide 3
-    await this.editor.addObject(
+      }),
       new KritzelShape({
         translateX: 2600,
         translateY: 50,
@@ -335,8 +292,8 @@ export class SlideshowPresentationComponent {
         fillColor: { light: '#e8f5e9', dark: '#1b5e20' },
         strokeColor: { light: '#2e7d32', dark: '#a5d6a7' },
         strokeWidth: 2,
-      })
-    );
+      }),
+    ];
   }
 
   async goToPrevSlide() {

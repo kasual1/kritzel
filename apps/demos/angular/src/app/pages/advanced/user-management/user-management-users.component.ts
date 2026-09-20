@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewChild, computed, signal } from '@angular/core';
-import { EditorIsReadyEvent, IKritzelUser, KritzelEditor } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { IKritzelUser, KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -49,13 +49,13 @@ const collaborators: IKritzelUser[] = [
       editorId="user-management-users"
       [user]="user()"
       [activeUsers]="activeUsers()"
+      [workspaces]="workspaces()"
       [theme]="'light'"
       [themes]="themes"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: [
@@ -100,9 +100,9 @@ const collaborators: IKritzelUser[] = [
   ],
 })
 export class UserManagementUsersComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   user = signal<IKritzelUser | undefined>(currentUser);
 
@@ -110,9 +110,4 @@ export class UserManagementUsersComponent {
 
   visibleUserCount = computed(() => this.activeUsers().length + (this.user() ? 1 : 0));
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 }

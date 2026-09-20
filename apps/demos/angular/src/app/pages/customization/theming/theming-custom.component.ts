@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import {
   KritzelEditor,
   KritzelTheme,
+  KritzelWorkspace,
   lightTheme,
 } from '@kritzel/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -264,11 +265,11 @@ const brandedPurpleFlatTheme = {
       editorId="theming-custom"
       theme="branded-purple-flat"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="true"
       [isWorkspaceManagerVisible]="true"
-      (isReady)="onIsReady($event)"
     ></kritzel-editor>
   `,
   styles: [
@@ -291,13 +292,7 @@ const brandedPurpleFlatTheme = {
   ],
 })
 export class ThemingCustomComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes: KritzelTheme[] = [brandedPurpleFlatTheme];
 
-  async onIsReady(_event: CustomEvent) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 }

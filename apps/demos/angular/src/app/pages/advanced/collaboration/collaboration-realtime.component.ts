@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
-import { KritzelEditor, IndexedDBSyncProvider, HocuspocusSyncProvider, KritzelSyncConfig, EditorIsReadyEvent } from '@kritzel/angular-editor';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { KritzelEditor, IndexedDBSyncProvider, HocuspocusSyncProvider, KritzelSyncConfig, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -20,12 +20,12 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         [syncConfig]="syncConfig"
         [theme]="'light'"
         [themes]="themes"
+        [workspaces]="workspaces()"
         [loginConfig]="undefined"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady($event)"
       ></kritzel-editor>
     </div>
   `,
@@ -47,9 +47,9 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   `],
 })
 export class CollaborationRealtimeComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   syncConfig: KritzelSyncConfig = {
     providers: [
@@ -58,14 +58,4 @@ export class CollaborationRealtimeComponent {
     ],
   };
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length > 0) {
-      return;
-    }
-
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 }

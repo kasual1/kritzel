@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { EditorIsReadyEvent, KritzelEditor, KritzelLoginConfig } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import { KritzelEditor, KritzelLoginConfig, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -24,13 +24,14 @@ const providerIcons: Record<string, string> = {
       editorId="user-management-providers"
       [loginConfig]="loginConfig"
       [customSvgIcons]="providerIcons"
+      [workspaces]="workspaces()"
       [theme]="'light'"
       [themes]="themes"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
+      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: [
@@ -67,6 +68,8 @@ export class UserManagementProvidersComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   providerIcons = providerIcons;
 
   loginConfig: KritzelLoginConfig = {
@@ -78,10 +81,7 @@ export class UserManagementProvidersComponent {
     ],
   };
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
+  async onReady() {
     await this.editor.openLoginDialog();
   }
 }

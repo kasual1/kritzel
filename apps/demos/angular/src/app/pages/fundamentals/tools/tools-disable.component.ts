@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, signal, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import {
   KritzelBrushTool,
   KritzelEditor,
   KritzelEraserTool,
   KritzelSelectionTool,
   KritzelToolbarItem,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -25,12 +26,12 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       editorId="tools-disable"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [toolbarItems]="toolbarItems()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: [`
@@ -39,9 +40,9 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   `],
 })
 export class ToolsDisableComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   isEraserDisabled = signal(true);
 
@@ -76,12 +77,6 @@ export class ToolsDisableComponent {
       },
     ];
   });
-
-  async onReady() {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 
   toggle() {
     this.isEraserDisabled.update(value => !value);
