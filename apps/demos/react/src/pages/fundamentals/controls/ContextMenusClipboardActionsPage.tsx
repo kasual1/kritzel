@@ -22,7 +22,7 @@ export function ContextMenusClipboardActionsPage() {
       },
       {
         label: "Select All",
-        icon: "select-all",
+        icon: "selectAll",
         group: "clipboard",
         action: async () => {
           await editorRef.current?.selectAllObjectsInViewport();

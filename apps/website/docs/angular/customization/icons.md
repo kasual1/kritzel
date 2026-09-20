@@ -11,13 +11,14 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel's icon system uses named SVG definitions. Built-in toolbar and menus resolve an icon name through the shared `KritzelIconRegistry`, so you can replace the visual language of an editor or add icons for your own application actions without changing Kritzel's components.
+Kritzel comes with a dedicated system for managing all icons used in the editor's user interface.
+You can replace built-in icons or add new ones for your own tools and components.
 
-Register custom icons with the `[customSvgIcons]` binding on `<kritzel-editor>`. The value is a `Record<string, string>` whose keys are the icon names and whose values are SVG markup strings. Use the same names anywhere Kritzel accepts an `icon`, including `ContextMenuItem` definitions and `KritzelToolbarItem` configurations.
+See the [Icons API reference](../api-reference/icons.md) for the full list of default icon names.
 
 ## Overriding Existing Icons
 
-The simplest way to customize Kritzel's built-in UI is to register SVG markup under the existing icon names. The editor's default toolbar and panels already refer to keys such as `cursor`, `pen`, `shape-rectangle`, `undo`, `redo`, and `delete`, so overriding those keys changes the artwork without redefining `toolbarItems` or replacing the built-in actions.
+The primary way to customize Kirtzel's built-in icons is to override the existing icon names with your own SVG markup and pass it to the `customSvgIcons` property when initializing the editor.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -25,9 +26,9 @@ The simplest way to customize Kritzel's built-in UI is to register SVG markup un
   repoFiles={['src/app/pages/customization/icons/icons-register.component.ts']}
 />
 
-## Registering Brand-New Icons
+## Registering New Icons
 
-Use a new name for an application-specific action or tool. This demo registers `brand-export` and uses it in custom context-menu entries.
+Of course, you can also register entirely new icons that are specific to your application and reference them in all components that have icon support, such as the `KritzelToolbarItem` or `ContextMenuItem`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -35,11 +36,10 @@ Use a new name for an application-specific action or tool. This demo registers `
   repoFiles={['src/app/pages/customization/icons/icons-register-new.component.ts']}
 />
 
-Use `currentColor` when the SVG should follow the control color. Reference the new key from a `KritzelToolbarItem` or `ContextMenuItem` to display it.
-
 ## API Details
 
 For the full list of related APIs, see the following reference sections.
 
+- [Icons](../api-reference/icons.md)
 - [Editor UI Elements](../api-reference/editor.md#ui-elements)
 - [Tool Management](../api-reference/editor.md#tool-management)

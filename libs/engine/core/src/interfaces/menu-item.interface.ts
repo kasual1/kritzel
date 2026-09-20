@@ -1,7 +1,9 @@
+import { KritzelIconName } from '../classes/registries/icon-registry.class';
+
 export interface IKritzelMenuItem<T = any> {
   id: string;
   label: string;
-  icon?: string;
+  icon?: KritzelIconName;
   iconTooltip?: string;
   color?: string;
   value?: T;

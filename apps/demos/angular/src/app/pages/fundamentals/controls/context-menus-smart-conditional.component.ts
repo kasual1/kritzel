@@ -53,7 +53,7 @@ export class ContextMenusSmartConditionalComponent {
       action: () => {
         this.editor.selectAllObjectsInViewport();
       },
-      icon: 'select-all',
+      icon: 'selectAll',
       group: 'clipboard',
       isDisabled: async () => (await this.editor.getObjectsInViewport()).length === 0,
     },

@@ -1,11 +1,12 @@
 import { KritzelBaseTool } from '../classes/tools/base-tool.class';
+import { KritzelIconName } from '../classes/registries/icon-registry.class';
 import { ShapeType } from '../enums/shape-type.enum';
 import { ThemeAwareColor } from '../constants/color-palette.constants';
 import { KritzelFontRegistration } from './font.interface';
 
 export interface KritzelToolbarSubOption {
   id: string;
-  icon: string;
+  icon: KritzelIconName;
   label: string;
   value: any;
   toolProperty: string;
@@ -14,7 +15,7 @@ export interface KritzelToolbarSubOption {
 export interface KritzelToolbarItem {
   type: 'tool' | 'config' | 'separator';
   tool?: (new (...args: any[]) => KritzelBaseTool) | KritzelBaseTool;
-  icon?: string;
+  icon?: KritzelIconName;
   isDefault?: boolean;
   isDisabled?: boolean | (() => boolean | Promise<boolean>);
   name: string;

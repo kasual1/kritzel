@@ -56,7 +56,7 @@ export class ContextMenusClipboardActionsComponent {
       action: () => {
         this.editor.selectAllObjectsInViewport();
       },
-      icon: 'select-all',
+      icon: 'selectAll',
       group: 'clipboard',
     },
   ];

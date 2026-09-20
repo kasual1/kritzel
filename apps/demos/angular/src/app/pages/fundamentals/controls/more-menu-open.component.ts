@@ -55,7 +55,7 @@ export class MoreMenuOpenComponent {
     {
       id: 'center-content',
       label: 'Center content',
-      icon: 'select-all',
+      icon: 'selectAll',
       action: () => {
         void this.editor()?.centerAllObjects();
       },

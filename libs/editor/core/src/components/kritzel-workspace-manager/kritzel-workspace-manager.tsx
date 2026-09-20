@@ -1,4 +1,4 @@
-﻿import { KritzelWorkspace } from '@kritzel/engine';
+import { KritzelWorkspace } from '@kritzel/engine';
 import { IKritzelMenuItem } from '@kritzel/engine';
 import { KritzelTermKey } from '@kritzel/engine';
 import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen, Method } from '@stencil/core';
@@ -162,7 +162,7 @@ export class KritzelWorkspaceManager {
         return {
           id: ws.id,
           label: ws.name,
-          icon: ws.isPublic ? 'users-round' : undefined,
+          icon: ws.isPublic ? 'usersRound' : undefined,
           iconTooltip: ws.isPublic ? (this.terms['workspace.sharedTooltip'] ?? 'Shared workspace') : undefined,
           value: ws,
           isEditing: this.editingItemId === ws.id,

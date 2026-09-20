@@ -1,4 +1,4 @@
-﻿import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
+import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
 import { KritzelIconRegistry } from '@kritzel/engine';
 import { KritzelToolbarItem } from '@kritzel/engine';
 import { KritzelToolDefinition } from '@kritzel/engine';
@@ -55,6 +55,7 @@ import { KritzelFontRegistry } from '@kritzel/engine';
 import { resolveTextToolAvailableFonts } from '@kritzel/engine';
 import { KritzelContextMenuState } from '@kritzel/engine';
 import { KritzelObjectExportFormat } from '@kritzel/engine';
+import { KritzelSvgIconMap } from '@kritzel/engine';
 
 @Component({
   tag: 'kritzel-editor',
@@ -112,12 +113,12 @@ export class KritzelEditor {
       name: 'shape',
       type: 'tool',
       tool: KritzelShapeTool,
-      icon: 'shape-rectangle',
+      icon: 'shapeRectangle',
       config: DEFAULT_SHAPE_CONFIG,
       subOptions: [
-        { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },
-        { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },
-        { id: 'triangle', icon: 'shape-triangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },
+        { id: 'rectangle', icon: 'shapeRectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },
+        { id: 'ellipse', icon: 'shapeEllipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },
+        { id: 'triangle', icon: 'shapeTriangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },
       ],
     },
     {
@@ -147,7 +148,7 @@ export class KritzelEditor {
     },
     {
       label: 'menu.selectAll',
-      icon: 'select-all',
+      icon: 'selectAll',
       action: () => this.selectAllObjectsInViewport(),
     },
   ];
@@ -180,10 +181,10 @@ export class KritzelEditor {
       icon: 'ordering',
       group: 'other',
       children: [
-        { label: 'menu.bringToFront', icon: 'bring-to-front', action: () => this.engineRef.bringToFront() },
-        { label: 'menu.sendToBack', icon: 'send-to-back', action: () => this.engineRef.sendToBack() },
-        { label: 'menu.moveUp', icon: 'arrow-up-from-dot', action: () => this.engineRef.bringForward() },
-        { label: 'menu.moveDown', icon: 'arrow-down-from-dot', action: () => this.engineRef.sendBackward() },
+        { label: 'menu.bringToFront', icon: 'bringToFront', action: () => this.engineRef.bringToFront() },
+        { label: 'menu.sendToBack', icon: 'sendToBack', action: () => this.engineRef.sendToBack() },
+        { label: 'menu.moveUp', icon: 'arrowUpFromDot', action: () => this.engineRef.bringForward() },
+        { label: 'menu.moveDown', icon: 'arrowDownFromDot', action: () => this.engineRef.sendBackward() },
       ],
     },
     {
@@ -191,12 +192,12 @@ export class KritzelEditor {
       icon: 'align',
       group: 'other',
       children: [
-        { label: 'menu.alignLeft', icon: 'align-start-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
-        { label: 'menu.alignCenterHorizontal', icon: 'align-center-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },
-        { label: 'menu.alignRight', icon: 'align-end-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },
-        { label: 'menu.alignTop', icon: 'align-start-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },
-        { label: 'menu.alignCenterVertical', icon: 'align-center-vertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },
-        { label: 'menu.alignBottom', icon: 'align-end-horizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },
+        { label: 'menu.alignLeft', icon: 'alignStartVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },
+        { label: 'menu.alignCenterHorizontal', icon: 'alignCenterHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },
+        { label: 'menu.alignRight', icon: 'alignEndVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },
+        { label: 'menu.alignTop', icon: 'alignStartHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },
+        { label: 'menu.alignCenterVertical', icon: 'alignCenterVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },
+        { label: 'menu.alignBottom', icon: 'alignEndHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },
       ],
     },
     {
@@ -266,7 +267,7 @@ export class KritzelEditor {
   @Prop() locales?: KritzelLocale[];
   /** The locale used to resolve terms missing from the active locale. */
   @Prop() fallbackLocale: LocaleCode = 'en';
-  @Prop() customSvgIcons: Record<string, string> = {};
+  @Prop() customSvgIcons: KritzelSvgIconMap = {};
   /**
    * Registers fonts for runtime usage (for example custom object rendering).
   * Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts.
@@ -390,7 +391,7 @@ export class KritzelEditor {
   }
 
   @Watch('customSvgIcons')
-  onCustomSvgIconsChange(newValue: Record<string, string> | undefined) {
+  onCustomSvgIconsChange(newValue: KritzelSvgIconMap | undefined) {
     this.registerCustomSvgIcons(newValue);
   }
 
@@ -1537,9 +1538,9 @@ export class KritzelEditor {
     return objects.filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox));
   }
 
-  private lastCustomSvgIcons?: Record<string, string>;
+  private lastCustomSvgIcons?: KritzelSvgIconMap;
 
-  private registerCustomSvgIcons(icons: Record<string, string> | undefined) {
+  private registerCustomSvgIcons(icons: KritzelSvgIconMap | undefined) {
     if (icons === this.lastCustomSvgIcons) {
       return;
     }

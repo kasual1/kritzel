@@ -8,6 +8,8 @@ import { KritzelDebugInfo } from "./debug-info.interface";
 import { LineHandleType } from "../classes/handlers/line-handle.handler";
 import { SnapCandidate, SnapPreviewCandidate } from "./anchor.interface";
 
+import { KritzelIconName } from '../classes/registries/icon-registry.class';
+
 export interface KritzelEngineState {
   activeWorkspace: KritzelWorkspace | null | undefined;
   activeTool: KritzelBaseTool | null;
@@ -66,8 +68,8 @@ export interface KritzelEngineState {
   pointers: Map<number, PointerEvent>;
   workspaces: KritzelWorkspace[];
   cursor: {
-    icon: string;
-    iconActive?: string;
+    icon: KritzelIconName | 'default';
+    iconActive?: KritzelIconName | 'default';
     rotation?: number;
   },
   /** When true, objects are drawn at a fixed visual size regardless of zoom level */

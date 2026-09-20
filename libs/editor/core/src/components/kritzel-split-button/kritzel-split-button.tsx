@@ -1,4 +1,4 @@
-﻿import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
+import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
 import { KritzelDevicesHelper } from '@kritzel/engine';
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/engine';
 
@@ -11,7 +11,7 @@ export class KritzelSplitButton {
   @Element() host!: HTMLElement;
 
   @Prop() buttonIcon: string = 'plus';
-  @Prop() dropdownIcon: string = 'chevron-down';
+  @Prop() dropdownIcon: string = 'chevronDown';
   @Prop() items: IKritzelMenuItem[] = [];
   @Prop() mainButtonDisabled = false;
   @Prop() menuButtonDisabled = false;

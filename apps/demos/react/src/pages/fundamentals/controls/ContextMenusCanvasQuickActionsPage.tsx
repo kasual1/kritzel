@@ -21,7 +21,7 @@ export function ContextMenusCanvasQuickActionsPage() {
       },
       {
         label: "Select All",
-        icon: "select-all",
+        icon: "selectAll",
         action: async () => {
           await editorRef.current?.selectAllObjectsInViewport();
         },

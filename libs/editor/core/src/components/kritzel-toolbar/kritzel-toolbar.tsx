@@ -1,4 +1,4 @@
-﻿import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method, Watch } from '@stencil/core';
+import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method, Watch } from '@stencil/core';
 import { KritzelBrushTool } from '@kritzel/engine';
 import { KritzelLineTool } from '@kritzel/engine';
 import { KritzelShapeTool } from '@kritzel/engine';
@@ -413,7 +413,7 @@ export class KritzelToolbar {
                       data-testid={`tool-${control.name}-dropdown`}
                       tabIndex={isActive ? 0 : -1}
                     >
-                      <kritzel-icon name="chevron-down" size={12}></kritzel-icon>
+                      <kritzel-icon name="chevronDown" size={12}></kritzel-icon>
                     </button>
 
                     <kritzel-tooltip anchorElement={(control as any)._anchorRef} triggerElement={(control as any)._triggerRef}>

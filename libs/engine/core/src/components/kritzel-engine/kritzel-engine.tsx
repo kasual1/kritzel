@@ -3411,7 +3411,7 @@ export class KritzelEngine {
                     }}
                   >
                     <kritzel-icon
-                      name={object.loadState === 'error' ? 'image-off' : 'image'}
+                      name={object.loadState === 'error' ? 'imageOff' : 'image'}
                       size={Math.max(16, Math.min(object.totalWidth, object.totalHeight) * 0.3)}
                       style={{
                         color: KritzelColorHelper.resolveThemeColor({ light: '#9ca3af', dark: '#6b7280' }, currentTheme),

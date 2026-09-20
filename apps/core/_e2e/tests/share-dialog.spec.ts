@@ -26,7 +26,7 @@ async function isWorkspaceMarkedShared(page: import('@playwright/test').Page, wo
     const items = Array.isArray(splitButton?.items) ? splitButton.items : [];
     const workspaceItem = items.find(item => item.id === id);
 
-    return workspaceItem?.icon === 'users-round';
+    return workspaceItem?.icon === 'usersRound';
   }, workspaceId);
 }
 

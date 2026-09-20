@@ -1,4 +1,4 @@
-﻿import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@stencil/core';
+import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@stencil/core';
 import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '@kritzel/engine';
 import { KritzelToolConfigHelper } from '@kritzel/engine';
 import { KritzelTextTool } from '@kritzel/engine';
@@ -395,7 +395,7 @@ export class KritzelToolConfig {
                 onClick={this.handleToggleExpand}
                 title={this.isExpanded ? (this.terms['toolConfig.collapse'] ?? 'Collapse') : (this.terms['toolConfig.expand'] ?? 'Expand')}
               >
-                <kritzel-icon name={this.isExpanded ? 'chevron-up' : 'chevron-down'}></kritzel-icon>
+                <kritzel-icon name={this.isExpanded ? 'chevronUp' : 'chevronDown'}></kritzel-icon>
               </button>
             </div>
           )}

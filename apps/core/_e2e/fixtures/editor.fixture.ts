@@ -17,7 +17,7 @@ const TOOL_ICON_MAP: Record<KritzelToolName, string> = {
   line: 'arrow',
   eraser: 'eraser',
   text: 'type',
-  shape: 'shape-rectangle',
+  shape: 'shapeRectangle',
   image: 'image',
 };
 

@@ -91,7 +91,7 @@ export class ToolsConfigComponent {
       name: 'shape',
       type: 'tool',
       tool: KritzelShapeTool,
-      icon: 'shape-ellipse',
+      icon: 'shapeEllipse',
       config: {
         shapeType: ShapeType.Ellipse,
         fillColor: { light: '#fee2e2', dark: '#4c1d1d' },
@@ -109,8 +109,8 @@ export class ToolsConfigComponent {
         sizes: [2, 4, 8],
       },
       subOptions: [
-        { id: 'ellipse', icon: 'shape-ellipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },
-        { id: 'rectangle', icon: 'shape-rectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },
+        { id: 'ellipse', icon: 'shapeEllipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },
+        { id: 'rectangle', icon: 'shapeRectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },
       ],
     },
     {
