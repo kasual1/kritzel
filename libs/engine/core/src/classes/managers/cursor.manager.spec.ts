@@ -163,7 +163,7 @@ describe('KritzelCursorManager', () => {
 
   describe('resetToDefault', () => {
     it('should reset cursor state to default', () => {
-      mockState.cursor = { icon: 'hand', iconActive: 'hand-grab', rotation: 45 };
+      mockState.cursor = { icon: 'hand', iconActive: 'handGrab', rotation: 45 };
 
       manager.resetToDefault();
 
@@ -203,7 +203,7 @@ describe('KritzelCursorManager', () => {
       expect(mockState.cursor).toEqual({ icon: 'default', iconActive: 'default' });
     });
 
-    it('should set move-vertical cursor when hovering resize handle overlay', () => {
+    it('should set moveVertical cursor when hovering resize handle overlay', () => {
       const resizeHandle = createMockElementWithClasses('resize-handle-overlay', 'top-left');
       const shadowRoot = createMockShadowRoot([resizeHandle]);
       manager.setShadowRoot(shadowRoot);
@@ -211,7 +211,7 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'move-vertical', rotation: -45 });
+      expect(mockState.cursor).toEqual({ icon: 'moveVertical', rotation: -45 });
     });
 
     it('should apply rotation offset of -45 for top-left handle', () => {
@@ -222,7 +222,7 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'move-vertical', rotation: 30 + (-45) });
+      expect(mockState.cursor).toEqual({ icon: 'moveVertical', rotation: 30 + (-45) });
     });
 
     it('should apply rotation offset of -45 for bottom-right handle', () => {
@@ -233,7 +233,7 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'move-vertical', rotation: -45 });
+      expect(mockState.cursor).toEqual({ icon: 'moveVertical', rotation: -45 });
     });
 
     it('should apply rotation offset of 45 for top-right/bottom-left handles', () => {
@@ -244,7 +244,7 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'move-vertical', rotation: 10 + 45 });
+      expect(mockState.cursor).toEqual({ icon: 'moveVertical', rotation: 10 + 45 });
     });
 
     it('should default to 0 rotation when selectionGroup is null', () => {
@@ -255,7 +255,7 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'move-vertical', rotation: 45 });
+      expect(mockState.cursor).toEqual({ icon: 'moveVertical', rotation: 45 });
     });
 
     it('should set hand cursor when hovering rotation handle overlay', () => {
@@ -265,7 +265,7 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'hand', iconActive: 'hand-grab' });
+      expect(mockState.cursor).toEqual({ icon: 'hand', iconActive: 'handGrab' });
     });
 
     it('should set hand cursor when hovering line handle overlay', () => {
@@ -275,11 +275,11 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'hand', iconActive: 'hand-grab' });
+      expect(mockState.cursor).toEqual({ icon: 'hand', iconActive: 'handGrab' });
     });
 
     it('should reset cursor when not hovering any handle', () => {
-      mockState.cursor = { icon: 'hand', iconActive: 'hand-grab' };
+      mockState.cursor = { icon: 'hand', iconActive: 'handGrab' };
       const plainElement = createMockElementWithClasses('some-other-element');
       const shadowRoot = createMockShadowRoot([plainElement]);
       manager.setShadowRoot(shadowRoot);
@@ -298,7 +298,7 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'move-vertical', rotation: -45 });
+      expect(mockState.cursor).toEqual({ icon: 'moveVertical', rotation: -45 });
     });
 
     it('should prioritize rotation handle over line handle', () => {
@@ -309,7 +309,7 @@ describe('KritzelCursorManager', () => {
 
       manager.updateHoverState(createMockPointerEvent());
 
-      expect(mockState.cursor).toEqual({ icon: 'hand', iconActive: 'hand-grab' });
+      expect(mockState.cursor).toEqual({ icon: 'hand', iconActive: 'handGrab' });
     });
 
     it('should use clientX and clientY from the pointer event', () => {
@@ -344,13 +344,13 @@ describe('KritzelCursorManager', () => {
     it('should use active icon when pointer is down', () => {
       const element = createMockElement();
       manager.setTargetElement(element);
-      mockState.cursor = { icon: 'hand', iconActive: 'hand-grab' };
+      mockState.cursor = { icon: 'hand', iconActive: 'handGrab' };
       mockState.pointers.set(1, {});
 
       manager.applyCursor();
 
       expect(KritzelCursorHelper.getCursor).toHaveBeenCalledWith({
-        iconName: 'hand-grab',
+        iconName: 'handGrab',
         rotation: undefined,
       });
     });
@@ -358,7 +358,7 @@ describe('KritzelCursorManager', () => {
     it('should use normal icon when pointer is not down', () => {
       const element = createMockElement();
       manager.setTargetElement(element);
-      mockState.cursor = { icon: 'hand', iconActive: 'hand-grab' };
+      mockState.cursor = { icon: 'hand', iconActive: 'handGrab' };
 
       manager.applyCursor();
 
@@ -371,12 +371,12 @@ describe('KritzelCursorManager', () => {
     it('should pass rotation to getCursor', () => {
       const element = createMockElement();
       manager.setTargetElement(element);
-      mockState.cursor = { icon: 'move-vertical', rotation: 45 };
+      mockState.cursor = { icon: 'moveVertical', rotation: 45 };
 
       manager.applyCursor();
 
       expect(KritzelCursorHelper.getCursor).toHaveBeenCalledWith({
-        iconName: 'move-vertical',
+        iconName: 'moveVertical',
         rotation: 45,
       });
     });

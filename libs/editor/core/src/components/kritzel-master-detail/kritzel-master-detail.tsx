@@ -1,4 +1,4 @@
-﻿import { Component, Element, Event, EventEmitter, Host, h, Prop, State, Watch } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, h, Prop, State, Watch } from '@stencil/core';
 import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '@kritzel/engine';
 
 @Component({
@@ -169,7 +169,7 @@ export class KritzelMasterDetail {
             aria-labelledby={selectedTabId}
           >
             <button class="mobile-back-button" onClick={this.handleBackClick} aria-label="Back to menu">
-              <kritzel-icon name="chevron-left" size={20} class="mobile-back-icon"></kritzel-icon>
+              <kritzel-icon name="chevronLeft" size={20} class="mobile-back-icon"></kritzel-icon>
               Back
             </button>
             <slot></slot>

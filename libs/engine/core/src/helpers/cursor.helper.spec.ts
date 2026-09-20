@@ -31,12 +31,12 @@ describe('KritzelCursorHelper', () => {
       spy.mockRestore();
     });
 
-    it('should look up "mouse-pointer" when iconName is "default"', () => {
+    it('should look up "mousePointer" when iconName is "default"', () => {
       mockedGet.mockReturnValue(FAKE_SVG);
 
       KritzelCursorHelper.getCursor({ iconName: 'default' });
 
-      expect(mockedGet).toHaveBeenCalledWith('mouse-pointer');
+      expect(mockedGet).toHaveBeenCalledWith('mousePointer');
     });
 
     it('should look up the provided iconName directly', () => {

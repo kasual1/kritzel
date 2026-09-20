@@ -1,3 +1,5 @@
+import { KritzelIconName } from '../classes/registries/icon-registry.class';
+
 /**
  * Represents an authentication provider button displayed in the login dialog.
  */
@@ -9,7 +11,7 @@ export interface KritzelLoginProvider {
   label: string;
 
   /** Optional icon name registered in KritzelIconRegistry via customSvgIcons */
-  icon?: string;
+  icon?: KritzelIconName;
 }
 
 /**

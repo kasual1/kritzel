@@ -1,5 +1,5 @@
 import { Component, h, Prop, Host, forceUpdate } from '@stencil/core';
-import { KritzelIconRegistry } from '../../classes/registries/icon-registry.class';
+import { KritzelIconName, KritzelIconRegistry } from '../../classes/registries/icon-registry.class';
 
 @Component({
   tag: 'kritzel-icon',
@@ -7,7 +7,7 @@ import { KritzelIconRegistry } from '../../classes/registries/icon-registry.clas
   shadow: true,
 })
 export class KritzelIcon {
-  @Prop() name: string;
+  @Prop() name: KritzelIconName;
   @Prop() label?: string;
   @Prop() size: number = 24;
 

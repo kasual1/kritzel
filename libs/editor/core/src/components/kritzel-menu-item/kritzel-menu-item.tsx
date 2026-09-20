@@ -1,4 +1,4 @@
-﻿import { Component, Host, Prop, h, Element, State, Watch, Event, EventEmitter } from '@stencil/core';
+import { Component, Host, Prop, h, Element, State, Watch, Event, EventEmitter } from '@stencil/core';
 import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/engine';
 import { KritzelDevicesHelper } from '@kritzel/engine';
 
@@ -113,7 +113,7 @@ export class KritzelMenuItem {
         {this.item.children &&
           this.item.children.length > 0 && [
             <button id="child-menu-toggle" class="action-button" onClick={this.handleMenuToggle} disabled={this.item.isDisabled}>
-              <kritzel-icon name="ellipsis-vertical" size={16}></kritzel-icon>
+              <kritzel-icon name="ellipsisVertical" size={16}></kritzel-icon>
             </button>,
             <kritzel-portal anchor={this.item.childMenuAnchor} offsetY={4} onClose={this.handleMenuClose}>
               {h(childMenuTag, {

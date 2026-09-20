@@ -7,13 +7,13 @@
 
 ## Properties
 
-| Property             | Attribute              | Description | Type                      | Default          |
-| -------------------- | ---------------------- | ----------- | ------------------------- | ---------------- |
-| `buttonIcon`         | `button-icon`          |             | `string`                  | `'plus'`         |
-| `dropdownIcon`       | `dropdown-icon`        |             | `string`                  | `'chevron-down'` |
-| `items`              | --                     |             | `IKritzelMenuItem<any>[]` | `[]`             |
-| `mainButtonDisabled` | `main-button-disabled` |             | `boolean`                 | `false`          |
-| `menuButtonDisabled` | `menu-button-disabled` |             | `boolean`                 | `false`          |
+| Property             | Attribute              | Description | Type                      | Default         |
+| -------------------- | ---------------------- | ----------- | ------------------------- | --------------- |
+| `buttonIcon`         | `button-icon`          |             | `string`                  | `'plus'`        |
+| `dropdownIcon`       | `dropdown-icon`        |             | `string`                  | `'chevronDown'` |
+| `items`              | --                     |             | `IKritzelMenuItem<any>[]` | `[]`            |
+| `mainButtonDisabled` | `main-button-disabled` |             | `boolean`                 | `false`         |
+| `menuButtonDisabled` | `menu-button-disabled` |             | `boolean`                 | `false`         |
 
 
 ## Events

@@ -1,4 +1,4 @@
-﻿import { Component, Host, h, Prop, Event, EventEmitter, State, Watch, Listen, Element } from '@stencil/core';
+import { Component, Host, h, Prop, Event, EventEmitter, State, Watch, Listen, Element } from '@stencil/core';
 import { ContextMenuItem } from '@kritzel/engine';
 import { KritzelBaseObject } from '@kritzel/engine';
 
@@ -293,7 +293,7 @@ export class KritzelContextMenu {
           >
             {item.icon && <kritzel-icon name={item.icon} size={16}></kritzel-icon>}
             <span class="label">{item.label}</span>
-            {hasChildren && <kritzel-icon name="chevron-right" size={12} class="submenu-arrow"></kritzel-icon>}
+            {hasChildren && <kritzel-icon name="chevronRight" size={12} class="submenu-arrow"></kritzel-icon>}
           </button>
           {hasChildren && submenuOpen && this.renderSubmenu(processedChildren!, path)}
         </div>,

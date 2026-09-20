@@ -47,7 +47,7 @@ describe('KritzelIconRegistry', () => {
       expect(KritzelIconRegistry.has('pen')).toBe(true);
       expect(KritzelIconRegistry.has('eraser')).toBe(true);
       expect(KritzelIconRegistry.has('pointer')).toBe(true);
-      expect(KritzelIconRegistry.has('mouse-pointer')).toBe(true);
+      expect(KritzelIconRegistry.has('mousePointer')).toBe(true);
     });
 
     it('should return SVG content for registered built-in icons', () => {

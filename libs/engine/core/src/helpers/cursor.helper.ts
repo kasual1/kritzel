@@ -1,4 +1,4 @@
-import { KritzelIconRegistry } from '../classes/registries/icon-registry.class';
+import { KritzelIconName, KritzelIconRegistry } from '../classes/registries/icon-registry.class';
 
 export class KritzelCursorHelper {
   private static _pointerCursor: string | null = null;
@@ -20,14 +20,14 @@ export class KritzelCursorHelper {
    */
   static getCursor(
     options: {
-      iconName: string;
+      iconName: KritzelIconName | 'default';
       rotation?: number;
       color?: string;
       size?: number;
       hotspot?: { x: number; y: number };
     }
   ): string {
-    const iconName = options.iconName === 'default' ? 'mouse-pointer' : options.iconName;
+    const iconName = options.iconName === 'default' ? 'mousePointer' : options.iconName;
     const iconSvg = KritzelIconRegistry.get(iconName);
     if (!iconSvg) {
       console.warn(`Icon "${iconName}" not found in registry.`);
@@ -37,7 +37,7 @@ export class KritzelCursorHelper {
     const size = options.size || 24;
     const rotation = options.rotation || 0;
     const color = options.color || 'black';
-    // Default cursor (mouse-pointer) has hotspot at (4, 4), others at center
+    // Default cursor (mousePointer) has hotspot at (4, 4), others at center
     const hotspot = options.hotspot || (options.iconName === 'default' ? { x: 4, y: 4 } : { x: size / 2, y: size / 2 });
 
     // Modify the SVG string to set size and color

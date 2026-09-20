@@ -33,7 +33,7 @@ export class KritzelBackToContent {
           onClick={this.handleClick}
           aria-label={this.text}
         >
-          <kritzel-icon name="chevrons-left"></kritzel-icon>
+          <kritzel-icon name="chevronsLeft"></kritzel-icon>
         </button>
       </Host>
     );

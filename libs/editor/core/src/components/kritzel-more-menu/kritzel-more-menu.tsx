@@ -1,4 +1,4 @@
-﻿import { Component, Host, h, Prop, State, Element, Event, EventEmitter, Watch, Method } from '@stencil/core';
+import { Component, Host, h, Prop, State, Element, Event, EventEmitter, Watch, Method } from '@stencil/core';
 import { KritzelDevicesHelper } from '@kritzel/engine';
 import { IKritzelMenuItem } from '@kritzel/engine';
 import { KritzelTermKey } from '@kritzel/engine';
@@ -26,7 +26,7 @@ export class KritzelMoreMenu {
   /**
    * The icon to display on the button
    */
-  @Prop() icon: string = 'ellipsis-vertical';
+  @Prop() icon: string = 'ellipsisVertical';
 
   /**
    * The size of the icon

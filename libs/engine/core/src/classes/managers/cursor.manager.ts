@@ -95,21 +95,21 @@ export class KritzelCursorManager {
       const isBottomRight = resizeHandleOverlay.classList.contains('bottom-right');
       const rotationOffset = (isTopLeft || isBottomRight) ? -45 : 45;
 
-      this._core.store.state.cursor = { icon: 'move-vertical', rotation: rotationDegrees + rotationOffset };
+      this._core.store.state.cursor = { icon: 'moveVertical', rotation: rotationDegrees + rotationOffset };
       return;
     }
 
     // Check for rotation handle overlay
     const rotationHandleOverlay = elementsAtPoint.find(el => el.classList.contains('rotation-handle-overlay'));
     if (rotationHandleOverlay) {
-      this._core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' };
+      this._core.store.state.cursor = { icon: 'hand', iconActive: 'handGrab' };
       return;
     }
 
     // Check for line handle overlays (selection line)
     const lineHandleOverlay = elementsAtPoint.find(el => el.classList.contains('selection-line-handle-overlay'));
     if (lineHandleOverlay) {
-      this._core.store.state.cursor = { icon: 'hand', iconActive: 'hand-grab' };
+      this._core.store.state.cursor = { icon: 'hand', iconActive: 'handGrab' };
       return;
     }
 

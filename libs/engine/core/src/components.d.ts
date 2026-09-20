@@ -33,6 +33,7 @@ import { KritzelLine } from "./classes/objects/line.class";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
+import { KritzelIconName } from "./classes/registries/icon-registry.class";
 export { KritzelCore } from "./classes/core/core.class";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
@@ -61,6 +62,7 @@ export { KritzelLine } from "./classes/objects/line.class";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
+export { KritzelIconName } from "./classes/registries/icon-registry.class";
 export namespace Components {
     interface KritzelAwarenessCursors {
         "core": KritzelCore;
@@ -609,7 +611,7 @@ export namespace Components {
     }
     interface KritzelIcon {
         "label"?: string;
-        "name": string;
+        "name": KritzelIconName;
         /**
           * @default 24
          */
@@ -914,7 +916,7 @@ declare namespace LocalJSX {
     }
     interface KritzelIcon {
         "label"?: string;
-        "name"?: string;
+        "name"?: KritzelIconName;
         /**
           * @default 24
          */
@@ -960,7 +962,7 @@ declare namespace LocalJSX {
         "isZoomingEnabled": boolean;
     }
     interface KritzelIconAttributes {
-        "name": string;
+        "name": KritzelIconName;
         "label": string;
         "size": number;
     }
