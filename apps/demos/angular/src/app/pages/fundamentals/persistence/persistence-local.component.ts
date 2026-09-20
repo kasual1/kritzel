@@ -1,6 +1,7 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, ViewChild } from '@angular/core';
 import {
   ActiveWorkspaceChangeEvent,
+  EditorIsReadyEvent,
   KritzelEditor,
   IndexedDBSyncProvider,
   KritzelSyncConfig,
@@ -19,8 +20,6 @@ import { createSeedObjects } from '../../../const/seed-objects';
       <kritzel-editor
         editorId="persistence-local"
         [syncConfig]="syncConfig"
-        [workspaces]="workspaces()"
-        [activeWorkspaceId]="activeWorkspaceId()"
         [theme]="'light'"
         [themes]="themes"
         [loginConfig]="undefined"
@@ -28,7 +27,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
+        (isReady)="onReady($event)"
       ></kritzel-editor>
     </div>
   `,
@@ -84,6 +83,8 @@ import { createSeedObjects } from '../../../const/seed-objects';
   ],
 })
 export class PersistenceLocalComponent {
+  @ViewChild(KritzelEditor) editor!: KritzelEditor;
+
   themes = [angularThemeLight, angularThemeDark];
 
   syncConfig: KritzelSyncConfig = {
@@ -91,16 +92,14 @@ export class PersistenceLocalComponent {
     appStateId: 'persistence-local',
   };
 
-  workspaces = signal<KritzelWorkspace[]>([
-    new KritzelWorkspace({
-      id: 'persistence-local-board',
-      name: 'Local Board',
-      objects: createSeedObjects(),
-    }),
-  ]);
-  activeWorkspaceId = signal<string | undefined>('persistence-local-board');
 
-  onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
-    this.activeWorkspaceId.set(event.detail.id);
+  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
+    // Only seed once: objects restored from IndexedDB must not be duplicated by fresh-id seed objects on reload.
+    const existing = await this.editor.getAllObjects();
+    if (existing.length > 0) {
+      return;
+    }
+
+    await this.editor.addObjects(createSeedObjects());
   }
 }
