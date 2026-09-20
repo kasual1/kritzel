@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, KritzelTheme } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { KritzelEditor, KritzelTheme, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -26,11 +26,12 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
           editorId="theming-listen"
           [theme]="activeTheme()"
           [themes]="themes"
+          [workspaces]="workspaces()"
           [isPanningEnabled]="false"
           [isZoomingEnabled]="false"
           [isMoreMenuVisible]="true"
           [isWorkspaceManagerVisible]="true"
-          (isReady)="onReady($event)"
+          (isReady)="onReady()"
           (themeChange)="onThemeChange($event)"
         ></kritzel-editor>
       </div>
@@ -84,18 +85,14 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
   `],
 })
 export class ThemingListenComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes: KritzelTheme[] = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   activeTheme = signal<string>('light');
   themeHistory = signal<string[]>([]);
 
-  async onReady(_event: CustomEvent) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-
+  onReady() {
     this.applyTheme('light');
   }
 

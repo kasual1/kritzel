@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
-import { KritzelEditor } from '@kritzel/angular-editor';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -19,6 +19,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="more-menu-open"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [moreMenuItems]="moreMenuItems"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
@@ -39,6 +40,8 @@ export class MoreMenuOpenComponent {
   isMoreMenuVisible = signal(true);
 
   themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   moreMenuItems = [
     {
@@ -63,10 +66,6 @@ export class MoreMenuOpenComponent {
   ];
 
   async onReady(): Promise<void> {
-    for (const obj of createSeedObjects()) {
-      await this.editor()?.addObject(obj);
-    }
-
     await this.editor()?.openMoreMenu();
   }
 

@@ -6,8 +6,8 @@ import {
 } from '@angular/core';
 import {
   KritzelEditor,
-  EditorIsReadyEvent,
   KritzelBaseObject,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -28,11 +28,11 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       editorId="objects-remove"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: [
@@ -54,15 +54,11 @@ export class ObjectsRemoveComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  objects = signal<KritzelBaseObject[]>([]);
+  private readonly seedObjects = createSeedObjects();
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
+  workspaces = signal([new KritzelWorkspace({ objects: this.seedObjects })]);
 
-    this.objects.set(await this.editor.getAllObjects());
-  }
+  objects = signal<KritzelBaseObject[]>(this.seedObjects);
 
   async removeLastObject() {
     const all = await this.editor.getAllObjects();

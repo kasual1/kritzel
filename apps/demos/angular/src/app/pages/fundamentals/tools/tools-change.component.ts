@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, KritzelSyncConfig } from '@kritzel/angular-editor';
+import { KritzelEditor, KritzelSyncConfig, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -26,16 +26,13 @@ type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text';
       editorId="tools-change"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [isToolbarVisible]="false"
-      (isReady)="onReady($event)"
     ></kritzel-editor>
-    <div class="status-bar">
-      Active tool: <strong>{{ activeTool() }}</strong>
-    </div>
   `,
   styles: [`
     :host { display: flex; flex-direction: column; height: 100%; font-family: Roboto, sans-serif; }
@@ -48,6 +45,8 @@ export class ToolsChangeComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   activeTool = signal<ToolName>('select');
 
   tools: { name: ToolName; label: string }[] = [
@@ -58,12 +57,6 @@ export class ToolsChangeComponent {
     { name: 'shape', label: 'Shape' },
     { name: 'text', label: 'Text' },
   ];
-
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 
   async setTool(name: ToolName) {
     this.activeTool.set(name);

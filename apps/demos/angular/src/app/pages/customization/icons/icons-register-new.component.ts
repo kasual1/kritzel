@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
   ContextMenuItem,
   KritzelBrushTool,
   KritzelEditor,
   KritzelSelectionTool,
   KritzelToolbarItem,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -19,6 +20,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="icons-register-new"
       [customSvgIcons]="customSvgIcons"
       [toolbarItems]="toolbarItems"
+      [workspaces]="workspaces()"
       [globalContextMenuItems]="globalItems"
       [theme]="'light'"
       [themes]="themes"
@@ -46,6 +48,8 @@ export class IconsRegisterNewComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
   
   customSvgIcons = {
     alien:
@@ -89,9 +93,6 @@ export class IconsRegisterNewComponent {
   ];
 
   async onReady() {
-    for (const object of createSeedObjects()) {
-      await this.editor.addObject(object);
-    }
     await this.editor.openContextMenu({ x: -50, y: -50 });
   }
 }

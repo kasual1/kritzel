@@ -13,6 +13,7 @@ import {
   KritzelBaseObject,
   KritzelEditor,
   KritzelSyncConfig,
+  KritzelWorkspace,
   ShapeType,
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
@@ -35,6 +36,7 @@ import { InfoPanelComponent } from '../../components/info-panel.component';
           [theme]="'light'"
           [themes]="themes"
           [syncConfig]="syncConfig"
+          [workspaces]="workspaces()"
           [isPanningEnabled]="false"
           [isZoomingEnabled]="false"
           [isMoreMenuVisible]="false"
@@ -590,6 +592,8 @@ export class ObjectExplorerComponent implements OnDestroy {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   syncConfig: KritzelSyncConfig = {
     providers: [],
   };
@@ -632,10 +636,6 @@ export class ObjectExplorerComponent implements OnDestroy {
   });
 
   async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      await this.seedObjects();
-    }
     const all = await this.editor.getAllObjects();
     this.allObjects.set([...all]);
     await this.applyTypeOpacityFilter();
@@ -920,9 +920,4 @@ export class ObjectExplorerComponent implements OnDestroy {
     return fallback;
   }
 
-  private async seedObjects() {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 }

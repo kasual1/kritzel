@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
-import { KritzelEditor } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -19,10 +19,10 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="zoom-panel-toggle"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isZoomPanelVisible]="isZoomPanelVisible()"
-      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: `
@@ -33,17 +33,11 @@ import { createSeedObjects } from '../../../const/seed-objects';
   `,
 })
 export class ZoomPanelToggleComponent {
-  editor = viewChild(KritzelEditor);
-
   isZoomPanelVisible = signal(true);
 
   themes = [angularThemeLight, angularThemeDark];
 
-  async onReady(): Promise<void> {
-    for (const obj of createSeedObjects()) {
-      await this.editor()?.addObject(obj);
-    }
-  }
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   setZoomPanelVisible(event: Event): void {
     this.isZoomPanelVisible.set((event.target as HTMLInputElement).checked);

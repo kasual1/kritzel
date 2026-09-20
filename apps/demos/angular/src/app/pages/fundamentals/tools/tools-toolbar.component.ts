@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
   DEFAULT_BRUSH_CONFIG,
   KritzelBrushTool,
@@ -7,6 +7,7 @@ import {
   KritzelSyncConfig,
   KritzelTextTool,
   KritzelToolbarItem,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -21,12 +22,12 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="tools-toolbar"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [toolbarItems]="toolbarItems"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: `
@@ -37,9 +38,9 @@ import { createSeedObjects } from '../../../const/seed-objects';
   `,
 })
 export class ToolsToolbarComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   toolbarItems: KritzelToolbarItem[] = [
     {
@@ -67,9 +68,4 @@ export class ToolsToolbarComponent {
     }
   ];
 
-  async onReady() {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 }

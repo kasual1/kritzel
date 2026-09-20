@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent, KritzelLocale, LocaleCode } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { KritzelEditor, KritzelLocale, KritzelWorkspace, LocaleCode } from '@kritzel/angular-editor';
 import { createSeedObjects } from '../../../const/seed-objects';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -42,13 +42,13 @@ const spanishLocale: KritzelLocale = {
         editorId="localization-custom"
         [locales]="customLocales"
         [locale]="activeLocale()"
+        [workspaces]="workspaces()"
         [theme]="'light'"
         [themes]="themes"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="true"
         [isWorkspaceManagerVisible]="true"
-        (isReady)="onReady($event)"
       ></kritzel-editor>
     </div>
   `,
@@ -59,19 +59,13 @@ const spanishLocale: KritzelLocale = {
   `],
 })
 export class LocalizationCustomComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
   
   customLocales: KritzelLocale[] = [spanishLocale];
   
   activeLocale = signal<LocaleCode>('es');
-
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
 
   setLocale(locale: LocaleCode) {
     this.activeLocale.set(locale);

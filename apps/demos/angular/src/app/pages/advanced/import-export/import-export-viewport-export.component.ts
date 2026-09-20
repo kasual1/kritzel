@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, viewChild } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent } from '@kritzel/angular-editor';
+import { Component, ChangeDetectionStrategy, signal, viewChild } from '@angular/core';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -19,11 +19,11 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         editorId="import-export-viewport-export"
         [theme]="'light'"
         [themes]="themes"
+        [workspaces]="workspaces()"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="onReady($event)"
       ></kritzel-editor>
     </div>
   `,
@@ -47,11 +47,7 @@ export class ImportExportViewportExportComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>): Promise<void> {
-    for (const obj of createSeedObjects()) {
-      await this.editor()?.addObject(obj);
-    }
-  }
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   async exportAsPng(): Promise<void> {
     await this.editor()?.exportViewportAsPng();

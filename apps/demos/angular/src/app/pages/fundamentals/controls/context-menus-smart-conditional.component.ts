@@ -1,5 +1,10 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEditor, ContextMenuItem, KritzelSyncConfig, EditorIsReadyEvent } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import {
+  ContextMenuItem,
+  KritzelBaseObject,
+  KritzelEditor,
+  KritzelWorkspace,
+} from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -14,13 +19,14 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="custom-context-menu-smart-conditional"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [globalContextMenuItems]="globalItems"
       [objectContextMenuItems]="objectItems"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onIsReady($event)"
+      (objectsChange)="onObjectsChange($event)"
     ></kritzel-editor>
   `,
   styles: `
@@ -35,9 +41,8 @@ export class ContextMenusSmartConditionalComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = {
-    providers: []
-  };
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+  private hasOpenedContextMenu = false;
 
   globalItems: ContextMenuItem[] = [
     {
@@ -86,20 +91,17 @@ export class ContextMenusSmartConditionalComponent {
     },
   ];
 
-  async onIsReady(_event: CustomEvent<EditorIsReadyEvent>) {
-     for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
+  async onObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
+    if (this.hasOpenedContextMenu || event.detail.length === 0) return;
 
+    this.hasOpenedContextMenu = true;
     await this.editor.selectAllObjectsInViewport();
-
-    const selected = await this.editor.getSelectedObjects();
+    const target = event.detail[0];
 
     await this.editor.openContextMenu({
-      x: selected[0].translateX + 50,
-      y: selected[0].translateY + 50,
-      objectId: selected[0].id,
+      x: target.translateX + 50,
+      y: target.translateY + 50,
+      objectId: target.id,
     });
   }
-
 }

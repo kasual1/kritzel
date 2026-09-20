@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
   KritzelEditor,
-  EditorIsReadyEvent,
   KritzelBaseObject,
-  KritzelSyncConfig,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -26,11 +25,11 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       editorId="viewport-center"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: [`
@@ -43,16 +42,11 @@ export class ViewportCenterComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  
+  private readonly seedObjects = createSeedObjects();
 
-  objects = signal<KritzelBaseObject[]>([]);
+  workspaces = signal([new KritzelWorkspace({ objects: this.seedObjects })]);
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-    this.objects.set(await this.editor.getAllObjects());
-  }
+  objects = signal<KritzelBaseObject[]>(this.seedObjects);
 
   async centerOn(index: number) {
     const all = this.objects();

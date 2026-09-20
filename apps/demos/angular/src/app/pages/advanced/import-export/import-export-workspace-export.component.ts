@@ -21,7 +21,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
           editorId="import-export-workspace-export"
           [theme]="'light'"
           [themes]="themes"
-          [workspaces]="workspaces"
+          [workspaces]="workspaces()"
           [isPanningEnabled]="false"
           [isZoomingEnabled]="false"
           [isMoreMenuVisible]="false"
@@ -74,13 +74,13 @@ export class ImportExportWorkspaceExportComponent {
 
   jsonPreview = signal('Click "Preview as JSON" to see the exported workspace.');
   themes = [angularThemeLight, angularThemeDark];
-  workspaces = [
+  workspaces = signal([
     new KritzelWorkspace({
       id: 'workspace-export',
       name: 'Workspace Export',
       objects: createSeedObjects(),
     }),
-  ];
+  ]);
 
   async previewJson(): Promise<void> {
     const json = await this.editor()?.exportAsJson();

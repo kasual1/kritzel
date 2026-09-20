@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, viewChild } from '@angular/core';
-import { KritzelEditor } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -17,6 +17,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="import-dialog"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isToolbarVisible]="false"
@@ -24,7 +25,6 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isWorkspaceManagerVisible]="false"
       [isMoreMenuVisible]="false"
       [isZoomPanelVisible]="false"
-      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: `
@@ -37,11 +37,7 @@ export class ImportDialogComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  async onReady(): Promise<void> {
-    for (const object of createSeedObjects()) {
-      await this.editor()?.addObject(object);
-    }
-  }
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   async openDialog(): Promise<void> {
     await this.editor()?.openImportDialog();

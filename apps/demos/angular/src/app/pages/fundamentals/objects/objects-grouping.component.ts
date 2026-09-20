@@ -7,6 +7,7 @@ import {
 import {
   KritzelEditor,
   KritzelBaseObject,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -33,6 +34,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
         editorId="objects-grouping"
         [theme]="'light'"
         [themes]="themes"
+        [workspaces]="workspaces()"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
@@ -100,13 +102,11 @@ export class ObjectsGroupingComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   objects = signal<KritzelBaseObject[]>([]);
 
   async onReady() {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-
     await this.refreshObjects();
   }
 

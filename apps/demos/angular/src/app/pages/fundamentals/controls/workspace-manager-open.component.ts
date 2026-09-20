@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
-import { KritzelEditor, KritzelSyncConfig, InMemorySyncProvider } from '@kritzel/angular-editor';
+import { KritzelEditor, KritzelSyncConfig, KritzelWorkspace, InMemorySyncProvider } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -19,6 +19,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="workspace-manager-open"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [syncConfig]="syncConfig"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
@@ -40,15 +41,13 @@ export class WorkspaceManagerOpenComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   syncConfig: KritzelSyncConfig = {
     providers: [InMemorySyncProvider],
   };
 
   async onReady(): Promise<void> {
-    for (const obj of createSeedObjects()) {
-      await this.editor()?.addObject(obj);
-    }
-
     await this.editor()?.openWorkspaceManagerMenu();
   }
 

@@ -3,6 +3,7 @@ import {
   KritzelEditor,
   EditorIsReadyEvent,
   KritzelBaseObject,
+  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
@@ -32,6 +33,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
         editorId="objects-filter"
         [theme]="'light'"
         [themes]="themes"
+        [workspaces]="workspaces()"
         [isPanningEnabled]="false"
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
@@ -70,15 +72,14 @@ export class ObjectsFilterComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   results = signal<KritzelBaseObject[]>([]);
 
   async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      for (const obj of createSeedObjects()) {
-        await this.editor.addObject(obj);
-        await this.editor.updateObject(obj, { opacity: 0.5 });
-      }
+    const objects = await this.editor.getAllObjects();
+    for (const object of objects) {
+      await this.editor.updateObject(object, { opacity: 0.5 });
     }
   }
 

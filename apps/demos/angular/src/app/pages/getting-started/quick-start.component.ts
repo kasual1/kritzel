@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, ViewChild } from '@angular/core';
-import { EditorIsReadyEvent, KritzelEditor } from '@kritzel/angular-editor';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { createSeedObjects } from '../../const/seed-objects';
 
@@ -12,11 +12,11 @@ import { createSeedObjects } from '../../const/seed-objects';
       editorId="quickstart"
       [theme]="'angular-theme-light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: [
@@ -29,13 +29,8 @@ import { createSeedObjects } from '../../const/seed-objects';
   ],
 })
 export class QuickStartComponent {
-  @ViewChild(KritzelEditor) editor!: KritzelEditor;
-
   themes = [angularThemeLight];
-
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-  }
+  workspaces = signal([
+    new KritzelWorkspace({ objects: createSeedObjects() }),
+  ]);
 }

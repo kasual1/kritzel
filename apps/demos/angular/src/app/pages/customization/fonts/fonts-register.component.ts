@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEditor, KritzelFontMap, KritzelTheme, KritzelText, KritzelWorkspace, lightTheme } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import { KritzelEditor, KritzelFontMap, KritzelTheme, KritzelText, KritzelWorkspace } from '@kritzel/angular-editor';
 import { ToolbarComponent } from '../../../components/toolbar.component';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 
@@ -24,7 +24,7 @@ const customFontConfig: KritzelFontMap = {
       <kritzel-editor
         editorId="fonts-register"
         [customFonts]="fonts"
-        [workspaces]="workspaces"
+        [workspaces]="workspaces()"
         [theme]="'custom'"
         [themes]="themes"
         [isPanningEnabled]="false"
@@ -52,7 +52,7 @@ export class FontsRegisterComponent {
 
   fonts: KritzelFontMap = customFontConfig;
 
-  workspaces = [
+  workspaces = signal([
     new KritzelWorkspace({
       id: 'fonts-register',
       name: 'Custom Fonts',
@@ -67,7 +67,7 @@ export class FontsRegisterComponent {
         } as any),
       ],
     }),
-  ];
+  ]);
 
   async addPacificoText() {
     const position = await this.randomViewportPosition();

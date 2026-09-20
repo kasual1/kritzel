@@ -5,10 +5,10 @@ import {
   signal,
 } from '@angular/core';
 import {
-  EditorIsReadyEvent,
   IKritzelUser,
   KritzelEditor,
   KritzelLoginConfig,
+  KritzelWorkspace,
   LoginEvent,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -24,13 +24,14 @@ import { createSeedObjects } from '../../../const/seed-objects';
       editorId="user-management-login"
       [loginConfig]="loginConfig"
       [user]="user()"
+      [workspaces]="workspaces()"
       [theme]="'light'"
       [themes]="themes"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
+      (isReady)="onReady()"
       (login)="onLogin($event)"
       (logout)="onLogout()"
     ></kritzel-editor>
@@ -54,6 +55,8 @@ export class UserManagementLoginComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
   user = signal<IKritzelUser | undefined>(undefined);
 
   loginConfig: KritzelLoginConfig = {
@@ -65,11 +68,7 @@ export class UserManagementLoginComponent {
     ],
   };
 
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const obj of createSeedObjects()) {
-      await this.editor.addObject(obj);
-    }
-
+  async onReady() {
     await this.editor.openLoginDialog();
   }
 

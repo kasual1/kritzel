@@ -9,6 +9,7 @@ import {
   KritzelEditor,
   KritzelShape,
   KritzelImage,
+  KritzelWorkspace,
   ShapeType,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
@@ -32,19 +33,22 @@ interface Defect {
   template: `
     <div class="mapper-workspace">
       <div class="editor-pane">
-        <kritzel-editor
-          editorId="blueprint-defect-mapper"
-          #editorEl
-          [themes]="themes"
-          [theme]="'light'"
-          [isToolbarVisible]="false"
-          [isMoreMenuVisible]="false"
-          [isWorkspaceManagerVisible]="false"
-          [isPanningEnabled]="false"
-          [isZoomingEnabled]="false"
-          (isReady)="onReady()"
-          (click)="onCanvasClick($event)"
-        ></kritzel-editor>
+        @if (workspaces().length > 0) {
+          <kritzel-editor
+            editorId="blueprint-defect-mapper"
+            #editorEl
+            [themes]="themes"
+            [theme]="'light'"
+            [isToolbarVisible]="false"
+            [isMoreMenuVisible]="false"
+            [isWorkspaceManagerVisible]="false"
+            [isPanningEnabled]="false"
+            [isZoomingEnabled]="false"
+            [workspaces]="workspaces()"
+            (isReady)="onReady()"
+            (click)="onCanvasClick($event)"
+          ></kritzel-editor>
+        }
 
         @if (placingMode()) {
           <div class="placing-toast">
@@ -448,26 +452,23 @@ export class BlueprintDefectMapperComponent {
 
   placingMode = signal<boolean>(false);
   defects = signal<Defect[]>([]);
+  workspaces = signal<KritzelWorkspace[]>([]);
 
   private nextDefectId = 2; // seeded defects account for 1, 2
 
+  constructor() {
+    void this.initializeWorkspace();
+  }
+
   async onReady() {
-    const existing = await this.editor.getAllObjects();
-    if (existing.length === 0) {
-      await this.initializeBlueprint();
-    } else {
-      await this.restoreDefectsFromCanvas();
-    }
+    await this.restoreDefectsFromCanvas();
 
     await this.normalizeFirstSeedPin();
     await this.normalizeSecondSeedPin();
-
   }
 
-  async initializeBlueprint() {
-    // 1. Load Blueprint floorplan.png from local assets as unselectable background scenery
-
-    const bg = await KritzelImage.fromUrl(
+  private async initializeWorkspace(): Promise<void> {
+    const background = await KritzelImage.fromUrl(
       'assets/floorplan.png',
       {
         maxWidth: 660,
@@ -475,11 +476,9 @@ export class BlueprintDefectMapperComponent {
       },
     );
 
-    bg.translateX = -bg.width / 2;
-    bg.translateY = (-bg.height / 2);
-    await this.editor.addObject(bg);
+    background.translateX = -background.width / 2;
+    background.translateY = -background.height / 2;
 
-    // 2. Seed initial reported defects onto floor plans
     const seedPins = [
       {
         id: 'defect-1',
@@ -500,6 +499,7 @@ export class BlueprintDefectMapperComponent {
     ];
 
     const initialList: Defect[] = [];
+    const objects: Array<KritzelImage | KritzelShape> = [background];
 
     for (const d of seedPins) {
       const pinId = `pin-${d.id}`;
@@ -515,7 +515,7 @@ export class BlueprintDefectMapperComponent {
       });
       pin.id = pinId;
       pin.isEditable = false;
-      await this.editor.addObject(pin);
+      objects.push(pin);
 
       initialList.push({
         id: d.id,
@@ -529,6 +529,7 @@ export class BlueprintDefectMapperComponent {
     }
 
     this.defects.set(initialList);
+    this.workspaces.set([new KritzelWorkspace({ objects })]);
   }
 
   async normalizeFirstSeedPin() {

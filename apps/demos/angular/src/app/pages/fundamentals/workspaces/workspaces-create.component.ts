@@ -22,7 +22,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-toolbar>
-      <button (click)="createWorkspace()">Create Workspace</button>
+      <button (click)="addWorkspace()">Add Workspace</button>
       @for (workspace of workspaces(); track workspace.id) {
         <button
           [class.active]="workspace.id === activeWorkspaceId()"
@@ -44,7 +44,6 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (activeWorkspaceChange)="onActiveWorkspaceChange($event)"
-      (workspacesChange)="refreshWorkspaces()"
     ></kritzel-editor>
   `,
   styles: [
@@ -69,30 +68,35 @@ export class WorkspacesCreateComponent {
     providers: [InMemorySyncProvider],
   };
   workspaces = signal<KritzelWorkspace[]>([
-    new KritzelWorkspace({ id: 'board-1', name: 'Board 1', objects: createSeedObjects() }),
+    new KritzelWorkspace({
+      id: 'board-1',
+      name: 'Board 1',
+      objects: createSeedObjects(),
+    }),
   ]);
   activeWorkspaceId = signal<string | undefined>('board-1');
-
 
   onActiveWorkspaceChange(event: CustomEvent<ActiveWorkspaceChangeEvent>) {
     this.activeWorkspaceId.set(event.detail.id);
   }
 
-  async createWorkspace() {
+  async addWorkspace() {
     const workspaceNumber = this.workspaces().length + 1;
-    const workspace = await this.editor.createWorkspace(new KritzelWorkspace({ name: `Board ${workspaceNumber}` }));
+    const workspace = await this.editor.createWorkspace(
+      new KritzelWorkspace({
+        id: `board-${workspaceNumber}`,
+        name: `Board ${workspaceNumber}`,
+        objects: createSeedObjects(),
+      }),
+    );
 
     if (workspace) {
-      this.workspaces.update(workspaces => [...workspaces, workspace]);
+      this.workspaces.update((workspaces) => [...workspaces, workspace]);
       this.activeWorkspaceId.set(workspace.id);
     }
   }
 
   async switchTo(workspace: KritzelWorkspace) {
     await this.editor.setActiveWorkspace(workspace.id);
-  }
-
-  async refreshWorkspaces() {
-    this.workspaces.set(await this.editor.getWorkspaces());
   }
 }

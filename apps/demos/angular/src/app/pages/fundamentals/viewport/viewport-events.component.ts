@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { EditorIsReadyEvent, KritzelEditor, KritzelViewportState } from '@kritzel/angular-editor';
+import { KritzelEditor, KritzelViewportState, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -27,11 +27,11 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       editorId="viewport-events"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
       (viewportChange)="onViewportChange($event)"
     ></kritzel-editor>
   `,
@@ -47,13 +47,8 @@ export class ViewportEventsComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
   viewport = signal<KritzelViewportState | null>(null);
-
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const object of createSeedObjects()) {
-      await this.editor.addObject(object);
-    }
-  }
 
   async panUp() {
     await this.panBy(0, -this.panStep);

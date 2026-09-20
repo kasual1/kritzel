@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { EditorIsReadyEvent, KritzelEditor } from '@kritzel/angular-editor';
+import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createSeedObjects } from '../../../const/seed-objects';
@@ -21,6 +21,7 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       editorId="viewport-boundaries"
       [theme]="'light'"
       [themes]="themes"
+      [workspaces]="workspaces()"
       [viewportBoundaryLeft]="-500"
       [viewportBoundaryRight]="500"
       [viewportBoundaryTop]="-400"
@@ -29,7 +30,6 @@ import { ToolbarComponent } from '../../../components/toolbar.component';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (isReady)="onReady($event)"
     ></kritzel-editor>
   `,
   styles: [`
@@ -43,11 +43,8 @@ export class ViewportBoundariesComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
-  async onReady(_event: CustomEvent<EditorIsReadyEvent>) {
-    for (const object of createSeedObjects()) {
-      await this.editor.addObject(object);
-    }
-  }
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
 
   async panUp() {
     await this.panBy(0, -this.panStep);
