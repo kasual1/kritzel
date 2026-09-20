@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/
 import {
   KritzelEditor,
   ContextMenuItem,
-  KritzelBaseObject,
   KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -26,7 +25,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (objectsChange)="onObjectsChange($event)"
+      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: `
@@ -42,7 +41,6 @@ export class ContextMenusClipboardActionsComponent {
   themes = [angularThemeLight, angularThemeDark];
 
   workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
-  private hasOpenedContextMenu = false;
 
   globalItems: ContextMenuItem[] = [
     {
@@ -90,16 +88,13 @@ export class ContextMenusClipboardActionsComponent {
     },
   ];
 
-  async onObjectsChange(event: CustomEvent<KritzelBaseObject[]>) {
-    if (this.hasOpenedContextMenu || event.detail.length === 0) return;
-
-    this.hasOpenedContextMenu = true;
+  async onReady() {
     await this.editor.selectAllObjectsInViewport();
-    const target = event.detail[0];
+    const selected = await this.editor.getSelectedObjects();
 
     await this.editor.openContextMenu({
-      x: target.translateX + 50,
-      y: target.translateY + 50,
+      x: selected[0].translateX + 50,
+      y: selected[0].translateY + 50,
     });
   }
 }

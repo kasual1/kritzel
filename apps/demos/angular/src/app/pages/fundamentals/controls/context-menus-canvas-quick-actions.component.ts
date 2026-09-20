@@ -7,7 +7,6 @@ import {
 import {
   KritzelEditor,
   ContextMenuItem,
-  KritzelBaseObject,
   KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -31,7 +30,7 @@ import { createSeedObjects } from '../../../const/seed-objects';
       [isZoomingEnabled]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
-      (objectsChange)="onObjectsChange($event)"
+      (isReady)="onReady()"
     ></kritzel-editor>
   `,
   styles: `
@@ -47,7 +46,6 @@ export class ContextMenusCanvasQuickActionsComponent {
   themes = [angularThemeLight, angularThemeDark];
 
   workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
-  private hasOpenedContextMenu = false;
 
   globalItems: ContextMenuItem[] = [
     {
@@ -66,10 +64,7 @@ export class ContextMenusCanvasQuickActionsComponent {
     },
   ];
 
-  async onObjectsChange(event: CustomEvent<KritzelBaseObject[]>): Promise<void> {
-    if (this.hasOpenedContextMenu || event.detail.length === 0) return;
-
-    this.hasOpenedContextMenu = true;
+  async onReady(): Promise<void> {
     await this.editor.openContextMenu({ x: -50, y: -50 });
   }
 }
