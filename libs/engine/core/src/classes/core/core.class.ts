@@ -25,6 +25,7 @@ import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
 import type { KritzelText } from '../objects/text.class';
+import type { KritzelImage } from '../objects/image.class';
 
 interface InitializeWorkspaceOptions {
   /**
@@ -412,7 +413,7 @@ export class KritzelCore {
     this._store.state.scale = scale;
 
     await objectsMap.initialize(this, activeWorkspace.id, this._syncConfig);
-    this.seedWorkspaceObjects(activeWorkspace, objectsMap);
+    await this.seedWorkspaceObjects(activeWorkspace, objectsMap);
 
     // Set local user in awareness after object map is initialized
     if (this._user) {
@@ -432,17 +433,24 @@ export class KritzelCore {
     this.rerender();
   }
 
-  private seedWorkspaceObjects(workspace: KritzelWorkspace, objectsMap: KritzelObjectMap<KritzelBaseObject<any>>): void {
+  private async seedWorkspaceObjects(workspace: KritzelWorkspace, objectsMap: KritzelObjectMap<KritzelBaseObject<any>>): Promise<void> {
     if (!workspace.objects?.length) {
       return;
     }
 
-    objectsMap.transaction(() => {
-      for (const object of workspace.objects!) {
-        if (objectsMap.findById(object.id)) {
-          continue;
-        }
+    const pendingObjects = workspace.objects.filter(object => !objectsMap.findById(object.id));
 
+    // Mirrors engine.addObject()/addObjects(): image asset upload is async and must
+    // happen before the (synchronous) Yjs transaction that inserts the objects.
+    for (const object of pendingObjects) {
+      object._core = this;
+      if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+        await object.prepareForInsert();
+      }
+    }
+
+    objectsMap.transaction(() => {
+      for (const object of pendingObjects) {
         this.prepareObjectForWorkspace(object, workspace.id, this._store.currentZIndex, this._store.state.scale);
         objectsMap.insert(object);
       }
@@ -484,23 +492,40 @@ export class KritzelCore {
    * @param scaleFallback - Scale applied to objects that do not define one
    * @returns The objects that were added, updated and removed
    */
-  private reconcileWorkspaceObjects(
+  private async reconcileWorkspaceObjects(
     objectsMap: KritzelObjectMap<KritzelBaseObject<any>>,
     workspaceId: string,
     desiredObjects: KritzelBaseObject<any>[],
     nextZIndex: () => number,
     scaleFallback: number,
-  ): KritzelWorkspaceObjectsDiff {
+  ): Promise<KritzelWorkspaceObjectsDiff> {
     const existingObjects = objectsMap.allObjects().filter(o => !(o instanceof KritzelSelectionGroup) && !(o instanceof KritzelSelectionBox));
     const existingById = new Map(existingObjects.map(object => [object.id, object]));
     const desiredIds = new Set<string>();
     const diff: KritzelWorkspaceObjectsDiff = { added: [], updated: [], removed: [] };
 
+    // Assign IDs up front so the insert-vs-update lookup below is stable, and so the
+    // async image-prepare pass and the (synchronous) transaction agree on identity.
+    for (const object of desiredObjects) {
+      if (!object.id) {
+        object.id = object.generateId();
+      }
+    }
+
+    // Mirrors engine.addObject()/addObjects(): image asset upload is async and must
+    // happen before the (synchronous) Yjs transaction that inserts the objects.
+    for (const object of desiredObjects) {
+      const existingObject = existingById.get(object.id);
+      const isNewOrReplaced = !existingObject || existingObject !== object;
+
+      if (isNewOrReplaced && KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+        object._core = this;
+        await object.prepareForInsert();
+      }
+    }
+
     objectsMap.transaction(() => {
       for (const object of desiredObjects) {
-        if (!object.id) {
-          object.id = object.generateId();
-        }
         desiredIds.add(object.id);
 
         const existingObject = existingById.get(object.id);
@@ -753,7 +778,7 @@ export class KritzelCore {
     }
   }
 
-  private applyObjectsToActiveWorkspace(workspace: KritzelWorkspace, desiredObjects: KritzelBaseObject<any>[]): KritzelWorkspaceObjectsDiff | null {
+  private async applyObjectsToActiveWorkspace(workspace: KritzelWorkspace, desiredObjects: KritzelBaseObject<any>[]): Promise<KritzelWorkspaceObjectsDiff | null> {
     const objectsMap = this._store.objects;
     if (!objectsMap) {
       return null;
@@ -761,7 +786,7 @@ export class KritzelCore {
 
     this.clearSelection();
 
-    const diff = this.reconcileWorkspaceObjects(objectsMap, workspace.id, desiredObjects, () => this._store.currentZIndex, this._store.state.scale);
+    const diff = await this.reconcileWorkspaceObjects(objectsMap, workspace.id, desiredObjects, () => this._store.currentZIndex, this._store.state.scale);
 
     this._anchorManager.rebuildIndex();
     this.rerender();
@@ -788,7 +813,7 @@ export class KritzelCore {
       await objectsMap.initialize(this, workspace.id, this._syncConfig, { headless: true, workspaceName: workspace.name });
       await objectsMap.whenNetworkSynced();
 
-      return this.reconcileWorkspaceObjects(objectsMap, workspace.id, desiredObjects, () => this.nextZIndexOf(objectsMap), this._store.state.scale);
+      return await this.reconcileWorkspaceObjects(objectsMap, workspace.id, desiredObjects, () => this.nextZIndexOf(objectsMap), this._store.state.scale);
     } finally {
       objectsMap.destroy();
     }
