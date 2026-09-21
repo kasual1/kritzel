@@ -1,11 +1,9 @@
-import { Component, ChangeDetectionStrategy, signal, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy,  ViewChild } from '@angular/core';
 import {
-  ActiveWorkspaceChangeEvent,
   EditorIsReadyEvent,
   KritzelEditor,
   IndexedDBSyncProvider,
   KritzelSyncConfig,
-  KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
