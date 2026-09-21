@@ -23,12 +23,13 @@ Flow:
 1. Object stores `rendererKey` + optional `rendererData`
 2. Engine resolves renderer via `KritzelDynamicObjectRendererRegistry`
 3. Renderer mounts framework/runtime content into the object container
-4. Renderer unmount returns latest serializable state for persistence
+4. Renderer serialization/unmount returns latest serializable state for persistence
 
 ## Renderer Contract
 
 A renderer should implement symmetric lifecycle behavior:
 - `onMount(context)` creates or attaches runtime content
+- `onSerialize(context)` returns latest serializable state when copy/export happens while mounted
 - `onUnmount(context)` cleans up and returns latest normalized state when needed
 
 Rules:
@@ -36,6 +37,16 @@ Rules:
 - Treat `context.data` as untrusted input and normalize shape defensively
 - Keep returned state serializable and stable across sessions
 - Avoid mutating shared global state from renderer hooks
+
+## Clipboard Serialization
+
+Copy/paste serializes objects without unmounting them first. Stateful dynamic content that must
+survive clipboard copy should therefore implement `onSerialize(context)` and return the live
+state from the mounted runtime. `onUnmount(context)` remains the cleanup-time persistence path.
+
+Raw DOM fallback stores `element.outerHTML` only. That preserves visible markup, but it cannot
+preserve event listeners, closures, framework instances, timers, or subscriptions. Use a stable
+`rendererKey` plus serializable `rendererData` for behavior that must be recreated after paste.
 
 ## Registry Discipline
 

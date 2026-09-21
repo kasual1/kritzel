@@ -33,10 +33,6 @@ type CounterRendererContext = {
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar-note">
-      <strong>Registered Component:</strong>
-      <span>The object mounts a real Angular component via the renderer registry.</span>
-    </div>
     <kritzel-editor
       editorId="dynamic-objects-component"
       [theme]="'light'"
@@ -91,6 +87,9 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
 
         container.innerHTML = '';
         container.appendChild(componentRef.location.nativeElement);
+      },
+      onSerialize: ({ object, data }: CounterRendererContext) => {
+        return this.mountedCounters.get(object.id)?.instance.exportState() ?? data ?? createCounterWidgetInitialState();
       },
       onUnmount: ({ object, container }: CounterRendererContext) => {
         const componentRef = this.mountedCounters.get(object.id);

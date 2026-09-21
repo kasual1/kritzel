@@ -16,7 +16,7 @@ Hosting modes:
 
 Key persisted fields:
 - `rendererKey`: optional registry key for lifecycle-driven rendering
-- `rendererData`: optional state payload returned by renderer unmount
+- `rendererData`: optional state payload returned by renderer serialization/unmount
 - `htmlString`: serialized fallback markup for compatibility
 
 Mount behavior:
@@ -30,6 +30,11 @@ Unmount behavior:
 2. If `onUnmount` returns a value, persist it into `rendererData`
 3. Mark object unmounted
 
+Serialization behavior:
+1. If renderer exists and implements `onSerialize`, call it during copy/export
+2. Persist the returned value into `rendererData`
+3. Fall back to cloning the current `rendererData` when no hook is registered
+
 ## Documentation Rules for Usage
 
 When writing docs or demos about dynamic objects:
@@ -41,6 +46,7 @@ When writing docs or demos about dynamic objects:
 - Cleanup (unregister + runtime teardown) when page/component unmounts
 3. State persistence must flow through `rendererData`:
 - Initialize from `rendererData`
+- Return latest live state from `onSerialize` for clipboard copy/export
 - Return latest state from `onUnmount`
 4. Keep `rendererData` serializable (plain objects, arrays, primitives)
 
@@ -69,7 +75,7 @@ When documenting how to extend dynamic objects:
 1. Define a stable renderer key
 2. Register renderer in startup/mount phase
 3. Normalize incoming `data` defensively
-4. Return latest normalized state from `onUnmount`
+4. Return latest normalized state from `onSerialize` and `onUnmount`
 5. Teardown all framework runtime artifacts (roots, component refs, listeners)
 6. Unregister renderer on page/component destroy
 
@@ -87,6 +93,6 @@ Before finishing dynamic object docs/demo updates:
 1. Route exists for every referenced demo path
 2. `repoFiles` point to real files
 3. Renderer registration and unregistration are both shown
-4. `rendererData` init and persistence flow is documented
+4. `rendererData` init and serialization/unmount persistence flow is documented
 5. Vue docs mention custom-element/encapsulation guidance when embedded Vue UI is shown
 6. Any wheel/scroll behavior claims are aligned with current helper behavior

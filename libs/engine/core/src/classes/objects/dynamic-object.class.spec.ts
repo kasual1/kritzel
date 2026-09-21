@@ -503,6 +503,104 @@ describe('KritzelDynamicObject', () => {
       expect(serialized).not.toHaveProperty('_elementRef');
     });
 
+    it('should serialize renderer data from the renderer hook when available', () => {
+      const rendererKey = 'test-renderer-serialize-data';
+      const container = document.createElement('div');
+      const onSerialize = jest.fn().mockReturnValue({ count: 7 });
+
+      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
+        onMount: () => undefined,
+        onSerialize,
+        onUnmount: () => undefined,
+      });
+
+      const obj = KritzelDynamicObject.create(mockCore, {
+        element: createMockElement(),
+        rendererKey,
+        rendererData: {
+          count: 7,
+          update: () => undefined,
+        },
+      }) as KritzelDynamicObject;
+
+      obj.mount(container);
+
+      const serialized = obj.serialize();
+
+      expect(onSerialize).toHaveBeenCalledWith({
+        object: obj,
+        container,
+        data: obj.rendererData,
+      });
+      expect(serialized.rendererData).toEqual({ count: 7 });
+
+      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+    });
+
+    it('should pass null container to renderer serialization when object is not mounted', () => {
+      const rendererKey = 'test-renderer-serialize-unmounted';
+      const onSerialize = jest.fn().mockReturnValue({ count: 3 });
+
+      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
+        onMount: () => undefined,
+        onSerialize,
+        onUnmount: () => undefined,
+      });
+
+      const obj = KritzelDynamicObject.create(mockCore, {
+        element: createMockElement(),
+        rendererKey,
+        rendererData: { count: 3 },
+      }) as KritzelDynamicObject;
+
+      obj.serialize();
+
+      expect(onSerialize).toHaveBeenCalledWith({
+        object: obj,
+        container: null,
+        data: obj.rendererData,
+      });
+
+      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+    });
+
+    it('should keep existing renderer data serialization when no renderer hook is registered', () => {
+      const rendererData = { count: 2, nested: { label: 'counter' } };
+      const obj = KritzelDynamicObject.create(mockCore, {
+        element: createMockElement(),
+        rendererKey: 'missing-renderer-key',
+        rendererData,
+      }) as KritzelDynamicObject;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.rendererData).toEqual(rendererData);
+      expect(serialized.rendererData).not.toBe(rendererData);
+    });
+
+    it('should keep existing renderer data serialization when renderer has no serialization hook', () => {
+      const rendererKey = 'test-renderer-without-serialize-hook';
+      const rendererData = { count: 4 };
+
+      KritzelDynamicObjectRendererRegistry.register(rendererKey, {
+        onMount: () => undefined,
+        onUnmount: () => undefined,
+      });
+
+      const obj = KritzelDynamicObject.create(mockCore, {
+        element: createMockElement(),
+        rendererKey,
+        rendererData,
+      }) as KritzelDynamicObject;
+
+      const serialized = obj.serialize();
+
+      expect(serialized.rendererData).toEqual(rendererData);
+      expect(serialized.rendererData).not.toBe(rendererData);
+
+      KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
+    });
+
     it('should handle empty element', () => {
       const obj = new KritzelDynamicObject();
       obj._core = mockCore;

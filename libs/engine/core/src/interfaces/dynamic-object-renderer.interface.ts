@@ -34,6 +34,14 @@ export interface KritzelDynamicObjectRenderer {
   onUpdate?(context: KritzelDynamicObjectRenderContext, changedProperties: string[]): void;
 
   /**
+   * Called when the object is serialized, including clipboard copy and workspace export.
+   * Return JSON-safe state that can recreate behavior when the object is revived.
+   * @param context - Render context with object, mounted container when available, and current data
+   * @returns Serializable renderer data to persist on the object
+   */
+  onSerialize?(context: KritzelDynamicObjectRenderContext): unknown;
+
+  /**
    * Called when the object leaves the viewport, is deleted, or workspace is unloaded.
    * Renderer must clean up event listeners, timers, framework instances, and remove DOM.
    * May optionally return updated data to capture back into object.rendererData.

@@ -484,18 +484,35 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> {
       resizing,
       markedForRemoval,
       isVisible,
+      rendererData,
       ...props
     } = this as any;
     const cloned = structuredClone(props);
     // Include rendererKey and rendererData for lifecycle-driven rendering
     cloned.rendererKey = this.rendererKey;
-    cloned.rendererData = this.rendererData;
+    cloned.rendererData = this.serializeRendererData();
     // Store HTML as string for fallback/compatibility when renderer is unavailable
     cloned.htmlString = element ? element.outerHTML : '';
     // Capture dimension snapshot at serialization time
     cloned.serializedWidth = this.width;
     cloned.serializedHeight = this.height;
     return cloned;
+  }
+
+  private serializeRendererData(): unknown {
+    if (this.rendererKey) {
+      const renderer = KritzelDynamicObjectRendererRegistry.get(this.rendererKey);
+
+      if (renderer?.onSerialize) {
+        return structuredClone(renderer.onSerialize({
+          object: this,
+          container: this.isMounted && this.elementRef instanceof HTMLElement ? this.elementRef : null,
+          data: this.rendererData,
+        }));
+      }
+    }
+
+    return structuredClone(this.rendererData);
   }
 
   /**

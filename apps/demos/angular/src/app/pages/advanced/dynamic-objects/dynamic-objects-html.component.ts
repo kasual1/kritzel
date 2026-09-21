@@ -1,14 +1,52 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, signal } from '@angular/core';
 
 import {
   KritzelDynamicObject,
+  KritzelDynamicObjectRendererRegistry,
   KritzelEditor,
   KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 
-function createHtmlCounterElement(): HTMLElement {
+const HTML_COUNTER_RENDERER_KEY = 'angular-dynamic-object-html-counter';
+
+interface HtmlCounterState {
+  count: number;
+}
+
+interface HtmlCounterRendererContext {
+  object: KritzelDynamicObject;
+  container: HTMLElement | null;
+  data?: unknown;
+}
+
+interface HtmlCounterInstance {
+  element: HTMLElement;
+  destroy(): void;
+  getState(): HtmlCounterState;
+}
+
+const DEFAULT_HTML_COUNTER_STATE: HtmlCounterState = { count: 0 };
+
+function createHtmlCounterInitialState(): HtmlCounterState {
+  return { ...DEFAULT_HTML_COUNTER_STATE };
+}
+
+function normalizeHtmlCounterState(data: unknown): HtmlCounterState {
+  if (!data || typeof data !== 'object') {
+    return createHtmlCounterInitialState();
+  }
+
+  const count = (data as Partial<HtmlCounterState>).count;
+  return {
+    count: typeof count === 'number' && Number.isFinite(count)
+      ? count
+      : DEFAULT_HTML_COUNTER_STATE.count,
+  };
+}
+
+function createHtmlCounterElement(initialState: HtmlCounterState): HtmlCounterInstance {
   const root = document.createElement('section');
   root.style.cssText = [
     'display:flex',
@@ -25,7 +63,7 @@ function createHtmlCounterElement(): HTMLElement {
   heading.style.cssText = 'margin:0; font-size:15px;';
 
   const note = document.createElement('p');
-  note.textContent = 'This content is plain DOM passed directly as the element, with no renderer.';
+  note.textContent = 'This content is plain DOM rebuilt from renderer state, so copy/paste keeps behavior.';
   note.style.cssText = 'margin:0; font-size:12px; color:#555;';
 
   const controls = document.createElement('div');
@@ -47,20 +85,23 @@ function createHtmlCounterElement(): HTMLElement {
       'width:32px; height:32px; border-radius:6px; border:1px solid #dd0031; background:#ffffff; color:#dd0031; cursor:pointer; font-size:16px;';
   });
 
-  let count = 0;
+  let count = initialState.count;
   const renderCount = () => {
     countLabel.textContent = String(count);
   };
   renderCount();
 
-  incrementButton.addEventListener('click', () => {
+  const increment = () => {
     count += 1;
     renderCount();
-  });
-  decrementButton.addEventListener('click', () => {
+  };
+  const decrement = () => {
     count -= 1;
     renderCount();
-  });
+  };
+
+  incrementButton.addEventListener('click', increment);
+  decrementButton.addEventListener('click', decrement);
 
   controls.appendChild(decrementButton);
   controls.appendChild(countLabel);
@@ -70,7 +111,14 @@ function createHtmlCounterElement(): HTMLElement {
   root.appendChild(note);
   root.appendChild(controls);
 
-  return root;
+  return {
+    element: root,
+    destroy: () => {
+      incrementButton.removeEventListener('click', increment);
+      decrementButton.removeEventListener('click', decrement);
+    },
+    getState: () => ({ count }),
+  };
 }
 
 @Component({
@@ -78,10 +126,6 @@ function createHtmlCounterElement(): HTMLElement {
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar-note">
-      <strong>Native HTML:</strong>
-      <span>The object mounts a plain DOM element with no renderer registered.</span>
-    </div>
     <kritzel-editor
       editorId="dynamic-objects-html"
       [theme]="'light'"
@@ -101,15 +145,51 @@ function createHtmlCounterElement(): HTMLElement {
     kritzel-editor { flex: 1; min-height: 0; }
   `],
 })
-export class DynamicObjectsHtmlComponent {
+export class DynamicObjectsHtmlComponent implements OnDestroy {
+  private readonly mountedCounters = new Map<string, HtmlCounterInstance>();
+
   themes = [angularThemeLight, angularThemeDark];
   workspaces = signal([
     new KritzelWorkspace({ objects: [this.createInitialDynamicObject()] }),
   ]);
 
+  constructor() {
+    const renderer = {
+      onMount: ({ object, container, data }: HtmlCounterRendererContext) => {
+        if (!container) {
+          return;
+        }
+
+        this.destroyMountedCounter(object.id, container);
+
+        const instance = createHtmlCounterElement(normalizeHtmlCounterState(data));
+        this.mountedCounters.set(object.id, instance);
+
+        container.innerHTML = '';
+        container.appendChild(instance.element);
+      },
+      onSerialize: ({ object, data }: HtmlCounterRendererContext) => {
+        return this.mountedCounters.get(object.id)?.getState() ?? normalizeHtmlCounterState(data);
+      },
+      onUnmount: ({ object, container, data }: HtmlCounterRendererContext) => {
+        const nextState = this.mountedCounters.get(object.id)?.getState() ?? normalizeHtmlCounterState(data);
+        this.destroyMountedCounter(object.id, container);
+
+        return nextState;
+      },
+    };
+
+    KritzelDynamicObjectRendererRegistry.register(HTML_COUNTER_RENDERER_KEY, renderer);
+  }
+
   private createInitialDynamicObject(): KritzelDynamicObject {
+    const placeholder = document.createElement('div');
+    placeholder.textContent = 'Loading Counter...';
+
     const dynamicObject = new KritzelDynamicObject({
-      element: createHtmlCounterElement(),
+      element: placeholder,
+      rendererKey: HTML_COUNTER_RENDERER_KEY,
+      rendererData: createHtmlCounterInitialState(),
       translateX: -150,
       translateY: -90,
       width: 260,
@@ -119,5 +199,27 @@ export class DynamicObjectsHtmlComponent {
     dynamicObject.isRotatable = false;
 
     return dynamicObject;
+  }
+
+  private destroyMountedCounter(objectId: string, container: HTMLElement | null): void {
+    const instance = this.mountedCounters.get(objectId);
+
+    if (instance) {
+      instance.destroy();
+      this.mountedCounters.delete(objectId);
+    }
+
+    if (container) {
+      container.innerHTML = '';
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.mountedCounters.forEach((instance) => {
+      instance.destroy();
+    });
+    this.mountedCounters.clear();
+
+    KritzelDynamicObjectRendererRegistry.unregister(HTML_COUNTER_RENDERER_KEY);
   }
 }
