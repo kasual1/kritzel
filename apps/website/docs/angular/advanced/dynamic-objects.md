@@ -34,7 +34,9 @@ Both modes produce the same kind of object on the canvas — the difference is p
 
 ## Rendering Native HTML
 
-The simplest way to use a dynamic object is to build a plain DOM subtree and pass it as `element`. Kritzel mounts it as-is; there is no renderer to register or unregister, and no lifecycle hooks to implement. This is a good fit for static or lightly interactive content that does not need a full component framework.
+The simplest way to use a dynamic object is to build a plain DOM subtree and pass it as `element`. Kritzel mounts it as-is; there is no renderer to register or unregister, and no lifecycle hooks to implement. This is a good fit for static content.
+
+If the native HTML owns runtime behavior, such as event listeners or local counter state, use a registered renderer even when the content is plain DOM rather than an Angular component. Clipboard copy serializes the object while it is still mounted, so a renderer can return the latest serializable state from `onSerialize` and recreate fresh DOM listeners from `rendererData` after paste.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
@@ -49,6 +51,7 @@ For richer content, register a renderer on `KritzelDynamicObjectRendererRegistry
 State flows through `rendererData`:
 
 - On mount, initialize your component from `data` (falling back to a default state on first mount).
+- On serialize, `onSerialize` should return the component's latest state so copy/paste captures the live value.
 - On unmount, `onUnmount` should return the component's latest state; Kritzel persists it back onto the object so the next mount (including after a reload) picks up where it left off.
 
 Always unregister the renderer, and detach/destroy any mounted component views, when the hosting page is destroyed.
