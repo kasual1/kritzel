@@ -3,6 +3,7 @@ import { KritzelBaseObject } from './base-object.class';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
 import { KritzelHTMLHelper } from '../../helpers/html.helper';
+import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
 
 /**
  * Configuration options for creating a KritzelDynamicObject instance.
@@ -24,7 +25,7 @@ export interface KritzelDynamicObjectConfig {
  * Extends KritzelBaseObject to inherit common object functionality like positioning,
  * scaling, and lifecycle management.
  */
-export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> {
+export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> implements KritzelEmbeddedObject {
   override __class__: string = 'KritzelDynamicObject';
 
   /** The HTML element to be rendered on the canvas. */
@@ -204,7 +205,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> {
       return false;
     }
 
-    const focusHosts = this.getFocusHosts();
+    const focusHosts = this.getEmbeddedContentRoots();
 
     // Primary path: locate the focused input-like element by walking from each host through
     // `:focus` (piercing open shadow roots). This works in real browsers even when the engine
@@ -225,7 +226,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> {
     return false;
   }
 
-  private getFocusHosts(): HTMLElement[] {
+  getEmbeddedContentRoots(): HTMLElement[] {
     const hosts: HTMLElement[] = [];
 
     if (this.element) {

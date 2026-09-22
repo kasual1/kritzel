@@ -65,6 +65,28 @@ describe('ObjectHelper', () => {
     });
   });
 
+  describe('isKritzelEmbeddedObject', () => {
+    const embeddedObject = {
+      isInteractive: false,
+      isSelected: false,
+      mount: jest.fn(),
+      unmount: jest.fn(),
+      setIsInteractive: jest.fn(),
+      hasFocusedInputElement: jest.fn(),
+      getEmbeddedContentRoots: jest.fn(() => []),
+    };
+
+    it('recognizes the structural embedded-object contract regardless of class name', () => {
+      expect(ObjectHelper.isKritzelEmbeddedObject({ ...embeddedObject, __class__: 'KritzelIframeObject' })).toBe(true);
+    });
+
+    it('rejects partial and unrelated objects', () => {
+      expect(ObjectHelper.isKritzelEmbeddedObject({ ...embeddedObject, unmount: undefined })).toBe(false);
+      expect(ObjectHelper.isKritzelEmbeddedObject({ __class__: 'KritzelDynamicObject' })).toBe(false);
+      expect(ObjectHelper.isKritzelEmbeddedObject(null)).toBe(false);
+    });
+  });
+
   describe('isKritzelExportable', () => {
     it('should return false for null', () => {
       expect(ObjectHelper.isKritzelExportable(null)).toBe(false);

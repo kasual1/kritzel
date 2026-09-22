@@ -1,5 +1,6 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelColorHelper } from '../../helpers/color.helper';
 import { KritzelMoveHandler } from '../handlers/move.handler';
@@ -17,7 +18,6 @@ import { KritzelLine } from '../objects/line.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelImage } from '../objects/image.class';
-import { KritzelDynamicObject } from '../objects/dynamic-object.class';
 import { ToolConfigControl, ToolConfigDefinition } from '../../interfaces/tool-config.interface';
 import { DEFAULT_COLOR_PALETTE, ThemeAwareColor } from '../../constants/color-palette.constants';
 import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
@@ -389,9 +389,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
         if (selectedObject && selectedObject.isSelected === false && selectedObject?.objects.length === 1) {
           const firstObj = selectedObject.objects[0];
-          if (KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(firstObj, 'KritzelDynamicObject')) {
-            // Selected single dynamic objects hand pointer interaction to their
-            // embedded DOM content. Unselected dynamic objects remain selectable.
+          if (ObjectHelper.isKritzelEmbeddedObject(firstObj)) {
+            // Selected embedded objects hand pointer interaction to their content.
             if (firstObj.isSelected && this._core.store.selectionGroup?.objects.length === 1) return;
           } else if (firstObj.isInteractive) {
             // Preserve existing behavior for text/shape edit mode

@@ -6,6 +6,7 @@ import { KritzelText } from '../classes/objects/text.class';
 import { KritzelImage } from '../classes/objects/image.class';
 import { KritzelGroup } from '../classes/objects/group.class';
 import { KritzelDynamicObject } from '../classes/objects/dynamic-object.class';
+import { KritzelIframeObject } from '../classes/objects/iframe.class';
 import { KritzelClassHelper } from './class.helper';
 import { KritzelColorHelper } from './color.helper';
 import { ThemeName } from '../interfaces/theme.interface';
@@ -331,6 +332,9 @@ export class KritzelSvgExportHelper {
     if (KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject')) {
       return this.dynamicObjectToSvg(object, rasterSafeForCanvas);
     }
+    if (KritzelClassHelper.isInstanceOf<KritzelIframeObject>(object, 'KritzelIframeObject')) {
+      return this.iframeObjectToSvg(object);
+    }
     if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
       return this.groupToSvg(object, theme, imageDataUrls, rasterSafeForCanvas);
     }
@@ -569,6 +573,19 @@ export class KritzelSvgExportHelper {
           ${html}
         </div>
       </foreignObject>
+    </g>`;
+  }
+
+  private static iframeObjectToSvg(object: KritzelIframeObject): string {
+    const transform = this.buildTransform(object);
+    const opacity = object.opacity !== 1 ? ` opacity="${object.opacity}"` : '';
+    const scale = this.getObjectScale(object);
+    const width = object.totalWidth / scale;
+    const height = object.totalHeight / scale;
+
+    return `<g transform="${transform}"${opacity}>
+      <rect x="0" y="0" width="${width}" height="${height}" fill="#f0f0f0" stroke="#999" stroke-width="1" />
+      <text x="${width / 2}" y="${height / 2}" text-anchor="middle" dominant-baseline="middle" font-size="12" fill="#999">[Iframe]</text>
     </g>`;
   }
 
