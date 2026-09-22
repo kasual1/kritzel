@@ -11,6 +11,7 @@ import { angularThemeLight } from '../../../const/angular-theme-light';
 
 const RUNTIME_IFRAME_RENDERER_KEY = 'angular-dynamic-object-runtime-iframe';
 const RUNTIME_IFRAME_STATE_MESSAGE = 'kritzel-runtime-iframe-state';
+const RUNTIME_IFRAME_POINTER_MESSAGE = 'kritzel-runtime-iframe-pointer';
 
 interface RuntimeIframeDefinition {
   name: string;
@@ -23,6 +24,26 @@ interface RuntimeIframeData {
   definition: RuntimeIframeDefinition;
   state: Record<string, unknown>;
   revision: number;
+}
+
+interface RuntimeIframeCursors {
+  default: string;
+  pointer: string;
+}
+
+interface RuntimeIframePointerMessage {
+  type: typeof RUNTIME_IFRAME_POINTER_MESSAGE;
+  eventType: 'pointerdown' | 'pointermove' | 'pointerup' | 'pointercancel';
+  pointerId: number;
+  pointerType: string;
+  clientX: number;
+  clientY: number;
+  button: number;
+  buttons: number;
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
 }
 
 interface RuntimeIframeRendererContext {
@@ -130,7 +151,7 @@ function normalizeRuntimeIframeData(data: unknown): RuntimeIframeData {
   };
 }
 
-function createIframeDocument(data: RuntimeIframeData): string {
+function createIframeDocument(data: RuntimeIframeData, cursors: RuntimeIframeCursors): string {
   const state = JSON.stringify(data.state).replace(/</g, '\\u003c');
 
   return `<!doctype html>
@@ -138,7 +159,12 @@ function createIframeDocument(data: RuntimeIframeData): string {
   <head>
     <meta charset="utf-8">
     <style>
-      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; font-family: Roboto, sans-serif; }
+      :root {
+        --kritzel-runtime-default-cursor: ${cursors.default};
+        --kritzel-runtime-pointer-cursor: ${cursors.pointer};
+      }
+      html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; font-family: Roboto, sans-serif; cursor: var(--kritzel-runtime-default-cursor); }
+      button, button * { cursor: var(--kritzel-runtime-pointer-cursor) !important; }
       ${data.definition.css}
     </style>
   </head>
@@ -152,13 +178,58 @@ function createIframeDocument(data: RuntimeIframeData): string {
           parent.postMessage({ type: '${RUNTIME_IFRAME_STATE_MESSAGE}', state: nextState }, '*');
         },
       };
+      let bridgedPointerId = null;
+      const interactiveSelector = 'button, input, textarea, select, a[href], [contenteditable="true"], [contenteditable=""]';
+      const bridgePointerEvent = event => {
+        parent.postMessage({
+          type: '${RUNTIME_IFRAME_POINTER_MESSAGE}',
+          eventType: event.type,
+          pointerId: event.pointerId,
+          pointerType: event.pointerType,
+          clientX: event.clientX,
+          clientY: event.clientY,
+          button: event.button,
+          buttons: event.buttons,
+          shiftKey: event.shiftKey,
+          ctrlKey: event.ctrlKey,
+          altKey: event.altKey,
+          metaKey: event.metaKey,
+        }, '*');
+      };
+      document.addEventListener('pointerdown', event => {
+        if (event.target.closest(interactiveSelector)) {
+          return;
+        }
+        bridgedPointerId = event.pointerId;
+        event.preventDefault();
+        bridgePointerEvent(event);
+      });
+      document.addEventListener('pointermove', event => {
+        if (event.pointerId === bridgedPointerId) {
+          event.preventDefault();
+          bridgePointerEvent(event);
+        }
+      });
+      const finishPointerBridge = event => {
+        if (event.pointerId === bridgedPointerId) {
+          event.preventDefault();
+          bridgePointerEvent(event);
+          bridgedPointerId = null;
+        }
+      };
+      document.addEventListener('pointerup', finishPointerBridge);
+      document.addEventListener('pointercancel', finishPointerBridge);
       ${data.definition.script}
     </script>
   </body>
 </html>`;
 }
 
-function createRuntimeIframeInstance(data: RuntimeIframeData, onStateChange: (state: Record<string, unknown>) => void): RuntimeIframeInstance {
+function createRuntimeIframeInstance(
+  data: RuntimeIframeData,
+  cursors: RuntimeIframeCursors,
+  onStateChange: (state: Record<string, unknown>) => void,
+): RuntimeIframeInstance {
   const iframe = document.createElement('iframe');
   iframe.sandbox.add('allow-scripts');
   iframe.title = `Sandboxed ${data.definition.name} component`;
@@ -170,6 +241,27 @@ function createRuntimeIframeInstance(data: RuntimeIframeData, onStateChange: (st
     }
 
     const message = event.data as { type?: unknown; state?: unknown };
+    if (message.type === RUNTIME_IFRAME_POINTER_MESSAGE) {
+      const pointerMessage = event.data as RuntimeIframePointerMessage;
+      const iframeRect = iframe.getBoundingClientRect();
+      iframe.dispatchEvent(new PointerEvent(pointerMessage.eventType, {
+        bubbles: true,
+        composed: true,
+        cancelable: true,
+        pointerId: pointerMessage.pointerId,
+        pointerType: pointerMessage.pointerType,
+        clientX: iframeRect.left + pointerMessage.clientX,
+        clientY: iframeRect.top + pointerMessage.clientY,
+        button: pointerMessage.button,
+        buttons: pointerMessage.buttons,
+        shiftKey: pointerMessage.shiftKey,
+        ctrlKey: pointerMessage.ctrlKey,
+        altKey: pointerMessage.altKey,
+        metaKey: pointerMessage.metaKey,
+      }));
+      return;
+    }
+
     if (message.type !== RUNTIME_IFRAME_STATE_MESSAGE || !message.state || typeof message.state !== 'object') {
       return;
     }
@@ -180,7 +272,7 @@ function createRuntimeIframeInstance(data: RuntimeIframeData, onStateChange: (st
   window.addEventListener('message', onMessage);
 
   const render = (nextData: RuntimeIframeData) => {
-    iframe.srcdoc = createIframeDocument(nextData);
+    iframe.srcdoc = createIframeDocument(nextData, cursors);
   };
   render(data);
 
@@ -241,7 +333,13 @@ export class DynamicObjectsIframeComponent implements OnDestroy {
         this.destroyMountedIframe(object.id, container);
 
         const runtimeData = normalizeRuntimeIframeData(data);
-        const instance = createRuntimeIframeInstance(runtimeData, state => {
+        const computedStyle = getComputedStyle(container);
+        const defaultCursor = computedStyle.cursor || 'auto';
+        const cursors: RuntimeIframeCursors = {
+          default: defaultCursor,
+          pointer: computedStyle.getPropertyValue('--kritzel-global-pointer-cursor').trim() || defaultCursor,
+        };
+        const instance = createRuntimeIframeInstance(runtimeData, cursors, state => {
           const currentData = normalizeRuntimeIframeData(object.rendererData);
           object.rendererData = { ...currentData, state };
         });
