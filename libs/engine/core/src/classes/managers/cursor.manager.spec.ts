@@ -87,6 +87,10 @@ describe('KritzelCursorManager', () => {
       manager.setTargetElement(element);
 
       expect(element.style.setProperty).toHaveBeenCalledWith(
+        '--kritzel-global-default-cursor',
+        expect.any(String)
+      );
+      expect(element.style.setProperty).toHaveBeenCalledWith(
         '--kritzel-global-pointer-cursor',
         expect.any(String)
       );
@@ -100,6 +104,7 @@ describe('KritzelCursorManager', () => {
       manager.setTargetElement(newElement);
 
       expect(oldElement.style.cursor).toBe('');
+      expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-default-cursor');
       expect(oldElement.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-pointer-cursor');
       expect(manager.getTargetElement()).toBe(newElement);
     });
@@ -111,6 +116,7 @@ describe('KritzelCursorManager', () => {
       manager.setTargetElement(null);
 
       expect(element.style.cursor).toBe('');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-default-cursor');
       expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-pointer-cursor');
       expect(manager.getTargetElement()).toBeNull();
     });
@@ -193,13 +199,13 @@ describe('KritzelCursorManager', () => {
       manager.updateHoverState(ev);
     });
 
-    it('should not update when no elements are found at point', () => {
+    it('should reset a stale cursor when no elements are found at point', () => {
+      mockState.cursor = { icon: 'moveVertical', rotation: -45 };
       const shadowRoot = createMockShadowRoot([]);
       manager.setShadowRoot(shadowRoot);
 
       manager.updateHoverState(createMockPointerEvent());
 
-      // Cursor should remain unchanged
       expect(mockState.cursor).toEqual({ icon: 'default', iconActive: 'default' });
     });
 
@@ -430,7 +436,8 @@ describe('KritzelCursorManager', () => {
       manager.cleanup();
 
       expect(element.style.cursor).toBe('');
-      expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-pointer-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-default-cursor');
+      expect(element.style.removeProperty).toHaveBeenCalledWith('--kritzel-global-pointer-cursor');
     });
 
     it('should null out target element and shadow root', () => {
