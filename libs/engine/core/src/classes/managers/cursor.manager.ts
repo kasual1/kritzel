@@ -28,6 +28,7 @@ export class KritzelCursorManager {
     // Reset cursor on old target
     if (this._targetElement) {
       this._targetElement.style.cursor = '';
+      this._targetElement.style.removeProperty('--kritzel-global-default-cursor');
       this._targetElement.style.removeProperty('--kritzel-global-pointer-cursor');
     }
 
@@ -35,6 +36,7 @@ export class KritzelCursorManager {
 
     // Set the pointer cursor CSS variable for child components to use
     if (this._targetElement) {
+      this._targetElement.style.setProperty('--kritzel-global-default-cursor', KritzelCursorHelper.getCursor({ iconName: 'default' }));
       this._targetElement.style.setProperty('--kritzel-global-pointer-cursor', KritzelCursorHelper.getPointerCursor());
     }
   }
@@ -82,7 +84,10 @@ export class KritzelCursorManager {
     if (!this._shadowRoot) return;
 
     const elementsAtPoint = this._shadowRoot.elementsFromPoint(ev.clientX, ev.clientY);
-    if (!elementsAtPoint || elementsAtPoint.length === 0) return;
+    if (!elementsAtPoint || elementsAtPoint.length === 0) {
+      this.resetToDefault();
+      return;
+    }
 
     // Check for resize handle overlays (selection group)
     const resizeHandleOverlay = elementsAtPoint.find(el => el.classList.contains('resize-handle-overlay'));
@@ -150,7 +155,8 @@ export class KritzelCursorManager {
   cleanup(): void {
     if (this._targetElement) {
       this._targetElement.style.cursor = '';
-      this._targetElement.style.removeProperty('--kritzel-pointer-cursor');
+      this._targetElement.style.removeProperty('--kritzel-global-default-cursor');
+      this._targetElement.style.removeProperty('--kritzel-global-pointer-cursor');
     }
     this._targetElement = null;
     this._shadowRoot = null;

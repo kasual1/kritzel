@@ -5,8 +5,8 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
-import { KritzelDynamicObject } from '../objects/dynamic-object.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
+import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
@@ -259,11 +259,18 @@ export class KritzelStore {
    * Gets the currently selected dynamic object whose focused descendant is an input-like element.
    * @returns The interactive dynamic object with focused input-like content, or null if none matches
    */
-  get activeInteractiveDynamicObject(): KritzelDynamicObject | null {
-    const interactiveDynamicObject = this.selectedObjects.find(
-      object => KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject') && object.hasFocusedInputElement(),
-    );
-    return (interactiveDynamicObject as KritzelDynamicObject) ?? null;
+  get activeInteractiveEmbeddedObject(): KritzelEmbeddedObject | null {
+    for (const object of this.selectedObjects) {
+      if (ObjectHelper.isKritzelEmbeddedObject(object) && object.hasFocusedInputElement()) {
+        return object;
+      }
+    }
+
+    return null;
+  }
+
+  get activeInteractiveDynamicObject(): KritzelEmbeddedObject | null {
+    return this.activeInteractiveEmbeddedObject;
   }
 
   /**

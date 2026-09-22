@@ -881,11 +881,19 @@ describe('KritzelCore', () => {
       expect(mockEngine.triggerSelectionChange).toHaveBeenCalled();
     });
 
-    it('should enable isInteractive for selected dynamic objects', () => {
-      const dynamicObjectObject = {
+    it('should enable interactivity for selected embedded objects', () => {
+      const embeddedObject = {
         id: 'custom-1',
-        __class__: 'KritzelDynamicObject',
+        __class__: 'KritzelIframeObject',
         isInteractive: false,
+        isSelected: false,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        setIsInteractive(isInteractive: boolean) {
+          this.isInteractive = isInteractive;
+        },
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => []),
       } as unknown as KritzelBaseObject<any>;
       const regularObject = {
         id: 'shape-1',
@@ -895,12 +903,12 @@ describe('KritzelCore', () => {
 
       const newGroup = {
         id: 'new-sg',
-        objects: [dynamicObjectObject, regularObject],
+        objects: [embeddedObject, regularObject],
       } as unknown as KritzelSelectionGroup;
 
       core.addSelectionGroup(newGroup);
 
-      expect(dynamicObjectObject.isInteractive).toBe(true);
+      expect(embeddedObject.isInteractive).toBe(true);
       expect(regularObject.isInteractive).toBe(false);
     });
 
@@ -955,11 +963,19 @@ describe('KritzelCore', () => {
       expect(mockObjectsMap.remove).not.toHaveBeenCalled();
     });
 
-    it('should disable isInteractive for deselected dynamic objects', () => {
-      const dynamicObjectObject = {
+    it('should disable interactivity for deselected embedded objects', () => {
+      const embeddedObject = {
         id: 'custom-1',
-        __class__: 'KritzelDynamicObject',
+        __class__: 'KritzelIframeObject',
         isInteractive: true,
+        isSelected: true,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        setIsInteractive(isInteractive: boolean) {
+          this.isInteractive = isInteractive;
+        },
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => []),
       } as unknown as KritzelBaseObject<any>;
       const regularObject = {
         id: 'shape-1',
@@ -969,13 +985,13 @@ describe('KritzelCore', () => {
 
       const sg = {
         id: 'sg-1',
-        objects: [dynamicObjectObject, regularObject],
+        objects: [embeddedObject, regularObject],
       } as unknown as KritzelSelectionGroup;
       mockStore.selectionGroup = sg;
 
       core.removeSelectionGroup();
 
-      expect(dynamicObjectObject.isInteractive).toBe(false);
+      expect(embeddedObject.isInteractive).toBe(false);
       expect(regularObject.isInteractive).toBe(true);
     });
 

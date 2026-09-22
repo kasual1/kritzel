@@ -13,6 +13,7 @@ import { KritzelSelectionTool } from "../tools/selection-tool.class";
 import { KritzelTextTool } from "../tools/text-tool.class";
 import { KritzelShapeTool } from "../tools/shape-tool.class";
 import { KritzelDynamicObject } from "../objects/dynamic-object.class";
+import { KritzelIframeObject } from "../objects/iframe.class";
 import type { KritzelCore } from "./core.class";
 import { KritzelWorkspace } from "./workspace.class";
 
@@ -81,6 +82,9 @@ export class KritzelReviver {
             break;
           case 'KritzelDynamicObject':
             revivedObj = KritzelDynamicObject.create(this._core).deserialize(obj);
+            break;
+          case 'KritzelIframeObject':
+            revivedObj = KritzelIframeObject.create(this._core).deserialize(obj);
             break;
           case 'KritzelSelectionGroup':
             revivedObj = KritzelSelectionGroup.create(this._core).deserialize(obj);

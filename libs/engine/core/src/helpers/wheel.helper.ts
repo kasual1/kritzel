@@ -1,7 +1,7 @@
-import { KritzelDynamicObject } from '../classes/objects/dynamic-object.class';
+import { KritzelEmbeddedObject } from '../interfaces/embedded-object.interface';
 
 export class KritzelWheelHelper {
-  public static shouldKeepWheelInDynamicObject(ev: WheelEvent, dynamicObject: KritzelDynamicObject): boolean {
+  public static shouldKeepWheelInDynamicObject(ev: WheelEvent, dynamicObject: KritzelEmbeddedObject): boolean {
     // Keep Ctrl+wheel available for viewport zoom gestures.
     if (ev.ctrlKey || dynamicObject.isSelected !== true) {
       return false;
@@ -19,18 +19,9 @@ export class KritzelWheelHelper {
     return this.canElementConsumeWheel(scrollContainer, ev.deltaX, ev.deltaY);
   }
 
-  private static getScrollableContainerFromEventPath(path: EventTarget[], dynamicObject: KritzelDynamicObject): HTMLElement | null {
-    const potentialRoots: HTMLElement[] = [];
-
-    if (dynamicObject.element instanceof HTMLElement) {
-      potentialRoots.push(dynamicObject.element);
-    }
-
-    if (dynamicObject.elementRef instanceof HTMLElement) {
-      potentialRoots.push(dynamicObject.elementRef);
-    }
-
-    const legacyElementRef = (dynamicObject as KritzelDynamicObject & { elmeentRef?: HTMLElement }).elmeentRef;
+  private static getScrollableContainerFromEventPath(path: EventTarget[], dynamicObject: KritzelEmbeddedObject): HTMLElement | null {
+    const potentialRoots = dynamicObject.getEmbeddedContentRoots();
+    const legacyElementRef = (dynamicObject as KritzelEmbeddedObject & { elmeentRef?: HTMLElement }).elmeentRef;
     if (legacyElementRef instanceof HTMLElement) {
       potentialRoots.push(legacyElementRef);
     }

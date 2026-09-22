@@ -28,7 +28,13 @@ const sidebars: SidebarsConfig = {
       items: [
         'advanced/user-management',
         'advanced/collaboration',
-        'advanced/dynamic-objects',
+        {
+          type: 'doc',
+          id: 'advanced/dynamic-objects',
+          customProps: {
+            badge: 'Preview',
+          },
+        },
         'advanced/import-export',
       ],
     },
