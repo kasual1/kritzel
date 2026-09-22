@@ -56,13 +56,29 @@ describe('KritzelIframeObject', () => {
     expect(iframe.getAttribute('sandbox')).toBe('allow-scripts');
     expect(initialSource).toContain('<button>Run</button>');
     expect(initialSource).toContain('"count":0');
-    expect(initialSource).toContain('--kritzel-iframe-default-cursor');
+    expect(initialSource).toContain('--kritzel-iframe-default-cursor: auto');
 
     object.setState({ count: 1 });
 
     expect(object.state).toEqual({ count: 1 });
     expect(iframe.srcdoc).toBe(initialSource);
     expect(core.store.objects.update).toHaveBeenCalledWith(object);
+  });
+
+  it('uses separate Kritzel cursors for iframe content and clickable controls', () => {
+    const object = new KritzelIframeObject({ html: '<button>Run</button>' });
+    const iframe = document.createElement('iframe');
+    const getComputedStyle = jest.spyOn(globalThis, 'getComputedStyle').mockReturnValue({
+      getPropertyValue: (property: string) => property === '--kritzel-global-default-cursor'
+        ? 'url(default-cursor) 4 4, auto'
+        : 'url(pointer-cursor) 12 12, auto',
+    } as CSSStyleDeclaration);
+
+    object.mount(iframe);
+
+    expect(iframe.srcdoc).toContain('--kritzel-iframe-default-cursor: url(default-cursor) 4 4, auto');
+    expect(iframe.srcdoc).toContain('--kritzel-iframe-pointer-cursor: url(pointer-cursor) 12 12, auto');
+    getComputedStyle.mockRestore();
   });
 
   it('reloads srcdoc when content changes', () => {
@@ -135,6 +151,100 @@ describe('KritzelIframeObject', () => {
     expect(revived.elementRef).toBe(iframe);
     expect(iframe.srcdoc).toBe(source);
     expect(previous.isMounted).toBe(false);
+  });
+
+  it('bridges pointer movement without feeding the moved iframe position back into the coordinates', () => {
+    const originalPointerEvent = globalThis.PointerEvent;
+    Object.defineProperty(globalThis, 'PointerEvent', {
+      configurable: true,
+      value: MouseEvent,
+    });
+    const object = new KritzelIframeObject();
+    const iframe = document.createElement('iframe');
+    const dispatchEvent = jest.spyOn(iframe, 'dispatchEvent');
+    let iframeLeft = 100;
+    jest.spyOn(iframe, 'getBoundingClientRect').mockImplementation(() => ({
+      left: iframeLeft,
+      top: 50,
+      right: iframeLeft + 200,
+      bottom: 150,
+      width: 200,
+      height: 100,
+      x: iframeLeft,
+      y: 50,
+      toJSON: () => ({}),
+    }));
+    object.mount(iframe);
+
+    const dispatchPointerMessage = (eventType: 'pointerdown' | 'pointermove', clientX: number, screenX: number) => {
+      (object as any).dispatchPointerMessage({
+        type: 'kritzel-iframe-pointer',
+        eventType,
+        pointerId: 1,
+        pointerType: 'mouse',
+        clientX,
+        clientY: 20,
+        screenX,
+        screenY: 120,
+        button: 0,
+        buttons: 1,
+        shiftKey: false,
+        ctrlKey: false,
+        altKey: false,
+        metaKey: false,
+      });
+    };
+
+    dispatchPointerMessage('pointerdown', 20, 220);
+    iframeLeft = 110;
+    dispatchPointerMessage('pointermove', 15, 225);
+
+    const bridgedMove = dispatchEvent.mock.calls[1][0] as PointerEvent;
+    expect(bridgedMove.clientX).toBe(125);
+    expect(bridgedMove.clientY).toBe(70);
+
+    Object.defineProperty(globalThis, 'PointerEvent', {
+      configurable: true,
+      value: originalPointerEvent,
+    });
+  });
+
+  it('bridges the iframe contextmenu event so Kritzel opens its own context menu', () => {
+    const object = new KritzelIframeObject();
+    const iframe = document.createElement('iframe');
+    const dispatchEvent = jest.spyOn(iframe, 'dispatchEvent');
+    jest.spyOn(iframe, 'getBoundingClientRect').mockReturnValue({
+      left: 100,
+      top: 50,
+      right: 300,
+      bottom: 150,
+      width: 200,
+      height: 100,
+      x: 100,
+      y: 50,
+      toJSON: () => ({}),
+    });
+    object.mount(iframe);
+
+    expect(iframe.srcdoc).toContain("addEventListener('contextmenu'");
+    expect(iframe.srcdoc).toContain('kritzel-iframe-contextmenu');
+
+    (object as any).dispatchContextMenuMessage({
+      type: 'kritzel-iframe-contextmenu',
+      clientX: 30,
+      clientY: 20,
+      button: 2,
+      shiftKey: false,
+      ctrlKey: false,
+      altKey: false,
+      metaKey: false,
+    });
+
+    const bridgedContextMenu = dispatchEvent.mock.calls[0][0] as MouseEvent;
+    expect(bridgedContextMenu.type).toBe('contextmenu');
+    expect(bridgedContextMenu.clientX).toBe(130);
+    expect(bridgedContextMenu.clientY).toBe(70);
+    expect(bridgedContextMenu.button).toBe(2);
   });
 
   it('captures unmount state and removes runtime references', () => {

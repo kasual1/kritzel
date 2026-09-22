@@ -6,6 +6,7 @@ import { KritzelBaseObject } from './base-object.class';
 const IFRAME_STATE_MESSAGE = 'kritzel-iframe-state';
 const IFRAME_PARENT_STATE_MESSAGE = 'kritzel-iframe-parent-state';
 const IFRAME_POINTER_MESSAGE = 'kritzel-iframe-pointer';
+const IFRAME_CONTEXT_MENU_MESSAGE = 'kritzel-iframe-contextmenu';
 
 const SUPPORTED_SANDBOX_TOKENS = new Set([
   'allow-downloads',
@@ -52,6 +53,8 @@ interface KritzelIframePointerMessage {
   pointerType: string;
   clientX: number;
   clientY: number;
+  screenX: number;
+  screenY: number;
   button: number;
   buttons: number;
   shiftKey: boolean;
@@ -59,6 +62,27 @@ interface KritzelIframePointerMessage {
   altKey: boolean;
   metaKey: boolean;
 }
+
+interface KritzelIframePointerBridgeStart {
+  pointerId: number;
+  clientX: number;
+  clientY: number;
+  screenX: number;
+  screenY: number;
+}
+
+interface KritzelIframeContextMenuMessage {
+  type: typeof IFRAME_CONTEXT_MENU_MESSAGE;
+  clientX: number;
+  clientY: number;
+  button: number;
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+}
+
+const iframePointerBridgeStarts = new WeakMap<HTMLIFrameElement, KritzelIframePointerBridgeStart>();
 
 export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> implements KritzelEmbeddedObject {
   override __class__: string = 'KritzelIframeObject';
@@ -283,7 +307,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     const css = this.css.replace(/<\/style/gi, '<\\/style');
     const script = this.script.replace(/<\/script/gi, '<\\/script');
     const computedStyle = this.isMounted ? getComputedStyle(this.elementRef) : null;
-    const defaultCursor = computedStyle?.cursor || 'auto';
+    const defaultCursor = computedStyle?.getPropertyValue('--kritzel-global-default-cursor').trim() || 'auto';
     const pointerCursor = computedStyle?.getPropertyValue('--kritzel-global-pointer-cursor').trim() || defaultCursor;
 
     return `<!doctype html>
@@ -325,6 +349,8 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
         pointerType: event.pointerType,
         clientX: event.clientX,
         clientY: event.clientY,
+        screenX: event.screenX,
+        screenY: event.screenY,
         button: event.button,
         buttons: event.buttons,
         shiftKey: event.shiftKey,
@@ -351,6 +377,19 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
       };
       document.addEventListener('pointerup', finishPointerBridge);
       document.addEventListener('pointercancel', finishPointerBridge);
+      document.addEventListener('contextmenu', event => {
+        event.preventDefault();
+        parent.postMessage({
+          type: '${IFRAME_CONTEXT_MENU_MESSAGE}',
+          clientX: event.clientX,
+          clientY: event.clientY,
+          button: event.button,
+          shiftKey: event.shiftKey,
+          ctrlKey: event.ctrlKey,
+          altKey: event.altKey,
+          metaKey: event.metaKey,
+        }, '*');
+      });
       ${script}
     <\/script>
   </body>
@@ -368,6 +407,11 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
       return;
     }
 
+    if (message.type === IFRAME_CONTEXT_MENU_MESSAGE) {
+      this.dispatchContextMenuMessage(event.data as KritzelIframeContextMenuMessage);
+      return;
+    }
+
     if (message.type !== IFRAME_STATE_MESSAGE || !message.state || typeof message.state !== 'object') {
       return;
     }
@@ -382,16 +426,60 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     }
 
     const iframeRect = this.elementRef.getBoundingClientRect();
+    if (message.eventType === 'pointerdown') {
+      iframePointerBridgeStarts.set(this.elementRef, {
+        pointerId: message.pointerId,
+        clientX: iframeRect.left + message.clientX,
+        clientY: iframeRect.top + message.clientY,
+        screenX: message.screenX,
+        screenY: message.screenY,
+      });
+    }
+
+    const bridgeStart = iframePointerBridgeStarts.get(this.elementRef);
+    const hasBridgeStart = bridgeStart?.pointerId === message.pointerId;
+    const clientX = hasBridgeStart ? bridgeStart.clientX + message.screenX - bridgeStart.screenX : iframeRect.left + message.clientX;
+    const clientY = hasBridgeStart ? bridgeStart.clientY + message.screenY - bridgeStart.screenY : iframeRect.top + message.clientY;
+
     this.elementRef.dispatchEvent(new PointerEvent(message.eventType, {
       bubbles: true,
       composed: true,
       cancelable: true,
       pointerId: message.pointerId,
       pointerType: message.pointerType,
+      clientX,
+      clientY,
+      screenX: message.screenX,
+      screenY: message.screenY,
+      button: message.button,
+      buttons: message.buttons,
+      shiftKey: message.shiftKey,
+      ctrlKey: message.ctrlKey,
+      altKey: message.altKey,
+      metaKey: message.metaKey,
+    }));
+
+    if (message.eventType === 'pointerup' || message.eventType === 'pointercancel') {
+      iframePointerBridgeStarts.delete(this.elementRef);
+    }
+  }
+
+  private dispatchContextMenuMessage(message: KritzelIframeContextMenuMessage): void {
+    if (!this.isMounted || !this.elementRef) {
+      return;
+    }
+
+    const iframeRect = this.elementRef.getBoundingClientRect();
+
+    // Dispatched as a MouseEvent (not PointerEvent) to mirror how browsers
+    // natively raise 'contextmenu' for both mouse right-click and touch long-press.
+    this.elementRef.dispatchEvent(new MouseEvent('contextmenu', {
+      bubbles: true,
+      composed: true,
+      cancelable: true,
       clientX: iframeRect.left + message.clientX,
       clientY: iframeRect.top + message.clientY,
       button: message.button,
-      buttons: message.buttons,
       shiftKey: message.shiftKey,
       ctrlKey: message.ctrlKey,
       altKey: message.altKey,
