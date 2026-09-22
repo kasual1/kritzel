@@ -18,11 +18,11 @@ import {
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
-import { CounterWidgetComponent, createCounterWidgetInitialState } from './counter-widget.component';
+import { CalculatorWidgetComponent, CalculatorWidgetState, createCalculatorWidgetInitialState } from './calculator-widget.component';
 
-const COUNTER_RENDERER_KEY = 'angular-dynamic-object-counter';
+const CALCULATOR_RENDERER_KEY = 'angular-dynamic-object-calculator';
 
-type CounterRendererContext = {
+type CalculatorRendererContext = {
   object: KritzelDynamicObject;
   container: HTMLElement | null;
   data?: unknown;
@@ -55,7 +55,7 @@ type CounterRendererContext = {
 export class DynamicObjectsComponentComponent implements OnDestroy {
   private readonly appRef = inject(ApplicationRef);
   private readonly environmentInjector = inject(EnvironmentInjector);
-  private readonly mountedCounters = new Map<string, ComponentRef<CounterWidgetComponent>>();
+  private readonly mountedCalculators = new Map<string, ComponentRef<CalculatorWidgetComponent>>();
 
   themes = [angularThemeLight, angularThemeDark];
   workspaces = signal([
@@ -63,36 +63,38 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
   ]);
 
   constructor() {
-    KritzelDynamicObjectRendererRegistry.register(COUNTER_RENDERER_KEY, {
-      onMount: ({ object, container, data }: CounterRendererContext) => {
+    KritzelDynamicObjectRendererRegistry.register(CALCULATOR_RENDERER_KEY, {
+      onMount: ({ object, container, data }: CalculatorRendererContext) => {
         if (!container) {
           return;
         }
 
-        let componentRef = this.mountedCounters.get(object.id);
+        container.style.overflow = 'visible';
+
+        let componentRef = this.mountedCalculators.get(object.id);
         const isFirstMount = !componentRef;
 
         if (!componentRef) {
-          componentRef = createComponent(CounterWidgetComponent, {
+          componentRef = createComponent(CalculatorWidgetComponent, {
             environmentInjector: this.environmentInjector,
           });
           this.appRef.attachView(componentRef.hostView);
-          this.mountedCounters.set(object.id, componentRef);
+          this.mountedCalculators.set(object.id, componentRef);
         }
 
         if (isFirstMount) {
-          componentRef.instance.initializeFromState(data as { count: number } | undefined);
+          componentRef.instance.initializeFromState(data as CalculatorWidgetState | undefined);
         }
         componentRef.changeDetectorRef.detectChanges();
 
         container.innerHTML = '';
         container.appendChild(componentRef.location.nativeElement);
       },
-      onSerialize: ({ object, data }: CounterRendererContext) => {
-        return this.mountedCounters.get(object.id)?.instance.exportState() ?? data ?? createCounterWidgetInitialState();
+      onSerialize: ({ object, data }: CalculatorRendererContext) => {
+        return this.mountedCalculators.get(object.id)?.instance.exportState() ?? data ?? createCalculatorWidgetInitialState();
       },
-      onUnmount: ({ object, container }: CounterRendererContext) => {
-        const componentRef = this.mountedCounters.get(object.id);
+      onUnmount: ({ object, container }: CalculatorRendererContext) => {
+        const componentRef = this.mountedCalculators.get(object.id);
 
         if (!componentRef) {
           return undefined;
@@ -102,7 +104,7 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
 
         this.appRef.detachView(componentRef.hostView);
         componentRef.destroy();
-        this.mountedCounters.delete(object.id);
+        this.mountedCalculators.delete(object.id);
 
         if (container) {
           container.innerHTML = '';
@@ -115,16 +117,16 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
 
   private createInitialDynamicObject(): KritzelDynamicObject {
     const placeholder = document.createElement('div');
-    placeholder.textContent = 'Loading Counter...';
+    placeholder.textContent = 'Loading Calculator...';
 
     const dynamicObject = new KritzelDynamicObject({
       element: placeholder,
-      rendererKey: COUNTER_RENDERER_KEY,
-      rendererData: createCounterWidgetInitialState(),
-      translateX: -150,
-      translateY: -90,
+      rendererKey: CALCULATOR_RENDERER_KEY,
+      rendererData: createCalculatorWidgetInitialState(),
+      translateX: -130,
+      translateY: -190,
       width: 260,
-      height: 160,
+      height: 320,
     });
 
     dynamicObject.isRotatable = false;
@@ -133,12 +135,12 @@ export class DynamicObjectsComponentComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.mountedCounters.forEach((componentRef) => {
+    this.mountedCalculators.forEach((componentRef) => {
       this.appRef.detachView(componentRef.hostView);
       componentRef.destroy();
     });
-    this.mountedCounters.clear();
+    this.mountedCalculators.clear();
 
-    KritzelDynamicObjectRendererRegistry.unregister(COUNTER_RENDERER_KEY);
+    KritzelDynamicObjectRendererRegistry.unregister(CALCULATOR_RENDERER_KEY);
   }
 }

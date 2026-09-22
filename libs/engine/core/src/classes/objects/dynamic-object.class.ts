@@ -162,7 +162,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
 
   private applyInteractiveState(): void {
     const pointerEvents = this.isInteractive ? 'auto' : 'none';
-    const contentCursor = this.isInteractive ? 'auto' : '';
+    const contentCursor = this.isInteractive ? 'var(--kritzel-global-default-cursor, auto)' : '';
 
     if (this.element) {
       this.element.style.pointerEvents = pointerEvents;

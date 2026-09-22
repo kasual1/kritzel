@@ -215,7 +215,7 @@ describe('KritzelDynamicObject', () => {
       obj.mount(container);
 
       expect(innerElement.style.pointerEvents).toBe('auto');
-      expect(innerElement.style.cursor).toBe('auto');
+      expect(innerElement.style.cursor).toBe('var(--kritzel-global-default-cursor, auto)');
     });
 
     it('should blur focused descendants when interactivity is disabled', () => {
@@ -303,6 +303,7 @@ describe('KritzelDynamicObject', () => {
 
       expect(container.style.pointerEvents).toBe('auto');
       expect(mountedHost.style.pointerEvents).toBe('auto');
+      expect(mountedHost.style.cursor).toBe('var(--kritzel-global-default-cursor, auto)');
 
       KritzelDynamicObjectRendererRegistry.unregister(rendererKey);
     });
