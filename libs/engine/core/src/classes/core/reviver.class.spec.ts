@@ -6,6 +6,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelDynamicObject } from '../objects/dynamic-object.class';
+import { KritzelIframeObject } from '../objects/iframe.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelWorkspace } from './workspace.class';
@@ -23,6 +24,7 @@ jest.mock('../objects/text.class');
 jest.mock('../objects/shape.class');
 jest.mock('../objects/image.class');
 jest.mock('../objects/dynamic-object.class');
+jest.mock('../objects/iframe.class');
 jest.mock('../objects/selection-group.class');
 jest.mock('../objects/group.class');
 jest.mock('./workspace.class', () => ({
@@ -299,6 +301,27 @@ describe('KritzelReviver', () => {
         const result = reviver.revive(serialized);
 
         expect(KritzelDynamicObject.create).toHaveBeenCalledWith(mockCore);
+        expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
+        expect(result).toBe(mockDeserializable.instance);
+      });
+    });
+
+    describe('KritzelIframeObject revival', () => {
+      it('should revive a KritzelIframeObject object', () => {
+        const mockDeserializable = createMockDeserializable('KritzelIframeObject');
+        (KritzelIframeObject.create as jest.Mock).mockReturnValue({
+          deserialize: mockDeserializable.deserialize,
+        });
+
+        const serialized = {
+          __class__: 'KritzelIframeObject',
+          html: '<main>Embedded</main>',
+          state: { ready: true },
+        };
+
+        const result = reviver.revive(serialized);
+
+        expect(KritzelIframeObject.create).toHaveBeenCalledWith(mockCore);
         expect(mockDeserializable.deserialize).toHaveBeenCalledWith(serialized);
         expect(result).toBe(mockDeserializable.instance);
       });

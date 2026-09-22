@@ -27,6 +27,7 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../constants/engine.constants';
 import { KritzelDynamicObject } from '../../classes/objects/dynamic-object.class';
+import { KritzelIframeObject } from '../../classes/objects/iframe.class';
 import { KritzelWorkspace, WORKSPACE_EXPORT_VERSION } from '../../classes/core/workspace.class';
 import { KritzelReviver } from '../../classes/core/reviver.class';
 import { KritzelEngineState } from '../../interfaces/engine-state.interface';
@@ -432,7 +433,7 @@ export class KritzelEngine {
 
     if (
       hoveredObject &&
-      ObjectHelper.isClass<KritzelDynamicObject>(hoveredObject, 'KritzelDynamicObject') &&
+      ObjectHelper.isKritzelEmbeddedObject(hoveredObject) &&
       KritzelWheelHelper.shouldKeepWheelInDynamicObject(ev, hoveredObject)
     ) {
       return;
@@ -565,7 +566,7 @@ export class KritzelEngine {
     }
 
     const object = this.core.store.objects.findById(objectElement.id);
-    if (!object || !KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject')) {
+    if (!object || !ObjectHelper.isKritzelEmbeddedObject(object)) {
       return false;
     }
 
@@ -578,13 +579,7 @@ export class KritzelEngine {
       return false;
     }
 
-    const potentialRoots: HTMLElement[] = [];
-    if (object.element instanceof HTMLElement) {
-      potentialRoots.push(object.element);
-    }
-    if (object.elementRef instanceof HTMLElement) {
-      potentialRoots.push(object.elementRef);
-    }
+    const potentialRoots = object.getEmbeddedContentRoots();
 
     if (potentialRoots.length === 0) {
       return false;
@@ -3180,7 +3175,7 @@ export class KritzelEngine {
         return 'auto';
       }
 
-      if (object.objects.length === 1 && KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object.objects[0], 'KritzelDynamicObject')) {
+      if (object.objects.length === 1 && ObjectHelper.isKritzelEmbeddedObject(object.objects[0])) {
         return 'none';
       }
 
@@ -3190,7 +3185,7 @@ export class KritzelEngine {
     // Track visible dynamic objects and unmount culled ones
     const currentVisibleDynamicObjects = new Set<string>();
     visibleObjects.forEach(object => {
-      if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
+      if (ObjectHelper.isKritzelEmbeddedObject(object)) {
         currentVisibleDynamicObjects.add(object.id);
       }
     });
@@ -3199,8 +3194,8 @@ export class KritzelEngine {
     this._previousVisibleDynamicObjects.forEach(id => {
       if (!currentVisibleDynamicObjects.has(id)) {
         const object = this.core.store.objects.findById(id);
-        if (object && KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
-          (object as any).unmount();
+        if (object && ObjectHelper.isKritzelEmbeddedObject(object)) {
+          object.unmount();
         }
       }
     });
@@ -3479,6 +3474,48 @@ export class KritzelEngine {
                       display: 'block',
                     }}
                   ></div>
+                )}
+
+                {KritzelClassHelper.isInstanceOf<KritzelIframeObject>(object, 'KritzelIframeObject') && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      left: '0',
+                      top: '0',
+                      width: object.totalWidth + 'px',
+                      height: object.totalHeight + 'px',
+                      transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
+                      transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
+                      opacity: effectiveOpacityString,
+                      backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
+                      borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
+                      borderWidth: object.borderWidth + 'px',
+                      borderStyle: 'solid',
+                      overflow: 'hidden',
+                      display: 'block',
+                      pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                    }}
+                  >
+                    <iframe
+                      ref={element => element && object.mount(element)}
+                      title={object.title}
+                      sandbox={object.sandboxAttribute}
+                      style={{
+                        display: 'block',
+                        width: '100%',
+                        height: '100%',
+                        border: '0',
+                        pointerEvents: object.isInteractive ? 'auto' : 'none',
+                      }}
+                    ></iframe>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        inset: '0',
+                        pointerEvents: object.isInteractive ? 'none' : 'auto',
+                      }}
+                    ></div>
+                  </div>
                 )}
 
                 {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && !this.core.displaySelectionLineUI(object) && (

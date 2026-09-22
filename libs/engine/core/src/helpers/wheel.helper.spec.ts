@@ -1,6 +1,11 @@
 import { KritzelWheelHelper } from './wheel.helper';
 
 describe('KritzelWheelHelper', () => {
+  const createEmbeddedObject = (root: HTMLElement, isSelected: boolean = true) => ({
+    isSelected,
+    getEmbeddedContentRoots: () => [root],
+  }) as any;
+
   const createWheelEvent = (overrides: Partial<WheelEvent> = {}): WheelEvent =>
     ({
       ctrlKey: false,
@@ -28,7 +33,7 @@ describe('KritzelWheelHelper', () => {
 
   it('returns false when no scroll container is found', () => {
     const root = document.createElement('div');
-    const dynamicObject = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = createEmbeddedObject(root);
 
     const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
@@ -43,7 +48,7 @@ describe('KritzelWheelHelper', () => {
 
   it('returns false when the dynamic object has no scrollable content', () => {
     const root = document.createElement('div');
-    const dynamicObject = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = createEmbeddedObject(root);
 
     const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
@@ -66,7 +71,7 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     root.appendChild(scrollHost);
 
-    const dynamicObject = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = createEmbeddedObject(root);
 
     const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
@@ -89,7 +94,7 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     root.appendChild(scrollHost);
 
-    const dynamicObject = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = createEmbeddedObject(root);
 
     const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
@@ -112,7 +117,7 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     root.appendChild(scrollHost);
 
-    const dynamicObject = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = createEmbeddedObject(root);
 
     const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({
@@ -135,7 +140,7 @@ describe('KritzelWheelHelper', () => {
     const root = document.createElement('div');
     root.appendChild(scrollHost);
 
-    const dynamicObject = { isSelected: true, elementRef: root } as any;
+    const dynamicObject = createEmbeddedObject(root);
 
     const result = KritzelWheelHelper.shouldKeepWheelInDynamicObject(
       createWheelEvent({

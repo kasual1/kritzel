@@ -20,6 +20,7 @@ export * from './classes/objects/line.class';
 export * from './classes/objects/group.class';
 export * from './classes/objects/shape.class';
 export * from './classes/objects/dynamic-object.class';
+export * from './classes/objects/iframe.class';
 export * from './classes/objects/selection-group.class';
 export * from './classes/objects/selection-box.class';
 
@@ -69,6 +70,7 @@ export * from './interfaces/menu-item.interface';
 export * from './interfaces/object-export.interface';
 export * from './interfaces/object-change-event.interface';
 export * from './interfaces/dynamic-object-renderer.interface';
+export * from './interfaces/embedded-object.interface';
 export * from './interfaces/sync-provider.interface';
 export * from './interfaces/sync-config.interface';
 export * from './interfaces/asset.interface';

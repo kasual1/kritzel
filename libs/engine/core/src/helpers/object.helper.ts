@@ -1,3 +1,5 @@
+import { KritzelEmbeddedObject } from '../interfaces/embedded-object.interface';
+
 export class ObjectHelper {
   static generateUUID(length: number = 16): string {
     const alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -17,6 +19,23 @@ export class ObjectHelper {
 
   static isClass<T>(object: unknown, className: string): object is T {
     return !!object && (object as { __class__?: string }).__class__ === className;
+  }
+
+  static isKritzelEmbeddedObject(object: unknown): object is KritzelEmbeddedObject {
+    if (!object || typeof object !== 'object') {
+      return false;
+    }
+
+    const candidate = object as Partial<KritzelEmbeddedObject>;
+    return (
+      typeof candidate.isInteractive === 'boolean' &&
+      typeof candidate.isSelected === 'boolean' &&
+      typeof candidate.mount === 'function' &&
+      typeof candidate.unmount === 'function' &&
+      typeof candidate.setIsInteractive === 'function' &&
+      typeof candidate.hasFocusedInputElement === 'function' &&
+      typeof candidate.getEmbeddedContentRoots === 'function'
+    );
   }
 
   static isKritzelExportable(object: unknown): object is { getSupportedExportFormats(): string[]; exportAs(format: string, context: unknown): Promise<string | null> } {
