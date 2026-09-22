@@ -1,0 +1,26 @@
+.linkContent {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.linkLabel {
+  min-width: 0;
+}
+
+.badge {
+  background: #f3f5f7;
+  border: 1px solid #dce1e6;
+  border-radius: 999px;
+  color: #5f6975;
+  flex: 0 0 auto;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  margin-left: auto;
+  padding: 0.24rem 0.48rem;
+  text-transform: uppercase;
+}

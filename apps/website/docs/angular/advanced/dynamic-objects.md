@@ -62,6 +62,18 @@ Always unregister the renderer, and detach/destroy any mounted component views, 
   repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-component.component.ts']}
 />
 
+## Rendering Runtime Sandbox Content
+
+For user-authored or LLM-authored content, a registered renderer can host a sandboxed iframe inside a dynamic object. Kritzel still owns selection, movement, resizing, workspace persistence, and copy/paste, while the iframe owns the generated HTML, CSS, JavaScript, and local interaction state.
+
+This example uses predefined mock responses rather than an LLM. The button swaps the serialized component definition and updates the mounted iframe, showing the runtime flow without executing external generated code.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  demoPath="/advanced/dynamic-objects/iframe"
+  repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-iframe.component.ts']}
+/>
+
 ## API Details
 
 For the full list of related APIs, see the following reference sections.

@@ -829,7 +829,12 @@ describe('KritzelEngine', () => {
       const dynamicObjectObject = {
         id: 'custom-1',
         isInteractive: true,
-        element: embeddedRoot,
+        isSelected: true,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        setIsInteractive: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => [embeddedRoot]),
       } as any;
 
       (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
@@ -851,8 +856,18 @@ describe('KritzelEngine', () => {
       objectElement.id = 'custom-2';
       objectElement.classList.add('object');
 
-      const nonSelectedDynamicObject = { id: 'custom-2', isInteractive: true } as any;
-      const differentSelectedDynamicObject = { id: 'custom-1', isInteractive: true } as any;
+      const createEmbeddedObject = (id: string) => ({
+        id,
+        isInteractive: true,
+        isSelected: true,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        setIsInteractive: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => []),
+      });
+      const nonSelectedDynamicObject = createEmbeddedObject('custom-2');
+      const differentSelectedDynamicObject = createEmbeddedObject('custom-1');
       (core.store.objects.findById as jest.Mock).mockReturnValue(nonSelectedDynamicObject);
       core.store.selectionGroup = { objects: [differentSelectedDynamicObject] };
       (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
@@ -945,8 +960,12 @@ describe('KritzelEngine', () => {
       const dynamicObjectObject = {
         id: 'custom-3',
         isInteractive: true,
-        element: document.createElement('div'),
-        elementRef: rendererContainer,
+        isSelected: true,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        setIsInteractive: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => [rendererContainer]),
       } as any;
 
       (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
@@ -989,8 +1008,12 @@ describe('KritzelEngine', () => {
       const dynamicObjectObject = {
         id: 'custom-4',
         isInteractive: true,
-        element: document.createElement('div'),
-        elementRef: rendererContainer,
+        isSelected: true,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        setIsInteractive: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => [rendererContainer]),
       } as any;
 
       (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
@@ -1231,6 +1254,16 @@ describe('KritzelEngine', () => {
   });
 
   describe('wheel interaction gating', () => {
+    const createEmbeddedObject = (roots: HTMLElement[]) => ({
+      isInteractive: true,
+      isSelected: true,
+      mount: jest.fn(),
+      unmount: jest.fn(),
+      setIsInteractive: jest.fn(),
+      hasFocusedInputElement: jest.fn(),
+      getEmbeddedContentRoots: jest.fn(() => roots),
+    });
+
     const createWheelEvent = (overrides: Partial<WheelEvent> = {}): WheelEvent =>
       ({
         ctrlKey: false,
@@ -1308,8 +1341,8 @@ describe('KritzelEngine', () => {
       objectElement.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
+        ...createEmbeddedObject([objectElement]),
         __class__: 'KritzelDynamicObject',
-        isSelected: true,
         elementRef: objectElement,
       } as any;
 
@@ -1333,8 +1366,8 @@ describe('KritzelEngine', () => {
       const objectElement = document.createElement('div');
 
       const hoveredDynamicObject = {
+        ...createEmbeddedObject([objectElement]),
         __class__: 'KritzelDynamicObject',
-        isSelected: true,
         elementRef: objectElement,
       } as any;
 
@@ -1415,8 +1448,8 @@ describe('KritzelEngine', () => {
       objectElement.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
+        ...createEmbeddedObject([objectElement]),
         __class__: 'KritzelDynamicObject',
-        isSelected: true,
         elementRef: objectElement,
       } as any;
 
@@ -1479,8 +1512,8 @@ describe('KritzelEngine', () => {
       typoRefContainer.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
+        ...createEmbeddedObject([]),
         __class__: 'KritzelDynamicObject',
-        isSelected: true,
         elmeentRef: typoRefContainer,
       } as any;
 
@@ -1506,8 +1539,8 @@ describe('KritzelEngine', () => {
       objectElement.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
+        ...createEmbeddedObject([objectElement]),
         __class__: 'KritzelDynamicObject',
-        isSelected: true,
         elementRef: objectElement,
       } as any;
 
@@ -1540,8 +1573,8 @@ describe('KritzelEngine', () => {
       objectElement.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
+        ...createEmbeddedObject([objectElement]),
         __class__: 'KritzelDynamicObject',
-        isSelected: true,
         elementRef: objectElement,
       } as any;
 
@@ -1573,8 +1606,8 @@ describe('KritzelEngine', () => {
       objectElement.appendChild(scrollHost);
 
       const hoveredDynamicObject = {
+        ...createEmbeddedObject([objectElement]),
         __class__: 'KritzelDynamicObject',
-        isSelected: true,
         elementRef: objectElement,
       } as any;
 

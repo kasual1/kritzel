@@ -23,6 +23,7 @@ import { KritzelLicenseManager } from '../managers/license.manager';
 import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
 import type { KritzelText } from '../objects/text.class';
 import type { KritzelImage } from '../objects/image.class';
@@ -571,8 +572,8 @@ export class KritzelCore {
    * object set stays exactly what the caller declared.
    */
   private detachObject(object: KritzelBaseObject<any>): void {
-    if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
-      (object as any).unmount();
+    if (ObjectHelper.isKritzelEmbeddedObject(object)) {
+      object.unmount();
     }
     object.isMounted = false;
   }
@@ -910,9 +911,8 @@ export class KritzelCore {
       });
     }
 
-    // Unmount dynamic objects before removal
-    if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
-      (object as any).unmount();
+    if (ObjectHelper.isKritzelEmbeddedObject(object)) {
+      object.unmount();
     }
 
     // Handle anchor cleanup
@@ -963,13 +963,8 @@ export class KritzelCore {
     this.removeSelectionBox();
 
     for (const object of selectionGroup.objects ?? []) {
-      if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelDynamicObject')) {
-        const dynamicObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
-        if (typeof dynamicObject.setIsInteractive === 'function') {
-          dynamicObject.setIsInteractive(true);
-        } else {
-          dynamicObject.isInteractive = true;
-        }
+      if (ObjectHelper.isKritzelEmbeddedObject(object)) {
+        object.setIsInteractive(true);
       }
     }
 
@@ -994,13 +989,8 @@ export class KritzelCore {
     selectionGroup.deselectAllChildren?.();
 
     for (const object of selectionGroup.objects ?? []) {
-      if (KritzelClassHelper.isInstanceOf<KritzelBaseObject<any>>(object, 'KritzelDynamicObject')) {
-        const dynamicObject = object as KritzelBaseObject<any> & { setIsInteractive?: (isInteractive: boolean) => void };
-        if (typeof dynamicObject.setIsInteractive === 'function') {
-          dynamicObject.setIsInteractive(false);
-        } else {
-          dynamicObject.isInteractive = false;
-        }
+      if (ObjectHelper.isKritzelEmbeddedObject(object)) {
+        object.setIsInteractive(false);
       }
     }
   }
