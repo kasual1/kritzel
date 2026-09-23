@@ -70,18 +70,44 @@ const CALCULATOR_BASE_CSS = `
   .has-toggle.is-simple .equals { grid-column: 4; grid-row: 3 / span 2; }
 `;
 
-const CALCULATOR_LOADING_CSS = `
-  ${CALCULATOR_BASE_CSS}
-  body { background: #eef1f4; }
-  .calculator-card {
+const IFRAME_LOADING_CONTENT: RuntimeIframeDefinition['content'] = {
+  html: `
+    <main class="loading-surface" aria-busy="true" aria-label="Generating content">
+      <span class="sr-only">Generating content</span>
+      <div class="loading-header">
+        <span class="placeholder placeholder-title"></span>
+        <span class="placeholder placeholder-chip"></span>
+      </div>
+      <span class="placeholder placeholder-line placeholder-line-long"></span>
+      <span class="placeholder placeholder-line placeholder-line-short"></span>
+      <div class="placeholder placeholder-preview"></div>
+      <div class="loading-actions">
+        <span class="placeholder placeholder-action"></span>
+        <span class="placeholder placeholder-action"></span>
+        <span class="placeholder placeholder-action"></span>
+      </div>
+    </main>
+  `,
+  css: `
+  :root { background: #eef1f4; }
+  body { display: flex; margin: 0; padding: 0; box-sizing: border-box; background: #eef1f4; font-family: Roboto, sans-serif; }
+  .loading-surface {
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    border: 1px solid #e1e6eb;
+    border-radius: 12px;
+    box-sizing: border-box;
     overflow: hidden;
     background: linear-gradient(90deg, #edf1f4 0%, #f4f6f8 25%, #ebeff3 50%, #f4f6f8 75%, #edf1f4 100%);
     background-size: 200% 100%;
     animation: shimmer 1.25s linear infinite;
-    border-color: #e5e7eb;
   }
-  .calculator-card::after {
+  .loading-surface::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -89,14 +115,24 @@ const CALCULATOR_LOADING_CSS = `
     transform: translateX(-100%);
     animation: sweep 1.25s ease-in-out infinite;
   }
-  .display, button {
-    border-color: rgba(148, 163, 184, 0.3);
-    background: rgba(255,255,255,0.38);
-    color: #a0a8b3;
+  .loading-header, .loading-actions { display: flex; align-items: center; gap: 9px; }
+  .loading-header { justify-content: space-between; margin-bottom: 4px; }
+  .loading-actions { margin-top: auto; }
+  .placeholder {
+    display: block;
+    flex: none;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.52);
   }
-  .mode-label { color: #9ca3af; }
-  button { opacity: 0.8; cursor: wait; }
-  .display { color: #a0a8b3; }
+  .placeholder-title { width: 42%; height: 20px; }
+  .placeholder-chip { width: 54px; height: 18px; border-radius: 9px; }
+  .placeholder-line { height: 10px; }
+  .placeholder-line-long { width: 76%; }
+  .placeholder-line-short { width: 54%; }
+  .placeholder-preview { flex: 1; width: 100%; min-height: 90px; margin-top: 4px; border-radius: 8px; }
+  .placeholder-action { width: 58px; height: 28px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   @keyframes shimmer {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
@@ -105,7 +141,9 @@ const CALCULATOR_LOADING_CSS = `
     0% { transform: translateX(-120%); }
     100% { transform: translateX(120%); }
   }
-`;
+  `,
+  script: '',
+};
 
 const CALCULATOR_SCRIPT = `
   const root = document.querySelector('.calculator-card');
@@ -228,34 +266,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
       css: CALCULATOR_BASE_CSS,
       script: CALCULATOR_SCRIPT,
     },
-    loadingContent: {
-      html: `
-        <main class="calculator-card is-simple">
-          <div class="header"><h2>Loading Calculator</h2><span id="mode-label" class="mode-label">loading</span></div>
-          <output id="display" class="display" aria-live="polite">…</output>
-          <div class="keypad simple-grid">
-            <button class="muted" type="button" disabled>•</button>
-            <button class="muted" type="button" disabled>•</button>
-            <button class="muted" type="button" disabled>•</button>
-            <button class="muted" type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button class="muted" type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-            <button type="button" disabled>•</button>
-          </div>
-        </main>
-      `,
-      css: CALCULATOR_LOADING_CSS,
-      script: '',
-    },
+    loadingContent: IFRAME_LOADING_CONTENT,
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'simple' },
   },
   {
@@ -277,23 +288,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
       css: CALCULATOR_BASE_CSS,
       script: CALCULATOR_SCRIPT,
     },
-    loadingContent: {
-      html: `
-        <main class="calculator-card">
-          <div class="header"><h2>Loading Calculator</h2><span id="mode-label" class="mode-label">loading</span></div>
-          <output id="display" class="display" aria-live="polite">…</output>
-          <div class="keypad scientific-grid">
-            <button class="muted" type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button>
-            <button type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button>
-            <button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button>
-            <button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button class="equals" type="button" disabled>•</button>
-            <button class="zero" type="button" disabled>•</button><button type="button" disabled>•</button>
-          </div>
-        </main>
-      `,
-      css: CALCULATOR_LOADING_CSS,
-      script: '',
-    },
+    loadingContent: IFRAME_LOADING_CONTENT,
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'scientific' },
   },
   {
@@ -316,24 +311,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
       css: CALCULATOR_BASE_CSS,
       script: CALCULATOR_SCRIPT,
     },
-    loadingContent: {
-      html: `
-        <main class="calculator-card has-toggle is-simple">
-          <div class="header"><h2>Loading Calculator</h2><span id="mode-label" class="mode-label">loading</span></div>
-          <div class="toggle" aria-label="Calculator mode"><button type="button" disabled>Simple</button><button type="button" disabled>Scientific</button></div>
-          <output id="display" class="display" aria-live="polite">…</output>
-          <div class="keypad scientific-grid">
-            <button class="muted" type="button" disabled>•</button><button class="scientific-only" type="button" disabled>•</button><button class="scientific-only" type="button" disabled>•</button><button class="scientific-only" type="button" disabled>•</button><button class="scientific-only" type="button" disabled>•</button>
-            <button class="scientific-only" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button>
-            <button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button>
-            <button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button class="equals" type="button" disabled>•</button>
-            <button class="zero" type="button" disabled>•</button><button type="button" disabled>•</button>
-          </div>
-        </main>
-      `,
-      css: CALCULATOR_LOADING_CSS,
-      script: '',
-    },
+    loadingContent: IFRAME_LOADING_CONTENT,
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'simple' },
   },
 ];
