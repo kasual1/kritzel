@@ -30,7 +30,9 @@ jobs:
 
       - name: Sync public content
         run: |
-          mkdir -p public-repo/apps public-repo/libs
+          rm -rf public-repo/apps public-repo/libs public-repo/demos public-repo/editor
+          mkdir -p public-repo/demos public-repo/editor
+          cp .github/mirror/public-package.json public-repo/package.json
 
           rsync -av \
             --delete \
@@ -40,19 +42,19 @@ jobs:
             --exclude='dist/' \
             --exclude='playwright-report/' \
             --exclude='test-results/' \
-            apps/demos/ public-repo/apps/demos/
+            apps/demos/ public-repo/demos/
 
           rsync -av \
             --delete \
             --exclude='node_modules/' \
             --exclude='.stencil/' \
             --exclude='dist/' \
-            libs/editor/ public-repo/libs/editor/
+            libs/editor/ public-repo/editor/
 
       - name: "Replace file: dependencies with npm versions"
         run: |
           VERSION=${{ steps.version.outputs.version }}
-          for pkg in public-repo/apps/demos/angular/package.json public-repo/apps/demos/react/package.json public-repo/apps/demos/vue/package.json; do
+          for pkg in public-repo/demos/angular/package.json public-repo/demos/react/package.json public-repo/demos/vue/package.json; do
             jq --arg v "^$VERSION" '
               .dependencies |= with_entries(
                 if .value | startswith("file:") then .value = $v else . end
