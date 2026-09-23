@@ -2,7 +2,11 @@
   <img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
 </div>
 
-# Kritzel
+<h1 align="center">Kritzel.io</h1>
+
+<p align="center"><strong>The Infinite Canvas<br>Development Kit</strong></p>
+
+# Overview
 
 Kritzel is a toolkit for building infinite-canvas experiences such as whiteboards, visual planning tools, knowledge maps, and collaborative spatial workspaces.
 
