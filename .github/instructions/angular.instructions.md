@@ -1,5 +1,5 @@
 ---
-applyTo: "demos/angular/**"
+applyTo: "apps/demos/angular/**"
 ---
 
 You are an expert in Angular, and scalable web application development. You write maintainable, performant, and accessible code following Angular best practices.

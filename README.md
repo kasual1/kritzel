@@ -1,12 +1,12 @@
 # Developer Guide
 Currently this serves as a short guide to remember important concepts and commands that are often used during development. 
 
-The main development of the kritzel-library is taking place under "libs/kritzel-stencil". The other directories under "libs" are the output target of stencil. With every new build stencil automatically generates code in those directories and generates their bundles, which later may be published to npm. Demo applications for testing can be found under "demos".
+The main engine development of the Kritzel library is taking place under "libs/engine/core". Editor and framework-specific package slots live under "libs/editor" and "libs/engine". With every new build Stencil automatically generates wrapper code for the configured output targets, which later may be published to npm. Demo applications for testing can be found under "apps/demos".
 
 ## Workflow
 The general workflow when working on the library may look as follows:
 
-1. Add or edit components under "libs/kritzel-stencil"
+1. Add or edit engine components and core logic under "libs/engine/core"
 2. Build libraries for all configured output targets, namely: Angular, React and Vue
 3. Test the libraries of respective output target in the demo applications
 4. When a feature is ready and has been tested with the demo applications, bump up the libraries version

@@ -7,7 +7,10 @@ loader/
 scripts/license/keys/
 
 # Playwright
-e2e/test-results/
-e2e/playwright-report/
-e2e/blob-report/
+apps/core/_e2e/test-results/
+apps/core/_e2e/playwright-report/
+apps/core/_e2e/blob-report/
+apps/demos/_e2e/test-results/
+apps/demos/_e2e/playwright-report/
+apps/demos/_e2e/blob-report/
 test-results/

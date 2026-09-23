@@ -1,0 +1,374 @@
+import { KritzelTheme } from '../interfaces/theme.interface';
+
+/**
+ * Dark theme preset
+ */
+export const darkTheme: KritzelTheme = {
+  name: 'dark',
+
+  global: {
+    borderColor: '#3a3a3a',
+    dividerColor: '#3a3a3a',
+    focusColor: '#ffffff',
+    focusRingColor: '#ffffff',
+    fontFamily: 'sans-serif',
+    iconColor: 'currentColor',
+    scrollbarThumbColor: '#555555',
+    textPrimary: '#ffffff',
+    textSecondary: '#e0e0e0',
+  },
+
+  pillTabs: {
+    background: '#3a3a3a',
+    tabBackground: 'transparent',
+    tabBackgroundHover: 'rgba(255, 255, 255, 0.08)',
+    tabBackgroundSelected: '#2a2a2a',
+    tabLabelMaxWidth: '10rem',
+    tabShadowSelected: '0 1px 3px rgba(0, 0, 0, 0.3)',
+    tabTextColor: '#999999',
+    tabTextColorSelected: '#ffffff',
+  },
+
+  textInput: {
+    background: '#1a1a1a',
+    borderColor: '#4a4a4a',
+    borderRadius: '6px',
+    focusBorderColor: '#ffffff',
+    hoverBorderColor: '#5a5a5a',
+    labelColor: '#e0e0e0',
+    placeholderColor: '#777777',
+    selectionBackground: '#0A84FF',
+    selectionColor: '#ffffff',
+    suffixBackground: '#3a3a3a',
+    suffixColor: '#aaaaaa',
+    textColor: '#e0e0e0',
+  },
+
+  selection: {
+    borderColor: '#0A84FF',
+    boxBackgroundColor: 'rgba(10, 132, 255, 0.2)',
+    boxBorderColor: 'rgba(10, 132, 255, 0.5)',
+    handleColor: '#1a1a1a',
+    handleStrokeColor: '#0A84FF'
+  },
+
+  checkerboard: {
+    colorDark: '#4a4a4a',
+    colorLight: '#3a3a3a',
+  },
+
+  backToContent: {
+    activeBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    color: '#ffffff',
+    hoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+  },
+
+  colorPalette: {
+    circleBorderColor: '#4a4a4a',
+    hoverBackgroundColor: '#3a3a3a',
+    selectedBackgroundColor: '#3a3a3a',
+  },
+
+  contextMenu: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
+    dividerColor: 'rgba(255, 255, 255, 0.1)',
+    itemActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
+    itemColor: '#e0e0e0',
+    itemDisabledColor: '#666666',
+    itemHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+  },
+
+  toolbar: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    controlActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
+    controlColor: '#ffffff',
+    controlHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    controlSelectedBackgroundColor: '#0A84FF',
+    controlSelectedColor: '#ffffff',
+    separatorColor: '#3a3a3a',
+  },
+
+  currentUserDialog: {
+    emailColor: '#999999',
+    nameColor: '#ffffff',
+  },
+
+  dialog: {
+    backdropColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    boxShadow: '0 4px 24px rgba(0, 0, 0, 0.5)',
+    closeButtonActiveBackground: 'hsl(0, 0%, 100%, 12%)',
+    closeButtonBackground: 'transparent',
+    closeButtonColor: '#e0e0e0',
+    closeButtonHoverBackground: 'hsl(0, 0%, 100%, 8%)',
+    closeButtonHoverColor: '#ffffff',
+    footerBorder: '1px solid #3a3a3a',
+    headerBorder: '1px solid #3a3a3a',
+    titleColor: '#ffffff',
+  },
+
+  loginDialog: {
+    buttonActiveBackground: '#444444',
+    buttonBackground: '#2a2a2a',
+    buttonBorderColor: '#4a4a4a',
+    buttonHoverBackground: '#3a3a3a',
+    buttonHoverBorderColor: '#5a5a5a',
+    buttonTextColor: '#e0e0e0',
+    spinnerActiveColor: '#ffffff',
+    spinnerColor: '#555555',
+    subtitleColor: '#999999',
+  },
+
+  dropdown: {
+    accentColor: '#0A84FF',
+    borderColor: '#4a4a4a',
+    borderRadius: '6px',
+    hoverBorderColor: '#5a5a5a',
+    background: '#1a1a1a',
+    hoverBackgroundColor: '#3a3a3a',
+    menuBorderRadius: '6px',
+    selectedBackgroundColor: 'rgba(10, 132, 255, 0.2)',
+    textColor: '#e0e0e0',
+  },
+
+  engine: {
+    backgroundColor: '#1a1a1a',
+  },
+
+  editor: {
+    loadingOverlayBackground: 'rgba(26, 26, 26, 0.85)',
+    loadingOverlayColor: '#e0e0e0',
+    loadingOverlaySpinnerActiveColor: '#e0e0e0',
+    loadingOverlaySpinnerColor: '#555555',
+  },
+
+  snap: {
+    indicatorFill: 'rgba(10, 132, 255, 0.35)',
+    indicatorFillInactive: 'rgba(10, 132, 255, 0.2)',
+    indicatorStroke: '#0A84FF',
+    indicatorStrokeInactive: 'rgba(255, 255, 255, 0.45)',
+    lineStroke: 'rgba(255, 255, 255, 0.35)',
+  },
+
+  fontSize: {
+    hoverBackgroundColor: '#3a3a3a',
+    selectedBackgroundColor: '#3a3a3a',
+    textColor: '#e0e0e0',
+  },
+
+  lineEndings: {
+    hoverBackgroundColor: '#3a3a3a',
+    labelColor: '#999999',
+    optionBackground: '#2a2a2a',
+    selectedBackgroundColor: '#3a3a3a',
+  },
+
+  masterDetail: {
+    backButtonColor: '#e0e0e0',
+    backgroundColor: '#2a2a2a',
+    detailBackgroundColor: '#2a2a2a',
+    detailFocusOutline: '2px solid #ffffff',
+    menuBackgroundColor: '#2a2a2a',
+    menuBorderRight: '1px solid #3a3a3a',
+    menuItemActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
+    menuItemBackgroundColor: 'transparent',
+    menuItemChevronColor: '#666666',
+    menuItemColor: '#e0e0e0',
+    menuItemDisabledColor: '#666666',
+    menuItemFocusOutline: '2px solid #ffffff',
+    menuItemHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    menuItemSelectedBackgroundColor: '#0A84FF',
+    menuItemSelectedColor: '#ffffff',
+    menuItemSelectedHoverBackgroundColor: '#0A84FF',
+  },
+
+  menu: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    itemButtonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    itemChildOpenBackgroundColor: 'hsl(0, 0%, 100%, 6%)',
+    itemColor: '#e0e0e0',
+    itemEditingBackgroundColor: '#3a3a3a',
+    itemInputBorder: '1px solid #ffffff',
+    itemInputBorderColorOnSelected: '#ffffff',
+    itemInputCaretColor: '#e0e0e0',
+    itemInputCaretColorOnSelected: '#ffffff',
+    itemInputSelectionColor: '#b0b0b0',
+    itemInputSelectionColorOnSelected: 'rgba(255, 255, 255, 0.35)',
+    itemInputSelectionTextColor: '#ffffff',
+    itemInputSelectionTextColorOnSelected: '#ffffff',
+    itemOverlayBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    itemSelectedBackgroundColor: '#0A84FF',
+    itemSelectedColor: '#ffffff',
+  },
+
+  moreMenu: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    borderRadius: '12px',
+    boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    buttonActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
+    buttonColor: '#ffffff',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    innerBorderRadius: '12px',
+  },
+
+  notificationCard: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    borderRadius: '12px',
+    boxShadow: '0 8px 20px rgba(0, 0, 0, 0.35)',
+    color: '#e0e0e0',
+    dismissButtonActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
+    dismissButtonBackgroundColor: 'transparent',
+    dismissButtonBorderRadius: '6px',
+    dismissButtonColor: '#c7c7c7',
+    dismissButtonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    dismissButtonSize: '24px',
+    errorPillBackgroundColor: '#4d1f24',
+    errorPillColor: '#ff9aa2',
+    headerGap: '8px',
+    headerMarginBottom: '8px',
+    headerRightGap: '6px',
+    infoPillBackgroundColor: '#1f2f4a',
+    infoPillColor: '#8bb7ff',
+    maxWidth: '360px',
+    messageColor: 'inherit',
+    messageFontSize: '14px',
+    messageLineHeight: '1.45',
+    padding: '12px 14px',
+    pillBackgroundColor: '#1f2f4a',
+    pillBorderRadius: '999px',
+    pillColor: '#8bb7ff',
+    pillFontSize: '12px',
+    pillFontWeight: '600',
+    pillHeight: '22px',
+    pillPadding: '0 8px',
+    timestampColor: '#a0a0a0',
+    timestampFontSize: '12px',
+    warningPillBackgroundColor: '#4a341f',
+    warningPillColor: '#ffd29a',
+  },
+
+  numericInput: {
+    borderColor: '#4a4a4a',
+    borderRadius: '6px',
+    focusBorderColor: '#ffffff',
+    hoverBorderColor: '#5a5a5a',
+    inputBackground: '#1a1a1a',
+    labelColor: '#999999',
+    selectionBackground: '#0A84FF',
+    selectionColor: '#ffffff',
+    spinnerActiveBackground: 'hsl(0, 0%, 100%, 12%)',
+    spinnerBackground: 'transparent',
+    spinnerBorderRadius: '5px',
+    spinnerColor: '#e0e0e0',
+    spinnerHoverBackground: 'hsl(0, 0%, 100%, 8%)',
+    textColor: '#e0e0e0',
+  },
+
+  opacitySlider: {
+    activeColor: '#0A84FF',
+    thumbBorderColor: '#0A84FF',
+    thumbColor: '#ffffff',
+    trackColor: '#4a4a4a',
+  },
+
+  settings: {
+    contentHeadingColor: '#ffffff',
+    contentTextColor: '#e0e0e0',
+    descriptionColor: '#999999',
+    labelColor: '#e0e0e0',
+    shortcutItemBg: '#3a3a3a',
+    shortcutKeyBg: '#2a2a2a',
+    shortcutKeyBorder: '#4a4a4a',
+    shortcutKeyColor: '#e0e0e0',
+  },
+
+  shapeFill: {
+    hoverBackgroundColor: '#3a3a3a',
+    optionBackground: '#2a2a2a',
+    selectedBackgroundColor: '#3a3a3a',
+  },
+
+  shareDialog: {
+    labelColor: '#e0e0e0',
+    descriptionColor: '#e0e0e0',
+    inputBackground: '#1a1a1a',
+    inputBorderColor: '#4a4a4a',
+    inputTextColor: '#e0e0e0',
+    selectionColor: '#0A84FF',
+    copyButtonBackground: '#2a2a2a',
+    copyButtonColor: '#e0e0e0',
+    copyButtonHoverBackground: '#3a3a3a',
+    copyButtonHoverColor: '#ffffff',
+    copySuccessBackground: '#28a745',
+    copySuccessColor: '#ffffff',
+  },
+
+  slideToggle: {
+    thumbColor: '#ffffff',
+    trackCheckedColor: '#0A84FF',
+    trackColor: '#4a4a4a',
+    transitionDuration: '0.2s',
+  },
+
+  splitButton: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    boxShadow: '0 0 6px rgba(0, 0, 0, 0.3)',
+    color: '#ffffff',
+    dividerBackgroundColor: '#3a3a3a',
+    hoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+  },
+
+  strokeSize: {
+    hoverBackgroundColor: '#3a3a3a',
+    selectedBackgroundColor: '#3a3a3a',
+  },
+
+    tooltip: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
+    color: '#ffffff',
+  },
+
+  utilityPanel: {
+    backgroundColor: '#3a3a3a',
+    buttonColor: '#e0e0e0',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    separatorColor: 'hsl(0, 0%, 100%, 12%)',
+  },
+
+
+
+  watermark: {
+    background: 'rgba(40, 40, 40, 0.6)',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.35)',
+    color: 'rgba(220, 220, 220, 0.8)',
+  },
+
+  zoomPanel: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    borderRadius: '12px',
+    boxShadow: '0 0 3px rgba(0, 0, 0, 0.4)',
+    buttonActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
+    buttonBorderRadius: '8px',
+    buttonHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+    buttonSize: '32px',
+    gap: '4px',
+    iconColor: '#e0e0e0',
+    padding: '4px',
+  },
+};

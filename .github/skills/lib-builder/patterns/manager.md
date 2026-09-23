@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/classes/managers/`
+`libs/engine/core/src/classes/managers/`
 
 ## Purpose
 

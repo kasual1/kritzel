@@ -3,8 +3,8 @@ const fs = require('fs');
 const frameworks = ['angular', 'react', 'vue'];
 
 for (const fw of frameworks) {
-    const engineFile = `c:/Projects/kritzel/website/docs/${fw}/api-reference-engine.md`;
-    const editorFile = `c:/Projects/kritzel/website/docs/${fw}/api-reference-editor.md`;
+    const engineFile = `c:/Projects/kritzel/apps/website/docs/${fw}/api-reference-engine.md`;
+    const editorFile = `c:/Projects/kritzel/apps/website/docs/${fw}/api-reference-editor.md`;
 
     if (!fs.existsSync(engineFile) || !fs.existsSync(editorFile)) {
         console.log(`Missing files for ${fw}`);

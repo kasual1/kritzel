@@ -40,13 +40,27 @@ Always treat this as cross-framework behavior, not framework-specific behavior:
 
 If the bug appears in one wrapper demo, validate the core fix in Stencil and avoid wrapper-only workarounds.
 
-## Custom-Element Runtime Note
+## Readiness Contract
 
-For custom-element object renderers, wrapper abstractions may legitimately handle framework-specific runtime behavior (for example style encapsulation and mount strategy), but they must not change the core lifecycle contract:
+`isReady` must only emit after the initial workspace is initialized, its seed objects are loaded, and the resulting scene has completed its first render. Consumers must be able to call selection, context-menu, and screenshot/export APIs directly from an `isReady` handler.
+
+Do not make demos wait for `objectsChange`, arbitrary timers, or animation frames to compensate for startup ordering. Fix readiness sequencing in the core component and add a regression test that covers the render boundary.
+
+## Dynamic Object Runtime Note
+
+For dynamic object renderers, wrapper abstractions may legitimately handle framework-specific runtime behavior (for example style encapsulation and mount strategy), but they must not change the core lifecycle contract:
 - Register renderer before object mount paths execute
 - Keep mount/unmount cleanup symmetric
 - Persist latest normalized state on unmount when renderer state is user-editable
 - Preserve wheel pass-through semantics so non-scrollable custom content does not block viewport navigation
+
+## Icon Registry Lifecycle
+
+- Register initial `customSvgIcons` in the editor's `componentWillLoad`, before child icons render, and bridge later prop replacements with `@Watch('customSvgIcons')`.
+- Wrapper inputs applied during custom-element upgrade can miss the initial watcher. Reconcile `customSvgIcons` in `componentWillRender` too, caching the last map reference to avoid repeated registrations.
+- Public engine imports and Stencil custom-element bundles can contain separate registry class instances. Share icon storage and notifications through `globalThis`, as with the font registry, and do not overwrite existing entries when seeding built-in icons.
+- Mounted icon components must refresh when their named registry entry changes. Subscribe in `connectedCallback`, unsubscribe in `disconnectedCallback`, and refresh on reconnect to pick up changes made while detached.
+- Test initial registration, late registration and replacement, separate module instances, and disconnect/reconnect behavior.
 
 ## Review Checklist
 

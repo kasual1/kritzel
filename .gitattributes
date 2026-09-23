@@ -1,5 +1,9 @@
 # Keep generated wrapper sources stable across OSes to avoid CRLF-only diffs.
-libs/kritzel-angular/projects/lib/src/lib/index.ts text eol=lf
-libs/kritzel-angular/projects/lib/src/lib/proxy.ts text eol=lf
-libs/kritzel-react/lib/components/stencil-generated/components.ts text eol=lf
-libs/kritzel-vue/lib/components.ts text eol=lf
+libs/engine/angular/projects/lib/src/lib/index.ts text eol=lf
+libs/engine/angular/projects/lib/src/lib/proxy.ts text eol=lf
+libs/engine/react/lib/components/stencil-generated/components.ts text eol=lf
+libs/engine/vue/lib/components.ts text eol=lf
+libs/editor/angular/projects/lib/src/lib/index.ts text eol=lf
+libs/editor/angular/projects/lib/src/lib/proxy.ts text eol=lf
+libs/editor/react/lib/components/stencil-generated/components.ts text eol=lf
+libs/editor/vue/lib/components.ts text eol=lf

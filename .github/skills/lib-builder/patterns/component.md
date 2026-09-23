@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/components/`
+`libs/engine/core/src/components/`
 
 Organized into:
 - `core/` — kritzel-editor, kritzel-engine, awareness

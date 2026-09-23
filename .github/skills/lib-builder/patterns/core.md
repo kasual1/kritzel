@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/classes/core/core.class.ts`
+`libs/engine/core/src/classes/core/core.class.ts`
 
 ## Purpose
 

@@ -4,12 +4,12 @@
 
 Example pages demonstrate a single Kritzel feature through multiple **self-contained, realistic use cases**. Each example on the page is a complete, copy-paste-ready implementation that solves a real scenario a developer might encounter. Examples are ordered from simple to advanced, but every example stands alone — a developer can grab any single one without needing the others.
 
-Each page lives at `website/docs/angular/example-<feature>.md` and uses the `<LiveDemo>` component to embed hosted previews alongside fetched source code.
+Each page lives at `apps/website/docs/angular/examples/<feature>.md` and uses the `<LiveDemo>` component to embed hosted previews alongside fetched source code.
 
 ## File Naming & Location
 
-- File: `website/docs/angular/example-<feature>.md`
-- Sidebar registration: add page ID (`example-<feature>`) to the `'Examples'` category in `website/sidebars.ts`
+- File: `apps/website/docs/angular/examples/<feature>.md`
+- Sidebar registration: add page ID (`examples/<feature>`) to the `'Examples'` category in `apps/website/sidebars.ts`
 
 ## Frontmatter
 
@@ -76,7 +76,7 @@ Each example includes a `<LiveDemo>` block that renders an iframe preview and fe
 The actual Angular components backing each example live in:
 
 ```
-demos/angular/src/app/examples/<feature>/
+apps/demos/angular/src/app/examples/<feature>/
 ├── <feature>-<example-name>.component.ts
 ├── <feature>-<example-name>.component.ts
 └── ...
@@ -168,7 +168,7 @@ When editing an existing example page:
 
 1. Read the current page to understand the existing scenarios.
 2. Identify whether the new content fits as a new scenario (append) or refines an existing one (edit in place).
-3. Ensure corresponding demo components exist in `demos/angular/src/app/examples/<feature>/`.
+3. Ensure corresponding demo components exist in `apps/demos/angular/src/app/examples/<feature>/`.
 4. Verify routes are registered in the Angular demo's router config.
 5. Each example component file should be named after the scenario slug, not a number (e.g., `custom-toolbar-annotation.component.ts` not `custom-toolbar-1.component.ts`). During the transition period, numbered files are acceptable.
 
@@ -209,7 +209,7 @@ Readers copy these examples as starting points. If custom UI uses generic colors
 
 ## Relationship to Other Frameworks
 
-Example pages are written for **Angular only**. The React and Vue equivalents are created by a separate translation process. Do not create or edit files in `website/docs/react/` or `website/docs/vue/` when using this pattern.
+Example pages are written for **Angular only**. The React and Vue equivalents are created by a separate translation process. Do not create or edit files in `apps/website/docs/react/` or `apps/website/docs/vue/` when using this pattern.
 
 ## Porting Checklist (When Explicitly Requested)
 

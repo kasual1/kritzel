@@ -1,0 +1,117 @@
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import {
+  KritzelBrushTool,
+  KritzelEditor,
+  KritzelSelectionTool,
+  KritzelTextTool,
+  KritzelToolbarItem,
+  KritzelWorkspace,
+} from '@kritzel/angular-editor';
+import { angularThemeLight } from '../../../const/angular-theme-light';
+import { angularThemeDark } from '../../../const/angular-theme-dark';
+import { createSeedObjects } from '../../../const/seed-objects';
+
+@Component({
+  selector: 'app-tools-register',
+  imports: [KritzelEditor],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <kritzel-editor
+      editorId="tools-register"
+      [theme]="'light'"
+      [themes]="themes"
+      [workspaces]="workspaces()"
+      [toolbarItems]="toolbarItems"
+      [isPanningEnabled]="false"
+      [isZoomingEnabled]="false"
+      [isMoreMenuVisible]="false"
+      [isWorkspaceManagerVisible]="false"
+    ></kritzel-editor>
+  `,
+  styles: [
+    `
+      :host {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        font-family: Roboto, sans-serif;
+      }
+      kritzel-editor {
+        flex: 1;
+      }
+      .status-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: #f5f5f5;
+        border-top: 1px solid #ebebeb;
+        font-size: 13px;
+      }
+    `,
+  ],
+})
+export class ToolsRegisterComponent {
+  themes = [angularThemeLight, angularThemeDark];
+
+  workspaces = signal([new KritzelWorkspace({ objects: createSeedObjects() })]);
+
+  toolbarItems: KritzelToolbarItem[] = [
+    {
+      name: 'select',
+      type: 'tool',
+      tool: KritzelSelectionTool,
+      icon: 'cursor',
+      isDefault: true,
+    },
+    {
+      name: 'brush',
+      type: 'tool',
+      tool: KritzelBrushTool,
+      icon: 'pen',
+      config: {
+        color: { light: '#1f2937', dark: '#f3f4f6' },
+        size: 6,
+        palette: [
+          { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
+          { light: '#dd0031', dark: '#ff5b79', label: 'Accent' },
+        ],
+      },
+    },
+    {
+      name: 'highlighter',
+      type: 'tool',
+      tool: KritzelBrushTool,
+      icon: 'highlighter',
+      config: {
+        color: { light: '#ffeb3b', dark: '#fff176' },
+        size: 20,
+        opacity: 0.6,
+        palette: [
+          { light: '#ffeb3b', dark: '#fff176', label: 'Yellow' },
+          { light: '#76ff03', dark: '#b2ff59', label: 'Green' },
+        ],
+      },
+    },
+    {
+      name: 'text',
+      type: 'tool',
+      tool: KritzelTextTool,
+      icon: 'type',
+      config: {
+        color: { light: '#1f2937', dark: '#f3f4f6' },
+        size: 18,
+        fontFamily: 'Arial',
+        palette: [
+          { light: '#1f2937', dark: '#f3f4f6' },
+          { light: '#dd0031', dark: '#ff5b79' },
+        ],
+      },
+    },
+    {
+      name: 'config',
+      type: 'config',
+    },
+  ];
+
+}

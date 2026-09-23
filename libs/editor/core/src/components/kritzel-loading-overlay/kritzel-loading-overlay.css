@@ -1,0 +1,54 @@
+:host {
+  position: absolute;
+  inset: 0;
+  z-index: var(--kritzel-editor-loading-overlay-z-index, 1);
+  display: block;
+  pointer-events: none;
+}
+
+.loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--kritzel-editor-loading-overlay-background, rgba(255, 255, 255, 0.6));
+  color: var(--kritzel-editor-loading-overlay-color, #333);
+  font-family: var(--kritzel-global-font-family, sans-serif);
+  font-size: 1.25rem;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity 300ms ease,
+    visibility 0s linear 300ms;
+}
+
+.loading-overlay.visible {
+  opacity: 1;
+  pointer-events: all;
+  visibility: visible;
+  transition:
+    opacity 300ms ease,
+    visibility 0s linear 0s;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  box-sizing: border-box;
+  display: block;
+  flex-shrink: 0;
+  border: 2px solid var(--kritzel-editor-loading-overlay-spinner-color, #cccccc);
+  border-top-color: var(--kritzel-editor-loading-overlay-spinner-active-color, #333333);
+  border-radius: 50%;
+  animation: kritzel-loading-spin 0.6s linear infinite;
+}
+
+@keyframes kritzel-loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

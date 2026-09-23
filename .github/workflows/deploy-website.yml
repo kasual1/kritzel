@@ -24,7 +24,7 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Build Docusaurus documentation
-        run: npm run build -w website
+        run: npm run build -w apps/website
         env:
           Docusaurus_BASE_URL: /
           DEMO_BASE_URL_ANGULAR: ${{ vars.DEMO_BASE_URL_ANGULAR }}
@@ -32,10 +32,10 @@ jobs:
           DEMO_BASE_URL_VUE: ${{ vars.DEMO_BASE_URL_VUE }}
 
       - name: Upload docs artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: docs-build
-          path: website/build
+          path: apps/website/build
 
   # --- Deploy to Cloudflare Pages ---
   deploy-cloudflare:
@@ -44,7 +44,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Download docs artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: docs-build
           path: _site

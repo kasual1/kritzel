@@ -4,22 +4,22 @@ A *tool* is the active pointer-interaction mode; exactly one is active at a time
 
 | Name | Class | Creates |
 |---|---|---|
-| `selection` (default active) | `KritzelSelectionTool` | — selects/transforms |
+| `selection` (default active) | `KritzelSelectionTool` | â€” selects/transforms |
 | `brush` | `KritzelBrushTool` | `KritzelPath` |
-| `eraser` | `KritzelEraserTool` | — removes objects |
+| `eraser` | `KritzelEraserTool` | â€” removes objects |
 | `line` | `KritzelLineTool` | `KritzelLine` |
 | `shape` | `KritzelShapeTool` | `KritzelShape` |
 | `text` | `KritzelTextTool` | `KritzelText` |
 | `image` | `KritzelImageTool` | `KritzelImage` |
 
-Tool *names are whatever the controls config / `registerTool` call says* — when you customize the toolbar, `changeActiveToolByName` must use your names. `<kritzel-engine>` registers none.
+Tool *names are whatever the toolbar config / `registerTool` call says* â€” when you customize the toolbar, `changeActiveToolByName` must use your names. `<kritzel-engine>` registers none.
 
 ## Switching tools
 
 ```ts
 await editor.changeActiveToolByName('brush');
 // or with an instance (e.g. the return value of registerTool):
-await editor.changeActiveTool(toolInstance);
+await editor.changeActiveToolByName(toolInstance.name);
 ```
 
 Switching tools clears the current selection. `disable()` / `enable()` turn all canvas interaction off/on (e.g. while a modal is open).
@@ -28,10 +28,9 @@ Switching tools clears the current selection. `disable()` / `enable()` turn all 
 
 ```ts
 interface KritzelBrushToolConfig {
-  type: 'pen' | 'highlighter';
   color: ThemeAwareColor;                 // { light, dark }
   size: number;
-  palettes: { [brushType: string]: ThemeAwareColor[] }; // {} or empty arrays disable the picker
+  palette: ThemeAwareColor[];             // [] disables the picker
   opacity?: number;                       // highlighters typically ~0.6
 }
 
@@ -64,21 +63,20 @@ interface KritzelTextToolConfig {
 }
 ```
 
-Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` — spread them to tweak a single field.
+Defaults are exported as `DEFAULT_BRUSH_CONFIG` and `DEFAULT_TEXT_CONFIG` â€” spread them to tweak a single field.
 
 ## Registering preconfigured tool variants
 
 The most common customization: several variants of a built-in tool under distinct names (e.g. color-locked brushes driven by your own UI):
 
 ```ts
-import { KritzelBrushTool, KritzelBrushToolConfig } from 'kritzel-angular';
+import { KritzelBrushTool, KritzelBrushToolConfig } from '@kritzel/angular-editor';
 
 async onReady() {
   const red: KritzelBrushToolConfig = {
-    type: 'pen',
     color: { light: '#ff0000', dark: '#ff6666' },
     size: 16,
-    palettes: {},                 // empty → no color picker, color is locked
+    palette: [],                  // empty → no color picker, color is locked
   };
   await this.editor.registerTool('red-brush', KritzelBrushTool, red);
   await this.editor.changeActiveToolByName('red-brush');
@@ -87,38 +85,34 @@ async onReady() {
 
 `registerTool(name, ToolClass, config?)` returns the tool instance (or the existing one if the name is taken).
 
-## Customizing the toolbar (`[controls]`)
+## Customizing the toolbar (`[toolbarItems]`)
 
-Replace the editor's toolbar wholesale with a `KritzelToolbarControl[]`:
+Replace the editor's toolbar wholesale with a `KritzelToolbarItem[]`:
 
 ```ts
 import {
-  KritzelToolbarControl, KritzelSelectionTool, KritzelBrushTool, KritzelTextTool, ShapeType,
-} from 'kritzel-angular';
+  KritzelToolbarItem, KritzelSelectionTool, KritzelBrushTool, KritzelTextTool, ShapeType,
+} from '@kritzel/angular-editor';
 
-readonly controls: KritzelToolbarControl[] = [
+readonly toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
   {
     name: 'brush', type: 'tool', tool: KritzelBrushTool, icon: 'pen',
     config: {
-      type: 'pen',
       color: { light: '#1f2937', dark: '#f3f4f6' },
       size: 6,
-      palettes: {
-        pen: [
-          { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
-          { light: '#dd0031', dark: '#ff5b79', label: 'Accent' },
-        ],
-      },
+      palette: [
+        { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
+        { light: '#dd0031', dark: '#ff5b79', label: 'Accent' },
+      ],
     },
   },
   {
     name: 'highlighter', type: 'tool', tool: KritzelBrushTool, icon: 'highlighter',
     config: {
-      type: 'highlighter',
       color: { light: '#ffeb3b', dark: '#fff176' },
       size: 20, opacity: 0.6,
-      palettes: { highlighter: [{ light: '#ffeb3b', dark: '#fff176', label: 'Yellow' }] },
+      palette: [{ light: '#ffeb3b', dark: '#fff176', label: 'Yellow' }],
     },
   },
   {
@@ -134,7 +128,7 @@ readonly controls: KritzelToolbarControl[] = [
 ```
 
 ```html
-<kritzel-editor [controls]="controls"></kritzel-editor>
+<kritzel-editor [toolbarItems]="toolbarItems"></kritzel-editor>
 ```
 
 Rules:
@@ -142,16 +136,16 @@ Rules:
 - `isDefault: true` marks the tool active on startup (use exactly one).
 - The same tool class can appear multiple times under different names/configs.
 - `subOptions` adds a per-control option picker, e.g. the shape tool's shape switcher: `{ id, icon, label, value: ShapeType.Ellipse, toolProperty: 'shapeType' }`.
-- Icons use the built-in icon names (`cursor`, `pen`, `eraser`, `arrow`, `shape-rectangle`, `type`, `image`, `highlighter`, …). Register custom SVGs via `[customSvgIcons]="{ name: '<svg…>' }"`.
+- Icons use the built-in icon names (`cursor`, `pen`, `eraser`, `arrow`, `shape-rectangle`, `type`, `image`, `highlighter`, â€¦). Register custom SVGs via `[customSvgIcons]="{ name: '<svgâ€¦>' }"`.
 
-To hide the toolbar entirely and drive tools from your own Angular UI: `[isControlsVisible]="false"` + `registerTool`/`changeActiveToolByName`.
+To hide the toolbar entirely and drive tools from your own Angular UI: `[isToolbarVisible]="false"` + `registerTool`/`changeActiveToolByName`.
 
 ## Fully custom tool classes
 
-For new interaction behavior, extend `KritzelBaseTool` (exported from `kritzel-angular`) and override the lifecycle/pointer hooks:
+For new interaction behavior, extend `KritzelBaseTool` (exported from `@kritzel/angular-editor`) and override the lifecycle/pointer hooks:
 
 ```ts
-import { KritzelBaseTool } from 'kritzel-angular';
+import { KritzelBaseTool } from '@kritzel/angular-editor';
 
 export class StampTool extends KritzelBaseTool {
   override onActivate(): void {}
@@ -163,5 +157,5 @@ export class StampTool extends KritzelBaseTool {
 }
 
 const tool = await editor.registerTool('stamp', StampTool);
-await editor.changeActiveTool(tool!);
+  await editor.changeActiveToolByName(tool!.name);
 ```

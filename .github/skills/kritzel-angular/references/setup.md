@@ -3,17 +3,17 @@
 ## Installation
 
 ```bash
-npm install kritzel-angular
+npm install @kritzel/angular-editor
 ```
 
-`kritzel-angular` wraps the core `kritzel-stencil` web components in typed Angular standalone proxy components and re-exports all classes/types you need — import everything from `kritzel-angular`, never from `kritzel-stencil` directly in an Angular app.
+`@kritzel/angular-editor` wraps the core `@kritzel/engine` web components in typed Angular standalone proxy components and re-exports all classes/types you need â€” import everything from `@kritzel/angular-editor`, or from `@kritzel/engine` when intentionally building an engine-only integration.
 
 ## Application config
 
 ```ts
 // app.config.ts
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideKritzel } from 'kritzel-angular';
+import { provideKritzel } from '@kritzel/angular-editor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -49,22 +49,22 @@ For mobile, add to `index.html`:
 <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, minimum-scale=1.0, interactive-widget=resizes-content" />
 ```
 
-## Editor vs. Engine — decision rule
+## Editor vs. Engine â€” decision rule
 
 | | `<kritzel-editor>` (KritzelEditor) | `<kritzel-engine>` (KritzelEngine) |
 |---|---|---|
-| Toolbar, settings, workspace manager, export UI | ✅ built in (each part hideable) | ❌ none |
-| Tools registered by default | ✅ selection, brush, eraser, line, shape, text, image | ❌ **none — you must `registerTool` yourself** |
-| Readiness event | `(isReady)` → `CustomEvent<EditorIsReadyEvent>` | `(isEngineReady)` → `CustomEvent<KritzelEngineState>` |
-| Programmatic object/viewport API | ✅ full (delegates to engine) | ✅ full |
-| Typical use | Default. Hide pieces via `[isControlsVisible]`, `[isMoreMenuVisible]`, `[isWorkspaceManagerVisible]`, `[isUtilityPanelVisible]` | Fully custom UI around a bare canvas |
+| Toolbar, settings, workspace manager, export UI | âœ… built in (each part hideable) | âŒ none |
+| Tools registered by default | âœ… selection, brush, eraser, line, shape, text, image | âŒ **none â€” you must `registerTool` yourself** |
+| Readiness event | `(isReady)` â†’ `CustomEvent<EditorIsReadyEvent>` | `(isEngineReady)` â†’ `CustomEvent<KritzelEngineState>` |
+| Programmatic object/viewport API | âœ… full (delegates to engine) | âœ… full |
+| Typical use | Default. Hide pieces via `[isToolbarVisible]`, `[isMoreMenuVisible]`, `[isWorkspaceManagerVisible]`, `[isUtilityPanelVisible]` | Fully custom UI around a bare canvas |
 
 **Prefer hiding editor UI over dropping to the engine.** A "chrome-less" editor still gives you context menus, shortcuts and tool plumbing:
 
 ```html
 <kritzel-editor
   editorId="embedded"
-  [isControlsVisible]="false"
+  [isToolbarVisible]="false"
   [isMoreMenuVisible]="false"
   [isWorkspaceManagerVisible]="false"
   [isUtilityPanelVisible]="false"
@@ -76,7 +76,7 @@ For mobile, add to `index.html`:
 
 ```ts
 import { ChangeDetectionStrategy, Component, ViewChild, signal } from '@angular/core';
-import { KritzelEditor, EditorIsReadyEvent } from 'kritzel-angular';
+import { KritzelEditor, EditorIsReadyEvent } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-board',
@@ -100,11 +100,11 @@ export class BoardComponent {
 
 ## Headless engine skeleton
 
-The engine registers **no tools** — without registration the canvas accepts no input. Register at least a selection or brush tool in `(isEngineReady)`:
+The engine registers **no tools** â€” without registration the canvas accepts no input. Register at least a selection or brush tool in `(isEngineReady)`:
 
 ```ts
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { KritzelEngine, KritzelBrushTool, KritzelSelectionTool, KritzelEraserTool } from 'kritzel-angular';
+import { KritzelEngine, KritzelBrushTool, KritzelSelectionTool, KritzelEraserTool } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-headless-canvas',
@@ -120,16 +120,16 @@ export class HeadlessCanvasComponent {
     await this.engine.registerTool('selection', KritzelSelectionTool);
     await this.engine.registerTool('brush', KritzelBrushTool);
     await this.engine.registerTool('eraser', KritzelEraserTool);
-    await this.engine.changeActiveToolByName('brush');
+    await this.engine.changeActiveTool('brush');
   }
 }
 ```
 
-Engine-only extras: it additionally exposes `exportAsJson`, `importFromJson`, `getIsPublic`, `saveSettings`, `loadSettings`, and the `workspace` input. Editor-only extras: `controls`, `customSvgIcons`, `loginConfig`, UI visibility flags, `openLoginDialog`, `setLoginLoading`.
+Engine-only extras: it additionally exposes `exportAsJson`, `importFromJson`, `getIsPublic`, `saveSettings`, `loadSettings`, and the `workspace` input. Editor-only extras: `toolbar`, `customSvgIcons`, `loginConfig`, UI visibility flags, `openLoginDialog`, `setLoginLoading`.
 
 ## Multiple instances
 
-Every concurrently mounted editor/engine needs a unique `editorId` — it namespaces settings (localStorage) and persistence (IndexedDB) keys. Without it, instances clobber each other's stored state.
+Every concurrently mounted editor/engine needs a unique `editorId` â€” it namespaces settings (localStorage) and persistence (IndexedDB) keys. Without it, instances clobber each other's stored state.
 
 ```html
 <kritzel-editor editorId="left-board"></kritzel-editor>
@@ -138,8 +138,8 @@ Every concurrently mounted editor/engine needs a unique `editorId` — it namesp
 
 ## Common setup mistakes
 
-- Canvas invisible → host element has no size (rule: explicit `display: block` + width/height).
-- "Method X failed / engineRef undefined" → called before `isReady`/`isEngineReady` fired.
-- Headless engine ignores all pointer input → no tools registered.
-- Two boards share drawings/settings → missing distinct `editorId`.
-- `CUSTOM_ELEMENTS_SCHEMA` added → unnecessary with the proxies; only needed if you put the raw `<kritzel-engine>` tag in a template *without* importing the proxy component.
+- Canvas invisible â†’ host element has no size (rule: explicit `display: block` + width/height).
+- "Method X failed / engineRef undefined" â†’ called before `isReady`/`isEngineReady` fired.
+- Headless engine ignores all pointer input â†’ no tools registered.
+- Two boards share drawings/settings â†’ missing distinct `editorId`.
+- `CUSTOM_ELEMENTS_SCHEMA` added â†’ unnecessary with the proxies; only needed if you put the raw `<kritzel-engine>` tag in a template *without* importing the proxy component.

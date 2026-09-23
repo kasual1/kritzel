@@ -1,14 +1,14 @@
 ---
 name: lib-builder
-description: "Add features, fix bugs, or edit existing code in the kritzel-stencil core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/kritzel-stencil/src/."
+description: "Add features, fix bugs, or edit existing code in the Kritzel engine core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/engine/core/src/."
 argument-hint: "Describe the feature, bug fix, or change to make in the stencil core"
 ---
 
-# Lib Builder — kritzel-stencil Core Library
+# Lib Builder — Kritzel Engine Core Library
 
 ## When to Use
 
-- Adding or editing a tool, handler, manager, object, component, provider, or helper in `libs/kritzel-stencil/src/`
+- Adding or editing a tool, handler, manager, object, component, provider, or helper in `libs/engine/core/src/`
 - Fixing a bug in the core rendering engine or state management
 - Adding or modifying CSS variables / theming
 - Integrating a new sync or asset provider
@@ -76,7 +76,7 @@ Select the relevant pattern based on what you're working on:
 | [helper.md](patterns/helper.md) | Adding or editing a static utility helper |
 | [provider.md](patterns/provider.md) | Adding or editing a sync/asset provider |
 | [manager.md](patterns/manager.md) | Adding or editing a cross-cutting manager |
-| [custom-elements.md](patterns/custom-elements.md) | Maintaining custom-element object rendering, renderer lifecycle, wheel behavior, and wrapper integration |
+| [dynamic-objects.md](patterns/dynamic-objects.md) | Maintaining dynamic object rendering, renderer lifecycle, wheel behavior, and wrapper integration |
 | [unit-tests.md](patterns/unit-tests.md) | Adding/updating Jest specs, fixing flaky tests, or adapting tests after refactors |
 | [reactivity-and-wrappers.md](patterns/reactivity-and-wrappers.md) | Debugging or preventing prop timing bugs between Stencil core and Angular/React/Vue wrappers |
 
@@ -86,33 +86,33 @@ Select the relevant pattern based on what you're working on:
 
 To expose a class, function, interface, or constant publicly, it must be exported in **four** places:
 
-1. **`libs/kritzel-stencil/src/index.ts`** — the stencil core barrel file
-2. **`libs/kritzel-angular/projects/lib/src/public-api.ts`** — re-exports from `kritzel-stencil`
-3. **`libs/kritzel-react/lib/index.ts`** — re-exports from `kritzel-stencil`
-4. **`libs/kritzel-vue/lib/index.ts`** — re-exports from `kritzel-stencil`
+1. **`libs/engine/core/src/index.ts`** — the engine core barrel file
+2. **`libs/editor/angular/projects/lib/src/public-api.ts`** — re-exports from `@kritzel/engine`
+3. **`libs/editor/react/lib/index.ts`** — re-exports from `@kritzel/engine`
+4. **`libs/editor/vue/lib/index.ts`** — re-exports from `@kritzel/engine`
 
-All three framework wrappers explicitly re-export symbols from `kritzel-stencil` so that consuming applications (e.g. the demos) only need a single import source — `kritzel-angular`, `kritzel-react`, or `kritzel-vue` — without ever importing `kritzel-stencil` directly.
+All three framework wrappers explicitly re-export symbols from `@kritzel/engine` so that consuming applications (e.g. the demos) only need a single import source — `@kritzel/angular-editor`, `@kritzel/react-editor`, or `@kritzel/vue-editor` — unless they are intentionally building against the engine package directly.
 
 **Keep the export lists consistent across all three wrappers.** When adding a new public symbol, add it to all four files.
 
 Example (adding `KritzelFoo`):
 
 ```typescript
-// libs/kritzel-stencil/src/index.ts
+// libs/engine/core/src/index.ts
 export * from './classes/objects/foo.class';
 
-// libs/kritzel-angular/projects/lib/src/public-api.ts
-// libs/kritzel-react/lib/index.ts
-// libs/kritzel-vue/lib/index.ts
+// libs/editor/angular/projects/lib/src/public-api.ts
+// libs/editor/react/lib/index.ts
+// libs/editor/vue/lib/index.ts
 export {
     // ... existing exports ...
     KritzelFoo,
-} from 'kritzel-stencil';
+} from '@kritzel/engine';
 ```
 
 ## General Rules
 
-1. **No framework code** — kritzel-stencil is framework-agnostic; never import Angular/React/Vue
+1. **No framework code** — `@kritzel/engine` is framework-agnostic; never import Angular/React/Vue
 2. **Serialization** — objects that persist must implement `serialize()` / `deserialize()` and set `__class__`
 3. **State changes** — go through `KritzelStore`; never mutate state directly
 4. **CSS variables** — prefix all with `--kritzel-`; run `node scripts/generate-theme-interface.js` after adding new ones
@@ -126,8 +126,8 @@ export {
 12. **Treat sync persistence as opt-in by default** — `kritzel-editor` defaults to `syncConfig.providers = []`, so object state is not persisted across page reloads and not persisted when switching workspaces unless a sync provider is explicitly configured
 13. **Choose providers by persistence scope** — use `IndexedDBSyncProvider` for persistent local storage across reloads (and across workspaces), and use `InMemorySyncProvider` when cross-workspace persistence is needed only within the current runtime session
 14. **Keep demos deterministic unless persistence is the concept** — most demos should keep no sync provider so reload resets canvas state; workspace concept demos are the main exception and should use `InMemorySyncProvider`
-15. **Custom-element renderers must be lifecycle-safe** — always provide mount/unmount symmetry and return normalized renderer state from unmount when state persistence is expected
-16. **Wheel behavior must preserve canvas navigation** — custom elements should consume wheel only when they can actually scroll in the current direction; otherwise wheel must pass through to viewport interactions
+15. **Dynamic object renderers must be lifecycle-safe** — always provide mount/unmount symmetry and return normalized renderer state from unmount when state persistence is expected
+16. **Wheel behavior must preserve canvas navigation** — dynamic objects should consume wheel only when they can actually scroll in the current direction; otherwise wheel must pass through to viewport interactions
 
 ## Unit Tests
 
