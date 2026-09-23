@@ -501,10 +501,12 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
     const iframeRect = this.elementRef.getBoundingClientRect();
     if (message.eventType === 'pointerdown') {
+      const scaleX = this.elementRef.offsetWidth > 0 ? iframeRect.width / this.elementRef.offsetWidth : 1;
+      const scaleY = this.elementRef.offsetHeight > 0 ? iframeRect.height / this.elementRef.offsetHeight : 1;
       iframePointerBridgeStarts.set(this.elementRef, {
         pointerId: message.pointerId,
-        clientX: iframeRect.left + message.clientX,
-        clientY: iframeRect.top + message.clientY,
+        clientX: iframeRect.left + message.clientX * scaleX,
+        clientY: iframeRect.top + message.clientY * scaleY,
         screenX: message.screenX,
         screenY: message.screenY,
       });
