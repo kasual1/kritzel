@@ -328,7 +328,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isToolbarVisible]="false"
-      [isMoreMenuVisible]="true"
+      [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [workspaces]="workspaces()"
     ></kritzel-editor>
@@ -351,9 +351,9 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
   styles: [`
     :host { position: relative; display: block; height: 100%; }
     kritzel-editor { display: block; width: 100%; height: 100%; }
-    .chat-input { position: absolute; left: 50%; bottom: 18px; z-index: 20; display: block; width: min(560px, calc(100% - 32px)); padding: 10px; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 16px 42px rgba(32, 33, 36, 0.18); box-sizing: border-box; transform: translateX(-50%); font-family: Roboto, sans-serif; }
+    .chat-input { position: absolute; left: 50%; bottom: 18px; z-index: 20; display: block; width: min(460px, calc(100% - 32px)); padding: 10px; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 16px 42px rgba(32, 33, 36, 0.18); box-sizing: border-box; transform: translateX(-50%); font-family: Roboto, sans-serif; }
     .textarea-wrapper { position: relative; width: 100%; }
-    textarea { display: block; width: 100%; min-height: 72px; max-height: 128px; resize: none; border: 0; border-radius: 12px; padding: 12px 14px 38px 14px; box-sizing: border-box; background: #f3f4f6; color: #202124; font: inherit; line-height: 1.45; }
+    textarea { display: block; width: 100%; height: 98px; min-height: 98px; max-height: 98px; resize: none; border: 0; border-radius: 12px; padding: 12px 14px 38px 14px; box-sizing: border-box; background: #f3f4f6; color: #202124; font: inherit; line-height: 1.45; }
     textarea:focus, textarea:focus-visible { border: 0; outline: 0; box-shadow: none; }
     .query-nav { position: absolute; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 6px; color: #5f6368; font-size: 12px; font-weight: 700; white-space: nowrap; user-select: none; }
     .nav-button { width: 26px; height: 26px; border: 0; border-radius: 999px; padding: 0; background: #ffffff; color: #202124; cursor: pointer; font: inherit; font-size: 18px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(32, 33, 36, 0.12); }
@@ -440,9 +440,9 @@ export class DynamicObjectsIframeComponent implements OnDestroy {
       isLoading: false,
       state: definition.initialState,
       title: 'Simple calculator',
-      translateX: -180,
-      translateY: -160,
-      width: 360,
+      translateX: -140,
+      translateY: -200,
+      width: 280,
       height: 320,
       borderRadius: 12,
       boxShadow: '0 12px 32px rgba(32, 33, 36, 0.12)',

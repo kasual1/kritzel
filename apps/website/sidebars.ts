@@ -27,7 +27,13 @@ const sidebars: SidebarsConfig = {
       collapsed: true,
       items: [
         'advanced/user-management',
-        'advanced/collaboration',
+        {
+          type: 'doc',
+          id: 'advanced/collaboration',
+          customProps: {
+            badge: 'Preview',
+          },
+        },
         {
           type: 'doc',
           id: 'advanced/dynamic-objects',
