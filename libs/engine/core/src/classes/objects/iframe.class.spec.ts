@@ -171,7 +171,7 @@ describe('KritzelIframeObject', () => {
     expect(previous.isMounted).toBe(false);
   });
 
-  it('bridges pointer movement without feeding the moved iframe position back into the coordinates', () => {
+  it('bridges pointer movement at viewport scale without feeding the moved iframe position back into the coordinates', () => {
     const originalPointerEvent = globalThis.PointerEvent;
     Object.defineProperty(globalThis, 'PointerEvent', {
       configurable: true,
@@ -181,13 +181,17 @@ describe('KritzelIframeObject', () => {
     const iframe = document.createElement('iframe');
     const dispatchEvent = jest.spyOn(iframe, 'dispatchEvent');
     let iframeLeft = 100;
+    Object.defineProperties(iframe, {
+      offsetWidth: { configurable: true, value: 200 },
+      offsetHeight: { configurable: true, value: 100 },
+    });
     jest.spyOn(iframe, 'getBoundingClientRect').mockImplementation(() => ({
       left: iframeLeft,
       top: 50,
-      right: iframeLeft + 200,
-      bottom: 150,
-      width: 200,
-      height: 100,
+      right: iframeLeft + 100,
+      bottom: 100,
+      width: 100,
+      height: 50,
       x: iframeLeft,
       y: 50,
       toJSON: () => ({}),
@@ -217,9 +221,12 @@ describe('KritzelIframeObject', () => {
     iframeLeft = 110;
     dispatchPointerMessage('pointermove', 15, 225);
 
+    const bridgedDown = dispatchEvent.mock.calls[0][0] as PointerEvent;
     const bridgedMove = dispatchEvent.mock.calls[1][0] as PointerEvent;
-    expect(bridgedMove.clientX).toBe(125);
-    expect(bridgedMove.clientY).toBe(70);
+    expect(bridgedDown.clientX).toBe(110);
+    expect(bridgedDown.clientY).toBe(60);
+    expect(bridgedMove.clientX).toBe(115);
+    expect(bridgedMove.clientY).toBe(60);
 
     Object.defineProperty(globalThis, 'PointerEvent', {
       configurable: true,

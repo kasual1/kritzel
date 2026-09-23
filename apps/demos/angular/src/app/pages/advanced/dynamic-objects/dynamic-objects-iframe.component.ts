@@ -328,7 +328,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
       [isToolbarVisible]="false"
-      [isMoreMenuVisible]="false"
+      [isMoreMenuVisible]="true"
       [isWorkspaceManagerVisible]="false"
       [workspaces]="workspaces()"
     ></kritzel-editor>
