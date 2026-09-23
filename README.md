@@ -1,9 +1,8 @@
 <div align="center" style="margin-top: 24px; margin-bottom: 12px;">
   <img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
-  <p style="margin: 18px 0 10px; font-size: 42px; font-weight: 700; line-height: 1.1;">Kritzel</p>
-  <p style="margin: 0; font-size: 30px; font-weight: 600; line-height: 1.25;">
-    The Infinite Canvas<br>
-    Development Kit
+  <p style="font-size: 64px;">Kritzel</p>
+  <p style="font-size: 48px;">
+    The Infinite Canvas Development Kit
   </p>
 </div>
 
