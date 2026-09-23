@@ -20,6 +20,8 @@ describe('KritzelIframeObject', () => {
       sandbox: ['allow-scripts', 'allow-forms', 'invalid-token', 'allow-scripts'],
       width: 320,
       height: 180,
+      borderRadius: 12,
+      boxShadow: '0 12px 32px rgba(32, 33, 36, 0.12)',
     });
 
     expect(object.html).toBe('<main>Test</main>');
@@ -28,6 +30,8 @@ describe('KritzelIframeObject', () => {
     expect(object.sandboxAttribute).toBe('allow-scripts allow-forms');
     expect(object.width).toBe(320);
     expect(object.height).toBe(180);
+    expect(object.borderRadius).toBe(12);
+    expect(object.boxShadow).toBe('0 12px 32px rgba(32, 33, 36, 0.12)');
   });
 
   it('creates an object bound to the current core context', () => {

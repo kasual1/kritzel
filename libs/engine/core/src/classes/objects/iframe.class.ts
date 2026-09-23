@@ -38,6 +38,8 @@ export interface KritzelIframeObjectConfig extends Partial<KritzelIframeContent>
   scale?: number;
   width?: number;
   height?: number;
+  borderRadius?: number | string;
+  boxShadow?: string;
 }
 
 export interface KritzelIframeObjectLifecycleContext {
@@ -93,6 +95,8 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   state: Record<string, unknown> = {};
   title: string = 'Embedded content';
   sandbox: string[] = ['allow-scripts'];
+  borderRadius?: number | string;
+  boxShadow?: string;
 
   private messageListener: ((event: MessageEvent<unknown>) => void) | null = null;
 
@@ -104,6 +108,8 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     this.state = structuredClone(config?.state ?? {});
     this.title = config?.title ?? 'Embedded content';
     this.sandbox = this.normalizeSandbox(config?.sandbox);
+    this.borderRadius = config?.borderRadius;
+    this.boxShadow = config?.boxShadow;
     this.translateX = config?.translateX ?? 0;
     this.translateY = config?.translateY ?? 0;
     this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
@@ -237,6 +243,8 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     this.state = object.state && typeof object.state === 'object' ? structuredClone(object.state as Record<string, unknown>) : {};
     this.title = typeof object.title === 'string' ? object.title : 'Embedded content';
     this.sandbox = this.normalizeSandbox(Array.isArray(object.sandbox) ? object.sandbox.filter((token): token is string => typeof token === 'string') : undefined);
+    this.borderRadius = (typeof object.borderRadius === 'number' || typeof object.borderRadius === 'string') ? object.borderRadius : undefined;
+    this.boxShadow = typeof object.boxShadow === 'string' ? object.boxShadow : undefined;
     this.messageListener = null;
     return this as unknown as T;
   }
@@ -245,6 +253,8 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     const copiedObject = super.copy() as KritzelIframeObject;
     copiedObject.state = structuredClone(this.state);
     copiedObject.sandbox = [...this.sandbox];
+    copiedObject.borderRadius = this.borderRadius;
+    copiedObject.boxShadow = this.boxShadow;
     copiedObject.messageListener = null;
     copiedObject._elementRef = null as unknown as HTMLIFrameElement;
     return copiedObject;
@@ -254,6 +264,8 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     const clonedObject = super.clone() as KritzelIframeObject;
     clonedObject.state = structuredClone(this.state);
     clonedObject.sandbox = [...this.sandbox];
+    clonedObject.borderRadius = this.borderRadius;
+    clonedObject.boxShadow = this.boxShadow;
     clonedObject.messageListener = null;
     clonedObject.isMounted = false;
     clonedObject._elementRef = null as unknown as HTMLIFrameElement;
