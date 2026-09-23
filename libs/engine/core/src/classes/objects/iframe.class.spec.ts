@@ -98,6 +98,20 @@ describe('KritzelIframeObject', () => {
     expect(iframe.srcdoc).toContain('globalThis.changed = true;');
   });
 
+  it('renders loading content when loading is enabled', () => {
+    const object = new KritzelIframeObject({
+      content: { html: '<main>Ready</main>', css: 'main { color: red; }', script: '' },
+      loadingContent: { html: '<main>Loading</main>', css: 'main { color: gray; }', script: '' },
+    });
+    const iframe = document.createElement('iframe');
+
+    object.mount(iframe);
+    object.setLoading(true);
+
+    expect(iframe.srcdoc).toContain('<main>Loading</main>');
+    expect(iframe.srcdoc).toContain('main { color: gray; }');
+  });
+
   it('escapes serialized state and closing script tags', () => {
     const object = new KritzelIframeObject({
       state: { value: '</script><script>bad()</script>' },

@@ -376,9 +376,10 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   }
 
   private createSourceDocument(): string {
+    const activeContent = this.getActiveContent();
     const state = JSON.stringify(this.state).replace(/</g, '\\u003c');
-    const css = this.css.replace(/<\/style/gi, '<\\/style');
-    const script = this.script.replace(/<\/script/gi, '<\\/script');
+    const css = activeContent.css.replace(/<\/style/gi, '<\\/style');
+    const script = activeContent.script.replace(/<\/script/gi, '<\\/script');
     const computedStyle = this.isMounted ? getComputedStyle(this.elementRef) : null;
     const defaultCursor = computedStyle?.getPropertyValue('--kritzel-global-default-cursor').trim() || 'auto';
     const pointerCursor = computedStyle?.getPropertyValue('--kritzel-global-pointer-cursor').trim() || defaultCursor;
@@ -398,7 +399,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     </style>
   </head>
   <body>
-    ${this.html}
+    ${activeContent.html}
     <script>
       const kritzel = globalThis.kritzel = {
         state: ${state},
