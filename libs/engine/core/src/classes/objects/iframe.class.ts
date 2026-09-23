@@ -29,6 +29,9 @@ export interface KritzelIframeContent {
 }
 
 export interface KritzelIframeObjectConfig extends Partial<KritzelIframeContent> {
+  content?: Partial<KritzelIframeContent>;
+  loadingContent?: Partial<KritzelIframeContent>;
+  isLoading?: boolean;
   state?: Record<string, unknown>;
   title?: string;
   sandbox?: string[];
@@ -89,22 +92,39 @@ const iframePointerBridgeStarts = new WeakMap<HTMLIFrameElement, KritzelIframePo
 export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> implements KritzelEmbeddedObject {
   override __class__: string = 'KritzelIframeObject';
 
-  html: string = '';
-  css: string = '';
-  script: string = '';
+  content: KritzelIframeContent = { html: '', css: '', script: '' };
+  loadingContent?: KritzelIframeContent;
+  isLoading: boolean = false;
   state: Record<string, unknown> = {};
   title: string = 'Embedded content';
   sandbox: string[] = ['allow-scripts'];
   borderRadius?: number | string;
   boxShadow?: string;
 
+  get html(): string { return this.content.html; }
+  set html(value: string) { this.content = { ...this.content, html: value }; }
+
+  get css(): string { return this.content.css; }
+  set css(value: string) { this.content = { ...this.content, css: value }; }
+
+  get script(): string { return this.content.script; }
+  set script(value: string) { this.content = { ...this.content, script: value }; }
+
   private messageListener: ((event: MessageEvent<unknown>) => void) | null = null;
 
   constructor(config?: KritzelIframeObjectConfig) {
     super();
-    this.html = config?.html ?? '';
-    this.css = config?.css ?? '';
-    this.script = config?.script ?? '';
+    this.content = {
+      html: config?.content?.html ?? config?.html ?? '',
+      css: config?.content?.css ?? config?.css ?? '',
+      script: config?.content?.script ?? config?.script ?? '',
+    };
+    this.loadingContent = config?.loadingContent ? {
+      html: config.loadingContent.html ?? '',
+      css: config.loadingContent.css ?? '',
+      script: config.loadingContent.script ?? '',
+    } : undefined;
+    this.isLoading = config?.isLoading ?? false;
     this.state = structuredClone(config?.state ?? {});
     this.title = config?.title ?? 'Embedded content';
     this.sandbox = this.normalizeSandbox(config?.sandbox);
@@ -174,15 +194,40 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   }
 
   setContent(content: Partial<KritzelIframeContent>): void {
-    this.html = content.html ?? this.html;
-    this.css = content.css ?? this.css;
-    this.script = content.script ?? this.script;
+    this.content = {
+      html: content.html ?? this.content.html,
+      css: content.css ?? this.content.css,
+      script: content.script ?? this.content.script,
+    };
 
-    if (this.isMounted && this.elementRef) {
-      this.elementRef.srcdoc = this.createSourceDocument();
-    }
-
+    this.refreshDocument();
     this.persistUpdate();
+  }
+
+  setLoadingContent(content: Partial<KritzelIframeContent>): void {
+    this.loadingContent = {
+      html: content.html ?? this.loadingContent?.html ?? '',
+      css: content.css ?? this.loadingContent?.css ?? '',
+      script: content.script ?? this.loadingContent?.script ?? '',
+    };
+
+    this.refreshDocument();
+    this.persistUpdate();
+  }
+
+  setLoading(isLoading: boolean): void {
+    this.isLoading = isLoading;
+    this.refreshDocument();
+    this.persistUpdate();
+  }
+
+  getActiveContent(): KritzelIframeContent {
+    const activeLoadingContent = this.isLoading ? this.loadingContent : undefined;
+    return {
+      html: activeLoadingContent?.html ?? this.content.html,
+      css: activeLoadingContent?.css ?? this.content.css,
+      script: activeLoadingContent?.script ?? this.content.script,
+    };
   }
 
   setState(state: Record<string, unknown>): void {
@@ -237,9 +282,19 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
   override deserialize<T>(object: Record<string, unknown>): T {
     super.deserialize<KritzelIframeObject>(object);
-    this.html = typeof object.html === 'string' ? object.html : '';
-    this.css = typeof object.css === 'string' ? object.css : '';
-    this.script = typeof object.script === 'string' ? object.script : '';
+    const nextContent = object.content && typeof object.content === 'object' ? object.content as Partial<KritzelIframeContent> : {};
+    const nextLoadingContent = object.loadingContent && typeof object.loadingContent === 'object' ? object.loadingContent as Partial<KritzelIframeContent> : undefined;
+    this.content = {
+      html: typeof nextContent.html === 'string' ? nextContent.html : typeof object.html === 'string' ? object.html : '',
+      css: typeof nextContent.css === 'string' ? nextContent.css : typeof object.css === 'string' ? object.css : '',
+      script: typeof nextContent.script === 'string' ? nextContent.script : typeof object.script === 'string' ? object.script : '',
+    };
+    this.loadingContent = nextLoadingContent ? {
+      html: typeof nextLoadingContent.html === 'string' ? nextLoadingContent.html : '',
+      css: typeof nextLoadingContent.css === 'string' ? nextLoadingContent.css : '',
+      script: typeof nextLoadingContent.script === 'string' ? nextLoadingContent.script : '',
+    } : undefined;
+    this.isLoading = typeof object.isLoading === 'boolean' ? object.isLoading : false;
     this.state = object.state && typeof object.state === 'object' ? structuredClone(object.state as Record<string, unknown>) : {};
     this.title = typeof object.title === 'string' ? object.title : 'Embedded content';
     this.sandbox = this.normalizeSandbox(Array.isArray(object.sandbox) ? object.sandbox.filter((token): token is string => typeof token === 'string') : undefined);
@@ -251,6 +306,9 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
   override copy(): KritzelIframeObject {
     const copiedObject = super.copy() as KritzelIframeObject;
+    copiedObject.content = { ...this.content };
+    copiedObject.loadingContent = this.loadingContent ? { ...this.loadingContent } : undefined;
+    copiedObject.isLoading = this.isLoading;
     copiedObject.state = structuredClone(this.state);
     copiedObject.sandbox = [...this.sandbox];
     copiedObject.borderRadius = this.borderRadius;
@@ -262,6 +320,9 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
   override clone(): KritzelIframeObject {
     const clonedObject = super.clone() as KritzelIframeObject;
+    clonedObject.content = { ...this.content };
+    clonedObject.loadingContent = this.loadingContent ? { ...this.loadingContent } : undefined;
+    clonedObject.isLoading = this.isLoading;
     clonedObject.state = structuredClone(this.state);
     clonedObject.sandbox = [...this.sandbox];
     clonedObject.borderRadius = this.borderRadius;
@@ -497,6 +558,12 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
       altKey: message.altKey,
       metaKey: message.metaKey,
     }));
+  }
+
+  private refreshDocument(): void {
+    if (this.isMounted && this.elementRef) {
+      this.elementRef.srcdoc = this.createSourceDocument();
+    }
   }
 
   private persistUpdate(): void {
