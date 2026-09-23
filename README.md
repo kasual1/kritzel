@@ -2,9 +2,8 @@
   <img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
 </div>
 
-<h1 align="center">Kritzel.io</h1>
-
-<p align="center"><strong>The Infinite Canvas<br>Development Kit</strong></p>
+<h1 align="center">Kritzel</h1>
+<h2 align="center">The Infinite Canvas Development Kit</h2>
 
 # Overview
 
