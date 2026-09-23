@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, OnDestroy, signal } from '@angular/core';
 
 import {
   KritzelEditor,
@@ -68,6 +68,43 @@ const CALCULATOR_BASE_CSS = `
   .is-simple .scientific-only { display: none; }
   .is-simple .scientific-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .has-toggle.is-simple .equals { grid-column: 4; grid-row: 3 / span 2; }
+`;
+
+const CALCULATOR_LOADING_CSS = `
+  ${CALCULATOR_BASE_CSS}
+  body { background: #eef1f4; }
+  .calculator-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, #edf1f4 0%, #f4f6f8 25%, #ebeff3 50%, #f4f6f8 75%, #edf1f4 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.25s linear infinite;
+    border-color: #e5e7eb;
+  }
+  .calculator-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+    transform: translateX(-100%);
+    animation: sweep 1.25s ease-in-out infinite;
+  }
+  .display, button {
+    border-color: rgba(148, 163, 184, 0.3);
+    background: rgba(255,255,255,0.38);
+    color: #a0a8b3;
+  }
+  .mode-label { color: #9ca3af; }
+  button { opacity: 0.8; cursor: wait; }
+  .display { color: #a0a8b3; }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  @keyframes sweep {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
+  }
 `;
 
 const CALCULATOR_SCRIPT = `
@@ -216,11 +253,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
           </div>
         </main>
       `,
-      css: `
-        ${CALCULATOR_BASE_CSS}
-        button { opacity: 0.75; cursor: wait; }
-        .display { color: #5f6368; }
-      `,
+      css: CALCULATOR_LOADING_CSS,
       script: '',
     },
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'simple' },
@@ -258,11 +291,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
           </div>
         </main>
       `,
-      css: `
-        ${CALCULATOR_BASE_CSS}
-        button { opacity: 0.75; cursor: wait; }
-        .display { color: #5f6368; }
-      `,
+      css: CALCULATOR_LOADING_CSS,
       script: '',
     },
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'scientific' },
@@ -302,11 +331,7 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
           </div>
         </main>
       `,
-      css: `
-        ${CALCULATOR_BASE_CSS}
-        button { opacity: 0.75; cursor: wait; }
-        .display { color: #5f6368; }
-      `,
+      css: CALCULATOR_LOADING_CSS,
       script: '',
     },
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'simple' },
@@ -359,9 +384,10 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
     .nav-button:disabled:hover { background: #ffffff; }
   `],
 })
-export class DynamicObjectsIframeComponent {
+export class DynamicObjectsIframeComponent implements OnDestroy {
   private readonly runtimeObject = this.createRuntimeObject();
   private readonly promptIndex = signal(0);
+  private responseTimeout: ReturnType<typeof setTimeout> | null = null;
 
   themes = [angularThemeLight, angularThemeDark];
   promptText = signal(MOCK_CHAT_PROMPTS[0]);
@@ -385,9 +411,9 @@ export class DynamicObjectsIframeComponent {
     const index = this.promptIndex();
     const nextIndex = Math.min(index + 1, MOCK_CHAT_PROMPTS.length - 1);
 
-    this.renderMockResponse(index);
     this.promptIndex.set(nextIndex);
     this.promptText.set(MOCK_CHAT_PROMPTS[nextIndex]);
+    this.renderMockResponse(nextIndex);
   }
 
   showPrompt(offset: -1 | 1): void {
@@ -402,13 +428,30 @@ export class DynamicObjectsIframeComponent {
     this.renderMockResponse(nextIndex);
   }
 
-  private renderMockResponse(index: number): void {
-    const definition = MOCK_COMPONENT_DEFINITIONS[index];
+  ngOnDestroy(): void {
+    if (this.responseTimeout) {
+      clearTimeout(this.responseTimeout);
+    }
+  }
 
-    this.runtimeObject.setState(definition.initialState);
-    this.runtimeObject.setContent(definition.content);
-    this.runtimeObject.setLoadingContent(definition.loadingContent ?? definition.content);
-    this.runtimeObject.setLoading(false);
+  private renderMockResponse(index: number): void {
+    if (this.responseTimeout) {
+      clearTimeout(this.responseTimeout);
+    }
+
+    const definition = MOCK_COMPONENT_DEFINITIONS[index];
+    const loadingContent = definition.loadingContent ?? definition.content;
+
+    this.runtimeObject.setLoadingContent(loadingContent);
+    this.runtimeObject.setContent(loadingContent);
+    this.runtimeObject.setLoading(true);
+
+    this.responseTimeout = setTimeout(() => {
+      this.runtimeObject.setState(definition.initialState);
+      this.runtimeObject.setContent(definition.content);
+      this.runtimeObject.setLoading(false);
+      this.responseTimeout = null;
+    }, 1100);
   }
 
   private createRuntimeObject(): KritzelIframeObject {
