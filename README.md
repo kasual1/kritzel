@@ -1,4 +1,4 @@
-![Kritzel logo](apps/website/static/img/favicon.svg)
+<img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
 
 # Kritzel
 
