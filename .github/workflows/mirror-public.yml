@@ -1,0 +1,70 @@
+# Mirrors the public demo apps and editor packages to kasual1/kritzel.
+# Local file: dependencies in demo package.json files are replaced with
+# published npm package versions so the public repository is installable.
+
+name: Mirror public repo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.18.0"
+
+      - name: Get version
+        id: version
+        run: echo "version=$(node -p 'require("./libs/editor/core/package.json").version')" >> "$GITHUB_OUTPUT"
+
+      - name: Clone public repository
+        run: |
+          git clone https://x-access-token:${{ secrets.GH_PAT }}@github.com/kasual1/kritzel.git public-repo
+
+      - name: Sync public content
+        run: |
+          mkdir -p public-repo/apps public-repo/libs
+
+          rsync -av \
+            --delete \
+            --exclude='local-libs/' \
+            --exclude='node_modules/' \
+            --exclude='.angular/' \
+            --exclude='dist/' \
+            --exclude='playwright-report/' \
+            --exclude='test-results/' \
+            apps/demos/ public-repo/apps/demos/
+
+          rsync -av \
+            --delete \
+            --exclude='node_modules/' \
+            --exclude='.stencil/' \
+            --exclude='dist/' \
+            libs/editor/ public-repo/libs/editor/
+
+      - name: "Replace file: dependencies with npm versions"
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          for pkg in public-repo/apps/demos/angular/package.json public-repo/apps/demos/react/package.json public-repo/apps/demos/vue/package.json; do
+            jq --arg v "^$VERSION" '
+              .dependencies |= with_entries(
+                if .value | startswith("file:") then .value = $v else . end
+              )
+            ' "$pkg" > tmp.json && mv tmp.json "$pkg"
+          done
+
+      - name: Commit and push
+        run: |
+          cd public-repo
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --staged --quiet || git commit -m "chore: sync public mirror from kritzel@${{ steps.version.outputs.version }}"
+          git push
