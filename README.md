@@ -1,7 +1,10 @@
-<div align="center" style="margin-top: 24px; margin-bottom: 8px;">
-  	<img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
-  	<h1 align="center">Kritzel</h1>
-	<h2 align="center">The Infinite Canvas Development Kit</h2>
+<div align="center" style="margin-top: 24px; margin-bottom: 12px;">
+  <img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
+  <p style="margin: 16px 0 8px; font-size: 32px; font-weight: 700;">Kritzel</p>
+  <p style="margin: 0; font-size: 22px; font-weight: 600; line-height: 1.3;">
+    The Infinite Canvas<br>
+    Development Kit
+  </p>
 </div>
 
 # Overview
