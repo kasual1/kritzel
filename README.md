@@ -1,9 +1,8 @@
 <div align="center" style="margin-top: 24px; margin-bottom: 8px;">
-  <img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
+  	<img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
+  	<h1 align="center">Kritzel</h1>
+	<h2 align="center">The Infinite Canvas Development Kit</h2>
 </div>
-
-<h1 align="center">Kritzel</h1>
-<h2 align="center">The Infinite Canvas Development Kit</h2>
 
 # Overview
 
