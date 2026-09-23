@@ -1,5 +1,5 @@
 /**
- * Script to find all CSS variables (--kritzel-*) in the kritzel-stencil component CSS files
+ * Script to find all CSS variables (--kritzel-*) in the engine/editor component CSS files
  * and generate/update the theme.interface.ts file.
  *
  * Usage: node scripts/generate-theme-interface.js
@@ -9,8 +9,9 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const SOURCE_DIR = path.join(__dirname, '../libs/kritzel-stencil/src');
-const THEME_INTERFACE_PATH = path.join(SOURCE_DIR, 'interfaces', 'theme.interface.ts');
+const ENGINE_SOURCE_DIR = path.join(__dirname, '../libs/engine/core/src');
+const EDITOR_SOURCE_DIR = path.join(__dirname, '../libs/editor/core/src');
+const THEME_INTERFACE_PATH = path.join(ENGINE_SOURCE_DIR, 'interfaces', 'theme.interface.ts');
 const CSS_FILE_PATTERN = /\.(css|tsx|ts)$/;
 const CSS_VARIABLE_PATTERN = /--kritzel-([a-zA-Z0-9-]+)/g;
 
@@ -18,7 +19,7 @@ const CSS_VARIABLE_PATTERN = /--kritzel-([a-zA-Z0-9-]+)/g;
 const KNOWN_CATEGORIES = [
   'engine',
   'snap',
-  'controls',
+  'toolbar',
   'tooltip',
   'context-menu',
   'menu',
@@ -227,7 +228,10 @@ function generateThemeInterface(groups) {
 function main() {
   console.log('🔍 Scanning CSS files for CSS variables...\n');
 
-  const cssFiles = findCssFiles(SOURCE_DIR);
+  const cssFiles = [
+    ...findCssFiles(ENGINE_SOURCE_DIR),
+    ...findCssFiles(EDITOR_SOURCE_DIR),
+  ];
   console.log(`Found ${cssFiles.length} CSS files\n`);
 
   // Collect all unique variables

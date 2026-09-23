@@ -1,4 +1,4 @@
-# Recipes — proven end-to-end patterns
+# Recipes â€” proven end-to-end patterns
 
 Composable patterns distilled from the official Angular examples. All assume the golden rules: seeding happens in `(isReady)`, every call awaited, OnPush + signals.
 
@@ -12,7 +12,7 @@ Hide the built-in toolbar, load a background image users can't move, register on
   imports: [KritzelEditor],
   template: `
     <kritzel-editor editorId="annotation"
-      [isControlsVisible]="false" [isMoreMenuVisible]="false"
+      [isToolbarVisible]="false" [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false" [isUtilityPanelVisible]="false"
       (isReady)="onReady()">
     </kritzel-editor>
@@ -40,22 +40,21 @@ export class AnnotationStudioComponent {
 
     for (const c of this.colors) {
       await this.editor.registerTool(`brush-${c.name}`, KritzelBrushTool, {
-        type: 'pen',
         color: { light: c.hex, dark: c.dark },
         size: 16,
-        palettes: {},                             // locked color, no picker
+        palette: [],                              // locked color, no picker
       });
     }
-    await this.editor.changeActiveToolByName('brush-red');
+    await this.editor.changeActiveTool('brush-red');
   }
 
   async activateBrush(name: string) {
-    await this.editor.changeActiveToolByName(`brush-${name}`);
+    await this.editor.changeActiveTool(`brush-${name}`);
   }
 }
 ```
 
-## 2. Pin map / defect mapper (click → world coords → marker)
+## 2. Pin map / defect mapper (click â†’ world coords â†’ marker)
 
 ```ts
 async onReady() {
@@ -69,7 +68,7 @@ async onCanvasClick(ev: MouseEvent) {
   const { x, y } = await this.editor.screenToWorld(ev.clientX, ev.clientY);
   const pin = new KritzelShape({
     shapeType: ShapeType.Ellipse,
-    translateX: x - 25, translateY: y - 25,        // center 50×50 pin on click
+    translateX: x - 25, translateY: y - 25,        // center 50Ã—50 pin on click
     width: 50, height: 50,
     rotation: -15,
     fillColor: { light: '#e53935', dark: '#ef5350' },
@@ -82,7 +81,7 @@ async onCanvasClick(ev: MouseEvent) {
 async focusPin(id: string) {
   const pin = await this.editor.getObjectById(id);
   if (!pin) return;
-  await this.editor.setViewport(pin.centerX, pin.centerY, 1.0);  // camera only — pin stays put
+  await this.editor.setViewport(pin.centerX, pin.centerY, 1.0);  // camera only â€” pin stays put
   await this.editor.selectObjects([pin]);
 }
 ```
@@ -90,8 +89,8 @@ async focusPin(id: string) {
 ## 3. Read-only infinite gallery
 
 ```ts
-// Only the selection tool in the toolbar → users can pan/zoom/inspect but not draw
-readonly controls: KritzelToolbarControl[] = [
+// Only the selection tool in the toolbar â†’ users can pan/zoom/inspect but not draw
+readonly toolbarItems: KritzelToolbarItem[] = [
   { name: 'select', type: 'tool', isDefault: true, tool: KritzelSelectionTool, icon: 'cursor' },
 ];
 
@@ -154,7 +153,7 @@ async goToSlide(i: number) {
 Mirror the canvas into your own model via the granular events; navigate and edit from the panel:
 
 ```ts
-// template: (objectsAdded)/(objectsRemoved)/(objectsUpdated) bindings → tree signals
+// template: (objectsAdded)/(objectsRemoved)/(objectsUpdated) bindings â†’ tree signals
 
 async onNodeClick(id: string) {
   const obj = await this.editor.getObjectById(id);

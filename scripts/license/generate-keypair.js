@@ -58,7 +58,7 @@ function main() {
   console.log(`   Private key (KEEP SECRET): ${PRIVATE_KEY_PATH}`);
   console.log(`   Public key:                ${PUBLIC_KEY_PATH}\n`);
   console.log('Embed this public key in the library as KRITZEL_LICENSE_PUBLIC_KEY');
-  console.log('(libs/kritzel-stencil/src/constants/license.constants.ts):\n');
+  console.log('(libs/engine/core/src/constants/license.constants.ts):\n');
   console.log(`   ${publicB64}\n`);
   console.log('⚠️  Back up the private key. If you lose it you cannot sign new');
   console.log('    licenses; if it leaks, anyone can mint licenses for free.');

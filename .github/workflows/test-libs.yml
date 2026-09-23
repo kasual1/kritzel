@@ -1,13 +1,14 @@
-# Builds the Stencil library, then runs unit tests and e2e tests in parallel.
-name: Run tests
+# Builds the core libraries, then runs unit tests and core/demo e2e tests in parallel.
+name: Run library tests
 
 on:
   push:
     branches-ignore:
       - main
   workflow_dispatch:
+
 jobs:
-  # --- Build Stencil Library ---
+  # --- Build Libraries ---
   build-stencil:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -25,20 +26,24 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Build Kritzel Stencil components
-        run: npm run build -w libs/kritzel-stencil
+      - name: Build Kritzel libraries
+        run: npm run build
 
-      - name: Build Kritzel Angular library
-        run: npm run build -w libs/kritzel-angular
-
-      - name: Upload Stencil and Angular dist
-        uses: actions/upload-artifact@v6
+      - name: Upload library dist
+        uses: actions/upload-artifact@v7
         with:
           name: stencil-dist
           path: |
-            libs/kritzel-stencil/dist
-            libs/kritzel-stencil/loader
-            libs/kritzel-angular/dist/lib
+            libs/engine/core/dist
+            libs/engine/core/loader
+            libs/engine/angular/dist/lib
+            libs/engine/react/dist
+            libs/engine/vue/dist
+            libs/editor/core/dist
+            libs/editor/core/loader
+            libs/editor/angular/dist/lib
+            libs/editor/react/dist
+            libs/editor/vue/dist
 
   # --- Run Unit Tests (after Stencil build) ---
   test-unit:
@@ -57,7 +62,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: stencil-dist
           path: libs
@@ -68,8 +73,8 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
-  # --- Run E2E Tests (after Stencil build, parallel with unit tests) ---
-  test-e2e:
+  # --- Run Core E2E Tests (after Stencil build, parallel with other tests) ---
+  test-core-e2e:
     runs-on: ubuntu-latest
     needs: build-stencil
     timeout-minutes: 30
@@ -89,7 +94,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Download Stencil dist
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           name: stencil-dist
           path: libs
@@ -99,30 +104,85 @@ jobs:
 
       - name: Build Kritzel React library
         if: matrix.project == 'react'
-        run: npm run build -w libs/kritzel-react
+        run: npm run build -w libs/editor/react
 
       - name: Build Kritzel Vue library
         if: matrix.project == 'vue'
-        run: npm run build -w libs/kritzel-vue
+        run: npm run build -w libs/editor/vue
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run e2e tests (${{ matrix.project }})
-        run: npx playwright test --config=e2e/playwright.config.ts --project=${{ matrix.project }}
-        env:
-          E2E_PROJECT: ${{ matrix.project }}
+      - name: Run core e2e tests (${{ matrix.project }})
+        run: npx playwright test --config=apps/core/_e2e/playwright.config.ts --project=core-${{ matrix.project }}
 
       - name: Upload Playwright report
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
-          name: playwright-report-${{ matrix.project }}
-          path: e2e/playwright-report/
+          name: playwright-report-core-${{ matrix.project }}
+          path: apps/core/_e2e/playwright-report/
 
       - name: Upload test results (screenshot diffs)
         if: failure()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
-          name: test-results-${{ matrix.project }}
-          path: e2e/test-results/
+          name: test-results-core-${{ matrix.project }}
+          path: apps/core/_e2e/test-results/
+
+  # --- Run Demo E2E Tests (after Stencil build, parallel with other tests) ---
+  test-demos-e2e:
+    runs-on: ubuntu-latest
+    needs: build-stencil
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [angular, react, vue]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.18.0"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Download Stencil dist
+        uses: actions/download-artifact@v8
+        with:
+          name: stencil-dist
+          path: libs
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build Kritzel React library
+        if: matrix.project == 'react'
+        run: npm run build -w libs/editor/react
+
+      - name: Build Kritzel Vue library
+        if: matrix.project == 'vue'
+        run: npm run build -w libs/editor/vue
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run demo e2e tests (${{ matrix.project }})
+        run: npx playwright test --config=apps/demos/_e2e/playwright.config.ts --project=demos-${{ matrix.project }}
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-demos-${{ matrix.project }}
+          path: apps/demos/_e2e/playwright-report/
+
+      - name: Upload test results (screenshot diffs)
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-results-demos-${{ matrix.project }}
+          path: apps/demos/_e2e/test-results/

@@ -18,7 +18,7 @@ Use this pattern whenever demo pages are created, moved, or ported across Angula
 - Keep interaction behavior equivalent across frameworks.
 - Keep API method intent equivalent even when component syntax differs.
 
-4. Preserve custom-element lifecycle parity when applicable.
+4. Preserve dynamic object lifecycle parity when applicable.
 - Keep renderer key semantics equivalent.
 - Keep mount/unmount persistence behavior equivalent.
 - Keep seed object behavior idempotent and deterministic.
@@ -33,12 +33,12 @@ Use this pattern whenever demo pages are created, moved, or ported across Angula
 2. Ref access conventions:
 - Angular: direct via `viewChild`/`ElementRef`
 - React: direct via `useRef<HTMLKritzelEditorElement | null>`
-- Vue: use `getEditorRef` / `getEngineRef` from `kritzel-vue`
+- Vue: use `getEditorRef` / `getEngineRef` from `@kritzel/vue-editor`
 
 3. Router locations:
-- Angular: `demos/angular/src/app/app.routes.ts`
-- React: `demos/react/src/App.tsx`
-- Vue: `demos/vue/src/router.ts`
+- Angular: `apps/demos/angular/src/app/app.routes.ts`
+- React: `apps/demos/react/src/App.tsx`
+- Vue: `apps/demos/vue/src/router.ts`
 
 ## Docs Integration Checks
 
@@ -51,11 +51,11 @@ When a docs page embeds a demo:
 - React `.tsx`
 - Vue `.vue`
 
-4. For local docs previews, verify `website/docusaurus.config.ts` `customFields.demoBaseUrls` points to running demo dev servers.
+4. For local docs previews, verify `apps/website/docusaurus.config.ts` `customFields.demoBaseUrls` points to running demo dev servers.
 
-## Custom-Element Reliability Checks
+## Dynamic Object Reliability Checks
 
-When a demo route uses `KritzelCustomElement`:
+When a demo route uses `KritzelDynamicObject`:
 
 1. Renderer registration and teardown are both implemented.
 2. Unmount returns serializable state snapshot where persistence is expected.
@@ -70,4 +70,4 @@ When a demo route uses `KritzelCustomElement`:
 3. Theme application is intentional (framework theme by default).
 4. Editor `editorId` is unique.
 5. Docs links (`demoPath` and `repoFiles`) still resolve if applicable.
-6. If custom elements are used, `patterns/custom-element-objects.md` checks are satisfied.
+6. If dynamic objects are used, `patterns/dynamic-objects.md` checks are satisfied.

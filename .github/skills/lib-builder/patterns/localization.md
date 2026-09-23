@@ -2,12 +2,12 @@
 
 ## Location
 
-`libs/kritzel-stencil/src/interfaces/localization.interface.ts`
-`libs/kritzel-stencil/src/classes/managers/localization.manager.ts`
-`libs/kritzel-stencil/src/locales/`
-`libs/kritzel-stencil/src/components/core/kritzel-engine/`
-`libs/kritzel-stencil/src/components/core/kritzel-editor/`
-`libs/kritzel-stencil/src/components/ui/`
+`libs/engine/core/src/interfaces/localization.interface.ts`
+`libs/engine/core/src/classes/managers/localization.manager.ts`
+`libs/engine/core/src/locales/`
+`libs/engine/core/src/components/core/kritzel-engine/`
+`libs/engine/core/src/components/core/kritzel-editor/`
+`libs/engine/core/src/components/ui/`
 
 ## Purpose
 

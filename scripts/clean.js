@@ -1,19 +1,23 @@
 const fs = require('fs');
 const path = require('path');
-const rimraf = require('rimraf');
-const { execSync } = require('child_process');
 
 // Project paths and generated folders to clean
 const cleanTargets = [
-  { path: '../demos/angular', folders: ['node_modules', 'dist'] },
-  { path: '../demos/react', folders: ['node_modules', 'dist'] },
-  { path: '../demos/vue', folders: ['node_modules', 'dist'] },
-  { path: '../libs/kritzel-angular', folders: ['node_modules', 'dist'] },
-  { path: '../libs/kritzel-react', folders: ['node_modules', 'dist'] },
-  { path: '../libs/kritzel-stencil', folders: ['node_modules', 'dist'] },
-  { path: '../libs/kritzel-vue', folders: ['node_modules', 'dist'] },
-  { path: '../server/websocket-demo', folders: ['node_modules', 'dist'] },
-  { path: '../website', folders: ['node_modules', 'build', '.docusaurus'] },
+  { path: '../apps/demos/angular', folders: ['node_modules', 'dist', '.angular'] },
+  { path: '../apps/demos/react', folders: ['node_modules', 'dist'] },
+  { path: '../apps/demos/vue', folders: ['node_modules', 'dist'] },
+  { path: '../apps/core/angular', folders: ['node_modules', 'dist', '.angular'] },
+  { path: '../apps/core/react', folders: ['node_modules', 'dist'] },
+  { path: '../apps/core/vue', folders: ['node_modules', 'dist'] },
+  { path: '../libs/engine/core', folders: ['node_modules', 'dist'] },
+  { path: '../libs/engine/angular', folders: ['node_modules', 'dist'] },
+  { path: '../libs/engine/react', folders: ['node_modules', 'dist'] },
+  { path: '../libs/engine/vue', folders: ['node_modules', 'dist'] },
+  { path: '../libs/editor/core', folders: ['node_modules', 'dist'] },
+  { path: '../libs/editor/angular', folders: ['node_modules', 'dist'] },
+  { path: '../libs/editor/react', folders: ['node_modules', 'dist'] },
+  { path: '../libs/editor/vue', folders: ['node_modules', 'dist'] },
+  { path: '../apps/website', folders: ['node_modules', 'build', '.docusaurus'] },
 ];
 
 // Helper function to delete a folder
@@ -21,7 +25,7 @@ function deleteFolder(folderPath, subfolder) {
   const fullPath = path.resolve(__dirname, folderPath, subfolder);
   if (fs.existsSync(fullPath)) {
     console.log(`Deleting: ${fullPath}`);
-    rimraf.sync(fullPath); // Use rimraf's sync method
+    fs.rmSync(fullPath, { force: true, maxRetries: 3, recursive: true, retryDelay: 100 });
   } else {
     console.log(`No ${subfolder} found at: ${fullPath}`);
   }

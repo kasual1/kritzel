@@ -1,0 +1,13 @@
+html,
+body {
+  width: 100dvw;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior-x: none;
+}
+
+input[type='checkbox'] {
+  accent-color: #dd0031;
+}

@@ -1,0 +1,12 @@
+import { KritzelEditor } from "@kritzel/react-editor";
+import { reactThemeLight } from "../../const/react-theme-light";
+import { reactThemeDark } from "../../const/react-theme-dark";
+
+export function EditorPage() {
+
+  return (
+    <div className="app">
+      <KritzelEditor theme="light" themes={[reactThemeLight, reactThemeDark]} />
+    </div>
+  );
+}

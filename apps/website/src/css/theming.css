@@ -1,0 +1,94 @@
+:root {
+  --ifm-color-primary: #000000;
+  --ifm-color-primary-dark: #000000;
+  --ifm-color-primary-darker: #000000;
+  --ifm-color-primary-darkest: #000000;
+  --ifm-color-primary-light: #000000;
+  --ifm-color-primary-lighter: #000000;
+  --ifm-color-primary-lightest: #000000;
+  --ifm-code-font-size: 95%;
+  --ifm-background-color: #ffffff;
+  --ifm-text-color: #000000;
+  --ifm-text-color-light: hsla(0, 0%, 0%, 0.75);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --button-icon-color: #ffffff;
+}
+
+html.plugin-id-angular .menu__link:not(.menu__link--sublist) {
+  --ifm-menu-color-active: #dd0031;
+  --ifm-menu-color-background-active: rgba(221, 0, 48, 0.08);
+  --ifm-menu-color-hover: rgba(221, 0, 48, 0.08);
+}
+
+html.plugin-id-react .menu__link:not(.menu__link--sublist) {
+  --ifm-menu-color-active: #0959a4;
+  --ifm-menu-color-background-active: rgba(11, 107, 196, 0.1);
+  --ifm-menu-color-hover: rgba(255, 0, 0, 0.05);
+}
+
+html.plugin-id-vue .menu__link:not(.menu__link--sublist) {
+  --ifm-menu-color-active: #33a06f;
+  --ifm-menu-color-background-active: rgba(66, 184, 131, 0.1);
+  --ifm-menu-color-hover: rgba(255, 0, 0, 0.05);
+}
+
+html.plugin-id-angular .navbar__item.dropdown .dropdown__link--active {
+  background-color: rgba(221, 0, 48, 0.08);
+  color: #dd0031;
+}
+
+html.plugin-id-react .navbar__item.dropdown .dropdown__link--active {
+  background-color: rgba(11, 107, 196, 0.1);
+  color: #0959a4;
+}
+
+html.plugin-id-vue .navbar__item.dropdown .dropdown__link--active {
+  background-color: rgba(66, 184, 131, 0.1);
+  color: #33a06f;
+}
+
+.menu__link--sublist {
+  font-size: 1.1em;
+  font-weight: 600;
+  color: var(--ifm-text-color);
+}
+
+/* Nested (non-top-level) sidebar categories match plain leaf-item styling instead of the bold top-level look. */
+li[class*='theme-doc-sidebar-item-category-level-']:not(.theme-doc-sidebar-item-category-level-1)
+  > div
+  > .menu__link--sublist {
+  font-size: inherit;
+  font-weight: var(--ifm-font-weight-semibold);
+  color: var(--ifm-menu-color);
+}
+
+.menu__link {
+  line-height: 1.4;
+}
+
+html.plugin-id-angular {
+  --ifm-toc-link-color-active: #dd0031;
+  --ifm-link-color: #dd0031;
+}
+
+html.plugin-id-angular .table-of-contents__link--active {
+  color: var(--ifm-toc-link-color-active);
+}
+
+html.plugin-id-react {
+  --ifm-toc-link-color-active: #0959a4;
+  --ifm-link-color: #0959a4;
+}
+
+html.plugin-id-react .table-of-contents__link--active {
+  color: var(--ifm-toc-link-color-active);
+}
+
+html.plugin-id-vue {
+  --ifm-toc-link-color-active: #33a06f;
+  --ifm-link-color: #33a06f;
+}
+
+html.plugin-id-vue .table-of-contents__link--active {
+  color: var(--ifm-toc-link-color-active);
+}

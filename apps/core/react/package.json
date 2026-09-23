@@ -1,0 +1,32 @@
+{
+  "name": "@kritzel/react-e2e-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "clean": "rimraf dist node_modules",
+    "build-app": "vite build",
+    "build:e2e:prod": "vite build",
+    "start:e2e:prod": "npm run build:e2e:prod && vite preview --port 5273 --strictPort"
+  },
+  "dependencies": {
+    "@kritzel/react-editor": "file:../../../libs/editor/react/dist",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.15.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.50.1",
+    "vite": "^7.3.0"
+  }
+}

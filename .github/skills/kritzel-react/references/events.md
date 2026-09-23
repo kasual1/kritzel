@@ -25,7 +25,7 @@ Handlers are typed as receiving `KritzelEditorCustomEvent<T>` (a `CustomEvent` s
 | `onUndoStateChange` | `KritzelUndoState` | Undo/redo availability changes — drive custom undo/redo buttons |
 | `onThemeChange` | `ThemeName` | Theme switched (settings UI or `theme` prop) |
 | `onViewportChange` | `KritzelViewportState` | Pan/zoom/resize |
-| `onIsPublicChange` | `IKritzelIsPublicChangedEvent` | Share-state of active workspace toggles |
+| `onIsPublicChange` | `IKritzelIsPublicChangeEvent` | Share-state of active workspace toggles |
 | `onAwarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `onLogin` / `onLogout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
 
@@ -92,7 +92,7 @@ Use the granular triplet instead of `onObjectsChange` when maintaining your own 
 
 ## Import sources for event payload types
 
-All common payload types are re-exported by `kritzel-react`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `kritzel-react`, not `kritzel-stencil`.
+All common payload types are re-exported by `@kritzel/react-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/react-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

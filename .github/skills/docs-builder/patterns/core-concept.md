@@ -1,15 +1,15 @@
-# Pattern: Core Concept Pages
+# Pattern: Fundamentals Pages
 
 ## Overview
 
-Core Concept pages introduce fundamental architectural pillars of Kritzel (such as Viewport, Workspaces, Tools, Objects, Theming, Persistence). Unlike the exhaustive, deep-dive Example pages, Core Concept pages are designed to give users a quick, high-level understanding of a concept, accompanied by very focused, small live-demo examples.
+Fundamentals pages introduce fundamental architectural pillars of Kritzel (such as Viewport, Workspaces, Tools, Objects, Theming, Persistence). Unlike the exhaustive, deep-dive Example pages, Fundamentals pages are designed to give users a quick, high-level understanding of a concept, accompanied by very focused, small live-demo examples.
 
 These pages bridge the gap between abstract architectural concepts and practical API usage.
 
 ## File Naming & Location
 
-- File: `website/docs/angular/concept-<concept>.md` (or the corresponding framework directory)
-- Sidebar registration: add page ID `concept-<concept>` to the `Core Concepts` category in `website/sidebars.ts`
+- File: `apps/website/docs/angular/fundamentals/<concept>.md` (or the corresponding framework directory)
+- Sidebar registration: add page ID `fundamentals/<concept>` to the `Fundamentals` category in `apps/website/sidebars.ts`
 
 ## Frontmatter
 
@@ -18,7 +18,7 @@ These pages bridge the gap between abstract architectural concepts and practical
 sidebar_label: <Concept Name>
 displayed_sidebar: tutorialSidebar
 title: "<Concept Name> Concept | Kritzel for Angular"
-description: "Understand the core concept of <Concept Name> in Kritzel."
+description: "Understand the fundamental concept of <Concept Name> in Kritzel."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -29,20 +29,20 @@ import LiveDemo from '@site/src/components/LiveDemo';
 1. **`# <Concept Name>`** — The main page title.
 2. **`## Overview`** — Explain what the concept is, its role within the Kritzel architecture, and why a developer should care. Keep it high-level.
 3. **Use Case Sections (`##` or `###`)** — Provide multiple *very focused* live-demo examples showing users exactly how to accomplish specific, atomic tasks related to the concept. **Do not** use a literal `## Focused Use Cases` heading; instead, promote the use cases to top-level or natural descriptive headings (e.g., `## Using the Editor Component`).
-4. **`## Related API Methods`** — A quick bulleted list summarizing the most relevant API methods associated with this concept.
-    - Group methods by a short, high-level context label, followed by the methods in parentheses (e.g., `- Camera control (\`setViewport()\`, \`panTo()\`)`).
-    - Keep it simple: do not use bold descriptions or long explanatory sentences.
-    - ALWAYS end this section with the exact sentence: `For a comprehensive view, see the [API Reference](api-reference-editor.md).`
+4. **`## API Details`** — A quick bulleted list linking to the most relevant API reference sections associated with this concept.
+  - Start with: `For the full list of related APIs, see the following reference sections.`
+  - Link to top-level sections (e.g., `- [Viewport & Navigation](../api-reference/editor.md#viewport--navigation)`) rather than individual methods, props, events, or types.
+  - Keep the list focused. Include multiple links only when the page genuinely covers distinct API sections.
 
 ## Focused Live-Demo Example Constraints
 
-The examples on a Core Concept page are **smaller** and **less detailed** than those on Example Pages (`examples.md`). 
+The examples on a Fundamentals page are **smaller** and **less detailed** than those on Example Pages (`examples.md`). 
 
 - Focus on **"How to do ONE specific thing."**
 - **Descriptive Text is Required:** Every section containing a `<LiveDemo>` MUST include descriptive text explaining the purpose of the demo.
 - **Strict `<LiveDemo>` Usage:** NEVER use raw inline markdown code blocks (e.g., \`\`\`typescript\`) to demonstrate API usage. ALWAYS use the `<LiveDemo>` component to embed a working example.
-- **Proactive Demo Creation:** If the underlying Angular component required for the `<LiveDemo>` does not exist in `demos/angular/src/app/...`, you MUST proactively create it. Do not fall back to inline code simply because the demo file is missing.
-- **Demo Routing Registration:** Whenever you create a new concept demo component, you must also register its route in the application's routing (`demos/angular/src/app/app.routes.ts`) so the `iframeUrl` correctly resolves and the demo loads on the site.
+- **Proactive Demo Creation:** If the underlying Angular component required for the `<LiveDemo>` does not exist in `apps/demos/angular/src/app/...`, you MUST proactively create it. Do not fall back to inline code simply because the demo file is missing.
+- **Demo Routing Registration:** Whenever you create a new concept demo component, you must also register its route in the application's routing (`apps/demos/angular/src/app/app.routes.ts`) so the `iframeUrl` correctly resolves and the demo loads on the site.
 - **No Duplicate Source Code:** Do not add raw code blocks below a `<LiveDemo>` embed. The `<LiveDemo>` component securely tracks and references the hosted code on GitHub.
 - Do not build full, robust applications here; emphasize simplicity and clarity.
 - **Do not** write extensive step-by-step tutorials here.
@@ -53,16 +53,16 @@ Just like in the Examples pattern, embed previews with:
 ```jsx
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
-  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/concepts/<concept>-<focus>"
-  repoFiles={['src/app/concepts/<concept>/<concept>-<focus>.component.ts']}
+  iframeUrl="https://kasual1.github.io/kritzel-demos/angular/#/fundamentals/<concept>-<focus>"
+  repoFiles={['src/app/fundamentals/<concept>/<concept>-<focus>.component.ts']}
 />
 ```
 
 ---
 
-## Content Mapping (Core Concepts to API)
+## Content Mapping (Fundamentals to API)
 
-When authoring a Core Concept page, draw upon the appropriate subset of the Kritzel Editor API:
+When authoring a Fundamentals page, draw upon the appropriate subset of the Kritzel Editor API:
 
 ### 1. Components (Editor, Engine)
 - **Concept:** The relationship between the visual `<kritzel-editor>` and the headless `<kritzel-engine>`, showing they share identical public APIs exposing asynchronous methods (returning Promises).
@@ -72,7 +72,7 @@ When authoring a Core Concept page, draw upon the appropriate subset of the Krit
 - **Concept:** How the user interacts with the canvas via registered drawing/selection modes.
 - **Relevant Usage:** 
   - `registerTool(toolName, toolClass, config)`
-  - `changeActiveTool(tool)`
+  - `changeActiveTool(toolName)`
   - `disable()`, `enable()`
 
 ### 3. Objects
@@ -106,8 +106,8 @@ Based on past learnings, always strictly follow these operational rules when upd
 1. **Safe File Editing:** If a documentation file already exists, **NEVER** use terminal shell commands (like PowerShell's `Set-Content` or `echo`) to rewrite or overwrite the file. Shell escaping frequently corrupts Markdown syntax (e.g., turning ``` `method()` ``` into `\method()\`). Always use the system's native `replace_string_in_file` or edit tools to safely update file contents.
 2. **Strict Markdown Formatting:** Ensure all methods, variable names, bindings, and components mentioned in paragraph text are properly wrapped in backticks (e.g., `` `[activeWorkspaceId]` ``). Do NOT escape backticks.
 3. **Demo Component Integration:** Creating demo components requires a full loop:
-  - Create the `<concept>-<focus>.component.ts` file in `demos/angular/src/app/concepts/<concept>/`.
-  - Update `demos/angular/src/app/app.routes.ts` to import the file and add its route to the `concepts` children array.
+  - Create the `<concept>-<focus>.component.ts` file in `apps/demos/angular/src/app/fundamentals/<concept>/`.
+  - Update `apps/demos/angular/src/app/app.routes.ts` to import the file and add its route to the `fundamentals` children array.
    - Without the route, the `<LiveDemo>` iframe will fail to load the preview.
 - **Relevant Usage:** (CSS Variable mapping and toolbar configuration objects).
 
@@ -117,11 +117,11 @@ Based on past learnings, always strictly follow these operational rules when upd
 
 ## Porting Checklist (When Explicitly Requested)
 
-Core Concept pages are authored in Angular first. If React/Vue translations are explicitly requested, follow [`framework-porting.md`](framework-porting.md).
+Fundamentals pages are authored in Angular first. If React/Vue translations are explicitly requested, follow [`framework-porting.md`](framework-porting.md).
 
 Quick checks before finishing:
 
-1. Keep conceptual sections aligned across frameworks (Overview, focused demos, Related API Methods).
+1. Keep conceptual sections aligned across frameworks (Overview, focused demos, API Details).
 2. Translate framework-specific naming in prose and snippets.
 3. In React/Vue docs, use `<KritzelEditor>` and avoid `<kritzel-editor>`.
 4. In Vue docs, use `html` fences for embedded component/template snippets.

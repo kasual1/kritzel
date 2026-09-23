@@ -2,15 +2,15 @@
 
 ## Overview
 
-React demo pages are route components in `demos/react/src/pages/`. They support direct demo app usage and docs `<LiveDemo>` embeds.
+React demo pages are route components in `apps/demos/react/src/pages/`. They support direct demo app usage and docs `<LiveDemo>` embeds.
 
 ## File Location
 
 | Category | Path template |
 |---|---|
-| Example demos | `demos/react/src/pages/examples/<feature>/<FeatureExamplePage>.tsx` |
-| Concept demos | `demos/react/src/pages/concepts/<concept>/<ConceptFocusPage>.tsx` |
-| Other guides | `demos/react/src/pages/<guide>/<GuidePage>.tsx` |
+| Example demos | `apps/demos/react/src/pages/examples/<ExampleName>Page.tsx` |
+| Fundamentals demos | `apps/demos/react/src/pages/fundamentals/<topic>/<TopicFocus>Page.tsx` |
+| Other guides | `apps/demos/react/src/pages/<guide>/<GuidePage>.tsx` |
 
 Follow existing folder conventions in the target area.
 
@@ -24,7 +24,7 @@ Examples:
 
 ## Routing Registration
 
-Register every new demo route in `demos/react/src/App.tsx`.
+Register every new demo route in `apps/demos/react/src/App.tsx`.
 
 1. Import page component.
 2. Add matching `<Route path="..." element={<... />} />`.
@@ -42,7 +42,7 @@ Register every new demo route in `demos/react/src/App.tsx`.
 
 Apply React framework theme by default:
 
-1. Import `customReactTheme` from `demos/react/src/const/custom-react-theme.ts`.
+1. Import `customReactTheme` from `apps/demos/react/src/const/custom-react-theme.ts`.
 2. Set `theme="react-theme"`.
 3. Set `themes={[customReactTheme]}`.
 
@@ -56,19 +56,19 @@ React refs resolve directly to native elements. Use `useRef<HTMLKritzelEditorEle
 
 When a demo needs initial object content, use a shared seed helper for consistent visuals and less duplicated setup code.
 
-## Custom-Element Objects
+## Dynamic Objects
 
-When a page uses `KritzelCustomElement`:
+When a page uses `KritzelDynamicObject`:
 
 1. Keep renderer setup and object factories in dedicated modules (not inline in the page component).
 2. Register/unregister renderers in page lifecycle hooks.
 3. Use guarded, idempotent `onReady` seeding and add factory-created objects through the editor ref.
-4. Apply `patterns/custom-element-objects.md` for lifecycle, state, and cleanup rules.
+4. Apply `patterns/dynamic-objects.md` for lifecycle, state, and cleanup rules.
 
 ## Docs LiveDemo Correspondence
 
 If the demo is embedded in docs:
 
-1. `demoPath` must match `demos/react/src/App.tsx` route.
+1. `demoPath` must match `apps/demos/react/src/App.tsx` route.
 2. `repoFiles` must match real file locations.
 3. Use `.tsx` file paths in docs.

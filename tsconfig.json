@@ -23,16 +23,16 @@
 		"strictPropertyInitialization": false,
 		"paths": {
 			"@kritzel/stencil": [
-				"./libs/kritzel-stencil"
+				"./libs/engine/core"
 			],
 			"@kritzel/stencil/loader": [
-				"./libs/kritzel-stencil/loader"
+				"./libs/engine/core/loader"
 			],
 			"@kritzel/angular": [
-				"./libs/kritzel-angular/dist/lib"
+				"./libs/editor/angular/dist/lib"
 			],
 			"@kritzel/react": [
-				"./libs/kritzel-react/dist/lib"
+				"./libs/editor/react/dist/lib"
 			]
 		}
 	}

@@ -2,15 +2,15 @@
 
 ## Overview
 
-Vue demo pages are SFC route components in `demos/vue/src/pages/`. They support direct demo usage and docs `<LiveDemo>` embeds.
+Vue demo pages are SFC route components in `apps/demos/vue/src/pages/`. They support direct demo usage and docs `<LiveDemo>` embeds.
 
 ## File Location
 
 | Category | Path template |
 |---|---|
-| Example demos | `demos/vue/src/pages/examples/<feature>/<FeatureExamplePage>.vue` |
-| Concept demos | `demos/vue/src/pages/concepts/<concept>/<ConceptFocusPage>.vue` |
-| Other guides | `demos/vue/src/pages/<guide>/<GuidePage>.vue` |
+| Example demos | `apps/demos/vue/src/pages/examples/<ExampleName>Page.vue` |
+| Fundamentals demos | `apps/demos/vue/src/pages/fundamentals/<topic>/<TopicFocus>Page.vue` |
+| Other guides | `apps/demos/vue/src/pages/<guide>/<GuidePage>.vue` |
 
 Follow existing folder conventions in the target area.
 
@@ -24,7 +24,7 @@ Examples:
 
 ## Routing Registration
 
-Register every new demo route in `demos/vue/src/router.ts`.
+Register every new demo route in `apps/demos/vue/src/router.ts`.
 
 1. Import page component.
 2. Add route entry.
@@ -32,7 +32,7 @@ Register every new demo route in `demos/vue/src/router.ts`.
 
 ## Component Tag Rule
 
-Use `<KritzelEditor>` from `kritzel-vue`. Do not use `<kritzel-editor>` directly in Vue demo pages.
+Use `<KritzelEditor>` from `@kritzel/vue-editor`. Do not use `<kritzel-editor>` directly in Vue demo pages.
 
 ## Component Baseline
 
@@ -45,7 +45,7 @@ Use `<KritzelEditor>` from `kritzel-vue`. Do not use `<kritzel-editor>` directly
 
 Apply Vue framework theme by default:
 
-1. Import `customVueTheme` from `demos/vue/src/const/custom-vue-theme.ts`.
+1. Import `customVueTheme` from `apps/demos/vue/src/const/custom-vue-theme.ts`.
 2. Set `theme="vue-theme"`.
 3. Set `:themes="[customVueTheme]"`.
 
@@ -53,7 +53,7 @@ Skip only for intentionally neutral/theming-baseline demos.
 
 ## Editor / Engine Ref Access (Vue-specific)
 
-Use `getEditorRef` / `getEngineRef` from `kritzel-vue`.
+Use `getEditorRef` / `getEngineRef` from `@kritzel/vue-editor`.
 
 Vue template refs on wrapper components point at component instances, not directly at native custom elements. The composables resolve native `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement` safely.
 
@@ -61,19 +61,19 @@ Vue template refs on wrapper components point at component instances, not direct
 
 Use shared seed helpers when demos need initial canvas content to keep visuals and behavior consistent.
 
-## Custom-Element Objects
+## Dynamic Objects
 
-When a page uses `KritzelCustomElement`:
+When a page uses `KritzelDynamicObject`:
 
 1. Keep renderer setup and object factory logic in dedicated modules, not inline in the page SFC.
 2. Register/unregister renderers in lifecycle hooks.
 3. Seed via guarded, idempotent setup flow.
-4. Apply `patterns/custom-element-objects.md` for general lifecycle, persistence, and cleanup expectations.
+4. Apply `patterns/dynamic-objects.md` for general lifecycle, persistence, and cleanup expectations.
 
 ## Docs LiveDemo Correspondence
 
 If the demo is embedded in docs:
 
-1. `demoPath` must match `demos/vue/src/router.ts` route.
+1. `demoPath` must match `apps/demos/vue/src/router.ts` route.
 2. `repoFiles` must match real file locations.
 3. Use `.vue` file paths in docs.

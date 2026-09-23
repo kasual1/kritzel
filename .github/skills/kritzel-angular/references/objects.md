@@ -1,6 +1,6 @@
 # Objects: Create, Update, Query, Organize
 
-All canvas content is a `KritzelBaseObject` subclass. Import all classes from `kritzel-angular`:
+All canvas content is a `KritzelBaseObject` subclass. Import all classes from `@kritzel/angular-editor`:
 `KritzelPath`, `KritzelLine`, `KritzelShape`, `KritzelText`, `KritzelImage`, `KritzelGroup`, plus `ShapeType` and `KritzelAlignment` enums.
 
 ## Shared base properties
@@ -41,7 +41,7 @@ await this.editor.addObject(text);
 ### Shape (rectangle / ellipse / triangle)
 
 ```ts
-import { ShapeType } from 'kritzel-angular';
+import { ShapeType } from '@kritzel/angular-editor';
 
 const shape = new KritzelShape({
   translateX: 20,
@@ -162,7 +162,7 @@ await editor.sendToBack();
 await editor.bringForward();
 await editor.sendBackward();
 
-import { KritzelAlignment } from 'kritzel-angular';
+import { KritzelAlignment } from '@kritzel/angular-editor';
 await editor.alignObjects(KritzelAlignment.CenterHorizontal); // needs ≥ 2 selected
 ```
 

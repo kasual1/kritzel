@@ -5,7 +5,7 @@
 A workspace is a complete document: its objects, view state, and metadata. The editor always has one active workspace (one is created automatically on first run).
 
 ```ts
-import { KritzelWorkspace } from 'kritzel-angular';
+import { KritzelWorkspace } from '@kritzel/angular-editor';
 
 const workspaces = await editor.getWorkspaces();
 const active = await editor.getActiveWorkspace();
@@ -44,7 +44,7 @@ The built-in workspace manager UI handles all of this; hide it with `[isWorkspac
 Kritzel state lives in a Yjs document; sync providers decide where it goes. **Default is `{ providers: [] }` — nothing persists across reloads.**
 
 ```ts
-import { IndexedDBSyncProvider, KritzelSyncConfig } from 'kritzel-angular';
+import { IndexedDBSyncProvider, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 readonly syncConfig: KritzelSyncConfig = {
   providers: [IndexedDBSyncProvider],   // local persistence, restored on reload
@@ -55,7 +55,7 @@ readonly syncConfig: KritzelSyncConfig = {
 <kritzel-editor [syncConfig]="syncConfig"></kritzel-editor>
 ```
 
-Available providers (all exported from `kritzel-angular`):
+Available providers (all exported from `@kritzel/angular-editor`):
 
 | Provider | Persists/Syncs to | Use |
 |---|---|---|
@@ -98,8 +98,8 @@ const json = await engine.exportAsJson();           // serialize active workspac
 await engine.importFromJson(json);                  // import as a NEW workspace and switch to it
 
 // Images
-const dataUrl = await editor.getScreenshot('png', { includeBackground: true }); // data URL or null
-await editor.exportViewportAsPng({ includeBackground: false });  // triggers download
+const dataUrl = await editor.getScreenshot('png'); // data URL or null
+await editor.exportViewportAsPng();  // triggers download
 await editor.exportViewportAsSvg();
 ```
 

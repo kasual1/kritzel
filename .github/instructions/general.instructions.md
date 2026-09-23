@@ -5,11 +5,13 @@ It is built with Stencil and has wrappers for Angular, React, and Vue.
 ### General Folder Structure
 Kritzel is a monorepo containing the core library and its framework-specific wrappers. The core functionality is built with Stencil, and wrappers are provided for Angular, React, and Vue.
 
-- **`libs/kritzel-stencil`**: The core Stencil library where most of the business logic resides.
-- **`libs/kritzel-angular`**, **`libs/kritzel-react`**, **`libs/kritzel-vue`**: Framework-specific wrapper libraries.
-- **`demos/*`**: Demo applications for each framework, useful for testing and showcasing features.
-- **`website`**: The Docusaurus-based documentation website.
-- **`server/websocket-demo`**: A NestJS-based WebSocket server for demoing real-time collaboration features.
+- **`libs/engine/core`**: The engine Stencil library where most business logic, canvas entities, providers, managers, and the engine component reside.
+- **`libs/engine/angular`**, **`libs/engine/react`**, **`libs/engine/vue`**: Framework-specific wrapper package slots for engine-only consumption.
+- **`libs/editor/core`**: The editor package slot for the higher-level UI shell.
+- **`libs/editor/angular`**, **`libs/editor/react`**, **`libs/editor/vue`**: Framework-specific wrapper libraries for editor consumption.
+- **`apps/demos/*`**: Demo applications for each framework, useful for testing and showcasing features.
+- **`apps/core/*`**: Core harness applications for e2e testing framework integrations.
+- **`apps/website`**: The Docusaurus-based documentation website.
 
 ### Stencil Folder Structure
 The core Stencil library follows a structured approach to organize its components, classes, and utilities.
@@ -33,21 +35,21 @@ The core Stencil library follows a structured approach to organize its component
 
 ### Coding Conventions
 - Follow consistent naming conventions for files, classes, methods, and variables.
-- All classes inside `libs/kritzel-stencil` should be prefixed with `Kritzel` but their filenames should not have the prefix.
+- All classes inside `libs/engine/core` should be prefixed with `Kritzel` but their filenames should not have the prefix.
 
 ### Unit Testing
 - Unit test files use the `.spec.ts` extension and should be placed in the same directory as the file they are testing (e.g., `my-class.ts` and `my-class.spec.ts` should be in the same folder).
 
 ### E2E Testing
-- E2E test files use the `.e2e.ts` extension and are placed inside `src/e2e/tests`.
+- Core e2e tests live in `apps/core/_e2e/tests`; docs-facing demo e2e tests live in `apps/demos/_e2e/tests`.
+- Screenshot baselines live beside their owning e2e project under `apps/core/_e2e/screenshots` or `apps/demos/_e2e/screenshots`.
 - Tests use the Page Object Model (POM) pattern.
-- Page object classes live under `src/e2e/pages` and have the `.page.ts` extension.
 - Tests exclusively use page object classes to interact with the application.
-- E2E tests have a strong focus on screenshot testing using Stencil's `compareScreenshot` API.
+- E2E tests have a strong focus on Playwright screenshot testing.
 
 ### Theming
 Kritzel uses a CSS custom property (CSS variables) based theming system. All themeable properties are defined as `--kritzel-*` CSS variables in component stylesheets.
 
-- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--kritzel-*` variables and automatically generate/update the `KritzelTheme` interface in `src/interfaces/theme.interface.ts`. This groups variables by category (e.g., controls, menu, dialog).
+- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--kritzel-*` variables and automatically generate/update the `KritzelTheme` interface in `src/interfaces/theme.interface.ts`. This groups variables by category (e.g., toolbar, menu, dialog).
 - **Theme Definitions**: Theme presets are defined in `src/themes/` (e.g., `light-theme.ts`, `dark-theme.ts`) and implement the `KritzelTheme` interface.
 - **Adding New Theme Variables**: When adding new CSS variables to components, re-run the generation script and update the theme files accordingly.
