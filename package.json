@@ -1,0 +1,22 @@
+{
+  "name": "kritzel",
+  "private": true,
+  "description": "Public demos and editor packages for Kritzel.",
+  "workspaces": [
+    "editor/core",
+    "editor/angular",
+    "editor/react",
+    "editor/vue",
+    "demos/angular",
+    "demos/react",
+    "demos/vue"
+  ],
+  "scripts": {
+    "start:editor": "npm run start -w editor/core",
+    "demo:angular": "npm run start -w demos/angular",
+    "demo:react": "npm run start -w demos/react",
+    "demo:vue": "npm run start -w demos/vue",
+    "build:editor": "npm run build -w editor/core && npm run build -w editor/angular && npm run build -w editor/react && npm run build -w editor/vue",
+    "build:demos": "npm run build-app -w demos/angular && npm run build-app -w demos/react && npm run build-app -w demos/vue"
+  }
+}
