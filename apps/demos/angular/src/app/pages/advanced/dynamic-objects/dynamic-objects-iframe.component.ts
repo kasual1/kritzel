@@ -10,9 +10,8 @@ import { angularThemeLight } from '../../../const/angular-theme-light';
 
 interface RuntimeIframeDefinition {
   name: string;
-  html: string;
-  css: string;
-  script: string;
+  content: { html: string; css: string; script: string };
+  loadingContent?: { html: string; css: string; script: string };
   initialState: Record<string, unknown>;
 }
 
@@ -24,21 +23,23 @@ const MOCK_CHAT_PROMPTS = [
 
 const IDLE_IFRAME_DEFINITION: RuntimeIframeDefinition = {
   name: 'Waiting for prompt',
-  html: `
-    <main class="card idle-card">
-      <p class="eyebrow">Mock LLM canvas</p>
-      <h2>Waiting for a prompt</h2>
-      <p class="summary">Send the prompt below to replace this sandboxed iframe with a generated calculator widget.</p>
-    </main>
-  `,
-  css: `
-    :root { color: #24313d; background: #f3f6f8; }
-    .card { box-sizing: border-box; min-height: 100%; padding: 20px; background: #f3f6f8; font-family: Roboto, sans-serif; }
-    .eyebrow { margin: 0 0 12px; color: #5d6b78; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-    h2 { margin: 0; font-size: 22px; }
-    .summary { margin: 10px 0 0; color: #5d6b78; font-size: 13px; line-height: 1.5; }
-  `,
-  script: '',
+  content: {
+    html: `
+      <main class="card idle-card">
+        <p class="eyebrow">Mock LLM canvas</p>
+        <h2>Waiting for a prompt</h2>
+        <p class="summary">Send the prompt below to replace this sandboxed iframe with a generated calculator widget.</p>
+      </main>
+    `,
+    css: `
+      :root { color: #24313d; background: #f3f6f8; }
+      .card { box-sizing: border-box; min-height: 100%; padding: 20px; background: #f3f6f8; font-family: Roboto, sans-serif; }
+      .eyebrow { margin: 0 0 12px; color: #5d6b78; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+      h2 { margin: 0; font-size: 22px; }
+      .summary { margin: 10px 0 0; color: #5d6b78; font-size: 13px; line-height: 1.5; }
+    `,
+    script: '',
+  },
   initialState: {},
 };
 
@@ -170,63 +171,144 @@ const CALCULATOR_SCRIPT = `
 const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
   {
     name: 'Simple calculator',
-    html: `
-      <main class="calculator-card is-simple">
-        <div class="header"><h2>Simple Calculator</h2><span id="mode-label" class="mode-label">simple</span></div>
-        <output id="display" class="display" aria-live="polite">0</output>
-        <div class="keypad simple-grid">
-          <button class="muted" type="button" data-action="clear">C</button>
-          <button class="operator" type="button" data-operator="divide">/</button>
-          <button class="operator" type="button" data-operator="multiply">x</button>
-          <button class="operator" type="button" data-operator="subtract">-</button>
-          <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button class="operator" type="button" data-operator="add">+</button>
-          <button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button><button type="button" data-digit="6">6</button><button class="equals" type="button" data-action="equals">=</button>
-          <button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button>
-          <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
-        </div>
-      </main>
-    `,
-    css: CALCULATOR_BASE_CSS,
-    script: CALCULATOR_SCRIPT,
+    content: {
+      html: `
+        <main class="calculator-card is-simple">
+          <div class="header"><h2>Simple Calculator</h2><span id="mode-label" class="mode-label">simple</span></div>
+          <output id="display" class="display" aria-live="polite">0</output>
+          <div class="keypad simple-grid">
+            <button class="muted" type="button" data-action="clear">C</button>
+            <button class="operator" type="button" data-operator="divide">/</button>
+            <button class="operator" type="button" data-operator="multiply">x</button>
+            <button class="operator" type="button" data-operator="subtract">-</button>
+            <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button class="operator" type="button" data-operator="add">+</button>
+            <button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button><button type="button" data-digit="6">6</button><button class="equals" type="button" data-action="equals">=</button>
+            <button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button>
+            <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
+          </div>
+        </main>
+      `,
+      css: CALCULATOR_BASE_CSS,
+      script: CALCULATOR_SCRIPT,
+    },
+    loadingContent: {
+      html: `
+        <main class="calculator-card is-simple">
+          <div class="header"><h2>Loading Calculator</h2><span id="mode-label" class="mode-label">loading</span></div>
+          <output id="display" class="display" aria-live="polite">…</output>
+          <div class="keypad simple-grid">
+            <button class="muted" type="button" disabled>•</button>
+            <button class="muted" type="button" disabled>•</button>
+            <button class="muted" type="button" disabled>•</button>
+            <button class="muted" type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button class="muted" type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+            <button type="button" disabled>•</button>
+          </div>
+        </main>
+      `,
+      css: `
+        ${CALCULATOR_BASE_CSS}
+        button { opacity: 0.75; cursor: wait; }
+        .display { color: #5f6368; }
+      `,
+      script: '',
+    },
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'simple' },
   },
   {
     name: 'Scientific calculator',
-    html: `
-      <main class="calculator-card">
-        <div class="header"><h2>Scientific Calculator</h2><span id="mode-label" class="mode-label">scientific</span></div>
-        <output id="display" class="display" aria-live="polite">0</output>
-        <div class="keypad scientific-grid">
-          <button class="muted" type="button" data-action="clear">C</button><button type="button" data-action="sqrt">√</button><button type="button" data-action="square">x²</button><button type="button" data-action="sin">sin</button><button type="button" data-action="cos">cos</button>
-          <button type="button" data-action="pi">π</button><button class="operator" type="button" data-operator="divide">/</button><button class="operator" type="button" data-operator="multiply">x</button><button class="operator" type="button" data-operator="subtract">-</button><button class="operator" type="button" data-operator="add">+</button>
-          <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button>
-          <button type="button" data-digit="6">6</button><button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button><button class="equals" type="button" data-action="equals">=</button>
-          <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
-        </div>
-      </main>
-    `,
-    css: CALCULATOR_BASE_CSS,
-    script: CALCULATOR_SCRIPT,
+    content: {
+      html: `
+        <main class="calculator-card">
+          <div class="header"><h2>Scientific Calculator</h2><span id="mode-label" class="mode-label">scientific</span></div>
+          <output id="display" class="display" aria-live="polite">0</output>
+          <div class="keypad scientific-grid">
+            <button class="muted" type="button" data-action="clear">C</button><button type="button" data-action="sqrt">√</button><button type="button" data-action="square">x²</button><button type="button" data-action="sin">sin</button><button type="button" data-action="cos">cos</button>
+            <button type="button" data-action="pi">π</button><button class="operator" type="button" data-operator="divide">/</button><button class="operator" type="button" data-operator="multiply">x</button><button class="operator" type="button" data-operator="subtract">-</button><button class="operator" type="button" data-operator="add">+</button>
+            <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button>
+            <button type="button" data-digit="6">6</button><button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button><button class="equals" type="button" data-action="equals">=</button>
+            <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
+          </div>
+        </main>
+      `,
+      css: CALCULATOR_BASE_CSS,
+      script: CALCULATOR_SCRIPT,
+    },
+    loadingContent: {
+      html: `
+        <main class="calculator-card">
+          <div class="header"><h2>Loading Calculator</h2><span id="mode-label" class="mode-label">loading</span></div>
+          <output id="display" class="display" aria-live="polite">…</output>
+          <div class="keypad scientific-grid">
+            <button class="muted" type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button>
+            <button type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button>
+            <button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button>
+            <button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button class="equals" type="button" disabled>•</button>
+            <button class="zero" type="button" disabled>•</button><button type="button" disabled>•</button>
+          </div>
+        </main>
+      `,
+      css: `
+        ${CALCULATOR_BASE_CSS}
+        button { opacity: 0.75; cursor: wait; }
+        .display { color: #5f6368; }
+      `,
+      script: '',
+    },
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'scientific' },
   },
   {
     name: 'Toggle calculator',
-    html: `
-      <main class="calculator-card has-toggle is-simple">
-        <div class="header"><h2>Adaptive Calculator</h2><span id="mode-label" class="mode-label">simple</span></div>
-        <div class="toggle" aria-label="Calculator mode"><button type="button" data-mode="simple">Simple</button><button type="button" data-mode="scientific">Scientific</button></div>
-        <output id="display" class="display" aria-live="polite">0</output>
-        <div class="keypad scientific-grid">
-          <button class="muted" type="button" data-action="clear">C</button><button class="scientific-only" type="button" data-action="sqrt">√</button><button class="scientific-only" type="button" data-action="square">x²</button><button class="scientific-only" type="button" data-action="sin">sin</button><button class="scientific-only" type="button" data-action="cos">cos</button>
-          <button class="scientific-only" type="button" data-action="pi">π</button><button class="operator" type="button" data-operator="divide">/</button><button class="operator" type="button" data-operator="multiply">x</button><button class="operator" type="button" data-operator="subtract">-</button><button class="operator" type="button" data-operator="add">+</button>
-          <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button>
-          <button type="button" data-digit="6">6</button><button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button><button class="equals" type="button" data-action="equals">=</button>
-          <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
-        </div>
-      </main>
-    `,
-    css: CALCULATOR_BASE_CSS,
-    script: CALCULATOR_SCRIPT,
+    content: {
+      html: `
+        <main class="calculator-card has-toggle is-simple">
+          <div class="header"><h2>Adaptive Calculator</h2><span id="mode-label" class="mode-label">simple</span></div>
+          <div class="toggle" aria-label="Calculator mode"><button type="button" data-mode="simple">Simple</button><button type="button" data-mode="scientific">Scientific</button></div>
+          <output id="display" class="display" aria-live="polite">0</output>
+          <div class="keypad scientific-grid">
+            <button class="muted" type="button" data-action="clear">C</button><button class="scientific-only" type="button" data-action="sqrt">√</button><button class="scientific-only" type="button" data-action="square">x²</button><button class="scientific-only" type="button" data-action="sin">sin</button><button class="scientific-only" type="button" data-action="cos">cos</button>
+            <button class="scientific-only" type="button" data-action="pi">π</button><button class="operator" type="button" data-operator="divide">/</button><button class="operator" type="button" data-operator="multiply">x</button><button class="operator" type="button" data-operator="subtract">-</button><button class="operator" type="button" data-operator="add">+</button>
+            <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button>
+            <button type="button" data-digit="6">6</button><button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button><button class="equals" type="button" data-action="equals">=</button>
+            <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
+          </div>
+        </main>
+      `,
+      css: CALCULATOR_BASE_CSS,
+      script: CALCULATOR_SCRIPT,
+    },
+    loadingContent: {
+      html: `
+        <main class="calculator-card has-toggle is-simple">
+          <div class="header"><h2>Loading Calculator</h2><span id="mode-label" class="mode-label">loading</span></div>
+          <div class="toggle" aria-label="Calculator mode"><button type="button" disabled>Simple</button><button type="button" disabled>Scientific</button></div>
+          <output id="display" class="display" aria-live="polite">…</output>
+          <div class="keypad scientific-grid">
+            <button class="muted" type="button" disabled>•</button><button class="scientific-only" type="button" disabled>•</button><button class="scientific-only" type="button" disabled>•</button><button class="scientific-only" type="button" disabled>•</button><button class="scientific-only" type="button" disabled>•</button>
+            <button class="scientific-only" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button><button class="operator" type="button" disabled>•</button>
+            <button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button>
+            <button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button type="button" disabled>•</button><button class="equals" type="button" disabled>•</button>
+            <button class="zero" type="button" disabled>•</button><button type="button" disabled>•</button>
+          </div>
+        </main>
+      `,
+      css: `
+        ${CALCULATOR_BASE_CSS}
+        button { opacity: 0.75; cursor: wait; }
+        .display { color: #5f6368; }
+      `,
+      script: '',
+    },
     initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'simple' },
   },
 ];
@@ -324,13 +406,17 @@ export class DynamicObjectsIframeComponent {
     const definition = MOCK_COMPONENT_DEFINITIONS[index];
 
     this.runtimeObject.setState(definition.initialState);
-    this.runtimeObject.setContent(definition);
+    this.runtimeObject.setContent(definition.content);
+    this.runtimeObject.setLoadingContent(definition.loadingContent ?? definition.content);
+    this.runtimeObject.setLoading(false);
   }
 
   private createRuntimeObject(): KritzelIframeObject {
     const definition = MOCK_COMPONENT_DEFINITIONS[0];
     const iframeObject = new KritzelIframeObject({
-      ...definition,
+      content: definition.content,
+      loadingContent: definition.loadingContent ?? definition.content,
+      isLoading: false,
       state: definition.initialState,
       title: 'Simple calculator',
       translateX: -180,
