@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 
 import {
   KritzelEditor,
@@ -16,76 +16,218 @@ interface RuntimeIframeDefinition {
   initialState: Record<string, unknown>;
 }
 
+const MOCK_CHAT_PROMPTS = [
+  'Create a simple calculator widget with basic arithmetic operations.',
+  'Turn that calculator into a small scientific calculator with a few extra functions.',
+  'Add a toggle at the top so users can switch between simple and scientific calculator modes.',
+];
+
+const IDLE_IFRAME_DEFINITION: RuntimeIframeDefinition = {
+  name: 'Waiting for prompt',
+  html: `
+    <main class="card idle-card">
+      <p class="eyebrow">Mock LLM canvas</p>
+      <h2>Waiting for a prompt</h2>
+      <p class="summary">Send the prompt below to replace this sandboxed iframe with a generated calculator widget.</p>
+    </main>
+  `,
+  css: `
+    :root { color: #24313d; background: #f3f6f8; }
+    .card { box-sizing: border-box; min-height: 100%; padding: 20px; background: #f3f6f8; font-family: Roboto, sans-serif; }
+    .eyebrow { margin: 0 0 12px; color: #5d6b78; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    h2 { margin: 0; font-size: 22px; }
+    .summary { margin: 10px 0 0; color: #5d6b78; font-size: 13px; line-height: 1.5; }
+  `,
+  script: '',
+  initialState: {},
+};
+
+const CALCULATOR_BASE_CSS = `
+  :root { color: #202124; background: transparent; }
+  body { display: flex; margin: 0; padding: 0; box-sizing: border-box; font-family: Roboto, sans-serif; }
+  .calculator-card { display: grid; grid-template-rows: auto 46px minmax(0, 1fr); gap: 10px; width: 100%; height: 100%; min-height: 0; padding: 14px; border: 1px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; overflow: hidden; background: #ffffff; }
+  .calculator-card.has-toggle { grid-template-rows: auto auto 46px minmax(0, 1fr); }
+  .header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  h2 { margin: 0; font-size: 17px; line-height: 1.2; }
+  .mode-label { color: #dd0031; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+  .display { display: flex; align-items: center; justify-content: flex-end; min-width: 0; padding: 0 12px; border: 1px solid #e0e0e0; border-radius: 7px; background: #f8fafc; font-size: 24px; font-weight: 800; line-height: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .keypad { display: grid; gap: 6px; min-height: 0; }
+  .simple-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); }
+  .scientific-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); }
+  button { min-width: 0; min-height: 0; border: 1px solid #dadce0; border-radius: 7px; background: #ffffff; color: #202124; cursor: var(--kritzel-iframe-pointer-cursor, pointer); font: inherit; font-size: 14px; font-weight: 700; line-height: 1; }
+  button:hover { background: #f3f4f6; }
+  .operator { border-color: #dd0031; color: #dd0031; }
+  .muted { color: #5f6368; }
+  .equals { grid-row: span 2; background: #dd0031; border-color: #dd0031; color: #ffffff; }
+  .equals:hover { background: #c3002f; }
+  .zero { grid-column: span 2; }
+  .toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 3px; border-radius: 9px; background: #f3f4f6; }
+  .toggle button { height: 28px; border: 0; border-radius: 7px; background: transparent; color: #5f6368; font-size: 12px; }
+  .toggle button.active { background: #ffffff; color: #dd0031; box-shadow: 0 1px 4px rgba(32, 33, 36, 0.12); }
+  .is-simple .scientific-only { display: none; }
+  .is-simple .scientific-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .has-toggle.is-simple .equals { grid-column: 4; grid-row: 3 / span 2; }
+`;
+
+const CALCULATOR_SCRIPT = `
+  const root = document.querySelector('.calculator-card');
+  const display = document.querySelector('#display');
+  const modeLabel = document.querySelector('#mode-label');
+  const toggleButtons = Array.from(document.querySelectorAll('[data-mode]'));
+  const operatorLabels = { add: '+', subtract: '-', multiply: 'x', divide: '/' };
+
+  const getState = () => ({
+    displayValue: String(kritzel.state.displayValue ?? '0'),
+    storedValue: typeof kritzel.state.storedValue === 'number' ? kritzel.state.storedValue : null,
+    pendingOperator: kritzel.state.pendingOperator ?? null,
+    shouldReplaceDisplay: typeof kritzel.state.shouldReplaceDisplay === 'boolean' ? kritzel.state.shouldReplaceDisplay : true,
+    mode: kritzel.state.mode === 'scientific' ? 'scientific' : 'simple',
+  });
+
+  const setState = (nextState) => {
+    kritzel.setState({ ...getState(), ...nextState });
+    render();
+  };
+
+  const formatNumber = (value) => Number.isInteger(value) ? String(value) : value.toFixed(4).replace(/0+$/, '').replace(/\\.$/, '');
+  const parseDisplayValue = () => {
+    const value = Number(getState().displayValue);
+    return Number.isFinite(value) ? value : 0;
+  };
+  const runOperation = (leftValue, rightValue, operator) => {
+    if (operator === 'add') return leftValue + rightValue;
+    if (operator === 'subtract') return leftValue - rightValue;
+    if (operator === 'multiply') return leftValue * rightValue;
+    if (operator === 'divide') return rightValue === 0 ? 0 : leftValue / rightValue;
+    return rightValue;
+  };
+
+  const render = () => {
+    const state = getState();
+    display.textContent = state.displayValue;
+    if (modeLabel) modeLabel.textContent = state.pendingOperator ? operatorLabels[state.pendingOperator] : state.mode;
+    if (root) root.classList.toggle('is-simple', state.mode !== 'scientific');
+    toggleButtons.forEach((button) => button.classList.toggle('active', button.dataset.mode === state.mode));
+  };
+
+  const appendDigit = (digit) => {
+    const state = getState();
+    setState({
+      displayValue: state.shouldReplaceDisplay ? digit : state.displayValue === '0' ? digit : state.displayValue + digit,
+      shouldReplaceDisplay: false,
+    });
+  };
+
+  const appendDecimal = () => {
+    const state = getState();
+    if (state.shouldReplaceDisplay) {
+      setState({ displayValue: '0.', shouldReplaceDisplay: false });
+      return;
+    }
+    if (!state.displayValue.includes('.')) setState({ displayValue: state.displayValue + '.' });
+  };
+
+  const chooseOperator = (operator) => {
+    const state = getState();
+    const currentValue = parseDisplayValue();
+    setState({
+      storedValue: state.pendingOperator && state.storedValue !== null ? runOperation(state.storedValue, currentValue, state.pendingOperator) : currentValue,
+      pendingOperator: operator,
+      shouldReplaceDisplay: true,
+    });
+  };
+
+  const calculate = () => {
+    const state = getState();
+    if (state.storedValue === null || !state.pendingOperator) return;
+    setState({
+      displayValue: formatNumber(runOperation(state.storedValue, parseDisplayValue(), state.pendingOperator)),
+      storedValue: null,
+      pendingOperator: null,
+      shouldReplaceDisplay: true,
+    });
+  };
+
+  const applyFunction = (action) => {
+    const value = parseDisplayValue();
+    if (action === 'clear') setState({ displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true });
+    if (action === 'decimal') appendDecimal();
+    if (action === 'pi') setState({ displayValue: formatNumber(Math.PI), shouldReplaceDisplay: true });
+    if (action === 'sqrt') setState({ displayValue: formatNumber(Math.sqrt(Math.max(value, 0))), shouldReplaceDisplay: true });
+    if (action === 'square') setState({ displayValue: formatNumber(value * value), shouldReplaceDisplay: true });
+    if (action === 'sin') setState({ displayValue: formatNumber(Math.sin(value)), shouldReplaceDisplay: true });
+    if (action === 'cos') setState({ displayValue: formatNumber(Math.cos(value)), shouldReplaceDisplay: true });
+  };
+
+  document.querySelectorAll('[data-digit]').forEach((button) => button.addEventListener('click', () => appendDigit(button.dataset.digit)));
+  document.querySelectorAll('[data-operator]').forEach((button) => button.addEventListener('click', () => chooseOperator(button.dataset.operator)));
+  document.querySelectorAll('[data-action]').forEach((button) => button.addEventListener('click', () => button.dataset.action === 'equals' ? calculate() : applyFunction(button.dataset.action)));
+  toggleButtons.forEach((button) => button.addEventListener('click', () => setState({ mode: button.dataset.mode })));
+  addEventListener('kritzelstatechange', render);
+  render();
+`;
+
 const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
   {
-    name: 'Launch checklist',
+    name: 'Simple calculator',
     html: `
-      <main class="card checklist-card">
-        <p class="eyebrow">Generated workspace</p>
-        <h2>Launch checklist</h2>
-        <p class="summary">A mocked LLM response rendered in a sandboxed iframe.</p>
-        <button id="progress-button" type="button">Mark next item complete</button>
-        <p id="progress" class="progress"></p>
+      <main class="calculator-card is-simple">
+        <div class="header"><h2>Simple Calculator</h2><span id="mode-label" class="mode-label">simple</span></div>
+        <output id="display" class="display" aria-live="polite">0</output>
+        <div class="keypad simple-grid">
+          <button class="muted" type="button" data-action="clear">C</button>
+          <button class="operator" type="button" data-operator="divide">/</button>
+          <button class="operator" type="button" data-operator="multiply">x</button>
+          <button class="operator" type="button" data-operator="subtract">-</button>
+          <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button class="operator" type="button" data-operator="add">+</button>
+          <button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button><button type="button" data-digit="6">6</button><button class="equals" type="button" data-action="equals">=</button>
+          <button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button>
+          <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
+        </div>
       </main>
     `,
-    css: `
-      :root { color: #18312b; background: #e9f4ed; }
-      .card { box-sizing: border-box; min-height: 100%; padding: 20px; background: #e9f4ed; }
-      .eyebrow { margin: 0 0 12px; color: #267352; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-      h2 { margin: 0; font-size: 22px; }
-      .summary { margin: 10px 0 24px; color: #466158; font-size: 13px; line-height: 1.5; }
-      button { border: 0; border-radius: 6px; padding: 10px 12px; background: #167a50; color: #ffffff; cursor: pointer; font: inherit; font-weight: 700; }
-      .progress { margin: 16px 0 0; color: #267352; font-size: 13px; font-weight: 700; }
-    `,
-    script: `
-      const progress = document.querySelector('#progress');
-      const render = () => {
-        const completed = Number(kritzel.state.completed ?? 0);
-        progress.textContent = completed === 3 ? 'All three items are ready.' : completed + ' of 3 items complete';
-      };
-      document.querySelector('#progress-button').addEventListener('click', () => {
-        const completed = Math.min(Number(kritzel.state.completed ?? 0) + 1, 3);
-        kritzel.setState({ completed });
-        render();
-      });
-      addEventListener('kritzelstatechange', render);
-      render();
-    `,
-    initialState: { completed: 0 },
+    css: CALCULATOR_BASE_CSS,
+    script: CALCULATOR_SCRIPT,
+    initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'simple' },
   },
   {
-    name: 'Focus timer',
+    name: 'Scientific calculator',
     html: `
-      <main class="card timer-card">
-        <p class="eyebrow">Generated workspace</p>
-        <h2>Focus timer</h2>
-        <p class="summary">The mock response replaced the iframe definition without recreating the canvas object.</p>
-        <div id="minutes" class="minutes"></div>
-        <button id="add-button" type="button">Add five minutes</button>
+      <main class="calculator-card">
+        <div class="header"><h2>Scientific Calculator</h2><span id="mode-label" class="mode-label">scientific</span></div>
+        <output id="display" class="display" aria-live="polite">0</output>
+        <div class="keypad scientific-grid">
+          <button class="muted" type="button" data-action="clear">C</button><button type="button" data-action="sqrt">√</button><button type="button" data-action="square">x²</button><button type="button" data-action="sin">sin</button><button type="button" data-action="cos">cos</button>
+          <button type="button" data-action="pi">π</button><button class="operator" type="button" data-operator="divide">/</button><button class="operator" type="button" data-operator="multiply">x</button><button class="operator" type="button" data-operator="subtract">-</button><button class="operator" type="button" data-operator="add">+</button>
+          <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button>
+          <button type="button" data-digit="6">6</button><button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button><button class="equals" type="button" data-action="equals">=</button>
+          <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
+        </div>
       </main>
     `,
-    css: `
-      :root { color: #33234d; background: #f3effa; }
-      .card { box-sizing: border-box; min-height: 100%; padding: 20px; background: #f3effa; }
-      .eyebrow { margin: 0 0 12px; color: #7848a1; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
-      h2 { margin: 0; font-size: 22px; }
-      .summary { margin: 10px 0 20px; color: #625372; font-size: 13px; line-height: 1.5; }
-      .minutes { margin-bottom: 20px; color: #7848a1; font-size: 34px; font-weight: 800; }
-      button { border: 1px solid #7848a1; border-radius: 6px; padding: 10px 12px; background: #ffffff; color: #593278; cursor: pointer; font: inherit; font-weight: 700; }
+    css: CALCULATOR_BASE_CSS,
+    script: CALCULATOR_SCRIPT,
+    initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'scientific' },
+  },
+  {
+    name: 'Toggle calculator',
+    html: `
+      <main class="calculator-card has-toggle is-simple">
+        <div class="header"><h2>Adaptive Calculator</h2><span id="mode-label" class="mode-label">simple</span></div>
+        <div class="toggle" aria-label="Calculator mode"><button type="button" data-mode="simple">Simple</button><button type="button" data-mode="scientific">Scientific</button></div>
+        <output id="display" class="display" aria-live="polite">0</output>
+        <div class="keypad scientific-grid">
+          <button class="muted" type="button" data-action="clear">C</button><button class="scientific-only" type="button" data-action="sqrt">√</button><button class="scientific-only" type="button" data-action="square">x²</button><button class="scientific-only" type="button" data-action="sin">sin</button><button class="scientific-only" type="button" data-action="cos">cos</button>
+          <button class="scientific-only" type="button" data-action="pi">π</button><button class="operator" type="button" data-operator="divide">/</button><button class="operator" type="button" data-operator="multiply">x</button><button class="operator" type="button" data-operator="subtract">-</button><button class="operator" type="button" data-operator="add">+</button>
+          <button type="button" data-digit="7">7</button><button type="button" data-digit="8">8</button><button type="button" data-digit="9">9</button><button type="button" data-digit="4">4</button><button type="button" data-digit="5">5</button>
+          <button type="button" data-digit="6">6</button><button type="button" data-digit="1">1</button><button type="button" data-digit="2">2</button><button type="button" data-digit="3">3</button><button class="equals" type="button" data-action="equals">=</button>
+          <button class="zero" type="button" data-digit="0">0</button><button type="button" data-action="decimal">.</button>
+        </div>
+      </main>
     `,
-    script: `
-      const minutes = document.querySelector('#minutes');
-      const render = () => {
-        minutes.textContent = String(Number(kritzel.state.minutes ?? 25)) + ' min';
-      };
-      document.querySelector('#add-button').addEventListener('click', () => {
-        kritzel.setState({ minutes: Number(kritzel.state.minutes ?? 25) + 5 });
-        render();
-      });
-      addEventListener('kritzelstatechange', render);
-      render();
-    `,
-    initialState: { minutes: 25 },
+    css: CALCULATOR_BASE_CSS,
+    script: CALCULATOR_SCRIPT,
+    initialState: { displayValue: '0', storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: 'simple' },
   },
 ];
 
@@ -94,41 +236,95 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="toolbar">
-      <button type="button" (click)="applyMockLlmResponse()">Mock LLM response</button>
-      <span>Replace the sandboxed component definition while preserving its canvas object.</span>
-    </div>
     <kritzel-editor
       editorId="dynamic-objects-iframe"
       [theme]="'light'"
       [themes]="themes"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
+      [isToolbarVisible]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
       [workspaces]="workspaces()"
     ></kritzel-editor>
+    <form class="chat-input" (submit)="sendPrompt($event)">
+      <textarea
+        rows="3"
+        aria-label="Mock LLM prompt"
+        [value]="promptText()"
+        (input)="updatePromptText($event)"
+      ></textarea>
+      <div class="chat-actions">
+        <button type="submit" class="send-button">Send</button>
+        <div class="query-nav" aria-label="Mock prompt navigation">
+          <button type="button" class="nav-button" aria-label="Previous query" [disabled]="isFirstQuery()" (click)="showPrompt(-1)">‹</button>
+          <span>{{ queryLabel() }}</span>
+          <button type="button" class="nav-button" aria-label="Next query" [disabled]="isLastQuery()" (click)="showPrompt(1)">›</button>
+        </div>
+      </div>
+    </form>
   `,
   styles: [`
-    :host { display: flex; flex-direction: column; height: 100%; }
-    .toolbar { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; font: 13px Roboto, sans-serif; }
-    .toolbar button { border: 1px solid #dd0031; border-radius: 6px; padding: 6px 10px; background: #ffffff; color: #dd0031; cursor: pointer; font: inherit; font-weight: 700; }
-    .toolbar span { color: #555; }
-    kritzel-editor { flex: 1; min-height: 0; }
+    :host { position: relative; display: block; height: 100%; }
+    kritzel-editor { display: block; width: 100%; height: 100%; }
+    .chat-input { position: absolute; left: 50%; bottom: 18px; z-index: 20; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px; width: min(560px, calc(100% - 32px)); padding: 12px; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 16px 42px rgba(32, 33, 36, 0.18); box-sizing: border-box; transform: translateX(-50%); font-family: Roboto, sans-serif; }
+    textarea { min-height: 72px; max-height: 128px; resize: none; border: 0; border-radius: 12px; padding: 12px 14px; box-sizing: border-box; background: #f3f4f6; color: #202124; font: inherit; line-height: 1.45; }
+    textarea:focus, textarea:focus-visible { border: 0; outline: 0; box-shadow: none; }
+    .chat-actions { display: flex; flex-direction: column; justify-content: space-between; align-self: stretch; gap: 12px; }
+    .send-button { height: 44px; border: 0; border-radius: 10px; padding: 0 18px; background: #dd0031; color: #ffffff; cursor: pointer; font: inherit; font-weight: 700; box-shadow: 0 8px 20px rgba(221, 0, 49, 0.22); }
+    .send-button:hover { background: #c3002f; }
+    .query-nav { display: grid; grid-template-columns: 28px auto 28px; align-items: center; gap: 6px; color: #5f6368; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .nav-button { width: 28px; height: 28px; border: 0; border-radius: 999px; padding: 0; background: #f3f4f6; color: #202124; cursor: pointer; font: inherit; font-size: 20px; line-height: 1; }
+    .nav-button:hover { background: #e5e7eb; }
+    .nav-button:disabled { color: #b8bdc4; cursor: default; opacity: 0.55; }
+    .nav-button:disabled:hover { background: #f3f4f6; }
   `],
 })
 export class DynamicObjectsIframeComponent {
-  private currentDefinitionIndex = 0;
   private readonly runtimeObject = this.createRuntimeObject();
+  private readonly promptIndex = signal(0);
 
   themes = [angularThemeLight, angularThemeDark];
+  promptText = signal(MOCK_CHAT_PROMPTS[0]);
+  queryLabel = computed(() => `${this.promptIndex() + 1} of ${MOCK_CHAT_PROMPTS.length}`);
+  isFirstQuery = computed(() => this.promptIndex() === 0);
+  isLastQuery = computed(() => this.promptIndex() === MOCK_CHAT_PROMPTS.length - 1);
   workspaces = signal([
     new KritzelWorkspace({ objects: [this.runtimeObject] }),
   ]);
 
-  applyMockLlmResponse(): void {
-    this.currentDefinitionIndex = (this.currentDefinitionIndex + 1) % MOCK_COMPONENT_DEFINITIONS.length;
-    const definition = MOCK_COMPONENT_DEFINITIONS[this.currentDefinitionIndex];
+  updatePromptText(event: Event): void {
+    const target = event.target;
+    if (target instanceof HTMLTextAreaElement) {
+      this.promptText.set(target.value);
+    }
+  }
+
+  sendPrompt(event: SubmitEvent): void {
+    event.preventDefault();
+
+    const index = this.promptIndex();
+    const nextIndex = Math.min(index + 1, MOCK_CHAT_PROMPTS.length - 1);
+
+    this.renderMockResponse(index);
+    this.promptIndex.set(nextIndex);
+    this.promptText.set(MOCK_CHAT_PROMPTS[nextIndex]);
+  }
+
+  showPrompt(offset: -1 | 1): void {
+    const nextIndex = Math.max(0, Math.min(this.promptIndex() + offset, MOCK_CHAT_PROMPTS.length - 1));
+
+    if (nextIndex === this.promptIndex()) {
+      return;
+    }
+
+    this.promptIndex.set(nextIndex);
+    this.promptText.set(MOCK_CHAT_PROMPTS[nextIndex]);
+    this.renderMockResponse(nextIndex);
+  }
+
+  private renderMockResponse(index: number): void {
+    const definition = MOCK_COMPONENT_DEFINITIONS[index];
 
     this.runtimeObject.setState(definition.initialState);
     this.runtimeObject.setContent(definition);
@@ -139,11 +335,13 @@ export class DynamicObjectsIframeComponent {
     const iframeObject = new KritzelIframeObject({
       ...definition,
       state: definition.initialState,
-      title: `Sandboxed ${definition.name} component`,
+      title: 'Simple calculator',
       translateX: -180,
-      translateY: -120,
+      translateY: -160,
       width: 360,
-      height: 240,
+      height: 320,
+      borderRadius: 12,
+      boxShadow: '0 12px 32px rgba(32, 33, 36, 0.12)',
     });
 
     iframeObject.isRotatable = false;

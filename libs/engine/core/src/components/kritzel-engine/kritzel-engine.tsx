@@ -3491,6 +3491,8 @@ export class KritzelEngine {
                       borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
+                      borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
+                      boxShadow: object.boxShadow,
                       overflow: 'hidden',
                       display: 'block',
                       pointerEvents: object.markedForRemoval ? 'none' : 'auto',
@@ -3505,6 +3507,7 @@ export class KritzelEngine {
                         width: '100%',
                         height: '100%',
                         border: '0',
+                        borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
                         pointerEvents: object.isInteractive ? 'auto' : 'none',
                       }}
                     ></iframe>
@@ -3512,6 +3515,7 @@ export class KritzelEngine {
                       style={{
                         position: 'absolute',
                         inset: '0',
+                        borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
                         pointerEvents: object.isInteractive ? 'none' : 'auto',
                       }}
                     ></div>
