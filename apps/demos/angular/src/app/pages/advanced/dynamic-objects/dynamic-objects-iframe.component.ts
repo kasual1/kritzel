@@ -247,37 +247,34 @@ const MOCK_COMPONENT_DEFINITIONS: RuntimeIframeDefinition[] = [
       [isWorkspaceManagerVisible]="false"
       [workspaces]="workspaces()"
     ></kritzel-editor>
-    <form class="chat-input" (submit)="sendPrompt($event)">
-      <textarea
-        rows="3"
-        aria-label="Mock LLM prompt"
-        [value]="promptText()"
-        (input)="updatePromptText($event)"
-      ></textarea>
-      <div class="chat-actions">
-        <button type="submit" class="send-button">Send</button>
+    <div class="chat-input">
+      <div class="textarea-wrapper">
+        <textarea
+          rows="3"
+          aria-label="Mock LLM prompt"
+          [value]="promptText()"
+          (input)="updatePromptText($event)"
+        ></textarea>
         <div class="query-nav" aria-label="Mock prompt navigation">
           <button type="button" class="nav-button" aria-label="Previous query" [disabled]="isFirstQuery()" (click)="showPrompt(-1)">‹</button>
           <span>{{ queryLabel() }}</span>
           <button type="button" class="nav-button" aria-label="Next query" [disabled]="isLastQuery()" (click)="showPrompt(1)">›</button>
         </div>
       </div>
-    </form>
+    </div>
   `,
   styles: [`
     :host { position: relative; display: block; height: 100%; }
     kritzel-editor { display: block; width: 100%; height: 100%; }
-    .chat-input { position: absolute; left: 50%; bottom: 18px; z-index: 20; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px; width: min(560px, calc(100% - 32px)); padding: 12px; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 16px 42px rgba(32, 33, 36, 0.18); box-sizing: border-box; transform: translateX(-50%); font-family: Roboto, sans-serif; }
-    textarea { min-height: 72px; max-height: 128px; resize: none; border: 0; border-radius: 12px; padding: 12px 14px; box-sizing: border-box; background: #f3f4f6; color: #202124; font: inherit; line-height: 1.45; }
+    .chat-input { position: absolute; left: 50%; bottom: 18px; z-index: 20; display: block; width: min(560px, calc(100% - 32px)); padding: 10px; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 16px 42px rgba(32, 33, 36, 0.18); box-sizing: border-box; transform: translateX(-50%); font-family: Roboto, sans-serif; }
+    .textarea-wrapper { position: relative; width: 100%; }
+    textarea { display: block; width: 100%; min-height: 72px; max-height: 128px; resize: none; border: 0; border-radius: 12px; padding: 12px 14px 38px 14px; box-sizing: border-box; background: #f3f4f6; color: #202124; font: inherit; line-height: 1.45; }
     textarea:focus, textarea:focus-visible { border: 0; outline: 0; box-shadow: none; }
-    .chat-actions { display: flex; flex-direction: column; justify-content: space-between; align-self: stretch; gap: 12px; }
-    .send-button { height: 44px; border: 0; border-radius: 10px; padding: 0 18px; background: #dd0031; color: #ffffff; cursor: pointer; font: inherit; font-weight: 700; box-shadow: 0 8px 20px rgba(221, 0, 49, 0.22); }
-    .send-button:hover { background: #c3002f; }
-    .query-nav { display: grid; grid-template-columns: 28px auto 28px; align-items: center; gap: 6px; color: #5f6368; font-size: 12px; font-weight: 700; white-space: nowrap; }
-    .nav-button { width: 28px; height: 28px; border: 0; border-radius: 999px; padding: 0; background: #f3f4f6; color: #202124; cursor: pointer; font: inherit; font-size: 20px; line-height: 1; }
+    .query-nav { position: absolute; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 6px; color: #5f6368; font-size: 12px; font-weight: 700; white-space: nowrap; user-select: none; }
+    .nav-button { width: 26px; height: 26px; border: 0; border-radius: 999px; padding: 0; background: #ffffff; color: #202124; cursor: pointer; font: inherit; font-size: 18px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(32, 33, 36, 0.12); }
     .nav-button:hover { background: #e5e7eb; }
-    .nav-button:disabled { color: #b8bdc4; cursor: default; opacity: 0.55; }
-    .nav-button:disabled:hover { background: #f3f4f6; }
+    .nav-button:disabled { color: #b8bdc4; cursor: default; opacity: 0.55; box-shadow: none; }
+    .nav-button:disabled:hover { background: #ffffff; }
   `],
 })
 export class DynamicObjectsIframeComponent {
