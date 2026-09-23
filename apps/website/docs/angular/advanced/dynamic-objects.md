@@ -11,28 +11,12 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Most canvas objects in Kritzel (shapes, lines, text, images) render through the engine's own drawing pipeline. `KritzelDynamicObject` is different: it is a canvas object whose visual content is arbitrary HTML that you provide, while it still fully participates in selection, movement, resizing, ordering, and workspace persistence like any other object.
+Kritzel supports the integration of dynamic components in two different ways. You can choose how to embed the content based on what you are building:
 
-`KritzelDynamicObject` supports two hosting modes:
+- **Dynamic objects** can contain HTML or framework-specific components while remaining part of the canvas. They can be selected, moved, resized, and saved like other objects.
+- **The iframe approach** hosts HTML, CSS, and JavaScript inside a scoped sandbox environment, keeping generated or user-authored content separate from the main application.
 
-- **Native HTML mode** — pass a plain DOM `element` and let the object mount it directly. No registration is required.
-- **Registered component mode** — pass a `rendererKey` (and optional `rendererData`) so a renderer registered on `KritzelDynamicObjectRendererRegistry` mounts a real Angular, React, or Vue component into the object's container.
-
-```ts
-interface KritzelDynamicObjectConfig {
-  element?: HTMLElement;
-  rendererKey?: string;
-  rendererData?: unknown;
-  translateX?: number;
-  translateY?: number;
-  width?: number;
-  height?: number;
-}
-```
-
-Both modes produce the same kind of object on the canvas — the difference is purely in how the content inside it is mounted and, for registered components, how its state survives mount/unmount cycles.
-
-## Rendering Native HTML
+## Rendering HTML
 
 The simplest way to use a dynamic object is to build a plain DOM subtree and pass it as `element`. Kritzel mounts it as-is; there is no renderer to register or unregister, and no lifecycle hooks to implement. This is a good fit for static content.
 
@@ -44,7 +28,7 @@ If the native HTML owns runtime behavior, such as event listeners or local count
   repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-html.component.ts']}
 />
 
-## Rendering Framework Components
+## Rendering Components
 
 For richer content, register a renderer on `KritzelDynamicObjectRendererRegistry` with a stable `rendererKey`. When an object using that key mounts, the registry's `onMount` hook receives the object, its container, and any previously persisted `rendererData`, so you can create and attach a live Angular component (via `createComponent`, `ApplicationRef`, and `EnvironmentInjector`) instead of static markup.
 
@@ -62,11 +46,11 @@ Always unregister the renderer, and detach/destroy any mounted component views, 
   repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-component.component.ts']}
 />
 
-## Rendering Runtime Sandbox Content
+## Rendering iFrames
 
-For user-authored or LLM-authored content, a registered renderer can host a sandboxed iframe inside a dynamic object. Kritzel still owns selection, movement, resizing, workspace persistence, and copy/paste, while the iframe owns the generated HTML, CSS, JavaScript, and local interaction state.
+For user-authored or LLM-authored content, `KritzelIframeObject` provides a sandboxed space for HTML, CSS, and JavaScript. The iframe keeps its own content and interaction state while Kritzel manages it as a canvas object.
 
-This example uses predefined mock responses rather than an LLM. The button swaps the serialized component definition and updates the mounted iframe, showing the runtime flow without executing external generated code.
+This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with a loading view displayed during the change.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
