@@ -12,7 +12,7 @@ The Infinite Canvas Development Kit
 
 <p align="center"><a href="https://www.npmjs.com/package/@kritzel/engine"><img src="https://img.shields.io/npm/v/@kritzel/engine?color=2c7dd1&amp;label=" alt="NPM version"></a></p>
 
-<p align="center"><a href="https://kritzel.io">Website</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://app.kritzel.io">Live Demo</a></p>
+<p align="center"><a href="https://kritzel.io">Website</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://app.kritzel.io">Live Demo</a>&nbsp;&nbsp;·&nbsp;&nbsp;<a href="https://www.npmjs.com/package/@kritzel/engine">NPM</a></p>
 
 <br>
 <br>
