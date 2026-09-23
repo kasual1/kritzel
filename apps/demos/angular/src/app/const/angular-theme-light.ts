@@ -17,6 +17,13 @@ export const angularThemeLight: KritzelTheme = {
     primaryActiveBackgroundColor: '#9f0023',
     primaryColor: '#ffffff',
   },
+  currentUserDialog: {
+    ...lightTheme.currentUserDialog,
+    logoutButtonBackgroundColor: '#dd0031',
+    logoutButtonHoverBackgroundColor: '#b70028',
+    logoutButtonActiveBackgroundColor: '#9f0023',
+    logoutButtonColor: '#ffffff',
+  },
   selection: {
     ...lightTheme.selection,
     borderColor: '#dd0031',

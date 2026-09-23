@@ -17,6 +17,13 @@ export const angularThemeDark: KritzelTheme = {
     primaryActiveBackgroundColor: '#b0003a',
     primaryColor: '#ffffff',
   },
+  currentUserDialog: {
+    ...darkTheme.currentUserDialog,
+    logoutButtonBackgroundColor: '#ff4081',
+    logoutButtonHoverBackgroundColor: '#d81b60',
+    logoutButtonActiveBackgroundColor: '#b0003a',
+    logoutButtonColor: '#ffffff',
+  },
   selection: {
     ...darkTheme.selection,
     borderColor: '#ff4081',
