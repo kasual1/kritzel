@@ -1,0 +1,39 @@
+:host {
+  display: contents;
+}
+
+kritzel-dialog {
+  --kritzel-dialog-width-small: 380px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--kritzel-current-user-dialog-name-color, #333333);
+  text-align: center;
+  margin-top: 8px;
+}
+
+.user-email {
+  font-size: 14px;
+  color: var(--kritzel-current-user-dialog-email-color, #666666);
+  text-align: center;
+}
+
+.logout-button {
+  margin-top: 16px;
+  width: 100%;
+  --kritzel-button-width: 100%;
+  --kritzel-button-primary-background-color: var(--kritzel-current-user-dialog-logout-button-background-color, #007AFF);
+  --kritzel-button-primary-hover-background-color: var(--kritzel-current-user-dialog-logout-button-hover-background-color, #006ae6);
+  --kritzel-button-primary-active-background-color: var(--kritzel-current-user-dialog-logout-button-active-background-color, #005bbf);
+  --kritzel-button-primary-color: var(--kritzel-current-user-dialog-logout-button-color, #ffffff);
+}

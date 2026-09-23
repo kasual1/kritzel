@@ -1,0 +1,113 @@
+:host {
+  display: block; 
+}
+
+.menu-container {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kritzel-context-menu-item-spacing, 2px);
+  background-color: var(--kritzel-context-menu-background-color, #ffffff);
+  border-radius: var(--kritzel-context-menu-border-radius, 12px);
+  box-shadow: var(--kritzel-context-menu-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
+  border: var(--kritzel-context-menu-border, 1px solid #ebebeb);
+  padding: var(--kritzel-context-menu-padding, 4px);
+  min-width: var(--kritzel-context-menu-min-width, 140px);
+}
+
+.menu-item-wrapper {
+  position: relative;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--kritzel-context-menu-item-gap, 8px);
+  font-family: var(--kritzel-context-menu-font-family, var(--kritzel-global-font-family, sans-serif));
+  background: none;
+  border: none;
+  text-align: left;
+  padding: var(--kritzel-context-menu-item-padding, 8px);
+  border-radius: var(--kritzel-context-menu-item-border-radius, 12px);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  font-size: var(--kritzel-context-menu-item-font-size, 14px);
+  color: var(--kritzel-context-menu-item-color, #333333);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  min-width: 0;
+}
+
+.menu-item:not(.disabled):hover,
+.menu-item.submenu-open {
+  background-color: var(--kritzel-context-menu-item-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.menu-item:not(.disabled):active {
+  background-color: var(--kritzel-context-menu-item-active-background-color, hsl(0, 0%, 0%, 8.6%));
+}
+
+.menu-item.disabled {
+  color: var(--kritzel-context-menu-item-disabled-color, #aaaaaa);
+}
+
+.menu-item.has-children.disabled {
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  color: var(--kritzel-context-menu-item-color, #333333);
+}
+
+.menu-item kritzel-icon {
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.menu-item.disabled kritzel-icon {
+  opacity: 0.4;
+}
+
+.menu-item.has-children.disabled kritzel-icon {
+  opacity: 0.8;
+}
+
+.label {
+  flex-grow: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.submenu-arrow {
+  margin-left: auto;
+  opacity: 0.5;
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: var(--kritzel-context-menu-divider-color, rgba(0, 0, 0, 0.1));
+  margin: var(--kritzel-context-menu-divider-margin, 4px 8px);
+}
+
+.submenu-container {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  z-index: 2;
+  margin-left: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--kritzel-context-menu-item-spacing, 2px);
+  background-color: var(--kritzel-context-menu-background-color, #ffffff);
+  border-radius: var(--kritzel-context-menu-border-radius, 12px);
+  box-shadow: var(--kritzel-context-menu-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
+  border: var(--kritzel-context-menu-border, 1px solid #ebebeb);
+  padding: var(--kritzel-context-menu-padding, 4px);
+  min-width: 120px;
+}
+
+.submenu-container.position-left {
+  left: auto;
+  right: 100%;
+  margin-left: 0;
+  margin-right: 4px;
+}

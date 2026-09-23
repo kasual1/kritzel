@@ -1,0 +1,58 @@
+:host {
+  display: inline-flex;
+  z-index: 1;
+}
+
+.more-menu-wrapper {
+  display: inline-flex;
+  padding: var(--kritzel-more-menu-padding, 4px);
+  background-color: var(--kritzel-more-menu-background-color, #ffffff);
+  border-radius: var(--kritzel-more-menu-border-radius, 12px);
+  box-shadow: var(--kritzel-more-menu-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--kritzel-more-menu-border, 1px solid #ebebeb);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.more-menu-wrapper.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+:host(.mobile) {
+  --kritzel-more-menu-button-hover-background-color: transparent;
+  --kritzel-more-menu-button-active-background-color: transparent;
+}
+
+.more-menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--kritzel-more-menu-button-width, 40px);
+  height: var(--kritzel-more-menu-button-height, 40px);
+  padding: 0;
+  border: none;
+  border-radius: var(--kritzel-more-menu-inner-border-radius, 12px);
+  background-color: transparent;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  box-shadow: none;
+  transition: background-color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  color: var(--kritzel-more-menu-button-color, currentColor);
+}
+
+.more-menu-button:hover {
+  background-color: var(--kritzel-more-menu-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.more-menu-button:focus-visible {
+  background-color: var(--kritzel-more-menu-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.more-menu-button:active {
+  background-color: var(--kritzel-more-menu-button-active-background-color, hsl(0, 0%, 0%, 4.3%));
+}

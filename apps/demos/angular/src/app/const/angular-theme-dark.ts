@@ -1,0 +1,104 @@
+import { darkTheme, KritzelTheme } from "@kritzel/angular-editor";
+
+export const angularThemeDark: KritzelTheme = {
+  ...darkTheme,
+  name: 'dark',
+  global: {
+    ...darkTheme.global,
+    primaryColor: '#ff4081',
+    primaryHoverColor: '#d81b60',
+    primaryTextColor: '#ffffff',
+    focusRingColor: 'rgba(255, 64, 129, 0.3)',
+  },
+  button: {
+    ...darkTheme.button,
+    primaryBackgroundColor: '#ff4081',
+    primaryHoverBackgroundColor: '#d81b60',
+    primaryActiveBackgroundColor: '#b0003a',
+    primaryColor: '#ffffff',
+  },
+  currentUserDialog: {
+    ...darkTheme.currentUserDialog,
+    logoutButtonBackgroundColor: '#ff4081',
+    logoutButtonHoverBackgroundColor: '#d81b60',
+    logoutButtonActiveBackgroundColor: '#b0003a',
+    logoutButtonColor: '#ffffff',
+  },
+  selection: {
+    ...darkTheme.selection,
+    borderColor: '#ff4081',
+    boxBackgroundColor: 'rgba(255, 64, 129, 0.15)',
+    boxBorderColor: 'rgba(255, 64, 129, 0.4)',
+    handleStrokeColor: '#ff4081',
+  },
+  toolbar: {
+    ...darkTheme.toolbar,
+    controlHoverBackgroundColor: 'rgba(255, 64, 129, 0.12)',
+    controlActiveBackgroundColor: 'rgba(255, 64, 129, 0.18)',
+    controlSelectedBackgroundColor: '#ff4081',
+  },
+  contextMenu: {
+    ...darkTheme.contextMenu,
+    itemHoverBackgroundColor: 'rgba(255, 64, 129, 0.12)',
+    itemActiveBackgroundColor: 'rgba(255, 64, 129, 0.18)',
+  },
+  menu: {
+    ...darkTheme.menu,
+    itemButtonHoverBackgroundColor: 'rgba(255, 64, 129, 0.12)',
+    itemOverlayBackgroundColor: 'rgba(255, 64, 129, 0.12)',
+    itemSelectedBackgroundColor: '#ff4081',
+    itemInputSelectionColor: '#ff4081',
+  },
+  snap: {
+    ...darkTheme.snap,
+    indicatorStroke: '#ff4081',
+    indicatorStrokeInactive: 'rgba(255, 255, 255, 0.45)',
+    indicatorFill: 'rgba(255, 64, 129, 0.35)',
+    indicatorFillInactive: 'rgba(255, 64, 129, 0.2)',
+    lineStroke: 'rgba(255, 64, 129, 0.28)',
+  },
+  splitButton: {
+    ...darkTheme.splitButton,
+    hoverBackgroundColor: 'rgba(255, 64, 129, 0.12)',
+  },
+  dropdown: {
+    ...darkTheme.dropdown,
+    accentColor: '#ff4081',
+    selectedBackgroundColor: 'rgba(255, 64, 129, 0.15)',
+  },
+  slideToggle: {
+    ...darkTheme.slideToggle,
+    trackCheckedColor: '#ff4081',
+  },
+  loginDialog: {
+    ...darkTheme.loginDialog,
+    buttonHoverBackground: 'rgba(255, 64, 129, 0.12)',
+  },
+  opacitySlider: {
+    ...darkTheme.opacitySlider,
+    activeColor: '#ff4081',
+    thumbBorderColor: '#ff4081',
+  },
+  moreMenu: {
+    ...darkTheme.moreMenu,
+    buttonHoverBackgroundColor: 'rgba(255, 64, 129, 0.12)',
+    buttonActiveBackgroundColor: 'rgba(255, 64, 129, 0.18)',
+  },
+  masterDetail: {
+    ...darkTheme.masterDetail,
+    menuItemHoverBackgroundColor: 'rgba(255, 64, 129, 0.12)',
+    menuItemActiveBackgroundColor: 'rgba(255, 64, 129, 0.18)',
+    menuItemSelectedBackgroundColor: '#ff4081',
+    menuItemSelectedHoverBackgroundColor: '#ff4081',
+    menuItemSelectedColor: '#ffffff',
+  },
+  textInput: {
+    ...darkTheme.textInput,
+    focusBorderColor: '#ff4081',
+  },
+  numericInput: {
+    ...darkTheme.numericInput,
+    focusBorderColor: '#ff4081',
+  },
+};
+

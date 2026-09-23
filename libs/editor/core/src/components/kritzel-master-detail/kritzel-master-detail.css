@@ -1,0 +1,190 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.master-detail-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: var(--kritzel-master-detail-min-height, 300px);
+  gap: var(--kritzel-master-detail-gap, 0);
+  background-color: var(--kritzel-master-detail-background-color, transparent);
+}
+
+/* Master Menu (Left Panel) */
+.master-menu {
+  display: flex;
+  flex-direction: column;
+  width: var(--kritzel-master-detail-menu-width, 200px);
+  min-width: var(--kritzel-master-detail-menu-min-width, 160px);
+  padding: var(--kritzel-master-detail-menu-padding, 8px);
+  background-color: var(--kritzel-master-detail-menu-background-color, #ffffff);
+  border-right: var(--kritzel-master-detail-menu-border-right, 1px solid #ebebeb);
+  gap: var(--kritzel-master-detail-menu-gap, 4px);
+  overflow-y: auto;
+}
+
+/* Menu Item */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--kritzel-master-detail-menu-item-gap, 10px);
+  padding: var(--kritzel-master-detail-menu-item-padding, 10px 12px);
+  border: none;
+  border-radius: var(--kritzel-master-detail-menu-item-border-radius, 6px);
+  background-color: var(--kritzel-master-detail-menu-item-background-color, transparent);
+  color: var(--kritzel-master-detail-menu-item-color, #333333);
+  font-family: inherit;
+  font-size: var(--kritzel-master-detail-menu-item-font-size, 14px);
+  font-weight: var(--kritzel-master-detail-menu-item-font-weight, 400);
+  text-align: left;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  transition: background-color 150ms ease, color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-item:hover:not(.is-disabled) {
+  background-color: var(--kritzel-master-detail-menu-item-hover-background-color, #ebebeb);
+}
+
+.menu-item:active:not(.is-disabled) {
+  background-color: var(--kritzel-master-detail-menu-item-active-background-color, #e0e0e0);
+}
+
+.menu-item.is-selected {
+  background-color: var(--kritzel-master-detail-menu-item-selected-background-color, #0066cc);
+  color: var(--kritzel-master-detail-menu-item-selected-color, #ffffff);
+  font-weight: var(--kritzel-master-detail-menu-item-selected-font-weight, 500);
+}
+
+.menu-item.is-selected:hover {
+  background-color: var(--kritzel-master-detail-menu-item-selected-hover-background-color, #0052a3);
+}
+
+.menu-item.is-disabled {
+  color: var(--kritzel-master-detail-menu-item-disabled-color, #999999);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.menu-item:focus-visible {
+  outline: var(--kritzel-master-detail-menu-item-focus-outline, revert);
+  outline-offset: var(--kritzel-master-detail-menu-item-focus-outline-offset, revert);
+}
+
+/* Menu Item Icon */
+.menu-item-icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Menu Item Label */
+.menu-item-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Detail Panel (Right Panel) */
+.detail-panel {
+  flex: 1;
+  min-height: 0;
+  padding: var(--kritzel-master-detail-detail-padding, 16px);
+  background-color: var(--kritzel-master-detail-detail-background-color, #ffffff);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
+  scrollbar-width: thin;
+}
+
+.detail-panel:focus {
+  outline: none;
+}
+
+.detail-panel:focus-visible {
+  outline: var(--kritzel-master-detail-detail-focus-outline, revert);
+  outline-offset: var(--kritzel-master-detail-detail-focus-outline-offset, revert);
+}
+
+/* Mobile Back Button */
+.mobile-back-button {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 0 0 16px 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  color: var(--kritzel-master-detail-back-button-color, #333333);
+  font-weight: 500;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.mobile-back-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Mobile Chevron */
+.menu-item-chevron {
+  display: none;
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--kritzel-master-detail-menu-item-chevron-color, #999999);
+}
+
+.menu-item-chevron svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+/* Mobile specific styles */
+@media (max-width: 768px) {
+  .master-menu {
+    width: 100%;
+    border-right: none;
+  }
+
+  .detail-panel {
+    display: none;
+    width: 100%;
+  }
+
+  /* When detail is active on mobile */
+  .master-detail-container.is-mobile-detail-visible .master-menu {
+    display: none;
+  }
+
+  .master-detail-container.is-mobile-detail-visible .detail-panel {
+    display: block;
+  }
+
+  .mobile-back-button {
+    display: flex;
+  }
+
+  /* Override selected styles for mobile */
+  .menu-item.is-selected {
+    background-color: transparent;
+    color: var(--kritzel-master-detail-menu-item-color, #333333);
+    font-weight: var(--kritzel-master-detail-menu-item-font-weight, 400);
+  }
+
+  .menu-item.is-selected:hover {
+    background-color: var(--kritzel-master-detail-menu-item-hover-background-color, #ebebeb);
+  }
+
+  .menu-item-chevron {
+    display: flex;
+    align-items: center;
+  }
+}

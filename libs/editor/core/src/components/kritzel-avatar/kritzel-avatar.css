@@ -1,0 +1,58 @@
+:host {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  overflow: hidden;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.avatar-initials {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  color: var(--kritzel-avatar-initials-color, #ffffff);
+  font-weight: var(--kritzel-avatar-initials-font-weight, 500);
+  font-family: var(--kritzel-avatar-initials-font-family, sans-serif);
+  line-height: 1;
+}
+
+.avatar-default {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--kritzel-avatar-default-background, #e0e0e0);
+  color: var(--kritzel-avatar-default-color, #9e9e9e);
+}
+
+.avatar-default svg {
+  width: 60%;
+  height: 60%;
+}
+
+:host(.has-image) {
+  border: var(--kritzel-avatar-border, none);
+}
+
+:host(.has-initials) {
+  border: var(--kritzel-avatar-border, none);
+}
+
+:host(.has-default) {
+  border: var(--kritzel-avatar-border, none);
+}

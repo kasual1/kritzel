@@ -1,0 +1,42 @@
+:host {
+  display: block;
+  z-index: var(--kritzel-back-to-content-z-index, 1000);
+}
+
+.back-to-content-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--kritzel-back-to-content-height, 50px);
+  box-sizing: border-box;
+  gap: var(--kritzel-back-to-content-gap, 6px);
+  padding: var(--kritzel-back-to-content-padding, 0 16px);
+  border: var(--kritzel-back-to-content-border, 1px solid #ebebeb);
+  border-radius: var(--kritzel-back-to-content-border-radius, 12px);
+  background-color: var(--kritzel-back-to-content-background-color, #ffffff);
+  color: var(--kritzel-back-to-content-color, #000000);
+  font-size: var(--kritzel-back-to-content-font-size, 14px);
+  font-weight: var(--kritzel-back-to-content-font-weight, 500);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  box-shadow: var(--kritzel-back-to-content-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out, background-color 0.15s ease-out;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.back-to-content-button.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (hover: hover) {
+  .back-to-content-button:hover {
+    background-color: var(--kritzel-back-to-content-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+  }
+}
+
+.back-to-content-button:active {
+  background-color: var(--kritzel-back-to-content-active-background-color, hsl(0, 0%, 0%, 8.6%));
+}

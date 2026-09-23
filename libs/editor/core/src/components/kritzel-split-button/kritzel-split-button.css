@@ -1,0 +1,78 @@
+:host {
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-family: sans-serif;
+  z-index: 1;
+  padding: var(--kritzel-split-button-padding, 4px);
+  background-color: var(--kritzel-split-button-background-color, #ffffff);
+  border-radius: var(--kritzel-split-button-border-radius, 12px);
+  box-shadow: var(--kritzel-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  border: var(--kritzel-split-button-border, 1px solid #ebebeb);
+  gap: var(--kritzel-split-button-gap, 4px);
+}
+
+:host(.mobile){
+  --kritzel-split-button-hover-background-color: transparent;
+}
+
+button {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: var(--kritzel-split-button-color, #000000);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.split-main-button,
+.split-menu-button {
+  height: auto;
+  display: flex;
+  align-items: center;
+  padding: var(--kritzel-split-button-padding, 8px);
+  background-color: var(--kritzel-split-button-background-color, #ffffff);
+  border-radius: var(--kritzel-split-button-border-radius, 12px);
+  font-size: var(--kritzel-split-button-font-size, 14px);
+}
+
+.split-main-button:hover,
+.split-menu-button:hover {
+  background-color: var(--kritzel-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.split-main-button:focus,
+.split-menu-button:focus {
+  background-color: var(--kritzel-split-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.split-main-button {
+  gap: var(--kritzel-split-button-gap, 4px);
+}
+
+.split-menu-button {
+  border-left: none;
+  justify-content: center;
+}
+
+.split-divider {
+  width: var(--kritzel-split-button-divider-width, 1px);
+  height: 24px;
+  background-color: var(--kritzel-split-button-divider-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

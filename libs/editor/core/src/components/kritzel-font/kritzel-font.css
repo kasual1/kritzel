@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+
+.font-preview {
+  color: var(--kritzel-font-size-text-color, #333333);
+  line-height: 1;
+  text-align: center;
+  font-weight: bold;
+}

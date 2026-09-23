@@ -1,0 +1,161 @@
+kritzel-editor{
+  display: flex;
+  margin: 0;
+  position: relative;
+  container-type: inline-size;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  text-align: start;
+  line-height: normal;
+}
+
+.editor-content {
+  position: absolute;
+  inset: 0;
+}
+
+.editor-content > kritzel-engine {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+kritzel-toolbar {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: max-content;
+  max-width: calc(100% - 16px);
+  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
+  transition: transform var(--kritzel-editor-toolbar-transition-duration, 0.1s) var(--kritzel-editor-toolbar-transition, ease-in-out);
+}
+
+kritzel-toolbar.keyboard-open {
+  transform: var(--kritzel-editor-toolbar-transform, translateY(300%));
+}
+
+.top-left-buttons {
+  position: absolute;
+  z-index: 2;
+  top: var(--kritzel-editor-top-left-buttons-top, 14px);
+  left: var(--kritzel-editor-top-left-buttons-left, 14px);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.top-center-notification-layer {
+  position: absolute;
+  top: var(--kritzel-editor-top-center-notification-top, 14px);
+  left: 0;
+  right: 0;
+  z-index: var(--kritzel-editor-top-center-notification-z-index, 10001);
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.top-center-notification-container {
+  width: min(90vw, 420px);
+  pointer-events: auto;
+  animation: kritzel-notification-slide-in var(--kritzel-editor-notification-animation-duration, 220ms)
+    var(--kritzel-editor-notification-animation-easing, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.top-center-notification-container.is-dismissing {
+  animation: kritzel-notification-fade-out var(--kritzel-editor-notification-dismiss-animation-duration, 180ms)
+    var(--kritzel-editor-notification-dismiss-animation-easing, ease-in) forwards;
+}
+
+@keyframes kritzel-notification-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kritzel-notification-fade-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .top-center-notification-container {
+    animation: none;
+  }
+}
+
+.top-right-buttons {
+  position: absolute;
+  z-index: 2;
+  top: var(--kritzel-editor-top-right-buttons-top, 14px);
+  right: var(--kritzel-editor-top-right-buttons-right, 14px);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bottom-left-buttons {
+  position: absolute;
+  z-index: 2;
+  left: var(--kritzel-editor-top-left-buttons-left, 14px);
+  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Hide the zoom panel when the editor container is narrow. */
+@container (max-width: 767px) {
+  .bottom-left-buttons {
+    display: none;
+  }
+}
+
+.top-right-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: var(--kritzel-split-button-border, 1px solid #ebebeb);
+  border-radius: var(--kritzel-split-button-border-radius, 12px);
+  background-color: var(--kritzel-split-button-background-color, #ffffff);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  box-shadow: var(--kritzel-split-button-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
+  transition: background-color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.top-right-button:hover {
+  background-color: #f5f5f5;
+}
+
+.top-right-button:active {
+  background-color: #ebebeb;
+}

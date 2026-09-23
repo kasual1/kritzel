@@ -1,0 +1,30 @@
+:host {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.size-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  border: 2px solid transparent;
+  box-sizing: border-box;
+  border-radius: 50%;
+}
+
+.size-container:hover {
+  background-color: var(--kritzel-font-size-hover-background-color, #ebebeb);
+}
+
+.size-container.selected {
+  border-color: var(--kritzel-selection-border-color, #007AFF);
+  background-color: var(--kritzel-font-size-selected-background-color, #e0e0e0);
+}
+

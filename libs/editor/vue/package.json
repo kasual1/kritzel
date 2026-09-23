@@ -1,0 +1,44 @@
+{
+  "name": "@kritzel/vue-editor",
+  "version": "0.4.31",
+  "homepage": "https://kritzel.io/",
+  "description": "Kritzel helps you build infinite canvas experiences with Vue.",
+  "keywords": [
+    "infinite canvas",
+    "collaboration",
+    "whiteboard",
+    "drawing",
+    "vue"
+  ],
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1",
+    "build": "npm run tsc",
+    "tsc": "tsc -p . --outDir ./dist",
+    "clean": "rimraf dist node_modules",
+    "bump": "npm version patch",
+    "release": "npm publish"
+  },
+  "bugs": {
+    "url": "https://github.com/kasual1/kritzel/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@stencil/vue-output-target": "0.11.8"
+  },
+  "peerDependencies": {
+    "@kritzel/editor": "^0.4.31",
+    "@kritzel/engine": "^0.4.31"
+  }
+}

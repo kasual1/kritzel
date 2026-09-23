@@ -1,0 +1,85 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.opacity-container {
+  display: flex;
+  align-items: center;
+  width: 232px;
+}
+
+.slider-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.opacity-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(
+    to right,
+    var(--kritzel-opacity-slider-active-color, #007AFF) 0%,
+    var(--kritzel-opacity-slider-active-color, #007AFF) var(--slider-progress, 100%),
+    var(--kritzel-opacity-slider-track-color, #e0e0e0) var(--slider-progress, 100%),
+    var(--kritzel-opacity-slider-track-color, #e0e0e0) 100%
+  );
+  outline: none;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+}
+
+.opacity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--kritzel-opacity-slider-thumb-color, #ffffff);
+  border: 2px solid var(--kritzel-opacity-slider-thumb-border-color, #007AFF);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease;
+}
+
+.opacity-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.opacity-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--kritzel-opacity-slider-thumb-color, #ffffff);
+  border: 2px solid var(--kritzel-opacity-slider-thumb-border-color, #007AFF);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.1s ease;
+}
+
+.opacity-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
+.opacity-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: transparent;
+}
+
+.opacity-slider:focus {
+  outline: none;
+}
+
+.opacity-slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
+}
+
+.opacity-slider:focus::-moz-range-thumb {
+  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
+}

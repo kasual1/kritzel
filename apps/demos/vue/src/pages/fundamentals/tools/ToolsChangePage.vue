@@ -1,0 +1,71 @@
+<script setup lang="ts">
+
+import { KritzelEditor } from '@kritzel/vue-editor'
+import { vueThemeLight } from '../../../const/vue-theme-light'
+import {
+  buttonStyle,
+  editorStyle,
+  hostStyle,
+  seedEditor,
+  statusBarStyle,
+  toolbarStyle,
+  getEditorRef,
+} from '../../shared/demo-shared'
+import { ref } from 'vue'
+
+type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text'
+
+const tools: Array<{ name: ToolName; label: string }> = [
+  { name: 'select', label: 'Select' },
+  { name: 'brush', label: 'Brush' },
+  { name: 'eraser', label: 'Eraser' },
+  { name: 'line', label: 'Line' },
+  { name: 'shape', label: 'Shape' },
+  { name: 'text', label: 'Text' },
+]
+
+const editor = getEditorRef('editor');
+const activeTool = ref<ToolName>('select')
+
+async function setTool(name: ToolName) {
+  activeTool.value = name
+  await editor.value?.setActiveTool(name)
+}
+
+async function onReady() {
+  if (editor.value) {
+    await seedEditor(editor.value)
+  }
+}
+</script>
+
+<template>
+  <div :style="hostStyle">
+    <div :style="toolbarStyle">
+      <button
+        v-for="tool in tools"
+        :key="tool.name"
+        :style="buttonStyle(activeTool === tool.name)"
+        @click="setTool(tool.name)"
+      >
+        {{ tool.label }}
+      </button>
+    </div>
+    <KritzelEditor
+      ref="editor"
+      editorId="tools-change"
+      theme="light"
+      :themes="[vueThemeLight]"
+      :isPanningEnabled="false"
+      :isZoomingEnabled="false"
+      :isMoreMenuVisible="false"
+      :isWorkspaceManagerVisible="false"
+      :isToolbarVisible="false"
+      :style="editorStyle"
+      @isReady="onReady"
+    />
+    <div :style="statusBarStyle">
+      Active tool: <strong>{{ activeTool }}</strong>
+    </div>
+  </div>
+</template>

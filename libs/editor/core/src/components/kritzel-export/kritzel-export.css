@@ -1,0 +1,89 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.export-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding:0;
+  flex: 1;
+}
+
+.export-content kritzel-pill-tabs {
+  align-self: center;
+}
+
+.export-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 330px;
+}
+
+.format-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.format-selection label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--kritzel-global-text-primary, #333);
+}
+
+.export-primary-button {
+  width: 100%;
+  padding: 12px 24px;
+  background-color: var(--kritzel-global-primary-color, #007AFF);
+  color: var(--kritzel-global-primary-text-color, #fff);
+  border: none;
+  border-radius: var(--kritzel-button-border-radius, 8px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.export-primary-button:hover {
+  background-color: var(--kritzel-global-primary-hover-color, #0066d6);
+}
+
+.export-primary-button:focus-visible {
+  outline: revert;
+  outline-offset: revert;
+}
+
+.preview-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+  margin-bottom: 8px; 
+}
+
+.preview-container img {
+  max-width: 100%;
+  max-height: 250px;
+  object-fit: contain;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  border: 1px solid var(--kritzel-global-border-color, #dbdbdb);
+}
+
+.export-content p {
+  margin: 0;
+  color: var(--kritzel-global-text-secondary, #666);
+}
+
+@media (max-width: 576px) {
+  .export-tab-content {
+    flex: 1;
+    min-height: 0;
+  }
+}

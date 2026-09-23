@@ -1,0 +1,37 @@
+:host {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.size-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 32px);
+  gap: 8px;
+  justify-items: center;
+}
+
+.size-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  border: 2px solid transparent;
+  box-sizing: border-box;
+}
+
+.size-container:hover {
+  background-color: var(--kritzel-stroke-size-hover-background-color, #ebebeb);
+}
+
+.size-container.selected {
+  border-color: var(--kritzel-selection-border-color, #007AFF);
+  background-color: var(--kritzel-stroke-size-selected-background-color, #ebebeb);
+}

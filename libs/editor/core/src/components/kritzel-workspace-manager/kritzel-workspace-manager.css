@@ -1,0 +1,16 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  z-index: 1;
+}
+
+.manager {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-out;
+}
+
+.manager.visible {
+  opacity: 1;
+  pointer-events: auto;
+}

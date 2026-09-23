@@ -1,0 +1,61 @@
+<script setup lang="ts">
+
+import {
+  getEditorRef,
+  HocuspocusSyncProvider,
+  IndexedDBSyncProvider,
+  KritzelEditor,
+  type KritzelSyncConfig,
+} from '@kritzel/vue-editor'
+import { vueThemeLight } from '../../../const/vue-theme-light'
+import {
+  accentDark,
+  editorStyle,
+  hostStyle,
+  seedEditor,
+  toolbarStyle,
+} from '../../shared/demo-shared'
+
+const editor = getEditorRef('editor');
+
+const syncConfig: KritzelSyncConfig = {
+  providers: [
+    IndexedDBSyncProvider,
+    HocuspocusSyncProvider.with({ url: 'wss://your-hocuspocus-server.com' }),
+  ],
+}
+
+async function onReady() {
+  if (editor.value) {
+    const existing = await editor.value.getAllObjects()
+    if (existing.length > 0) {
+      return
+    }
+
+    await seedEditor(editor.value)
+  }
+}
+</script>
+
+<template>
+  <div :style="{ ...hostStyle, background: 'radial-gradient(circle at 0% 0%, #e8fbf3 0%, #ffffff 42%)' }">
+    <div :style="toolbarStyle">
+      <span :style="{ fontWeight: 700, color: accentDark, fontSize: '13px' }">Real-time Sync</span>
+      <span :style="{ fontSize: '12px', color: accentDark }">Configured for Hocuspocus server</span>
+    </div>
+    <KritzelEditor
+      ref="editor"
+      editorId="collaboration-realtime"
+      theme="light"
+      :themes="[vueThemeLight]"
+      :syncConfig="syncConfig"
+      :loginConfig="undefined"
+      :isPanningEnabled="false"
+      :isZoomingEnabled="false"
+      :isMoreMenuVisible="false"
+      :isWorkspaceManagerVisible="false"
+      :style="editorStyle"
+      @isReady="onReady"
+    />
+  </div>
+</template>

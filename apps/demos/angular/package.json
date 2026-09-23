@@ -1,0 +1,39 @@
+{
+  "name": "@kritzel/angular-demo",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "rimraf .angular && ng serve --no-hmr",
+    "start:e2e": "ng serve --no-hmr --configuration e2e",
+    "build:e2e:prod": "ng build --configuration production",
+    "start:e2e:prod": "npm run build:e2e:prod && npx --yes http-server ./dist/angular/browser -p 4200 -c-1 --silent",
+    "clean": "rimraf dist .angular node_modules",
+    "build-app": "ng build"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^22.0.0",
+    "@angular/common": "^22.0.0",
+    "@angular/compiler": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0",
+    "@angular/platform-browser": "^22.0.0",
+    "@angular/platform-browser-dynamic": "^22.0.0",
+    "@angular/router": "^22.0.0",
+    "@lucide/angular": "^1.27.0",
+    "@kritzel/angular-editor": "^0.4.31",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.0.0",
+    "@angular/cli": "^22.0.0",
+    "@angular/compiler-cli": "^22.0.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~6.0.0"
+  }
+}

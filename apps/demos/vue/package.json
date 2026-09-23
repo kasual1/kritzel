@@ -1,0 +1,34 @@
+{
+  "name": "@kritzel/vue-demo",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "clean": "rimraf dist node_modules",
+    "build-app": "vite build",
+    "build:e2e:prod": "vite build",
+    "start:e2e:prod": "npm run build:e2e:prod && vite preview --port 5174 --strictPort"
+  },
+  "dependencies": {
+    "@kritzel/vue-engine": "^0.4.31",
+    "@kritzel/vue-editor": "^0.4.31",
+    "vue": "^3.5.26",
+    "vue-router": "^5.0.7"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.8",
+    "@types/node": "^20.17.0",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
+    "@vue/tsconfig": "^0.8.1",
+    "eslint": "^9.39.2",
+    "eslint-plugin-vue": "^10.6.2",
+    "npm-run-all2": "^8.0.4",
+    "prettier": "^3.7.4",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.0",
+    "vue-tsc": "^3.2.1"
+  }
+}

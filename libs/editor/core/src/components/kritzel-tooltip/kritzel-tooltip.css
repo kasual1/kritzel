@@ -1,0 +1,18 @@
+:host {
+  width: auto;
+}
+
+.tooltip-content {
+  position: relative;
+  padding: 8px 12px;
+  border-radius: 4px;
+  width: fit-content;
+  background-color: var(--kritzel-tooltip-background-color, #ffffff);
+  color: var(--kritzel-tooltip-color, #000000);
+  padding: var(--kritzel-tooltip-padding, 12px);
+  border: var(--kritzel-tooltip-border, 1px solid #ebebeb);
+  border-radius: var(--kritzel-tooltip-border-radius, 16px);
+  white-space: nowrap;
+  box-shadow: var(--kritzel-tooltip-box-shadow, 0 1px 6px rgba(0, 0, 0, 0.12));
+}
+

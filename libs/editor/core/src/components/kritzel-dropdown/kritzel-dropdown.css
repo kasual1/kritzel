@@ -1,0 +1,190 @@
+:host {
+  display: inline-flex;
+  vertical-align: middle;
+  width: 100%;
+  position: relative;
+}
+
+.dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--kritzel-dropdown-border-color, #ebebeb);
+  border-radius: var(--kritzel-dropdown-border-radius, 6px);
+  overflow: visible;
+  height: 38px;
+  width: 100%;
+  position: relative;
+}
+
+.dropdown-wrapper:hover:not(:focus-within) {
+  border-color: var(--kritzel-dropdown-hover-border-color, #cccccc);
+}
+
+.dropdown-container {
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+}
+
+.dropdown-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 8px;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: var(--kritzel-dropdown-border-radius, 6px);
+  border: none;
+  background-color: var(--kritzel-dropdown-background, #ffffff);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  outline: none;
+  font-size: inherit;
+  font-family: inherit;
+  color: var(--kritzel-dropdown-text-color, #333333);
+  -webkit-tap-highlight-color: transparent;
+  text-align: left;
+}
+
+.dropdown-trigger:focus-visible {
+  outline: revert;
+}
+
+.dropdown-trigger.has-suffix-border {
+  border-right: 1px solid var(--kritzel-global-border-color, #ebebeb);
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.dropdown-trigger.has-prefix-border {
+  border-left: 1px solid var(--kritzel-global-border-color, #ebebeb);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.dropdown-trigger-label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.dropdown-trigger-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-trigger-arrow svg {
+  width: 100%;
+  height: 100%;
+}
+
+.dropdown-trigger.is-open .dropdown-trigger-arrow {
+  transform: rotate(180deg);
+}
+
+.dropdown-trigger.is-open.open-up .dropdown-trigger-arrow {
+  transform: rotate(0deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background-color: var(--kritzel-dropdown-background, #ffffff);
+  border: 1px solid var(--kritzel-global-border-color, #ebebeb);
+  border-radius: var(--kritzel-dropdown-menu-border-radius, var(--kritzel-dropdown-border-radius, 6px));
+  box-shadow: var(--kritzel-toolbar-box-shadow, 0 4px 12px rgba(0, 0, 0, 0.15));
+  z-index: 1000;
+  max-height: 240px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease,
+    visibility 0.15s;
+  outline: none;
+}
+
+/* Open downward (default) */
+.dropdown-menu.open-down {
+  top: calc(100% + 4px);
+  bottom: auto;
+  transform: translateY(-8px);
+}
+
+/* Open upward */
+.dropdown-menu.open-up {
+  bottom: calc(100% + 4px);
+  top: auto;
+  transform: translateY(8px);
+}
+
+.dropdown-menu.is-open {
+  opacity: 1;
+  visibility: inherit;
+  transform: translateY(0);
+}
+
+/* Adjust box shadow for upward opening */
+.dropdown-menu.open-up {
+  box-shadow: var(--kritzel-toolbar-box-shadow, 0 -4px 12px rgba(0, 0, 0, 0.15));
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  color: var(--kritzel-dropdown-text-color, #333333);
+  transition: background-color 0.1s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dropdown-option.is-focused {
+  background-color: var(--kritzel-dropdown-hover-background-color, #f0f0f0);
+}
+
+.dropdown-option.is-selected {
+  font-weight: 600;
+  background-color: var(--kritzel-dropdown-selected-background-color, #007bff1a);
+}
+
+.dropdown-option-check {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--kritzel-dropdown-accent-color, #007bff);
+}
+
+.dropdown-option-check svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Scrollbar styling */
+.dropdown-menu {
+  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
+  scrollbar-width: thin;
+}
+
+::slotted(*) {
+  height: 100%;
+  box-sizing: border-box;
+}

@@ -1,0 +1,38 @@
+{
+  "name": "@kritzel/react-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "homepage": "https://kritzel.io",
+  "scripts": {
+    "start": "vite",
+    "clean": "rimraf dist node_modules",
+    "build-app": "vite build",
+    "build:e2e:prod": "vite build",
+    "start:e2e:prod": "npm run build:e2e:prod && vite preview --port 5173 --strictPort"
+  },
+  "dependencies": {
+    "@google/model-viewer": "^4.3.1",
+    "@kritzel/react-engine": "^0.4.31",
+    "@kritzel/react-editor": "^0.4.31",
+    "postprocessing": "^6.39.4",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.15.1",
+    "three": "^0.183.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/three": "^0.185.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "eslint": "^9.13.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.26",
+    "globals": "^16.5.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.50.1",
+    "vite": "^7.3.0"
+  }
+}

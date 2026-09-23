@@ -1,0 +1,46 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px;
+  gap: 8px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  background-color: var(--kritzel-utility-panel-background-color, #e2e2e2);
+  width: fit-content;
+  user-select: none;
+  z-index: 1;
+}
+
+.utility-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  color: var(--kritzel-utility-panel-button-color, #333333);
+  --kritzel-icon-color: var(--kritzel-utility-panel-button-color, #333333);
+  -webkit-tap-highlight-color: transparent;
+  border-radius: var(--kritzel-utility-panel-button-border-radius, 8px);
+}
+
+.utility-button:hover,
+.utility-button:focus-visible {
+  background-color: var(--kritzel-utility-panel-button-hover-background-color, hsl(0, 0%, 0%, 4.3%));
+}
+
+.utility-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.utility-separator {
+  width: 1px;
+  height: 16px;
+  background-color: var(--kritzel-utility-panel-separator-color, hsl(0, 0%, 0%, 8%));
+}
