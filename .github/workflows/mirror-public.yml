@@ -32,7 +32,7 @@ jobs:
         run: |
           rm -rf public-repo/apps public-repo/libs public-repo/demos public-repo/editor
           mkdir -p public-repo/demos public-repo/editor
-          cp README.md public-repo/README.md
+          cp .github/mirror/README.md public-repo/README.md
           cp .github/mirror/public-package.json public-repo/package.json
 
           rsync -av \
