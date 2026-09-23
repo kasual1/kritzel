@@ -1,11 +1,3 @@
-<div align="center" style="margin-top: 24px; margin-bottom: 12px;">
- 
-  <h1>Kritzel</h1>
-  <p style="font-size: 48px;">
-    The Infinite Canvas Development Kit
-  </p>
-</div>
-
 <br>
 <br>
 <p align="center">
