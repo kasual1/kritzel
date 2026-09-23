@@ -1,4 +1,6 @@
-<img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
+<div align="center" style="margin-top: 24px; margin-bottom: 8px;">
+  <img src="apps/website/static/img/favicon.svg" alt="Kritzel logo" width="160" />
+</div>
 
 # Kritzel
 
