@@ -32,7 +32,7 @@ This example makes use of the following core concepts. Click on the links below 
 A curated slides deck with an interactive dashboard header. Clicking next or previous triggers viewport pan transitions while clamping camera coordinates inside active slide margins.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/examples/slideshow-presentation"
   repoFiles={['src/pages/examples/SlideshowPresentationPage.vue']}
 />

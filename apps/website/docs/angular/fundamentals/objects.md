@@ -30,7 +30,7 @@ Take a look at [Tools](tools.md) for more information on how to create and manip
 You can manually inject objects into the canvas programmatically, bypassing the need for a user to draw them.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/objects/add"
   repoFiles={['src/app/pages/fundamentals/objects/objects-add.component.ts']}
 />
@@ -40,7 +40,7 @@ You can manually inject objects into the canvas programmatically, bypassing the 
 You can remove objects from the canvas programmatically when they are no longer needed.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/objects/remove"
   repoFiles={['src/app/pages/fundamentals/objects/objects-remove.component.ts']}
 />
@@ -50,7 +50,7 @@ You can remove objects from the canvas programmatically when they are no longer 
 Object properties should never be mutated directly. Instead, changes go through `updateObject()`, which takes the object and a partial set of properties to apply. This ensures the change is properly persisted, synced, and reflected on the canvas.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/objects/update"
   repoFiles={['src/app/pages/fundamentals/objects/objects-update.component.ts']}
 />
@@ -60,7 +60,7 @@ Object properties should never be mutated directly. Instead, changes go through 
 You can programmatically retrieve the currently selected objects, select specific objects, or clear the selection.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/objects/selection"
   repoFiles={['src/app/pages/fundamentals/objects/objects-selection.component.ts']}
 />
@@ -70,7 +70,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Kritzel's internal selection-related objects.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/objects/filter"
   repoFiles={['src/app/pages/fundamentals/objects/objects-filter.component.ts']}
 />
@@ -80,7 +80,7 @@ Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()`
 Objects can be grouped together so they can be moved and transformed as a single unit.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/objects/grouping"
   repoFiles={['src/app/pages/fundamentals/objects/objects-grouping.component.ts']}
 />
@@ -90,7 +90,7 @@ Objects can be grouped together so they can be moved and transformed as a single
 Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/objects/ordering"
   repoFiles={['src/app/pages/fundamentals/objects/objects-ordering.component.ts']}
 />

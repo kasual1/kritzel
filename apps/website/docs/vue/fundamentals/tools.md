@@ -20,7 +20,7 @@ Kritzel provides a versatile set of default tools like the Selection Tool, Brush
 If your application needs to temporarily lock the canvas to prevent user interaction (for example, during a loading state or when opening a modal), you can disable and enable tool interactions.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/fundamentals/tools/disable"
   repoFiles={['src/pages/fundamentals/tools/ToolsDisablePage.vue']}
 />
@@ -30,7 +30,7 @@ If your application needs to temporarily lock the canvas to prevent user interac
 For more fine-grained control than the global `enable()`/`disable()` methods, set `isDisabled` on a specific entry of the `toolbarItems` array. The tool is rendered in a disabled state and can no longer be selected, while every other tool remains fully interactive. `isDisabled` accepts a plain boolean or a (sync or async) function, so you can resolve it dynamically from your own state or an API call.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/fundamentals/tools/toolbar-item-disable"
   repoFiles={['src/pages/fundamentals/tools/ToolsToolbarItemDisablePage.vue']}
 />
@@ -40,7 +40,7 @@ For more fine-grained control than the global `enable()`/`disable()` methods, se
 If you want a focused editing experience, pass a custom `toolbarItems` array to `<KritzelEditor>`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/fundamentals/tools/toolbar"
   repoFiles={['src/pages/fundamentals/tools/ToolsToolbarPage.vue']}
 />
@@ -50,7 +50,7 @@ If you want a focused editing experience, pass a custom `toolbarItems` array to 
 You can register a custom tool configuration and then surface it in the toolbar panel. This example registers a custom highlighter built from `KritzelBrushTool` and adds it to the toolbar alongside `selection`, `pen`, and `text`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/fundamentals/tools/register"
   repoFiles={['src/pages/fundamentals/tools/ToolsRegisterPage.vue']}
 />
@@ -60,7 +60,7 @@ You can register a custom tool configuration and then surface it in the toolbar 
 You can programmatically change the currently active tool using the API. This is useful when you want to build your own custom toolbar or trigger tool changes via keyboard shortcuts.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/fundamentals/tools/change"
   repoFiles={['src/pages/fundamentals/tools/ToolsChangePage.vue']}
 />

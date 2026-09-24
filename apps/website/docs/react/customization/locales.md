@@ -20,7 +20,7 @@ Kritzel ships with English (`'en'`), German (`'de'`), and French (`'fr'`) transl
 Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()` method through the editor ref. The editor updates its UI without a page reload.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/customization/localization/switch"
   repoFiles={['src/pages/customization/localization/LocalizationSwitchPage.tsx']}
 />
@@ -30,7 +30,7 @@ Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()
 Register a `KritzelLocale` definition through the `locales` prop or dynamically with `registerLocales()`. A locale can provide only the terms it needs; missing keys use the fallback chain.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/customization/localization/custom"
   repoFiles={['src/pages/customization/localization/LocalizationCustomPage.tsx']}
 />

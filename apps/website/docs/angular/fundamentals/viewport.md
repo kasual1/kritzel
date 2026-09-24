@@ -22,7 +22,7 @@ Use `panTo` to move the viewport to a world coordinate while preserving the curr
 The demo moves the viewport between a few world positions while preserving the current scale.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/viewport/pan"
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-pan.component.ts']}
 />
@@ -34,7 +34,7 @@ Use `zoomTo` to set an exact zoom scale, optionally anchoring the zoom around a 
 The demo includes step controls, an exact zoom level, and a zoom that stays anchored to a selected world position.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/viewport/zoom"
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-zoom.component.ts']}
 />
@@ -48,7 +48,7 @@ The `backToContent` method is optimized for recovery when the user has panned aw
 `centerObjectInViewport` has a different purpose: it centers the object itself in the current viewport by updating the object, instead of panning the viewport. For navigation UI, prefer `panToObject` or `centerObjects`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/viewport/center"
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-center.component.ts']}
 />
@@ -60,7 +60,7 @@ Use `scaleMin` and `scaleMax` to keep the viewport's zoom within a supported ran
 The demo provides 10% zoom-in and zoom-out steps. Continue selecting one direction to reach the configured limit; further selections keep the viewport at the clamped scale.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/viewport/limits"
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-limits.component.ts']}
 />
@@ -72,7 +72,7 @@ Set `viewportBoundaryLeft`, `viewportBoundaryRight`, `viewportBoundaryTop`, and 
 The demo provides four controls that move the viewport 100 world units up, down, left, or right. Continue selecting one direction to reach that boundary; further selections keep the viewport at the constrained position.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/viewport/boundaries"
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-boundaries.component.ts']}
 />
@@ -82,7 +82,7 @@ The demo provides four controls that move the viewport 100 world units up, down,
 Kritzel emits `viewportChange` with the latest position, scale, and dimensions whenever the view changes. The demo uses pan and zoom controls and displays the resulting viewport state in its toolbar.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/fundamentals/viewport/events"
   repoFiles={['src/app/pages/fundamentals/viewport/viewport-events.component.ts']}
 />

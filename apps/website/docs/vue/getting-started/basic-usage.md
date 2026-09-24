@@ -127,7 +127,7 @@ function onViewportChange(event: Event) {
 Below is a complete example combining everything covered in this guide. It provides a simple custom toolbar to trigger tools, insert programmatic text, zoom into the canvas, and displays a dynamic counter of the total objects.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   repoFiles={['src/pages/getting-started/BasicUsagePage.vue']}
   demoPath="/getting-started/basic-usage"
 />

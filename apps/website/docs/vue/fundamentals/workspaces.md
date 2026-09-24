@@ -22,7 +22,7 @@ Workspaces are the fundamental unit for real-time collaboration. When multiple u
 By default, Kritzel provides a built-in UI for managing multiple workspaces. However, if you hide this UI (`:isWorkspaceManagerVisible="false"`), you can programmatically build your own workspace navigation. `<KritzelEditor>` exposes an `activeWorkspaceId` prop and an `activeWorkspaceChange` event that make switching between canvases seamless.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/fundamentals/workspaces/switch"
   repoFiles={['src/pages/fundamentals/workspaces/WorkspacesSwitchPage.vue']}
 />
@@ -38,7 +38,7 @@ Changing the objects of a workspace that is not currently active requires a conf
 :::
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/fundamentals/workspaces/crud"
   repoFiles={['src/pages/fundamentals/workspaces/WorkspacesCrudPage.vue']}
 />

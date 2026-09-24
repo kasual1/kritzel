@@ -20,7 +20,7 @@ The Viewport API allows you to programmatically control the camera, read the cur
 You can programmatically set the viewport pan and zoom using `setViewport`, or use animated transitions via `panTo` and `zoomTo`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/viewport/change"
   repoFiles={['src/pages/fundamentals/viewport/ViewportChangePage.tsx']}
 />
@@ -30,7 +30,7 @@ You can programmatically set the viewport pan and zoom using `setViewport`, or u
 Kritzel provides built-in methods to quickly navigate back to content. You can center individual objects using `centerObjectInViewport`, or reset the camera to view all currently drawn content via `backToContent`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/viewport/center"
   repoFiles={['src/pages/fundamentals/viewport/ViewportCenterPage.tsx']}
 />

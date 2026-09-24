@@ -20,7 +20,7 @@ When fonts are registered, Kritzel injects stylesheet URLs and waits for the bro
 Pass a `KritzelFontMap` to the `customFonts` prop on `<KritzelEditor>`, or call `registerFonts()` through the editor ref. Each registration can define a family, display label, CSS font family stack, and stylesheet source.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/customization/fonts/register"
   repoFiles={['src/pages/customization/fonts/FontsRegisterPage.vue']}
 />

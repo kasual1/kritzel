@@ -37,7 +37,7 @@ Both modes produce the same kind of object on the canvas — the difference is p
 The simplest way to use a dynamic object is to build a plain DOM subtree and pass it as `element`. Kritzel mounts it as-is; there is no renderer to register or unregister, and no lifecycle hooks to implement. This is a good fit for static or lightly interactive content that does not need a full component framework.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/advanced/dynamic-objects/html"
   repoFiles={['src/pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.tsx']}
 />
@@ -54,7 +54,7 @@ State flows through `rendererData`:
 Always unregister the renderer, and unmount any mounted React roots, when the hosting page unmounts.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/advanced/dynamic-objects/component"
   repoFiles={['src/pages/advanced/dynamic-objects/DynamicObjectsComponentPage.tsx']}
 />

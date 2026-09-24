@@ -20,7 +20,7 @@ Kritzel ships two built-in themes (`lightTheme` and `darkTheme`) which serve as 
 The simplest entry point is switching between the two built-in themes. Pass `lightTheme` and `darkTheme` in the `themes` array and toggle the active theme name with `theme`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/customization/theming/apply"
   repoFiles={['src/pages/customization/theming/ThemingApplyPage.vue']}
 />
@@ -30,7 +30,7 @@ The simplest entry point is switching between the two built-in themes. Pass `lig
 This example intentionally applies a strong light-purple visual language and removes rounding across the UI (`borderRadius: 0`) to demonstrate how far Kritzel can be customized. It starts from `lightTheme`, then overrides multiple `KritzelTheme` groups (`engine`, `toolbar`, `menu`, `contextMenu`, `button`, and more) so the editor background, toolbar, menus, and actions all follow one coherent branded style.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/customization/theming/custom"
   repoFiles={['src/pages/customization/theming/ThemingCustomPage.vue']}
 />
