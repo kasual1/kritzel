@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, type CSSProperties } from 'vue'
+import { computed, shallowRef, type CSSProperties } from 'vue'
 import {
   getEditorRef,
   InMemorySyncProvider,
@@ -170,7 +170,7 @@ const themes = [vueThemeLight, vueThemeDark]
 const syncConfig: KritzelSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const activeWorkspace = ref<KritzelWorkspace | null>(null)
+const activeWorkspace = shallowRef<KritzelWorkspace | null>(null)
 const activeWorkspaceJson = computed(() =>
   activeWorkspace.value
     ? JSON.stringify(
