@@ -1,30 +1,24 @@
 <script setup lang="ts">
-
 import {
   BroadcastSyncProvider,
-  getEditorRef,
   KritzelEditor,
+  KritzelWorkspace,
   type KritzelSyncConfig,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
   accentDark,
   editorStyle,
   hostStyle,
-  seedEditor,
   toolbarStyle,
 } from '../../shared/demo-shared'
 
-const editor = getEditorRef('editor');
-
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 const syncConfig: KritzelSyncConfig = {
   providers: [BroadcastSyncProvider],
-}
-
-async function onReady() {
-  if (editor.value) {
-    await seedEditor(editor.value)
-  }
 }
 </script>
 
@@ -35,10 +29,10 @@ async function onReady() {
       <span :style="{ fontSize: '12px', color: accentDark }">BroadcastChannel enabled</span>
     </div>
     <KritzelEditor
-      ref="editor"
       editorId="collaboration-local"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
       :syncConfig="syncConfig"
       :loginConfig="undefined"
       :isPanningEnabled="false"
@@ -46,7 +40,6 @@ async function onReady() {
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
-      @isReady="onReady"
     />
   </div>
 </template>

@@ -11,13 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel includes a dedicated `KritzelFontRegistry` for registering custom web fonts for canvas text objects and the text tool configuration panel. Fonts can come from Google Fonts, another hosted stylesheet, or a self-hosted source.
+Kritzel comes with a dedicated system for managing custom fonts, allowing you to integrate web fonts in text-based canvas objects or in the editor's UI.
 
-When fonts are registered, Kritzel injects stylesheet URLs and waits for the browser font loading process before rendering dependent text.
+## Registering Custom Fonts
 
-## Registering and Using Custom Fonts
-
-Pass a `KritzelFontMap` to the `customFonts` prop on `<KritzelEditor>`, or call `registerFonts()` through the editor ref. Each registration can define a family, display label, CSS font family stack, and stylesheet source.
+Register fonts declaratively through the `customFonts` prop on `<KritzelEditor>` or programmatically using `registerFonts()`. Registered fonts immediately become available to the text tool and can be applied to the editor's UI.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
@@ -25,10 +23,18 @@ Pass a `KritzelFontMap` to the `customFonts` prop on `<KritzelEditor>`, or call 
   repoFiles={['src/pages/customization/fonts/FontsRegisterPage.vue']}
 />
 
-## Related API Methods
+## Using a Custom Font in the UI
 
-- Editor font configuration (`customFonts`, `registerFonts()`)
-- Font registry management (`KritzelFontRegistry.register()`, `KritzelFontRegistry.registerFonts()`, `KritzelFontRegistry.list()`)
-- CSS family resolution (`KritzelFontRegistry.resolveCssFontFamily()`)
+To use a custom font in the editor's controls, first register it and then set `global.fontFamily` in a theme. This applies the font to menus, dialogs, buttons, and other UI elements.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+To override only specific UI elements, set the font family on the relevant component-specific theme property, such as `dialog.fontFamily` or `contextMenu.fontFamily`.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/customization/fonts/ui-font-family"
+  repoFiles={['src/pages/customization/fonts/FontsUiFontFamilyPage.vue']}
+/>
+
+## API Details
+
+For the full list of related APIs, see [Theming](../api-reference/editor.md#theming).

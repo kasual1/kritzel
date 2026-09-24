@@ -11,15 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel ships a presentational login dialog that `<KritzelEditor>` renders as soon as a `loginConfig` prop is supplied. The dialog only displays provider buttons and emits events - the actual authentication is always performed by your application.
-
-Providing a `loginConfig` has two effects: a **Sign in** button appears in the editor header while no authenticated user is set, and features that require an account (such as sharing a workspace) open the dialog instead of failing.
+Kritzel comes with a whole set of user management features, such as configurable login dialogs and user profile handling. While the editor provides the UI and event hooks, your application is responsible for performing the actual authentication and managing user state.
 
 ## Configuring Providers
 
-Every entry in `providers` becomes one button in the dialog, in declaration order. The `name` is the identifier your application receives when the button is clicked, while `label` controls the visible text. The optional `icon` references a name resolved through the shared `KritzelIconRegistry`, so provider marks are registered with the `customSvgIcons` prop just like any other custom icon.
-
-`title` and `subtitle` override the localized defaults of the dialog header. When `title` is omitted, the active locale's `login.dialogTitle` term is used.
+To enable Kritzel's user management features, provide a `loginConfig` with at least one authentication provider. This renders the login button at the top right of `<KritzelEditor>` and displays the login dialog with a button for each provider.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
@@ -27,31 +23,38 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
   repoFiles={['src/pages/advanced/user-management/UserManagementProvidersPage.vue']}
 />
 
-## Handling the Login Flow
+## Handling the Login
 
-Clicking a provider button puts that button into a loading state and emits the editor's `login` event with a `LoginEvent` containing the provider `name`. Your application performs the sign-in and then reports the result back to the editor:
-
-- Call `setLoginLoading(provider)` while authentication is pending and `setLoginLoading(null)` when it settles.
-- Bind the `user` prop to an `IKritzelUser` once authentication succeeds. A user with `isGuest: false` replaces the Sign in button with the current-user avatar.
-- Handle the `logout` event to clear the user again.
-- Call `openLoginDialog()` to open the dialog from your own UI, for example from an application menu.
+Clicking a provider button puts that button into a loading state and emits the editor's `login` event. Your application performs the sign-in and then sets the current user accordingly.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
-  demoPath="/advanced/user-management/flow"
-  repoFiles={['src/pages/advanced/user-management/UserManagementFlowPage.vue']}
+  demoPath="/advanced/user-management/login"
+  repoFiles={['src/pages/advanced/user-management/UserManagementLoginPage.vue']}
 />
 
-## Theming the Dialog
+## Handling the Logout
 
-The dialog reads its colors from the `loginDialog` section of a `KritzelTheme`, which covers the subtitle color, the provider button background, border, hover and active states, and the spinner colors. Extend the shipped `lightTheme` or `darkTheme` sections to match your application's branding.
+When the user selects the logout action, the editor emits the `logout` event. Your application should clear the current user and update its authentication state.
 
-## Related API Methods and Types
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/advanced/user-management/logout"
+  repoFiles={['src/pages/advanced/user-management/UserManagementLogoutPage.vue']}
+/>
 
-- Configuration (`loginConfig`, `KritzelLoginConfig`, `KritzelLoginProvider`)
-- Provider icons (`customSvgIcons`, `KritzelIconRegistry`)
-- User state (`user`, `IKritzelUser`)
-- Events (`login`, `logout`, `LoginEvent`)
-- Methods (`openLoginDialog`, `setLoginLoading`)
+## Setting the User
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+Use `:user` for the logged-in user and `:activeUsers` for workspace collaborators. The current user drives the account UI and awareness metadata, while active users appear as avatars in the editor header; both props update at runtime, so clearing `user` signs out and replacing `activeUsers` refreshes the collaborator list.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/advanced/user-management/users"
+  repoFiles={['src/pages/advanced/user-management/UserManagementUsersPage.vue']}
+/>
+
+## API Details
+
+For the full list of related APIs, see the following reference sections.
+
+- [User Management](../api-reference/editor.md#user-management)

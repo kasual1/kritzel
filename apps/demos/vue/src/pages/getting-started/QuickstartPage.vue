@@ -1,30 +1,23 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelEditor } from '@kritzel/vue-editor'
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../const/vue-theme-light'
-import { seedEditor } from '../shared/demo-shared';
+import { createSeedObjects } from './seed-objects'
 
-const editor = getEditorRef('editor');
-
-async function onReady() {
-    if (editor.value) {
-        await seedEditor(editor.value)
-    }
-}
-
+const themes = [vueThemeLight]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 </script>
 
 <template>
     <div class="host">
         <KritzelEditor
-            ref="editor"
             editorId="quickstart"
             theme="light"
-            :themes="[vueThemeLight]"
+            :themes="themes"
+            :workspaces="workspaces"
             :isPanningEnabled="false"
             :isZoomingEnabled="false"
             :isMoreMenuVisible="false"
             :isWorkspaceManagerVisible="false"
-            @isReady="onReady"
         />
     </div>
 </template>
