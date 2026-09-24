@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/engine",
-  "version": "0.4.31",
+  "version": "0.4.33",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite whiteboard experiences.",
   "keywords": [
@@ -67,6 +67,8 @@
     "html-to-image": "^1.11.11",
     "lodash": "^4.17.21",
     "perfect-freehand": "^1.2.2",
+    "prosemirror-commands": "^1.7.1",
+    "prosemirror-keymap": "^1.2.3",
     "prosemirror-model": "^1.25.4",
     "prosemirror-schema-basic": "^1.2.4",
     "prosemirror-schema-list": "^1.5.1",
