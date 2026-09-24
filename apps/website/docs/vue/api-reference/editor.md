@@ -4,15 +4,18 @@ sidebar_label: Editor
 displayed_sidebar: tutorialSidebar
 title: "Editor API Reference | Kritzel for Vue"
 description: "Complete API reference for the Kritzel editor component: props, methods, and events available in Vue."
+toc_max_heading_level: 2
 ---
 
 # Editor
 
-The `<KritzelEditor>` is the high-level, full-featured whiteboard component. It wraps `<kritzel-engine>` and adds a toolbar, utility panel, context menus, dialogs, and workspace management.
+The `<KritzelEditor>` is the high-level, full-featured whiteboard component. It wraps `<KritzelEngine>` and adds a toolbar, utility panel, context menus, dialogs, and workspace management.
 
 All methods are async and return Promises. The editor exposes all the same methods as the engine.
 
-## Props
+## General
+
+### Props
 
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -32,7 +35,7 @@ All methods are async and return Promises. The editor exposes all the same metho
 | syncConfig | KritzelSyncConfig | undefined | Sync provider configuration |
 | workspaces | KritzelWorkspace[] | undefined | Optional authoritative workspace catalog for this editor instance. Provider-only workspaces are hidden but not deleted. |
 
-## Events
+### Events
 
 | Event | Payload Type | Description |
 |-------|-------------|-------------|
@@ -47,9 +50,74 @@ All methods are async and return Promises. The editor exposes all the same metho
 
 ---
 
-## Methods
+### Methods
 
-### Object
+#### beginSceneBootstrap
+
+Starts a scene bootstrap phase by hiding the scene immediately.
+
+```ts
+beginSceneBootstrap(): Promise<void>
+```
+
+#### endSceneBootstrap
+
+Ends the scene bootstrap phase.
+
+```ts
+endSceneBootstrap(): Promise<void>
+```
+
+---
+
+## UI Elements
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| cursorTarget | HTMLElement | Element used as cursor target. Defaults to the editor container if omitted. |
+| customSvgIcons | KritzelSvgIconMap | Custom SVG icon definitions. |
+| globalContextMenuItems | ContextMenuItem[] | Context menu items shown on the canvas background. |
+| isMoreMenuVisible | boolean | Controls visibility of the More menu. |
+| isToolbarVisible | boolean | Controls toolbar visibility. |
+| isUtilityPanelVisible | boolean | Controls utility panel visibility. |
+| isWorkspaceManagerVisible | boolean | Controls workspace manager visibility. |
+| isZoomPanelVisible | boolean | Controls zoom panel visibility. |
+| moreMenuItems | IKritzelMenuItem[] | Custom entries for the More dropdown menu. |
+| objectContextMenuItems | ContextMenuItem[] | Context menu items shown for selected objects. |
+
+### Events
+
+No UI-specific events.
+
+### Methods
+
+#### openContextMenu
+
+Opens a context menu at screen coordinates: `openContextMenu(options: { x: number; y: number; objectId?: string }): Promise<void>`.
+
+#### openWorkspaceManagerMenu
+
+Opens the workspace manager menu: `openWorkspaceManagerMenu(): Promise<void>`.
+
+#### openMoreMenu
+
+Opens the More menu: `openMoreMenu(): Promise<void>`.
+
+#### hideContextMenu
+
+Hides the active context menu: `hideContextMenu(): Promise<void>`.
+
+#### getDisplayableShortcuts
+
+Returns registered shortcuts without their actions or conditions: `getDisplayableShortcuts(): Promise<Omit<KritzelShortcut, "action" | "condition">[]>`.
+
+#### triggerNotification
+
+Shows a UI notification: `triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" | "timestamp">>): Promise<void>`.
+
+## Object
 
 #### addObject
 
@@ -59,12 +127,28 @@ Adds a new object to the canvas. The object is automatically assigned an ID, cor
 addObject<T extends KritzelBaseObject>(object: T): Promise<T | null>
 ```
 
+#### addObjects
+
+Adds multiple objects in one undo step and render cycle.
+
+```ts
+addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]>
+```
+
 #### removeObject
 
 Removes an object from the canvas.
 
 ```ts
 removeObject<T extends KritzelBaseObject>(object: T): Promise<T | null>
+```
+
+#### removeObjects
+
+Removes multiple objects in one batch operation.
+
+```ts
+removeObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]>
 ```
 
 #### updateObject
@@ -117,7 +201,7 @@ getObjectsInViewport: Promise<KritzelBaseObject[]>
 
 ---
 
-### Selection
+## Selection
 
 #### getSelectedObjects
 
@@ -161,7 +245,7 @@ triggerSelectionChange: Promise<void>
 
 ---
 
-### Viewport & Navigation
+## Viewport & Navigation
 
 #### getViewport
 
@@ -187,6 +271,14 @@ Pans the viewport to center on the given world coordinates without changing the 
 panTo(x: number, y: number): Promise<void>
 ```
 
+#### panToObject
+
+Pans to an object without changing scale.
+
+```ts
+panToObject(object: KritzelBaseObject): Promise<void>
+```
+
 #### zoomTo
 
 Zooms the viewport to the given scale. Optionally centers on a world point; if omitted, zooms around the viewport center.
@@ -195,12 +287,44 @@ Zooms the viewport to the given scale. Optionally centers on a world point; if o
 zoomTo(scale: number, worldX?: number, worldY?: number): Promise<void>
 ```
 
+#### zoomIn
+
+Zooms in by one configured step.
+
+```ts
+zoomIn(): Promise<void>
+```
+
+#### zoomOut
+
+Zooms out by one configured step.
+
+```ts
+zoomOut(): Promise<void>
+```
+
 #### centerObjectInViewport
 
 Pans and zooms the viewport to center on the given object.
 
 ```ts
 centerObjectInViewport(object: KritzelBaseObject): Promise<KritzelBaseObject>
+```
+
+#### centerObjects
+
+Moves the supplied objects so their combined bounds are centered in the viewport.
+
+```ts
+centerObjects(objects: KritzelBaseObject[]): Promise<void>
+```
+
+#### centerAllObjects
+
+Moves all objects so their combined bounds are centered in the viewport.
+
+```ts
+centerAllObjects(): Promise<void>
 ```
 
 #### backToContent
@@ -231,7 +355,7 @@ worldToScreen(x: number, y: number): Promise<{ x: number; y: number }>
 
 ---
 
-### Workspace
+## Workspace
 
 #### setActiveWorkspace
 
@@ -281,9 +405,17 @@ Returns the currently active workspace.
 getActiveWorkspace: Promise<KritzelWorkspace>
 ```
 
+#### loadSharedWorkspace
+
+Loads a shared workspace by identifier.
+
+```ts
+loadSharedWorkspace(workspaceId: string): Promise<void>
+```
+
 ---
 
-### Tool Management
+## Tool Management
 
 #### registerTool
 
@@ -323,7 +455,7 @@ enable: Promise<void>
 
 ---
 
-### Clipboard & Editing
+## Clipboard & Editing
 
 #### copy
 
@@ -331,6 +463,14 @@ Copies the currently selected objects to the internal clipboard.
 
 ```ts
 copy: Promise<void>
+```
+
+#### cut
+
+Cuts selected objects to the clipboard.
+
+```ts
+cut(): Promise<void>
 ```
 
 #### paste
@@ -351,7 +491,7 @@ delete: Promise<void>
 
 ---
 
-### Ordering
+## Ordering
 
 #### bringForward
 
@@ -387,7 +527,7 @@ sendToBack(object?: KritzelBaseObject): Promise<void>
 
 ---
 
-### Alignment
+## Alignment
 
 #### alignObjects
 
@@ -401,7 +541,7 @@ Alignment values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `Start
 
 ---
 
-### Grouping
+## Grouping
 
 #### group
 
@@ -421,7 +561,7 @@ ungroup: Promise<void>
 
 ---
 
-### Undo & Redo
+## Undo & Redo
 
 #### undo
 
@@ -441,7 +581,7 @@ redo: Promise<void>
 
 ---
 
-### Export
+## Export & Import
 
 #### getScreenshot
 
@@ -465,6 +605,30 @@ Exports the current viewport as an SVG file and triggers a browser download.
 
 ```ts
 exportViewportAsSvg: Promise<void>
+```
+
+#### canExportSelectedObjectAs
+
+Checks whether the selected object supports a format.
+
+```ts
+canExportSelectedObjectAs(format: KritzelExportFormat): Promise<boolean>
+```
+
+#### exportSelectedObject
+
+Exports the selected object in the requested format.
+
+```ts
+exportSelectedObject(format: KritzelExportFormat): Promise<void>
+```
+
+#### getSelectedObjectSupportedExportFormats
+
+Returns export formats supported by the selected object.
+
+```ts
+getSelectedObjectSupportedExportFormats(): Promise<KritzelExportFormat[]>
 ```
 
 #### downloadAsJson
@@ -493,20 +657,117 @@ loadObjectsFromJson(json: string): Promise<number>
 
 ---
 
-### Other
+## Theming
 
-#### hideContextMenu
+### Props
 
-Hides the context menu and resets any associated selection state.
+| Property | Type | Description |
+|----------|------|-------------|
+| customFonts | KritzelFontMap | Registers fonts for runtime rendering and text-tool usage. |
+| theme | ThemeCode | Current active theme. |
+| themes | KritzelTheme[] | Available theme definitions. |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| themeChange | ThemeCode | Emitted when the active theme changes. |
+
+### Methods
+
+#### registerFonts
+
+Registers custom fonts for runtime rendering and text-tool usage.
 
 ```ts
-hideContextMenu: Promise<void>
+registerFonts(fonts: KritzelFontMap): Promise<void>
 ```
 
-#### getDisplayableShortcuts
+## Localization
 
-Returns all registered keyboard shortcuts (without action/condition) for display in a help UI.
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| fallbackLocale | LocaleCode | Locale used to resolve terms missing from the active locale. |
+| locale | LocaleCode | Current locale code used by the editor. |
+| locales | KritzelLocale[] | Available locale definitions with optional term overrides. |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| localeChange | LocaleCode | Emitted when the active locale changes. |
+
+### Methods
+
+#### registerLocales
+
+Registers locale definitions: `registerLocales(locales: KritzelLocale[]): Promise<void>`.
+
+#### getAvailableLocales
+
+Returns available locale codes: `getAvailableLocales(): Promise<LocaleCode[]>`.
+
+#### getLocale
+
+Returns the active locale: `getLocale(): Promise<LocaleCode>`.
+
+#### setLocale
+
+Sets the active locale: `setLocale(code: LocaleCode): Promise<void>`.
+
+#### t
+
+Resolves a localized term: `t(key: KritzelTermKey, vars?: KritzelTermVars): Promise<string>`.
+
+## User Management
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| user | IKritzelUser | Current authenticated user for awareness and collaboration state. |
+| loginConfig | KritzelLoginConfig | Login dialog provider configuration. |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| login | LoginEvent | Emitted when login is triggered from the authentication dialog. |
+| logout | void | Emitted when logout is triggered from the editor UI. |
+
+### Methods
+
+#### openLoginDialog
+
+Opens the configured login dialog: `openLoginDialog(): Promise<void>`.
+
+#### setLoginLoading
+
+Sets a provider's loading state: `setLoginLoading(provider: string | null): Promise<void>`.
+
+## Collaboration
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| activeUsers | IKritzelUser[] | Other users currently in the session. |
+| syncConfig | KritzelSyncConfig | Real-time collaboration provider configuration. |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| awarenessChange | AwarenessStateMap | Emitted when collaborative awareness state changes. |
+
+### Methods
+
+#### reinitSync
+
+Reinitializes the active synchronization provider connection.
 
 ```ts
-getDisplayableShortcuts: Promise<Omit<KritzelShortcut, 'action' | 'condition'>[]>
+reinitSync(): Promise<void>
 ```

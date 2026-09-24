@@ -1,19 +1,25 @@
 <script setup lang="ts">
-
-import { KritzelEditor, type KritzelBaseObject } from '@kritzel/vue-editor'
+import {
+  getEditorRef,
+  KritzelEditor,
+  KritzelWorkspace,
+  type KritzelBaseObject,
+} from '@kritzel/vue-editor'
+import { ref } from 'vue'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
   buttonStyle,
   editorStyle,
   hostStyle,
-  seedEditor,
   toolbarStyle,
-  getEditorRef,
 } from '../../shared/demo-shared'
-import { ref } from 'vue';
 
-const editor = getEditorRef('editor');
-const selectedObjects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
+const editor = getEditorRef('editor')
+const selectedObjects = ref<KritzelBaseObject[]>([])
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 
 async function refreshSelection() {
   selectedObjects.value = ((await editor.value?.getSelectedObjects()) ?? []) as KritzelBaseObject<HTMLElement | SVGElement>[]
@@ -35,14 +41,6 @@ async function selectFirst() {
 
 async function clearSelection() {
   await editor.value?.clearSelection()
-  await refreshSelection()
-}
-
-async function onReady() {
-  if (!editor.value) {
-    return
-  }
-  await seedEditor(editor.value)
 }
 </script>
 
@@ -50,23 +48,22 @@ async function onReady() {
   <div :style="hostStyle">
     <div :style="toolbarStyle">
       <button :style="buttonStyle(false)" @click="selectAll">Select All</button>
-      <button :style="buttonStyle(false)" @click="selectFirst">Select First</button>
+      <button :style="buttonStyle(false)" @click="selectFirst">Select Object</button>
       <button :style="buttonStyle(false)" @click="clearSelection">Clear Selection</button>
-      <button :style="buttonStyle(false)" @click="refreshSelection">Get Selected</button>
-      <span :style="{ marginLeft: 'auto', fontSize: '13px' }">Selected: {{ selectedObjects.length }}</span>
     </div>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
         ref="editor"
         editorId="objects-selection"
         theme="light"
-        :themes="[vueThemeLight]"
+        :themes="themes"
+        :workspaces="workspaces"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :style="editorStyle"
-        @isReady="onReady"
+        @objectsSelectionChange="refreshSelection"
       />
       <aside :style="{ width: '220px', borderLeft: '1px solid #ebebeb', padding: '8px', overflowY: 'auto', fontSize: '13px' }">
         <h3 :style="{ margin: '0 0 8px', fontSize: '14px' }">Selected</h3>

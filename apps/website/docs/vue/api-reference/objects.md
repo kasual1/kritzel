@@ -7,7 +7,7 @@ description: "Reference for all canvas object types in Kritzel: brush, line, sha
 
 All objects on the canvas extend `KritzelBaseObject`. Each tool creates a specific object type when the user draws on the canvas.
 
-## KritzelBaseObject
+## Base Object
 
 Abstract base class for every object that can be placed on the canvas. All other object types listed below extend this class and inherit its properties, computed properties, and methods — only properties/methods specific to a given type are listed in its own section.
 
@@ -81,7 +81,7 @@ Abstract base class for every object that can be placed on the canvas. All other
 
 ---
 
-## KritzelPath
+## Path
 
 Freehand brush strokes. Rendered as SVG paths using the [perfect-freehand](https://github.com/steveruizok/perfect-freehand) library.
 
@@ -109,7 +109,7 @@ Freehand brush strokes. Rendered as SVG paths using the [perfect-freehand](https
 
 ---
 
-## KritzelLine
+## Line
 
 Straight lines and arrows with configurable start/end arrowheads.
 
@@ -144,7 +144,7 @@ Straight lines and arrows with configurable start/end arrowheads.
 
 ---
 
-## KritzelShape
+## Shape
 
 Geometric shapes: rectangle, ellipse, or triangle.
 
@@ -194,7 +194,7 @@ enum ShapeType {
 
 ---
 
-## KritzelText
+## Text
 
 Rich text object powered by [ProseMirror](https://prosemirror.net/).
 
@@ -236,7 +236,7 @@ Rich text object powered by [ProseMirror](https://prosemirror.net/).
 
 ---
 
-## KritzelImage
+## Image
 
 Raster image object.
 
@@ -268,7 +268,7 @@ Raster image object.
 
 ---
 
-## KritzelGroup
+## Group
 
 Permanent grouping of multiple objects. Unlike a temporary multi-selection, a group is persisted and saved with the workspace.
 
@@ -309,7 +309,7 @@ Permanent grouping of multiple objects. Unlike a temporary multi-selection, a gr
 
 ---
 
-## KritzelDynamicObject
+## Dynamic Object
 
 User-defined custom HTML element on the canvas.
 
@@ -321,7 +321,7 @@ User-defined custom HTML element on the canvas.
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | element | HTMLElement | — | The HTML element rendered on the canvas |
-| rendererKey | string | — | Identifier for a registered renderer (e.g. 'angular-component', 'react-default') |
+| rendererKey | string | — | Identifier for a registered renderer (for example `vue-calculator`) |
 | rendererData | unknown | — | Custom data payload passed to the renderer |
 
 ### Methods

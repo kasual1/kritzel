@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
 import {
-  getEditorRef,
   KritzelEditor,
+  KritzelWorkspace,
   lightTheme,
   type KritzelTheme,
 } from '@kritzel/vue-editor'
-import { seedEditor } from '../../shared/demo-shared'
+import { createSeedObjects } from '../../getting-started/seed-objects'
 
 const brandPurple = '#7c3aed'
 const brandPurpleHover = '#6d28d9'
@@ -257,13 +257,8 @@ const brandedPurpleFlatTheme: KritzelTheme = {
   },
 }
 
-const editor = getEditorRef('editor');
-
-async function onReady() {
-  if (editor.value) {
-    await seedEditor(editor.value)
-  }
-}
+const themes = [brandedPurpleFlatTheme]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 </script>
 
 <template>
@@ -275,10 +270,10 @@ async function onReady() {
     }"
   >
     <KritzelEditor
-      ref="editor"
       editorId="theming-custom"
       theme="branded-purple-flat"
-      :themes="[brandedPurpleFlatTheme]"
+      :themes="themes"
+      :workspaces="workspaces"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="true"
@@ -291,7 +286,6 @@ async function onReady() {
         borderRadius: 0,
         boxSizing: 'border-box',
       }"
-      @isReady="onReady"
     />
   </div>
 </template>

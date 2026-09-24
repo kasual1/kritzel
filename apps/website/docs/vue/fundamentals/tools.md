@@ -11,33 +11,25 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Kritzel, a Tool represents an active state that determines how user input (like mouse clicks, touches, and pen strokes) behaves on the canvas. Because Kritzel is a state machine, only one tool can be active at a time. The active tool intercepts all pointer events and executes its specific logic to perform actions such as drawing, selecting, or erasing.
+In Kritzel, the easiest way to manually interact with the canvas is through tools. Kritzel comes with a configurable toolbar that allows users to select and switch between a set of different prebuilt tools. A tool handles user interaction on the canvas and typically either adds or removes objects.
 
-Kritzel provides a versatile set of default tools like the Selection Tool, Brush Tool, Line Tool, Shape Tool, and Text Tool. You can also customize existing tools or register entirely custom tools to extend functionality.
+The toolbar includes the following tools:
 
-## Disabling and Enabling Tools
+- [Selection Tool](../api-reference/tools.md#selection-tool)
+- [Brush Tool](../api-reference/tools.md#brush-tool)
+- [Line Tool](../api-reference/tools.md#line-tool)
+- [Shape Tool](../api-reference/tools.md#shape-tool)
+- [Text Tool](../api-reference/tools.md#text-tool)
+- [Image Tool](../api-reference/tools.md#image-tool)
+- [Eraser Tool](../api-reference/tools.md#eraser-tool)
 
-If your application needs to temporarily lock the canvas to prevent user interaction (for example, during a loading state or when opening a modal), you can disable and enable tool interactions.
+You can also customize existing tool configurations or register entirely new tools to extend editor capabilities.
 
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
-  demoPath="/fundamentals/tools/disable"
-  repoFiles={['src/pages/fundamentals/tools/ToolsDisablePage.vue']}
-/>
+If you rather want to programmatically interact with the canvas, take a look at the [Objects](objects.md) section.
 
-## Disabling Individual Toolbar Items
+## Adjusting the Toolbar
 
-For more fine-grained control than the global `enable()`/`disable()` methods, set `isDisabled` on a specific entry of the `toolbarItems` array. The tool is rendered in a disabled state and can no longer be selected, while every other tool remains fully interactive. `isDisabled` accepts a plain boolean or a (sync or async) function, so you can resolve it dynamically from your own state or an API call.
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
-  demoPath="/fundamentals/tools/toolbar-item-disable"
-  repoFiles={['src/pages/fundamentals/tools/ToolsToolbarItemDisablePage.vue']}
-/>
-
-## Customizing the Toolbar
-
-If you want a focused editing experience, pass a custom `toolbarItems` array to `<KritzelEditor>`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `select`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
+You can adjust the toolbar by passing a custom `toolbarItems` array to `<KritzelEditor>`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `selection`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
@@ -45,9 +37,26 @@ If you want a focused editing experience, pass a custom `toolbarItems` array to 
   repoFiles={['src/pages/fundamentals/tools/ToolsToolbarPage.vue']}
 />
 
+## Adjusting the Tool Config
+
+Each toolbar item of type `tool` accepts an optional `config` property for its initial values and the options shown in the configuration tooltip. Omitted properties use the tool's defaults.
+
+- [Brush Config](../api-reference/tools.md#brush-tool)
+- [Line Config](../api-reference/tools.md#line-tool)
+- [Shape Config](../api-reference/tools.md#shape-tool)
+- [Text Config](../api-reference/tools.md#text-tool)
+
+Add a toolbar item of type `config` to let users adjust the active tool at runtime.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/fundamentals/tools/config"
+  repoFiles={['src/pages/fundamentals/tools/ToolsConfigPage.vue']}
+/>
+
 ## Adding Custom Tools
 
-You can register a custom tool configuration and then surface it in the toolbar panel. This example registers a custom highlighter built from `KritzelBrushTool` and adds it to the toolbar alongside `selection`, `pen`, and `text`.
+To add a custom tool, include it as an item in the `toolbarItems` array. Kritzel registers the tool automatically and renders it in the toolbar. This example adds a highlighter built from `KritzelBrushTool` alongside `selection`, `pen`, and `text`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
@@ -55,9 +64,9 @@ You can register a custom tool configuration and then surface it in the toolbar 
   repoFiles={['src/pages/fundamentals/tools/ToolsRegisterPage.vue']}
 />
 
-## Programmatically Changing the Active Tool
+## Switching the Active Tool
 
-You can programmatically change the currently active tool using the API. This is useful when you want to build your own custom toolbar or trigger tool changes via keyboard shortcuts.
+You can programmatically change the currently active tool by calling the `setActiveTool` method with the name of the tool on the editor instance.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
@@ -65,10 +74,19 @@ You can programmatically change the currently active tool using the API. This is
   repoFiles={['src/pages/fundamentals/tools/ToolsChangePage.vue']}
 />
 
-## Related API Methods
+## Disabling Tools
 
-- Tool activation (`setActiveTool()`)
-- Tool configuration (`registerTool()`)
-- Tool interaction (`enable()`, `disable()`)
+In order to disable a specific tool, set `isDisabled` on the corresponding entry of the `toolbarItems` array. The tool is rendered in a disabled state and can no longer be selected, while every other tool remains fully interactive. `isDisabled` accepts a plain boolean or a function that either returns a boolean or a `Promise<boolean>`, so you can resolve it dynamically from your own state.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/fundamentals/tools/disable"
+  repoFiles={['src/pages/fundamentals/tools/ToolsDisablePage.vue']}
+/>
+
+## API Details
+
+For the full list of related APIs, see the following reference sections.
+
+- [Tool Management](../api-reference/editor.md#tool-management)
+- [Tools](../api-reference/tools.md)
