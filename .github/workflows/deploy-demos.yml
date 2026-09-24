@@ -29,6 +29,48 @@ jobs:
         with:
           node-version: '24.18.0'
 
+      # The editor sources are mirrored from a private repo where these tsconfigs
+      # extend a base config that lives above this repo's root, so rewrite them here.
+      - name: Patch editor tsconfigs
+        run: |
+          cat > editor/react/tsconfig.json <<'EOF'
+          {
+            "compilerOptions": {
+              "outDir": "./dist",
+              "rootDir": "./lib",
+              "lib": ["dom", "es2015"],
+              "module": "esnext",
+              "moduleResolution": "bundler",
+              "target": "es2015",
+              "strict": false,
+              "skipLibCheck": true,
+              "jsx": "react",
+              "allowSyntheticDefaultImports": true,
+              "declaration": true,
+              "declarationDir": "./dist/types"
+            },
+            "include": ["lib"],
+            "exclude": ["node_modules"]
+          }
+          EOF
+          cat > editor/vue/tsconfig.json <<'EOF'
+          {
+            "compilerOptions": {
+              "outDir": "./dist",
+              "rootDir": "./lib",
+              "lib": ["dom", "es2020"],
+              "module": "esnext",
+              "moduleResolution": "bundler",
+              "target": "es2017",
+              "strict": false,
+              "skipLibCheck": true,
+              "declaration": true
+            },
+            "include": ["lib"],
+            "exclude": ["node_modules"]
+          }
+          EOF
+
       - name: Install dependencies
         run: npm install
 
