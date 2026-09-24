@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, type CSSProperties } from 'vue'
+import { computed, ref, shallowRef, type CSSProperties } from 'vue'
 import {
   InMemorySyncProvider,
   KritzelEditor,
@@ -81,7 +81,7 @@ const themes = [vueThemeLight, vueThemeDark]
 const syncConfig: KritzelSyncConfig = {
   providers: [InMemorySyncProvider],
 }
-const workspaces = ref<KritzelWorkspace[]>([
+const workspaces = shallowRef<KritzelWorkspace[]>([
   new KritzelWorkspace({
     id: 'coral',
     name: 'Coral',

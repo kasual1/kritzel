@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, shallowRef } from 'vue'
 import {
   getEditorRef,
   KritzelEditor,
@@ -84,7 +84,7 @@ const editor = getEditorRef('editor')
 const jsonInput = ref('')
 const activeWorkspaceName = ref('')
 const themes = [vueThemeLight, vueThemeDark]
-const workspaces = ref([
+const workspaces = shallowRef([
   new KritzelWorkspace({
     id: 'workspace-import-initial',
     name: 'Initial Workspace',
