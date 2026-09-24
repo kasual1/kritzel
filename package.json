@@ -64,8 +64,12 @@
   },
   "overrides": {
     "axios": "^0.30.0",
+    "image-size": "2.0.4",
+    "mermaid": "11.17.2",
     "picomatch": "^4.0.4",
-    "undici": "^6.19.8"
+    "serialize-javascript": "7.0.5",
+    "undici": "^6.19.8",
+    "uuid": "11.1.1"
   },
   "dependencies": {
     "prosemirror-commands": "^1.7.1",
