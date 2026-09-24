@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/vue-editor",
-  "version": "0.4.32",
+  "version": "0.4.33",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite canvas experiences with Vue.",
   "keywords": [
@@ -38,7 +38,7 @@
     "@stencil/vue-output-target": "0.11.8"
   },
   "peerDependencies": {
-    "@kritzel/editor": "^0.4.32",
-    "@kritzel/engine": "^0.4.32"
+    "@kritzel/editor": "^0.4.33",
+    "@kritzel/engine": "^0.4.33"
   }
 }
