@@ -4,6 +4,8 @@ node_modules/
 # Build output
 dist/
 .angular/
+editor/core/loader/
+editor/core/www/
 
 # Logs
 *.log

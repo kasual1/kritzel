@@ -61,6 +61,8 @@
     "release": "npm publish"
   },
   "dependencies": {
+    "prosemirror-commands": "^1.7.2",
+    "prosemirror-keymap": "^1.2.3",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {

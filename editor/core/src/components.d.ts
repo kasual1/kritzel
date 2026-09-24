@@ -2940,7 +2940,6 @@ declare namespace LocalJSX {
         "licenseKey": string;
         "locale": LocaleCode;
         "fallbackLocale": LocaleCode;
-        "customSvgIcons": string;
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
         "isToolbarVisible": boolean;
