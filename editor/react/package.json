@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/react-editor",
-  "version": "0.4.31",
+  "version": "0.4.32",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite canvas experiences with React.",
   "keywords": [
@@ -28,8 +28,8 @@
     "@stencil/react-output-target": "^1.2.0"
   },
   "peerDependencies": {
-    "@kritzel/editor": "^0.4.31",
-    "@kritzel/engine": "^0.4.31"
+    "@kritzel/editor": "^0.4.32",
+    "@kritzel/engine": "^0.4.32"
   },
   "repository": {
     "type": "git",

@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
-    "@kritzel/react-engine": "^0.4.31",
-    "@kritzel/react-editor": "^0.4.31",
+    "@kritzel/react-engine": "^0.4.32",
+    "@kritzel/react-editor": "^0.4.32",
     "postprocessing": "^6.39.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
