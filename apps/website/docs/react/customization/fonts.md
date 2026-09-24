@@ -11,13 +11,11 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel includes a dedicated `KritzelFontRegistry` for registering custom web fonts for canvas text objects and the text tool configuration panel. Fonts can come from Google Fonts, another hosted stylesheet, or a self-hosted source.
+Kritzel has a dedicated custom-font system for text objects on the canvas and for the editor UI. Fonts can come from Google Fonts, another hosted stylesheet, or a self-hosted source.
 
-When fonts are registered, Kritzel injects stylesheet URLs and waits for the browser font loading process before rendering dependent text.
+## Registering Custom Fonts
 
-## Registering and Using Custom Fonts
-
-Pass a `KritzelFontMap` to the `customFonts` prop on `<KritzelEditor>`, or call `registerFonts()` through the editor ref. Each registration can define a family, display label, CSS font family stack, and stylesheet source.
+Register fonts declaratively with the `customFonts` prop on `<KritzelEditor>` or programmatically with `registerFonts()` through a typed editor ref. Registered fonts immediately become available to the text tool and can also be used by the editor UI.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
@@ -25,10 +23,16 @@ Pass a `KritzelFontMap` to the `customFonts` prop on `<KritzelEditor>`, or call 
   repoFiles={['src/pages/customization/fonts/FontsRegisterPage.tsx']}
 />
 
-## Related API Methods
+## Using a Custom Font in the UI
 
-- Editor font configuration (`customFonts`, `registerFonts()`)
-- Font registry management (`KritzelFontRegistry.register()`, `KritzelFontRegistry.registerFonts()`, `KritzelFontRegistry.list()`)
-- CSS family resolution (`KritzelFontRegistry.resolveCssFontFamily()`)
+Register the font first, then set `global.fontFamily` in a theme to apply it to menus, dialogs, buttons, and other controls. To override only a specific component, set its component-level theme property, such as `dialog.fontFamily` or `contextMenu.fontFamily`.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/customization/fonts/ui-font-family"
+  repoFiles={['src/pages/customization/fonts/FontsUiFontFamilyPage.tsx']}
+/>
+
+## API Details
+
+- [Editor API](../api-reference/editor.md)

@@ -37,6 +37,6 @@ A presentation-style explorer layout with a dashboard header, grouped tree navig
   repoFiles={['src/pages/examples/ObjectExplorerPage.tsx']}
 />
 
-The object list is seeded in `onReady()` and kept in sync via the `objectsAdded`, `objectsRemoved`, and `objectsUpdated` event callbacks. Root objects are derived by filtering out any IDs that appear as children inside `KritzelGroup` objects. Selecting a tree node calls `updateObject()` to apply property changes from the inspector fields in real time.
+The object list is seeded from `onIsReady` and mirrored into React state through `onObjectsAdded`, `onObjectsRemoved`, and `onObjectsUpdated`. Each event payload is read from `event.detail`. Root objects are derived with `useMemo()` by filtering out IDs that appear as children inside `KritzelGroup` objects, while inspector edits call `updateObject()` through a typed editor ref.
 
-Clicking a tree entry highlights the corresponding canvas object and pans the viewport to bring it into view using `setViewport()`. The tree supports expand/collapse for groups, text search across IDs and types, and type-based chip filters - all driven purely from the local signal state without additional API calls.
+Clicking a tree entry selects the corresponding canvas object and brings it into view with `panToObject()`. The tree supports expand/collapse for groups, text search across IDs and types, and type chips, all derived from local React state. A native `objectsSelectionChange` listener keeps the inspector synchronized with canvas selection and is removed in the effect cleanup.

@@ -4,21 +4,14 @@ import {
   KritzelEditor,
   KritzelSelectionTool,
   KritzelTextTool,
-  HTMLKritzelEditorElement,
-  type KritzelBrushToolConfig,
+  type HTMLKritzelEditorElement,
   type KritzelToolbarItem,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
 
-const highlighterConfig: KritzelBrushToolConfig = {
-  color: { light: "#ffeb3b", dark: "#fff176" },
-  size: 20,
-  palette: [
-    { light: "#ffeb3b", dark: "#fff176", label: "Yellow" },
-    { light: "#76ff03", dark: "#b2ff59", label: "Green" },
-  ],
-};
+const themes = [reactThemeLight, reactThemeDark];
 
 const toolbarItems: KritzelToolbarItem[] = [
   {
@@ -38,7 +31,7 @@ const toolbarItems: KritzelToolbarItem[] = [
       size: 6,
       palette: [
         { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
-        { light: "#087ea4", dark: "#7dd3fc", label: "Accent" },
+          { light: "#087ea4", dark: "#7dd3fc", label: "React Blue" },
       ],
     },
   },
@@ -81,29 +74,24 @@ const toolbarItems: KritzelToolbarItem[] = [
 export function ToolsRegisterPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
 
-  async function onReady() {
-    if (!editorRef.current) {
-      return;
-    }
-
-    await seedEditor(editorRef.current);
-    await editorRef.current.registerTool("highlighter", KritzelBrushTool, highlighterConfig);
-  }
-
   return (
     <div style={hostStyle}>
       <KritzelEditor
         ref={editorRef}
         editorId="tools-register"
         theme="light"
-        themes={[reactThemeLight]}
+        themes={themes}
+        syncConfig={undefined}
+        loginConfig={undefined}
         toolbarItems={toolbarItems}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {
-          void onReady();
+          if (editorRef.current) {
+            void seedEditor(editorRef.current);
+          }
         }}
         style={editorStyle}
       />

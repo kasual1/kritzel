@@ -7,41 +7,55 @@ description: "Understand the core concept of Objects in Kritzel."
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# Canvas Objects
+# Objects
 
 ## Overview
 
-Everything visually rendered onto the Kritzel canvas, whether it is a brush stroke, a text block, or an image, is conceptually an **Object**.
+Everything placed on the Kritzel canvas is considered an object. Objects can be either added using a tool from the toolbar or programmatically through the editor's API.
 
-All objects share a common foundational structure. No matter the specific type, every object tracks its spatial existence in the infinite canvas using standard 2D properties:
+Kritzel comes with the following built-in objects:
 
-- **Position and Dimensions:** `x`, `y`, `width`, `height`
-- **Transforms:** `rotation`, `scale`
-- **Styling:** `opacity`, `backgroundColor`, `borderColor`, `zIndex`
+- [Path](../api-reference/objects.md#path)
+- [Line](../api-reference/objects.md#line)
+- [Shape](../api-reference/objects.md#shape)
+- [Text](../api-reference/objects.md#text)
+- [Image](../api-reference/objects.md#image)
+- [Group](../api-reference/objects.md#group)
+- [Dynamic Object](../api-reference/objects.md#dynamic-object)
 
-Because all objects share this base, the engine can uniformly handle hit-testing, rendering bounds, and selection outlines. Currently, tools create specific instances of sub-classed objects: `KritzelPath`, `KritzelLine`, `KritzelShape`, `KritzelText`, `KritzelImage`, and `KritzelDynamicObject`.
+Take a look at [Tools](tools.md) for more information on how to create and manipulate objects using the toolbar.
 
-## Adding and Removing Objects
+## Adding Objects
 
-You can manually inject objects into the canvas or remove them programmatically, bypassing the need for a user to draw them.
-
-<LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
-  demoPath="/fundamentals/objects/add-remove"
-  repoFiles={['src/pages/fundamentals/objects/ObjectsAddRemovePage.tsx']}
-/>
-
-## Querying and Filtering Objects
-
-Kritzel allows you to read the state of all objects currently on the canvas or find specific objects. This is useful for building layer panels or object inspectors.
+You can manually inject objects into the canvas programmatically, bypassing the need for a user to draw them. Create the appropriate object class, then await `addObject()` through a typed editor ref after `onIsReady` fires.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
-  demoPath="/fundamentals/objects/query"
-  repoFiles={['src/pages/fundamentals/objects/ObjectsQueryPage.tsx']}
+  demoPath="/fundamentals/objects/add"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsAddPage.tsx']}
 />
 
-## Managing Object Selection
+## Removing Objects
+
+You can remove objects from the canvas programmatically when they are no longer needed. Await `removeObject()` so dependent UI state is refreshed only after the mutation completes.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/objects/remove"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsRemovePage.tsx']}
+/>
+
+## Updating Objects
+
+Object properties should never be mutated directly. Instead, changes go through `updateObject()`, which takes the object and a partial set of properties to apply. This ensures the change is properly persisted, synced, and reflected on the canvas. Since `updateObject()` returns the replacement object, reselect that returned instance when the selection should remain active.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/objects/update"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsUpdatePage.tsx']}
+/>
+
+## Selecting Objects
 
 You can programmatically retrieve the currently selected objects, select specific objects, or clear the selection.
 
@@ -51,7 +65,17 @@ You can programmatically retrieve the currently selected objects, select specifi
   repoFiles={['src/pages/fundamentals/objects/ObjectsSelectionPage.tsx']}
 />
 
-## Grouping
+## Filtering Objects
+
+Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Kritzel's internal selection-related objects.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/objects/filter"
+  repoFiles={['src/pages/fundamentals/objects/ObjectsFilterPage.tsx']}
+/>
+
+## Grouping Objects
 
 Objects can be grouped together so they can be moved and transformed as a single unit.
 
@@ -61,7 +85,7 @@ Objects can be grouped together so they can be moved and transformed as a single
   repoFiles={['src/pages/fundamentals/objects/ObjectsGroupingPage.tsx']}
 />
 
-## Ordering
+## Ordering Objects
 
 Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward.
 
@@ -71,11 +95,12 @@ Objects' z-index can be changed to control their visual stacking order, for exam
   repoFiles={['src/pages/fundamentals/objects/ObjectsOrderingPage.tsx']}
 />
 
-## Related API Methods
+## API Details
 
-- Lifecycle (`addObject()`, `removeObject()`, `updateObject()`, `getObjectById()`)
-- Queries (`getAllObjects()`, `findObjects()`, `getObjectsTotalCount()`, `getObjectsInViewport()`)
-- Manipulation (`group()`, `ungroup()`, `bringToFront()`, `sendBackward()`, `alignObjects()`)
-- Selection (`getSelectedObjects()`, `selectObjects()`, `clearSelection()`)
+For the full list of related APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Object](../api-reference/editor.md#object)
+- [Selection](../api-reference/editor.md#selection)
+- [Ordering](../api-reference/editor.md#ordering)
+- [Alignment](../api-reference/editor.md#alignment)
+- [Grouping](../api-reference/editor.md#grouping)

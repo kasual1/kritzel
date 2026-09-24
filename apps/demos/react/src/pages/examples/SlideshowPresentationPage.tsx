@@ -7,6 +7,7 @@ import {
   type HTMLKritzelEditorElement,
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
+import { reactThemeDark } from "../../const/react-theme-dark";
 
 interface Slide {
   title: string;
@@ -19,6 +20,7 @@ const slides: Slide[] = [
   { title: "2. Core Frontend Capabilities", centerX: 1200, centerY: 0 },
   { title: "3. Seamless Presentation Layout", centerX: 2400, centerY: 0 },
 ];
+const themes = [reactThemeLight, reactThemeDark];
 
 const hostStyle: CSSProperties = {
   display: "flex",
@@ -183,7 +185,7 @@ export function SlideshowPresentationPage() {
 
     await editor.addObject(
       new KritzelText({
-        text: "â€¢ Offline-First Canvas Persistence\nâ€¢ Dynamic Viewport & Navigation Helpers\nâ€¢ Tailored Custom Color Tool Palettes\nâ€¢ Entirely Interactive Drawing Tools",
+        text: "- Offline-First Canvas Persistence\n- Dynamic Viewport & Navigation Helpers\n- Tailored Custom Color Tool Palettes\n- Entirely Interactive Drawing Tools",
         translateX: 850,
         translateY: -50,
         fontSize: 20,
@@ -325,7 +327,7 @@ export function SlideshowPresentationPage() {
           ref={editorRef}
           editorId="slideshow-presentation"
           theme="light"
-          themes={[reactThemeLight]}
+          themes={themes}
           isPanningEnabled={false}
           isZoomingEnabled={false}
           isToolbarVisible={false}

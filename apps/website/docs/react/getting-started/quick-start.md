@@ -17,13 +17,15 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 
 ## Installation
 
+Run the following command to install the Kritzel editor in your project.
+
 ```bash
 npm install @kritzel/react-editor
 ```
 
 ## Setup
 
-Render Kritzel in your component:
+Import and render the `<KritzelEditor>` component:
 
 ```tsx title="Editor.tsx"
 import { KritzelEditor } from '@kritzel/react-editor';
@@ -33,7 +35,7 @@ export function Editor() {
 }
 ```
 
-This renders the editor with the **full default toolbar**: selection, brush, eraser, line, shape, text, and image tools.
+This renders the editor with all the default UI elements such as the toolbar, the workspace manager, the more menu, and the zoom control panel.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
@@ -43,20 +45,20 @@ This renders the editor with the **full default toolbar**: selection, brush, era
 
 ## Optional Enhancements
 
-### Persist Canvas State
+### Persisting Canvas State
 
 By default, the editor uses an empty sync provider list, so canvas state is reset on reload. To persist objects locally across page reloads, configure `syncConfig` explicitly with `IndexedDBSyncProvider`.
 
-For provider behavior details and persistence guidance, see the [Persistence concept](../fundamentals/persistence.md).
+For provider behavior details and persistence guidance, take a look at [Persistence](../fundamentals/persistence.md).
 
 ```tsx title="Editor.tsx"
-import { KritzelEditor, IndexedDBSyncProvider } from '@kritzel/react-editor';
+import { IndexedDBSyncProvider, KritzelEditor, type KritzelSyncConfig } from '@kritzel/react-editor';
+
+const syncConfig: KritzelSyncConfig = {
+  providers: [IndexedDBSyncProvider],
+};
 
 export function Editor() {
-  const syncConfig = {
-    providers: [IndexedDBSyncProvider],
-  };
-
   return (
     <KritzelEditor
       syncConfig={syncConfig}
@@ -66,9 +68,9 @@ export function Editor() {
 }
 ```
 
-### Apply Full Viewport Styling
+### Full Viewport Styling
 
-To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet, for example `styles.css`:
+To ensure the Kritzel editor occupies the entire viewport and prevents unwanted scrolling, add the following CSS to your global stylesheet (e.g., `styles.css`):
 
 ```css
 html,
@@ -79,12 +81,13 @@ body,
   margin: 0;
   padding: 0;
   overflow: hidden;
+  display: block;
 }
 ```
 
-### Include Mobile Viewport Meta Tag
+### Mobile Viewport Meta Tag
 
-For optimal rendering and responsiveness on mobile devices, add this meta tag within the `head` section of your `index.html`:
+For optimal rendering and responsiveness on mobile devices, add this meta tag within the `<head>` section of your `index.html`:
 
 ```html
 <!doctype html>

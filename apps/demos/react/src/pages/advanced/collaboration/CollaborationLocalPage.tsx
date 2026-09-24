@@ -1,22 +1,26 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import {
   BroadcastSyncProvider,
   KritzelEditor,
-  HTMLKritzelEditorElement,
   type KritzelSyncConfig,
+  KritzelWorkspace,
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
+import { reactThemeDark } from "../../../const/react-theme-dark";
+import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
   editorStyle,
   hostStyle,
-  seedEditor,
   toolbarStyle,
 } from "../../shared/demo-shared";
 
 export function CollaborationLocalPage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const syncConfig = useMemo<KritzelSyncConfig>(
     () => ({ providers: [BroadcastSyncProvider] }),
+    [],
+  );
+  const workspaces = useMemo(
+    () => [new KritzelWorkspace({ objects: createSeedObjects() })],
     [],
   );
 
@@ -27,21 +31,16 @@ export function CollaborationLocalPage() {
         <span style={{ fontSize: "12px", color: "#065d7a" }}>BroadcastChannel enabled</span>
       </div>
       <KritzelEditor
-        ref={editorRef}
         editorId="collaboration-local"
         syncConfig={syncConfig}
         theme="light"
-        themes={[reactThemeLight]}
+        themes={[reactThemeLight, reactThemeDark]}
+        workspaces={workspaces}
         loginConfig={undefined}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
-        onIsReady={() => {
-          if (editorRef.current) {
-            void seedEditor(editorRef.current);
-          }
-        }}
         style={editorStyle}
       />
     </div>
