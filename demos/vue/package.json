@@ -11,8 +11,8 @@
     "start:e2e:prod": "npm run build:e2e:prod && vite preview --port 5174 --strictPort"
   },
   "dependencies": {
-    "@kritzel/vue-engine": "^0.4.31",
-    "@kritzel/vue-editor": "^0.4.31",
+    "@kritzel/vue-engine": "^0.4.32",
+    "@kritzel/vue-editor": "^0.4.32",
     "vue": "^3.5.26",
     "vue-router": "^5.0.7"
   },
