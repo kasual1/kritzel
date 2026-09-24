@@ -11,13 +11,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel provides an internationalization framework built into the editor and core engine. User-visible text such as context menu actions, toolbar labels, settings dialogs, zoom controls, and export dialogs is resolved through the centralized `KritzelLocalizationManager`.
+Kritzel includes support for multiple languages and lets you extend or override its translations with custom locales.
 
-Kritzel ships with English (`'en'`), German (`'de'`), and French (`'fr'`) translations. You can switch languages at runtime, register custom locales, or override selected term keys. Missing terms fall back through the configured fallback locale.
+See [Localization Terms](../api-reference/localization-terms.md) for all available keys.
 
-## Switching Built-in Locales
+## Switching the Locale
 
-Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()` method through the editor ref. The editor updates its UI without a page reload.
+Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()` method through a typed editor ref. The editor updates all UI controls and context menus without a reload.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
@@ -25,9 +25,19 @@ Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()
   repoFiles={['src/pages/customization/localization/LocalizationSwitchPage.tsx']}
 />
 
-## Registering Custom Locales & Term Overrides
+## Listening for Locale Changes
 
-Register a `KritzelLocale` definition through the `locales` prop or dynamically with `registerLocales()`. A locale can provide only the terms it needs; missing keys use the fallback chain.
+Use `onLocaleChange` to synchronize React state, persist the selected language, or update custom controls when Kritzel changes locale. The new `LocaleCode` is available as `event.detail`.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/customization/localization/listen"
+  repoFiles={['src/pages/customization/localization/LocalizationListenPage.tsx']}
+/>
+
+## Registering Custom Locales
+
+Add languages such as Spanish or override individual keys such as `menu.copy` and `settings.dialogTitle` with a `KritzelLocale`. Pass custom definitions through the `locales` prop or register them dynamically with `registerLocales()`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
@@ -35,12 +45,7 @@ Register a `KritzelLocale` definition through the `locales` prop or dynamically 
   repoFiles={['src/pages/customization/localization/LocalizationCustomPage.tsx']}
 />
 
-## Related API Methods
+## API Details
 
-- Setting locale (`locale`, `setLocale()`, `getLocale()`)
-- Fallback locale (`fallbackLocale`)
-- Registering locales (`locales`, `registerLocales()`, `getAvailableLocales()`)
-- Programmatic translation (`t()`)
-- Locale change events (`localeChange`)
-
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Editor API](../api-reference/editor.md)
+- [Localization Terms](../api-reference/localization-terms.md)

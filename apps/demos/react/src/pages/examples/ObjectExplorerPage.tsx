@@ -19,11 +19,20 @@ import {
   type ObjectsUpdatedEvent,
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
+import { reactThemeDark } from "../../const/react-theme-dark";
 import { createSeedObjects } from "../getting-started/seed-objects";
 
-type AnyObject = KritzelBaseObject<HTMLElement | SVGElement> & Record<string, any>;
+type AnyObject = KritzelBaseObject<HTMLElement | SVGElement> & {
+  childIds?: string[];
+  fill?: unknown;
+  fillColor?: unknown;
+  shapeType?: ShapeType;
+  stroke?: unknown;
+  text?: string;
+};
 
 const AVAILABLE_TYPES = ["KritzelShape", "KritzelText", "KritzelLine", "KritzelPath"];
+const themes = [reactThemeLight, reactThemeDark];
 
 const hostStyle: CSSProperties = {
   display: "flex",
@@ -169,7 +178,8 @@ function resolveThemeColor(raw: unknown, fallback: string): string {
 
 export function ObjectExplorerPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const selectionListenerAttached = useRef(false);
+  const selectionEditorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const selectionHandlerRef = useRef<(() => void) | null>(null);
 
   const syncConfig = useMemo<KritzelSyncConfig>(() => ({ providers: [] }), []);
 
@@ -198,10 +208,11 @@ export function ObjectExplorerPage() {
 
   const getGroupChildren = useCallback(
     (groupObj: AnyObject): AnyObject[] => {
-      if (!groupObj.childIds) {
+      const childIds = groupObj.childIds;
+      if (!childIds) {
         return [];
       }
-      return allObjects.filter((o) => groupObj.childIds.includes(o.id));
+      return allObjects.filter((object) => childIds.includes(object.id));
     },
     [allObjects],
   );
@@ -242,16 +253,19 @@ export function ObjectExplorerPage() {
 
   const hasMatchingDescendant = useCallback(
     (groupObj: AnyObject): boolean => {
-      const children = getGroupChildren(groupObj);
-      for (const child of children) {
-        if (matchesFilter(child)) {
-          return true;
+      function visit(group: AnyObject): boolean {
+        for (const child of getGroupChildren(group)) {
+          if (matchesFilter(child)) {
+            return true;
+          }
+          if (child.__class__ === "KritzelGroup" && visit(child)) {
+            return true;
+          }
         }
-        if (child.__class__ === "KritzelGroup" && hasMatchingDescendant(child)) {
-          return true;
-        }
+        return false;
       }
-      return false;
+
+      return visit(groupObj);
     },
     [getGroupChildren, matchesFilter],
   );
@@ -290,27 +304,23 @@ export function ObjectExplorerPage() {
   }, []);
 
   useEffect(() => {
-    const editor = editorRef.current;
-    if (!editor || selectionListenerAttached.current) {
-      return;
-    }
-
-    const handler = () => {
-      void syncInspectorWithSelection();
-    };
-    editor.addEventListener("objectsSelectionChange", handler);
-    selectionListenerAttached.current = true;
-
     return () => {
-      editor.removeEventListener("objectsSelectionChange", handler);
-      selectionListenerAttached.current = false;
+      if (selectionEditorRef.current && selectionHandlerRef.current) {
+        selectionEditorRef.current.removeEventListener("objectsSelectionChange", selectionHandlerRef.current);
+      }
     };
-  }, [syncInspectorWithSelection]);
+  }, []);
 
   async function onReady() {
     const editor = editorRef.current;
     if (!editor) {
       return;
+    }
+
+    if (!selectionHandlerRef.current) {
+      selectionHandlerRef.current = () => void syncInspectorWithSelection();
+      editor.addEventListener("objectsSelectionChange", selectionHandlerRef.current);
+      selectionEditorRef.current = editor;
     }
 
     const existing = await editor.getAllObjects();
@@ -533,7 +543,7 @@ export function ObjectExplorerPage() {
             ref={editorRef}
             editorId="object-explorer"
             theme="light"
-            themes={[reactThemeLight]}
+            themes={themes}
             syncConfig={syncConfig}
             isPanningEnabled={false}
             isZoomingEnabled={false}
@@ -542,15 +552,9 @@ export function ObjectExplorerPage() {
             onIsReady={() => {
               void onReady();
             }}
-            onObjectsAdded={(event) =>
-              onObjectsAdded(event as CustomEvent<ObjectsAddedEvent>)
-            }
-            onObjectsRemoved={(event) =>
-              onObjectsRemoved(event as CustomEvent<ObjectsRemovedEvent>)
-            }
-            onObjectsUpdated={(event) =>
-              onObjectsUpdated(event as CustomEvent<ObjectsUpdatedEvent>)
-            }
+            onObjectsAdded={onObjectsAdded}
+            onObjectsRemoved={onObjectsRemoved}
+            onObjectsUpdated={onObjectsUpdated}
             style={editorStyle}
           />
         </div>

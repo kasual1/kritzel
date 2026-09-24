@@ -256,6 +256,8 @@ const brandedPurpleFlatTheme: KritzelTheme = {
   },
 };
 
+const themes = [brandedPurpleFlatTheme];
+
 export function ThemingCustomPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
 
@@ -271,7 +273,7 @@ export function ThemingCustomPage() {
         ref={editorRef}
         editorId="theming-custom"
         theme="branded-purple-flat"
-        themes={[brandedPurpleFlatTheme]}
+        themes={themes}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={true}

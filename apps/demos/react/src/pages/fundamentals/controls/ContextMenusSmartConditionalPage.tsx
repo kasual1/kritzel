@@ -1,14 +1,22 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   KritzelEditor,
+  KritzelWorkspace,
   type ContextMenuItem,
   HTMLKritzelEditorElement,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
+import { createSeedObjects } from "../../getting-started/seed-objects";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+
+const themes = [reactThemeLight, reactThemeDark];
 
 export function ContextMenusSmartConditionalPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const [workspaces] = useState(() => [
+    new KritzelWorkspace({ objects: createSeedObjects() }),
+  ]);
 
   const globalItems = useMemo<ContextMenuItem[]>(
     () => [
@@ -22,6 +30,7 @@ export function ContextMenusSmartConditionalPage() {
       },
       {
         label: "Select All",
+        icon: "selectAll",
         group: "clipboard",
         isDisabled: async () =>
           ((await editorRef.current?.getObjectsInViewport()) ?? []).length === 0,
@@ -69,7 +78,6 @@ export function ContextMenusSmartConditionalPage() {
       return;
     }
 
-    await seedEditor(editor);
     await editor.selectAllObjectsInViewport();
     const selected = await editor.getSelectedObjects();
     if (!selected[0]) {
@@ -89,7 +97,10 @@ export function ContextMenusSmartConditionalPage() {
         ref={editorRef}
         editorId="custom-context-menu-smart-conditional"
         theme="light"
-        themes={[reactThemeLight]}
+        themes={themes}
+        workspaces={workspaces}
+        syncConfig={undefined}
+        loginConfig={undefined}
         globalContextMenuItems={globalItems}
         objectContextMenuItems={objectItems}
         isPanningEnabled={false}

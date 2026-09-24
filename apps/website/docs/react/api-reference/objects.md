@@ -2,12 +2,14 @@
 sidebar_label: Objects
 title: "Objects | Kritzel for React"
 description: "Reference for all canvas object types in Kritzel: brush, line, shape, text, and image."
+toc_max_heading_level: 2
 ---
 # Objects
 
-All objects on the canvas extend `KritzelBaseObject`. Each tool creates a specific object type when the user draws on the canvas.
+This is the API reference for all canvas object types in Kritzel.
+Every object consists of properties, computed properties, and methods.
 
-## KritzelBaseObject
+## Base Object
 
 Abstract base class for every object that can be placed on the canvas. All other object types listed below extend this class and inherit its properties, computed properties, and methods — only properties/methods specific to a given type are listed in its own section.
 
@@ -81,7 +83,7 @@ Abstract base class for every object that can be placed on the canvas. All other
 
 ---
 
-## KritzelPath
+## Path
 
 Freehand brush strokes. Rendered as SVG paths using the [perfect-freehand](https://github.com/steveruizok/perfect-freehand) library.
 
@@ -109,7 +111,7 @@ Freehand brush strokes. Rendered as SVG paths using the [perfect-freehand](https
 
 ---
 
-## KritzelLine
+## Line
 
 Straight lines and arrows with configurable start/end arrowheads.
 
@@ -129,6 +131,7 @@ Straight lines and arrows with configurable start/end arrowheads.
 | controlY | number | — | Y coordinate of the curve control point |
 | stroke | ThemeAwareColor | — | Stroke color |
 | strokeWidth | number | 4 | Width of the stroke in pixels |
+| opacity | number | 1 | Line opacity (0–1) |
 | startAnchor | LineAnchor | — | Anchor connection for the start point |
 | endAnchor | LineAnchor | — | Anchor connection for the end point |
 | arrows | LineArrowConfig | — | Arrow head configuration for start and end of line |
@@ -144,7 +147,7 @@ Straight lines and arrows with configurable start/end arrowheads.
 
 ---
 
-## KritzelShape
+## Shape
 
 Geometric shapes: rectangle, ellipse, or triangle.
 
@@ -194,7 +197,7 @@ enum ShapeType {
 
 ---
 
-## KritzelText
+## Text
 
 Rich text object powered by [ProseMirror](https://prosemirror.net/).
 
@@ -236,7 +239,7 @@ Rich text object powered by [ProseMirror](https://prosemirror.net/).
 
 ---
 
-## KritzelImage
+## Image
 
 Raster image object.
 
@@ -268,7 +271,7 @@ Raster image object.
 
 ---
 
-## KritzelGroup
+## Group
 
 Permanent grouping of multiple objects. Unlike a temporary multi-selection, a group is persisted and saved with the workspace.
 
@@ -309,7 +312,7 @@ Permanent grouping of multiple objects. Unlike a temporary multi-selection, a gr
 
 ---
 
-## KritzelDynamicObject
+## Dynamic Object
 
 User-defined custom HTML element on the canvas.
 
@@ -321,7 +324,7 @@ User-defined custom HTML element on the canvas.
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | element | HTMLElement | — | The HTML element rendered on the canvas |
-| rendererKey | string | — | Identifier for a registered renderer (e.g. 'angular-component', 'react-default') |
+| rendererKey | string | — | Identifier for a registered renderer (for example, 'react-card') |
 | rendererData | unknown | — | Custom data payload passed to the renderer |
 
 ### Methods

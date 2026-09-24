@@ -9,21 +9,26 @@ Kritzel includes built-in light and dark themes. Themes are applied via CSS vari
 
 ## Setting the Theme
 
-### On `<kritzel-engine>`
+### On `<KritzelEngine>`
 
-```html
-<kritzel-engine theme="dark"></kritzel-engine>
+```tsx
+import { KritzelEngine } from '@kritzel/react-editor';
+
+export function DarkCanvas() {
+  return <KritzelEngine theme="dark" />;
+}
 ```
 
 ### On `<KritzelEditor>`
 
 The editor manages the theme internally and emits a `themeChange` event when it changes. The user can toggle the theme through the settings panel.
 
-```ts
-const editor = document.querySelector('kritzel-editor');
-editor.addEventListener('themeChange', (event) => {
-  console.log('Theme changed to:', event.detail); // 'light' or 'dark'
-});
+```tsx
+<KritzelEditor
+  onThemeChange={(event) => {
+    console.log('Theme changed to:', event.detail);
+  }}
+/>
 ```
 
 ## Built-in Themes

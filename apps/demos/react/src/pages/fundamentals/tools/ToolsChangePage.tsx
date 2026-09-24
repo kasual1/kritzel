@@ -1,15 +1,15 @@
 import { useRef, useState } from "react";
 import {
   KritzelEditor,
-  HTMLKritzelEditorElement,
+  type HTMLKritzelEditorElement,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
   editorStyle,
   hostStyle,
   seedEditor,
-  statusBarStyle,
   toolbarStyle,
 } from "../../shared/demo-shared";
 
@@ -23,6 +23,8 @@ const tools: Array<{ name: ToolName; label: string }> = [
   { name: "shape", label: "Shape" },
   { name: "text", label: "Text" },
 ];
+
+const themes = [reactThemeLight, reactThemeDark];
 
 export function ToolsChangePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -46,7 +48,9 @@ export function ToolsChangePage() {
         ref={editorRef}
         editorId="tools-change"
         theme="light"
-        themes={[reactThemeLight]}
+        themes={themes}
+        syncConfig={undefined}
+        loginConfig={undefined}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
@@ -59,9 +63,6 @@ export function ToolsChangePage() {
         }}
         style={editorStyle}
       />
-      <div style={statusBarStyle}>
-        Active tool: <strong>{activeTool}</strong>
-      </div>
     </div>
   );
 }

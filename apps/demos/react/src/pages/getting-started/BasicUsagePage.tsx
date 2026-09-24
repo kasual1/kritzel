@@ -1,44 +1,36 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   InMemorySyncProvider,
   KritzelBaseObject,
   KritzelEditor,
   KritzelSyncConfig,
   KritzelText,
+  KritzelWorkspace,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../const/react-theme-dark";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { createSeedObjects } from "./seed-objects";
 
-type ToolName = "brush" | "select";
+type ToolName = "brush" | "selection";
+
+const syncConfig: KritzelSyncConfig = {
+  providers: [InMemorySyncProvider],
+};
+const themes = [reactThemeLight, reactThemeDark];
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })];
 
 export function BasicUsagePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
 
   const [isReady, setIsReady] = useState(false);
-  const [activeTool, setActiveTool] = useState<ToolName>("select");
+  const [activeTool, setActiveTool] = useState<ToolName>("selection");
   const [objectsCount, setObjectsCount] = useState(0);
-
-  const syncConfig = useMemo<KritzelSyncConfig>(
-    () => ({
-      providers: [InMemorySyncProvider],
-    }),
-    [],
-  );
 
   const statusLine = isReady
     ? `Objects: ${objectsCount} | Tool: ${activeTool}`
     : "Loading editor...";
 
-  async function onReady() {
-    const editor = editorRef.current;
-    if (!editor) {
-      return;
-    }
-
-    for (const obj of createSeedObjects()) {
-      await editor.addObject(obj);
-    }
-
+  function onReady() {
     setIsReady(true);
   }
 
@@ -64,8 +56,8 @@ export function BasicUsagePage() {
       return;
     }
 
-    setActiveTool("select");
-    await editor.setActiveTool("select");
+    setActiveTool("selection");
+    await editor.setActiveTool("selection");
   }
 
   async function addText() {
@@ -92,7 +84,11 @@ export function BasicUsagePage() {
   }
 
   async function zoomIn() {
-    await editorRef.current?.zoomTo(1.5);
+    await editorRef.current?.zoomIn();
+  }
+
+  async function zoomOut() {
+    await editorRef.current?.zoomOut();
   }
 
   return (
@@ -123,7 +119,7 @@ export function BasicUsagePage() {
           Brush
         </button>
         <button
-          style={buttonStyle(activeTool === "select")}
+          style={buttonStyle(activeTool === "selection")}
           onClick={() => void setSelectTool()}
         >
           Select
@@ -136,6 +132,9 @@ export function BasicUsagePage() {
         </button>
         <button style={buttonStyle(false)} onClick={() => void zoomIn()}>
           Zoom In
+        </button>
+        <button style={buttonStyle(false)} onClick={() => void zoomOut()}>
+          Zoom Out
         </button>
         <span
           style={{
@@ -154,22 +153,17 @@ export function BasicUsagePage() {
         ref={editorRef}
         editorId="basic-usage"
         syncConfig={syncConfig}
+        workspaces={workspaces}
         theme="light"
-        themes={[reactThemeLight]}
+        themes={themes}
         loginConfig={undefined}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         isToolbarVisible={false}
-        onIsReady={() => {
-          void onReady();
-        }}
-        onObjectsChange={(event) => {
-          onObjectsChange(
-            event as CustomEvent<KritzelBaseObject<HTMLElement | SVGElement>[]>,
-          );
-        }}
+        onIsReady={onReady}
+        onObjectsChange={onObjectsChange}
         style={{ flex: 1, minHeight: 0, display: "block" }}
       />
     </div>

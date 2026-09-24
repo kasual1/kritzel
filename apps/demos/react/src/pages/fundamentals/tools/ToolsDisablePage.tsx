@@ -1,8 +1,13 @@
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
+  KritzelBrushTool,
   KritzelEditor,
-  HTMLKritzelEditorElement,
+  KritzelEraserTool,
+  KritzelSelectionTool,
+  type HTMLKritzelEditorElement,
+  type KritzelToolbarItem,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
@@ -12,55 +17,61 @@ import {
   toolbarStyle,
 } from "../../shared/demo-shared";
 
+const themes = [reactThemeLight, reactThemeDark];
+
 export function ToolsDisablePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const [isDisabled, setIsDisabled] = useState(true);
-
-  async function onReady() {
-    if (!editorRef.current) {
-      return;
-    }
-
-    await seedEditor(editorRef.current);
-    await editorRef.current.disable();
-  }
-
-  async function toggle() {
-    if (!editorRef.current) {
-      return;
-    }
-
-    if (isDisabled) {
-      await editorRef.current.enable();
-      setIsDisabled(false);
-      return;
-    }
-
-    await editorRef.current.disable();
-    setIsDisabled(true);
-  }
+  const [isEraserDisabled, setIsEraserDisabled] = useState(true);
+  const toolbarItems = useMemo<KritzelToolbarItem[]>(() => [
+    {
+      name: "selection",
+      type: "tool",
+      isDefault: true,
+      tool: KritzelSelectionTool,
+      icon: "cursor",
+    },
+    {
+      name: "brush",
+      type: "tool",
+      tool: KritzelBrushTool,
+      icon: "pen",
+    },
+    {
+      name: "eraser",
+      type: "tool",
+      tool: KritzelEraserTool,
+      icon: "eraser",
+      isDisabled: () => isEraserDisabled,
+    },
+    {
+      name: "config",
+      type: "config",
+    },
+  ], [isEraserDisabled]);
 
   return (
     <div style={hostStyle}>
       <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void toggle()}>
-          {isDisabled ? "Enable" : "Disable"}
+        <button style={buttonStyle(false)} onClick={() => setIsEraserDisabled((value) => !value)}>
+          {isEraserDisabled ? "Enable eraser tool" : "Disable eraser tool"}
         </button>
-        <span style={{ fontSize: "13px", color: isDisabled ? "#e53935" : "#333" }}>
-          {isDisabled ? "Interactions disabled" : "Interactions enabled"}
-        </span>
       </div>
       <KritzelEditor
         ref={editorRef}
         editorId="tools-disable"
         theme="light"
-        themes={[reactThemeLight]}
+        themes={themes}
+        syncConfig={undefined}
+        loginConfig={undefined}
+        toolbarItems={toolbarItems}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={() => {
-          void onReady();
+          if (editorRef.current) {
+            void seedEditor(editorRef.current);
+          }
         }}
         style={editorStyle}
       />
