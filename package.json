@@ -69,11 +69,21 @@
     "picomatch": "^4.0.4",
     "serialize-javascript": "7.0.5",
     "undici": "^6.19.8",
-    "uuid": "11.1.1"
+    "uuid": "11.1.1",
+    "glob": "^13.0.6"
   },
   "dependencies": {
     "prosemirror-commands": "^1.7.1",
     "prosemirror-history": "^1.4.1",
     "prosemirror-keymap": "^1.2.3"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "@swc/core@1.16.2": true,
+    "core-js@3.50.0": true,
+    "esbuild@0.28.2": true,
+    "lmdb@3.5.6": true,
+    "msgpackr-extract@3.0.4": true,
+    "unrs-resolver@1.12.2": true
   }
 }
