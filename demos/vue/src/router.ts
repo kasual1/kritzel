@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import BasicUsagePage from './pages/getting-started/BasicUsagePage.vue'
-import QuickStartPage from './pages/getting-started/QuickStartPage.vue'
 import UserManagementProvidersPage from './pages/advanced/user-management/UserManagementProvidersPage.vue'
+import QuickStartPage from './pages/getting-started/QuickStartPage.vue'
 import UserManagementFlowPage from './pages/advanced/user-management/UserManagementFlowPage.vue'
 import ComponentsEditorUiPage from './pages/fundamentals/controls/ComponentsEditorUiPage.vue'
 import ContextMenusCanvasQuickActionsPage from './pages/fundamentals/controls/ContextMenusCanvasQuickActionsPage.vue'
