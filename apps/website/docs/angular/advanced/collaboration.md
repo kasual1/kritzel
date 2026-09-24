@@ -24,7 +24,7 @@ Kritzel comes with the following built-in collaboration providers:
 Use `BroadcastSyncProvider` to synchronize document updates across browser tabs on the same device through the BroadcastChannel API.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/advanced/collaboration/local"
   repoFiles={['src/app/pages/advanced/collaboration/collaboration-local.component.ts']}
 />
@@ -34,7 +34,7 @@ Use `BroadcastSyncProvider` to synchronize document updates across browser tabs 
 To collaborate across devices or users, combine local persistence with a network provider. A common production pattern uses `IndexedDBSyncProvider` for offline resilience together with `HocuspocusSyncProvider` (or `WebSocketSyncProvider`) for real-time sync. The `HocuspocusSyncProvider` also supports connection multiplexing for managing multiple documents efficiently.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/advanced/collaboration/realtime"
   repoFiles={['src/app/pages/advanced/collaboration/collaboration-realtime.component.ts']}
 />

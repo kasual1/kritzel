@@ -20,7 +20,7 @@ Pass a `Record<string, string>` to the `customSvgIcons` prop on `<KritzelEditor>
 The demo registers application-specific SVG icons and reuses their names in toolbar items and global or object context-menu items.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/customization/icons/register"
   repoFiles={['src/pages/customization/icons/IconsRegisterPage.vue']}
 />

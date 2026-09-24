@@ -26,7 +26,7 @@ Because all objects share this base, the engine can uniformly handle hit-testing
 You can manually inject objects into the canvas or remove them programmatically, bypassing the need for a user to draw them.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/objects/add-remove"
   repoFiles={['src/pages/fundamentals/objects/ObjectsAddRemovePage.tsx']}
 />
@@ -36,7 +36,7 @@ You can manually inject objects into the canvas or remove them programmatically,
 Kritzel allows you to read the state of all objects currently on the canvas or find specific objects. This is useful for building layer panels or object inspectors.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/objects/query"
   repoFiles={['src/pages/fundamentals/objects/ObjectsQueryPage.tsx']}
 />
@@ -46,7 +46,7 @@ Kritzel allows you to read the state of all objects currently on the canvas or f
 You can programmatically retrieve the currently selected objects, select specific objects, or clear the selection.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/objects/selection"
   repoFiles={['src/pages/fundamentals/objects/ObjectsSelectionPage.tsx']}
 />
@@ -56,7 +56,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 Objects can be grouped together so they can be moved and transformed as a single unit.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/objects/grouping"
   repoFiles={['src/pages/fundamentals/objects/ObjectsGroupingPage.tsx']}
 />
@@ -66,7 +66,7 @@ Objects can be grouped together so they can be moved and transformed as a single
 Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/objects/ordering"
   repoFiles={['src/pages/fundamentals/objects/ObjectsOrderingPage.tsx']}
 />

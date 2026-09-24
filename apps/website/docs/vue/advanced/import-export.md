@@ -23,7 +23,7 @@ Two surfaces expose these capabilities:
 Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor ref to render the current viewport and trigger a browser download.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/advanced/import-export/viewport-export"
   repoFiles={['src/pages/advanced/import-export/ImportExportViewportExportPage.vue']}
 />
@@ -33,7 +33,7 @@ Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor ref to ren
 Call `exportAsJson()` on the engine ref to serialize the active workspace — its metadata and every object it contains — into a JSON string you can inspect, transmit, or store yourself. If you just need a file download instead of the raw string, call `downloadAsJson()` on either the editor or the engine ref.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/advanced/import-export/workspace-export"
   repoFiles={['src/pages/advanced/import-export/ImportExportWorkspaceExportPage.vue']}
 />
@@ -43,7 +43,7 @@ Call `exportAsJson()` on the engine ref to serialize the active workspace — it
 Call `importFromJson()` on the engine ref with a JSON string produced by `exportAsJson()` to recreate the workspace. Kritzel creates a **new** workspace with a fresh id, revives all objects into it, and switches the active workspace to it. If you instead want to merge objects into the *current* workspace without creating a new one, use `loadObjectsFromJson()` on the editor or engine ref.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/advanced/import-export/workspace-import"
   repoFiles={['src/pages/advanced/import-export/ImportExportWorkspaceImportPage.vue']}
 />

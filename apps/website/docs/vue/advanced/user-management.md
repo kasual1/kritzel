@@ -22,7 +22,7 @@ Every entry in `providers` becomes one button in the dialog, in declaration orde
 `title` and `subtitle` override the localized defaults of the dialog header. When `title` is omitted, the active locale's `login.dialogTitle` term is used.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/advanced/user-management/providers"
   repoFiles={['src/pages/advanced/user-management/UserManagementProvidersPage.vue']}
 />
@@ -37,7 +37,7 @@ Clicking a provider button puts that button into a loading state and emits the e
 - Call `openLoginDialog()` to open the dialog from your own UI, for example from an application menu.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/advanced/user-management/flow"
   repoFiles={['src/pages/advanced/user-management/UserManagementFlowPage.vue']}
 />

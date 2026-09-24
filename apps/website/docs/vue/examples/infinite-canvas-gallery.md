@@ -33,7 +33,7 @@ This example makes use of the following core concepts. Click on the links below 
 Twenty artwork thumbnails — sourced from [placehold.co](https://placehold.co) as dummy images — are placed in loose clusters across a ~4000 × 2700 world-space canvas. Visitors pan to travel between clusters and scroll to zoom into individual pieces.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/examples/infinite-canvas-gallery"
   repoFiles={['src/pages/examples/InfiniteCanvasGalleryPage.vue']}
 />

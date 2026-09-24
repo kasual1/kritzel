@@ -120,7 +120,7 @@ Other object, tool, and viewport methods follow the same asynchronous pattern.
 Below is a complete example combining props, events, and public methods. It uses the Editor's custom toolbar to trigger methods, inserts programmatic text, zooms the viewport, and displays a dynamic object count from an event.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   repoFiles={['src/app/pages/getting-started/basic-usage.component.ts']}
   demoPath="/getting-started/basic-usage"
 />

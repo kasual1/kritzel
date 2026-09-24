@@ -22,7 +22,7 @@ For same-device collaboration across multiple browser tabs, use `BroadcastSyncPr
 This is useful when users open the same board in multiple tabs and expect immediate consistency.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/advanced/collaboration/local"
   repoFiles={['src/pages/advanced/collaboration/CollaborationLocalPage.tsx']}
 />
@@ -37,7 +37,7 @@ To collaborate across devices or users, add a network provider. Kritzel supports
 A common production pattern combines local persistence (for offline resilience) with a network provider (for real-time sync):
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/advanced/collaboration/realtime"
   repoFiles={['src/pages/advanced/collaboration/CollaborationRealtimePage.tsx']}
 />

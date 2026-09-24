@@ -18,7 +18,7 @@ Kritzel comes with a whole set of user management features, such as configurable
 To enable Kritzel's user management features, you need to provide a `loginConfig` with at least one authentication provider. This will render the login button at the top right of the editor and display the login dialog with a button of the corresponding provider.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/advanced/user-management/providers"
   repoFiles={['src/app/pages/advanced/user-management/user-management-providers.component.ts']}
 />
@@ -28,7 +28,7 @@ To enable Kritzel's user management features, you need to provide a `loginConfig
 Clicking a provider button puts that button into a loading state and emits the editor's `LoginEvent`. Your application performs the sign-in and then sets the current user accordingly.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/advanced/user-management/login"
   repoFiles={['src/app/pages/advanced/user-management/user-management-login.component.ts']}
 />
@@ -38,7 +38,7 @@ Clicking a provider button puts that button into a loading state and emits the e
 When the user selects the logout action, the editor emits the logout event. Your application then should clear the current user and update its authentication state.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/advanced/user-management/logout"
   repoFiles={['src/app/pages/advanced/user-management/user-management-logout.component.ts']}
 />
@@ -48,7 +48,7 @@ When the user selects the logout action, the editor emits the logout event. Your
 Use `[user]` for the logged-in user and `[activeUsers]` for workspace collaborators. The current user drives the account UI and awareness metadata, while active users appear as avatars in the editor header; both bindings update at runtime, so clearing `[user]` signs out and replacing `[activeUsers]` refreshes the collaborator list.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/advanced/user-management/users"
   repoFiles={['src/app/pages/advanced/user-management/user-management-users.component.ts']}
 />

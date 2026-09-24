@@ -171,8 +171,8 @@ function HomepageEditorEmbed() {
       <iframe
         key={isMobileViewport ? "hero-mobile" : "hero-desktop"}
         src={isMobileViewport
-          ? "https://kasual1.github.io/kritzel-demos/react/#/website/hero-mobile"
-          : "https://kasual1.github.io/kritzel-demos/react/#/website/hero"}
+          ? "https://kasual1.github.io/kritzel/demos/react/#/website/hero-mobile"
+          : "https://kasual1.github.io/kritzel/demos/react/#/website/hero"}
         title={isMobileViewport ? "Kritzel React Hero Mobile Demo" : "Kritzel React Hero Demo"}
         className={styles.editorFrame}
         style={{ width: "100%", height: "100%", border: 0 }}

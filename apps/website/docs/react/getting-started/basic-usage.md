@@ -144,7 +144,7 @@ export function CanvasStatus() {
 Below is a complete example combining everything covered in this guide. It provides a simple custom toolbar to trigger tools, insert programmatic text, zoom into the canvas, and displays a dynamic counter of the total objects.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   repoFiles={['src/pages/getting-started/BasicUsagePage.tsx']}
   demoPath="/getting-started/basic-usage"
 />

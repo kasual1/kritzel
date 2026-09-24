@@ -57,7 +57,7 @@ export class EditorComponent {}
 This renders the editor with all the default ui elements such as the toolbar, the workspace manager, the more menu and the zoom control panel.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/getting-started/quick-start"
   repoFiles={['src/app/pages/getting-started/quick-start.component.ts']}
 />
