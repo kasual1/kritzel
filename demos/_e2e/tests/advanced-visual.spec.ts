@@ -52,4 +52,8 @@ test.describe('Advanced Pages Visual Regression', () => {
     await expectAdvancedScreenshot(editorPage, '/advanced/dynamic-objects/component', 'advanced-dynamic-objects-component');
   });
 
+  test('should match screenshot for advanced-dynamic-objects-iframe', async ({ editorPage }) => {
+    await expectAdvancedScreenshot(editorPage, '/advanced/dynamic-objects/iframe', 'advanced-dynamic-objects-iframe');
+  });
+
 });

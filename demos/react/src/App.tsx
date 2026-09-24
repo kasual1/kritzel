@@ -1,5 +1,5 @@
 import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import { QuickStartPage } from "./pages/getting-started/QuickStartPage";
+import { QuickStartPage } from "./pages/getting-started/QuickstartPage";
 import { BasicUsagePage } from "./pages/getting-started/BasicUsagePage";
 import { UserManagementProvidersPage } from "./pages/advanced/user-management/UserManagementProvidersPage";
 import { UserManagementFlowPage } from "./pages/advanced/user-management/UserManagementFlowPage";
