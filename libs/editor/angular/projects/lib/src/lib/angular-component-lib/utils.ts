@@ -1,6 +1,7 @@
 /* eslint-disable */
 /* tslint:disable */
-import { fromEvent } from 'rxjs';
+import * as RxJS from 'rxjs';
+const { fromEvent } = RxJS;
 
 export const proxyInputs = (Cmp: any, inputs: string[]) => {
   const Prototype = Cmp.prototype;

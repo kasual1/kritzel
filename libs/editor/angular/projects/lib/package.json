@@ -15,7 +15,8 @@
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@kritzel/editor": "^0.4.31",
-    "@kritzel/engine": "^0.4.31"
+    "@kritzel/engine": "^0.4.31",
+    "rxjs": "^7.0.0"
   },
   "dependencies": {
     "tslib": "^2.3.0"
