@@ -77,14 +77,8 @@ jobs:
       - name: Build editor packages
         run: npm run build:editor
 
-      - name: Build Angular demo
-        run: npm run build-app -w demos/angular -- --base-href /kritzel/angular/
-
-      - name: Build React demo
-        run: npm run build-app -w demos/react -- --base /kritzel/react/
-
-      - name: Build Vue demo
-        run: npm run build-app -w demos/vue -- --base /kritzel/vue/
+      - name: Build demos
+        run: npm run build:demos:pages
 
       - name: Assemble dist-all
         run: |
