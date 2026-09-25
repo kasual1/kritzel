@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
 import {
   KritzelEditor,
-  HTMLKritzelEditorElement,
+  type HTMLKritzelEditorElement,
   type KritzelBaseObject,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
   buttonStyle,
@@ -12,6 +13,8 @@ import {
   seedEditor,
   toolbarStyle,
 } from "../../shared/demo-shared";
+
+const themes = [reactThemeLight, reactThemeDark];
 
 export function ViewportCenterPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -45,7 +48,9 @@ export function ViewportCenterPage() {
         ref={editorRef}
         editorId="viewport-center"
         theme="light"
-        themes={[reactThemeLight]}
+        themes={themes}
+        syncConfig={undefined}
+        loginConfig={undefined}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}

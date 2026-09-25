@@ -237,6 +237,11 @@ export function ImageAnnotationStudioPage() {
   }
 
   async function ensureSeedImage(editor: HTMLKritzelEditorElement) {
+    const existing = await editor.getAllObjects();
+    if (existing.some((object) => object instanceof KritzelImage)) {
+      return;
+    }
+
     const image = await KritzelImage.fromUrl(
       "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80",
       { maxWidth: 660, maxHeight: 360 },

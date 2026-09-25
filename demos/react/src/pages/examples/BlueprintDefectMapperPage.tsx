@@ -8,6 +8,7 @@ import {
   type ThemeAwareColor,
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
+import { reactThemeDark } from "../../const/react-theme-dark";
 
 type DefectStatus = "Outstanding" | "In Progress" | "Resolved";
 
@@ -24,11 +25,19 @@ interface Defect {
 const PIN_SIZE = 30;
 const FIRST_SEED_PIN_CENTER = { x: -60, y: 145 };
 const SECOND_SEED_PIN_CENTER = { x: 135, y: -80 };
+const themes = [reactThemeLight, reactThemeDark];
 
 function getPinColor(status: DefectStatus): ThemeAwareColor {
   if (status === "Outstanding") return { light: "#dd0031", dark: "#ef4444" };
   if (status === "In Progress") return { light: "#f59e0b", dark: "#f59e0b" };
   return { light: "#10b981", dark: "#10b981" };
+}
+
+function getDefectMetadata(id: string): Pick<Defect, "title" | "category"> {
+  if (id === "defect-1") return { title: "Kitchen Sink Drain Clog", category: "Plumbing" };
+  if (id === "defect-2") return { title: "Bathroom Toilet Running", category: "Plumbing" };
+  if (id === "defect-3") return { title: "Exposed Electrical Terminal", category: "Electrical" };
+  return { title: `Pinned Defect ${id}`, category: "Manual" };
 }
 
 const hostStyle: CSSProperties = {
@@ -176,7 +185,7 @@ export function BlueprintDefectMapperPage() {
 
   async function initializeBlueprint(editor: HTMLKritzelEditorElement) {
     // 1. Load floorplan.png from local assets as unselectable background scenery
-    const bg = await KritzelImage.fromUrl("floorplan.png", {
+    const bg = await KritzelImage.fromUrl("/floorplan.png", {
       maxWidth: 660,
       maxHeight: 360,
     });
@@ -256,21 +265,7 @@ export function BlueprintDefectMapperPage() {
         status = "Resolved";
       }
 
-      let title = "Defect";
-      let category = "Facility";
-      if (id === "defect-1") {
-        title = "Kitchen Sink Drain Clog";
-        category = "Plumbing";
-      } else if (id === "defect-2") {
-        title = "Bathroom Toilet Running";
-        category = "Plumbing";
-      } else if (id === "defect-3") {
-        title = "Exposed Electrical Terminal";
-        category = "Electrical";
-      } else {
-        title = `Pinned Defect ${id}`;
-        category = "Manual";
-      }
+      const { title, category } = getDefectMetadata(id);
 
       const isFirstSeedPin = pin.id === "pin-defect-1";
       const isSecondSeedPin = pin.id === "pin-defect-2";
@@ -484,7 +479,7 @@ export function BlueprintDefectMapperPage() {
           ref={editorRef}
           editorId="blueprint-defect-mapper"
           theme="light"
-          themes={[reactThemeLight]}
+          themes={themes}
           isPanningEnabled={false}
           isZoomingEnabled={false}
           isToolbarVisible={false}

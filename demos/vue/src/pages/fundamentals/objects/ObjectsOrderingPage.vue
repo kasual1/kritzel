@@ -1,26 +1,40 @@
 <script setup lang="ts">
-
 import {
+  getEditorRef,
   KritzelEditor,
+  KritzelWorkspace,
   type KritzelBaseObject,
 } from '@kritzel/vue-editor'
+import { ref } from 'vue'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
   buttonStyle,
   editorStyle,
   hostStyle,
-  seedEditor,
   toolbarStyle,
-  getEditorRef,
 } from '../../shared/demo-shared'
-import { ref } from 'vue';
 
-const editor = getEditorRef('editor');
-const objects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
+function createOverlappingSeedObjects(): KritzelBaseObject[] {
+  return createSeedObjects().map((object) => {
+    object.translateX -= object.centerX
+    object.translateY -= object.centerY
+    return object
+  })
+}
+
+const editor = getEditorRef('editor')
+const seedObjects = createOverlappingSeedObjects()
+const objects = ref<KritzelBaseObject[]>(seedObjects)
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: seedObjects })]
 
 async function refreshObjects() {
-  const all = (await editor.value?.getAllObjects()) ?? []
-  objects.value = [...(all as KritzelBaseObject<HTMLElement | SVGElement>[])].sort(
+  const all = (await editor.value?.findObjects(
+    (object) => object.__class__ !== 'KritzelSelectionBox',
+  )) ?? []
+  objects.value = [...all].sort(
     (a, b) => a.zIndex - b.zIndex,
   )
 }
@@ -50,25 +64,6 @@ async function sendToBack() {
   await refreshObjects()
 }
 
-async function onReady() {
-  if (!editor.value) {
-    return
-  }
-
-  await seedEditor(editor.value)
-
-  const all = (await editor.value.getAllObjects()) ?? []
-  await Promise.all(
-    all.map((obj) =>
-      editor.value?.updateObject(obj, {
-        translateX: obj.translateX - obj.centerX,
-        translateY: obj.translateY - obj.centerY,
-      }),
-    ),
-  )
-
-  await refreshObjects()
-}
 </script>
 
 <template>
@@ -85,13 +80,14 @@ async function onReady() {
         ref="editor"
         editorId="objects-ordering"
         theme="light"
-        :themes="[vueThemeLight]"
+        :themes="themes"
+        :workspaces="workspaces"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :style="editorStyle"
-        @isReady="onReady"
+        @objectsSelectionChange="refreshObjects"
       />
       <aside :style="{ width: '200px', borderLeft: '1px solid #ebebeb', padding: '8px', overflowY: 'auto', fontSize: '13px' }">
         <h3 :style="{ margin: '0 0 8px', fontSize: '14px' }">Objects (z-order)</h3>

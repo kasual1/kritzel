@@ -13,6 +13,8 @@ import {
   toolbarStyle,
 } from "../../shared/demo-shared";
 
+const themes = [reactThemeLight, reactThemeDark];
+
 export function ThemingApplyPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [activeName, setActiveName] = useState("light");
@@ -27,7 +29,7 @@ export function ThemingApplyPage() {
         ref={editorRef}
         editorId="theming-apply"
         theme={activeName}
-        themes={[reactThemeLight, reactThemeDark]}
+        themes={themes}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={true}

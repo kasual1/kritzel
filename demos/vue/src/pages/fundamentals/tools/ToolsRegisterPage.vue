@@ -1,24 +1,19 @@
 <script setup lang="ts">
-
 import {
   KritzelBrushTool,
   KritzelEditor,
   KritzelSelectionTool,
   KritzelTextTool,
-  type KritzelBrushToolConfig,
+  KritzelWorkspace,
   type KritzelToolbarItem,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../../shared/demo-shared'
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
-const highlighterConfig: KritzelBrushToolConfig = {
-  color: { light: '#ffeb3b', dark: '#fff176' },
-  size: 20,
-  palette: [
-    { light: '#ffeb3b', dark: '#fff176', label: 'Yellow' },
-    { light: '#76ff03', dark: '#b2ff59', label: 'Green' },
-  ],
-}
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 
 const toolbarItems: KritzelToolbarItem[] = [
   {
@@ -38,7 +33,7 @@ const toolbarItems: KritzelToolbarItem[] = [
       size: 6,
       palette: [
         { light: '#1f2937', dark: '#f3f4f6', label: 'Ink' },
-        { light: '#42b883', dark: '#7ee2b8', label: 'Accent' },
+        { light: '#42b883', dark: '#7ee2b8', label: 'Vue Green' },
       ],
     },
   },
@@ -77,33 +72,21 @@ const toolbarItems: KritzelToolbarItem[] = [
     type: 'config',
   },
 ]
-
-const editor = getEditorRef('editor');
-
-async function onReady() {
-  if (!editor.value) {
-    return
-  }
-
-  await seedEditor(editor.value)
-  await editor.value.registerTool('highlighter', KritzelBrushTool, highlighterConfig)
-}
 </script>
 
 <template>
   <div :style="hostStyle">
     <KritzelEditor
-      ref="editor"
       editorId="tools-register"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
       :toolbarItems="toolbarItems"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
-      @isReady="onReady"
     />
   </div>
 </template>

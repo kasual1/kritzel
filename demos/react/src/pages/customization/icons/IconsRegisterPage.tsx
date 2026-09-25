@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef } from "react";
 import {
   KritzelBrushTool,
   KritzelEditor,
@@ -8,6 +8,7 @@ import {
   type HTMLKritzelEditorElement,
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
+import { editorStyle, seedEditor } from "../../shared/demo-shared";
 
 const customSvgIcons = {
   "brand-select": '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 3 14 8-6 2-2 6Z"/><path d="m11 13 4 5"/></svg>',
@@ -34,30 +35,38 @@ const toolbarItems: KritzelToolbarItem[] = [
   },
 ];
 
+const globalContextMenuItems = [{ label: "Export board", icon: "brand-export", action: () => undefined }];
+const objectContextMenuItems = [{ label: "Export selection", icon: "brand-export", action: () => undefined }];
+
 export function IconsRegisterPage() {
-  const [editor, setEditor] = useState<HTMLElement | null>(null);
+  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+
+  async function onReady() {
+    if (!editorRef.current) return;
+    await seedEditor(editorRef.current);
+    await editorRef.current.openContextMenu({ x: -50, y: -50 });
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       <div style={{ padding: 8, background: "#f5f5f5", borderBottom: "1px solid #ddd", fontFamily: "sans-serif" }}>
         <strong>Custom SVG Icons:</strong> toolbar and context-menu icons use the same registered names.
       </div>
       <KritzelEditor
-        ref={setEditor}
+        ref={editorRef}
         editorId="icons-register"
         customSvgIcons={customSvgIcons}
         toolbarItems={toolbarItems}
-        globalContextMenuItems={[{ label: "Export board", icon: "brand-export", action: () => undefined }]}
-        objectContextMenuItems={[{ label: "Export selection", icon: "brand-export", action: () => undefined }]}
+        globalContextMenuItems={globalContextMenuItems}
+        objectContextMenuItems={objectContextMenuItems}
         theme="light"
         themes={[reactThemeLight]}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
-        onIsReady={() => {
-          void (editor as HTMLKritzelEditorElement | null)?.openContextMenu({ x: -50, y: -50 });
-        }}
-        style={{ flex: 1, minHeight: 0 }}
+        onIsReady={() => void onReady()}
+        style={editorStyle}
       />
     </div>
   );

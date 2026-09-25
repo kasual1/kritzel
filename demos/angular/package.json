@@ -20,7 +20,7 @@
     "@angular/platform-browser-dynamic": "^22.0.0",
     "@angular/router": "^22.0.0",
     "@lucide/angular": "^1.27.0",
-    "@kritzel/angular-editor": "^0.4.33",
+    "@kritzel/angular-editor": "^0.4.34",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

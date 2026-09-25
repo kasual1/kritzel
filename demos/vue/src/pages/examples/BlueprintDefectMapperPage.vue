@@ -7,6 +7,7 @@ import {
   KritzelShape,
   ShapeType,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 
 type DefectStatus = 'Outstanding' | 'In Progress' | 'Resolved'
@@ -22,6 +23,8 @@ interface Defect {
 }
 
 const editor = getEditorRef('editor')
+const themes = [vueThemeLight, vueThemeDark]
+const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
 const pinSize = 30
 const firstSeedPinCenter = { x: -60, y: 145 }
@@ -362,14 +365,14 @@ function statusClass(status: DefectStatus): string {
         ref="editor"
         editorId="blueprint-defect-mapper"
         theme="light"
-        :themes="[vueThemeLight]"
+        :themes="themes"
         :isToolbarVisible="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :loginConfig="undefined"
-        :style="{ display: 'block', width: '100%', height: '100%' }"
+        :style="editorStyle"
         @isReady="onReady"
         @click="onCanvasClick"
       />

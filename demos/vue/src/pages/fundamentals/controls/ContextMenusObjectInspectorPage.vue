@@ -1,13 +1,18 @@
 <script setup lang="ts">
-
 import {
+  getEditorRef,
   KritzelEditor,
+  KritzelWorkspace,
   type ContextMenuItem,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { editorStyle, hostStyle, seedEditor, getEditorRef } from '../../shared/demo-shared'
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
-const editor = getEditorRef('editor');
+const editor = getEditorRef('editor')
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 
 const globalItems: ContextMenuItem[] = [
   {
@@ -75,7 +80,6 @@ async function onReady() {
     return
   }
 
-  await seedEditor(editor.value)
   await editor.value.selectAllObjectsInViewport()
   const selected = await editor.value.getSelectedObjects()
   if (!selected[0]) {
@@ -96,7 +100,8 @@ async function onReady() {
       ref="editor"
       editorId="custom-context-menu-object-inspector"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
       :globalContextMenuItems="globalItems"
       :objectContextMenuItems="objectItems"
       :isPanningEnabled="false"

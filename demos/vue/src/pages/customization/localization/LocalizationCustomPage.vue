@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { KritzelEditor, type KritzelLocale } from '@kritzel/vue-editor'
+import { KritzelEditor, KritzelWorkspace, type KritzelLocale, type LocaleCode } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
 
-const locale = ref('es')
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 const spanishLocale: KritzelLocale = {
   code: 'es',
   label: 'Espanol',
@@ -21,23 +25,27 @@ const spanishLocale: KritzelLocale = {
     'utility.redo': 'Rehacer',
   },
 }
+const customLocales = [spanishLocale]
+const activeLocale = ref<LocaleCode>('es')
 </script>
 
 <template>
-  <div class="page">
-    <div class="toolbar">
-      <strong>Custom Locale:</strong>
-      <button @click="locale = 'es'">Espanol (es)</button>
-      <button @click="locale = 'en'">English (en)</button>
+  <div :style="hostStyle">
+    <div :style="toolbarStyle">
+      <button :style="buttonStyle(activeLocale === 'es')" @click="activeLocale = 'es'">Espanol</button>
     </div>
-    <KritzelEditor editorId="localization-custom" :locales="[spanishLocale]" :locale="locale" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="true" :isWorkspaceManagerVisible="true" />
-    <div class="status">Active Locale: {{ locale }}</div>
+    <KritzelEditor
+      editorId="localization-custom"
+      :locales="customLocales"
+      :locale="activeLocale"
+      :workspaces="workspaces"
+      theme="light"
+      :themes="themes"
+      :isPanningEnabled="false"
+      :isZoomingEnabled="false"
+      :isMoreMenuVisible="true"
+      :isWorkspaceManagerVisible="true"
+      :style="editorStyle"
+    />
   </div>
 </template>
-
-<style scoped>
-.page { display: flex; flex-direction: column; height: 100vh; font-family: sans-serif; }
-.toolbar, .status { padding: 8px; background: #f5f5f5; border-bottom: 1px solid #ddd; display: flex; gap: 8px; }
-.status { border-top: 1px solid #ddd; border-bottom: 0; font-family: monospace; }
-KritzelEditor { flex: 1; min-height: 0; }
-</style>

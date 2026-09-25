@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { getEditorRef, KritzelEditor } from '@kritzel/vue-editor'
+import {
+  getEditorRef,
+  KritzelEditor,
+  KritzelWorkspace,
+  type KritzelLoginConfig,
+} from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
 
 const editor = getEditorRef('editor')
 
@@ -11,28 +18,36 @@ const providerIcons: Record<string, string> = {
   'auth-email': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
 }
 
-const loginConfig = {
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const loginConfig: KritzelLoginConfig = {
   title: 'Sign in to Kritzel',
-  subtitle: 'Choose a provider to continue to your workspace.',
   providers: [
-    { name: 'google', label: 'Continue with Google', icon: 'auth-google' },
-    { name: 'github', label: 'Continue with GitHub', icon: 'auth-github' },
-    { name: 'microsoft', label: 'Continue with Microsoft', icon: 'auth-microsoft' },
-    { name: 'email', label: 'Continue with Email', icon: 'auth-email' },
+    { name: 'google', icon: 'google', label: 'Continue with Google' },
+    { name: 'facebook', icon: 'facebook', label: 'Continue with Facebook' },
+    { name: 'github', icon: 'github', label: 'Continue with GitHub' },
   ],
+}
+
+async function onReady(): Promise<void> {
+  await editor.value?.openLoginDialog()
 }
 </script>
 
 <template>
-  <div class="page">
-    <div class="toolbar"><strong>Login Providers:</strong> each entry in loginConfig.providers becomes a button in the dialog.</div>
-    <KritzelEditor ref="editor" editorId="user-management-providers" :loginConfig="loginConfig" :customSvgIcons="providerIcons" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="false" :isWorkspaceManagerVisible="false" @isReady="() => editor?.openLoginDialog()" />
-  </div>
+  <KritzelEditor
+    ref="editor"
+    editorId="user-management-providers"
+    :loginConfig="loginConfig"
+    :customSvgIcons="providerIcons"
+    :workspaces="workspaces"
+    theme="light"
+    :themes="themes"
+    :isPanningEnabled="false"
+    :isZoomingEnabled="false"
+    :isMoreMenuVisible="false"
+    :isWorkspaceManagerVisible="false"
+    @isReady="onReady"
+    style="display: block; width: 100%; height: 100vh"
+  />
 </template>
-
-<style scoped>
-.page { display: flex; flex-direction: column; height: 100vh; }
-.toolbar { padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #ebebeb; font: 13px sans-serif; }
-.toolbar strong { color: #42b883; }
-KritzelEditor { flex: 1; min-height: 0; }
-</style>

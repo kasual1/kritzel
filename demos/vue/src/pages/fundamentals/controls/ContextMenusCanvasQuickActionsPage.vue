@@ -2,12 +2,18 @@
 import {
   getEditorRef,
   KritzelEditor,
+  KritzelWorkspace,
   type ContextMenuItem,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { editorStyle, hostStyle, seedEditor } from '../../shared/demo-shared';
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
 
-const editor = getEditorRef('editor');
+const editor = getEditorRef('editor')
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const objectItems: ContextMenuItem[] = []
 
 const globalItems: ContextMenuItem[] = [
   {
@@ -19,7 +25,7 @@ const globalItems: ContextMenuItem[] = [
   },
   {
     label: 'Select All',
-    icon: 'select-all',
+    icon: 'selectAll',
     action: async () => {
       await editor.value?.selectAllObjectsInViewport()
     },
@@ -27,12 +33,7 @@ const globalItems: ContextMenuItem[] = [
 ]
 
 async function onReady() {
-  if (!editor.value) {
-    return
-  }
-
-  await seedEditor(editor.value)
-  await editor.value.openContextMenu({ x: -50, y: -50 })
+  await editor.value?.openContextMenu({ x: -50, y: -50 })
 }
 </script>
 
@@ -42,9 +43,10 @@ async function onReady() {
       ref="editor"
       editorId="custom-context-menu-canvas-quick-actions"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
       :globalContextMenuItems="globalItems"
-      :objectContextMenuItems="[]"
+      :objectContextMenuItems="objectItems"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
