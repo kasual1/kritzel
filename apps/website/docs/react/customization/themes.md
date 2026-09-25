@@ -11,34 +11,42 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel's visual appearance is fully controlled through the `KritzelTheme` interface, a structured TypeScript object that maps design tokens to every component in the editor. Each token is grouped by component category (for example, `toolbar`, `contextMenu`, `selection`, `button`), giving you precise control over colors, borders, shadows, and typography without touching CSS directly.
+Kritzel allows you to fully customize the editor by providing a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can choose a built-in theme or create your own.
 
-Kritzel ships two built-in themes (`lightTheme` and `darkTheme`) which serve as solid defaults or safe base objects to extend. You pass one or more `KritzelTheme` instances via the `themes` prop and activate one by name through the `theme` prop.
+Kritzel includes `lightTheme` and `darkTheme`, and exports the `KritzelTheme` interface for custom themes. Pass themes through the `themes` prop and activate one by name through the `theme` prop.
 
-## Applying a Built-in Theme
+The full list of customizable properties is available in the [Theming API Reference](../api-reference/theming.md).
 
-The simplest entry point is switching between the two built-in themes. Pass `lightTheme` and `darkTheme` in the `themes` array and toggle the active theme name with `theme`.
+## Switching the Theme
+
+To switch between light and dark themes, keep the active name in React state and pass it to `theme`. Define the `themes` array outside the component so its reference remains stable across renders.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/customization/theming/apply"
   repoFiles={['src/pages/customization/theming/ThemingApplyPage.tsx']}
 />
 
-## Creating a Custom Theme
+## Listening for Theme Changes
 
-This example intentionally applies a strong light-purple visual language and removes rounding across the UI (`borderRadius: 0`) to demonstrate how far Kritzel can be customized. It starts from `lightTheme`, then overrides multiple `KritzelTheme` groups (`engine`, `toolbar`, `menu`, `contextMenu`, `button`, and more) so the editor background, toolbar, menus, and actions all follow one coherent branded style.
+Use `onThemeChange` to react whenever the active theme changes. The callback receives a `CustomEvent<string>` and the new theme name is available as `event.detail`. This is useful for synchronizing React state when a theme changes from inside Kritzel settings.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/customization/theming/listen"
+  repoFiles={['src/pages/customization/theming/ThemingListenPage.tsx']}
+/>
+
+## Creating a Custom Theme
+
+Create a custom theme by extending a built-in theme and overriding the relevant `KritzelTheme` groups. Add the result to the `themes` prop and activate it by passing its `name` to `theme`.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/customization/theming/custom"
   repoFiles={['src/pages/customization/theming/ThemingCustomPage.tsx']}
 />
 
-## Related API Methods
+## API Details
 
-- Applying themes (`theme`, `themes`)
-- Built-in presets (`lightTheme`, `darkTheme`)
-- Theme type (`KritzelTheme`, `ThemeName`)
-
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Theming](../api-reference/theming.md)

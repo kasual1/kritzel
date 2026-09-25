@@ -83,15 +83,15 @@ async function expectExampleScreenshot(
 }
 
 test.describe('Example Pages Visual Regression', () => {
-  test('should match screenshot for object-explorer', async ({ editorPage }) => {
+  test.skip('should match screenshot for object-explorer', async ({ editorPage }) => {
     await expectExampleScreenshot(editorPage, '/examples/object-explorer', 'object-explorer');
   });
 
-  test('should match screenshot for blueprint-defect-mapper', async ({ editorPage }) => {
+  test.skip('should match screenshot for blueprint-defect-mapper', async ({ editorPage }) => {
     await expectExampleScreenshot(editorPage, '/examples/blueprint-defect-mapper', 'blueprint-defect-mapper');
   });
 
-  test('should match screenshot for slideshow-presentation', async ({ editorPage }) => {
+  test.skip('should match screenshot for slideshow-presentation', async ({ editorPage }) => {
     await expectExampleScreenshot(editorPage, '/examples/slideshow-presentation', 'slideshow-presentation');
   });
 

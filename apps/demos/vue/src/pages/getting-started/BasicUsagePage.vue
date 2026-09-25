@@ -7,20 +7,24 @@ import {
   KritzelEditor,
   type KritzelSyncConfig,
   KritzelText,
+  KritzelWorkspace,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from './seed-objects'
 
-type ToolName = 'brush' | 'select'
+type ToolName = 'brush' | 'selection'
 
-const editor = getEditorRef('editor');
+const editor = getEditorRef('editor')
 const isReady = ref(false)
-const activeTool = ref<ToolName>('select')
+const activeTool = ref<ToolName>('selection')
 const objectsCount = ref(0)
 
 const syncConfig: KritzelSyncConfig = {
   providers: [InMemorySyncProvider],
 }
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 
 const statusLine = computed(() => {
   if (!isReady.value) {
@@ -30,22 +34,13 @@ const statusLine = computed(() => {
   return `Objects: ${objectsCount.value} | Tool: ${activeTool.value}`
 })
 
-async function onReady() {
-  if (!editor.value) {
-    return
-  }
-
-  for (const obj of createSeedObjects()) {
-    await editor.value.addObject(obj)
-  }
-
+function onReady() {
   isReady.value = true
 }
 
-function onObjectsChange(
-  event: CustomEvent<KritzelBaseObject<HTMLElement | SVGElement>[]>,
-) {
-  objectsCount.value = event.detail.length
+function onObjectsChange(event: Event) {
+  const objects = (event as CustomEvent<KritzelBaseObject<HTMLElement | SVGElement>[]>).detail
+  objectsCount.value = objects.length
 }
 
 async function setBrushTool() {
@@ -62,8 +57,8 @@ async function setSelectTool() {
     return
   }
 
-  activeTool.value = 'select'
-  await editor.value.setActiveTool('select')
+  activeTool.value = 'selection'
+  await editor.value.setActiveTool('selection')
 }
 
 async function addText() {
@@ -89,7 +84,11 @@ async function undoAction() {
 }
 
 async function zoomIn() {
-  await editor.value?.zoomTo(1.5)
+  await editor.value?.zoomIn()
+}
+
+async function zoomOut() {
+  await editor.value?.zoomOut()
 }
 </script>
 
@@ -99,12 +98,13 @@ async function zoomIn() {
       <button :class="{ active: activeTool === 'brush' }" @click="setBrushTool">
         Brush
       </button>
-      <button :class="{ active: activeTool === 'select' }" @click="setSelectTool">
+      <button :class="{ active: activeTool === 'selection' }" @click="setSelectTool">
         Select
       </button>
       <button @click="addText">Add Text</button>
       <button @click="undoAction">Undo</button>
       <button @click="zoomIn">Zoom In</button>
+      <button @click="zoomOut">Zoom Out</button>
       <span class="status">{{ statusLine }}</span>
     </header>
 
@@ -112,8 +112,9 @@ async function zoomIn() {
       ref="editor"
       editorId="basic-usage"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
       :syncConfig="syncConfig"
+      :workspaces="workspaces"
       :loginConfig="undefined"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"

@@ -20,7 +20,7 @@ Take a look at the [Localization Terms](../api-reference/localization-terms.md) 
 To change the active interface language, bind the `[locale]` property on `<kritzel-editor>` or call the asynchronous `setLocale()` method. The editor instantly updates all UI controls and context menus without requiring a page reload.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/customization/localization/switch"
   repoFiles={['src/app/pages/customization/localization/localization-switch.component.ts']}
 />
@@ -30,7 +30,7 @@ To change the active interface language, bind the `[locale]` property on `<kritz
 Listen for the `localeChange` event to react when the active locale changes, for example to sync a UI status label, persist the selected language, or update a custom settings panel.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/customization/localization/listen"
   repoFiles={['src/app/pages/customization/localization/localization-listen.component.ts']}
 />
@@ -40,7 +40,7 @@ Listen for the `localeChange` event to react when the active locale changes, for
 You can add support for additional languages (such as Spanish `'es'`) or override individual term keys (such as `menu.copy` or `settings.dialogTitle`) by providing a `KritzelLocale` definition. Pass custom locales to the `[locales]` binding or register them dynamically using `registerLocales()`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/customization/localization/custom"
   repoFiles={['src/app/pages/customization/localization/localization-custom.component.ts']}
 />

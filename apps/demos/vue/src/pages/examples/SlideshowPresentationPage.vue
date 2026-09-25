@@ -7,6 +7,7 @@ import {
   KritzelText,
   ShapeType,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 
 interface Slide {
@@ -16,6 +17,8 @@ interface Slide {
 }
 
 const editor = getEditorRef('editor')
+const themes = [vueThemeLight, vueThemeDark]
+const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
 const slides: Slide[] = [
   { title: '1. Welcome to Kritzel', centerX: 0, centerY: 0 },
@@ -250,14 +253,14 @@ async function navigateToSlide(index: number) {
         ref="editor"
         editorId="slideshow-presentation"
         theme="light"
-        :themes="[vueThemeLight]"
+        :themes="themes"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :isToolbarVisible="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :loginConfig="undefined"
-        :style="{ display: 'block', width: '100%', height: '100%' }"
+        :style="editorStyle"
         @isReady="onReady"
       />
     </div>

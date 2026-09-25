@@ -11,25 +11,32 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel's icon system uses named SVG definitions. Built-in toolbar and menus resolve an icon name through the shared `KritzelIconRegistry`, so you can add icons for application actions without changing Kritzel's components.
+Kritzel has a dedicated system for the icons used throughout the editor UI. You can replace built-in icons or add new names for application-specific tools and actions.
 
-Pass a `Record<string, string>` to the `customSvgIcons` prop on `<KritzelEditor>`. Use the same names anywhere Kritzel accepts an `icon`, including context-menu items and toolbar items.
+See the [Icons API reference](../api-reference/icons.md) for the complete list of built-in icon names.
 
-## Registering and Using Custom SVG Icons
+## Overriding Existing Icons
 
-The demo registers application-specific SVG icons and reuses their names in toolbar items and global or object context-menu items.
+Override built-in icons by mapping existing names to your own SVG markup and passing the map to the `customSvgIcons` prop on `<KritzelEditor>`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/customization/icons/register"
   repoFiles={['src/pages/customization/icons/IconsRegisterPage.tsx']}
 />
 
-## Related API Methods and Types
+## Registering New Icons
 
-- Registering icons (`customSvgIcons`, `KritzelIconRegistry.register()`, `KritzelIconRegistry.registerIcons()`)
-- Toolbar configuration (`KritzelToolbarItem.icon`)
-- Context-menu configuration (`ContextMenuItem.icon`)
-- Editor configuration (`toolbar`, `globalContextMenuItems`, `objectContextMenuItems`)
+You can also register new icon names and reference them wherever Kritzel accepts an `icon`, including `KritzelToolbarItem` and `ContextMenuItem` definitions. Keep `customSvgIcons`, toolbar items, and context-menu arrays at module scope so their references stay stable.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/customization/icons/register-new"
+  repoFiles={['src/pages/customization/icons/IconsRegisterNewPage.tsx']}
+/>
+
+## API Details
+
+- [Icons](../api-reference/icons.md)
+- [Editor API](../api-reference/editor.md)
+- [Tools API](../api-reference/tools.md)

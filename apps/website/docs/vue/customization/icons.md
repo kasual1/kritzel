@@ -11,25 +11,32 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel's icon system uses named SVG definitions. Built-in toolbar and menus resolve an icon name through the shared `KritzelIconRegistry`, so you can add icons for application actions without changing Kritzel's components.
+Kritzel comes with a dedicated system for managing all icons used in the editor's user interface. You can replace built-in icons or add new ones for your own tools and components.
 
-Pass a `Record<string, string>` to the `customSvgIcons` prop on `<KritzelEditor>`. Use the same names anywhere Kritzel accepts an `icon`, including context-menu items and toolbar items.
+See the [Icons API reference](../api-reference/icons.md) for the full list of default icon names.
 
-## Registering and Using Custom SVG Icons
+## Overriding Existing Icons
 
-The demo registers application-specific SVG icons and reuses their names in toolbar items and global or object context-menu items.
+Override built-in icon names with your own SVG markup and pass the resulting `KritzelSvgIconMap` to the `customSvgIcons` prop on `<KritzelEditor>`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
-  demoPath="/customization/icons/register"
-  repoFiles={['src/pages/customization/icons/IconsRegisterPage.vue']}
+repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+demoPath="/customization/icons/register"
+repoFiles={['src/pages/customization/icons/IconsRegisterPage.vue']}
 />
 
-## Related API Methods and Types
+## Registering New Icons
 
-- Registering icons (`customSvgIcons`, `KritzelIconRegistry.register()`, `KritzelIconRegistry.registerIcons()`)
-- Toolbar configuration (`KritzelToolbarItem.icon`)
-- Context-menu configuration (`ContextMenuItem.icon`)
-- Editor configuration (`toolbar`, `globalContextMenuItems`, `objectContextMenuItems`)
+You can also register entirely new icons that are specific to your application and reference them in components with icon support, such as `KritzelToolbarItem` or `ContextMenuItem`.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+<LiveDemo
+repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+demoPath="/customization/icons/register-new"
+repoFiles={['src/pages/customization/icons/IconsRegisterNewPage.vue']}
+/>
+
+## API Details
+
+- [Icons](../api-reference/icons.md)
+- [Editor UI Elements](../api-reference/editor.md#ui-elements)
+- [Tool Management](../api-reference/editor.md#tool-management)

@@ -16,7 +16,7 @@ License keys are available [here](/get-license). Contact us and we will provide 
 
 ## Activating Your License
 
-Pass your license key to the `<KritzelEditor>` or `<kritzel-engine>` component via the `licenseKey` prop:
+Pass your license key to the `<KritzelEditor>` or `<KritzelEngine>` component via the `licenseKey` prop:
 
 ```tsx
 import { KritzelEditor } from '@kritzel/react-editor';

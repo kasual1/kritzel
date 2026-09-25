@@ -29,12 +29,12 @@ This example makes use of the following core concepts. Click on the links below 
 
 ## Screenshot-Style Annotation Canvas with External Color Tools
 
-Users pick a color from a row of circular swatches in a custom bottom toolbar, then sketch freehand annotations directly over the image. A mode toggle switches between brush drawing and text placement for callouts. The built-in editor toolbar are hidden - all interaction flows through the external toolbar.
+Users pick a color from circular swatches in a custom bottom toolbar, then sketch directly over the image. A segmented mode control switches between brush drawing and text placement, while separate icon controls expose undo, redo, and zoom. The built-in editor controls are hidden so all interaction flows through the React UI.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/examples/image-annotation-studio"
   repoFiles={['src/pages/examples/ImageAnnotationStudioPage.tsx']}
 />
 
-The background image is loaded once in `onReady()` using `KritzelImage.fromUrl()` and centered on the canvas. It is marked non-editable with `isEditable = false` so annotations always remain the primary interaction layer. Each color swatch registers a separate brush tool with a fixed stroke color, and clicking a swatch calls `setActiveTool(...)` to activate the corresponding tool without any built-in UI involvement.
+The background image is loaded from `onIsReady` with `KritzelImage.fromUrl()` and centered on the canvas. The page checks existing objects before insertion so the image is added only once. Each color swatch registers a brush tool with a fixed stroke color; clicking a swatch updates React state, synchronizes the text-tool color, and calls `setActiveTool(...)` through the editor ref.

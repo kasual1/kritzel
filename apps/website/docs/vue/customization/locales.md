@@ -11,36 +11,41 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel provides an internationalization framework built into the editor and core engine. User-visible text such as context menu actions, toolbar labels, settings dialogs, zoom controls, and export dialogs is resolved through the centralized `KritzelLocalizationManager`.
+Kritzel comes with built-in support for multiple languages and allows you to override or extend the default translations with custom locales.
 
-Kritzel ships with English (`'en'`), German (`'de'`), and French (`'fr'`) translations. You can switch languages at runtime, register custom locales, or override selected term keys. Missing terms fall back through the configured fallback locale.
+Take a look at the [Localization Terms](../api-reference/localization-terms.md) to see all available localization keys.
 
-## Switching Built-in Locales
+## Switching the Locale
 
 Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()` method through the editor ref. The editor updates its UI without a page reload.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/customization/localization/switch"
   repoFiles={['src/pages/customization/localization/LocalizationSwitchPage.vue']}
 />
 
-## Registering Custom Locales & Term Overrides
+## Listening for Locale Changes
 
-Register a `KritzelLocale` definition through the `locales` prop or dynamically with `registerLocales()`. A locale can provide only the terms it needs; missing keys use the fallback chain.
+Listen for the `localeChange` event to react when the active locale changes, for example to persist the selected language or update a custom settings panel. In Vue, the new locale is available through `event.detail`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/customization/localization/listen"
+  repoFiles={['src/pages/customization/localization/LocalizationListenPage.vue']}
+/>
+
+## Registering Custom Locales
+
+Add support for additional languages or override individual term keys by providing a `KritzelLocale` definition. Pass custom locales through the `locales` prop or register them dynamically using `registerLocales()`.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/customization/localization/custom"
   repoFiles={['src/pages/customization/localization/LocalizationCustomPage.vue']}
 />
 
-## Related API Methods
+## API Details
 
-- Setting locale (`locale`, `setLocale()`, `getLocale()`)
-- Fallback locale (`fallbackLocale`)
-- Registering locales (`locales`, `registerLocales()`, `getAvailableLocales()`)
-- Programmatic translation (`t()`)
-- Locale change events (`localeChange`)
-
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [Editor](../api-reference/editor.md#localization)
+- [Localization Terms](../api-reference/localization-terms.md)

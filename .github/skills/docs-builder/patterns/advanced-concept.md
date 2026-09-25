@@ -52,7 +52,7 @@ Keep examples focused. Do not turn an Advanced page into a complete application 
 
 ```jsx
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/advanced/<concept>-<focus>"
   repoFiles={['src/app/advanced/<concept>/<concept>-<focus>.component.ts']}
 />
@@ -62,7 +62,7 @@ Keep examples focused. Do not turn an Advanced page into a complete application 
 
 ```jsx
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/advanced/<concept>-<focus>"
   repoFiles={['src/pages/advanced/<concept>/<ConceptFocusPage.tsx']}
 />
@@ -72,7 +72,7 @@ Keep examples focused. Do not turn an Advanced page into a complete application 
 
 ```jsx
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/advanced/<concept>-<focus>"
   repoFiles={['src/pages/advanced/<concept>/<ConceptFocusPage.vue']}
 />

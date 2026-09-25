@@ -11,58 +11,64 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Most canvas objects in Kritzel (shapes, lines, text, images) render through the engine's own drawing pipeline. `KritzelDynamicObject` is different: it is a canvas object whose visual content is arbitrary HTML that you provide, while it still fully participates in selection, movement, resizing, ordering, and workspace persistence like any other object.
+Kritzel supports the integration of dynamic components in two different ways. You can choose how to embed the content based on what you are building:
 
-`KritzelDynamicObject` supports two hosting modes:
+- **Dynamic objects** can contain HTML or framework-specific components while remaining part of the canvas. They can be selected, moved, resized, and saved like other objects.
+- **The iframe approach** hosts HTML, CSS, and JavaScript inside a scoped sandbox environment, keeping generated or user-authored content separate from the main application.
 
-- **Native HTML mode** — pass a plain DOM `element` and let the object mount it directly. No registration is required.
-- **Registered component mode** — pass a `rendererKey` (and optional `rendererData`) so a renderer registered on `KritzelDynamicObjectRendererRegistry` mounts a real Angular, React, or Vue component into the object's container.
+## Rendering HTML
 
-```ts
-interface KritzelDynamicObjectConfig {
-  element?: HTMLElement;
-  rendererKey?: string;
-  rendererData?: unknown;
-  translateX?: number;
-  translateY?: number;
-  width?: number;
-  height?: number;
-}
-```
+The simplest way to use a dynamic object is to build a plain DOM subtree and pass it as `element`. Kritzel mounts it as-is; there is no renderer to register or unregister, and no lifecycle hooks to implement. This is a good fit for static content.
 
-Both modes produce the same kind of object on the canvas — the difference is purely in how the content inside it is mounted and, for registered components, how its state survives mount/unmount cycles.
-
-## Rendering Native HTML
-
-The simplest way to use a dynamic object is to build a plain DOM subtree and pass it as `element`. Kritzel mounts it as-is; there is no renderer to register or unregister, and no lifecycle hooks to implement. This is a good fit for static or lightly interactive content that does not need a full component framework.
+If the native HTML owns runtime behavior, such as event listeners or local calculator state, use a registered renderer even when the content is plain DOM rather than a Vue component. Clipboard copy serializes the object while it is still mounted, so a renderer can return the latest serializable state from `onSerialize` and recreate fresh DOM listeners from `rendererData` after paste.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/advanced/dynamic-objects/html"
-  repoFiles={['src/pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.vue']}
+  repoFiles={[
+    'src/pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.vue',
+  ]}
 />
 
-## Rendering Framework Components
+## Rendering Components
 
 For richer content, use the `registerVueDynamicObjectRenderer` helper to register a renderer on `KritzelDynamicObjectRendererRegistry` with a stable `rendererKey`. A regular Vue SFC mounted directly into an engine-managed container may not carry its styles reliably, since style injection differs from a normal app mount — so the helper defines your component as a Vue custom element (`defineCustomElement`) and mounts that instead, keeping styles encapsulated.
 
-State flows through `rendererData`:
+The helper defines the `.ce.vue` component as a custom element so styles remain encapsulated when the engine mounts it outside the normal Vue component tree. State flows through `rendererData`:
 
 - On mount, the helper initializes your component from `data` (falling back to `createInitialState()` on first mount) and passes it as the `initialState` prop.
-- Your component reports state changes through an `onStateChange` prop; the helper tracks the latest value and returns it from `onUnmount`, so Kritzel persists it back onto the object for the next mount (including after a reload).
+- The component reports state changes through an `onStateChange` prop. The demo updates the object's `rendererData` immediately for copy/export and the helper returns its latest state from `onUnmount`, so remounts and reloads resume from the same value.
 
 Always call the unregister function returned by `registerVueDynamicObjectRenderer` when the hosting page unmounts.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/advanced/dynamic-objects/component"
-  repoFiles={['src/pages/advanced/dynamic-objects/DynamicObjectsComponentPage.vue']}
+  repoFiles={[
+    'src/pages/advanced/dynamic-objects/DynamicObjectsComponentPage.vue',
+    'src/pages/advanced/dynamic-objects/CalculatorWidget.ce.vue',
+  ]}
 />
 
-## Related API Methods and Types
+Dynamic object content follows Kritzel's wheel handoff rules: scrollable embedded content consumes wheel input while it can scroll; at a boundary, the wheel is passed back to the canvas viewport.
 
-- Object type ([`KritzelDynamicObject`](../fundamentals/objects.md))
-- Renderer registry (`KritzelDynamicObjectRendererRegistry.register`, `KritzelDynamicObjectRendererRegistry.unregister`, `registerVueDynamicObjectRenderer`)
-- Object creation ([addObject](../api-reference/editor.md#addobject))
+## Rendering iFrames
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+For user-authored or LLM-authored content, `KritzelIframeObject` provides a sandboxed space for HTML, CSS, and JavaScript. The iframe keeps its own content and interaction state while Kritzel manages it as a canvas object.
+
+This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with a loading view displayed during the change.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/advanced/dynamic-objects/iframe"
+  repoFiles={[
+    'src/pages/advanced/dynamic-objects/DynamicObjectsIframePage.vue',
+  ]}
+/>
+
+## API Details
+
+For the full list of related APIs, see the following reference sections.
+
+- [Dynamic Object](../api-reference/objects.md#dynamic-object)
+- [Object](../api-reference/editor.md#object)

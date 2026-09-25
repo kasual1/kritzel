@@ -9,9 +9,9 @@ const SITE_BASE_URL = process.env.Docusaurus_BASE_URL || "/";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const DEFAULT_DEMO_BASE_URLS = IS_PRODUCTION
   ? {
-    angular: "https://kasual1.github.io/kritzel-demos/angular",
-    react: "https://kasual1.github.io/kritzel-demos/react",
-    vue: "https://kasual1.github.io/kritzel-demos/vue",
+    angular: "https://kasual1.github.io/kritzel/demos/angular",
+    react: "https://kasual1.github.io/kritzel/demos/react",
+    vue: "https://kasual1.github.io/kritzel/demos/vue",
   }
   : {
     angular: "http://localhost:4200",
@@ -49,7 +49,6 @@ const LEGACY_DOC_PATHS: Record<string, string> = {
   "example-blueprint-defect-mapper": "examples/blueprint-defect-mapper",
   "example-slideshow-presentation": "examples/slideshow-presentation",
   "example-image-annotation-studio": "examples/image-annotation-studio",
-  "example-infinite-canvas-gallery": "examples/infinite-canvas-gallery",
   "api-reference-editor": "api-reference/editor",
   "api-reference-engine": "api-reference/engine",
   objects: "api-reference/objects",

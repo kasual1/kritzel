@@ -1,42 +1,56 @@
 <script setup lang="ts">
-
-import { KritzelEditor } from '@kritzel/vue-editor'
+import { computed, ref } from 'vue'
+import {
+  KritzelBrushTool,
+  KritzelEditor,
+  KritzelEraserTool,
+  KritzelSelectionTool,
+  KritzelWorkspace,
+  type KritzelToolbarItem,
+} from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
   buttonStyle,
   editorStyle,
   hostStyle,
-  seedEditor,
   toolbarStyle,
-  getEditorRef,
 } from '../../shared/demo-shared'
-import { ref } from 'vue';
 
-const editor = getEditorRef('editor');
-const isDisabled = ref(true)
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const isEraserDisabled = ref(true)
 
-async function onReady() {
-  if (!editor.value) {
-    return
-  }
+const toolbarItems = computed<KritzelToolbarItem[]>(() => [
+  {
+    name: 'selection',
+    type: 'tool',
+    isDefault: true,
+    tool: KritzelSelectionTool,
+    icon: 'cursor',
+  },
+  {
+    name: 'brush',
+    type: 'tool',
+    tool: KritzelBrushTool,
+    icon: 'pen',
+  },
+  {
+    name: 'eraser',
+    type: 'tool',
+    tool: KritzelEraserTool,
+    icon: 'eraser',
+    isDisabled: () => isEraserDisabled.value,
+  },
+  {
+    name: 'config',
+    type: 'config',
+  },
+])
 
-  await seedEditor(editor.value)
-  await editor.value.disable()
-}
-
-async function toggle() {
-  if (!editor.value) {
-    return
-  }
-
-  if (isDisabled.value) {
-    await editor.value.enable()
-    isDisabled.value = false
-    return
-  }
-
-  await editor.value.disable()
-  isDisabled.value = true
+function toggle() {
+  isEraserDisabled.value = !isEraserDisabled.value
 }
 </script>
 
@@ -44,23 +58,20 @@ async function toggle() {
   <div :style="hostStyle">
     <div :style="toolbarStyle">
       <button :style="buttonStyle(false)" @click="toggle">
-        {{ isDisabled ? 'Enable' : 'Disable' }}
+        {{ isEraserDisabled ? 'Enable eraser tool' : 'Disable eraser tool' }}
       </button>
-      <span :style="{ fontSize: '13px', color: isDisabled ? '#e53935' : '#333' }">
-        {{ isDisabled ? 'Interactions disabled' : 'Interactions enabled' }}
-      </span>
     </div>
     <KritzelEditor
-      ref="editor"
       editorId="tools-disable"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
+      :toolbarItems="toolbarItems"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
-      @isReady="onReady"
     />
   </div>
 </template>
