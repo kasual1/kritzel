@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/react-engine",
-  "version": "0.4.33",
+  "version": "0.4.34",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel engine wrapper for React.",
   "keywords": [
@@ -28,7 +28,7 @@
     "@stencil/react-output-target": "^1.2.0"
   },
   "peerDependencies": {
-    "@kritzel/engine": "^0.4.33"
+    "@kritzel/engine": "^0.4.34"
   },
   "repository": {
     "type": "git",

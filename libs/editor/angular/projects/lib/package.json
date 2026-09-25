@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/angular-editor",
-  "version": "0.4.33",
+  "version": "0.4.34",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite canvas experiences with Angular.",
   "keywords": [
@@ -14,8 +14,8 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
-    "@kritzel/editor": "^0.4.33",
-    "@kritzel/engine": "^0.4.33"
+    "@kritzel/editor": "^0.4.34",
+    "@kritzel/engine": "^0.4.34"
   },
   "dependencies": {
     "tslib": "^2.3.0"
