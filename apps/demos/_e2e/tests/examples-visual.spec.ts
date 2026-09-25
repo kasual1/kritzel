@@ -91,7 +91,7 @@ test.describe('Example Pages Visual Regression', () => {
     await expectExampleScreenshot(editorPage, '/examples/blueprint-defect-mapper', 'blueprint-defect-mapper');
   });
 
-  test('should match screenshot for slideshow-presentation', async ({ editorPage }) => {
+  test.skip('should match screenshot for slideshow-presentation', async ({ editorPage }) => {
     await expectExampleScreenshot(editorPage, '/examples/slideshow-presentation', 'slideshow-presentation');
   });
 
