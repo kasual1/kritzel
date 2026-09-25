@@ -9,9 +9,9 @@ const SITE_BASE_URL = process.env.Docusaurus_BASE_URL || "/";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const DEFAULT_DEMO_BASE_URLS = IS_PRODUCTION
   ? {
-    angular: "https://kasual1.github.io/kritzel/demos/angular",
-    react: "https://kasual1.github.io/kritzel/demos/react",
-    vue: "https://kasual1.github.io/kritzel/demos/vue",
+    angular: "https://kasual1.github.io/kritzel/angular",
+    react: "https://kasual1.github.io/kritzel/react",
+    vue: "https://kasual1.github.io/kritzel/vue",
   }
   : {
     angular: "http://localhost:4200",

@@ -27,9 +27,6 @@ jobs:
         run: npm run build -w apps/website
         env:
           Docusaurus_BASE_URL: /
-          DEMO_BASE_URL_ANGULAR: ${{ vars.DEMO_BASE_URL_ANGULAR }}
-          DEMO_BASE_URL_REACT: ${{ vars.DEMO_BASE_URL_REACT }}
-          DEMO_BASE_URL_VUE: ${{ vars.DEMO_BASE_URL_VUE }}
 
       - name: Upload docs artifact
         uses: actions/upload-artifact@v7
