@@ -32,7 +32,7 @@ This example makes use of the following core concepts. Click on the links below 
 A presentation-style explorer layout with a dashboard header, grouped tree navigation, and an inline inspector for updating coordinates, dimensions, text, fill colors, and visibility behavior.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/examples/object-explorer"
   repoFiles={['src/app/pages/examples/object-explorer.component.ts']}
 />

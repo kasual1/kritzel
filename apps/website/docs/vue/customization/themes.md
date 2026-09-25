@@ -11,34 +11,42 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-Kritzel's visual appearance is fully controlled through the `KritzelTheme` interface, a structured TypeScript object that maps design tokens to every component in the editor. Each token is grouped by component category (for example, `toolbar`, `contextMenu`, `selection`, `button`), giving you precise control over colors, borders, shadows, and typography without touching CSS directly.
+Kritzel allows you to fully customize the appearance of the editor through a dedicated theming interface. A theme is a JSON-like structure containing the editor's configurable properties. You can either choose one of the built-in themes or create your own.
 
-Kritzel ships two built-in themes (`lightTheme` and `darkTheme`) which serve as solid defaults or safe base objects to extend. You pass one or more `KritzelTheme` instances via the `themes` prop and activate one by name through the `theme` prop.
+Kritzel comes with two built-in themes, `lightTheme` and `darkTheme`, and offers the `KritzelTheme` interface for creating custom themes.
 
-## Applying a Built-in Theme
+The full list of customizable properties can be found in the [API Reference](../api-reference/theming.md).
 
-The simplest entry point is switching between the two built-in themes. Pass `lightTheme` and `darkTheme` in the `themes` array and toggle the active theme name with `theme`.
+## Switching the Theme
+
+To toggle between the default light and dark theme, pass the respective theme name to the `theme` prop.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/customization/theming/apply"
   repoFiles={['src/pages/customization/theming/ThemingApplyPage.vue']}
 />
 
-## Creating a Custom Theme
+## Listening for Theme Changes
 
-This example intentionally applies a strong light-purple visual language and removes rounding across the UI (`borderRadius: 0`) to demonstrate how far Kritzel can be customized. It starts from `lightTheme`, then overrides multiple `KritzelTheme` groups (`engine`, `toolbar`, `menu`, `contextMenu`, `button`, and more) so the editor background, toolbar, menus, and actions all follow one coherent branded style.
+Listen for the `themeChange` event to react whenever the active theme changes. The event provides the new theme name through `event.detail`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  demoPath="/customization/theming/listen"
+  repoFiles={['src/pages/customization/theming/ThemingListenPage.vue']}
+/>
+
+## Creating a Custom Theme
+
+Create a custom theme by overriding the groups and properties of `KritzelTheme`, then provide it through the editor's `themes` prop. Activate it by passing its name to the `theme` prop.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/customization/theming/custom"
   repoFiles={['src/pages/customization/theming/ThemingCustomPage.vue']}
 />
 
-## Related API Methods
+## API Details
 
-- Applying themes (`theme`, `themes`)
-- Built-in presets (`lightTheme`, `darkTheme`)
-- Theme type (`KritzelTheme`, `ThemeName`)
-
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+For the full list of related APIs, see [Theming](../api-reference/theming.md).

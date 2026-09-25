@@ -11,36 +11,84 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-In Kritzel, the Viewport represents the visible area of the canvas. Because Kritzel supports potentially infinite or bounded canvas structures, users need to pan and zoom to navigate different areas of their drawing.
+In Kritzel, the viewport defines the portion of the canvas world currently displayed to the user. It tracks the current pan offset, zoom scale, and visible dimensions, while objects retain their own world coordinates.
 
-The Viewport API allows you to programmatically control the camera, read the current viewer state, and constrain navigation.
+The Viewport API lets you programmatically navigate the canvas, fit content into view, inspect and react to viewport changes, and constrain navigation.
 
-## Changing the Viewport
+## Panning
 
-You can programmatically set the viewport pan and zoom using `setViewport`, or use animated transitions via `panTo` and `zoomTo`.
+Use `panTo` to move the viewport to a world coordinate while preserving the current zoom. Use `setViewport` when you need to center the viewport on a world coordinate and explicitly retain or set the scale.
+
+The demo moves the viewport between a few world positions while preserving the current scale.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/viewport/change"
-  repoFiles={['src/pages/fundamentals/viewport/ViewportChangePage.tsx']}
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/viewport/pan"
+  repoFiles={['src/pages/fundamentals/viewport/ViewportPanPage.tsx']}
+/>
+
+## Zooming
+
+Use `zoomTo` to set an exact zoom scale, optionally anchoring the zoom around a world coordinate. For custom zoom controls, `zoomIn` and `zoomOut` apply a multiplicative zoom step around the current viewport center and support an animation duration.
+
+The demo includes step controls, an exact zoom level, and a zoom that stays anchored to a selected world position.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/viewport/zoom"
+  repoFiles={['src/pages/fundamentals/viewport/ViewportZoomPage.tsx']}
 />
 
 ## Centering Content
 
-Kritzel provides built-in methods to quickly navigate back to content. You can center individual objects using `centerObjectInViewport`, or reset the camera to view all currently drawn content via `backToContent`.
+Kritzel provides several ways to bring content into view. Use `panToObject` to move the viewport to an object without changing the current zoom. Use `centerObjects` to fit a specific set of objects, or `centerAllObjects` to fit all non-selection objects on the canvas.
+
+The `backToContent` method is optimized for recovery when the user has panned away from the drawing. It fits the nearest content objects, not necessarily every object in the workspace. If you specifically need an overview of everything, use `centerAllObjects`.
+
+`centerObjectInViewport` has a different purpose: it centers the object itself in the current viewport by updating the object, instead of panning the viewport. For navigation UI, prefer `panToObject` or `centerObjects`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/viewport/center"
   repoFiles={['src/pages/fundamentals/viewport/ViewportCenterPage.tsx']}
 />
 
-## Related API Methods
+## Zoom Limits
 
-The following methods are available on the Editor and Engine components for managing the viewport:
+Use `scaleMin` and `scaleMax` to keep the viewport's zoom within a supported range. Kritzel applies these limits to both user input and programmatic zoom operations.
 
-- State reading (`getViewport()`)
-- Camera control (`setViewport()`, `panTo()`, `zoomTo()`)
-- Content centering (`centerObjectInViewport()`, `backToContent()`)
+The demo provides 10% zoom-in and zoom-out steps. Continue selecting one direction to reach the configured limit; further selections keep the viewport at the clamped scale.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/viewport/limits"
+  repoFiles={['src/pages/fundamentals/viewport/ViewportLimitsPage.tsx']}
+/>
+
+## Boundaries
+
+Set `viewportBoundaryLeft`, `viewportBoundaryRight`, `viewportBoundaryTop`, and `viewportBoundaryBottom` to keep panning inside a bounded world area. When finite boundaries are configured, Kritzel may raise the effective minimum scale so the viewport cannot zoom out far enough to reveal space beyond those boundaries.
+
+The demo provides four controls that move the viewport 100 world units up, down, left, or right. Continue selecting one direction to reach that boundary; further selections keep the viewport at the constrained position.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/viewport/boundaries"
+  repoFiles={['src/pages/fundamentals/viewport/ViewportBoundariesPage.tsx']}
+/>
+
+## Events
+
+Kritzel emits `onViewportChange` with the latest position, scale, and dimensions whenever the view changes. The demo uses pan and zoom controls and displays the resulting viewport state in its toolbar.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/viewport/events"
+  repoFiles={['src/pages/fundamentals/viewport/ViewportEventsPage.tsx']}
+/>
+
+## API Details
+
+For the full list of related APIs, see the following reference sections.
+
+- [Viewport & Navigation](../api-reference/editor.md#viewport--navigation)

@@ -1,36 +1,34 @@
 <script setup lang="ts">
-
-import { KritzelEditor } from '@kritzel/vue-editor'
+import {
+  getEditorRef,
+  KritzelEditor,
+  KritzelWorkspace,
+  type KritzelBaseObject,
+} from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
   buttonStyle,
   editorStyle,
   hostStyle,
-  seedEditor,
   toolbarStyle,
-  getEditorRef,
 } from '../../shared/demo-shared'
-import { ref } from 'vue';
 
-type ObjectItem = Parameters<HTMLKritzelEditorElement['centerObjects']>[0][number]
-
-const editor = getEditorRef('editor');
-const objects = ref<ObjectItem[]>([])
-
-async function onReady() {
-  if (!editor.value) {
-    return
-  }
-
-  await seedEditor(editor.value)
-  objects.value = ((await editor.value.getAllObjects()) ?? []) as ObjectItem[]
-}
+const themes = [vueThemeLight, vueThemeDark]
+const objects: KritzelBaseObject<HTMLElement | SVGElement>[] = createSeedObjects()
+const workspaces = [new KritzelWorkspace({ objects })]
+const editor = getEditorRef('editor')
 
 async function centerOn(index: number) {
-  const target = objects.value[index]
+  const target = objects[index]
   if (target) {
-    await editor.value?.centerObjects([target] as unknown as Parameters<HTMLKritzelEditorElement['centerObjects']>[0])
+    await editor.value?.centerObjects([target])
   }
+}
+
+async function backToContent() {
+  await editor.value?.backToContent()
 }
 </script>
 
@@ -41,19 +39,19 @@ async function centerOn(index: number) {
       <button :style="buttonStyle(false)" :disabled="objects.length === 0" @click="centerOn(0)">Center on Rectangle</button>
       <button :style="buttonStyle(false)" :disabled="objects.length < 3" @click="centerOn(2)">Center on Line</button>
       <button :style="buttonStyle(false)" :disabled="objects.length < 4" @click="centerOn(3)">Center on Path</button>
-      <button :style="buttonStyle(false)" @click="editor?.backToContent()">Back to Content</button>
+      <button :style="buttonStyle(false)" @click="backToContent">Back to Content</button>
     </div>
     <KritzelEditor
       ref="editor"
       editorId="viewport-center"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
-      @isReady="onReady"
     />
   </div>
 </template>

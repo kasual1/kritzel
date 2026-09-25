@@ -1,25 +1,39 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { KritzelEditor } from '@kritzel/vue-editor'
+import { KritzelEditor, KritzelWorkspace, type LocaleCode } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
 
-const locale = ref('en')
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const activeLocale = ref<LocaleCode>('en')
+
+function onLocaleChange(event: CustomEvent<LocaleCode>) {
+  activeLocale.value = event.detail
+}
 </script>
 
 <template>
-  <div class="page">
-    <div class="toolbar">
-      <strong>Locale:</strong>
-      <button v-for="item in [['en', 'English'], ['de', 'German'], ['fr', 'French']]" :key="item[0]" @click="locale = item[0]">{{ item[1] }} ({{ item[0] }})</button>
+  <div :style="hostStyle">
+    <div :style="toolbarStyle">
+      <button :style="buttonStyle(activeLocale === 'en')" @click="activeLocale = 'en'">English</button>
+      <button :style="buttonStyle(activeLocale === 'de')" @click="activeLocale = 'de'">German</button>
+      <button :style="buttonStyle(activeLocale === 'fr')" @click="activeLocale = 'fr'">French</button>
     </div>
-    <KritzelEditor editorId="localization-switch" :locale="locale" theme="light" :themes="[vueThemeLight]" :isPanningEnabled="false" :isZoomingEnabled="false" :isMoreMenuVisible="true" :isWorkspaceManagerVisible="true" @localeChange="locale = $event.detail" />
-    <div class="status">Active Locale: {{ locale }}</div>
+    <KritzelEditor
+      editorId="localization-switch"
+      :locale="activeLocale"
+      :workspaces="workspaces"
+      theme="light"
+      :themes="themes"
+      :isPanningEnabled="false"
+      :isZoomingEnabled="false"
+      :isMoreMenuVisible="true"
+      :isWorkspaceManagerVisible="true"
+      :style="editorStyle"
+      @localeChange="onLocaleChange"
+    />
   </div>
 </template>
-
-<style scoped>
-.page { display: flex; flex-direction: column; height: 100vh; font-family: sans-serif; }
-.toolbar, .status { padding: 8px; background: #f5f5f5; border-bottom: 1px solid #ddd; display: flex; gap: 8px; }
-.status { border-top: 1px solid #ddd; border-bottom: 0; font-family: monospace; }
-KritzelEditor { flex: 1; min-height: 0; }
-</style>

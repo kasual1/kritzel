@@ -39,11 +39,11 @@ Instead, to center the camera viewport on a static image background or a station
 :::
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/examples/blueprint-defect-mapper"
   repoFiles={['src/pages/examples/BlueprintDefectMapperPage.tsx']}
 />
 
-The background scenery is registered directly in `onReady()` when the canvas activates. Because we want user-drawn drawings or shapes to sit on top of the architectural drawing, the image scenery item is loaded and pushed first. The custom `pointer-events: none` property applied to the blueprint layer allows users to select manually added pins or draw arrows over the blueprint scenery without dragging the floorplan background by mistake.
+The background image is loaded through `KritzelImage.fromUrl()` the first time `onIsReady` runs, centered at the world origin, and inserted before the defect pins so markers remain above it. Existing canvas objects are checked before seeding, which keeps React development remounts from duplicating the floorplan.
 
-To convert a standard mouse or pointer click into coordinate units, we measure the click relative to our `<KritzelEditor>` bounds and pass it to `screenToWorld(x, y)`. The resulting absolute coordinates act as the center pivot when constructing our customized circular `KritzelShape` pin objects on the canvas.
+To convert a click into canvas units, the page measures it relative to the `<KritzelEditor>` ref and passes the local coordinates to `screenToWorld(x, y)`. The returned world coordinates become the center point for a circular `KritzelShape`. Defect cards live in React state; status changes update both that state and the corresponding pin through `updateObject()`.

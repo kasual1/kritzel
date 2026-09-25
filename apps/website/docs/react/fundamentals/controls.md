@@ -11,24 +11,34 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-`<KritzelEditor>` includes a complete whiteboard interface, including toolbars, utility panels, context menus, and settings dialogs. You can selectively hide its built-in controls for a more focused experience, or replace the context-menu actions with controls tailored to your application.
+The `<KritzelEditor>` includes a complete set of whiteboard controls, including toolbars, utility panels, context menus, and settings dialogs. You can selectively hide them or adjust them to fit your application's behavior.
 
-## Controls
+## Toolbar and Utility Panel
 
-Use the Editor's visibility props to toggle its built-in controls. For example, setting `isWorkspaceManagerVisible` and `isMoreMenuVisible` to `false` hides the workspace manager and more menu. `isToolbarVisible`, `isUtilityPanelVisible`, and `isZoomPanelVisible` control the tool toolbar, utility panel, and zoom control panel.
+The toolbar provides the configured drawing and selection tools, while the utility panel exposes undo, redo, and delete actions. Set `isToolbarVisible` or `isUtilityPanelVisible` to `false` independently to replace either control surface without changing the editor's core functionality.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
-  demoPath="/fundamentals/controls/editor-ui"
-  repoFiles={['src/pages/fundamentals/controls/ComponentsEditorUiPage.tsx']}
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/controls/toolbar-utility-panel"
+  repoFiles={['src/pages/fundamentals/controls/ToolbarUtilityPanelPage.tsx']}
 />
 
-## Context Menus
+## Workspace Manager
 
-The Editor separates right-click actions into `globalContextMenuItems` for empty-canvas interactions and `objectContextMenuItems` for selected-object interactions. Each item accepts a `label`, an `icon`, and an `action` handler.
+The workspace manager in the top-left corner lets people switch between workspaces and create, rename, or delete them. Set `isWorkspaceManagerVisible` to `false` to hide it. Use a typed editor ref and await `openWorkspaceManagerMenu()` to programmatically open the workspace manager's menu after `onIsReady` fires.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/controls/workspace-manager-open"
+  repoFiles={['src/pages/fundamentals/controls/WorkspaceManagerOpenPage.tsx']}
+/>
+
+## Context Menu
+
+The Editor separates right-click actions into two arrays: `globalContextMenuItems` for empty-canvas interactions and `objectContextMenuItems` for selected-object interactions. Each item accepts a `label`, an `icon`, and an `action` handler. Keep these array props stable with `useMemo` or module-level constants.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/controls/context-menus-canvas-quick-actions"
   repoFiles={['src/pages/fundamentals/controls/ContextMenusCanvasQuickActionsPage.tsx']}
 />
@@ -36,7 +46,7 @@ The Editor separates right-click actions into `globalContextMenuItems` for empty
 Items can also call clipboard methods such as `copy`, `paste`, and `delete`, wiring the menu to the same actions available from keyboard shortcuts.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/controls/context-menus-clipboard-actions"
   repoFiles={['src/pages/fundamentals/controls/ContextMenusClipboardActionsPage.tsx']}
 />
@@ -44,18 +54,57 @@ Items can also call clipboard methods such as `copy`, `paste`, and `delete`, wir
 Use `group` to cluster related entries with a separator, and `children` to nest a submenu of arbitrary depth for actions that do not need a top-level entry.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/controls/context-menus-object-inspector"
   repoFiles={['src/pages/fundamentals/controls/ContextMenusObjectInspectorPage.tsx']}
 />
 
-The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling Select All when the viewport is empty.
-The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling Select All when the viewport is empty.
+The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling "Select All" when the viewport is empty.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/controls/context-menus-smart-conditional"
   repoFiles={['src/pages/fundamentals/controls/ContextMenusSmartConditionalPage.tsx']}
+/>
+
+## More Menu
+
+The more menu in the top-right corner groups secondary editor actions. Set `isMoreMenuVisible` to `false` to hide it. Await `openMoreMenu()` to programmatically open it. Pass a stable array of menu items to the `moreMenuItems` prop to configure the actions shown in the menu.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/controls/more-menu-open"
+  repoFiles={['src/pages/fundamentals/controls/MoreMenuOpenPage.tsx']}
+/>
+
+## Export Dialog
+
+The export dialog allows users to save the current viewport as an image or export the current workspace as JSON. You can open it from the default more menu or await `openExportDialog()` on the editor ref after the editor is ready.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/controls/export-dialog"
+  repoFiles={['src/pages/fundamentals/controls/ExportDialogPage.tsx']}
+/>
+
+## Import Dialog
+
+The import dialog allows users to load a workspace stored as JSON. You can open it from the default more menu or await `openImportDialog()` on the editor ref.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/controls/import-dialog"
+  repoFiles={['src/pages/fundamentals/controls/ImportDialogPage.tsx']}
+/>
+
+## Zoom Panel
+
+The zoom panel shows the current zoom level and provides zoom-in and zoom-out buttons. Set `isZoomPanelVisible` to `false` to hide it. On small screens, the zoom panel is automatically hidden to save space.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  demoPath="/fundamentals/controls/zoom-panel-toggle"
+  repoFiles={['src/pages/fundamentals/controls/ZoomPanelTogglePage.tsx']}
 />
 
 ## Notifications
@@ -63,15 +112,14 @@ The optional `isVisible` and `isDisabled` conditions accept booleans or async fu
 Call `triggerNotification()` to display a transient message in the editor. Notifications have `info`, `warning`, and `error` types, allowing your application to provide feedback without building a separate notification surface.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
   demoPath="/fundamentals/controls/notifications-trigger"
   repoFiles={['src/pages/fundamentals/controls/NotificationsTriggerPage.tsx']}
 />
 
-## Related API Methods
+## API Details
 
-- Context menu configuration (`globalContextMenuItems`, `objectContextMenuItems`, `ContextMenuItem`)
-- Editor UI options (`isToolbarVisible`, `isUtilityPanelVisible`, `isWorkspaceManagerVisible`, `isMoreMenuVisible`, `isZoomPanelVisible`, `moreMenuItems`)
-- Notifications (`triggerNotification`, `KritzelNotification`)
+For the full list of related APIs, see the following reference sections.
 
-For a comprehensive view, see the [API Reference](../api-reference/editor.md).
+- [UI Elements](../api-reference/editor.md#ui-elements)
+- [General](../api-reference/editor.md#general)

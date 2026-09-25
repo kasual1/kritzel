@@ -32,11 +32,11 @@ This example makes use of the following core concepts. Click on the links below 
 A presentation-style explorer layout with a dashboard header, grouped tree navigation, and an inline inspector for updating coordinates, dimensions, text, fill colors, and visibility behavior.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
   demoPath="/examples/object-explorer"
   repoFiles={['src/pages/examples/ObjectExplorerPage.vue']}
 />
 
-The object list is seeded in `onReady()` and kept in sync via the `objectsAdded`, `objectsRemoved`, and `objectsUpdated` event callbacks. Root objects are derived by filtering out any IDs that appear as children inside `KritzelGroup` objects. Selecting a tree node calls `updateObject()` to apply property changes from the inspector fields in real time.
+The object list is seeded through the editor's `workspaces` prop and kept in sync via the `objectsAdded`, `objectsRemoved`, and `objectsUpdated` event callbacks. Root objects are derived by filtering out any IDs that appear as children inside `KritzelGroup` objects. Selecting a tree node calls `updateObject()` to apply property changes from the inspector fields in real time.
 
 Clicking a tree entry highlights the corresponding canvas object and pans the viewport to bring it into view using `setViewport()`. The tree supports expand/collapse for groups, text search across IDs and types, and type-based chip filters - all driven purely from the local signal state without additional API calls.

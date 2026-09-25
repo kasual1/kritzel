@@ -18,7 +18,7 @@ Kritzel comes with a dedicated system for managing custom fonts, allowing you to
 You can register fonts declaratively via the `[customFonts]` binding on `<kritzel-editor>` or programmatically using `registerFonts()`. Registered fonts come immediately available as options in the text tool and can be applied to the editor's UI.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/customization/fonts/register"
   repoFiles={['src/app/pages/customization/fonts/fonts-register.component.ts']}
 />
@@ -30,7 +30,7 @@ To make use of a custom font in the editor's controls, you first have to registe
 To override only specifc UI elements, set the font family on the relevant component-specific theme property, such as `dialog.fontFamily` or `contextMenu.fontFamily`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel-demos/tree/main/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
   demoPath="/customization/fonts/ui-font-family"
   repoFiles={['src/app/pages/customization/fonts/fonts-ui-font-family.component.ts']}
 />

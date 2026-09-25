@@ -1,17 +1,16 @@
 <script setup lang="ts">
-
-import { KritzelEditor } from '@kritzel/vue-editor'
+import { ref } from 'vue'
+import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
   buttonStyle,
   editorStyle,
   hostStyle,
-  seedEditor,
   statusBarStyle,
   toolbarStyle,
-  getEditorRef,
 } from '../../shared/demo-shared'
-import { ref } from 'vue'
 
 type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text'
 
@@ -24,18 +23,14 @@ const tools: Array<{ name: ToolName; label: string }> = [
   { name: 'text', label: 'Text' },
 ]
 
-const editor = getEditorRef('editor');
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const editor = getEditorRef('editor')
 const activeTool = ref<ToolName>('select')
 
 async function setTool(name: ToolName) {
   activeTool.value = name
   await editor.value?.setActiveTool(name)
-}
-
-async function onReady() {
-  if (editor.value) {
-    await seedEditor(editor.value)
-  }
 }
 </script>
 
@@ -55,14 +50,14 @@ async function onReady() {
       ref="editor"
       editorId="tools-change"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :isToolbarVisible="false"
       :style="editorStyle"
-      @isReady="onReady"
     />
     <div :style="statusBarStyle">
       Active tool: <strong>{{ activeTool }}</strong>

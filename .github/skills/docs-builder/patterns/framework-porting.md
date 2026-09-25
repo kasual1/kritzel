@@ -47,8 +47,8 @@ When adding or porting <LiveDemo> blocks:
 - Preserve section placement and narrative around the demo.
 
 2. Use framework-specific repository roots.
-- React: https://github.com/kasual1/kritzel-demos/tree/main/react
-- Vue: https://github.com/kasual1/kritzel-demos/tree/main/vue
+- React: https://github.com/kasual1/kritzel/tree/main/demos/react
+- Vue: https://github.com/kasual1/kritzel/tree/main/demos/vue
 
 3. Keep route semantics consistent.
 - Reuse equivalent demoPath values from Angular where the route convention matches.

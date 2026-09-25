@@ -75,7 +75,7 @@ function getBranchVariants(branch: string): string[] {
   return [branch];
 }
 
-function buildRawBaseCandidates(repoUrl: string, framework: DemoFramework): string[] {
+function buildRawBaseCandidates(repoUrl: string): string[] {
   const parsed = parseGitHubUrl(repoUrl);
   if (!parsed) {
     return [];
@@ -87,10 +87,6 @@ function buildRawBaseCandidates(repoUrl: string, framework: DemoFramework): stri
 
   for (const currentBranch of branches) {
     bases.push(`https://raw.githubusercontent.com/${owner}/${repo}/${currentBranch}/${path}/`);
-
-    if (repo === 'kritzel-demos') {
-      bases.push(`https://raw.githubusercontent.com/${owner}/kritzel/${currentBranch}/apps/demos/${framework}/`);
-    }
   }
 
   return Array.from(new Set(bases));
@@ -221,7 +217,7 @@ export default function LiveDemo({
   const demoBaseUrls = getDemoBaseUrls(siteConfig.customFields);
   const resolvedDemoFramework = demoFramework ?? getFrameworkFromPathname(pathname) ?? 'angular';
   const rawBase = repoUrl ? buildRawBaseUrl(repoUrl) : null;
-  const rawBaseCandidates = repoUrl ? buildRawBaseCandidates(repoUrl, resolvedDemoFramework) : [];
+  const rawBaseCandidates = repoUrl ? buildRawBaseCandidates(repoUrl) : [];
   const demoBaseUrl = demoBaseUrls[resolvedDemoFramework];
   const resolvedIframeUrl = iframeUrl ?? (demoPath && demoBaseUrl ? buildDemoUrl(demoBaseUrl, demoPath) : undefined);
   const resolvedStackBlitzUrl = stackBlitzUrl
