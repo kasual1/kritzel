@@ -49,7 +49,6 @@ const LEGACY_DOC_PATHS: Record<string, string> = {
   "example-blueprint-defect-mapper": "examples/blueprint-defect-mapper",
   "example-slideshow-presentation": "examples/slideshow-presentation",
   "example-image-annotation-studio": "examples/image-annotation-studio",
-  "example-infinite-canvas-gallery": "examples/infinite-canvas-gallery",
   "api-reference-editor": "api-reference/editor",
   "api-reference-engine": "api-reference/engine",
   objects: "api-reference/objects",

@@ -476,10 +476,4 @@ export const demoRoutes = [
     category: 'examples',
     component: () => import('./pages/examples/ImageAnnotationStudioPage.vue'),
   },
-  {
-    path: '/examples/infinite-canvas-gallery',
-    title: 'Infinite Canvas Gallery',
-    category: 'examples',
-    component: () => import('./pages/examples/InfiniteCanvasGalleryPage.vue'),
-  },
 ] satisfies readonly DemoRoute[]
