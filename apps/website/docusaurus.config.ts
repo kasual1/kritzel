@@ -306,6 +306,14 @@ const config: Config = {
   } satisfies Preset.ThemeConfig,
   headTags: [
     {
+      tagName: "link",
+      attributes: {
+        rel: "apple-touch-icon",
+        sizes: "512x512",
+        href: "/img/logo_avatar.png",
+      },
+    },
+    {
       tagName: "script",
       attributes: {
         defer: true,
