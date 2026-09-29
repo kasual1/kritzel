@@ -3,7 +3,8 @@ import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-edit
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
@@ -16,9 +17,9 @@ async function openDialog() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button type="button" :style="buttonStyle()" @click="openDialog">Open import dialog</button>
-    </div>
+    <Toolbar>
+      <button type="button" @click="openDialog">Open import dialog</button>
+    </Toolbar>
     <KritzelEditor
       ref="editor"
       editorId="import-dialog"

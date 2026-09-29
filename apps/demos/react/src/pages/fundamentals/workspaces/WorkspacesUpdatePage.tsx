@@ -14,11 +14,10 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 interface WorkspaceVariant {
   name: string;
@@ -154,14 +153,14 @@ export function WorkspacesUpdatePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle()} onClick={() => void updateWorkspace()}>
+      <Toolbar>
+        <button onClick={() => void updateWorkspace()}>
           Update Workspace
         </button>
-        <span style={{ fontSize: "13px" }}>
+        <span className="status">
           Current: {activeWorkspace?.name}
         </span>
-      </div>
+      </Toolbar>
       <div style={contentStyle}>
         <KritzelEditor
           ref={editorRef}

@@ -9,11 +9,10 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -53,13 +52,13 @@ export function ObjectsOrderingPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void selectAll()}>Select All</button>
-        <button style={buttonStyle(false)} onClick={() => void reorder("bringToFront")}>Bring to Front</button>
-        <button style={buttonStyle(false)} onClick={() => void reorder("bringForward")}>Bring Forward</button>
-        <button style={buttonStyle(false)} onClick={() => void reorder("sendBackward")}>Send Backward</button>
-        <button style={buttonStyle(false)} onClick={() => void reorder("sendToBack")}>Send to Back</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void selectAll()}>Select All</button>
+        <button onClick={() => void reorder("bringToFront")}>Bring to Front</button>
+        <button onClick={() => void reorder("bringForward")}>Bring Forward</button>
+        <button onClick={() => void reorder("sendBackward")}>Send Backward</button>
+        <button onClick={() => void reorder("sendToBack")}>Send to Back</button>
+      </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}

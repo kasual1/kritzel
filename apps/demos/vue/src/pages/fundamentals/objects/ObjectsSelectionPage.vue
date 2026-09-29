@@ -10,11 +10,10 @@ import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const selectedObjects = ref<KritzelBaseObject[]>([])
@@ -46,11 +45,11 @@ async function clearSelection() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" @click="selectAll">Select All</button>
-      <button :style="buttonStyle(false)" @click="selectFirst">Select Object</button>
-      <button :style="buttonStyle(false)" @click="clearSelection">Clear Selection</button>
-    </div>
+    <Toolbar>
+      <button @click="selectAll">Select All</button>
+      <button @click="selectFirst">Select Object</button>
+      <button @click="clearSelection">Clear Selection</button>
+    </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
         ref="editor"

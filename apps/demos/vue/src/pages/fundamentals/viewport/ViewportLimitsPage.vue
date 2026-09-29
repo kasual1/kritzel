@@ -3,7 +3,8 @@ import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-edit
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const zoomFactor = 1.1
 const themes = [vueThemeLight, vueThemeDark]
@@ -21,10 +22,10 @@ async function zoomOut() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" @click="zoomIn">Zoom In</button>
-      <button :style="buttonStyle(false)" @click="zoomOut">Zoom Out</button>
-    </div>
+    <Toolbar>
+      <button @click="zoomIn">Zoom In</button>
+      <button @click="zoomOut">Zoom Out</button>
+    </Toolbar>
     <KritzelEditor
       ref="editor"
       editorId="viewport-limits"

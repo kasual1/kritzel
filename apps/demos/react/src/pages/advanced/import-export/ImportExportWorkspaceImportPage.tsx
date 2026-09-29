@@ -12,6 +12,7 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
+import { Toolbar } from "../../../components/Toolbar";
 
 function createImportedWorkspaceObjects(): KritzelBaseObject[] {
   return [
@@ -90,11 +91,11 @@ export function ImportExportWorkspaceImportPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", fontFamily: "sans-serif" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#f5f5f5", borderBottom: "1px solid #e0e0e0" }}>
-        <span style={{ fontWeight: 700, fontSize: 13, color: "#61dafb", marginRight: 4 }}>Workspace Import</span>
+      <Toolbar>
+        <span className="label">Workspace Import</span>
         <button onClick={() => void importJson()}>Import Workspace</button>
-        <span style={{ fontSize: 12, color: "#555" }}>Active workspace: {activeWorkspaceName}</span>
-      </div>
+        <span className="status">Active workspace: {activeWorkspaceName}</span>
+      </Toolbar>
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}

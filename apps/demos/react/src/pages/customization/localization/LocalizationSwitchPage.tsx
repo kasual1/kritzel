@@ -2,7 +2,8 @@ import { useRef, useState } from "react";
 import { KritzelEditor, type HTMLKritzelEditorElement, type LocaleCode } from "@kritzel/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { buttonStyle, editorStyle, hostStyle, seedEditor, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 const localeOptions: { code: LocaleCode; label: string }[] = [
@@ -17,11 +18,11 @@ export function LocalizationSwitchPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
+      <Toolbar>
         {localeOptions.map(({ code, label }) => (
-          <button key={code} style={buttonStyle(locale === code)} onClick={() => setLocale(code)}>{label}</button>
+          <button key={code} className={locale === code ? "active" : undefined} onClick={() => setLocale(code)}>{label}</button>
         ))}
-      </div>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="localization-switch"

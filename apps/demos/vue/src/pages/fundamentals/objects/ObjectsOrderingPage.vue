@@ -10,11 +10,10 @@ import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 function createOverlappingSeedObjects(): KritzelBaseObject[] {
   return createSeedObjects().map((object) => {
@@ -68,13 +67,13 @@ async function sendToBack() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" @click="selectAll">Select All</button>
-      <button :style="buttonStyle(false)" @click="bringToFront">Bring to Front</button>
-      <button :style="buttonStyle(false)" @click="bringForward">Bring Forward</button>
-      <button :style="buttonStyle(false)" @click="sendBackward">Send Backward</button>
-      <button :style="buttonStyle(false)" @click="sendToBack">Send to Back</button>
-    </div>
+    <Toolbar>
+      <button @click="selectAll">Select All</button>
+      <button @click="bringToFront">Bring to Front</button>
+      <button @click="bringForward">Bring Forward</button>
+      <button @click="sendBackward">Send Backward</button>
+      <button @click="sendToBack">Send to Back</button>
+    </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
         ref="editor"

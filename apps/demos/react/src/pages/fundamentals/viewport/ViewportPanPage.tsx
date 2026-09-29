@@ -2,7 +2,8 @@ import { useRef } from "react";
 import { KritzelEditor, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { buttonStyle, editorStyle, hostStyle, seedEditor, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -21,11 +22,11 @@ export function ViewportPanPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle()} onClick={() => void editorRef.current?.panTo(0, 0)}>Pan to Origin</button>
-        <button style={buttonStyle()} onClick={() => void editorRef.current?.panTo(200, 150)}>Pan to (200, 150)</button>
-        <button style={buttonStyle()} onClick={() => void setViewportCenter()}>Center on (100, 100)</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void editorRef.current?.panTo(0, 0)}>Pan to Origin</button>
+        <button onClick={() => void editorRef.current?.panTo(200, 150)}>Pan to (200, 150)</button>
+        <button onClick={() => void setViewportCenter()}>Center on (100, 100)</button>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="viewport-pan"

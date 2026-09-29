@@ -12,8 +12,8 @@ import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 export function CollaborationRealtimePage() {
   const syncConfig = useMemo<KritzelSyncConfig>(
@@ -32,10 +32,10 @@ export function CollaborationRealtimePage() {
 
   return (
     <div style={{ ...hostStyle, background: "radial-gradient(circle at 0% 0%, #e9f8ff 0%, #ffffff 42%)" }}>
-      <div style={toolbarStyle}>
-        <span style={{ fontWeight: 700, color: "#087ea4", fontSize: "13px" }}>Real-time Sync</span>
-        <span style={{ fontSize: "12px", color: "#065d7a" }}>Configured for Hocuspocus server</span>
-      </div>
+      <Toolbar>
+        <span className="label">Real-time Sync</span>
+        <span className="status">Configured for Hocuspocus server</span>
+      </Toolbar>
       <KritzelEditor
         editorId="collaboration-realtime"
         syncConfig={syncConfig}

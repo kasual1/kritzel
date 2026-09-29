@@ -12,11 +12,10 @@ import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
@@ -102,18 +101,18 @@ async function onActiveWorkspaceChange(
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="addWorkspace">Add Workspace</button>
-      <span :style="{ width: '1px', height: '24px', background: '#d9d9d9' }" />
+    <Toolbar>
+      <button @click="addWorkspace">Add Workspace</button>
+      <span class="separator" />
       <button
         v-for="workspace in workspaces"
         :key="workspace.id"
-        :style="buttonStyle(workspace.id === activeWorkspaceId)"
+        :class="{ active: workspace.id === activeWorkspaceId }"
         @click="switchTo(workspace)"
       >
         {{ workspace.name }}
       </button>
-    </div>
+    </Toolbar>
     <div :style="contentStyle">
       <KritzelEditor
         ref="editor"

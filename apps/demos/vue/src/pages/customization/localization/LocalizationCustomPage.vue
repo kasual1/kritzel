@@ -4,7 +4,8 @@ import { KritzelEditor, KritzelWorkspace, type KritzelLocale, type LocaleCode } 
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
@@ -31,9 +32,9 @@ const activeLocale = ref<LocaleCode>('es')
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(activeLocale === 'es')" @click="activeLocale = 'es'">Espanol</button>
-    </div>
+    <Toolbar>
+      <button :class="{ active: activeLocale === 'es' }" @click="activeLocale = 'es'">Espanol</button>
+    </Toolbar>
     <KritzelEditor
       editorId="localization-custom"
       :locales="customLocales"

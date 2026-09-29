@@ -3,6 +3,7 @@ import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-edit
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
@@ -19,10 +20,10 @@ async function exportAsSvg(): Promise<void> {
 
 <template>
   <div class="page">
-    <div class="toolbar">
+    <Toolbar>
       <button type="button" @click="exportAsPng">Export as PNG</button>
       <button type="button" @click="exportAsSvg">Export as SVG</button>
-    </div>
+    </Toolbar>
     <div class="editor-wrap">
       <KritzelEditor
         ref="editor"
@@ -41,7 +42,6 @@ async function exportAsSvg(): Promise<void> {
 
 <style scoped>
 .page { display: flex; flex-direction: column; height: 100vh; font-family: sans-serif; }
-.toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; }
 .editor-wrap { flex: 1; position: relative; min-height: 0; }
 .editor-wrap > * { display: block; height: 100%; }
 </style>

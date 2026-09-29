@@ -8,7 +8,8 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -44,31 +45,28 @@ export function ObjectsUpdatePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void selectFirst()}>Select Object</button>
-        <span style={{ width: "1px", height: "24px", background: "#d9d9d9" }} />
+      <Toolbar>
+        <button onClick={() => void selectFirst()}>Select Object</button>
+        <span className="separator" />
         <button
-          style={buttonStyle(false)}
           disabled={selectionCount !== 1}
           onClick={() => void updateSelected({ translateX: (selected?.translateX ?? 0) + 40 })}
         >
           Move Right
         </button>
         <button
-          style={buttonStyle(false)}
           disabled={selectionCount !== 1}
           onClick={() => void updateSelected({ rotation: ((selected?.rotation ?? 0) + 15) % 360 })}
         >
           Rotate 15°
         </button>
         <button
-          style={buttonStyle(false)}
           disabled={selectionCount !== 1}
           onClick={() => void updateSelected({ opacity: selected?.opacity === 1 ? 0.4 : 1 })}
         >
           Toggle Opacity
         </button>
-      </div>
+      </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}

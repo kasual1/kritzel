@@ -11,11 +11,10 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 const syncConfig: KritzelSyncConfig = {
@@ -71,20 +70,20 @@ export function WorkspacesCreatePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle()} onClick={() => void addWorkspace()}>
+      <Toolbar>
+        <button onClick={() => void addWorkspace()}>
           Add Workspace
         </button>
         {workspaces.map((workspace) => (
           <button
             key={workspace.id}
-            style={buttonStyle(workspace.id === activeWorkspaceId)}
+            className={workspace.id === activeWorkspaceId ? "active" : undefined}
             onClick={() => void switchTo(workspace)}
           >
             {workspace.name}
           </button>
         ))}
-      </div>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="workspaces-create"

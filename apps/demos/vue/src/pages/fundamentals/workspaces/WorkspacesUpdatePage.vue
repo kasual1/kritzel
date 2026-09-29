@@ -15,11 +15,10 @@ import {
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 interface WorkspaceVariant {
   name: string
@@ -230,12 +229,12 @@ async function updateWorkspace() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="updateWorkspace">
+    <Toolbar>
+      <button @click="updateWorkspace">
         Update Workspace
       </button>
       <span>Current: {{ activeWorkspace?.name }}</span>
-    </div>
+    </Toolbar>
     <div :style="contentStyle">
       <KritzelEditor
         ref="editor"

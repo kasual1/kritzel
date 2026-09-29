@@ -3,7 +3,8 @@ import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-edit
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const panStep = 100
 const themes = [vueThemeLight, vueThemeDark]
@@ -44,12 +45,12 @@ async function panRight() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" @click="panUp">Pan Up</button>
-      <button :style="buttonStyle(false)" @click="panDown">Pan Down</button>
-      <button :style="buttonStyle(false)" @click="panLeft">Pan Left</button>
-      <button :style="buttonStyle(false)" @click="panRight">Pan Right</button>
-    </div>
+    <Toolbar>
+      <button @click="panUp">Pan Up</button>
+      <button @click="panDown">Pan Down</button>
+      <button @click="panLeft">Pan Left</button>
+      <button @click="panRight">Pan Right</button>
+    </Toolbar>
     <KritzelEditor
       ref="editor"
       editorId="viewport-boundaries"

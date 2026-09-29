@@ -15,11 +15,10 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 interface WorkspacePalette {
   fill: string;
@@ -146,17 +145,17 @@ export function WorkspacesSwitchPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
+      <Toolbar>
         {workspaces.map((workspace) => (
           <button
             key={workspace.id}
-            style={buttonStyle(activeWorkspaceId === workspace.id)}
+            className={activeWorkspaceId === workspace.id ? "active" : undefined}
             onClick={() => void switchTo(workspace)}
           >
             {workspace.name}
           </button>
         ))}
-      </div>
+      </Toolbar>
       <div style={contentStyle}>
         <KritzelEditor
           ref={editorRef}
