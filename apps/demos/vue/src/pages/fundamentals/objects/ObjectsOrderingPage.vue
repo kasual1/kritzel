@@ -14,6 +14,11 @@ import {
   hostStyle,
 } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
+import InfoPanelToggle from '../../../components/InfoPanelToggle.vue'
+import { useInfoPanel } from '../../../components/info-panel'
+
+const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 function createOverlappingSeedObjects(): KritzelBaseObject[] {
   return createSeedObjects().map((object) => {
@@ -73,6 +78,7 @@ async function sendToBack() {
       <button @click="bringForward">Bring Forward</button>
       <button @click="sendBackward">Send Backward</button>
       <button @click="sendToBack">Send to Back</button>
+      <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
@@ -88,8 +94,8 @@ async function sendToBack() {
         :style="editorStyle"
         @objectsSelectionChange="refreshObjects"
       />
-      <aside :style="{ width: '200px', borderLeft: '1px solid #ebebeb', padding: '8px', overflowY: 'auto', fontSize: '13px' }">
-        <h3 :style="{ margin: '0 0 8px', fontSize: '14px' }">Objects (z-order)</h3>
+      <InfoPanel :panel="infoPanel" width="180px">
+        <h3>Objects (z-order)</h3>
         <ul :style="{ listStyle: 'none', margin: 0, padding: 0 }">
           <li
             v-for="obj in objects"
@@ -100,7 +106,7 @@ async function sendToBack() {
             <span :style="{ color: '#999', fontFamily: 'monospace' }">z:{{ obj.zIndex }}</span>
           </li>
         </ul>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>

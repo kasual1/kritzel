@@ -6,6 +6,11 @@ import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import { editorStyle, hostStyle } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
+import InfoPanelToggle from '../../../components/InfoPanelToggle.vue'
+import { useInfoPanel } from '../../../components/info-panel'
+
+const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
@@ -27,6 +32,7 @@ function onThemeChange(event: CustomEvent<string>) {
     <Toolbar>
       <button :class="{ active: activeTheme === 'light' }" @click="applyTheme('light')">Light</button>
       <button :class="{ active: activeTheme === 'dark' }" @click="applyTheme('dark')">Dark</button>
+      <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div class="content">
       <KritzelEditor
@@ -42,20 +48,18 @@ function onThemeChange(event: CustomEvent<string>) {
         @isReady="applyTheme('light')"
         @themeChange="onThemeChange"
       />
-      <aside>
+      <InfoPanel :panel="infoPanel" width="220px">
         <h3>Theme changes</h3>
         <ul>
           <li v-for="(theme, index) in themeHistory" :key="`${index}-${theme}`">{{ theme }}</li>
         </ul>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>
 
 <style scoped>
 .content { display: flex; flex: 1; min-height: 0; }
-aside { box-sizing: border-box; width: 220px; padding: 12px; border-left: 1px solid #e5e7eb; background: #fff; }
-h3 { margin: 0 0 12px; font-size: 14px; }
 ul { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
 li { padding: 6px 8px; border: 1px solid #e5e7eb; border-radius: 4px; background: #f9fafb; font: 12px monospace; }
 </style>

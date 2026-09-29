@@ -19,6 +19,7 @@ import {
   hostStyle,
 } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
 
 interface WorkspacePalette {
   fill: string
@@ -165,13 +166,6 @@ const contentStyle: CSSProperties = {
   minHeight: 0,
   position: 'relative',
 }
-const infoPanelStyle: CSSProperties = {
-  width: '300px',
-  padding: '12px',
-  overflow: 'auto',
-  borderLeft: '1px solid #ebebeb',
-  background: '#ffffff',
-}
 const preStyle: CSSProperties = {
   margin: 0,
   overflowWrap: 'anywhere',
@@ -217,10 +211,10 @@ function switchTo(workspace: KritzelWorkspace) {
         :style="editorStyle"
         @activeWorkspaceChange="onActiveWorkspaceChange"
       />
-      <aside :style="infoPanelStyle">
+      <InfoPanel width="300px">
         <h3>Active Workspace</h3>
         <pre :style="preStyle">{{ activeWorkspaceJson }}</pre>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>

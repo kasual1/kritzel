@@ -21,6 +21,7 @@ import {
 import { reactThemeLight } from "../../const/react-theme-light";
 import { reactThemeDark } from "../../const/react-theme-dark";
 import { createSeedObjects } from "../getting-started/seed-objects";
+import { InfoPanel, useInfoPanel } from "../../components/InfoPanel";
 
 type AnyObject = KritzelBaseObject<HTMLElement | SVGElement> & {
   childIds?: string[];
@@ -59,18 +60,6 @@ const editorStyle: CSSProperties = {
   display: "block",
   width: "100%",
   height: "100%",
-};
-
-const asideStyle: CSSProperties = {
-  width: "340px",
-  overflowY: "auto",
-  borderLeft: "1px solid #d8e8ee",
-  backgroundColor: "#ffffff",
-  padding: "12px",
-  fontSize: "13px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
 };
 
 const taglineStyle: CSSProperties = {
@@ -178,6 +167,7 @@ function resolveThemeColor(raw: unknown, fallback: string): string {
 
 export function ObjectExplorerPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel({ showOnMobile: true });
   const selectionEditorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const selectionHandlerRef = useRef<(() => void) | null>(null);
 
@@ -559,7 +549,7 @@ export function ObjectExplorerPage() {
           />
         </div>
 
-        <aside style={asideStyle}>
+        <InfoPanel panel={infoPanel} width="340px" bodyPadding="12px" contentColumn>
           <div style={{ borderBottom: "1px solid #d8e8ee", paddingBottom: "10px" }}>
             <span style={taglineStyle}>Explorer Mode</span>
             <h2 style={{ margin: 0, color: "#0959a4", fontSize: "18px", lineHeight: 1.2 }}>
@@ -732,7 +722,7 @@ export function ObjectExplorerPage() {
               </div>
             </section>
           )}
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

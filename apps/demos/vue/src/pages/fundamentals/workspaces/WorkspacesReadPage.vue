@@ -16,6 +16,11 @@ import {
   hostStyle,
 } from '../../shared/demo-shared'
 import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
+import InfoPanelToggle from '../../../components/InfoPanelToggle.vue'
+import { useInfoPanel } from '../../../components/info-panel'
+
+const infoPanel = useInfoPanel()
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
@@ -46,13 +51,6 @@ const contentStyle: CSSProperties = {
   flex: 1,
   minHeight: 0,
   position: 'relative',
-}
-const infoPanelStyle: CSSProperties = {
-  width: '300px',
-  padding: '12px',
-  overflow: 'auto',
-  borderLeft: '1px solid #ebebeb',
-  background: '#ffffff',
 }
 const preStyle: CSSProperties = {
   margin: 0,
@@ -112,6 +110,7 @@ async function onActiveWorkspaceChange(
       >
         {{ workspace.name }}
       </button>
+      <InfoPanelToggle :panel="infoPanel" />
     </Toolbar>
     <div :style="contentStyle">
       <KritzelEditor
@@ -130,10 +129,10 @@ async function onActiveWorkspaceChange(
         @isReady="onReady"
         @activeWorkspaceChange="onActiveWorkspaceChange"
       />
-      <aside :style="infoPanelStyle">
+      <InfoPanel :panel="infoPanel" width="300px">
         <h3>Active Workspace</h3>
         <pre :style="preStyle">{{ activeWorkspaceJson }}</pre>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>

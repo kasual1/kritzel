@@ -9,6 +9,7 @@ import {
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
 import { reactThemeDark } from "../../const/react-theme-dark";
+import { InfoPanel, useInfoPanel } from "../../components/InfoPanel";
 
 type DefectStatus = "Outstanding" | "In Progress" | "Resolved";
 
@@ -75,16 +76,6 @@ const placingToastStyle: CSSProperties = {
   boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
   zIndex: 10,
   border: "1px solid rgba(255, 255, 255, 0.2)",
-};
-
-const sidebarStyle: CSSProperties = {
-  width: "320px",
-  borderLeft: "1px solid #d8e8ee",
-  background: "#ffffff",
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
-  boxShadow: "-1px 0 3px rgba(9, 89, 164, 0.05)",
 };
 
 const sidebarHeaderStyle: CSSProperties = {
@@ -178,6 +169,7 @@ const statusColors: Record<DefectStatus, string> = {
 
 export function BlueprintDefectMapperPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel({ showOnMobile: true });
   const nextDefectId = useRef(2);
 
   const [placingMode, setPlacingMode] = useState(false);
@@ -498,7 +490,7 @@ export function BlueprintDefectMapperPage() {
         )}
       </div>
 
-      <aside style={sidebarStyle}>
+      <InfoPanel panel={infoPanel} width="320px" bodyPadding="0" contentColumn>
         <div style={sidebarHeaderStyle}>
           <span style={badgeStyle}>Facilities</span>
           <h2 style={{ margin: "0 0 4px 0", fontSize: "18px", fontWeight: 600, color: "#333333" }}>
@@ -620,7 +612,7 @@ export function BlueprintDefectMapperPage() {
             )}
           </div>
         </div>
-      </aside>
+      </InfoPanel>
     </div>
   );
 }
