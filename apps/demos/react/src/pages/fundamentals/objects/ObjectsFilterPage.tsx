@@ -8,7 +8,8 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -57,14 +58,14 @@ export function ObjectsFilterPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void queryByType("KritzelShape")}>Shapes</button>
-        <button style={buttonStyle(false)} onClick={() => void queryByType("KritzelPath")}>Paths</button>
-        <button style={buttonStyle(false)} onClick={() => void queryByType("KritzelLine")}>Lines</button>
-        <button style={buttonStyle(false)} onClick={() => void queryAll()}>All</button>
-        <button style={buttonStyle(false)} onClick={() => void queryNone()}>None</button>
-        <button style={buttonStyle(false)} onClick={() => void queryInViewport()}>In Viewport</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void queryByType("KritzelShape")}>Shapes</button>
+        <button onClick={() => void queryByType("KritzelPath")}>Paths</button>
+        <button onClick={() => void queryByType("KritzelLine")}>Lines</button>
+        <button onClick={() => void queryAll()}>All</button>
+        <button onClick={() => void queryNone()}>None</button>
+        <button onClick={() => void queryInViewport()}>In Viewport</button>
+      </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}

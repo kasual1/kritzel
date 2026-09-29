@@ -2,7 +2,8 @@ import { useRef } from "react";
 import { KritzelEditor, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { buttonStyle, editorStyle, hostStyle, seedEditor, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 const zoomFactor = 1.1;
@@ -12,10 +13,10 @@ export function ViewportLimitsPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle()} onClick={() => void editorRef.current?.zoomIn(zoomFactor, 200)}>Zoom In</button>
-        <button style={buttonStyle()} onClick={() => void editorRef.current?.zoomOut(zoomFactor, 200)}>Zoom Out</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void editorRef.current?.zoomIn(zoomFactor, 200)}>Zoom In</button>
+        <button onClick={() => void editorRef.current?.zoomOut(zoomFactor, 200)}>Zoom Out</button>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="viewport-limits"

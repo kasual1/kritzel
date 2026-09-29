@@ -6,12 +6,11 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
   seedEditor,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 type ToolName = "select" | "brush" | "eraser" | "line" | "shape" | "text";
 
@@ -37,13 +36,13 @@ export function ToolsChangePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
+      <Toolbar>
         {tools.map((tool) => (
-          <button key={tool.name} style={buttonStyle(activeTool === tool.name)} onClick={() => void setTool(tool.name)}>
+          <button key={tool.name} className={activeTool === tool.name ? "active" : undefined} onClick={() => void setTool(tool.name)}>
             {tool.label}
           </button>
         ))}
-      </div>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="tools-change"

@@ -15,11 +15,10 @@ import {
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 interface WorkspacePalette {
   fill: string
@@ -193,16 +192,16 @@ function switchTo(workspace: KritzelWorkspace) {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
+    <Toolbar>
       <button
         v-for="workspace in workspaces"
         :key="workspace.id"
-        :style="buttonStyle(workspace.id === activeWorkspaceId)"
+        :class="{ active: workspace.id === activeWorkspaceId }"
         @click="switchTo(workspace)"
       >
         {{ workspace.name }}
       </button>
-    </div>
+    </Toolbar>
     <div :style="contentStyle">
       <KritzelEditor
         editorId="workspaces-switch"

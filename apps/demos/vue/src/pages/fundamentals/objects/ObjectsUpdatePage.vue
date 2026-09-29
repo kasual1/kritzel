@@ -9,7 +9,8 @@ import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const selected = ref<KritzelBaseObject | null>(null)
@@ -75,19 +76,19 @@ async function toggleOpacity() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="selectFirst">Select Object</button>
+    <Toolbar>
+      <button @click="selectFirst">Select Object</button>
       <span class="separator" />
-      <button :style="buttonStyle()" :disabled="selectionCount !== 1" @click="moveRight">
+      <button :disabled="selectionCount !== 1" @click="moveRight">
         Move Right
       </button>
-      <button :style="buttonStyle()" :disabled="selectionCount !== 1" @click="rotate">
+      <button :disabled="selectionCount !== 1" @click="rotate">
         Rotate 15°
       </button>
-      <button :style="buttonStyle()" :disabled="selectionCount !== 1" @click="toggleOpacity">
+      <button :disabled="selectionCount !== 1" @click="toggleOpacity">
         Toggle Opacity
       </button>
-    </div>
+    </Toolbar>
     <div class="content">
       <KritzelEditor
         ref="editor"

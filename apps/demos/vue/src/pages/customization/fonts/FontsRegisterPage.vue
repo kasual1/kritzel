@@ -8,7 +8,8 @@ import {
   type KritzelTheme,
 } from '@kritzel/vue-editor'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const fonts: KritzelFontMap = {
@@ -62,9 +63,9 @@ async function addPacificoText() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="addPacificoText">Add Pacifico Text</button>
-    </div>
+    <Toolbar>
+      <button @click="addPacificoText">Add Pacifico Text</button>
+    </Toolbar>
     <KritzelEditor
       ref="editor"
       editorId="fonts-register"

@@ -11,11 +11,10 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 const syncConfig: KritzelSyncConfig = {
@@ -57,17 +56,17 @@ export function PersistenceMemoryPage() {
         background: "linear-gradient(180deg, #f3fbff 0%, #ffffff 100%)",
       }}
     >
-      <div style={toolbarStyle}>
+      <Toolbar>
         {workspaces.map((workspace) => (
           <button
             key={workspace.id}
-            style={buttonStyle(workspace.id === activeWorkspaceId)}
+            className={workspace.id === activeWorkspaceId ? "active" : undefined}
             onClick={() => void switchTo(workspace)}
           >
             {workspace.name}
           </button>
         ))}
-      </div>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="persistence-memory"

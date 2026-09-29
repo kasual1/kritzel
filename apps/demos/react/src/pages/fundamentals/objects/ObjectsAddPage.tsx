@@ -11,7 +11,8 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -87,12 +88,12 @@ export function ObjectsAddPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void addRectangle()}>Add Rectangle</button>
-        <button style={buttonStyle(false)} onClick={() => void addEllipse()}>Add Ellipse</button>
-        <button style={buttonStyle(false)} onClick={() => void addPath()}>Add Path</button>
-        <span style={{ marginLeft: "auto", fontSize: "13px" }}>Objects: {objects.length}</span>
-      </div>
+      <Toolbar>
+        <button onClick={() => void addRectangle()}>Add Rectangle</button>
+        <button onClick={() => void addEllipse()}>Add Ellipse</button>
+        <button onClick={() => void addPath()}>Add Path</button>
+        <span className="status" style={{ marginLeft: "auto" }}>Objects: {objects.length}</span>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="objects-add"

@@ -9,11 +9,10 @@ import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
 const objects: KritzelBaseObject<HTMLElement | SVGElement>[] = createSeedObjects()
@@ -34,13 +33,13 @@ async function backToContent() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" :disabled="objects.length < 2" @click="centerOn(1)">Center on Ellipsis</button>
-      <button :style="buttonStyle(false)" :disabled="objects.length === 0" @click="centerOn(0)">Center on Rectangle</button>
-      <button :style="buttonStyle(false)" :disabled="objects.length < 3" @click="centerOn(2)">Center on Line</button>
-      <button :style="buttonStyle(false)" :disabled="objects.length < 4" @click="centerOn(3)">Center on Path</button>
-      <button :style="buttonStyle(false)" @click="backToContent">Back to Content</button>
-    </div>
+    <Toolbar>
+      <button :disabled="objects.length < 2" @click="centerOn(1)">Center on Ellipsis</button>
+      <button :disabled="objects.length === 0" @click="centerOn(0)">Center on Rectangle</button>
+      <button :disabled="objects.length < 3" @click="centerOn(2)">Center on Line</button>
+      <button :disabled="objects.length < 4" @click="centerOn(3)">Center on Path</button>
+      <button @click="backToContent">Back to Content</button>
+    </Toolbar>
     <KritzelEditor
       ref="editor"
       editorId="viewport-center"

@@ -1,7 +1,8 @@
 import { useRef } from "react";
 import { KritzelEditor, KritzelText, type HTMLKritzelEditorElement, type KritzelFontMap, type KritzelTheme } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const fonts: KritzelFontMap = {
   pacifico: { family: "Pacifico", label: "Pacifico Cursive", cssFontFamily: "'Pacifico', cursive", source: "https://fonts.googleapis.com/css2?family=Pacifico&display=swap" },
@@ -30,7 +31,7 @@ export function FontsRegisterPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}><button style={buttonStyle()} onClick={() => void addPacificoText()}>Add Pacifico Text</button></div>
+      <Toolbar><button onClick={() => void addPacificoText()}>Add Pacifico Text</button></Toolbar>
       <KritzelEditor ref={editorRef} editorId="fonts-register" customFonts={fonts} theme="custom" themes={themes} isPanningEnabled={false} isZoomingEnabled={false} isMoreMenuVisible onIsReady={() => void addPacificoText()} style={editorStyle} />
     </div>
   );

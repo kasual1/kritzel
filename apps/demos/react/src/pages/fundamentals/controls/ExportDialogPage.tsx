@@ -7,7 +7,8 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -32,10 +33,10 @@ export function ExportDialogPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button type="button" style={buttonStyle(false)} onClick={() => void openDialog()}>Open export dialog</button>
-        <button type="button" style={buttonStyle(false)} onClick={() => void closeDialog()}>Close export dialog</button>
-      </div>
+      <Toolbar>
+        <button type="button" onClick={() => void openDialog()}>Open export dialog</button>
+        <button type="button" onClick={() => void closeDialog()}>Close export dialog</button>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="export-dialog"

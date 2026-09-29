@@ -9,11 +9,10 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -49,11 +48,11 @@ export function ObjectsGroupingPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void selectAll()}>Select All</button>
-        <button style={buttonStyle(false)} onClick={() => void groupSelected()}>Group</button>
-        <button style={buttonStyle(false)} onClick={() => void ungroupSelected()}>Ungroup</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void selectAll()}>Select All</button>
+        <button onClick={() => void groupSelected()}>Group</button>
+        <button onClick={() => void ungroupSelected()}>Ungroup</button>
+      </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}

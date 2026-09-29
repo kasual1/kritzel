@@ -9,11 +9,10 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -50,11 +49,11 @@ export function ObjectsSelectionPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void selectAll()}>Select All</button>
-        <button style={buttonStyle(false)} onClick={() => void selectFirst()}>Select Object</button>
-        <button style={buttonStyle(false)} onClick={() => void clearSelection()}>Clear Selection</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void selectAll()}>Select All</button>
+        <button onClick={() => void selectFirst()}>Select Object</button>
+        <button onClick={() => void clearSelection()}>Clear Selection</button>
+      </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}

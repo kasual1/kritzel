@@ -9,7 +9,8 @@ import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const results = ref<KritzelBaseObject[]>([])
@@ -55,14 +56,14 @@ async function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="queryByType('KritzelShape')">Shapes</button>
-      <button :style="buttonStyle()" @click="queryByType('KritzelPath')">Paths</button>
-      <button :style="buttonStyle()" @click="queryByType('KritzelLine')">Lines</button>
-      <button :style="buttonStyle()" @click="queryAll">All</button>
-      <button :style="buttonStyle()" @click="queryNone">None</button>
-      <button :style="buttonStyle()" @click="queryInViewport">In Viewport</button>
-    </div>
+    <Toolbar>
+      <button @click="queryByType('KritzelShape')">Shapes</button>
+      <button @click="queryByType('KritzelPath')">Paths</button>
+      <button @click="queryByType('KritzelLine')">Lines</button>
+      <button @click="queryAll">All</button>
+      <button @click="queryNone">None</button>
+      <button @click="queryInViewport">In Viewport</button>
+    </Toolbar>
     <div class="content">
       <KritzelEditor
         ref="editor"

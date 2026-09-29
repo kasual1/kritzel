@@ -11,11 +11,10 @@ import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
 const syncConfig: KritzelSyncConfig = {
@@ -57,16 +56,16 @@ function switchTo(workspace: KritzelWorkspace) {
       background: 'linear-gradient(180deg, #f3fbf8 0%, #ffffff 100%)',
     }"
   >
-    <div :style="toolbarStyle">
+    <Toolbar>
       <button
         v-for="workspace in workspaces"
         :key="workspace.id"
-        :style="buttonStyle(workspace.id === activeWorkspaceId)"
+        :class="{ active: workspace.id === activeWorkspaceId }"
         @click="switchTo(workspace)"
       >
         {{ workspace.name }}
       </button>
-    </div>
+    </Toolbar>
     <KritzelEditor
       editorId="persistence-memory"
       theme="light"
