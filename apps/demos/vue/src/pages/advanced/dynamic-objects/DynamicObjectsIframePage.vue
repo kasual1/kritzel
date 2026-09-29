@@ -75,11 +75,13 @@ onBeforeUnmount(() => {
       :isWorkspaceManagerVisible="false"
     />
     <div class="chat-input">
-      <textarea v-model="promptText" rows="3" aria-label="Mock LLM prompt"></textarea>
-      <div class="query-nav" aria-label="Mock prompt navigation">
-        <button type="button" aria-label="Previous query" :disabled="promptIndex === 0" @click="showPrompt(-1)">&lt;</button>
-        <span>{{ queryLabel }}</span>
-        <button type="button" aria-label="Next query" :disabled="promptIndex === mockChatPrompts.length - 1" @click="showPrompt(1)">&gt;</button>
+      <div class="textarea-wrapper">
+        <textarea v-model="promptText" rows="3" aria-label="Mock LLM prompt"></textarea>
+        <div class="query-nav" aria-label="Mock prompt navigation">
+          <button type="button" class="nav-button" aria-label="Previous query" :disabled="promptIndex === 0" @click="showPrompt(-1)">‹</button>
+          <span>{{ queryLabel }}</span>
+          <button type="button" class="nav-button" aria-label="Next query" :disabled="promptIndex === mockChatPrompts.length - 1" @click="showPrompt(1)">›</button>
+        </div>
       </div>
     </div>
   </div>
@@ -88,9 +90,13 @@ onBeforeUnmount(() => {
 <style scoped>
 .page { position: relative; height: 100vh; }
 .page > :first-child { display: block; width: 100%; height: 100%; }
-.chat-input { position: absolute; left: 50%; bottom: 18px; z-index: 20; width: min(460px, calc(100% - 32px)); padding: 10px; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 16px 42px rgba(32, 33, 36, 0.18); box-sizing: border-box; transform: translateX(-50%); font-family: Roboto, sans-serif; }
-textarea { display: block; width: 100%; height: 98px; resize: none; border: 0; border-radius: 12px; padding: 12px 14px 38px; box-sizing: border-box; background: #f3f4f6; font: inherit; line-height: 1.45; }
-.query-nav { position: absolute; right: 18px; bottom: 18px; display: flex; align-items: center; gap: 6px; color: #5f6368; font-size: 12px; font-weight: 700; }
-.query-nav button { width: 26px; height: 26px; border: 0; border-radius: 50%; padding: 0; background: #ffffff; cursor: pointer; font-size: 18px; }
-.query-nav button:disabled { color: #b8bdc4; cursor: default; opacity: 0.55; }
+.chat-input { position: absolute; left: 50%; bottom: 18px; z-index: 20; display: block; width: min(460px, calc(100% - 32px)); padding: 10px; border: 1px solid #e5e7eb; border-radius: 16px; background: #ffffff; box-shadow: 0 16px 42px rgba(32, 33, 36, 0.18); box-sizing: border-box; transform: translateX(-50%); font-family: Roboto, sans-serif; }
+.textarea-wrapper { position: relative; width: 100%; }
+textarea { display: block; width: 100%; height: 98px; min-height: 98px; max-height: 98px; resize: none; border: 0; border-radius: 12px; padding: 12px 14px 38px 14px; box-sizing: border-box; background: #f3f4f6; color: #202124; font: inherit; line-height: 1.45; }
+textarea:focus, textarea:focus-visible { border: 0; outline: 0; box-shadow: none; }
+.query-nav { position: absolute; right: 8px; bottom: 8px; display: flex; align-items: center; gap: 6px; color: #5f6368; font-size: 12px; font-weight: 700; white-space: nowrap; user-select: none; }
+.nav-button { width: 26px; height: 26px; border: 0; border-radius: 999px; padding: 0; background: #ffffff; color: #202124; cursor: pointer; font: inherit; font-size: 18px; line-height: 1; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(32, 33, 36, 0.12); }
+.nav-button:hover { background: #e5e7eb; }
+.nav-button:disabled { color: #b8bdc4; cursor: default; opacity: 0.55; box-shadow: none; }
+.nav-button:disabled:hover { background: #ffffff; }
 </style>
