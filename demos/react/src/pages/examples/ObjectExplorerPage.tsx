@@ -21,6 +21,7 @@ import {
 import { reactThemeLight } from "../../const/react-theme-light";
 import { reactThemeDark } from "../../const/react-theme-dark";
 import { createSeedObjects } from "../getting-started/seed-objects";
+import { InfoPanel, useInfoPanel } from "../../components/InfoPanel";
 
 type AnyObject = KritzelBaseObject<HTMLElement | SVGElement> & {
   childIds?: string[];
@@ -61,25 +62,13 @@ const editorStyle: CSSProperties = {
   height: "100%",
 };
 
-const asideStyle: CSSProperties = {
-  width: "340px",
-  overflowY: "auto",
-  borderLeft: "1px solid #d8e8ee",
-  backgroundColor: "#ffffff",
-  padding: "12px",
-  fontSize: "13px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "12px",
-};
-
 const taglineStyle: CSSProperties = {
   display: "inline-block",
   fontSize: "11px",
   fontWeight: 700,
   textTransform: "uppercase",
-  backgroundColor: "rgba(8, 126, 164, 0.1)",
-  color: "#087ea4",
+  backgroundColor: "rgba(9, 89, 164, 0.1)",
+  color: "#0959a4",
   padding: "2px 8px",
   borderRadius: "99px",
   letterSpacing: "0.5px",
@@ -109,12 +98,12 @@ const treeContainerStyle: CSSProperties = {
   overflowY: "auto",
   border: "1px solid #d8e8ee",
   borderRadius: "4px",
-  background: "rgba(8, 126, 164, 0.02)",
+  background: "rgba(9, 89, 164, 0.02)",
   padding: "4px",
 };
 
 const inspectorStyle: CSSProperties = {
-  background: "rgba(8, 126, 164, 0.02)",
+  background: "rgba(9, 89, 164, 0.02)",
   padding: "10px",
   borderRadius: "4px",
   border: "1px solid #d8e8ee",
@@ -151,9 +140,9 @@ function filterChipStyle(active: boolean): CSSProperties {
     fontSize: "11px",
     borderRadius: "12px",
     boxShadow: "none",
-    border: `1px solid ${active ? "#087ea4" : "#d8e8ee"}`,
-    background: active ? "#087ea4" : "rgba(8, 126, 164, 0.06)",
-    color: active ? "#ffffff" : "#087ea4",
+    border: `1px solid ${active ? "#0959a4" : "#d8e8ee"}`,
+    background: active ? "#0959a4" : "rgba(9, 89, 164, 0.06)",
+    color: active ? "#ffffff" : "#0959a4",
     cursor: "pointer",
     fontFamily: "inherit",
   };
@@ -178,6 +167,7 @@ function resolveThemeColor(raw: unknown, fallback: string): string {
 
 export function ObjectExplorerPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel({ showOnMobile: true });
   const selectionEditorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const selectionHandlerRef = useRef<(() => void) | null>(null);
 
@@ -465,8 +455,8 @@ export function ObjectExplorerPage() {
             paddingLeft: `${depth * 16 + 6}px`,
             borderRadius: "4px",
             marginBottom: "1px",
-              background: isSelected ? "rgba(8, 126, 164, 0.08)" : "transparent",
-              borderLeft: isSelected ? "3px solid #087ea4" : "3px solid transparent",
+              background: isSelected ? "rgba(9, 89, 164, 0.08)" : "transparent",
+              borderLeft: isSelected ? "3px solid #0959a4" : "3px solid transparent",
             opacity: obj.isVisible === false ? 0.6 : 1,
           }}
         >
@@ -559,10 +549,10 @@ export function ObjectExplorerPage() {
           />
         </div>
 
-        <aside style={asideStyle}>
+        <InfoPanel panel={infoPanel} width="340px" bodyPadding="12px" contentColumn>
           <div style={{ borderBottom: "1px solid #d8e8ee", paddingBottom: "10px" }}>
             <span style={taglineStyle}>Explorer Mode</span>
-            <h2 style={{ margin: 0, color: "#087ea4", fontSize: "18px", lineHeight: 1.2 }}>
+            <h2 style={{ margin: 0, color: "#0959a4", fontSize: "18px", lineHeight: 1.2 }}>
               Hierarchical Object Explorer
             </h2>
           </div>
@@ -727,12 +717,12 @@ export function ObjectExplorerPage() {
                   step="0.1"
                   value={selectedObject.opacity ?? 1}
                   onChange={(event) => void updateSelectedProperty("opacity", event)}
-                  style={{ width: "100%", accentColor: "#087ea4", cursor: "pointer" }}
+                  style={{ width: "100%", accentColor: "#0959a4", cursor: "pointer" }}
                 />
               </div>
             </section>
           )}
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

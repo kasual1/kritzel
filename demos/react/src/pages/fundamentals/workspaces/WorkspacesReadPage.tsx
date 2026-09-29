@@ -11,11 +11,11 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/InfoPanel";
 
 const themes = [reactThemeLight, reactThemeDark];
 const syncConfig: KritzelSyncConfig = {
@@ -25,13 +25,6 @@ const contentStyle: CSSProperties = {
   display: "flex",
   flex: 1,
   minHeight: 0,
-};
-const infoPanelStyle: CSSProperties = {
-  width: "300px",
-  padding: "16px",
-  overflow: "auto",
-  borderLeft: "1px solid #ebebeb",
-  background: "#ffffff",
 };
 const jsonStyle: CSSProperties = {
   margin: 0,
@@ -54,6 +47,7 @@ function createInitialWorkspaces() {
 
 export function WorkspacesReadPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel();
   const [workspaces, setWorkspaces] = useState(createInitialWorkspaces);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(
     "board-1",
@@ -107,20 +101,21 @@ export function WorkspacesReadPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle()} onClick={() => void addWorkspace()}>
+      <Toolbar>
+        <button onClick={() => void addWorkspace()}>
           Add Workspace
         </button>
         {workspaces.map((workspace) => (
           <button
             key={workspace.id}
-            style={buttonStyle(workspace.id === activeWorkspaceId)}
+            className={workspace.id === activeWorkspaceId ? "active" : undefined}
             onClick={() => void switchTo(workspace)}
           >
             {workspace.name}
           </button>
         ))}
-      </div>
+        <InfoPanelToggle panel={infoPanel} />
+      </Toolbar>
       <div style={contentStyle}>
         <KritzelEditor
           ref={editorRef}
@@ -141,10 +136,10 @@ export function WorkspacesReadPage() {
           }
           style={editorStyle}
         />
-        <aside style={infoPanelStyle}>
+        <InfoPanel panel={infoPanel} width="300px">
           <h3>Active Workspace</h3>
           <pre style={jsonStyle}>{activeWorkspaceJson}</pre>
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

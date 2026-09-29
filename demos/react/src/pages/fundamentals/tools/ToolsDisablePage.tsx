@@ -10,12 +10,11 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
   seedEditor,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -51,11 +50,11 @@ export function ToolsDisablePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => setIsEraserDisabled((value) => !value)}>
+      <Toolbar>
+        <button onClick={() => setIsEraserDisabled((value) => !value)}>
           {isEraserDisabled ? "Enable eraser tool" : "Disable eraser tool"}
         </button>
-      </div>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="tools-disable"

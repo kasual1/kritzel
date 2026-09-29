@@ -7,7 +7,8 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 
@@ -26,11 +27,11 @@ export function NotificationsTriggerPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void notify("info")}>Show info</button>
-        <button style={buttonStyle(false)} onClick={() => void notify("warning")}>Show warning</button>
-        <button style={buttonStyle(false)} onClick={() => void notify("error")}>Show error</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void notify("info")}>Show info</button>
+        <button onClick={() => void notify("warning")}>Show warning</button>
+        <button onClick={() => void notify("error")}>Show error</button>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="notifications-trigger"

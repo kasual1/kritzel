@@ -10,7 +10,8 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
-import { editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 const syncConfig: KritzelSyncConfig = {
@@ -101,7 +102,7 @@ export function WorkspacesDeletePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
+      <Toolbar>
         {workspaces.map((workspace) => {
           const isActive = workspace.id === activeWorkspaceId;
           return (
@@ -109,8 +110,8 @@ export function WorkspacesDeletePage() {
               key={workspace.id}
               style={{
                 ...tabStyle,
-                borderColor: isActive ? "#087ea4" : "#cccccc",
-                background: isActive ? "#087ea4" : "#ffffff",
+                borderColor: isActive ? "#0959a4" : "#cccccc",
+                background: isActive ? "#0959a4" : "#ffffff",
                 color: isActive ? "#ffffff" : "#333333",
               }}
             >
@@ -134,7 +135,7 @@ export function WorkspacesDeletePage() {
             </div>
           );
         })}
-      </div>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="workspaces-delete"

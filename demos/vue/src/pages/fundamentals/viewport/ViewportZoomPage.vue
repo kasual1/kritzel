@@ -3,7 +3,8 @@ import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-edit
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
@@ -28,12 +29,12 @@ async function zoomToPoint() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" @click="zoomIn">Zoom In</button>
-      <button :style="buttonStyle(false)" @click="zoomOut">Zoom Out</button>
-      <button :style="buttonStyle(false)" @click="zoomToScale">Zoom to 150%</button>
-      <button :style="buttonStyle(false)" @click="zoomToPoint">Zoom at (200, 150)</button>
-    </div>
+    <Toolbar>
+      <button @click="zoomIn">Zoom In</button>
+      <button @click="zoomOut">Zoom Out</button>
+      <button @click="zoomToScale">Zoom to 150%</button>
+      <button @click="zoomToPoint">Zoom at (200, 150)</button>
+    </Toolbar>
     <KritzelEditor
       ref="editor"
       editorId="viewport-zoom"

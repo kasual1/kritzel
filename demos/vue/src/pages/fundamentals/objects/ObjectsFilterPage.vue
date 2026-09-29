@@ -9,7 +9,13 @@ import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
+import InfoPanelToggle from '../../../components/InfoPanelToggle.vue'
+import { useInfoPanel } from '../../../components/info-panel'
+
+const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const editor = getEditorRef('editor')
 const results = ref<KritzelBaseObject[]>([])
@@ -55,14 +61,15 @@ async function onReady() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="queryByType('KritzelShape')">Shapes</button>
-      <button :style="buttonStyle()" @click="queryByType('KritzelPath')">Paths</button>
-      <button :style="buttonStyle()" @click="queryByType('KritzelLine')">Lines</button>
-      <button :style="buttonStyle()" @click="queryAll">All</button>
-      <button :style="buttonStyle()" @click="queryNone">None</button>
-      <button :style="buttonStyle()" @click="queryInViewport">In Viewport</button>
-    </div>
+    <Toolbar>
+      <button @click="queryByType('KritzelShape')">Shapes</button>
+      <button @click="queryByType('KritzelPath')">Paths</button>
+      <button @click="queryByType('KritzelLine')">Lines</button>
+      <button @click="queryAll">All</button>
+      <button @click="queryNone">None</button>
+      <button @click="queryInViewport">In Viewport</button>
+      <InfoPanelToggle :panel="infoPanel" />
+    </Toolbar>
     <div class="content">
       <KritzelEditor
         ref="editor"
@@ -77,7 +84,7 @@ async function onReady() {
         :style="editorStyle"
         @isReady="onReady"
       />
-      <aside class="info-panel">
+      <InfoPanel :panel="infoPanel">
         <h3>Objects</h3>
         <ul>
           <li v-if="results.length === 0" class="empty">No results</li>
@@ -86,7 +93,7 @@ async function onReady() {
             <span class="id">{{ object.id.slice(0, 8) }}</span>
           </li>
         </ul>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>
@@ -96,19 +103,6 @@ async function onReady() {
   display: flex;
   flex: 1;
   min-height: 0;
-}
-
-.info-panel {
-  width: 220px;
-  padding: 8px;
-  overflow-y: auto;
-  border-left: 1px solid #ebebeb;
-  font-size: 13px;
-}
-
-h3 {
-  margin: 0 0 8px;
-  font-size: 14px;
 }
 
 ul {

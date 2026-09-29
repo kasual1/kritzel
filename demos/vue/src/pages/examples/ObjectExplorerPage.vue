@@ -14,6 +14,10 @@ import {
 import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from '../getting-started/seed-objects'
+import InfoPanel from '../../components/InfoPanel.vue'
+import { useInfoPanel } from '../../components/info-panel'
+
+const infoPanel = useInfoPanel({ showOnMobile: true })
 
 const editor = getEditorRef('editor')
 
@@ -398,7 +402,7 @@ function asKritzelObject(obj: AnyObject) {
       />
     </div>
 
-    <aside>
+    <InfoPanel :panel="infoPanel" width="340px">
       <div class="panel-header">
         <span class="panel-tagline">Explorer Mode</span>
         <h2 class="panel-title">Hierarchical Object Explorer</h2>
@@ -563,7 +567,7 @@ function asKritzelObject(obj: AnyObject) {
           />
         </div>
       </section>
-    </aside>
+    </InfoPanel>
   </div>
 </template>
 
@@ -583,19 +587,8 @@ function asKritzelObject(obj: AnyObject) {
   min-width: 0;
 }
 
-aside {
-  width: 340px;
-  overflow-y: auto;
-  border-left: 1px solid #d4ece0;
-  background-color: #ffffff;
-  padding: 12px;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .panel-header {
+  margin-bottom: 12px;
   border-bottom: 1px solid #d4ece0;
   padding-bottom: 10px;
 }
@@ -629,6 +622,7 @@ h4 {
 }
 
 .section {
+  margin-bottom: 12px;
   border-bottom: 1px solid #e4f1ea;
   padding-bottom: 10px;
 }

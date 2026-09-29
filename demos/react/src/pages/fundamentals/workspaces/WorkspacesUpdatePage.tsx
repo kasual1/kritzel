@@ -14,11 +14,11 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel } from "../../../components/InfoPanel";
 
 interface WorkspaceVariant {
   name: string;
@@ -49,13 +49,6 @@ const contentStyle: CSSProperties = {
   display: "flex",
   flex: 1,
   minHeight: 0,
-};
-const infoPanelStyle: CSSProperties = {
-  width: "300px",
-  padding: "16px",
-  overflow: "auto",
-  borderLeft: "1px solid #ebebeb",
-  background: "#ffffff",
 };
 const jsonStyle: CSSProperties = {
   margin: 0,
@@ -154,14 +147,14 @@ export function WorkspacesUpdatePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle()} onClick={() => void updateWorkspace()}>
+      <Toolbar>
+        <button onClick={() => void updateWorkspace()}>
           Update Workspace
         </button>
-        <span style={{ fontSize: "13px" }}>
+        <span className="status">
           Current: {activeWorkspace?.name}
         </span>
-      </div>
+      </Toolbar>
       <div style={contentStyle}>
         <KritzelEditor
           ref={editorRef}
@@ -178,10 +171,10 @@ export function WorkspacesUpdatePage() {
           onObjectsChange={() => void refreshActiveWorkspace()}
           style={editorStyle}
         />
-        <aside style={infoPanelStyle}>
+        <InfoPanel width="300px">
           <h3>Active Workspace</h3>
           <pre style={jsonStyle}>{activeWorkspaceJson}</pre>
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

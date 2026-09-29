@@ -4,7 +4,8 @@ import { KritzelEditor, KritzelWorkspace, type LocaleCode } from '@kritzel/vue-e
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
@@ -17,11 +18,11 @@ function onLocaleChange(event: CustomEvent<LocaleCode>) {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(activeLocale === 'en')" @click="activeLocale = 'en'">English</button>
-      <button :style="buttonStyle(activeLocale === 'de')" @click="activeLocale = 'de'">German</button>
-      <button :style="buttonStyle(activeLocale === 'fr')" @click="activeLocale = 'fr'">French</button>
-    </div>
+    <Toolbar>
+      <button :class="{ active: activeLocale === 'en' }" @click="activeLocale = 'en'">English</button>
+      <button :class="{ active: activeLocale === 'de' }" @click="activeLocale = 'de'">German</button>
+      <button :class="{ active: activeLocale === 'fr' }" @click="activeLocale = 'fr'">French</button>
+    </Toolbar>
     <KritzelEditor
       editorId="localization-switch"
       :locale="activeLocale"

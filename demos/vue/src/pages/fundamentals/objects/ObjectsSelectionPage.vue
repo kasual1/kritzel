@@ -10,11 +10,15 @@ import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
+import InfoPanelToggle from '../../../components/InfoPanelToggle.vue'
+import { useInfoPanel } from '../../../components/info-panel'
+
+const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const editor = getEditorRef('editor')
 const selectedObjects = ref<KritzelBaseObject[]>([])
@@ -46,11 +50,12 @@ async function clearSelection() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" @click="selectAll">Select All</button>
-      <button :style="buttonStyle(false)" @click="selectFirst">Select Object</button>
-      <button :style="buttonStyle(false)" @click="clearSelection">Clear Selection</button>
-    </div>
+    <Toolbar>
+      <button @click="selectAll">Select All</button>
+      <button @click="selectFirst">Select Object</button>
+      <button @click="clearSelection">Clear Selection</button>
+      <InfoPanelToggle :panel="infoPanel" />
+    </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
         ref="editor"
@@ -65,8 +70,8 @@ async function clearSelection() {
         :style="editorStyle"
         @objectsSelectionChange="refreshSelection"
       />
-      <aside :style="{ width: '220px', borderLeft: '1px solid #ebebeb', padding: '8px', overflowY: 'auto', fontSize: '13px' }">
-        <h3 :style="{ margin: '0 0 8px', fontSize: '14px' }">Selected</h3>
+      <InfoPanel :panel="infoPanel">
+        <h3>Selected</h3>
         <ul :style="{ listStyle: 'none', margin: 0, padding: 0 }">
           <li v-if="selectedObjects.length === 0" :style="{ color: '#999', fontStyle: 'italic' }">Nothing selected</li>
           <li
@@ -78,7 +83,7 @@ async function clearSelection() {
             <span :style="{ color: '#999', fontFamily: 'monospace' }">{{ obj.id.slice(0, 8) }}</span>
           </li>
         </ul>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>

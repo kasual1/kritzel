@@ -11,8 +11,8 @@ import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 export function CollaborationLocalPage() {
   const syncConfig = useMemo<KritzelSyncConfig>(
@@ -26,10 +26,10 @@ export function CollaborationLocalPage() {
 
   return (
     <div style={{ ...hostStyle, background: "linear-gradient(160deg, #e9f8ff 0%, #ffffff 46%)" }}>
-      <div style={toolbarStyle}>
-        <span style={{ fontWeight: 700, color: "#087ea4", fontSize: "13px" }}>Cross-tab Sync</span>
-        <span style={{ fontSize: "12px", color: "#065d7a" }}>BroadcastChannel enabled</span>
-      </div>
+      <Toolbar>
+        <span className="label">Cross-tab Sync</span>
+        <span className="status">BroadcastChannel enabled</span>
+      </Toolbar>
       <KritzelEditor
         editorId="collaboration-local"
         syncConfig={syncConfig}

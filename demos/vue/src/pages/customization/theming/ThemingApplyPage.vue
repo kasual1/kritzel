@@ -4,7 +4,8 @@ import { KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
@@ -13,10 +14,10 @@ const activeTheme = ref('light')
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(activeTheme === 'light')" @click="activeTheme = 'light'">Light</button>
-      <button :style="buttonStyle(activeTheme === 'dark')" @click="activeTheme = 'dark'">Dark</button>
-    </div>
+    <Toolbar>
+      <button :class="{ active: activeTheme === 'light' }" @click="activeTheme = 'light'">Light</button>
+      <button :class="{ active: activeTheme === 'dark' }" @click="activeTheme = 'dark'">Dark</button>
+    </Toolbar>
     <KritzelEditor
       editorId="theming-apply"
       :theme="activeTheme"

@@ -15,11 +15,11 @@ import {
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
 
 interface WorkspaceVariant {
   name: string
@@ -188,13 +188,6 @@ const contentStyle: CSSProperties = {
   minHeight: 0,
   position: 'relative',
 }
-const infoPanelStyle: CSSProperties = {
-  width: '300px',
-  padding: '12px',
-  overflow: 'auto',
-  borderLeft: '1px solid #ebebeb',
-  background: '#ffffff',
-}
 const preStyle: CSSProperties = {
   margin: 0,
   overflowWrap: 'anywhere',
@@ -230,12 +223,12 @@ async function updateWorkspace() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="updateWorkspace">
+    <Toolbar>
+      <button @click="updateWorkspace">
         Update Workspace
       </button>
       <span>Current: {{ activeWorkspace?.name }}</span>
-    </div>
+    </Toolbar>
     <div :style="contentStyle">
       <KritzelEditor
         ref="editor"
@@ -251,10 +244,10 @@ async function updateWorkspace() {
         @isReady="onReady"
         @workspacesChange="refreshActiveWorkspace"
       />
-      <aside :style="infoPanelStyle">
+      <InfoPanel width="300px">
         <h3>Active Workspace</h3>
         <pre :style="preStyle">{{ activeWorkspaceJson }}</pre>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>

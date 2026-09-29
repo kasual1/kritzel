@@ -1,8 +1,19 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import { KritzelEditor, KritzelWorkspace, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
+import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel } from "../../../components/InfoPanel";
+
+const preStyle: CSSProperties = {
+  margin: 0,
+  overflowWrap: "anywhere",
+  whiteSpace: "pre-wrap",
+  fontFamily: "monospace",
+  fontSize: 11,
+  lineHeight: 1.45,
+};
 
 export function ImportExportWorkspaceExportPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -25,11 +36,11 @@ export function ImportExportWorkspaceExportPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%", fontFamily: "sans-serif" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", background: "#f5f5f5", borderBottom: "1px solid #e0e0e0" }}>
-        <span style={{ fontWeight: 700, fontSize: 13, color: "#61dafb", marginRight: 4 }}>Workspace Export</span>
+      <Toolbar>
+        <span className="label">Workspace Export</span>
         <button onClick={() => void previewJson()}>Preview as JSON</button>
         <button onClick={() => void downloadJson()}>Download JSON</button>
-      </div>
+      </Toolbar>
       <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}
@@ -43,21 +54,10 @@ export function ImportExportWorkspaceExportPage() {
           isWorkspaceManagerVisible={false}
           style={{ flex: "1 1 60%", minHeight: 0, display: "block" }}
         />
-        <pre
-          style={{
-            flex: "1 1 40%",
-            margin: 0,
-            padding: 12,
-            overflow: "auto",
-            fontSize: 11,
-            lineHeight: 1.4,
-            background: "#1e1e1e",
-            color: "#d4d4d4",
-            borderLeft: "1px solid #e0e0e0",
-          }}
-        >
-          {jsonPreview}
-        </pre>
+        <InfoPanel width="300px">
+          <h3>Exported Workspace</h3>
+          <pre style={preStyle}>{jsonPreview}</pre>
+        </InfoPanel>
       </div>
     </div>
   );

@@ -8,12 +8,15 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/InfoPanel";
 
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsFilterPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel({ hasToolbarToggle: true });
   const [results, setResults] = useState<KritzelBaseObject[]>([]);
   const [workspaces] = useState(() => [
     new KritzelWorkspace({ objects: createSeedObjects() }),
@@ -57,14 +60,15 @@ export function ObjectsFilterPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void queryByType("KritzelShape")}>Shapes</button>
-        <button style={buttonStyle(false)} onClick={() => void queryByType("KritzelPath")}>Paths</button>
-        <button style={buttonStyle(false)} onClick={() => void queryByType("KritzelLine")}>Lines</button>
-        <button style={buttonStyle(false)} onClick={() => void queryAll()}>All</button>
-        <button style={buttonStyle(false)} onClick={() => void queryNone()}>None</button>
-        <button style={buttonStyle(false)} onClick={() => void queryInViewport()}>In Viewport</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void queryByType("KritzelShape")}>Shapes</button>
+        <button onClick={() => void queryByType("KritzelPath")}>Paths</button>
+        <button onClick={() => void queryByType("KritzelLine")}>Lines</button>
+        <button onClick={() => void queryAll()}>All</button>
+        <button onClick={() => void queryNone()}>None</button>
+        <button onClick={() => void queryInViewport()}>In Viewport</button>
+        <InfoPanelToggle panel={infoPanel} />
+      </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}
@@ -81,8 +85,8 @@ export function ObjectsFilterPage() {
           onIsReady={() => void onReady()}
           style={editorStyle}
         />
-        <aside style={{ width: "220px", borderLeft: "1px solid #ebebeb", padding: "8px", overflowY: "auto", fontSize: "13px" }}>
-          <h3 style={{ margin: "0 0 8px", fontSize: "14px" }}>Objects</h3>
+        <InfoPanel panel={infoPanel}>
+          <h3>Objects</h3>
           <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
             {results.length === 0 && <li style={{ color: "#999", fontStyle: "italic" }}>No results</li>}
             {results.map((object) => (
@@ -92,7 +96,7 @@ export function ObjectsFilterPage() {
               </li>
             ))}
           </ul>
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

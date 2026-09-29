@@ -4,7 +4,13 @@ import { KritzelEditor, KritzelWorkspace, type LocaleCode } from '@kritzel/vue-e
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
+import InfoPanelToggle from '../../../components/InfoPanelToggle.vue'
+import { useInfoPanel } from '../../../components/info-panel'
+
+const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const themes = [vueThemeLight, vueThemeDark]
 const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
@@ -23,11 +29,12 @@ function onLocaleChange(event: CustomEvent<LocaleCode>) {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(activeLocale === 'en')" @click="applyLocale('en')">English</button>
-      <button :style="buttonStyle(activeLocale === 'de')" @click="applyLocale('de')">German</button>
-      <button :style="buttonStyle(activeLocale === 'fr')" @click="applyLocale('fr')">French</button>
-    </div>
+    <Toolbar>
+      <button :class="{ active: activeLocale === 'en' }" @click="applyLocale('en')">English</button>
+      <button :class="{ active: activeLocale === 'de' }" @click="applyLocale('de')">German</button>
+      <button :class="{ active: activeLocale === 'fr' }" @click="applyLocale('fr')">French</button>
+      <InfoPanelToggle :panel="infoPanel" />
+    </Toolbar>
     <div class="content">
       <KritzelEditor
         editorId="localization-listen"
@@ -43,20 +50,18 @@ function onLocaleChange(event: CustomEvent<LocaleCode>) {
         @isReady="applyLocale('en')"
         @localeChange="onLocaleChange"
       />
-      <aside>
+      <InfoPanel :panel="infoPanel" width="220px">
         <h3>Locale changes</h3>
         <ul>
           <li v-for="(locale, index) in localeHistory" :key="`${index}-${locale}`">{{ locale }}</li>
         </ul>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>
 
 <style scoped>
 .content { display: flex; flex: 1; min-height: 0; }
-aside { box-sizing: border-box; width: 220px; padding: 12px; border-left: 1px solid #e5e7eb; background: #fff; }
-h3 { margin: 0 0 12px; font-size: 14px; }
 ul { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
 li { padding: 6px 8px; border: 1px solid #e5e7eb; border-radius: 4px; background: #f9fafb; font: 12px monospace; }
 </style>

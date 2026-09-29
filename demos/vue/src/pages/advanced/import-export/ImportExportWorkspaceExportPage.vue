@@ -4,6 +4,8 @@ import { getEditorRef, KritzelEditor, KritzelWorkspace } from '@kritzel/vue-edit
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
+import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
 
 const editor = getEditorRef('editor')
 const jsonPreview = ref('Click "Preview as JSON" to see the exported workspace.')
@@ -30,10 +32,10 @@ async function downloadJson(): Promise<void> {
 
 <template>
   <div class="page">
-    <div class="toolbar">
+    <Toolbar>
       <button type="button" @click="previewJson">Preview as JSON</button>
       <button type="button" @click="downloadJson">Download JSON</button>
-    </div>
+    </Toolbar>
     <div class="content">
       <div class="editor-wrap">
         <KritzelEditor
@@ -48,21 +50,18 @@ async function downloadJson(): Promise<void> {
           :isWorkspaceManagerVisible="false"
         />
       </div>
-      <aside class="info-panel">
+      <InfoPanel width="300px">
         <h3>Exported Workspace</h3>
         <pre>{{ jsonPreview }}</pre>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>
 
 <style scoped>
 .page { display: flex; flex-direction: column; height: 100vh; font-family: sans-serif; }
-.toolbar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; }
 .content { flex: 1; display: flex; min-height: 0; }
 .editor-wrap { flex: 1 1 60%; position: relative; min-width: 0; }
 .editor-wrap > * { display: block; height: 100%; }
-.info-panel { width: 300px; padding: 12px; overflow: auto; border-left: 1px solid #e0e0e0; box-sizing: border-box; }
-.info-panel h3 { margin: 0 0 12px; font-size: 14px; }
 pre { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; font-family: monospace; font-size: 11px; line-height: 1.45; }
 </style>

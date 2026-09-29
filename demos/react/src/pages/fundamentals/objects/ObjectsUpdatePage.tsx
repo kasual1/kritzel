@@ -8,12 +8,15 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/InfoPanel";
 
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsUpdatePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel({ hasToolbarToggle: true });
   const [selected, setSelected] = useState<KritzelBaseObject | null>(null);
   const [selectionCount, setSelectionCount] = useState(0);
   const [workspaces] = useState(() => [
@@ -44,31 +47,29 @@ export function ObjectsUpdatePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void selectFirst()}>Select Object</button>
-        <span style={{ width: "1px", height: "24px", background: "#d9d9d9" }} />
+      <Toolbar>
+        <button onClick={() => void selectFirst()}>Select Object</button>
+        <span className="separator" />
         <button
-          style={buttonStyle(false)}
           disabled={selectionCount !== 1}
           onClick={() => void updateSelected({ translateX: (selected?.translateX ?? 0) + 40 })}
         >
           Move Right
         </button>
         <button
-          style={buttonStyle(false)}
           disabled={selectionCount !== 1}
           onClick={() => void updateSelected({ rotation: ((selected?.rotation ?? 0) + 15) % 360 })}
         >
           Rotate 15°
         </button>
         <button
-          style={buttonStyle(false)}
           disabled={selectionCount !== 1}
           onClick={() => void updateSelected({ opacity: selected?.opacity === 1 ? 0.4 : 1 })}
         >
           Toggle Opacity
         </button>
-      </div>
+        <InfoPanelToggle panel={infoPanel} />
+      </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}
@@ -86,8 +87,8 @@ export function ObjectsUpdatePage() {
           onObjectsSelectionChange={() => void refreshSelection()}
           style={editorStyle}
         />
-        <aside style={{ width: "180px", borderLeft: "1px solid #ebebeb", padding: "8px", overflowY: "auto", fontSize: "13px" }}>
-          <h3 style={{ margin: "0 0 8px", fontSize: "14px" }}>Object</h3>
+        <InfoPanel panel={infoPanel} width="180px">
+          <h3>Object</h3>
           {selected ? (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {[
@@ -105,7 +106,7 @@ export function ObjectsUpdatePage() {
           ) : (
             <p style={{ color: "#999", fontStyle: "italic" }}>Nothing selected</p>
           )}
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

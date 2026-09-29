@@ -2,7 +2,8 @@ import { useRef, useState } from "react";
 import { KritzelEditor, type HTMLKritzelEditorElement, type KritzelLocale, type LocaleCode } from "@kritzel/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { buttonStyle, editorStyle, hostStyle, seedEditor, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const spanishLocale: KritzelLocale = {
   code: "es",
@@ -37,9 +38,9 @@ export function LocalizationCustomPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(locale === "es")} onClick={() => setLocale("es")}>Español</button>
-      </div>
+      <Toolbar>
+        <button className={locale === "es" ? "active" : undefined} onClick={() => setLocale("es")}>Español</button>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="localization-custom"

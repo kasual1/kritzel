@@ -5,12 +5,11 @@ import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
   statusBarStyle,
-  toolbarStyle,
 } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 type ToolName = 'select' | 'brush' | 'eraser' | 'line' | 'shape' | 'text'
 
@@ -36,16 +35,16 @@ async function setTool(name: ToolName) {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
+    <Toolbar>
       <button
         v-for="tool in tools"
         :key="tool.name"
-        :style="buttonStyle(activeTool === tool.name)"
+        :class="{ active: activeTool === tool.name }"
         @click="setTool(tool.name)"
       >
         {{ tool.label }}
       </button>
-    </div>
+    </Toolbar>
     <KritzelEditor
       ref="editor"
       editorId="tools-change"

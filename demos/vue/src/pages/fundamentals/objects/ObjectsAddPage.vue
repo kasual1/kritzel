@@ -12,7 +12,8 @@ import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
 const editor = getEditorRef('editor')
 const objects = ref<KritzelBaseObject[]>([])
@@ -77,12 +78,12 @@ async function addPath() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="addRectangle">Add Rectangle</button>
-      <button :style="buttonStyle()" @click="addEllipse">Add Ellipse</button>
-      <button :style="buttonStyle()" @click="addPath">Add Path</button>
+    <Toolbar>
+      <button @click="addRectangle">Add Rectangle</button>
+      <button @click="addEllipse">Add Ellipse</button>
+      <button @click="addPath">Add Path</button>
       <span class="object-count">Objects: {{ objects.length }}</span>
-    </div>
+    </Toolbar>
     <KritzelEditor
       ref="editor"
       editorId="objects-add"

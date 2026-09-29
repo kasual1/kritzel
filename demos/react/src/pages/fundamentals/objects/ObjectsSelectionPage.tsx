@@ -9,16 +9,17 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/InfoPanel";
 
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsSelectionPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel({ hasToolbarToggle: true });
   const [selectedObjects, setSelectedObjects] = useState<KritzelBaseObject<HTMLElement | SVGElement>[]>([]);
   const [workspaces] = useState(() => [
     new KritzelWorkspace({ objects: createSeedObjects() }),
@@ -50,11 +51,12 @@ export function ObjectsSelectionPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(false)} onClick={() => void selectAll()}>Select All</button>
-        <button style={buttonStyle(false)} onClick={() => void selectFirst()}>Select Object</button>
-        <button style={buttonStyle(false)} onClick={() => void clearSelection()}>Clear Selection</button>
-      </div>
+      <Toolbar>
+        <button onClick={() => void selectAll()}>Select All</button>
+        <button onClick={() => void selectFirst()}>Select Object</button>
+        <button onClick={() => void clearSelection()}>Clear Selection</button>
+        <InfoPanelToggle panel={infoPanel} />
+      </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
           ref={editorRef}
@@ -71,8 +73,8 @@ export function ObjectsSelectionPage() {
           onObjectsSelectionChange={() => void refreshSelection()}
           style={editorStyle}
         />
-        <aside style={{ width: "220px", borderLeft: "1px solid #ebebeb", padding: "8px", overflowY: "auto", fontSize: "13px" }}>
-          <h3 style={{ margin: "0 0 8px", fontSize: "14px" }}>Objects</h3>
+        <InfoPanel panel={infoPanel}>
+          <h3>Objects</h3>
           <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
             {selectedObjects.length === 0 && <li style={{ color: "#999", fontStyle: "italic" }}>Nothing selected</li>}
             {selectedObjects.map((obj) => (
@@ -82,7 +84,7 @@ export function ObjectsSelectionPage() {
               </li>
             ))}
           </ul>
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

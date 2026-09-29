@@ -6,7 +6,8 @@ import {
 } from "@kritzel/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { buttonStyle, editorStyle, hostStyle, seedEditor, toolbarStyle } from "../../shared/demo-shared";
+import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const themes = [reactThemeLight, reactThemeDark];
 const panStep = 100;
@@ -38,17 +39,17 @@ export function ViewportEventsPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle()} onClick={() => void panBy(0, -panStep)}>Pan Up</button>
-        <button style={buttonStyle()} onClick={() => void panBy(0, panStep)}>Pan Down</button>
-        <button style={buttonStyle()} onClick={() => void panBy(-panStep, 0)}>Pan Left</button>
-        <button style={buttonStyle()} onClick={() => void panBy(panStep, 0)}>Pan Right</button>
-        <button style={buttonStyle()} onClick={() => void editorRef.current?.zoomIn(zoomFactor, 200)}>Zoom In</button>
-        <button style={buttonStyle()} onClick={() => void editorRef.current?.zoomOut(zoomFactor, 200)}>Zoom Out</button>
-        <span style={{ fontSize: "13px" }}>X: {Math.round(viewport?.translateX ?? 0)}</span>
-        <span style={{ fontSize: "13px" }}>Y: {Math.round(viewport?.translateY ?? 0)}</span>
-        <span style={{ fontSize: "13px" }}>Scale: {(viewport?.scale ?? 1).toFixed(2)}</span>
-      </div>
+      <Toolbar>
+        <button onClick={() => void panBy(0, -panStep)}>Pan Up</button>
+        <button onClick={() => void panBy(0, panStep)}>Pan Down</button>
+        <button onClick={() => void panBy(-panStep, 0)}>Pan Left</button>
+        <button onClick={() => void panBy(panStep, 0)}>Pan Right</button>
+        <button onClick={() => void editorRef.current?.zoomIn(zoomFactor, 200)}>Zoom In</button>
+        <button onClick={() => void editorRef.current?.zoomOut(zoomFactor, 200)}>Zoom Out</button>
+        <span className="status">X: {Math.round(viewport?.translateX ?? 0)}</span>
+        <span className="status">Y: {Math.round(viewport?.translateY ?? 0)}</span>
+        <span className="status">Scale: {(viewport?.scale ?? 1).toFixed(2)}</span>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="viewport-events"

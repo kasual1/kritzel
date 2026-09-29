@@ -9,7 +9,13 @@ import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createSeedObjects } from '../../getting-started/seed-objects'
-import { buttonStyle, editorStyle, hostStyle, toolbarStyle } from '../../shared/demo-shared'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
+import InfoPanelToggle from '../../../components/InfoPanelToggle.vue'
+import { useInfoPanel } from '../../../components/info-panel'
+
+const infoPanel = useInfoPanel({ hasToolbarToggle: true })
 
 const editor = getEditorRef('editor')
 const selected = ref<KritzelBaseObject | null>(null)
@@ -75,19 +81,20 @@ async function toggleOpacity() {
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle()" @click="selectFirst">Select Object</button>
+    <Toolbar>
+      <button @click="selectFirst">Select Object</button>
       <span class="separator" />
-      <button :style="buttonStyle()" :disabled="selectionCount !== 1" @click="moveRight">
+      <button :disabled="selectionCount !== 1" @click="moveRight">
         Move Right
       </button>
-      <button :style="buttonStyle()" :disabled="selectionCount !== 1" @click="rotate">
+      <button :disabled="selectionCount !== 1" @click="rotate">
         Rotate 15°
       </button>
-      <button :style="buttonStyle()" :disabled="selectionCount !== 1" @click="toggleOpacity">
+      <button :disabled="selectionCount !== 1" @click="toggleOpacity">
         Toggle Opacity
       </button>
-    </div>
+      <InfoPanelToggle :panel="infoPanel" />
+    </Toolbar>
     <div class="content">
       <KritzelEditor
         ref="editor"
@@ -103,7 +110,7 @@ async function toggleOpacity() {
         @isReady="refreshSelection"
         @objectsSelectionChange="refreshSelection"
       />
-      <aside class="info-panel">
+      <InfoPanel :panel="infoPanel" width="180px">
         <h3>Object</h3>
         <ul v-if="selected">
           <li><span class="label">translateX</span><span class="value">{{ selected.translateX.toFixed(0) }}</span></li>
@@ -112,7 +119,7 @@ async function toggleOpacity() {
           <li><span class="label">opacity</span><span class="value">{{ selected.opacity.toFixed(1) }}</span></li>
         </ul>
         <p v-else class="empty">Nothing selected</p>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>
@@ -128,19 +135,6 @@ async function toggleOpacity() {
   display: flex;
   flex: 1;
   min-height: 0;
-}
-
-.info-panel {
-  width: 180px;
-  padding: 8px;
-  overflow-y: auto;
-  border-left: 1px solid #ebebeb;
-  font-size: 13px;
-}
-
-h3 {
-  margin: 0 0 8px;
-  font-size: 14px;
 }
 
 ul {
