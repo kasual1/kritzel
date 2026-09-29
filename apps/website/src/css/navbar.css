@@ -72,12 +72,16 @@ body:has(.theme-doc-markdown) .navbar--fixed-top {
 }
 
 .navbar__logo {
-  height: 24px !important;
-  width: 24px !important;
+  height: 24px;
+  width: 24px;
 }
 
+/* Fixed box matching the config's width/height so the logo can't shift while the SVG loads */
 .navbar__logo img {
   display: block;
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .navbar__items {
