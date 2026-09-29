@@ -38,7 +38,7 @@ const headerStyle: CSSProperties = {
   padding: "12px 24px",
   background: "#ffffff",
   borderBottom: "1px solid #d8e8ee",
-  boxShadow: "0 1px 3px rgba(8, 126, 164, 0.06)",
+  boxShadow: "0 1px 3px rgba(9, 89, 164, 0.06)",
 };
 
 const badgeStyle: CSSProperties = {
@@ -46,8 +46,8 @@ const badgeStyle: CSSProperties = {
   fontSize: "11px",
   fontWeight: 700,
   textTransform: "uppercase",
-  backgroundColor: "rgba(8, 126, 164, 0.1)",
-  color: "#087ea4",
+  backgroundColor: "rgba(9, 89, 164, 0.1)",
+  color: "#0959a4",
   padding: "2px 8px",
   borderRadius: "99px",
   letterSpacing: "0.5px",
@@ -64,7 +64,7 @@ const navButtonsStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: "12px",
-  background: "rgba(8, 126, 164, 0.08)",
+  background: "rgba(9, 89, 164, 0.08)",
   padding: "4px",
   borderRadius: "8px",
 };
@@ -99,8 +99,8 @@ function navButtonStyle(disabled: boolean): CSSProperties {
     cursor: disabled ? "not-allowed" : "pointer",
     fontSize: "13px",
     fontWeight: 500,
-    color: disabled ? "#8aa0aa" : "#087ea4",
-    boxShadow: disabled ? "none" : "0 1px 2px rgba(8, 126, 164, 0.08)",
+    color: disabled ? "#8aa0aa" : "#0959a4",
+    boxShadow: disabled ? "none" : "0 1px 2px rgba(9, 89, 164, 0.08)",
     opacity: disabled ? 0.5 : 1,
     transition: "all 0.2s ease",
   };

@@ -19,7 +19,7 @@ export const currentUser: IKritzelUser = {
   displayName: "Ada Lovelace",
   email: "ada@example.com",
   oauthProvider: "demo",
-  color: "#087ea4",
+  color: "#0959a4",
   isGuest: false,
 };
 
@@ -37,7 +37,7 @@ export function createAuthenticatedUser(provider: string): IKritzelUser {
   return {
     id: `user-${provider}-1`,
     displayName: "Ada Lovelace",
-    color: "#087ea4",
+    color: "#0959a4",
     isGuest: false,
   };
 }
