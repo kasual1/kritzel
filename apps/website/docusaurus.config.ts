@@ -194,8 +194,8 @@ const config: Config = {
       logo: {
         alt: "Kritzel Infinite Canvas",
         src: "img/logo.svg",
-        width: 32,
-        height: 32,
+        width: 24,
+        height: 24,
       },
       items: [
         {
