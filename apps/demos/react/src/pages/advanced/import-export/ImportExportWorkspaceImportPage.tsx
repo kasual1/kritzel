@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState, type CSSProperties } from "react";
 import {
   KritzelEditor,
   KritzelLine,
@@ -13,6 +13,16 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel } from "../../../components/InfoPanel";
+
+const preStyle: CSSProperties = {
+  margin: 0,
+  overflowWrap: "anywhere",
+  whiteSpace: "pre-wrap",
+  fontFamily: "monospace",
+  fontSize: 11,
+  lineHeight: 1.45,
+};
 
 function createImportedWorkspaceObjects(): KritzelBaseObject[] {
   return [
@@ -112,7 +122,10 @@ export function ImportExportWorkspaceImportPage() {
           }}
           style={{ flex: "1 1 60%", minHeight: 0, display: "block" }}
         />
-        <pre style={{ flex: "1 1 40%", margin: 0, padding: 12, overflow: "auto", whiteSpace: "pre-wrap", overflowWrap: "anywhere", fontSize: 11, lineHeight: 1.4, background: "#f8fafc", borderLeft: "1px solid #e0e0e0" }}>{jsonInput}</pre>
+        <InfoPanel width="300px">
+          <h3>Workspace to Import</h3>
+          <pre style={preStyle}>{jsonInput}</pre>
+        </InfoPanel>
       </div>
     </div>
   );

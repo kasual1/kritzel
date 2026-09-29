@@ -18,6 +18,7 @@ import {
   hostStyle,
 } from "../../shared/demo-shared";
 import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel } from "../../../components/InfoPanel";
 
 interface WorkspaceVariant {
   name: string;
@@ -48,13 +49,6 @@ const contentStyle: CSSProperties = {
   display: "flex",
   flex: 1,
   minHeight: 0,
-};
-const infoPanelStyle: CSSProperties = {
-  width: "300px",
-  padding: "16px",
-  overflow: "auto",
-  borderLeft: "1px solid #ebebeb",
-  background: "#ffffff",
 };
 const jsonStyle: CSSProperties = {
   margin: 0,
@@ -177,10 +171,10 @@ export function WorkspacesUpdatePage() {
           onObjectsChange={() => void refreshActiveWorkspace()}
           style={editorStyle}
         />
-        <aside style={infoPanelStyle}>
+        <InfoPanel width="300px">
           <h3>Active Workspace</h3>
           <pre style={jsonStyle}>{activeWorkspaceJson}</pre>
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

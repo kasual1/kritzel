@@ -10,11 +10,13 @@ import { reactThemeLight } from "../../../const/react-theme-light";
 import { createSeedObjects } from "../../getting-started/seed-objects";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
 import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/InfoPanel";
 
 const themes = [reactThemeLight, reactThemeDark];
 
 export function ObjectsUpdatePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel({ hasToolbarToggle: true });
   const [selected, setSelected] = useState<KritzelBaseObject | null>(null);
   const [selectionCount, setSelectionCount] = useState(0);
   const [workspaces] = useState(() => [
@@ -66,6 +68,7 @@ export function ObjectsUpdatePage() {
         >
           Toggle Opacity
         </button>
+        <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={{ display: "flex", flex: 1, minHeight: 0 }}>
         <KritzelEditor
@@ -84,8 +87,8 @@ export function ObjectsUpdatePage() {
           onObjectsSelectionChange={() => void refreshSelection()}
           style={editorStyle}
         />
-        <aside style={{ width: "180px", borderLeft: "1px solid #ebebeb", padding: "8px", overflowY: "auto", fontSize: "13px" }}>
-          <h3 style={{ margin: "0 0 8px", fontSize: "14px" }}>Object</h3>
+        <InfoPanel panel={infoPanel} width="180px">
+          <h3>Object</h3>
           {selected ? (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {[
@@ -103,7 +106,7 @@ export function ObjectsUpdatePage() {
           ) : (
             <p style={{ color: "#999", fontStyle: "italic" }}>Nothing selected</p>
           )}
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );

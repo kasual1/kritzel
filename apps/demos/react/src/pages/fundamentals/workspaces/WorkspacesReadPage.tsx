@@ -15,6 +15,7 @@ import {
   hostStyle,
 } from "../../shared/demo-shared";
 import { Toolbar } from "../../../components/Toolbar";
+import { InfoPanel, InfoPanelToggle, useInfoPanel } from "../../../components/InfoPanel";
 
 const themes = [reactThemeLight, reactThemeDark];
 const syncConfig: KritzelSyncConfig = {
@@ -24,13 +25,6 @@ const contentStyle: CSSProperties = {
   display: "flex",
   flex: 1,
   minHeight: 0,
-};
-const infoPanelStyle: CSSProperties = {
-  width: "300px",
-  padding: "16px",
-  overflow: "auto",
-  borderLeft: "1px solid #ebebeb",
-  background: "#ffffff",
 };
 const jsonStyle: CSSProperties = {
   margin: 0,
@@ -53,6 +47,7 @@ function createInitialWorkspaces() {
 
 export function WorkspacesReadPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel();
   const [workspaces, setWorkspaces] = useState(createInitialWorkspaces);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string | undefined>(
     "board-1",
@@ -119,6 +114,7 @@ export function WorkspacesReadPage() {
             {workspace.name}
           </button>
         ))}
+        <InfoPanelToggle panel={infoPanel} />
       </Toolbar>
       <div style={contentStyle}>
         <KritzelEditor
@@ -140,10 +136,10 @@ export function WorkspacesReadPage() {
           }
           style={editorStyle}
         />
-        <aside style={infoPanelStyle}>
+        <InfoPanel panel={infoPanel} width="300px">
           <h3>Active Workspace</h3>
           <pre style={jsonStyle}>{activeWorkspaceJson}</pre>
-        </aside>
+        </InfoPanel>
       </div>
     </div>
   );
