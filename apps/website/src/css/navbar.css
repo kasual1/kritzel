@@ -72,13 +72,18 @@ body:has(.theme-doc-markdown) .navbar--fixed-top {
 }
 
 .navbar__logo {
+  display: flex;
+  align-items: center;
   height: 24px;
   width: 24px;
 }
 
-/* Fixed box matching the config's width/height so the logo can't shift while the SVG loads */
+/*
+ * Don't set `display` here: Docusaurus SSR renders a light and a dark logo and hides the
+ * inactive one via `.themedComponent { display: none }` until hydration. Overriding it
+ * shows both stacked, and the logo jumps once React removes the extra one.
+ */
 .navbar__logo img {
-  display: block;
   width: 24px;
   height: 24px;
   object-fit: contain;
