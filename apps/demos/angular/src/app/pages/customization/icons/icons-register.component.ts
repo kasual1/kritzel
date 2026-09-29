@@ -61,7 +61,7 @@ export class IconsRegisterComponent {
       '<svg fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 -960 960 960\"><path d=\"M516-120 402-402 120-516v-56l720-268-268 720zm26-148 162-436-436 162 196 78zm-78-196\"/></svg>',
     pen: '<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960"><path d="m490-527 37 37 217-217-37-37zM200-200h37l233-233-37-37-233 233zm355-205L405-555l167-167-29-29-219 219-56-56 218-219q24-24 56.5-24t56.5 24l29 29 50-50q12-12 28.5-12t28.5 12l93 93q12 12 12 28.5T828-678zM270-120H120v-150l285-285 150 150z"/></svg>',
     arrow:
-      '<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\" width=\"24px\" fill=\"#1f1f1f\"><path d=\"m216-160-56-56 464-464H360v-80h400v400h-80v-264L216-160Z\"/></svg>',
+      '<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 -960 960 960\" width=\"24px\" fill=\"currentColor\"><path d=\"m216-160-56-56 464-464H360v-80h400v400h-80v-264L216-160Z\"/></svg>',
     arrowUpFromDot:
       '<svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 -960 960 960"><path d="M440-240v-368L296-464l-56-56 240-240 240 240-56 56-144-144v368z"/></svg>',
     arrowDownFromDot:
