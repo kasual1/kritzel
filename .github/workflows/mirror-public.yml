@@ -31,7 +31,7 @@ jobs:
       - name: Sync public content
         run: |
           rm -rf public-repo/apps public-repo/libs public-repo/demos public-repo/editor
-          mkdir -p public-repo/demos public-repo/editor
+          mkdir -p public-repo/demos public-repo/editor public-repo/skills/kritzel
 
           rsync -av \
             --delete \
@@ -49,6 +49,10 @@ jobs:
             --exclude='.stencil/' \
             --exclude='dist/' \
             libs/editor/ public-repo/editor/
+
+          rsync -av \
+            --delete \
+            .github/skills/kritzel/ public-repo/skills/kritzel/
 
       - name: "Replace file: dependencies with npm versions"
         run: |
