@@ -32,6 +32,9 @@
   "scripts": {
     "clean": "node ./scripts/clean.js",
     "generate:icons": "node ./scripts/generate-google-font-icons.js",
+    "skill:api": "node ./scripts/generate-kritzel-skill-api.mjs",
+    "skill:api:check": "node ./scripts/generate-kritzel-skill-api.mjs --check",
+    "skill:sync": "node ./scripts/sync-kritzel-skill.mjs",
     "bump-patch": "node ./scripts/bump-patch.js",
     "bump-minor": "node ./scripts/bump-minor.js",
     "bump-major": "node ./scripts/bump-major.js",

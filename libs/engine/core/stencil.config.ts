@@ -34,6 +34,7 @@ export const config: Config = {
       ? []
       : [
           { type: 'docs-readme' as const },
+          { type: 'docs-json' as const, file: '.stencil/docs.json' },
           { type: 'www' as const, serviceWorker: null },
           angularOutputTarget({
             componentCorePackage: '@kritzel/engine',
