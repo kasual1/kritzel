@@ -10,5 +10,31 @@ main {
 }
 
 input[type='checkbox'] {
-  accent-color: #42b883;
+  appearance: none;
+  display: inline-grid;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 1px solid #167a55;
+  border-radius: 3px;
+  background-color: #fff;
+  place-content: center;
+}
+
+input[type='checkbox']:checked {
+  background-color: #167a55;
+}
+
+input[type='checkbox']:checked::before {
+  width: 8px;
+  height: 4px;
+  border-bottom: 2px solid #fff;
+  border-left: 2px solid #fff;
+  content: '';
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+input[type='checkbox']:focus-visible {
+  outline: 2px solid #167a55;
+  outline-offset: 2px;
 }
