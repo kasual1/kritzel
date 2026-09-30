@@ -2,6 +2,8 @@ node_modules/
 dist/
 .stencil/
 loader/
+.agents/skills/kritzel/
+.claude/skills/kritzel/
 
 # License signing keys — the private key must never be committed.
 scripts/license/keys/
