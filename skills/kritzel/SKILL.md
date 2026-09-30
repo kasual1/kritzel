@@ -14,6 +14,26 @@ metadata:
 3. Use `kritzel-editor` for the full canvas and UI. Use `kritzel-engine` for a custom UI around a bare canvas; the engine registers no tools by default. The framework setup reference has a working example of each.
 4. Check the installed `@kritzel/*-editor` version before using an API. Prefer the installed package types when they differ from [the generated API reference](./references/api.md), which is stamped with the source version.
 
+## Use the demos as canonical examples
+
+The runnable demos are the best reference for complete integrations. They use parallel routes across frameworks, so open the matching page for the framework being edited rather than translating wrapper syntax by guesswork:
+
+- [Angular route registry](../../../apps/demos/angular/src/app/app.routes.ts) and [Angular pages](../../../apps/demos/angular/src/app/pages/)
+- [React route registry](../../../apps/demos/react/src/demo-routes.ts) and [React pages](../../../apps/demos/react/src/pages/)
+- [Vue route registry](../../../apps/demos/vue/src/demo-routes.ts) and [Vue pages](../../../apps/demos/vue/src/pages/)
+
+Use these demo areas as good examples for the corresponding task:
+
+| Task | Angular | React | Vue |
+| --- | --- | --- | --- |
+| Start an editor and seed objects | [Getting started](../../../apps/demos/angular/src/app/pages/getting-started/) | [Getting started](../../../apps/demos/react/src/pages/getting-started/) | [Getting started](../../../apps/demos/vue/src/pages/getting-started/) |
+| Controls, objects, tools, viewport, workspaces and persistence | [Fundamentals](../../../apps/demos/angular/src/app/pages/fundamentals/) | [Fundamentals](../../../apps/demos/react/src/pages/fundamentals/) | [Fundamentals](../../../apps/demos/vue/src/pages/fundamentals/) |
+| Collaboration, dynamic objects, import/export and user management | [Advanced](../../../apps/demos/angular/src/app/pages/advanced/) | [Advanced](../../../apps/demos/react/src/pages/advanced/) | [Advanced](../../../apps/demos/vue/src/pages/advanced/) |
+| Themes, fonts, icons and localization | [Customization](../../../apps/demos/angular/src/app/pages/customization/) | [Customization](../../../apps/demos/react/src/pages/customization/) | [Customization](../../../apps/demos/vue/src/pages/customization/) |
+| Complete product-style integrations | [Examples](../../../apps/demos/angular/src/app/pages/examples/) | [Examples](../../../apps/demos/react/src/pages/examples/) | [Examples](../../../apps/demos/vue/src/pages/examples/) |
+
+In particular, start with `quick-start` or `basic-usage`, then compare the focused `objects`, `tools`, `viewport`, `persistence`, `theming`, and `localization` pages before implementing a new integration. The `examples` pages (`object-explorer`, `blueprint-defect-mapper`, `slideshow-presentation`, and `image-annotation-studio`) show how the editor can be composed into larger workflows.
+
 ## Rules shared by all frameworks
 
 - Give the host a concrete width and height; an unsized canvas will not render.
