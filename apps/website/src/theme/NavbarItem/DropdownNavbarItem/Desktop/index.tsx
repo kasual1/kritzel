@@ -82,70 +82,83 @@ export default function DropdownNavbarItemDesktop({
     : props.label;
 
   return (
-    <div
-      ref={dropdownRef}
-      className={clsx('navbar__item', 'dropdown', {
-        'dropdown--hoverable': !isFramework,
-        'dropdown--right': position === 'right',
-        'dropdown--show': showDropdown,
-        'navbar-framework-picker': isFramework,
-      })}>
-      <NavbarNavLink
-        aria-haspopup="true"
-        aria-expanded={showDropdown}
-        role="button"
-        // # hash permits to make the <a> tag focusable in case no link target
-        // See https://github.com/facebook/docusaurus/pull/6003
-        // There's probably a better solution though...
-        href={props.to ? undefined : '#'}
-        className={clsx('navbar__link', className)}
-        {...props}
-        label={
-          <>
-            {props.children ?? displayLabel}
-            <ChevronDown className="navbar-dropdown-chevron" size={18} aria-hidden="true" />
-          </>
-        }
-        onClick={(event) => {
-          if (!props.to) {
-            event.preventDefault();
+    <>
+      {isFramework && (
+        <a
+          className="navbar-framework-github-link"
+          href="https://github.com/kasual1/kritzel"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Kritzel on GitHub"
+          title="Kritzel on GitHub">
+          <img src="/img/github-framework.svg" alt="" aria-hidden="true" />
+        </a>
+      )}
+      <div
+        ref={dropdownRef}
+        className={clsx('navbar__item', 'dropdown', {
+          'dropdown--hoverable': !isFramework,
+          'dropdown--right': position === 'right',
+          'dropdown--show': showDropdown,
+          'navbar-framework-picker': isFramework,
+        })}>
+        <NavbarNavLink
+          aria-haspopup="true"
+          aria-expanded={showDropdown}
+          role="button"
+          // # hash permits to make the <a> tag focusable in case no link target
+          // See https://github.com/facebook/docusaurus/pull/6003
+          // There's probably a better solution though...
+          href={props.to ? undefined : '#'}
+          className={clsx('navbar__link', className)}
+          {...props}
+          label={
+            <>
+              {props.children ?? displayLabel}
+              <ChevronDown className="navbar-dropdown-chevron" size={18} aria-hidden="true" />
+            </>
           }
-          onClick?.(event);
-          if (isFramework) {
-            setShowDropdown((isOpen) => !isOpen);
-          }
-        }}
-        onKeyDown={(e) => {
-          if (e.key === 'Escape') {
-            e.preventDefault();
-            setShowDropdown(false);
-          } else if (isFramework && e.key === ' ') {
-            e.preventDefault();
-            setShowDropdown((isOpen) => !isOpen);
-          }
-        }}>
-      </NavbarNavLink>
-      <ul className="dropdown__menu">
-        {items.map((childItemProps, i) => {
-          const handleClick = isFramework ? () => {
-            const framework = getFrameworkFromPath(childItemProps.to || '');
-            if (framework) {
-              setPreferredFramework(framework);
+          onClick={(event) => {
+            if (!props.to) {
+              event.preventDefault();
             }
-            setShowDropdown(false);
-          } : undefined;
-          
-          return (
-            <NavbarItem
-              isDropdownItem
-              activeClassName="dropdown__link--active"
-              {...childItemProps}
-              onClick={handleClick}
-              key={i}
-            />
-          );
-        })}
-      </ul>
-    </div>
+            onClick?.(event);
+            if (isFramework) {
+              setShowDropdown((isOpen) => !isOpen);
+            }
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              e.preventDefault();
+              setShowDropdown(false);
+            } else if (isFramework && e.key === ' ') {
+              e.preventDefault();
+              setShowDropdown((isOpen) => !isOpen);
+            }
+          }}>
+        </NavbarNavLink>
+        <ul className="dropdown__menu">
+          {items.map((childItemProps, i) => {
+            const handleClick = isFramework ? () => {
+              const framework = getFrameworkFromPath(childItemProps.to || '');
+              if (framework) {
+                setPreferredFramework(framework);
+              }
+              setShowDropdown(false);
+            } : undefined;
+            
+            return (
+              <NavbarItem
+                isDropdownItem
+                activeClassName="dropdown__link--active"
+                {...childItemProps}
+                onClick={handleClick}
+                key={i}
+              />
+            );
+          })}
+        </ul>
+      </div>
+    </>
   );
 }

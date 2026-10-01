@@ -120,6 +120,26 @@ body:has(.theme-doc-markdown) .navbar--fixed-top {
   background: rgba(255, 255, 255, 0.76);
 }
 
+.navbar-framework-github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 2rem;
+  margin-right: -0.2rem;
+  transition: opacity 0.2s ease;
+}
+
+.navbar-framework-github-link:hover,
+.navbar-framework-github-link:focus-visible {
+  opacity: 0.72;
+}
+
+.navbar-framework-github-link img {
+  width: 1rem;
+  height: 1rem;
+}
+
 .navbar-framework-picker.dropdown--show > .dropdown__menu {
   visibility: visible !important;
   opacity: 1 !important;
