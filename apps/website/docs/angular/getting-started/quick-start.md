@@ -23,6 +23,12 @@ Run the following command to install the Kritzel editor in your project.
 npm install @kritzel/angular-editor
 ```
 
+Install the related Kritzel skill for coding assistance:
+
+```bash
+npx skills add kasual1/kritzel
+```
+
 ## Setup
 
 Register Kritzel in your application config:
