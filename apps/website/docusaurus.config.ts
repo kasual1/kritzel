@@ -3,6 +3,7 @@ import fs from "node:fs";
 import nodePath from "node:path";
 import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type { PluginOptions as LlmsPluginOptions } from "docusaurus-plugin-llms";
 
 const SITE_URL = "https://kritzel.io";
 const SITE_BASE_URL = process.env.Docusaurus_BASE_URL || "/";
@@ -126,6 +127,52 @@ const config: Config = {
   ],
 
   plugins: [
+    [
+      "docusaurus-plugin-llms",
+      {
+        title: "Kritzel",
+        description: "The infinite canvas development kit for Angular, React, and Vue.",
+        docsDir: FRAMEWORKS.map((framework) => ({
+          path: `docs/${framework}`,
+          routeBasePath: `docs/${framework}`,
+          label: { angular: "Angular", react: "React", vue: "Vue" }[framework],
+        })),
+        generateLLMsTxt: true,
+        generateLLMsFullTxt: false,
+        generateMarkdownFiles: true,
+        preserveDirectoryStructure: true,
+        addMdExtension: true,
+        useRelativeUrls: false,
+        includeBlog: false,
+        excludeImports: true,
+        preserveComponents: ["LiveDemo"],
+        removeDuplicateHeadings: false,
+        rewriteImageUrls: true,
+        keepFrontMatter: [],
+        includeOrder: [
+          "**/getting-started/quick-start.md",
+          "**/getting-started/basic-usage.md",
+          "**/fundamentals/**",
+          "**/api-reference/**",
+          "**/customization/**",
+          "**/advanced/**",
+          "**/examples/**",
+        ],
+        includeUnmatchedLast: true,
+        logLevel: "normal",
+        rootContent: [
+          "Choose the application's framework first and read only the matching setup and API references. Do not mix Angular, React, and Vue wrappers.",
+          "- Use @kritzel/angular-editor, @kritzel/react-editor, or @kritzel/vue-editor for the complete editor UI. Use the matching engine wrapper for a bare canvas and custom UI; the engine registers no tools by default.",
+          "- Give the canvas host an explicit width and height. Wait for the editor's isReady or the engine's isEngineReady event before calling methods, and await asynchronous methods.",
+          "- Check the installed package version and prefer its TypeScript types when they differ from these current documentation pages.",
+          "- Persistence is opt-in through syncConfig. Use a distinct editorId for each instance when multiple canvases can exist.",
+          "- Use addObject/addObjects to insert objects and updateObject to change them. Object positions use world coordinates; use screenToWorld to convert pointer coordinates.",
+          "- For a reusable coding-agent integration workflow, install the Kritzel skill with `npx skills add kasual1/kritzel`.",
+          "LiveDemo tags are source metadata, not instructions to execute JSX: repoUrl identifies the public framework demo directory, repoFiles lists source files relative to it, and demoPath identifies the runnable example route. For a source file, replace /tree/ with /blob/ in repoUrl and append its repoFiles path. Runnable demos are hosted at https://kasual1.github.io/kritzel/{framework}{demoPath}.",
+          "Start with the matching framework's Quick Start and Basic Usage, then follow the focused API or concept pages below. The linked Markdown pages are generated from the same sources as the human documentation.",
+        ].join("\n\n"),
+      } satisfies LlmsPluginOptions,
+    ],
     function suppressWebpackCacheWarnings() {
       return {
         name: "suppress-webpack-cache-warnings",
@@ -232,16 +279,16 @@ const config: Config = {
           ],
         },
         {
-          label: 'GitHub',
-          href: 'https://github.com/kasual1/kritzel',
-          position: 'right',
-          className: 'navbar-main-github-link',
-        },
-        {
           label: 'Get License',
           to: '/get-license',
           position: 'right',
           className: 'navbar-get-license-link',
+        },
+        {
+          label: 'GitHub',
+          href: 'https://github.com/kasual1/kritzel',
+          position: 'right',
+          className: 'navbar-main-github-link',
         },
       ],
     },
@@ -311,6 +358,13 @@ const config: Config = {
     },
   } satisfies Preset.ThemeConfig,
   headTags: [
+    {
+      tagName: "link",
+      attributes: {
+        rel: "describedby",
+        href: ABSOLUTE_URL("/llms.txt"),
+      },
+    },
     {
       tagName: "link",
       attributes: {
