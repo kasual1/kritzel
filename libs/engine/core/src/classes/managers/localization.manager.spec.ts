@@ -204,11 +204,21 @@ describe('KritzelLocalizationManager', () => {
       expect(manager.getAvailableLocales()).toEqual(['es']);
     });
 
-    it('should still fall back to built-in terms for keys a configured locale omits', () => {
-      manager.configureLocales([{ code: 'es', terms: { 'menu.copy': 'Copiar' } }]);
+    it('should still fall back to active built-in terms for keys a configured locale omits', () => {
+      manager.configureLocales([{ code: 'es', terms: { 'menu.copy': 'Custom copy' } }]);
       manager.setLocale('es');
 
-      expect(manager.translate('menu.copy')).toBe('Copiar');
+      expect(manager.translate('menu.copy')).toBe('Custom copy');
+      expect(manager.translate('menu.paste')).toBe('Pegar');
+    });
+
+    it('should fall back to English for omitted keys in a configured language unknown to the built-in catalog', () => {
+      expect(manager.getAvailableLocales()).not.toContain('fi');
+
+      manager.configureLocales([{ code: 'fi', label: 'Suomi', terms: { 'menu.copy': 'Kopioi' } }]);
+      manager.setLocale('fi');
+
+      expect(manager.translate('menu.copy')).toBe('Kopioi');
       expect(manager.translate('menu.paste')).toBe('Paste');
     });
 
