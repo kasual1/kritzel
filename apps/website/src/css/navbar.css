@@ -140,6 +140,36 @@ body:has(.theme-doc-markdown) .navbar--fixed-top {
   height: 1rem;
 }
 
+.navbar__inner a.navbar-main-github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  font-size: 0;
+  background: transparent;
+  border-radius: 0;
+}
+
+.navbar__inner a.navbar-main-github-link:hover,
+.navbar__inner a.navbar-main-github-link.navbar__link--active {
+  background: transparent;
+  opacity: 0.72;
+}
+
+.navbar__inner a.navbar-main-github-link::before {
+  width: 1rem;
+  height: 1rem;
+  background: url("/img/github-framework.svg") center / contain no-repeat;
+  content: "";
+}
+
+.navbar__inner a.navbar-main-github-link svg,
+.navbar-sidebar .menu__link.navbar-main-github-link {
+  display: none !important;
+}
+
 .navbar-framework-picker.dropdown--show > .dropdown__menu {
   visibility: visible !important;
   opacity: 1 !important;
@@ -163,7 +193,8 @@ a.navbar-get-license-link.navbar__link--active {
   color: #fff !important;
 }
 
-body:has(.theme-doc-markdown) .navbar__inner a.navbar-get-license-link {
+body:has(.theme-doc-markdown) .navbar__inner a.navbar-get-license-link,
+body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
   display: none;
 }
 
@@ -259,7 +290,8 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-get-license-link {
     padding: 0.22rem 0.55rem;
   }
 
-  body:has(.theme-doc-markdown) .navbar-sidebar .menu__link.navbar-get-license-link {
+  body:has(.theme-doc-markdown) .navbar-sidebar .menu__link.navbar-get-license-link,
+  body:has(.theme-doc-markdown) .navbar-sidebar .menu__link.navbar-main-github-link {
     display: none !important;
   }
 

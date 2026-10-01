@@ -232,6 +232,12 @@ const config: Config = {
           ],
         },
         {
+          label: 'GitHub',
+          href: 'https://github.com/kasual1/kritzel',
+          position: 'right',
+          className: 'navbar-main-github-link',
+        },
+        {
           label: 'Get License',
           to: '/get-license',
           position: 'right',
