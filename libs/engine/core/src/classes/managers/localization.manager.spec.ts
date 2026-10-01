@@ -1,5 +1,13 @@
 import { KritzelLocalizationManager } from './localization.manager';
 import { KritzelCore } from '../core/core.class';
+import { EN_LOCALE } from '../../locales/en-locale';
+import { DE_LOCALE } from '../../locales/de-locale';
+import { FR_LOCALE } from '../../locales/fr-locale';
+import { PT_LOCALE } from '../../locales/pt-locale';
+import { ES_LOCALE } from '../../locales/es-locale';
+import { PL_LOCALE } from '../../locales/pl-locale';
+import { NL_LOCALE } from '../../locales/nl-locale';
+import { IT_LOCALE } from '../../locales/it-locale';
 
 jest.mock('../core/core.class');
 
@@ -103,6 +111,51 @@ describe('KritzelLocalizationManager', () => {
   });
 
   describe('locale registry', () => {
+    it('should expose the complete built-in locale catalog', () => {
+      const builtInLocales = [
+        EN_LOCALE,
+        DE_LOCALE,
+        FR_LOCALE,
+        PT_LOCALE,
+        ES_LOCALE,
+        PL_LOCALE,
+        NL_LOCALE,
+        IT_LOCALE,
+      ];
+
+      expect(manager.getAvailableLocales()).toEqual(['en', 'de', 'fr', 'pt', 'es', 'pl', 'nl', 'it']);
+      expect(manager.getAvailableLocaleOptions()).toEqual([
+        { code: 'en', label: 'English' },
+        { code: 'de', label: 'Deutsch' },
+        { code: 'fr', label: 'Français' },
+        { code: 'pt', label: 'Português' },
+        { code: 'es', label: 'Español' },
+        { code: 'pl', label: 'Polski' },
+        { code: 'nl', label: 'Nederlands' },
+        { code: 'it', label: 'Italiano' },
+      ]);
+
+      for (const locale of builtInLocales) {
+        expect(Object.keys(locale.terms).sort()).toEqual(Object.keys(EN_LOCALE.terms).sort());
+      }
+    });
+
+    it('should translate representative terms and return native labels for each added locale', () => {
+      const locales = [
+        { code: 'pt', copy: 'Copiar', label: 'Português' },
+        { code: 'es', copy: 'Copiar', label: 'Español' },
+        { code: 'pl', copy: 'Kopiuj', label: 'Polski' },
+        { code: 'nl', copy: 'Kopiëren', label: 'Nederlands' },
+        { code: 'it', copy: 'Copia', label: 'Italiano' },
+      ] as const;
+
+      for (const locale of locales) {
+        manager.setLocale(locale.code);
+        expect(manager.translate('menu.copy')).toBe(locale.copy);
+        expect(manager.getLocaleLabel(locale.code)).toBe(locale.label);
+      }
+    });
+
     it('should list built-in and registered locale codes', () => {
       manager.registerLocales([{ code: 'es', label: 'Español', terms: {} }]);
 
@@ -151,11 +204,21 @@ describe('KritzelLocalizationManager', () => {
       expect(manager.getAvailableLocales()).toEqual(['es']);
     });
 
-    it('should still fall back to built-in terms for keys a configured locale omits', () => {
-      manager.configureLocales([{ code: 'es', terms: { 'menu.copy': 'Copiar' } }]);
+    it('should still fall back to active built-in terms for keys a configured locale omits', () => {
+      manager.configureLocales([{ code: 'es', terms: { 'menu.copy': 'Custom copy' } }]);
       manager.setLocale('es');
 
-      expect(manager.translate('menu.copy')).toBe('Copiar');
+      expect(manager.translate('menu.copy')).toBe('Custom copy');
+      expect(manager.translate('menu.paste')).toBe('Pegar');
+    });
+
+    it('should fall back to English for omitted keys in a configured language unknown to the built-in catalog', () => {
+      expect(manager.getAvailableLocales()).not.toContain('fi');
+
+      manager.configureLocales([{ code: 'fi', label: 'Suomi', terms: { 'menu.copy': 'Kopioi' } }]);
+      manager.setLocale('fi');
+
+      expect(manager.translate('menu.copy')).toBe('Kopioi');
       expect(manager.translate('menu.paste')).toBe('Paste');
     });
 
