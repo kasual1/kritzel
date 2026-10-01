@@ -23,6 +23,12 @@ Run the following command to install the Kritzel editor in your project.
 npm install @kritzel/react-editor
 ```
 
+Install the related Kritzel skill for coding assistance:
+
+```bash
+npx skills add kasual1/kritzel
+```
+
 ## Setup
 
 Import and render the `<KritzelEditor>` component:

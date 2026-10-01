@@ -7,6 +7,13 @@ export const vueThemeDark: KritzelTheme = {
     ...darkTheme.global,
     focusRingColor: 'rgba(66, 184, 131, 0.3)',
   },
+  currentUserDialog: {
+    ...darkTheme.currentUserDialog,
+    logoutButtonBackgroundColor: '#42b883',
+    logoutButtonHoverBackgroundColor: '#369a6e',
+    logoutButtonActiveBackgroundColor: '#2c7d5a',
+    logoutButtonColor: '#ffffff',
+  },
   selection: {
     ...darkTheme.selection,
     borderColor: '#42b883',
