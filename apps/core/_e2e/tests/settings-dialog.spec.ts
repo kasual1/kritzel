@@ -30,6 +30,10 @@ test.describe('Settings dialog', () => {
     const appliedTheme = await editorPage.getProp<string>('theme');
     expect(appliedTheme).toBe('dark');
 
+    await page.waitForTimeout(100);
+    const detailPanel = settingsRoot.locator('kritzel-master-detail .detail-panel');
+    await detailPanel.evaluate(element => element.scrollTo(0, 0));
+    await expect.poll(() => detailPanel.evaluate(element => element.scrollTop)).toBe(0);
     await expect(editorPage.engine).toHaveScreenshot('Settings-dialog-dark-theme.png', { timeout: 1000 });
   });
 

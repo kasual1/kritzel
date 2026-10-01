@@ -58,8 +58,8 @@
 
 .demo-toolbar > .info-panel-toolbar-toggle:hover,
 .demo-toolbar > .info-panel-toolbar-toggle:focus-visible {
-  border-color: #087ea4;
-  background: #087ea4;
+  border-color: #0959a4;
+  background: #0959a4;
   color: #fff;
   outline: 0;
 }
@@ -148,8 +148,8 @@
 
   .info-panel-close:hover,
   .info-panel-close:focus-visible {
-    border-color: #087ea4;
-    background: #087ea4;
+    border-color: #0959a4;
+    background: #0959a4;
     color: #fff;
     outline: 0;
   }

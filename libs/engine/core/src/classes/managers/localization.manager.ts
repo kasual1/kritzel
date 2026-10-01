@@ -3,6 +3,11 @@ import { LocalizationHelper } from '../../helpers/localization.helper';
 import { EN_LOCALE } from '../../locales/en-locale';
 import { DE_LOCALE } from '../../locales/de-locale';
 import { FR_LOCALE } from '../../locales/fr-locale';
+import { PT_LOCALE } from '../../locales/pt-locale';
+import { ES_LOCALE } from '../../locales/es-locale';
+import { PL_LOCALE } from '../../locales/pl-locale';
+import { NL_LOCALE } from '../../locales/nl-locale';
+import { IT_LOCALE } from '../../locales/it-locale';
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../../interfaces/localization.interface';
 
 /** Key used to store the settings object in localStorage. */
@@ -56,6 +61,11 @@ export class KritzelLocalizationManager {
     this._builtinLocales.set(EN_LOCALE.code, EN_LOCALE);
     this._builtinLocales.set(DE_LOCALE.code, DE_LOCALE);
     this._builtinLocales.set(FR_LOCALE.code, FR_LOCALE);
+    this._builtinLocales.set(PT_LOCALE.code, PT_LOCALE);
+    this._builtinLocales.set(ES_LOCALE.code, ES_LOCALE);
+    this._builtinLocales.set(PL_LOCALE.code, PL_LOCALE);
+    this._builtinLocales.set(NL_LOCALE.code, NL_LOCALE);
+    this._builtinLocales.set(IT_LOCALE.code, IT_LOCALE);
 
     this._currentLocale = this.getStoredLocale();
   }
@@ -102,7 +112,7 @@ export class KritzelLocalizationManager {
    * configured or registered custom locales. Unlike {@link registerLocales},
    * this determines which locales are considered "available" (e.g. for a
    * settings selector): passing `undefined` restores the built-in set
-   * (en/de/fr); passing an array (even empty) makes that array's codes the
+   * (en/de/fr/pt/es/pl/nl/it); passing an array (even empty) makes that array's codes the
    * exclusive available set, falling back to `en` only if the array is empty.
    * Built-in term fallback for missing keys is unaffected either way.
    *
