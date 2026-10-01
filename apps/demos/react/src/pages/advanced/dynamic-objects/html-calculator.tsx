@@ -67,7 +67,7 @@ export function createHtmlCalculator(initialState: CalculatorState): HtmlCalcula
   heading.textContent = "HTML Calculator";
   heading.style.cssText = "margin:0;font-size:16px";
   const operatorLabel = document.createElement("strong");
-  operatorLabel.style.color = "#087ea4";
+  operatorLabel.style.color = "#0959a4";
   header.append(heading, operatorLabel);
 
   const display = document.createElement("output");
@@ -121,7 +121,7 @@ export function createHtmlCalculator(initialState: CalculatorState): HtmlCalcula
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = label;
-    button.style.cssText = `min-width:0;min-height:0;border:1px solid ${accent ? "#087ea4" : "#dadce0"};border-radius:6px;background:${label === "=" ? "#087ea4" : "#fff"};color:${label === "=" ? "#fff" : accent ? "#087ea4" : "#202124"};cursor:pointer;font-weight:600${span ? ";grid-column:span 2" : ""}${label === "=" ? ";grid-row:span 2" : ""}`;
+    button.style.cssText = `min-width:0;min-height:0;border:1px solid ${accent ? "#0959a4" : "#dadce0"};border-radius:6px;background:${label === "=" ? "#0959a4" : "#fff"};color:${label === "=" ? "#fff" : accent ? "#0959a4" : "#202124"};cursor:pointer;font-weight:600${span ? ";grid-column:span 2" : ""}${label === "=" ? ";grid-row:span 2" : ""}`;
     button.addEventListener("click", onClick);
     cleanup.push(() => button.removeEventListener("click", onClick));
     keypad.appendChild(button);
