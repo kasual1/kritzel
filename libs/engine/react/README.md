@@ -82,12 +82,12 @@ For optimal rendering and responsiveness on mobile devices, add this meta tag wi
 
 Kritzel is composed of a small set of core concepts that work together to power your canvas experience:
 
-- **Components** — Two entry points, a batteries-included editor and a headless engine, to match any integration style.
-- **Tools** — State-machine interaction handlers that define how users draw, select, and manipulate the canvas.
-- **Objects** — The visual building blocks on the canvas, such as paths, shapes, text, and images with shared spatial properties.
-- **Workspaces** — Containers that manage an entire canvas collection, view state, and editor configuration.
-- **Theming** — Built-in light and dark themes with full CSS variable customization to match your brand.
-- **Collaboration** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
+- **[Components](https://kritzel.io/docs/react/getting-started/basic-usage)** — Two entry points, a batteries-included editor and a headless engine, to match any integration style.
+- **[Tools](https://kritzel.io/docs/react/fundamentals/tools)** — State-machine interaction handlers that define how users draw, select, and manipulate the canvas.
+- **[Objects](https://kritzel.io/docs/react/fundamentals/objects)** — The visual building blocks on the canvas, such as paths, shapes, text, and images with shared spatial properties.
+- **[Workspaces](https://kritzel.io/docs/react/fundamentals/workspaces)** — Containers that manage an entire canvas collection, view state, and editor configuration.
+- **[Theming](https://kritzel.io/docs/react/customization/themes)** — Built-in light and dark themes with full CSS variable customization to match your brand.
+- **[Collaboration](https://kritzel.io/docs/react/advanced/collaboration)** — Real-time multi-user sync powered by Yjs CRDTs with pluggable transport providers.
 
 Learn more in the [full documentation](https://kritzel.io/docs/react/getting-started/basic-usage).
 
