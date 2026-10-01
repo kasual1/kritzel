@@ -2,7 +2,7 @@
 # Local file: dependencies in demo package.json files are replaced with
 # published npm package versions so the public repository is installable.
 
-name: Mirror public repo
+name: Mirror repo
 
 on:
   workflow_dispatch:

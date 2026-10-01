@@ -1,5 +1,5 @@
 # Runs the website Vitest contract checks when website files change.
-name: Run website tests
+name: Test website
 
 on:
   pull_request:

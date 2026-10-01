@@ -1,5 +1,5 @@
 # Builds the core libraries, then runs unit tests and core/demo e2e tests in parallel.
-name: Run library tests
+name: Test libraries
 
 on:
   push:
