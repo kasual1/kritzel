@@ -94,6 +94,12 @@ export const reactThemeLight: KritzelTheme = {
     primaryHoverBackgroundColor: '#07437c',
     primaryActiveBackgroundColor: '#052e55',
   },
+  currentUserDialog: {
+    logoutButtonBackgroundColor: '#0959a4',
+    logoutButtonHoverBackgroundColor: '#07437c',
+    logoutButtonActiveBackgroundColor: '#052e55',
+    logoutButtonColor: '#ffffff',
+  },
   slideToggle: {
     trackCheckedColor: '#0959a4',
   },

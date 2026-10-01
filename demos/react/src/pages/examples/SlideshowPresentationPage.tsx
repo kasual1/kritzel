@@ -120,7 +120,7 @@ export function SlideshowPresentationPage() {
         height: 450,
         shapeType: ShapeType.Rectangle,
         fillColor: { light: "#ffffff", dark: "#1b1b1e" },
-        strokeColor: { light: "#087ea4", dark: "#065d7a" },
+        strokeColor: { light: "#0959a4", dark: "#2f8be0" },
         strokeWidth: 4,
       }),
     );
@@ -131,7 +131,7 @@ export function SlideshowPresentationPage() {
         translateX: -350,
         translateY: -150,
         fontSize: 36,
-        fontColor: { light: "#087ea4", dark: "#4dd0e1" },
+        fontColor: { light: "#0959a4", dark: "#2f8be0" },
       }),
     );
 
@@ -168,7 +168,7 @@ export function SlideshowPresentationPage() {
         height: 450,
         shapeType: ShapeType.Rectangle,
         fillColor: { light: "#ffffff", dark: "#1b1b1e" },
-        strokeColor: { light: "#087ea4", dark: "#065d7a" },
+        strokeColor: { light: "#0959a4", dark: "#2f8be0" },
         strokeWidth: 4,
       }),
     );
@@ -179,7 +179,7 @@ export function SlideshowPresentationPage() {
         translateX: 850,
         translateY: -150,
         fontSize: 36,
-        fontColor: { light: "#087ea4", dark: "#4dd0e1" },
+        fontColor: { light: "#0959a4", dark: "#2f8be0" },
       }),
     );
 
@@ -216,7 +216,7 @@ export function SlideshowPresentationPage() {
         height: 450,
         shapeType: ShapeType.Rectangle,
         fillColor: { light: "#ffffff", dark: "#1b1b1e" },
-        strokeColor: { light: "#087ea4", dark: "#065d7a" },
+        strokeColor: { light: "#0959a4", dark: "#2f8be0" },
         strokeWidth: 4,
       }),
     );
@@ -227,7 +227,7 @@ export function SlideshowPresentationPage() {
         translateX: 2050,
         translateY: -150,
         fontSize: 36,
-        fontColor: { light: "#087ea4", dark: "#4dd0e1" },
+        fontColor: { light: "#0959a4", dark: "#2f8be0" },
       }),
     );
 

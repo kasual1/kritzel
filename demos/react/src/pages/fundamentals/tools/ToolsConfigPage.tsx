@@ -30,11 +30,11 @@ const toolbarItems: KritzelToolbarItem[] = [
     icon: "pen",
     isDefault: true,
     config: {
-      color: { light: "#087ea4", dark: "#7dd3fc", label: "React Blue" },
+      color: { light: "#0959a4", dark: "#2f8be0", label: "React Blue" },
       size: 8,
       opacity: 1,
       palette: [
-        { light: "#087ea4", dark: "#7dd3fc", label: "React Blue" },
+        { light: "#0959a4", dark: "#2f8be0", label: "React Blue" },
         { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
         { light: "#16a34a", dark: "#4ade80", label: "Green" },
       ],
@@ -69,14 +69,14 @@ const toolbarItems: KritzelToolbarItem[] = [
     config: {
       shapeType: ShapeType.Ellipse,
       fillColor: { light: "#e0f2fe", dark: "#0c4a6e" },
-      strokeColor: { light: "#087ea4", dark: "#7dd3fc", label: "React Blue" },
+      strokeColor: { light: "#0959a4", dark: "#2f8be0", label: "React Blue" },
       strokeWidth: 4,
       opacity: 1,
       fontColor: { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
       fontSize: 16,
       fontFamily: "Arial",
       palette: [
-        { light: "#087ea4", dark: "#7dd3fc", label: "React Blue" },
+        { light: "#0959a4", dark: "#2f8be0", label: "React Blue" },
         { light: "#f59e0b", dark: "#fbbf24", label: "Amber" },
         { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
       ],
@@ -99,7 +99,7 @@ const toolbarItems: KritzelToolbarItem[] = [
       availableFonts: ["Georgia", "Courier New"],
       palette: [
         { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
-        { light: "#087ea4", dark: "#7dd3fc", label: "React Blue" },
+        { light: "#0959a4", dark: "#2f8be0", label: "React Blue" },
       ],
       sizes: [8, 12, 24],
     },
