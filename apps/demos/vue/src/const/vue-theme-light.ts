@@ -94,6 +94,12 @@ export const vueThemeLight: KritzelTheme = {
     primaryHoverBackgroundColor: '#369a6e',
     primaryActiveBackgroundColor: '#2c7d5a',
   },
+  currentUserDialog: {
+    logoutButtonBackgroundColor: '#42b883',
+    logoutButtonHoverBackgroundColor: '#369a6e',
+    logoutButtonActiveBackgroundColor: '#2c7d5a',
+    logoutButtonColor: '#ffffff',
+  },
   slideToggle: {
     trackCheckedColor: '#42b883',
   },

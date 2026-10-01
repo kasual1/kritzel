@@ -2,6 +2,7 @@
 sidebar_label: Objects
 title: "Objects | Kritzel for Vue"
 description: "Reference for all canvas object types in Kritzel: brush, line, shape, text, and image."
+toc_max_heading_level: 2
 ---
 # Objects
 
