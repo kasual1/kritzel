@@ -10,12 +10,19 @@ on:
       - 'package-lock.json'
       - 'apps/website/**'
       - '.github/workflows/test-website.yml'
+      - '.github/workflows/deploy-website.yml'
   workflow_dispatch:
 
 jobs:
   test-website:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        base-url: ['/', '/preview/']
+    env:
+      Docusaurus_BASE_URL: ${{ matrix.base-url }}
 
     steps:
       - name: Checkout repository
@@ -33,3 +40,9 @@ jobs:
 
       - name: Run website tests
         run: npm run test -w apps/website
+
+      - name: Build documentation and Markdown exports
+        run: npm run build -w apps/website
+
+      - name: Validate generated LLM documentation
+        run: npm run test:llms -w apps/website

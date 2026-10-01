@@ -28,6 +28,11 @@ jobs:
         env:
           Docusaurus_BASE_URL: /
 
+      - name: Validate generated LLM documentation
+        run: npm run test:llms -w apps/website
+        env:
+          Docusaurus_BASE_URL: /
+
       - name: Upload docs artifact
         uses: actions/upload-artifact@v7
         with:
