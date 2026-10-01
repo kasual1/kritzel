@@ -30,7 +30,7 @@ export function CalculatorWidget({ initialState, onStateChange }: CalculatorWidg
 
   return (
     <section aria-label="React calculator" style={cardStyle}>
-      <header style={headerStyle}><h3 style={{ margin: 0, fontSize: 16 }}>React Calculator</h3><strong style={{ color: "#087ea4" }}>{state.pendingOperator ? operatorLabels[state.pendingOperator] : ""}</strong></header>
+      <header style={headerStyle}><h3 style={{ margin: 0, fontSize: 16 }}>React Calculator</h3><strong style={{ color: "#0959a4" }}>{state.pendingOperator ? operatorLabels[state.pendingOperator] : ""}</strong></header>
       <output aria-live="polite" style={displayStyle}>{state.displayValue}</output>
       <div style={keypadStyle}>
         <button type="button" style={buttonStyle} onClick={() => setState(createCalculatorInitialState())}>C</button>
@@ -54,5 +54,5 @@ const headerStyle: CSSProperties = { display: "flex", alignItems: "center", just
 const displayStyle: CSSProperties = { display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 12px", border: "1px solid #e0e0e0", borderRadius: 6, background: "#fafafa", fontSize: 24, fontWeight: 700, overflow: "hidden" };
 const keypadStyle: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gridTemplateRows: "repeat(5, minmax(0, 1fr))", gap: 6, minHeight: 0 };
 const buttonStyle: CSSProperties = { minWidth: 0, minHeight: 0, border: "1px solid #dadce0", borderRadius: 6, background: "#fff", color: "#202124", cursor: "pointer", fontWeight: 600 };
-const operatorStyle: CSSProperties = { ...buttonStyle, borderColor: "#087ea4", color: "#087ea4" };
-const equalsStyle: CSSProperties = { ...operatorStyle, gridRow: "span 2", background: "#087ea4", color: "#fff" };
+const operatorStyle: CSSProperties = { ...buttonStyle, borderColor: "#0959a4", color: "#0959a4" };
+const equalsStyle: CSSProperties = { ...operatorStyle, gridRow: "span 2", background: "#0959a4", color: "#fff" };

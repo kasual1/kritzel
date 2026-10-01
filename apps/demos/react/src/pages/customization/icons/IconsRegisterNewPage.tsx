@@ -17,10 +17,10 @@ const toolbarItems: KritzelToolbarItem[] = [
     tool: KritzelBrushTool,
     icon: "pen",
     config: {
-      color: { light: "#087ea4", dark: "#61dafb", label: "React Blue" },
+      color: { light: "#0959a4", dark: "#2f8be0", label: "React Blue" },
       size: 8,
       opacity: 1,
-      palette: [{ light: "#087ea4", dark: "#61dafb", label: "React Blue" }, { light: "#1f2937", dark: "#f3f4f6", label: "Ink" }],
+      palette: [{ light: "#0959a4", dark: "#2f8be0", label: "React Blue" }, { light: "#1f2937", dark: "#f3f4f6", label: "Ink" }],
       sizes: [4, 8, 16],
     },
   },
