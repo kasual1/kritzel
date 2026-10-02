@@ -29,6 +29,13 @@ It gives you a framework-neutral whiteboard foundation for creating interactive,
 - Visual planning and diagram tools
 - Spatial knowledge and idea maps
 - Collaborative content workspaces
+- Agentic canvases
+
+## Quick Start
+
+- [Angular](https://kritzel.io/docs/angular/getting-started/quick-start)
+- [React](https://kritzel.io/docs/react/getting-started/quick-start)
+- [Vue](https://kritzel.io/docs/vue/getting-started/quick-start)
 
 ## Repository
 
