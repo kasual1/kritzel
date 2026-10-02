@@ -1,6 +1,7 @@
 :host {
   display: block;
   z-index: var(--kritzel-back-to-content-z-index, 1000);
+  pointer-events: none;
 }
 
 .back-to-content-button {
@@ -20,14 +21,16 @@
   cursor: var(--kritzel-global-pointer-cursor, pointer);
   box-shadow: var(--kritzel-back-to-content-box-shadow, 0 0 3px rgba(0, 0, 0, 0.08));
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.2s ease-out, transform 0.2s ease-out, background-color 0.15s ease-out;
+  transition: opacity 0.2s ease-out, visibility 0.2s ease-out, transform 0.2s ease-out, background-color 0.15s ease-out;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
 
 .back-to-content-button.visible {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
 }
 
