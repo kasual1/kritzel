@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/vue-engine",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel engine wrapper for Vue.",
   "keywords": [
@@ -38,6 +38,6 @@
     "@stencil/vue-output-target": "0.11.8"
   },
   "peerDependencies": {
-    "@kritzel/engine": "^0.5.2"
+    "@kritzel/engine": "^0.5.3"
   }
 }
