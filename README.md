@@ -1,7 +1,7 @@
 <br>
 <br>
 <p align="center">
- <img src="favicon.svg" alt="Kritzel logo" width="160" />
+ <img src="logo.svg" alt="Kritzel logo" width="160" />
 </p>
 
 <h3 align="center">Kritzel</h3>
