@@ -1,4 +1,4 @@
-# Kritzel Editorfor Vue
+# Kritzel Editor for Vue
 
 Build infinite canvas and collaborative whiteboard experiences in Vue with Kritzel's native wrapper and TypeScript-first API.
 

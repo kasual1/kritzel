@@ -1,4 +1,4 @@
-# Kritzel Editorfor React
+# Kritzel Editor for React
 
 Build infinite canvas and collaborative whiteboard experiences in React with Kritzel's native wrapper and TypeScript-first API.
 
