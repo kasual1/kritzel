@@ -55,6 +55,7 @@ kritzel-toolbar.keyboard-open {
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  pointer-events: none;
 }
 
 .top-center-notification-layer {
@@ -127,6 +128,7 @@ kritzel-toolbar.keyboard-open {
   bottom: var(--kritzel-editor-toolbar-bottom, 14px);
   display: flex;
   align-items: flex-end;
+  pointer-events: none;
 }
 
 /* Hide the zoom panel when the editor container is narrow. */
