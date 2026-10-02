@@ -3,22 +3,47 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import {
   getEditorRef,
   KritzelEditor,
+  KritzelWorkspace,
+  type KritzelBaseObject,
   type KritzelSyncConfig,
   type ObjectsAddedEvent,
   type ObjectsRemovedEvent,
   type ObjectsUpdatedEvent,
   ShapeType,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
 import { createSeedObjects } from '../getting-started/seed-objects'
+import InfoPanel from '../../components/InfoPanel.vue'
+import { useInfoPanel } from '../../components/info-panel'
+
+const infoPanel = useInfoPanel({ showOnMobile: true })
 
 const editor = getEditorRef('editor')
 
-type AnyObject = any
+type AnyObject = {
+  __class__: string
+  id: string
+  childIds?: string[]
+  fill?: unknown
+  fillColor?: unknown
+  height?: number
+  isVisible?: boolean
+  opacity?: number
+  shapeType?: ShapeType
+  stroke?: unknown
+  text?: string
+  translateX?: number
+  translateY?: number
+  width?: number
+}
 
 const syncConfig: KritzelSyncConfig = {
   providers: [],
 }
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
 const availableTypes = ['KritzelShape', 'KritzelText', 'KritzelLine', 'KritzelPath']
 
@@ -77,10 +102,6 @@ async function onIsReady() {
     return
   }
 
-  const existing = await editor.value.getAllObjects()
-  if (existing.length === 0) {
-    await seedObjects()
-  }
   const all = await editor.value.getAllObjects()
   allObjects.value = [...all] as unknown as AnyObject[]
   await applyTypeOpacityFilter()
@@ -255,13 +276,13 @@ function getDisplayName(obj: AnyObject): string {
 
 async function selectTreeObject(obj: AnyObject) {
   selectedObject.value = obj
-  await editor.value?.panToObject(obj)
-  await editor.value?.selectObjects([obj])
+  await editor.value?.panToObject(asKritzelObject(obj))
+  await editor.value?.selectObjects([asKritzelObject(obj)])
 }
 
 async function deleteTreeObject(event: Event, obj: AnyObject) {
   event.stopPropagation()
-  await editor.value?.removeObject(obj)
+  await editor.value?.removeObject(asKritzelObject(obj))
 }
 
 function getTextContent(obj: AnyObject): string {
@@ -308,7 +329,7 @@ async function updateSelectedProperty(prop: string, event: Event) {
     payload[prop] = value
   }
 
-  await editor.value?.updateObject(active, payload)
+  await editor.value?.updateObject(asKritzelObject(active), payload)
 }
 
 async function syncInspectorWithSelection() {
@@ -325,7 +346,7 @@ async function applyTypeOpacityFilter() {
     const targetOpacity = types.has(obj.__class__) ? 1 : 0.5
     const currentOpacity = obj.opacity ?? 1
     if (currentOpacity !== targetOpacity) {
-      return editor.value!.updateObject(obj, { opacity: targetOpacity })
+      return editor.value!.updateObject(asKritzelObject(obj), { opacity: targetOpacity })
     }
     return Promise.resolve()
   })
@@ -352,11 +373,10 @@ function resolveThemeColor(raw: unknown, fallback: string): string {
   return fallback
 }
 
-async function seedObjects() {
-  for (const obj of createSeedObjects()) {
-    await editor.value?.addObject(obj)
-  }
+function asKritzelObject(obj: AnyObject) {
+  return obj as unknown as KritzelBaseObject<HTMLElement | SVGElement>
 }
+
 </script>
 
 <template>
@@ -366,14 +386,15 @@ async function seedObjects() {
         ref="editor"
         editorId="object-explorer"
         theme="light"
-        :themes="[vueThemeLight]"
+        :themes="themes"
         :syncConfig="syncConfig"
+        :workspaces="workspaces"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :loginConfig="undefined"
-        :style="{ display: 'block', width: '100%', height: '100%' }"
+        :style="editorStyle"
         @isReady="onIsReady"
         @objectsAdded="onObjectsAdded"
         @objectsRemoved="onObjectsRemoved"
@@ -381,7 +402,7 @@ async function seedObjects() {
       />
     </div>
 
-    <aside>
+    <InfoPanel :panel="infoPanel" width="340px">
       <div class="panel-header">
         <span class="panel-tagline">Explorer Mode</span>
         <h2 class="panel-title">Hierarchical Object Explorer</h2>
@@ -546,7 +567,7 @@ async function seedObjects() {
           />
         </div>
       </section>
-    </aside>
+    </InfoPanel>
   </div>
 </template>
 
@@ -566,19 +587,8 @@ async function seedObjects() {
   min-width: 0;
 }
 
-aside {
-  width: 340px;
-  overflow-y: auto;
-  border-left: 1px solid #d4ece0;
-  background-color: #ffffff;
-  padding: 12px;
-  font-size: 13px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
 .panel-header {
+  margin-bottom: 12px;
   border-bottom: 1px solid #d4ece0;
   padding-bottom: 10px;
 }
@@ -612,6 +622,7 @@ h4 {
 }
 
 .section {
+  margin-bottom: 12px;
   border-bottom: 1px solid #e4f1ea;
   padding-bottom: 10px;
 }

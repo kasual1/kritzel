@@ -1,17 +1,16 @@
 import { useRef, useState } from "react";
 import {
   KritzelEditor,
-  HTMLKritzelEditorElement,
+  type HTMLKritzelEditorElement,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
   seedEditor,
-  statusBarStyle,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 type ToolName = "select" | "brush" | "eraser" | "line" | "shape" | "text";
 
@@ -24,6 +23,8 @@ const tools: Array<{ name: ToolName; label: string }> = [
   { name: "text", label: "Text" },
 ];
 
+const themes = [reactThemeLight, reactThemeDark];
+
 export function ToolsChangePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [activeTool, setActiveTool] = useState<ToolName>("select");
@@ -35,18 +36,20 @@ export function ToolsChangePage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
+      <Toolbar>
         {tools.map((tool) => (
-          <button key={tool.name} style={buttonStyle(activeTool === tool.name)} onClick={() => void setTool(tool.name)}>
+          <button key={tool.name} className={activeTool === tool.name ? "active" : undefined} onClick={() => void setTool(tool.name)}>
             {tool.label}
           </button>
         ))}
-      </div>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="tools-change"
         theme="light"
-        themes={[reactThemeLight]}
+        themes={themes}
+        syncConfig={undefined}
+        loginConfig={undefined}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
@@ -59,9 +62,6 @@ export function ToolsChangePage() {
         }}
         style={editorStyle}
       />
-      <div style={statusBarStyle}>
-        Active tool: <strong>{activeTool}</strong>
-      </div>
     </div>
   );
 }

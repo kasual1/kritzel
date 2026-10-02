@@ -8,7 +8,7 @@ import {
   KritzelTextTool,
   type KritzelTheme,
 } from '@kritzel/vue-editor'
-import { vueThemeLight } from '../../const/vue-theme-light'
+import { vueThemeDark } from '../../const/vue-theme-dark'
 
 type AnnotationMode = 'sketch' | 'text'
 
@@ -19,16 +19,17 @@ type ColorTool = {
 }
 
 const editor = getEditorRef('editor')
+const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
 const annotationTheme: KritzelTheme = {
-  ...vueThemeLight,
+  ...vueThemeDark,
   name: 'dark',
   engine: {
-    ...vueThemeLight.engine,
+    ...vueThemeDark.engine,
     backgroundColor: '#090f18',
   },
   editor: {
-    ...vueThemeLight.editor,
+    ...vueThemeDark.editor,
     loadingOverlayBackground: 'rgba(9, 15, 24, 0.72)',
   },
 }
@@ -82,9 +83,7 @@ async function redo() {
 }
 
 async function download() {
-  await editor.value?.exportViewportAsPng({
-    includeBackground: false,
-  })
+  await editor.value?.exportViewportAsPng()
 }
 
 async function zoomIn() {
@@ -141,6 +140,11 @@ async function ensureSeedImage() {
     return
   }
 
+  const existing = await editor.value.getAllObjects()
+  if (existing.length > 0) {
+    return
+  }
+
   const image = await KritzelImage.fromUrl(
     'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80',
     {
@@ -151,6 +155,7 @@ async function ensureSeedImage() {
 
   image.translateX = -image.width / 2
   image.translateY = -image.height / 2 - 50
+  image.isEditable = false
 
   await editor.value.addObject(image)
 }
@@ -173,7 +178,7 @@ async function ensureSeedImage() {
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :loginConfig="undefined"
-      :style="{ display: 'block', width: '100%', height: '100%' }"
+      :style="editorStyle"
       @isReady="onReady"
     />
 

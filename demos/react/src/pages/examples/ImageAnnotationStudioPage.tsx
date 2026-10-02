@@ -138,7 +138,7 @@ const iconButtonStyle: CSSProperties = {
 
 const primaryButtonStyle: CSSProperties = {
   ...actionButtonStyle,
-  background: "rgba(8, 126, 164, 0.92)",
+  background: "rgba(9, 89, 164, 0.92)",
   borderColor: "rgba(255, 255, 255, 0.35)",
   color: "#ffffff",
 };
@@ -237,6 +237,11 @@ export function ImageAnnotationStudioPage() {
   }
 
   async function ensureSeedImage(editor: HTMLKritzelEditorElement) {
+    const existing = await editor.getAllObjects();
+    if (existing.some((object) => object instanceof KritzelImage)) {
+      return;
+    }
+
     const image = await KritzelImage.fromUrl(
       "https://images.unsplash.com/photo-1547891654-e66ed7ebb968?auto=format&fit=crop&w=1800&q=80",
       { maxWidth: 660, maxHeight: 360 },

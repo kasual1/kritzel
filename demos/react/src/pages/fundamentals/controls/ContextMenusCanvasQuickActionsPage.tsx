@@ -1,14 +1,23 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   KritzelEditor,
+  KritzelWorkspace,
   type ContextMenuItem,
   HTMLKritzelEditorElement,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { editorStyle, hostStyle, seedEditor } from "../../shared/demo-shared";
+import { createSeedObjects } from "../../getting-started/seed-objects";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+
+const themes = [reactThemeLight, reactThemeDark];
+const objectItems: ContextMenuItem[] = [];
 
 export function ContextMenusCanvasQuickActionsPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const [workspaces] = useState(() => [
+    new KritzelWorkspace({ objects: createSeedObjects() }),
+  ]);
 
   const globalItems = useMemo<ContextMenuItem[]>(
     () => [
@@ -36,7 +45,6 @@ export function ContextMenusCanvasQuickActionsPage() {
       return;
     }
 
-    await seedEditor(editor);
     await editor.openContextMenu({ x: -50, y: -50 });
   }
 
@@ -46,9 +54,12 @@ export function ContextMenusCanvasQuickActionsPage() {
         ref={editorRef}
         editorId="custom-context-menu-canvas-quick-actions"
         theme="light"
-        themes={[reactThemeLight]}
+        themes={themes}
+        workspaces={workspaces}
+        syncConfig={undefined}
+        loginConfig={undefined}
         globalContextMenuItems={globalItems}
-        objectContextMenuItems={[]}
+        objectContextMenuItems={objectItems}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}

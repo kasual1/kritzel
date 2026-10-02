@@ -1,44 +1,34 @@
 <script setup lang="ts">
-
 import {
   BroadcastSyncProvider,
-  getEditorRef,
   KritzelEditor,
+  KritzelWorkspace,
   type KritzelSyncConfig,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import {
-  accentDark,
-  editorStyle,
-  hostStyle,
-  seedEditor,
-  toolbarStyle,
-} from '../../shared/demo-shared'
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
-const editor = getEditorRef('editor');
-
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 const syncConfig: KritzelSyncConfig = {
   providers: [BroadcastSyncProvider],
-}
-
-async function onReady() {
-  if (editor.value) {
-    await seedEditor(editor.value)
-  }
 }
 </script>
 
 <template>
   <div :style="{ ...hostStyle, background: 'linear-gradient(160deg, #e8fbf3 0%, #ffffff 46%)' }">
-    <div :style="toolbarStyle">
-      <span :style="{ fontWeight: 700, color: accentDark, fontSize: '13px' }">Cross-tab Sync</span>
-      <span :style="{ fontSize: '12px', color: accentDark }">BroadcastChannel enabled</span>
-    </div>
+    <Toolbar>
+      <span class="label">Cross-tab Sync</span>
+      <span class="status">BroadcastChannel enabled</span>
+    </Toolbar>
     <KritzelEditor
-      ref="editor"
       editorId="collaboration-local"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
       :syncConfig="syncConfig"
       :loginConfig="undefined"
       :isPanningEnabled="false"
@@ -46,7 +36,6 @@ async function onReady() {
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
-      @isReady="onReady"
     />
   </div>
 </template>

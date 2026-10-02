@@ -7,7 +7,12 @@ import {
   KritzelShape,
   ShapeType,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../const/vue-theme-dark'
 import { vueThemeLight } from '../../const/vue-theme-light'
+import InfoPanel from '../../components/InfoPanel.vue'
+import { useInfoPanel } from '../../components/info-panel'
+
+const infoPanel = useInfoPanel({ showOnMobile: true })
 
 type DefectStatus = 'Outstanding' | 'In Progress' | 'Resolved'
 
@@ -22,6 +27,8 @@ interface Defect {
 }
 
 const editor = getEditorRef('editor')
+const themes = [vueThemeLight, vueThemeDark]
+const editorStyle = { display: 'block', width: '100%', height: '100%' }
 
 const pinSize = 30
 const firstSeedPinCenter = { x: -60, y: 145 }
@@ -362,14 +369,14 @@ function statusClass(status: DefectStatus): string {
         ref="editor"
         editorId="blueprint-defect-mapper"
         theme="light"
-        :themes="[vueThemeLight]"
+        :themes="themes"
         :isToolbarVisible="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :loginConfig="undefined"
-        :style="{ display: 'block', width: '100%', height: '100%' }"
+        :style="editorStyle"
         @isReady="onReady"
         @click="onCanvasClick"
       />
@@ -379,7 +386,7 @@ function statusClass(status: DefectStatus): string {
       </div>
     </div>
 
-    <aside class="sidebar">
+    <InfoPanel :panel="infoPanel" class="sidebar" content-column>
       <div class="sidebar-header">
         <span class="badge">Facilities</span>
         <h2 class="sidebar-title">Blueprint Defect Mapper</h2>
@@ -447,7 +454,7 @@ function statusClass(status: DefectStatus): string {
           </template>
         </div>
       </div>
-    </aside>
+    </InfoPanel>
   </div>
 </template>
 
@@ -486,6 +493,8 @@ function statusClass(status: DefectStatus): string {
 }
 
 .sidebar {
+  --demo-info-panel-body-padding: 0;
+  flex: 0 0 320px;
   width: 320px;
   border-left: 1px solid #d4ece0;
   background: #ffffff;
@@ -493,6 +502,20 @@ function statusClass(status: DefectStatus): string {
   flex-direction: column;
   height: 100%;
   box-shadow: -1px 0 3px rgba(66, 184, 131, 0.05);
+}
+
+@media (max-width: 720px) {
+  .sidebar {
+    display: block;
+    flex: 0 0 0;
+    width: 0;
+    min-width: 0;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+  }
 }
 
 .sidebar-header {

@@ -1,6 +1,8 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { KritzelEditor, type HTMLKritzelEditorElement } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
+import { createUserManagementWorkspaces } from "./user-management-shared";
 
 const providerIcons = {
   "auth-google":
@@ -15,30 +17,27 @@ const providerIcons = {
 
 const loginConfig = {
   title: "Sign in to Kritzel",
-  subtitle: "Choose a provider to continue to your workspace.",
   providers: [
-    { name: "google", label: "Continue with Google", icon: "auth-google" },
-    { name: "github", label: "Continue with GitHub", icon: "auth-github" },
-    { name: "microsoft", label: "Continue with Microsoft", icon: "auth-microsoft" },
-    { name: "email", label: "Continue with Email", icon: "auth-email" },
+    { name: "google", label: "Continue with Google", icon: "google" },
+    { name: "facebook", label: "Continue with Facebook", icon: "facebook" },
+    { name: "github", label: "Continue with GitHub", icon: "github" },
   ],
 };
 
 export function UserManagementProvidersPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const workspaces = useMemo(() => createUserManagementWorkspaces(), []);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", fontFamily: "sans-serif" }}>
-      <div style={{ padding: 8, background: "#f5f5f5", borderBottom: "1px solid #ddd" }}>
-        <strong>Login Providers:</strong> each entry in loginConfig.providers becomes a button in the dialog.
-      </div>
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <KritzelEditor
         ref={editorRef}
         editorId="user-management-providers"
         loginConfig={loginConfig}
         customSvgIcons={providerIcons}
+        workspaces={workspaces}
         theme="light"
-        themes={[reactThemeLight]}
+        themes={[reactThemeLight, reactThemeDark]}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}

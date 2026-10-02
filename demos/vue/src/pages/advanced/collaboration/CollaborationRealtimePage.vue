@@ -1,23 +1,19 @@
 <script setup lang="ts">
-
 import {
-  getEditorRef,
   HocuspocusSyncProvider,
   IndexedDBSyncProvider,
   KritzelEditor,
+  KritzelWorkspace,
   type KritzelSyncConfig,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
-import {
-  accentDark,
-  editorStyle,
-  hostStyle,
-  seedEditor,
-  toolbarStyle,
-} from '../../shared/demo-shared'
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
-const editor = getEditorRef('editor');
-
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 const syncConfig: KritzelSyncConfig = {
   providers: [
     IndexedDBSyncProvider,
@@ -25,29 +21,19 @@ const syncConfig: KritzelSyncConfig = {
   ],
 }
 
-async function onReady() {
-  if (editor.value) {
-    const existing = await editor.value.getAllObjects()
-    if (existing.length > 0) {
-      return
-    }
-
-    await seedEditor(editor.value)
-  }
-}
 </script>
 
 <template>
   <div :style="{ ...hostStyle, background: 'radial-gradient(circle at 0% 0%, #e8fbf3 0%, #ffffff 42%)' }">
-    <div :style="toolbarStyle">
-      <span :style="{ fontWeight: 700, color: accentDark, fontSize: '13px' }">Real-time Sync</span>
-      <span :style="{ fontSize: '12px', color: accentDark }">Configured for Hocuspocus server</span>
-    </div>
+    <Toolbar>
+      <span class="label">Real-time Sync</span>
+      <span class="status">Configured for Hocuspocus server</span>
+    </Toolbar>
     <KritzelEditor
-      ref="editor"
       editorId="collaboration-realtime"
       theme="light"
-      :themes="[vueThemeLight]"
+      :themes="themes"
+      :workspaces="workspaces"
       :syncConfig="syncConfig"
       :loginConfig="undefined"
       :isPanningEnabled="false"
@@ -55,7 +41,6 @@ async function onReady() {
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
-      @isReady="onReady"
     />
   </div>
 </template>

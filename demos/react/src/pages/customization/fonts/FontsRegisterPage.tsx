@@ -1,19 +1,57 @@
 import { useRef } from "react";
-import { KritzelEditor, type HTMLKritzelEditorElement, type KritzelFontMap } from "@kritzel/react-editor";
+import { KritzelEditor, KritzelText, KritzelWorkspace, type HTMLKritzelEditorElement, type KritzelFontMap, type KritzelTheme } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
+import { editorStyle, hostStyle } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 const fonts: KritzelFontMap = {
   pacifico: { family: "Pacifico", label: "Pacifico Cursive", cssFontFamily: "'Pacifico', cursive", source: "https://fonts.googleapis.com/css2?family=Pacifico&display=swap" },
-  "fira-code": { family: "Fira Code", label: "Fira Code Monospace", cssFontFamily: "'Fira Code', monospace", source: "https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" },
-  "space-grotesk": { family: "Space Grotesk", label: "Space Grotesk Sans", cssFontFamily: "'Space Grotesk', sans-serif", source: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" },
 };
+
+const themes: KritzelTheme[] = [{ ...reactThemeLight, name: "custom", global: { ...reactThemeLight.global, fontFamily: "Pacifico" } }];
+
+const workspaces = [
+  new KritzelWorkspace({
+    id: "fonts-register",
+    name: "Custom Fonts",
+    objects: [
+      new KritzelText({
+        text: "Handwritten Pacifico Font",
+        translateX: -180,
+        translateY: -50,
+        fontSize: 24,
+        fontFamily: "Pacifico",
+        fontColor: { light: "#0959a4", dark: "#2f8be0" },
+      }),
+    ],
+  }),
+];
 
 export function FontsRegisterPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+
+  async function addPacificoText() {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const viewport = await editor.getViewport();
+    const visibleWidth = viewport.width / viewport.scale;
+    const visibleHeight = viewport.height / viewport.scale;
+    const visibleLeft = -viewport.translateX / viewport.scale;
+    const visibleTop = -viewport.translateY / viewport.scale;
+    await editor.addObject(new KritzelText({
+      text: "Handwritten Pacifico Font",
+      translateX: visibleLeft + visibleWidth * (0.2 + Math.random() * 0.6),
+      translateY: visibleTop + visibleHeight * (0.2 + Math.random() * 0.6),
+      fontSize: 24,
+      fontFamily: "Pacifico",
+      fontColor: { light: "#0959a4", dark: "#2f8be0" },
+    }));
+  }
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", fontFamily: "sans-serif" }}>
-      <div style={{ padding: 8, background: "#f5f5f5", borderBottom: "1px solid #ddd" }}>Custom Fonts: Pacifico, Fira Code, Space Grotesk</div>
-      <KritzelEditor ref={editorRef} editorId="fonts-register" customFonts={fonts} theme="light" themes={[reactThemeLight]} isPanningEnabled={false} isZoomingEnabled={false} isMoreMenuVisible style={{ flex: 1, minHeight: 0 }} />
+    <div style={hostStyle}>
+      <Toolbar><button onClick={() => void addPacificoText()}>Add Pacifico Text</button></Toolbar>
+      <KritzelEditor ref={editorRef} editorId="fonts-register" customFonts={fonts} workspaces={workspaces} theme="custom" themes={themes} isPanningEnabled={false} isZoomingEnabled={false} isMoreMenuVisible style={editorStyle} />
     </div>
   );
 }

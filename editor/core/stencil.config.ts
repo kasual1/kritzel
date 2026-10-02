@@ -66,6 +66,7 @@ export const config: Config = {
     : [
         { type: 'dist', esmLoaderPath: '../loader' },
         { type: 'docs-readme' },
+        { type: 'docs-json', file: '.stencil/docs.json' },
         { type: 'dist-custom-elements', externalRuntime: false, customElementsExportBehavior: 'single-export-module' },
         angularOutputTarget({
           componentCorePackage: '@kritzel/editor',

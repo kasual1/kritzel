@@ -6,12 +6,13 @@ import {
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import {
-  buttonStyle,
   editorStyle,
   hostStyle,
   seedEditor,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
+
+const themes = [reactThemeLight, reactThemeDark];
 
 export function ThemingApplyPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -19,15 +20,15 @@ export function ThemingApplyPage() {
 
   return (
     <div style={hostStyle}>
-      <div style={toolbarStyle}>
-        <button style={buttonStyle(activeName === "light")} onClick={() => setActiveName("light")}>Light</button>
-        <button style={buttonStyle(activeName === "dark")} onClick={() => setActiveName("dark")}>Dark</button>
-      </div>
+      <Toolbar>
+        <button className={activeName === "light" ? "active" : undefined} onClick={() => setActiveName("light")}>Light</button>
+        <button className={activeName === "dark" ? "active" : undefined} onClick={() => setActiveName("dark")}>Dark</button>
+      </Toolbar>
       <KritzelEditor
         ref={editorRef}
         editorId="theming-apply"
         theme={activeName}
-        themes={[reactThemeLight, reactThemeDark]}
+        themes={themes}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={true}

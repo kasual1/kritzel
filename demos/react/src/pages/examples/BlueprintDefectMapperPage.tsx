@@ -8,6 +8,8 @@ import {
   type ThemeAwareColor,
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../const/react-theme-light";
+import { reactThemeDark } from "../../const/react-theme-dark";
+import { InfoPanel, useInfoPanel } from "../../components/InfoPanel";
 
 type DefectStatus = "Outstanding" | "In Progress" | "Resolved";
 
@@ -24,11 +26,19 @@ interface Defect {
 const PIN_SIZE = 30;
 const FIRST_SEED_PIN_CENTER = { x: -60, y: 145 };
 const SECOND_SEED_PIN_CENTER = { x: 135, y: -80 };
+const themes = [reactThemeLight, reactThemeDark];
 
 function getPinColor(status: DefectStatus): ThemeAwareColor {
   if (status === "Outstanding") return { light: "#dd0031", dark: "#ef4444" };
   if (status === "In Progress") return { light: "#f59e0b", dark: "#f59e0b" };
   return { light: "#10b981", dark: "#10b981" };
+}
+
+function getDefectMetadata(id: string): Pick<Defect, "title" | "category"> {
+  if (id === "defect-1") return { title: "Kitchen Sink Drain Clog", category: "Plumbing" };
+  if (id === "defect-2") return { title: "Bathroom Toilet Running", category: "Plumbing" };
+  if (id === "defect-3") return { title: "Exposed Electrical Terminal", category: "Electrical" };
+  return { title: `Pinned Defect ${id}`, category: "Manual" };
 }
 
 const hostStyle: CSSProperties = {
@@ -57,7 +67,7 @@ const placingToastStyle: CSSProperties = {
   top: "16px",
   left: "50%",
   transform: "translateX(-50%)",
-  background: "rgba(8, 126, 164, 0.96)",
+  background: "rgba(9, 89, 164, 0.96)",
   color: "white",
   padding: "8px 20px",
   borderRadius: "99px",
@@ -66,16 +76,6 @@ const placingToastStyle: CSSProperties = {
   boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
   zIndex: 10,
   border: "1px solid rgba(255, 255, 255, 0.2)",
-};
-
-const sidebarStyle: CSSProperties = {
-  width: "320px",
-  borderLeft: "1px solid #d8e8ee",
-  background: "#ffffff",
-  display: "flex",
-  flexDirection: "column",
-  height: "100%",
-  boxShadow: "-1px 0 3px rgba(8, 126, 164, 0.05)",
 };
 
 const sidebarHeaderStyle: CSSProperties = {
@@ -88,8 +88,8 @@ const badgeStyle: CSSProperties = {
   fontSize: "11px",
   fontWeight: 700,
   textTransform: "uppercase",
-  backgroundColor: "rgba(8, 126, 164, 0.1)",
-  color: "#087ea4",
+  backgroundColor: "rgba(9, 89, 164, 0.1)",
+  color: "#0959a4",
   padding: "2px 8px",
   borderRadius: "99px",
   letterSpacing: "0.5px",
@@ -100,7 +100,7 @@ const mapControlsStyle: CSSProperties = {
   display: "flex",
   gap: "8px",
   padding: "12px 16px",
-  background: "rgba(8, 126, 164, 0.03)",
+  background: "rgba(9, 89, 164, 0.03)",
   borderBottom: "1px solid #d8e8ee",
 };
 
@@ -108,10 +108,10 @@ function actionBtnStyle(active: boolean): CSSProperties {
   return {
     flex: 1,
     padding: "8px 12px",
-    border: "1px solid #087ea4",
+    border: "1px solid #0959a4",
     borderRadius: "6px",
-    background: active ? "#087ea4" : "#ffffff",
-    color: active ? "#ffffff" : "#087ea4",
+    background: active ? "#0959a4" : "#ffffff",
+    color: active ? "#ffffff" : "#0959a4",
     fontSize: "13px",
     fontWeight: 600,
     cursor: "pointer",
@@ -127,7 +127,7 @@ const resetBtnStyle: CSSProperties = {
   border: "1px solid #cfe0e7",
   borderRadius: "6px",
   background: "#ffffff",
-  color: "#065d7a",
+  color: "#07437c",
   fontSize: "13px",
   fontWeight: 500,
   cursor: "pointer",
@@ -162,13 +162,14 @@ const defectCardStyle: CSSProperties = {
 };
 
 const statusColors: Record<DefectStatus, string> = {
-  Outstanding: "#087ea4",
+  Outstanding: "#0959a4",
   "In Progress": "#f59e0b",
   Resolved: "#10b981",
 };
 
 export function BlueprintDefectMapperPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const infoPanel = useInfoPanel({ showOnMobile: true });
   const nextDefectId = useRef(2);
 
   const [placingMode, setPlacingMode] = useState(false);
@@ -176,7 +177,7 @@ export function BlueprintDefectMapperPage() {
 
   async function initializeBlueprint(editor: HTMLKritzelEditorElement) {
     // 1. Load floorplan.png from local assets as unselectable background scenery
-    const bg = await KritzelImage.fromUrl("floorplan.png", {
+    const bg = await KritzelImage.fromUrl("/floorplan.png", {
       maxWidth: 660,
       maxHeight: 360,
     });
@@ -256,21 +257,7 @@ export function BlueprintDefectMapperPage() {
         status = "Resolved";
       }
 
-      let title = "Defect";
-      let category = "Facility";
-      if (id === "defect-1") {
-        title = "Kitchen Sink Drain Clog";
-        category = "Plumbing";
-      } else if (id === "defect-2") {
-        title = "Bathroom Toilet Running";
-        category = "Plumbing";
-      } else if (id === "defect-3") {
-        title = "Exposed Electrical Terminal";
-        category = "Electrical";
-      } else {
-        title = `Pinned Defect ${id}`;
-        category = "Manual";
-      }
+      const { title, category } = getDefectMetadata(id);
 
       const isFirstSeedPin = pin.id === "pin-defect-1";
       const isSecondSeedPin = pin.id === "pin-defect-2";
@@ -484,7 +471,7 @@ export function BlueprintDefectMapperPage() {
           ref={editorRef}
           editorId="blueprint-defect-mapper"
           theme="light"
-          themes={[reactThemeLight]}
+          themes={themes}
           isPanningEnabled={false}
           isZoomingEnabled={false}
           isToolbarVisible={false}
@@ -503,7 +490,7 @@ export function BlueprintDefectMapperPage() {
         )}
       </div>
 
-      <aside style={sidebarStyle}>
+      <InfoPanel panel={infoPanel} width="320px" bodyPadding="0" contentColumn>
         <div style={sidebarHeaderStyle}>
           <span style={badgeStyle}>Facilities</span>
           <h2 style={{ margin: "0 0 4px 0", fontSize: "18px", fontWeight: 600, color: "#333333" }}>
@@ -625,7 +612,7 @@ export function BlueprintDefectMapperPage() {
             )}
           </div>
         </div>
-      </aside>
+      </InfoPanel>
     </div>
   );
 }

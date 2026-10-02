@@ -1,21 +1,21 @@
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import {
   HocuspocusSyncProvider,
   IndexedDBSyncProvider,
   KritzelEditor,
-  HTMLKritzelEditorElement,
   type KritzelSyncConfig,
+  KritzelWorkspace,
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
+import { reactThemeDark } from "../../../const/react-theme-dark";
+import { createSeedObjects } from "../../getting-started/seed-objects";
 import {
   editorStyle,
   hostStyle,
-  seedEditor,
-  toolbarStyle,
 } from "../../shared/demo-shared";
+import { Toolbar } from "../../../components/Toolbar";
 
 export function CollaborationRealtimePage() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const syncConfig = useMemo<KritzelSyncConfig>(
     () => ({
       providers: [
@@ -25,39 +25,28 @@ export function CollaborationRealtimePage() {
     }),
     [],
   );
+  const workspaces = useMemo(
+    () => [new KritzelWorkspace({ objects: createSeedObjects() })],
+    [],
+  );
 
   return (
     <div style={{ ...hostStyle, background: "radial-gradient(circle at 0% 0%, #e9f8ff 0%, #ffffff 42%)" }}>
-      <div style={toolbarStyle}>
-        <span style={{ fontWeight: 700, color: "#087ea4", fontSize: "13px" }}>Real-time Sync</span>
-        <span style={{ fontSize: "12px", color: "#065d7a" }}>Configured for Hocuspocus server</span>
-      </div>
+      <Toolbar>
+        <span className="label">Real-time Sync</span>
+        <span className="status">Configured for Hocuspocus server</span>
+      </Toolbar>
       <KritzelEditor
-        ref={editorRef}
         editorId="collaboration-realtime"
         syncConfig={syncConfig}
         theme="light"
-        themes={[reactThemeLight]}
+        themes={[reactThemeLight, reactThemeDark]}
+        workspaces={workspaces}
         loginConfig={undefined}
         isPanningEnabled={false}
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
-        onIsReady={() => {
-          const editor = editorRef.current;
-          if (!editor) {
-            return;
-          }
-
-          void (async () => {
-            const existing = await editor.getAllObjects();
-            if (existing.length > 0) {
-              return;
-            }
-
-            await seedEditor(editor);
-          })();
-        }}
         style={editorStyle}
       />
     </div>

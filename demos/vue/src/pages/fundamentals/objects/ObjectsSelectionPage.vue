@@ -1,19 +1,29 @@
 <script setup lang="ts">
-
-import { KritzelEditor, type KritzelBaseObject } from '@kritzel/vue-editor'
-import { vueThemeLight } from '../../../const/vue-theme-light'
 import {
-  buttonStyle,
+  getEditorRef,
+  KritzelEditor,
+  KritzelWorkspace,
+  type KritzelBaseObject,
+} from '@kritzel/vue-editor'
+import { ref } from 'vue'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
+import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import {
   editorStyle,
   hostStyle,
-  seedEditor,
-  toolbarStyle,
-  getEditorRef,
 } from '../../shared/demo-shared'
-import { ref } from 'vue';
+import Toolbar from '../../../components/Toolbar.vue'
+import InfoPanel from '../../../components/InfoPanel.vue'
+import InfoPanelToggle from '../../../components/InfoPanelToggle.vue'
+import { useInfoPanel } from '../../../components/info-panel'
 
-const editor = getEditorRef('editor');
-const selectedObjects = ref<KritzelBaseObject<HTMLElement | SVGElement>[]>([])
+const infoPanel = useInfoPanel({ hasToolbarToggle: true })
+
+const editor = getEditorRef('editor')
+const selectedObjects = ref<KritzelBaseObject[]>([])
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
 
 async function refreshSelection() {
   selectedObjects.value = ((await editor.value?.getSelectedObjects()) ?? []) as KritzelBaseObject<HTMLElement | SVGElement>[]
@@ -35,41 +45,33 @@ async function selectFirst() {
 
 async function clearSelection() {
   await editor.value?.clearSelection()
-  await refreshSelection()
-}
-
-async function onReady() {
-  if (!editor.value) {
-    return
-  }
-  await seedEditor(editor.value)
 }
 </script>
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(false)" @click="selectAll">Select All</button>
-      <button :style="buttonStyle(false)" @click="selectFirst">Select First</button>
-      <button :style="buttonStyle(false)" @click="clearSelection">Clear Selection</button>
-      <button :style="buttonStyle(false)" @click="refreshSelection">Get Selected</button>
-      <span :style="{ marginLeft: 'auto', fontSize: '13px' }">Selected: {{ selectedObjects.length }}</span>
-    </div>
+    <Toolbar>
+      <button @click="selectAll">Select All</button>
+      <button @click="selectFirst">Select Object</button>
+      <button @click="clearSelection">Clear Selection</button>
+      <InfoPanelToggle :panel="infoPanel" />
+    </Toolbar>
     <div :style="{ display: 'flex', flex: 1, minHeight: 0 }">
       <KritzelEditor
         ref="editor"
         editorId="objects-selection"
         theme="light"
-        :themes="[vueThemeLight]"
+        :themes="themes"
+        :workspaces="workspaces"
         :isPanningEnabled="false"
         :isZoomingEnabled="false"
         :isMoreMenuVisible="false"
         :isWorkspaceManagerVisible="false"
         :style="editorStyle"
-        @isReady="onReady"
+        @objectsSelectionChange="refreshSelection"
       />
-      <aside :style="{ width: '220px', borderLeft: '1px solid #ebebeb', padding: '8px', overflowY: 'auto', fontSize: '13px' }">
-        <h3 :style="{ margin: '0 0 8px', fontSize: '14px' }">Selected</h3>
+      <InfoPanel :panel="infoPanel">
+        <h3>Selected</h3>
         <ul :style="{ listStyle: 'none', margin: 0, padding: 0 }">
           <li v-if="selectedObjects.length === 0" :style="{ color: '#999', fontStyle: 'italic' }">Nothing selected</li>
           <li
@@ -81,7 +83,7 @@ async function onReady() {
             <span :style="{ color: '#999', fontFamily: 'monospace' }">{{ obj.id.slice(0, 8) }}</span>
           </li>
         </ul>
-      </aside>
+      </InfoPanel>
     </div>
   </div>
 </template>

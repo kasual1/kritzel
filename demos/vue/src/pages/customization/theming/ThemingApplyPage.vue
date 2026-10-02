@@ -1,47 +1,33 @@
 <script setup lang="ts">
-
-import {
-  KritzelEditor,
-  getEditorRef,
-} from '@kritzel/vue-editor'
-import { vueThemeLight } from '../../../const/vue-theme-light'
-import { vueThemeDark } from '../../../const/vue-theme-dark'
-import {
-  buttonStyle,
-  editorStyle,
-  hostStyle,
-  seedEditor,
-  toolbarStyle,
-} from '../../shared/demo-shared'
 import { ref } from 'vue'
+import { KritzelEditor, KritzelWorkspace } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
+import { vueThemeLight } from '../../../const/vue-theme-light'
+import { createSeedObjects } from '../../getting-started/seed-objects'
+import { editorStyle, hostStyle } from '../../shared/demo-shared'
+import Toolbar from '../../../components/Toolbar.vue'
 
-const editor = getEditorRef('editor');
-const activeName = ref('light')
-
-async function onReady() {
-  if (editor.value) {
-    await seedEditor(editor.value)
-  }
-}
+const themes = [vueThemeLight, vueThemeDark]
+const workspaces = [new KritzelWorkspace({ objects: createSeedObjects() })]
+const activeTheme = ref('light')
 </script>
 
 <template>
   <div :style="hostStyle">
-    <div :style="toolbarStyle">
-      <button :style="buttonStyle(activeName === 'light')" @click="activeName = 'light'">Light</button>
-      <button :style="buttonStyle(activeName === 'dark')" @click="activeName = 'dark'">Dark</button>
-    </div>
+    <Toolbar>
+      <button :class="{ active: activeTheme === 'light' }" @click="activeTheme = 'light'">Light</button>
+      <button :class="{ active: activeTheme === 'dark' }" @click="activeTheme = 'dark'">Dark</button>
+    </Toolbar>
     <KritzelEditor
-      ref="editor"
       editorId="theming-apply"
-      :theme="activeName"
-      :themes="[vueThemeLight, vueThemeDark]"
+      :theme="activeTheme"
+      :themes="themes"
+      :workspaces="workspaces"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
       :isMoreMenuVisible="true"
       :isWorkspaceManagerVisible="true"
       :style="editorStyle"
-      @isReady="onReady"
     />
   </div>
 </template>
