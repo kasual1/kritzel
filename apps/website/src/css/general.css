@@ -224,3 +224,35 @@ article a[aria-label^="Read more about "] {
     grid-column: 1;
   }
 }
+:root {
+  --kritzel-site-default-cursor: url("/img/cursor-default.svg") 4 4, auto;
+  --kritzel-site-pointer-cursor: url("/img/cursor-pointer.svg") 12 12, pointer;
+}
+
+html,
+body {
+  cursor: var(--kritzel-site-default-cursor);
+}
+
+a[href],
+button,
+summary,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+select,
+label[for],
+label:has(input[type="checkbox"], input[type="radio"]),
+[class*="wordmarkLetter"] {
+  cursor: var(--kritzel-site-pointer-cursor) !important;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed !important;
+}
