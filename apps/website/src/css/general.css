@@ -227,6 +227,8 @@ article a[aria-label^="Read more about "] {
 :root {
   --kritzel-site-default-cursor: url("/img/cursor-default.svg") 4 4, auto;
   --kritzel-site-pointer-cursor: url("/img/cursor-pointer.svg") 12 12, pointer;
+  --kritzel-site-hand-cursor: url("/img/cursor-hand.svg") 12 12, grab;
+  --kritzel-site-grab-cursor: url("/img/cursor-grab.svg") 12 12, grabbing;
 }
 
 html,
