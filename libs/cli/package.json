@@ -1,0 +1,42 @@
+{
+  "name": "@kritzel/cli",
+  "version": "0.5.3",
+  "description": "Install Kritzel into an existing Angular, React or Vue application.",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "repository": { "type": "git", "url": "https://github.com/kasual1/kritzel-private.git", "directory": "libs/cli" },
+  "homepage": "https://kritzel.io",
+  "bin": { "kritzel": "dist/bin.js" },
+  "files": ["dist", "README.md", "LICENSE"],
+  "engines": { "node": ">=22" },
+  "publishConfig": { "access": "public" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepack": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "jest --runInBand",
+    "test:pack": "node tests/pack-check.cjs",
+    "test:managers": "node tests/manager-smoke.cjs",
+    "test:templates": "node tests/templates/validate-templates.mjs",
+    "release": "npm publish"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "commander": "^14.0.0",
+    "cross-spawn": "^7.0.6",
+    "fast-glob": "^3.3.3",
+    "semver": "^7.7.2",
+    "yaml": "^2.8.1"
+  },
+  "devDependencies": {
+    "@types/cross-spawn": "^6.0.6",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.14.1",
+    "@types/semver": "^7.7.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.4",
+    "typescript": "~6.0.0",
+    "pnpm": "^10.0.0",
+    "yarn-classic": "npm:yarn@^1.22.22",
+    "yarn-modern": "npm:@yarnpkg/cli-dist@^4.9.2"
+  }
+}

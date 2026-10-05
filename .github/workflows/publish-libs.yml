@@ -17,7 +17,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 60
     permissions:
       contents: write
     steps:
@@ -33,13 +33,40 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci --no-audit --no-fund
+
+      - name: Check shared release versions
+        run: node scripts/check-shared-versions.js
 
       - name: Bump version
         run: npm run bump-${{ inputs.bump }}
 
+      - name: Refresh workspace lockfile after version bump
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
+      - name: Check bumped release versions
+        run: node scripts/check-shared-versions.js
+
       - name: Build all packages
         run: npm run build
+
+      - name: Typecheck CLI
+        run: npm run typecheck -w libs/cli
+
+      - name: Run library and CLI tests
+        run: npm test
+
+      - name: Validate packed CLI
+        run: npm run test:pack -w libs/cli
+
+      - name: Validate real package-manager workspace installations
+        run: npm run test:managers -w libs/cli
+
+      - name: Install browser for template smoke tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Validate generated TypeScript integrations
+        run: npm run test:cli:templates
 
       - name: Get new version
         id: version
@@ -55,7 +82,19 @@ jobs:
           git push
           git push --tags
 
-      - name: Publish all packages
-        run: npm run publish
+      # Explicit fail-fast sequencing: npm's --workspaces runner can continue after a failure.
+      - name: Publish canvas packages, then CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run release -w libs/engine/core
+          npm run release -w libs/engine/angular
+          npm run release -w libs/engine/react
+          npm run release -w libs/engine/vue
+          npm run release -w libs/editor/core
+          npm run release -w libs/editor/angular
+          npm run release -w libs/editor/react
+          npm run release -w libs/editor/vue
+          npm run release -w libs/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

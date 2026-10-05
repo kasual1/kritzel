@@ -11,6 +11,7 @@ const paths = {
   editorAngular: path.resolve(__dirname, '../libs/editor/angular/projects/lib/package.json'),
   editorReact: path.resolve(__dirname, '../libs/editor/react/package.json'),
   editorVue: path.resolve(__dirname, '../libs/editor/vue/package.json'),
+  cli: path.resolve(__dirname, '../libs/cli/package.json'),
   version: path.resolve(__dirname, '../libs/engine/core/src/constants/version.ts'),
 };
 
@@ -33,7 +34,7 @@ export const KRITZEL_VERSION = '${version}';
   fs.writeFileSync(paths.version, content, 'utf8');
 }
 
-// Bumps @kritzel/engine and @kritzel/editor plus all of their framework wrappers to the
+// Bumps @kritzel/engine, @kritzel/editor, @kritzel/cli and all framework wrappers to the
 // same new version, keeping cross-package peerDependencies in sync.
 function bump(bumpVersion) {
   const enginePackage = readJson(paths.engineCore);
@@ -82,6 +83,11 @@ function bump(bumpVersion) {
     writeJson(paths[key], packageJson);
     console.log(`Updated ${packageJson.name} package to version ${newVersion}`);
   });
+
+  const cliPackage = readJson(paths.cli);
+  cliPackage.version = newVersion;
+  writeJson(paths.cli, cliPackage);
+  console.log(`Updated ${cliPackage.name} package to version ${newVersion}`);
 
   return newVersion;
 }

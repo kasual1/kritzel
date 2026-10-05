@@ -17,6 +17,16 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 
 ## Installation
 
+Optionally, let the CLI detect your existing application and install the matching editor packages and required peers:
+
+```bash
+npx @kritzel/cli@latest init
+```
+
+This installs dependencies only. Add `--generate-component` to opt in to a TypeScript starter, then follow the printed manual setup steps. See [CLI Setup](./cli.md) for engine selection, workspace targeting, and all options.
+
+Direct installation remains supported:
+
 Run the following command to install the Kritzel editor in your project.
 
 ```bash
