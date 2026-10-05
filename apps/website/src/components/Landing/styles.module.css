@@ -926,9 +926,221 @@
   }
 }
 
+/* Scale the non-mobile composition from a 1440px-wide canvas. */
+@media (min-width: 769px) {
+  .heroWrapper {
+    container-type: inline-size;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .heroCanvas {
+    min-height: 50cqw;
+    height: 100svh;
+    overflow: visible;
+  }
+
+  .brand {
+    top: 1.389cqw;
+    left: 2.222cqw;
+    gap: 0.694cqw;
+    min-height: 3.333cqw;
+    font-size: 1.806cqw;
+  }
+
+  .brand svg {
+    width: 2.5cqw;
+    height: 2.188cqw;
+  }
+
+  .topNav {
+    top: 1.389cqw;
+    right: 2.222cqw;
+    min-height: 3.333cqw;
+    font-size: 1.042cqw;
+    flex-wrap: nowrap;
+  }
+
+  .topNavLink {
+    min-height: 3.056cqw;
+    padding: 0 0.972cqw;
+  }
+
+  .page .topNavCta {
+    min-height: 3.056cqw;
+    padding: 0 1.25cqw;
+    margin: 0 0.278cqw;
+    border-radius: 0.833cqw;
+  }
+
+  .topNavIcon {
+    width: 3.056cqw;
+    height: 3.056cqw;
+  }
+
+  .topNavIcon img {
+    width: 1.528cqw;
+    height: 1.528cqw;
+  }
+
+  .heroCopy {
+    padding: 0;
+  }
+
+  .heroCopyInner {
+    width: 46cqw;
+    max-width: none;
+    gap: 1.528cqw;
+  }
+
+  .heroTitle {
+    font-size: 4.2cqw;
+  }
+
+  .page .heroSubtitle {
+    max-width: 43.056cqw;
+    font-size: 1.319cqw;
+  }
+
+  .photoParabola,
+  .photoShapes,
+  .photoCube {
+    width: 14cqw;
+  }
+
+  .photoParabola {
+    left: calc(15% - 2.778cqw);
+  }
+
+  .photoShapes {
+    right: calc(15% - 3.472cqw);
+  }
+
+  .photoFrame {
+    padding: 0.556cqw 0.556cqw 1.944cqw;
+    border-radius: 0.417cqw;
+  }
+
+  .photoCube {
+    right: calc(15% + 6.25cqw);
+    top: calc(60% + 1.389cqw);
+  }
+
+  .photoImage {
+    border-radius: 0.208cqw;
+  }
+
+  .noteCube,
+  .noteEquation,
+  .noteVertex {
+    margin-top: 1.667cqw;
+    font-size: 1.944cqw;
+  }
+
+  .noteEquation {
+    margin-top: 2.5cqw;
+    margin-left: 0.833cqw;
+  }
+
+  .caret {
+    width: 0.174cqw;
+    margin-left: 0.278cqw;
+    margin-top: 0.139cqw;
+  }
+
+  .toolbarDock {
+    bottom: 1.667cqw;
+  }
+
+  .heroSpacer {
+    height: 0;
+  }
+
+  .historyTab {
+    margin-left: 0.972cqw;
+    padding: 0 0.278cqw;
+    border-radius: 0.833cqw 0.833cqw 0 0;
+  }
+
+  .historyButton {
+    width: 2.778cqw;
+    height: 2.5cqw;
+  }
+
+  .historyButton svg {
+    width: 1.25cqw;
+    height: 1.25cqw;
+  }
+
+  .historyDivider {
+    height: 1.389cqw;
+  }
+
+  .toolbar {
+    gap: 0.833cqw;
+    padding: 0.556cqw 0.694cqw;
+    border-radius: 1.111cqw;
+  }
+
+  .tool {
+    width: 3.333cqw;
+    height: 3.333cqw;
+    border-radius: 0.694cqw;
+  }
+
+  .tool svg {
+    width: 1.389cqw;
+    height: 1.389cqw;
+  }
+
+  .ctaBar {
+    gap: 0.833cqw;
+    flex-wrap: nowrap;
+  }
+
+  .ctaPrimary,
+  .ctaSecondary,
+  .ctaInstall {
+    gap: 0.694cqw;
+    min-height: 3.611cqw;
+    border-radius: 0.972cqw;
+    font-size: 1.111cqw;
+    white-space: nowrap;
+  }
+
+  .page .ctaPrimary {
+    padding: 0 1.806cqw;
+  }
+
+  .page .ctaSecondary {
+    padding: 0 1.667cqw;
+  }
+
+  .ctaInstall {
+    gap: 0.417cqw;
+    padding: 0 0.556cqw 0 1.25cqw;
+  }
+
+  .ctaCode {
+    font-size: 0.972cqw;
+  }
+
+  .ctaCopy {
+    width: 2.5cqw;
+    height: 2.5cqw;
+    margin-left: 0.417cqw;
+    border-radius: 0.556cqw;
+  }
+
+  .ctaBar svg {
+    width: 1.111cqw;
+    height: 1.111cqw;
+  }
+}
+
 /* ---------- Small screens ---------- */
 
-@media (max-width: 996px) {
+@media (max-width: 768px) {
   .noteCube,
   .noteVertex {
     display: none;
