@@ -30,4 +30,9 @@
   - Username / Email: kritzelapp@gmail.com
   - Notes: 
 
+- **Claude**
+  - URL: https://www.anthropic.com/claude
+  - Username / Email: seifertluk11@gmail.com
+  - Notes: Only use
+
 
