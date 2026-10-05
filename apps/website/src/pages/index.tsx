@@ -5,7 +5,6 @@ import { HtmlClassNameProvider } from "@docusaurus/theme-common";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import Hero from "@site/src/components/Landing/Hero";
 import {
-  CallToActionBar,
   CliSection,
   Faq,
   Features,
@@ -49,7 +48,6 @@ export default function Home(): ReactNode {
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} />
             <div aria-hidden="true" className={styles.heroSpacer} />
-            <CallToActionBar docsPath={docsPath} />
             <Features />
           </div>
           <CliSection />
