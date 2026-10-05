@@ -197,20 +197,20 @@ function useTerminalSession(terminalRef: React.RefObject<HTMLDivElement | null>)
       timers = [];
       setState({ ...FINAL_STATE, typed: "", typing: true, banner: false, question: false, answered: false, added: false, prompt: false, round });
 
-      let t = 500;
+      let t = 250;
       for (let i = 1; i <= CLI_COMMAND.length; i++) {
-        at(t + i * 70, () => update({ typed: CLI_COMMAND.slice(0, i) }));
+        at(t + i * 35, () => update({ typed: CLI_COMMAND.slice(0, i) }));
       }
-      t += CLI_COMMAND.length * 70 + 150;
+      t += CLI_COMMAND.length * 35 + 75;
       at(t, () => update({ typing: false }));
-      at(t + 450, () => update({ banner: true }));
-      at(t + 1300, () => update({ question: true }));
-      t += 1300 + 900;
+      at(t + 225, () => update({ banner: true }));
+      at(t + 650, () => update({ question: true }));
+      t += 650 + 450;
       at(t, () => update({ answered: true }));
-      at(t + 600, () => update({ added: true }));
-      at(t + 1000, () => update({ prompt: true }));
-      at(t + 4400, () => update({ leaving: true }));
-      at(t + 5600, () => run(round + 1));
+      at(t + 300, () => update({ added: true }));
+      at(t + 500, () => update({ prompt: true }));
+      at(t + 2700, () => update({ leaving: true }));
+      at(t + 2950, () => run(round + 1));
     };
 
     let started = false;
