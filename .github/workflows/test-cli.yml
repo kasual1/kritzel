@@ -1,26 +1,9 @@
 name: Test CLI
 
 on:
-  pull_request:
-    paths:
-      - 'libs/**'
-      - 'scripts/bump-*.js'
-      - 'scripts/check-shared-versions.js'
-      - 'package.json'
-      - 'package-lock.json'
-      - '.github/workflows/test-cli.yml'
-      - '.github/workflows/publish-libs.yml'
   push:
     branches-ignore:
       - main
-    paths:
-      - 'libs/**'
-      - 'scripts/bump-*.js'
-      - 'scripts/check-shared-versions.js'
-      - 'package.json'
-      - 'package-lock.json'
-      - '.github/workflows/test-cli.yml'
-      - '.github/workflows/publish-libs.yml'
   workflow_dispatch:
 
 permissions:
