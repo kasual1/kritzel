@@ -1,6 +1,7 @@
 import type { CSSProperties, ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Icon, { GitHubIcon } from "./Icon";
+import { CallToActionBar } from "./Sections";
 import { KRITZEL_LOGO_PATH } from "./paths";
 import styles from "./styles.module.css";
 
@@ -21,10 +22,16 @@ function PhotoGrid({ stroke }: { stroke: string }) {
 }
 
 /** Hand-drawn style sketches shown as "photos" placed on the mock canvas. */
-const PHOTOS: ReadonlyArray<{ className: string; rotate: number; art: ReactNode }> = [
+const PHOTOS: ReadonlyArray<{
+  className: string;
+  rotate: number;
+  art: ReactNode;
+  note: { className: string; text: string; caret: string };
+}> = [
   {
     className: styles.photoParabola,
     rotate: -5,
+    note: { className: styles.noteEquation, text: "f(x) = −x² + 4x", caret: "#4a7dff" },
     art: (
       <>
         <rect width="240" height="170" fill="#ffc7a8" />
@@ -41,6 +48,7 @@ const PHOTOS: ReadonlyArray<{ className: string; rotate: number; art: ReactNode 
   {
     className: styles.photoShapes,
     rotate: 5,
+    note: { className: styles.noteVertex, text: "the vertex is the highest point, at x = 2!", caret: "#f97316" },
     art: (
       <>
         <rect width="240" height="170" fill="#9fd3ff" />
@@ -57,6 +65,7 @@ const PHOTOS: ReadonlyArray<{ className: string; rotate: number; art: ReactNode 
   {
     className: styles.photoCube,
     rotate: -3,
+    note: { className: styles.noteCube, text: "a cube has 6 faces and 12 edges", caret: "#8b5cf6" },
     art: (
       <>
         <rect width="240" height="170" fill="#a8d9b4" />
@@ -72,13 +81,6 @@ const PHOTOS: ReadonlyArray<{ className: string; rotate: number; art: ReactNode 
       </>
     ),
   },
-];
-
-/** Handwritten notes, each with the caret of the collaborator typing it. */
-const NOTES: ReadonlyArray<{ className: string; text: string; caret: string }> = [
-  { className: styles.noteCube, text: "a cube has 6 faces and 12 edges", caret: "#8b5cf6" },
-  { className: styles.noteEquation, text: "f(x) = −x² + 4x", caret: "#4a7dff" },
-  { className: styles.noteVertex, text: "the vertex is the highest point, at x = 2!", caret: "#f97316" },
 ];
 
 const TOOLS: ReadonlyArray<{ label: string; icon: ReactNode }> = [
@@ -203,6 +205,7 @@ export default function Hero({ docsPath }: { docsPath: string }) {
               Kritzel is a framework-agnostic infinite canvas library that helps you build custom whiteboard
               experiences with React, Vue and Angular.
             </p>
+            <CallToActionBar docsPath={docsPath} />
           </div>
         </div>
 
@@ -216,12 +219,10 @@ export default function Hero({ docsPath }: { docsPath: string }) {
                   </svg>
                 </div>
               </div>
-            </div>
-          ))}
-          {NOTES.map((note) => (
-            <div key={note.className} className={note.className}>
-              {note.text}
-              <span className={styles.caret} style={{ background: note.caret }} />
+              <div className={photo.note.className}>
+                {photo.note.text}
+                <span className={styles.caret} style={{ background: photo.note.caret }} />
+              </div>
             </div>
           ))}
         </div>

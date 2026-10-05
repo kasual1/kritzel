@@ -51,8 +51,8 @@
 .heroCanvas {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  min-height: 560px;
+  aspect-ratio: 2 / 1;
+  min-height: 520px;
   background: #ffffff;
   overflow: hidden;
 }
@@ -191,17 +191,17 @@
 }
 
 .photoParabola {
-  left: 5%;
-  top: 35%;
+  left: 15%;
+  top: 25%;
 }
 
 .photoShapes {
-  right: 5%;
+  right: 15%;
   top: 15%;
 }
 
 .photoCube {
-  left: 72%;
+  right: 20%;
   top: 64%;
 }
 
@@ -226,8 +226,7 @@
 .noteCube,
 .noteEquation,
 .noteVertex {
-  position: absolute;
-  z-index: 1;
+  margin-top: 24px;
   font-family: var(--landing-hand) !important;
   font-size: clamp(22px, 2vw, 28px);
   font-weight: 500;
@@ -235,22 +234,9 @@
   color: #1f2937;
 }
 
-.noteCube {
-  left: 73%;
-  top: 92%;
-  max-width: 260px;
-}
-
 .noteEquation {
-  left: 6%;
-  top: 63%;
-  max-width: 280px;
-}
-
-.noteVertex {
-  left: 77%;
-  top: 43%;
-  max-width: 250px;
+  margin-top: 36px;
+  margin-left: 12px;
 }
 
 .caret {
@@ -268,7 +254,7 @@
 .toolbarDock {
   position: absolute;
   left: 50%;
-  bottom: -14px;
+  bottom: -48px;
   z-index: 2;
   transform: translateX(-50%);
   display: flex;
@@ -338,13 +324,10 @@
 }
 
 .ctaAnchor {
-  position: relative;
-  z-index: 2;
-  height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 16px;
+  width: 100%;
 }
 
 .ctaBar {
@@ -353,11 +336,6 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 12px;
-  box-sizing: border-box;
-  border: var(--landing-border);
-  border-radius: 22px;
-  background: #ffffff;
 }
 
 .ctaPrimary,
@@ -966,7 +944,7 @@
 @media (max-width: 768px) {
   .heroCanvas {
     aspect-ratio: auto;
-    min-height: 640px;
+    min-height: 580px;
   }
 
   .brand {
@@ -991,8 +969,9 @@
   }
 
   .heroCopy {
-    top: 20%;
-    padding: 0 16px;
+    position: relative;
+    top: auto;
+    padding: 100px 16px 210px;
   }
 
   .photoParabola,
@@ -1002,8 +981,9 @@
   }
 
   .photoParabola {
-    left: 6%;
-    top: 60%;
+    left: 17%;
+    top: auto;
+    bottom: 50px;
   }
 
   .photoShapes {
@@ -1012,7 +992,8 @@
 
   .photoCube {
     right: 6%;
-    top: 58%;
+    top: auto;
+    bottom: 50px;
   }
 
   .noteEquation {
@@ -1031,10 +1012,6 @@
 
   .heroSpacer {
     height: 48px;
-  }
-
-  .ctaAnchor {
-    height: auto;
   }
 
   .ctaBar {
