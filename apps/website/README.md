@@ -15,6 +15,11 @@ their photo wrapper so they move together. The mobile layout is separate.
 
 ## Installation
 
+The website's default and link cursors use 24px SVG assets in `static/img/cursor-*.svg`,
+matching the engine's white-filled, black-outline arrow and hand. Hotspots match
+`KritzelCursorHelper`: 4,4 for the arrow and 12,12 for the hand. Text fields and
+disabled controls keep semantic cursors; embedded demo frames manage their own cursors.
+
 ```bash
 yarn
 ```
