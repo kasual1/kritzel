@@ -1,4 +1,4 @@
-import type { CSSProperties, ReactNode } from "react";
+import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Icon, { GitHubIcon } from "./Icon";
 import { CallToActionBar } from "./Sections";
@@ -170,6 +170,26 @@ function MockToolbar() {
 }
 
 export default function Hero({ docsPath }: { docsPath: string }) {
+  const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) {
+      return;
+    }
+
+    const root = document.documentElement;
+    const observer = new IntersectionObserver(([entry]) => {
+      root.classList.toggle("landing-nav-visible", !entry.isIntersecting);
+    });
+    observer.observe(nav);
+
+    return () => {
+      observer.disconnect();
+      root.classList.remove("landing-nav-visible");
+    };
+  }, []);
+
   return (
     <div className={styles.heroWrapper}>
       <div className={styles.heroCanvas}>
@@ -179,7 +199,7 @@ export default function Hero({ docsPath }: { docsPath: string }) {
           </svg>
           Kritzel
         </Link>
-        <nav aria-label="Main" className={styles.topNav}>
+        <nav ref={navRef} aria-label="Main" className={styles.topNav}>
           <Link to="/blog" className={styles.topNavLink}>
             Blog
           </Link>

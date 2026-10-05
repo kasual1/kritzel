@@ -2,6 +2,17 @@
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
+## Landing hero layout
+
+Above 768px, the hero fills the initial viewport using `100svh`, with a minimum
+height of half its width to avoid crowding on short screens. The toolbar sits
+inside the canvas and the features begin below it. The canvas is centered and
+capped at 1440px. Container-relative
+`cqw` units scale typography, images, notes, controls, and the toolbar together;
+1cqw is 1% of the canvas width. Keep hero dimensions relative to that container
+rather than mixing fixed pixels and viewport units. Photo captions remain inside
+their photo wrapper so they move together. The mobile layout is separate.
+
 ## Installation
 
 ```bash
