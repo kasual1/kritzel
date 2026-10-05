@@ -2,15 +2,9 @@
 name: Test website
 
 on:
-  pull_request:
-    branches:
+  push:
+    branches-ignore:
       - main
-    paths:
-      - 'package.json'
-      - 'package-lock.json'
-      - 'apps/website/**'
-      - '.github/workflows/test-website.yml'
-      - '.github/workflows/deploy-website.yml'
   workflow_dispatch:
 
 jobs:
