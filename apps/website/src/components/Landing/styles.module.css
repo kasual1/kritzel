@@ -6,11 +6,6 @@
  * that are explicitly reset here so the page matches the design.
  */
 
-/* The landing page ships its own top navigation and footer. */
-:global(html.landing-page) :global(.navbar) {
-  display: none;
-}
-
 :global(html.landing-page) {
   --landing-ink: #0a0a0a;
   --landing-muted: #4a4a55;
@@ -64,7 +59,7 @@
 
 .brand {
   position: absolute;
-  top: 28px;
+  top: 20px;
   left: 32px;
   z-index: 3;
   display: flex;
@@ -81,16 +76,21 @@
   color: var(--landing-ink);
 }
 
+.brand svg {
+  width: 36px;
+  height: 31.5px;
+}
+
 .topNav {
   position: absolute;
-  top: 28px;
+  top: 20px;
   right: 32px;
   z-index: 3;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: center;
-  gap: 6px;
+  gap: 0;
   min-height: 48px;
   font-size: 15px;
   font-weight: 500;
@@ -792,10 +792,21 @@
   position: relative;
   z-index: 1;
   box-sizing: border-box;
+  width: min(var(--kritzel-nav-max-width), calc(100% - 1.75rem));
   min-height: 346px;
-  border-top: var(--landing-border);
+  margin: 0 auto;
   padding: 52px 32px 28px;
   background: #ffffff;
+}
+
+.footer::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  border-top: var(--landing-border);
+  content: "";
+  transform: translateX(-50%);
 }
 
 .footerGrid {
@@ -959,18 +970,18 @@
   }
 
   .brand {
-    top: 16px;
+    top: 10px;
     left: 16px;
     font-size: 22px;
   }
 
   .brand svg {
-    width: 32px;
-    height: 28px;
+    width: 28px;
+    height: 24.5px;
   }
 
   .topNav {
-    top: 16px;
+    top: 10px;
     right: 12px;
     gap: 0;
   }
