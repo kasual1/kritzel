@@ -10,8 +10,12 @@ inside the canvas and the features begin below it. The canvas is centered and
 capped at 1440px. Container-relative
 `cqw` units scale typography, images, notes, controls, and the toolbar together;
 1cqw is 1% of the canvas width. Keep hero dimensions relative to that container
-rather than mixing fixed pixels and viewport units. Photo captions remain inside
-their photo wrapper so they move together. The mobile layout is separate.
+rather than mixing fixed pixels and viewport units. Photo captions start beneath
+their photo wrapper but can be moved independently. The mobile layout is separate.
+
+Hero images and captions can be dragged independently or moved with arrow keys
+while focused (Shift increases the step). Drag offsets scale with the item size
+on resize and reset when the landing page is remounted.
 
 ## Installation
 

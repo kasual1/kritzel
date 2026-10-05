@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Icon, { GitHubIcon } from "./Icon";
 import { CallToActionBar } from "./Sections";
@@ -7,6 +7,99 @@ import styles from "./styles.module.css";
 
 const GRID_X = [20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220];
 const GRID_Y = [10, 30, 50, 70, 90, 110, 130, 150];
+
+function DraggableCanvasItem({
+  children,
+  className,
+  label,
+}: {
+  children: ReactNode;
+  className?: string;
+  label: string;
+}) {
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef<{
+    pointerId: number;
+    x: number;
+    y: number;
+    offset: { x: number; y: number };
+    width: number;
+    height: number;
+  } | null>(null);
+
+  return (
+    <div
+      className={`${styles.draggableItem} ${className ?? ""}`}
+      role="button"
+      tabIndex={0}
+      aria-label={`Move ${label}`}
+      aria-description="Drag to move, or use arrow keys. Hold Shift for larger steps."
+      data-dragging={dragging || undefined}
+      style={{ transform: `translate(${offset.x * 100}%, ${offset.y * 100}%)` }}
+      onPointerDown={(event) => {
+        if (event.button !== 0 || dragRef.current) {
+          return;
+        }
+        event.preventDefault();
+        event.currentTarget.focus({ preventScroll: true });
+        const { width, height } = event.currentTarget.getBoundingClientRect();
+        dragRef.current = {
+          pointerId: event.pointerId,
+          x: event.clientX,
+          y: event.clientY,
+          offset,
+          width,
+          height,
+        };
+        event.currentTarget.setPointerCapture(event.pointerId);
+        setDragging(true);
+      }}
+      onPointerMove={(event) => {
+        const drag = dragRef.current;
+        if (!drag || drag.pointerId !== event.pointerId) {
+          return;
+        }
+        setOffset({
+          x: drag.offset.x + (event.clientX - drag.x) / drag.width,
+          y: drag.offset.y + (event.clientY - drag.y) / drag.height,
+        });
+      }}
+      onPointerUp={(event) => {
+        if (dragRef.current?.pointerId === event.pointerId) {
+          event.currentTarget.releasePointerCapture(event.pointerId);
+          dragRef.current = null;
+          setDragging(false);
+        }
+      }}
+      onLostPointerCapture={() => {
+        dragRef.current = null;
+        setDragging(false);
+      }}
+      onKeyDown={(event) => {
+        const directions: Record<string, { x: number; y: number }> = {
+          ArrowLeft: { x: -1, y: 0 },
+          ArrowRight: { x: 1, y: 0 },
+          ArrowUp: { x: 0, y: -1 },
+          ArrowDown: { x: 0, y: 1 },
+        };
+        const direction = directions[event.key];
+        if (!direction) {
+          return;
+        }
+        event.preventDefault();
+        const { width, height } = event.currentTarget.getBoundingClientRect();
+        const step = event.shiftKey ? 20 : 5;
+        setOffset((current) => ({
+          x: current.x + direction.x * step / width,
+          y: current.y + direction.y * step / height,
+        }));
+      }}
+    >
+      {children}
+    </div>
+  );
+}
 
 function PhotoGrid({ stroke }: { stroke: string }) {
   return (
@@ -229,20 +322,22 @@ export default function Hero({ docsPath }: { docsPath: string }) {
           </div>
         </div>
 
-        <div className={styles.canvasLayer} aria-hidden="true">
+        <div className={styles.canvasLayer}>
           {PHOTOS.map((photo) => (
             <div key={photo.className} className={photo.className}>
-              <div className={styles.photoFrame} style={{ "--photo-rotate": `${photo.rotate}deg` } as CSSProperties}>
+              <DraggableCanvasItem label={`${photo.note.text} image`}>
+                <div className={styles.photoFrame} style={{ "--photo-rotate": `${photo.rotate}deg` } as CSSProperties}>
                 <div className={styles.photoImage}>
-                  <svg viewBox="0 0 240 170" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+                  <svg aria-hidden="true" viewBox="0 0 240 170" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
                     {photo.art}
                   </svg>
                 </div>
-              </div>
-              <div className={photo.note.className}>
+                </div>
+              </DraggableCanvasItem>
+              <DraggableCanvasItem className={photo.note.className} label={photo.note.text}>
                 {photo.note.text}
-                <span className={styles.caret} style={{ background: photo.note.caret }} />
-              </div>
+                <span aria-hidden="true" className={styles.caret} style={{ background: photo.note.caret }} />
+              </DraggableCanvasItem>
             </div>
           ))}
         </div>
