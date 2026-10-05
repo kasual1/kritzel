@@ -24,5 +24,27 @@ export default function Root({ children }: { children: ReactNode }): React.React
     }
   }, [pathname]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    const landingNav = root.classList.contains("landing-page")
+      ? document.querySelector('nav[aria-label="Main"]:not(.navbar)')
+      : null;
+
+    root.classList.remove("landing-nav-visible");
+    if (!landingNav) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      root.classList.toggle("landing-nav-visible", !entry.isIntersecting);
+    });
+    observer.observe(landingNav);
+
+    return () => {
+      observer.disconnect();
+      root.classList.remove("landing-nav-visible");
+    };
+  }, [pathname]);
+
   return <>{children}</>;
 }

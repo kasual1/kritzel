@@ -17,6 +17,27 @@
   padding: 0.3rem 1rem;
 }
 
+html.landing-page .navbar {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s;
+}
+
+html.landing-page.landing-nav-visible .navbar {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s;
+}
+
+html.landing-page:not(.landing-nav-visible) .navbar {
+  opacity: 0;
+  transform: translateY(calc(-100% - 1rem));
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .navbar::before {
   position: absolute;
   inset: 0;
@@ -29,26 +50,15 @@
   pointer-events: none;
 }
 
-body:has(.theme-doc-markdown) .navbar {
-  width: 100%;
-  margin: 0;
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-body:has(.theme-doc-markdown) .navbar::before {
-  border-radius: 0;
-}
-
 .navbar--fixed-top {
   top: 0.75rem;
 }
 
-body:has(.theme-doc-markdown) .navbar--fixed-top {
-  top: 0;
+html.landing-page .navbar--fixed-top {
+  position: fixed;
+  right: 0;
+  left: 0;
+  margin-top: 0;
 }
 
 .navbar > .container,
@@ -194,11 +204,6 @@ a.navbar-get-license-link.navbar__link--active {
   color: #fff !important;
 }
 
-body:has(.theme-doc-markdown) .navbar__inner a.navbar-get-license-link,
-body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
-  display: none;
-}
-
 .dropdown__menu {
   margin-top: 0.4rem;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -232,15 +237,6 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
     width: calc(100% - 1rem);
     margin-top: 0.5rem;
     padding: 0.25rem 0.7rem;
-  }
-
-  body:has(.theme-doc-markdown) .navbar {
-    width: 100%;
-    margin: 0;
-  }
-
-  body:has(.theme-doc-markdown) .navbar--fixed-top {
-    top: 0;
   }
 
   .navbar__inner {
@@ -289,11 +285,6 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
 
   .navbar__inner .navbar-framework-picker > .navbar__link {
     padding: 0.22rem 0.55rem;
-  }
-
-  body:has(.theme-doc-markdown) .navbar-sidebar .menu__link.navbar-get-license-link,
-  body:has(.theme-doc-markdown) .navbar-sidebar .menu__link.navbar-main-github-link {
-    display: none !important;
   }
 
   .navbar-sidebar {
