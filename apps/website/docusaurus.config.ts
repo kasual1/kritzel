@@ -301,7 +301,7 @@ const config: Config = {
       theme: prismThemes.github,
     },
     footer: {
-      style: 'dark',
+      style: 'light',
       links: [
         {
           title: 'Documentation',

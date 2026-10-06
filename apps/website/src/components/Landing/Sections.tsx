@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Icon, { ArrowIcon } from "./Icon";
-import { KRITZEL_LOGO_PATH, WORDMARK_LETTERS } from "./paths";
+import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
 
 const INSTALL_COMMAND = "npm i kritzel";
@@ -405,65 +405,5 @@ export function Wordmark() {
         </g>
       </svg>
     </section>
-  );
-}
-
-const FOOTER_COLUMNS: ReadonlyArray<{ title: string; links: ReadonlyArray<{ label: string; to?: string; href?: string }> }> = [
-  {
-    title: "Documentation",
-    links: [
-      { label: "Getting Started", to: "/docs/react/getting-started/quick-start" },
-      { label: "Examples", to: "/docs/react/examples/object-explorer" },
-    ],
-  },
-  {
-    title: "Frameworks",
-    links: [
-      { label: "Angular", to: "/docs/angular/getting-started/quick-start" },
-      { label: "React", to: "/docs/react/getting-started/quick-start" },
-      { label: "Vue", to: "/docs/vue/getting-started/quick-start" },
-    ],
-  },
-  {
-    title: "Community",
-    links: [
-      { label: "X", href: "https://x.com/kritzel_io" },
-      { label: "LinkedIn", href: "https://linkedin.com/in/kritzel-app-26721b40b" },
-      { label: "Bluesky", href: "https://bsky.app/profile/kritzelio.bsky.social" },
-      { label: "GitHub", href: "https://github.com/kasual1/kritzel" },
-      { label: "NPM", href: "https://www.npmjs.com/package/@kritzel/engine" },
-    ],
-  },
-];
-
-export function LandingFooter() {
-  return (
-    <footer className={styles.footer}>
-      <div className={styles.footerGrid}>
-        <div className={styles.footerBrand}>
-          <Link to="/" aria-label="Kritzel home" className={styles.footerLogo}>
-            <svg width="28" height="24" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
-              <path fill="currentColor" d={KRITZEL_LOGO_PATH} />
-            </svg>
-          </Link>
-          <p className={styles.footerTagline}>Build infinite canvas experiences in minutes.</p>
-        </div>
-        {FOOTER_COLUMNS.map((column) => (
-          <nav key={column.title} aria-label={column.title} className={styles.footerColumn}>
-            <h3 className={styles.footerHeading}>{column.title}</h3>
-            <ul className={styles.footerList}>
-              {column.links.map((link) => (
-                <li key={link.label}>
-                  <Link to={link.to} href={link.href} className={styles.footerLink}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ))}
-      </div>
-      <p className={styles.footerCopyright}>Copyright © {new Date().getFullYear()} Kritzel</p>
-    </footer>
   );
 }

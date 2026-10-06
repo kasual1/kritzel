@@ -4,6 +4,10 @@ This website is built using [Docusaurus](https://docusaurus.io/), a modern stati
 
 ## Landing hero layout
 
+The `/agentic` page has its own hero, CTA controls, and stylesheet under
+`src/components/Agentic`; edit these independently of `src/components/Landing`.
+The sections below the hero and basic icon assets remain shared.
+
 Above 768px, the hero fills the initial viewport using `100svh`, with a minimum
 height of half its width to avoid crowding on short screens. The toolbar sits
 inside the canvas and the features begin below it. The canvas is centered and

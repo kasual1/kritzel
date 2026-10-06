@@ -8,7 +8,6 @@ import {
   CliSection,
   Faq,
   Features,
-  LandingFooter,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
 import styles from "@site/src/components/Landing/styles.module.css";
@@ -35,7 +34,7 @@ export default function Home(): ReactNode {
 
   return (
     <HtmlClassNameProvider className="landing-page">
-      <Layout description={siteConfig.tagline} noFooter>
+      <Layout description={siteConfig.tagline}>
         <Head>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -53,7 +52,6 @@ export default function Home(): ReactNode {
           <CliSection />
           <Faq />
           <Wordmark />
-          <LandingFooter />
         </div>
       </Layout>
     </HtmlClassNameProvider>
