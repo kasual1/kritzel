@@ -1,21 +1,22 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "./Icon";
 import { CallToActionBar } from "./Sections";
+import Calculator from "./Calculator";
 import { KRITZEL_LOGO_PATH } from "./paths";
 import styles from "./styles.module.css";
-
-const GRID_X = [20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220];
-const GRID_Y = [10, 30, 50, 70, 90, 110, 130, 150];
 
 function DraggableCanvasItem({
   children,
   className,
   label,
+  interactive = false,
 }: {
   children: ReactNode;
   className?: string;
   label: string;
+  interactive?: boolean;
 }) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
@@ -31,13 +32,16 @@ function DraggableCanvasItem({
   return (
     <div
       className={`${styles.draggableItem} ${className ?? ""}`}
-      role="button"
+      role={interactive ? "group" : "button"}
       tabIndex={0}
       aria-label={`Move ${label}`}
       aria-description="Drag to move, or use arrow keys. Hold Shift for larger steps."
       data-dragging={dragging || undefined}
       style={{ transform: `translate(${offset.x * 100}%, ${offset.y * 100}%)` }}
       onPointerDown={(event) => {
+        if (interactive && event.target instanceof Element && event.target.closest("button")) {
+          return;
+        }
         if (event.button !== 0 || dragRef.current) {
           return;
         }
@@ -77,6 +81,9 @@ function DraggableCanvasItem({
         setDragging(false);
       }}
       onKeyDown={(event) => {
+        if (event.target !== event.currentTarget) {
+          return;
+        }
         const directions: Record<string, { x: number; y: number }> = {
           ArrowLeft: { x: -1, y: 0 },
           ArrowRight: { x: 1, y: 0 },
@@ -100,81 +107,6 @@ function DraggableCanvasItem({
     </div>
   );
 }
-
-function PhotoGrid({ stroke }: { stroke: string }) {
-  return (
-    <g stroke={stroke} strokeWidth="1">
-      {GRID_X.map((x) => (
-        <path key={`x${x}`} d={`M${x} 0V170`} />
-      ))}
-      {GRID_Y.map((y) => (
-        <path key={`y${y}`} d={`M0 ${y}H240`} />
-      ))}
-    </g>
-  );
-}
-
-/** Hand-drawn style sketches shown as "photos" placed on the mock canvas. */
-const PHOTOS: ReadonlyArray<{
-  className: string;
-  rotate: number;
-  art: ReactNode;
-  note: { className: string; text: string; caret: string };
-}> = [
-  {
-    className: styles.photoParabola,
-    rotate: -5,
-    note: { className: styles.noteEquation, text: "f(x) = −x² + 4x", caret: "#4a7dff" },
-    art: (
-      <>
-        <rect width="240" height="170" fill="#ffc7a8" />
-        <PhotoGrid stroke="#ffb48f" />
-        <path d="M20 130 H224 M40 154 V16" stroke="#3a3160" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M60 150 Q120 -10 180 150" fill="none" stroke="#e2603a" strokeWidth="4" strokeLinecap="round" />
-        <path d="M120 70 V130" stroke="#3a3160" strokeWidth="1.5" strokeDasharray="4 4" />
-        <circle cx="120" cy="70" r="6" fill="#ffffff" stroke="#3a3160" strokeWidth="3" />
-        <circle cx="68" cy="130" r="4.5" fill="#3a3160" />
-        <circle cx="172" cy="130" r="4.5" fill="#3a3160" />
-      </>
-    ),
-  },
-  {
-    className: styles.photoShapes,
-    rotate: 5,
-    note: { className: styles.noteVertex, text: "the vertex is the highest point, at x = 2!", caret: "#f97316" },
-    art: (
-      <>
-        <rect width="240" height="170" fill="#9fd3ff" />
-        <PhotoGrid stroke="#84c3f2" />
-        <circle cx="92" cy="86" r="44" fill="#4c9bd6" opacity="0.85" />
-        <rect x="108" y="44" width="78" height="78" fill="#e3f3ff" opacity="0.85" stroke="#1f4d7a" strokeWidth="3" />
-        <circle cx="92" cy="86" r="44" fill="none" stroke="#1f4d7a" strokeWidth="3" />
-        <path d="M150 140 L190 66 L226 140 Z" fill="#3f6283" opacity="0.9" stroke="#1f4d7a" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M92 86 L136 86" stroke="#1f4d7a" strokeWidth="2" strokeDasharray="4 4" />
-        <circle cx="92" cy="86" r="3.5" fill="#1f4d7a" />
-      </>
-    ),
-  },
-  {
-    className: styles.photoCube,
-    rotate: -3,
-    note: { className: styles.noteCube, text: "a cube has 6 faces and 12 edges", caret: "#8b5cf6" },
-    art: (
-      <>
-        <rect width="240" height="170" fill="#a8d9b4" />
-        <PhotoGrid stroke="#8cc49a" />
-        <path d="M80 48 L124 70 L124 122 L80 100 Z" fill="#5a9c6b" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M124 70 L168 48 L168 100 L124 122 Z" fill="#2c6a45" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M80 48 L124 26 L168 48 L124 70 Z" fill="#cfeedd" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M80 100 L124 78 L168 100" fill="none" stroke="#1f5636" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6" />
-        <path d="M186 142 L204 96 L226 142 Z" fill="#5a9c6b" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M204 96 L212 142" stroke="#1f5636" strokeWidth="2" />
-        <ellipse cx="44" cy="132" rx="22" ry="8" fill="#cfeedd" stroke="#1f5636" strokeWidth="3" />
-        <path d="M22 132 L44 90 L66 132" fill="none" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-      </>
-    ),
-  },
-];
 
 const TOOLS: ReadonlyArray<{ label: string; icon: ReactNode }> = [
   { label: "Select", icon: <path d="M4.04 4.65a.5.5 0 0 1 .61-.61l15.5 5.94a.5.5 0 0 1-.05.95l-6.1 1.88a1 1 0 0 0-.66.66l-1.88 6.1a.5.5 0 0 1-.95.05z" /> },
@@ -270,6 +202,7 @@ export default function Hero({
   variant?: "infinite" | "agentic";
 }) {
   const navRef = useRef<HTMLElement>(null);
+  const grassImageUrl = useBaseUrl("/img/wet_grass.webp");
 
   useEffect(() => {
     const nav = navRef.current;
@@ -337,23 +270,36 @@ export default function Hero({
         </div>
 
         <div className={styles.canvasLayer}>
-          {PHOTOS.map((photo) => (
-            <div key={photo.className} className={photo.className}>
-              <DraggableCanvasItem label={`${photo.note.text} image`}>
-                <div className={styles.photoFrame} style={{ "--photo-rotate": `${photo.rotate}deg` } as CSSProperties}>
-                <div className={styles.photoImage}>
-                  <svg aria-hidden="true" viewBox="0 0 240 170" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-                    {photo.art}
-                  </svg>
-                </div>
-                </div>
-              </DraggableCanvasItem>
-              <DraggableCanvasItem className={photo.note.className} label={photo.note.text}>
-                {photo.note.text}
-                <span aria-hidden="true" className={styles.caret} style={{ background: photo.note.caret }} />
-              </DraggableCanvasItem>
-            </div>
-          ))}
+          <div className={styles.grassImageAnchor}>
+            <DraggableCanvasItem label="wet grass image">
+              <img className={styles.grassImage} src={grassImageUrl} alt="Wet grass" draggable={false} />
+            </DraggableCanvasItem>
+          </div>
+          <div className={styles.calculatorAnchor}>
+            <DraggableCanvasItem label="calculator" interactive>
+              <Calculator />
+            </DraggableCanvasItem>
+          </div>
+          <div className={styles.helloDrawing}>
+            <DraggableCanvasItem label="handwritten hello">
+              <svg aria-hidden="true" viewBox="0 0 260 120" width="100%" height="100%">
+                <path
+                  d="M18 88 C27 62 49 12 38 16 C24 20 20 72 22 88
+                     C31 49 52 48 49 72 C47 91 53 93 65 80
+                     C94 57 72 48 65 68 C55 97 81 99 98 77
+                     C112 57 132 8 117 16 C101 26 96 77 105 88 C114 100 128 88 138 70
+                     C153 43 163 10 150 17 C136 25 126 78 139 89 C151 101 169 83 176 70
+                     C184 52 207 53 207 72 C207 94 179 104 174 83 C170 66 183 57 194 60
+                     C207 65 215 82 239 66"
+                  fill="none"
+                  stroke="#4a7dff"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </DraggableCanvasItem>
+          </div>
         </div>
       </div>
       <MockToolbar />
