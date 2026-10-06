@@ -262,7 +262,13 @@ function MockToolbar() {
   );
 }
 
-export default function Hero({ docsPath }: { docsPath: string }) {
+export default function Hero({
+  docsPath,
+  variant = "infinite",
+}: {
+  docsPath: string;
+  variant?: "infinite" | "agentic";
+}) {
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -299,8 +305,8 @@ export default function Hero({ docsPath }: { docsPath: string }) {
           <Link to={docsPath} className={styles.topNavLink}>
             Documentation
           </Link>
-          <Link to={docsPath} className={styles.topNavCta}>
-            Get started
+          <Link to="/get-license" className={styles.topNavCta}>
+            Get License
           </Link>
           <Link href="https://github.com/kasual1/kritzel" aria-label="GitHub" className={styles.topNavIcon}>
             <GitHubIcon />
@@ -309,6 +315,14 @@ export default function Hero({ docsPath }: { docsPath: string }) {
 
         <div className={styles.heroCopy}>
           <div className={styles.heroCopyInner}>
+            <nav className={styles.canvasToggle} aria-label="Canvas experience">
+              <Link to="/" aria-current={variant === "infinite" ? "page" : undefined}>
+                Infinite
+              </Link>
+              <Link to="/agentic" aria-current={variant === "agentic" ? "page" : undefined}>
+                Agentic
+              </Link>
+            </nav>
             <h1 className={styles.heroTitle}>
               The Infinite<span className={styles.heroTitleAccent}>&nbsp;Canvas</span>
               <br />
