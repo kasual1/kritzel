@@ -4,6 +4,7 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "./Icon";
 import { CallToActionBar } from "./Sections";
 import Calculator from "./Calculator";
+import HeroTitle from "./HeroTitle";
 import { KRITZEL_LOGO_PATH } from "./paths";
 import styles from "./styles.module.css";
 
@@ -256,11 +257,7 @@ export default function Hero({
                 Agentic
               </Link>
             </nav>
-            <h1 className={styles.heroTitle}>
-              The Infinite<span className={styles.heroTitleAccent}>&nbsp;Canvas</span>
-              <br />
-              Development Kit
-            </h1>
+            <HeroTitle />
             <p className={styles.heroSubtitle}>
               Kritzel is a framework-agnostic infinite canvas library that helps you build custom whiteboard
               experiences with React, Vue and Angular.
