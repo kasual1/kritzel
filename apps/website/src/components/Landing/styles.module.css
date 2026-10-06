@@ -699,11 +699,8 @@
 }
 
 .frameworkTile {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
+  display: grid;
+  place-items: center;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -712,18 +709,18 @@
   color: #ffffff;
 }
 
-.frameworkInitial {
-  font-size: 50px;
-  line-height: 1;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+.frameworkLogo {
+  display: block;
+  opacity: 0.9;
+  width: 88px;
+  height: 88px;
+  object-fit: contain;
+  object-position: center;
+  transform-origin: center;
 }
 
-.frameworkName {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.frameworkLogo[data-framework="Vue"] {
+  transform: scale(0.85);
 }
 
 /* ---------- FAQ ---------- */
@@ -1225,8 +1222,9 @@
     height: 88px;
   }
 
-  .frameworkInitial {
-    font-size: 38px;
+  .frameworkLogo {
+    width: 68px;
+    height: 68px;
   }
 
 }

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { ArrowIcon } from "./Icon";
 import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
@@ -149,9 +150,9 @@ const KRITZEL_ASCII = `██╗  ██╗██████╗ ██╗██
 const CLI_COMMAND = "npx kritzel init";
 
 const CLI_FRAMEWORKS = [
-  { name: "React", initial: "R", color: "#38c6ee" },
-  { name: "Vue", initial: "V", color: "#42b883" },
-  { name: "Angular", initial: "A", color: "#e8234a" },
+  { name: "React", logo: "/img/logo-react.svg", color: "#38c6ee" },
+  { name: "Vue", logo: "/img/logo_vue.svg", color: "#42b883" },
+  { name: "Angular", logo: "/img/logo_angular.svg", color: "#dd0031" },
 ] as const;
 
 type TerminalState = {
@@ -239,6 +240,7 @@ export function CliSection() {
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const state = useTerminalSession(terminalRef);
   const framework = CLI_FRAMEWORKS[state.round % CLI_FRAMEWORKS.length];
+  const frameworkLogoUrl = useBaseUrl(framework.logo);
 
   return (
     <section aria-labelledby="cli-heading" className={styles.cli}>
@@ -299,9 +301,18 @@ export function CliSection() {
         </div>
         <div aria-label={`Selected framework: ${framework.name}`} className={styles.frameworkTileAnchor}>
           <div key={state.round} className={styles.frameworkTileMotion} data-leaving={state.leaving ? "true" : undefined}>
-            <div className={styles.frameworkTile} style={{ background: framework.color }}>
-              <span className={styles.frameworkInitial}>{framework.initial}</span>
-              <span className={styles.frameworkName}>{framework.name}</span>
+            <div
+              className={styles.frameworkTile}
+              style={{ background: framework.color, boxShadow: `0 18px 20px -12px ${framework.color}40` }}
+            >
+              <img
+                className={styles.frameworkLogo}
+                data-framework={framework.name}
+                src={frameworkLogoUrl}
+                alt=""
+                width={88}
+                height={88}
+              />
             </div>
           </div>
         </div>
