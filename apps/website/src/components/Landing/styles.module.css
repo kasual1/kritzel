@@ -228,77 +228,134 @@
   outline-offset: 6px;
 }
 
-.photoParabola:focus-within,
-.photoShapes:focus-within,
-.photoCube:focus-within {
+.helloDrawing:focus-within,
+.grassImageAnchor:focus-within,
+.calculatorAnchor:focus-within {
   z-index: 2;
 }
 
-.photoParabola,
-.photoShapes,
-.photoCube {
+.helloDrawing {
   position: absolute;
   z-index: 1;
-  width: clamp(150px, 16vw, 230px);
-}
-
-.photoParabola {
-  left: 4%;
-  top: 25%;
-}
-
-.photoShapes {
   right: 4%;
   top: 15%;
+  width: clamp(165px, 20vw, 286px);
+  transform: rotate(-8deg);
 }
 
-.photoCube {
-  right: calc(4% + 50px);
-  top: 60%;
-}
-
-.photoFrame {
-  transform: rotate(var(--photo-rotate, 0deg));
-  padding: 8px 8px 28px;
-  border-radius: 6px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(20, 18, 31, 0.08), 0 18px 36px -14px rgba(20, 18, 31, 0.35);
-}
-
-.photoImage {
-  aspect-ratio: 24 / 17;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.photoImage svg {
+.helloDrawing svg {
   display: block;
 }
 
-.noteCube,
-.noteEquation,
-.noteVertex {
-  margin-top: 24px;
-  font-family: var(--landing-hand) !important;
-  font-size: clamp(22px, 2vw, 28px);
-  font-weight: 500;
-  line-height: 1.15;
-  color: #1f2937;
+.grassImageAnchor {
+  position: absolute;
+  z-index: 1;
+  right: calc(4% + 50px);
+  top: 60%;
+  width: clamp(198px, 22vw, 315px);
+  transform: translate(20px, 10px) rotate(5deg);
 }
 
-.noteEquation {
-  margin-top: 36px;
-  margin-left: 12px;
+.grassImage {
+  display: block;
+  width: 100%;
+  aspect-ratio: 24 / 17;
+  object-fit: cover;
+  box-shadow: 0 12px 32px rgba(32, 33, 36, 0.12);
 }
 
-.caret {
-  display: inline-block;
-  width: 2.5px;
-  height: 1.05em;
-  margin-left: 4px;
-  border-radius: 1px;
-  vertical-align: top;
-  margin-top: 2px;
+.calculatorAnchor {
+  position: absolute;
+  z-index: 1;
+  left: 4%;
+  top: 25%;
+  width: clamp(150px, 16vw, 230px);
+  transform: rotate(-5deg);
+}
+
+.calculator {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(32, 33, 36, 0.12);
+  background: #ffffff;
+  color: #202124;
+  font-family: inherit;
+}
+
+.calculatorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.calculatorHeader span:last-child {
+  color: #dd0031;
+}
+
+.calculatorDisplay {
+  display: block;
+  padding: 6px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #fafafa;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.calculatorKeypad {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(5, 30px);
+  gap: 6px;
+}
+
+.calculatorKeypad button {
+  min-width: 0;
+  padding: 0;
+  border: 1px solid #dadce0;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #202124;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calculatorKeypad button:hover {
+  background: #fff0f3;
+}
+
+.calculatorKeypad button:focus-visible {
+  outline: 2px solid #dd0031;
+  outline-offset: 2px;
+}
+
+.calculatorKeypad .calculatorOperator,
+.calculatorKeypad .calculatorEquals {
+  border-color: #dd0031;
+  color: #dd0031;
+}
+
+.calculatorKeypad .calculatorEquals {
+  grid-row: span 2;
+  background: #dd0031;
+  color: #ffffff;
+}
+
+.calculatorKeypad .calculatorEquals:hover {
+  background: #b70028;
+}
+
+.calculatorZero {
+  grid-column: span 2;
 }
 
 /* ---------- Mock toolbar ---------- */
@@ -959,50 +1016,19 @@
     font-size: 1.319cqw;
   }
 
-  .photoParabola,
-  .photoShapes,
-  .photoCube {
-    width: 14cqw;
-  }
-
-  .photoParabola {
+  .calculatorAnchor {
     left: 4cqw;
+    width: 16cqw;
   }
 
-  .photoShapes {
+  .helloDrawing {
     right: 4cqw;
+    width: 20cqw;
   }
 
-  .photoFrame {
-    padding: 0.556cqw 0.556cqw 1.944cqw;
-    border-radius: 0.417cqw;
-  }
-
-  .photoCube {
+  .grassImageAnchor {
     right: calc(4cqw + 50px);
-    top: 60%;
-  }
-
-  .photoImage {
-    border-radius: 0.208cqw;
-  }
-
-  .noteCube,
-  .noteEquation,
-  .noteVertex {
-    margin-top: 1.667cqw;
-    font-size: 1.944cqw;
-  }
-
-  .noteEquation {
-    margin-top: 2.5cqw;
-    margin-left: 0.833cqw;
-  }
-
-  .caret {
-    width: 0.174cqw;
-    margin-left: 0.278cqw;
-    margin-top: 0.139cqw;
+    width: 19.8cqw;
   }
 
   .toolbarDock {
@@ -1102,16 +1128,10 @@
 /* ---------- Small screens ---------- */
 
 @media (max-width: 768px) {
-  .noteCube,
-  .noteVertex {
+  .helloDrawing {
     display: none;
   }
 
-  .photoCube {
-    left: auto;
-    right: 6%;
-    top: 62%;
-  }
 }
 
 @media (max-width: 768px) {
@@ -1144,33 +1164,21 @@
   .heroCopy {
     position: relative;
     top: auto;
-    padding: 100px 16px 210px;
+    padding: 100px 16px 330px;
   }
 
-  .photoParabola,
-  .photoShapes,
-  .photoCube {
-    width: 120px;
-  }
-
-  .photoParabola {
-    left: 17%;
+  .calculatorAnchor {
+    left: 6%;
     top: auto;
     bottom: 50px;
+    width: 160px;
   }
 
-  .photoShapes {
-    display: none;
-  }
-
-  .photoCube {
+  .grassImageAnchor {
     right: 6%;
     top: auto;
     bottom: 50px;
-  }
-
-  .noteEquation {
-    display: none;
+    width: 165px;
   }
 
   .toolbar {
