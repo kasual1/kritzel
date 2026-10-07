@@ -116,18 +116,21 @@ function DraggableCanvasItem({
 }
 
 const INITIAL_COMMAND = "Lets focus on the image with the red running shoe";
-const NEXT_COMMAND = "Create 2 variants of the red running shoe";
+const CASUAL_COMMAND = "Create a more casual variant of the red running shoe.";
+const SUMMER_COMMAND = "Create a summer variant of the red running shoe";
 
 function MockChatBox({
   onSubmit,
   onReset,
   shoeFocused,
-  variantsLoading,
+  command,
+  canReset,
 }: {
   onSubmit: () => void;
   onReset: () => void;
   shoeFocused: boolean;
-  variantsLoading: boolean;
+  command: string;
+  canReset: boolean;
 }) {
   const [visibleCount, setVisibleCount] = useState(0);
 
@@ -137,7 +140,7 @@ function MockChatBox({
     }
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (motionPreference.matches) {
-      setVisibleCount(NEXT_COMMAND.length);
+      setVisibleCount(command.length);
       return;
     }
     setVisibleCount(0);
@@ -145,21 +148,19 @@ function MockChatBox({
     const timer = window.setInterval(() => {
       count += 1;
       setVisibleCount(count);
-      if (count === NEXT_COMMAND.length) window.clearInterval(timer);
+      if (count === command.length) window.clearInterval(timer);
     }, 40);
     const finish = () => {
       if (!motionPreference.matches) return;
       window.clearInterval(timer);
-      setVisibleCount(NEXT_COMMAND.length);
+      setVisibleCount(command.length);
     };
     motionPreference.addEventListener("change", finish);
     return () => {
       window.clearInterval(timer);
       motionPreference.removeEventListener("change", finish);
     };
-  }, [shoeFocused]);
-
-  const command = shoeFocused ? NEXT_COMMAND : INITIAL_COMMAND;
+  }, [shoeFocused, command]);
 
   return (
     <div className={styles.chatDock}>
@@ -167,18 +168,18 @@ function MockChatBox({
         <span className={styles.chatMessage} aria-label={command}>
           <span className={styles.chatMessageSizer} aria-hidden="true">{command}</span>
           <span className={styles.chatMessageText} aria-hidden="true">
-            {shoeFocused ? NEXT_COMMAND.slice(0, visibleCount) : INITIAL_COMMAND}
-            {shoeFocused && visibleCount < NEXT_COMMAND.length && <span className={styles.chatTypingCursor} />}
+            {shoeFocused ? command.slice(0, visibleCount) : INITIAL_COMMAND}
+            {shoeFocused && visibleCount < command.length && <span className={styles.chatTypingCursor} />}
           </span>
         </span>
         <button
           type="button"
           className={styles.chatSend}
-          aria-label={variantsLoading ? "Reset demo" : shoeFocused ? "Create two shoe variants" : "Focus on the red running shoe"}
-          onClick={variantsLoading ? onReset : onSubmit}
+          aria-label={canReset ? "Reset demo" : shoeFocused ? command : "Focus on the red running shoe"}
+          onClick={canReset ? onReset : onSubmit}
         >
           <Icon size={20}>
-            {variantsLoading ? (
+            {canReset ? (
               <>
                 <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
                 <path d="M3 3v5h5" />
@@ -227,8 +228,8 @@ function HeroScene({
   const copyInnerRef = useRef<HTMLDivElement>(null);
   const shoeRef = useRef<HTMLDivElement>(null);
   const [focusRequest, setFocusRequest] = useState(0);
-  const [variantStatus, setVariantStatus] = useState<"idle" | "left-loading" | "waiting-right" | "right-loading" | "ready">("idle");
-  const [selectedImage, setSelectedImage] = useState<"shoe" | "left" | "right" | null>(null);
+  const [variantStatus, setVariantStatus] = useState<"idle" | "left-loading" | "left-ready" | "right-loading" | "ready">("idle");
+  const [selectedImage, setSelectedImage] = useState<"shoe" | "left" | "right" | "pie" | "smiley" | null>(null);
   const [focusLayout, setFocusLayout] = useState({ copyShift: 0, shoeTop: 0, minHeight: 520 });
   const shoeFocused = focusRequest > 0;
   const shoeImageUrl = useBaseUrl("/img/red_running_shoe_3.jpg");
@@ -246,21 +247,18 @@ function HeroScene({
   }, []);
 
   useEffect(() => {
-    if (variantStatus !== "left-loading" && variantStatus !== "waiting-right" && variantStatus !== "right-loading") return;
+    if (variantStatus !== "left-loading" && variantStatus !== "right-loading") return;
     const timer = window.setTimeout(
       () => {
         if (variantStatus === "left-loading") {
           setSelectedImage((current) => current === "left" ? null : current);
-          setVariantStatus("waiting-right");
-        } else if (variantStatus === "waiting-right") {
-          setSelectedImage("right");
-          setVariantStatus("right-loading");
+          setVariantStatus("left-ready");
         } else {
           setSelectedImage((current) => current === "right" ? null : current);
           setVariantStatus("ready");
         }
       },
-      variantStatus === "waiting-right" ? 500 : 800,
+      800,
     );
     return () => window.clearTimeout(timer);
   }, [variantStatus]);
@@ -330,7 +328,9 @@ function HeroScene({
           setSelectedImage(null);
         }
       }}
-      className={`${styles.heroWrapper} ${shoeFocused ? styles.heroFocused : ""}`}
+      className={`${styles.heroWrapper} ${shoeFocused ? styles.heroFocused : ""} ${
+        variantStatus === "left-loading" || variantStatus === "left-ready" ? styles.heroPair : ""
+      } ${variantStatus === "right-loading" || variantStatus === "ready" ? styles.heroTrio : ""}`}
       style={{
         "--focus-copy-shift": `${focusLayout.copyShift}px`,
         "--focus-shoe-top": `${focusLayout.shoeTop}px`,
@@ -436,7 +436,12 @@ function HeroScene({
             </DraggableCanvasItem>
           </div>
           <div className={styles.pieChartAnchor} inert={shoeFocused} aria-hidden={shoeFocused}>
-            <DraggableCanvasItem label="3D pie chart with 75%, 20%, and 5% slices">
+            <DraggableCanvasItem
+              label="3D pie chart with 75%, 20%, and 5% slices"
+              selected={selectedImage === "pie"}
+              onSelect={() => setSelectedImage("pie")}
+              className={selectedImage === "pie" ? styles.selectedImage : undefined}
+            >
               <PieChart fallback={
               <svg aria-hidden="true" className={styles.pieChart} viewBox="0 0 260 180" width="100%">
                 <g transform="rotate(-12 130 90)">
@@ -479,7 +484,12 @@ function HeroScene({
             </DraggableCanvasItem>
           </div>
           <div className={styles.smileyAnchor} inert={shoeFocused} aria-hidden={shoeFocused}>
-            <DraggableCanvasItem label="hand-drawn smiley face">
+            <DraggableCanvasItem
+              label="hand-drawn smiley face"
+              selected={selectedImage === "smiley"}
+              onSelect={() => setSelectedImage("smiley")}
+              className={selectedImage === "smiley" ? styles.selectedImage : undefined}
+            >
               <svg
                 className={styles.smiley}
                 aria-hidden="true"
@@ -522,12 +532,16 @@ function HeroScene({
         <MockChatBox
           onReset={onReset}
           shoeFocused={shoeFocused}
-          variantsLoading={variantStatus !== "idle"}
+          command={!shoeFocused ? INITIAL_COMMAND : variantStatus === "idle" || variantStatus === "left-loading" ? CASUAL_COMMAND : SUMMER_COMMAND}
+          canReset={variantStatus === "right-loading" || variantStatus === "ready"}
           onSubmit={() => {
-            if (shoeFocused) {
+            if (variantStatus === "left-ready") {
+              setSelectedImage("right");
+              setVariantStatus("right-loading");
+            } else if (shoeFocused && variantStatus === "idle") {
               setSelectedImage("left");
               setVariantStatus("left-loading");
-            } else {
+            } else if (!shoeFocused) {
               setSelectedImage("shoe");
               setFocusRequest((current) => current + 1);
             }
@@ -541,8 +555,8 @@ function HeroScene({
           ? "Loading the left red running shoe variant."
           : variantStatus === "right-loading"
           ? "Left variant created. Loading the right red running shoe variant."
-          : variantStatus === "waiting-right"
-          ? "Left variant created. Preparing the right variant."
+          : variantStatus === "left-ready"
+          ? "Casual variant created. Submit the summer variant command to continue."
           : shoeFocused ? "Red running shoe selected and centered." : ""}
       </span>
     </div>
