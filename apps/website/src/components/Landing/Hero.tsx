@@ -5,6 +5,7 @@ import Icon, { GitHubIcon } from "./Icon";
 import { CallToActionBar } from "./Sections";
 import Calculator from "./Calculator";
 import HeroTitle from "./HeroTitle";
+import ImageCard from "./ImageCard";
 import { KRITZEL_LOGO_PATH } from "./paths";
 import styles from "./styles.module.css";
 
@@ -294,7 +295,9 @@ export default function Hero({
         <div className={styles.canvasLayer}>
           <div className={styles.grassImageAnchor}>
             <DraggableCanvasItem label="wet grass image">
-              <img className={styles.grassImage} src={grassImageUrl} alt="Wet grass" draggable={false} />
+              <ImageCard>
+                <img className={styles.grassImage} src={grassImageUrl} alt="Wet grass" draggable={false} />
+              </ImageCard>
             </DraggableCanvasItem>
           </div>
           <div className={styles.calculatorAnchor}>
