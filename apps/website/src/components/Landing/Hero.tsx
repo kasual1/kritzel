@@ -154,41 +154,66 @@ const TOOLS: ReadonlyArray<{ label: string; icon: ReactNode }> = [
   },
 ];
 
-/**
- * Static mock of the Kritzel toolbar. It is purely decorative, so it is hidden
- * from assistive technology and rendered without interactive elements.
- */
 function MockToolbar() {
+  const [showNotification, setShowNotification] = useState(false);
+  const notificationTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => () => window.clearTimeout(notificationTimer.current), []);
+
+  const dismissNotification = () => {
+    window.clearTimeout(notificationTimer.current);
+    setShowNotification(false);
+  };
+
+  const openNotification = () => {
+    window.clearTimeout(notificationTimer.current);
+    setShowNotification(true);
+    notificationTimer.current = window.setTimeout(() => setShowNotification(false), 3500);
+  };
+
   return (
-    <div className={styles.toolbarDock} aria-hidden="true">
+    <div className={styles.toolbarDock}>
+      <div className={styles.toolbarNotificationRegion} role="status">
+        <div
+          className={styles.toolbarNotification}
+          data-visible={showNotification || undefined}
+          aria-hidden={!showNotification}
+          inert={!showNotification}
+        >
+          <span>Go to <Link href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer">full demo</Link></span>
+          <button type="button" aria-label="Dismiss notification" onClick={dismissNotification}>
+            <Icon size={16}><path d="m6 6 12 12M18 6 6 18" /></Icon>
+          </button>
+        </div>
+      </div>
       <div className={styles.historyTab}>
-        <span className={styles.historyButton}>
+        <button type="button" aria-label="Undo" className={styles.historyButton} onClick={openNotification}>
           <Icon size={18}>
             <path d="M9 14 4 9l5-5" />
             <path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" />
           </Icon>
-        </span>
-        <span className={styles.historyButton}>
+        </button>
+        <button type="button" aria-label="Redo" className={styles.historyButton} onClick={openNotification}>
           <Icon size={18}>
             <path d="m15 14 5-5-5-5" />
             <path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" />
           </Icon>
-        </span>
+        </button>
         <span className={styles.historyDivider} />
-        <span className={styles.historyButton} data-active="true">
+        <button type="button" aria-label="Delete" className={styles.historyButton} data-active="true" onClick={openNotification}>
           <Icon size={18}>
             <path d="M3 6h18" />
             <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
             <path d="M10 11v6M14 11v6" />
           </Icon>
-        </span>
+        </button>
       </div>
       <div className={styles.toolbar}>
         {TOOLS.map((tool, index) => (
-          <span key={tool.label} className={styles.tool} data-selected={index === 0 ? "true" : undefined}>
+          <button type="button" aria-label={tool.label} key={tool.label} className={styles.tool} data-selected={index === 0 ? "true" : undefined} onClick={openNotification}>
             <Icon size={20}>{tool.icon}</Icon>
-          </span>
+          </button>
         ))}
       </div>
     </div>

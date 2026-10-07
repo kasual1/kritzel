@@ -28,7 +28,7 @@ export function CallToActionBar({ docsPath }: { docsPath: string }) {
   return (
     <div className={styles.ctaAnchor}>
       <div className={styles.ctaBar}>
-        <Link href="https://app.kritzel.io" className={styles.ctaPrimary}>
+        <Link href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
           Demo <ArrowIcon />
         </Link>
         <Link to={docsPath} className={styles.ctaSecondary}>
