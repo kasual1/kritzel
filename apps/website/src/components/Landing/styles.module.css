@@ -263,13 +263,13 @@
   outline-offset: 6px;
 }
 
-.helloDrawing:focus-within,
+.halloDrawing:focus-within,
 .grassImageAnchor:focus-within,
 .calculatorAnchor:focus-within {
   z-index: 2;
 }
 
-.helloDrawing {
+.halloDrawing {
   position: absolute;
   z-index: 1;
   right: 4%;
@@ -278,11 +278,41 @@
   transform: rotate(-8deg);
 }
 
-.helloDrawing svg {
+.halloDrawing svg {
+  --hallo-draw-delay: 300ms;
+  --hallo-draw-duration: 1500ms;
+  --hallo-exclamation-duration: 200ms;
   display: block;
 }
 
+/* Hidden until their animation starts; the gap exceeds the path length so no zero-length dash caps render as dots. */
+.halloStroke,
+.halloExclamation,
+.halloDot {
+  visibility: hidden;
+}
+
+.halloStroke {
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1;
+  animation: landing-hallo-draw var(--hallo-draw-duration) linear var(--hallo-draw-delay) forwards;
+}
+
+.halloExclamation {
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1;
+  animation: landing-hallo-draw var(--hallo-exclamation-duration) linear
+    calc(var(--hallo-draw-delay) + var(--hallo-draw-duration)) forwards;
+}
+
+.halloDot {
+  animation: landing-hallo-show 1ms linear
+    calc(var(--hallo-draw-delay) + var(--hallo-draw-duration) + var(--hallo-exclamation-duration)) forwards;
+}
+
 .grassImageAnchor {
+  --hero-entry-offset: 100vw;
+  animation: landing-canvas-enter 1500ms cubic-bezier(0.22, 1, 0.36, 1) 300ms backwards;
   position: absolute;
   z-index: 1;
   right: calc(4% + 50px);
@@ -300,6 +330,8 @@
 }
 
 .calculatorAnchor {
+  --hero-entry-offset: -100vw;
+  animation: landing-canvas-enter 1500ms cubic-bezier(0.22, 1, 0.36, 1) 300ms backwards;
   position: absolute;
   z-index: 1;
   left: 4%;
@@ -908,6 +940,35 @@
 
 /* ---------- Keyframes ---------- */
 
+@keyframes landing-hallo-draw {
+  from {
+    visibility: visible;
+    stroke-dashoffset: 1;
+  }
+  to {
+    visibility: visible;
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes landing-hallo-show {
+  from,
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes landing-canvas-enter {
+  from {
+    translate: var(--hero-entry-offset) 0;
+    opacity: 0;
+  }
+  to {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
 @keyframes landing-caret {
   0% {
     opacity: 1;
@@ -957,9 +1018,25 @@
   }
 
   .terminalCursorBlink,
+  .calculatorAnchor,
+  .halloStroke,
+  .halloExclamation,
+  .halloDot,
+  .grassImageAnchor,
   .frameworkTileMotion,
   .faqAnswer {
     animation: none !important;
+  }
+
+  .halloStroke,
+  .halloExclamation,
+  .halloDot {
+    visibility: visible;
+  }
+
+  .halloStroke,
+  .halloExclamation {
+    stroke-dashoffset: 0 !important;
   }
 }
 
@@ -1056,7 +1133,7 @@
     width: 16cqw;
   }
 
-  .helloDrawing {
+  .halloDrawing {
     right: 4cqw;
     width: 20cqw;
   }
@@ -1163,7 +1240,7 @@
 /* ---------- Small screens ---------- */
 
 @media (max-width: 768px) {
-  .helloDrawing {
+  .halloDrawing {
     display: none;
   }
 

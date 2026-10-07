@@ -277,22 +277,42 @@ export default function Hero({
               <Calculator />
             </DraggableCanvasItem>
           </div>
-          <div className={styles.helloDrawing}>
-            <DraggableCanvasItem label="handwritten hello">
+          <div className={styles.halloDrawing}>
+            <DraggableCanvasItem label="handwritten hallo!">
               <svg aria-hidden="true" viewBox="0 0 260 120" width="100%" height="100%">
                 <path
                   d="M18 88 C27 62 49 12 38 16 C24 20 20 72 22 88
                      C31 49 52 48 49 72 C47 91 53 93 65 80
-                     C94 57 72 48 65 68 C55 97 81 99 98 77
+                     C73 52 88 51 86 69 C83 91 58 99 60 77
+                     C62 59 80 52 86 62 C84 75 78 94 90 88 C94 85 96 81 98 77
                      C112 57 132 8 117 16 C101 26 96 77 105 88 C114 100 128 88 138 70
                      C153 43 163 10 150 17 C136 25 126 78 139 89 C151 101 169 83 176 70
                      C184 52 207 53 207 72 C207 94 179 104 174 83 C170 66 183 57 194 60
-                     C207 65 215 82 239 66"
+                     C207 65 211 90 225 77"
                   fill="none"
+                  className={styles.halloStroke}
+                  pathLength={1}
                   stroke="#4a7dff"
                   strokeWidth="5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                />
+                <path
+                  d="M240 32 C239 45 237 59 236 72"
+                  fill="none"
+                  className={styles.halloExclamation}
+                  pathLength={1}
+                  stroke="#4a7dff"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M235 88 L235 90"
+                  fill="none"
+                  className={styles.halloDot}
+                  stroke="#4a7dff"
+                  strokeWidth="5"
+                  strokeLinecap="round"
                 />
               </svg>
             </DraggableCanvasItem>
