@@ -120,10 +120,12 @@ const NEXT_COMMAND = "Create 2 variants of the red running shoe";
 
 function MockChatBox({
   onSubmit,
+  onReset,
   shoeFocused,
   variantsLoading,
 }: {
   onSubmit: () => void;
+  onReset: () => void;
   shoeFocused: boolean;
   variantsLoading: boolean;
 }) {
@@ -172,12 +174,18 @@ function MockChatBox({
         <button
           type="button"
           className={styles.chatSend}
-          aria-label={shoeFocused ? "Create two shoe variants" : "Focus on the red running shoe"}
-          disabled={variantsLoading}
-          onClick={onSubmit}
+          aria-label={variantsLoading ? "Reset demo" : shoeFocused ? "Create two shoe variants" : "Focus on the red running shoe"}
+          onClick={variantsLoading ? onReset : onSubmit}
         >
           <Icon size={20}>
-            <path d="M12 19V5M6 11l6-6 6 6" />
+            {variantsLoading ? (
+              <>
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </>
+            ) : (
+              <path d="M12 19V5M6 11l6-6 6 6" />
+            )}
           </Icon>
         </button>
       </div>
@@ -192,6 +200,26 @@ export default function Hero({
   docsPath: string;
   variant?: "infinite" | "agentic";
 }) {
+  const [resetCount, setResetCount] = useState(0);
+  return (
+    <HeroScene
+      key={resetCount}
+      docsPath={docsPath}
+      variant={variant}
+      onReset={() => setResetCount((current) => current + 1)}
+    />
+  );
+}
+
+function HeroScene({
+  docsPath,
+  variant,
+  onReset,
+}: {
+  docsPath: string;
+  variant: "infinite" | "agentic";
+  onReset: () => void;
+}) {
   const navRef = useRef<HTMLElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -199,7 +227,7 @@ export default function Hero({
   const copyInnerRef = useRef<HTMLDivElement>(null);
   const shoeRef = useRef<HTMLDivElement>(null);
   const [focusRequest, setFocusRequest] = useState(0);
-  const [variantStatus, setVariantStatus] = useState<"idle" | "loading" | "ready">("idle");
+  const [variantStatus, setVariantStatus] = useState<"idle" | "left-loading" | "waiting-right" | "right-loading" | "ready">("idle");
   const [selectedImage, setSelectedImage] = useState<"shoe" | "left" | "right" | null>(null);
   const [focusLayout, setFocusLayout] = useState({ copyShift: 0, shoeTop: 0, minHeight: 520 });
   const shoeFocused = focusRequest > 0;
@@ -218,8 +246,22 @@ export default function Hero({
   }, []);
 
   useEffect(() => {
-    if (variantStatus !== "loading") return;
-    const timer = window.setTimeout(() => setVariantStatus("ready"), 800);
+    if (variantStatus !== "left-loading" && variantStatus !== "waiting-right" && variantStatus !== "right-loading") return;
+    const timer = window.setTimeout(
+      () => {
+        if (variantStatus === "left-loading") {
+          setSelectedImage((current) => current === "left" ? null : current);
+          setVariantStatus("waiting-right");
+        } else if (variantStatus === "waiting-right") {
+          setSelectedImage("right");
+          setVariantStatus("right-loading");
+        } else {
+          setSelectedImage((current) => current === "right" ? null : current);
+          setVariantStatus("ready");
+        }
+      },
+      variantStatus === "waiting-right" ? 500 : 800,
+    );
     return () => window.clearTimeout(timer);
   }, [variantStatus]);
 
@@ -351,12 +393,13 @@ export default function Hero({
                   className={selectedImage === "left" ? styles.selectedImage : undefined}
                 >
                   <ImageCard>
-                    {variantStatus === "loading" ? <div className={styles.variantSkeleton} aria-hidden="true" /> : (
+                    {variantStatus === "left-loading" ? <div className={styles.variantSkeleton} aria-hidden="true" /> : (
                       <img className={styles.variantImage} src={leftVariantUrl} alt="Red running shoe variant with a knitted ankle cuff" draggable={false} />
                     )}
                   </ImageCard>
                 </DraggableCanvasItem>
               </div>
+              {(variantStatus === "right-loading" || variantStatus === "ready") && (
               <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderRight}`}>
                 <DraggableCanvasItem
                   label="right shoe variant"
@@ -365,12 +408,13 @@ export default function Hero({
                   className={selectedImage === "right" ? styles.selectedImage : undefined}
                 >
                   <ImageCard>
-                    {variantStatus === "loading" ? <div className={styles.variantSkeleton} aria-hidden="true" /> : (
+                    {variantStatus === "right-loading" ? <div className={styles.variantSkeleton} aria-hidden="true" /> : (
                       <img className={styles.variantImage} src={rightVariantUrl} alt="Red running shoe variant with a buckle strap" draggable={false} />
                     )}
                   </ImageCard>
                 </DraggableCanvasItem>
               </div>
+              )}
             </>
           )}
           <div ref={shoeRef} className={styles.slippersImageAnchor}>
@@ -476,11 +520,13 @@ export default function Hero({
       </div>
       <div className={styles.chatViewport}>
         <MockChatBox
+          onReset={onReset}
           shoeFocused={shoeFocused}
           variantsLoading={variantStatus !== "idle"}
           onSubmit={() => {
             if (shoeFocused) {
-              setVariantStatus("loading");
+              setSelectedImage("left");
+              setVariantStatus("left-loading");
             } else {
               setSelectedImage("shoe");
               setFocusRequest((current) => current + 1);
@@ -491,8 +537,12 @@ export default function Hero({
       <span className={styles.focusAnnouncement} role="status">
         {variantStatus === "ready"
           ? "Two red running shoe variants created."
-          : variantStatus === "loading"
-          ? "Loading two red running shoe variants."
+          : variantStatus === "left-loading"
+          ? "Loading the left red running shoe variant."
+          : variantStatus === "right-loading"
+          ? "Left variant created. Loading the right red running shoe variant."
+          : variantStatus === "waiting-right"
+          ? "Left variant created. Preparing the right variant."
           : shoeFocused ? "Red running shoe selected and centered." : ""}
       </span>
     </div>
