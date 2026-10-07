@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "../Landing/Icon";
 import HeroTitle from "../Landing/HeroTitle";
+import ImageCard from "../Landing/ImageCard";
 import PieChart from "./PieChart";
 import { CallToActionBar } from "./CallToActionBar";
 import { KRITZEL_LOGO_PATH } from "../Landing/paths";
@@ -123,6 +125,7 @@ export default function Hero({
   variant?: "infinite" | "agentic";
 }) {
   const navRef = useRef<HTMLElement>(null);
+  const shoeImageUrl = useBaseUrl("/img/red_running_shoe_3.jpg");
 
   useEffect(() => {
     const nav = navRef.current;
@@ -190,6 +193,18 @@ export default function Hero({
         </div>
 
         <div className={styles.canvasLayer}>
+          <div className={styles.slippersImageAnchor}>
+            <DraggableCanvasItem label="running shoe image">
+              <ImageCard>
+                <img
+                  className={styles.slippersImage}
+                  src={shoeImageUrl}
+                  alt="Running shoe with red accents on a white background"
+                  draggable={false}
+                />
+              </ImageCard>
+            </DraggableCanvasItem>
+          </div>
           <div className={styles.pieChartAnchor}>
             <DraggableCanvasItem label="3D pie chart with 75%, 20%, and 5% slices">
               <PieChart fallback={
@@ -249,20 +264,24 @@ export default function Hero({
                 {[
                   { d: "M92 22 C128 18 155 47 157 83 C161 120 134 155 94 158 C55 163 24 134 22 95 C18 57 47 24 84 22 C88 21 94 23 99 24", delay: 300, duration: 800 },
                   { d: "M62 66 C59 73 60 81 63 84", delay: 1100, duration: 120 },
-                  { d: "M116 65 C113 72 115 79 117 82", delay: 1220, duration: 120 },
+                  { d: "M116 65 C113 72 115 79 117 82", delay: 1220, duration: 120, blink: true },
                   { d: "M51 106 C61 132 103 142 129 108", delay: 1340, duration: 350 },
                   { d: "M65 27 C57 19 54 12 58 8", delay: 1690, duration: 100 },
                   { d: "M82 22 C77 13 79 7 84 5", delay: 1790, duration: 100 },
                   { d: "M99 23 C99 14 104 8 111 9", delay: 1890, duration: 100 },
                   { d: "M115 28 C120 20 128 17 133 20", delay: 1990, duration: 100 },
-                ].map(({ d, delay, duration }) => (
-                  <path
-                    key={d}
-                    d={d}
-                    pathLength={1}
-                    className={styles.smileyStroke}
-                    style={{ animationDelay: `${delay}ms`, animationDuration: `${duration}ms` }}
-                  />
+                ].map(({ d, delay, duration, blink }) => (
+                  <g key={d}>
+                    <g className={blink ? styles.smileyOpenEye : undefined}>
+                      <path
+                        d={d}
+                        pathLength={1}
+                        className={styles.smileyStroke}
+                        style={{ animationDelay: `${delay}ms`, animationDuration: `${duration}ms` }}
+                      />
+                    </g>
+                    {blink && <path className={styles.smileyClosedEye} d="M107 76 Q116 70 125 76" />}
+                  </g>
                 ))}
               </svg>
             </DraggableCanvasItem>

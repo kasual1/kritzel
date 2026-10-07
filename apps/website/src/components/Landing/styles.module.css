@@ -326,7 +326,6 @@
   width: 100%;
   aspect-ratio: 24 / 17;
   object-fit: cover;
-  box-shadow: 0 12px 32px rgba(32, 33, 36, 0.12);
 }
 
 .calculatorAnchor {

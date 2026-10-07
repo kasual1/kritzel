@@ -229,6 +229,7 @@
 }
 
 .smileyAnchor:focus-within,
+.slippersImageAnchor:focus-within,
 .pieChartAnchor:focus-within {
   z-index: 2;
 }
@@ -245,6 +246,22 @@
 
 .pieChart {
   display: block;
+}
+
+.slippersImageAnchor {
+  position: absolute;
+  z-index: 1;
+  left: 4%;
+  top: calc(25% + 20px);
+  width: clamp(180px, 20vw, 288px);
+  transform: rotate(-5deg);
+  animation: agentic-image-enter 1500ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
+}
+
+.slippersImage {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 .smileyAnchor {
@@ -265,6 +282,37 @@
   stroke-dasharray: 1 2;
   stroke-dashoffset: 1;
   animation: agentic-smiley-draw linear forwards;
+}
+
+.smileyOpenEye {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: agentic-eye-blink 500ms ease-in-out 2090ms;
+}
+
+.smileyClosedEye {
+  opacity: 0;
+  animation: agentic-eye-wink 500ms ease-in-out 2090ms;
+}
+
+@keyframes agentic-eye-blink {
+  0%, 100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  35%, 65% {
+    transform: scaleY(0.1);
+    opacity: 0;
+  }
+}
+
+@keyframes agentic-eye-wink {
+  0%, 100% {
+    opacity: 0;
+  }
+  35%, 65% {
+    opacity: 1;
+  }
 }
 
 @keyframes agentic-smiley-draw {
@@ -1014,6 +1062,15 @@
   }
 }
 
+@keyframes agentic-image-enter {
+  from {
+    translate: -100vw 0;
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
 @keyframes agentic-chat-enter {
   from {
     translate: 0 calc(100% + var(--chat-bottom));
@@ -1024,6 +1081,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .smileyOpenEye,
+  .smileyClosedEye {
+    animation: none;
+  }
+
   .smileyStroke {
     animation: none;
     visibility: visible;
@@ -1036,6 +1098,7 @@
   }
 
   .terminalCursorBlink,
+  .slippersImageAnchor,
   .pieChart,
   .chatDock,
   .frameworkTileMotion,
@@ -1134,6 +1197,11 @@
 
   .pieChartAnchor {
     right: 4cqw;
+    width: 20cqw;
+  }
+
+  .slippersImageAnchor {
+    left: 4cqw;
     width: 20cqw;
   }
 
@@ -1317,6 +1385,13 @@
     right: 6%;
     top: auto;
     bottom: 50px;
+    width: 120px;
+  }
+
+  .slippersImageAnchor {
+    left: 6%;
+    top: auto;
+    bottom: 30px;
     width: 120px;
   }
 
