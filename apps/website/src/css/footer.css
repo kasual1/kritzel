@@ -83,7 +83,8 @@
 
 .kritzel-footer-brand__description {
   margin: 0;
-  color: #4a4a55;
+  color: #0a0a0a;
+  opacity: 1;
   line-height: 1.55;
   font-size: 0.93rem;
 }
