@@ -197,6 +197,10 @@
   outline-offset: 5px;
 }
 
+.centeringItem {
+  transition: transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .variantPlaceholder {
   position: absolute;
   top: calc(var(--focus-shoe-top) + 20px);
@@ -1251,6 +1255,7 @@
   }
 
   .heroCopy,
+  .centeringItem,
   .variantPlaceholder,
   .slippersImageAnchor {
     transition: none;
