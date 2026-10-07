@@ -150,7 +150,7 @@ const KRITZEL_ASCII = `██╗  ██╗██████╗ ██╗██
 const CLI_COMMAND = "npx kritzel init";
 
 const CLI_FRAMEWORKS = [
-  { name: "React", logo: "/img/logo-react.svg", color: "#38c6ee" },
+  { name: "React", logo: "/img/logo-react.svg", color: "#4a7dff" },
   { name: "Vue", logo: "/img/logo_vue.svg", color: "#42b883" },
   { name: "Angular", logo: "/img/logo_angular.svg", color: "#dd0031" },
 ] as const;
