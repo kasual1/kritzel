@@ -1,14 +1,21 @@
 import { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 
-const TITLE_PREFIX = "The Infinite";
 const TITLE_ACCENT = "\u00a0Canvas";
-const FIRST_LINE = TITLE_PREFIX + TITLE_ACCENT;
 const SECOND_LINE = "Development Kit";
-const CHARACTER_COUNT = FIRST_LINE.length + SECOND_LINE.length;
 
-export default function HeroTitle() {
-  const [visibleCount, setVisibleCount] = useState(CHARACTER_COUNT);
+export default function HeroTitle({
+  prefix = "The Infinite",
+  className = styles.heroTitle,
+  accentClassName = styles.heroTitleAccent,
+}: {
+  prefix?: string;
+  className?: string;
+  accentClassName?: string;
+}) {
+  const firstLine = prefix + TITLE_ACCENT;
+  const characterCount = firstLine.length + SECOND_LINE.length;
+  const [visibleCount, setVisibleCount] = useState(characterCount);
 
   useEffect(() => {
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -19,19 +26,19 @@ export default function HeroTitle() {
     const timer = window.setInterval(() => {
       count += 1;
       setVisibleCount(count);
-      if (count === CHARACTER_COUNT) window.clearInterval(timer);
+      if (count === characterCount) window.clearInterval(timer);
     }, 40);
     const finish = () => {
       if (!motionPreference.matches) return;
       window.clearInterval(timer);
-      setVisibleCount(CHARACTER_COUNT);
+      setVisibleCount(characterCount);
     };
     motionPreference.addEventListener("change", finish);
     return () => {
       window.clearInterval(timer);
       motionPreference.removeEventListener("change", finish);
     };
-  }, []);
+  }, [characterCount]);
 
   const character = (letter: string, index: number) => (
     <span
@@ -50,16 +57,16 @@ export default function HeroTitle() {
   );
 
   return (
-    <h1 className={styles.heroTitle} aria-label="The Infinite Canvas Development Kit">
+    <h1 className={className} aria-label={`${prefix} Canvas ${SECOND_LINE}`}>
       <span aria-hidden="true">
         <span className={styles.heroTitleLine}>
-          {Array.from(TITLE_PREFIX).map((letter, index) => character(letter, index))}
-          <span className={styles.heroTitleAccent}>
-            {Array.from(TITLE_ACCENT).map((letter, index) => character(letter, index + TITLE_PREFIX.length))}
+          {Array.from(prefix).map((letter, index) => character(letter, index))}
+          <span className={accentClassName}>
+            {Array.from(TITLE_ACCENT).map((letter, index) => character(letter, index + prefix.length))}
           </span>
         </span>
         <span className={styles.heroTitleLine}>
-          {Array.from(SECOND_LINE).map((letter, index) => character(letter, index + FIRST_LINE.length))}
+          {Array.from(SECOND_LINE).map((letter, index) => character(letter, index + firstLine.length))}
         </span>
       </span>
     </h1>

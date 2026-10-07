@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Icon, { GitHubIcon } from "../Landing/Icon";
+import HeroTitle from "../Landing/HeroTitle";
 import { CallToActionBar } from "./CallToActionBar";
 import { KRITZEL_LOGO_PATH } from "../Landing/paths";
 import styles from "./styles.module.css";
@@ -252,11 +253,11 @@ export default function Hero({
                 Agentic
               </Link>
             </nav>
-            <h1 className={styles.heroTitle}>
-              The Agentic<span className={styles.heroTitleAccent}>&nbsp;Canvas</span>
-              <br />
-              Development Kit
-            </h1>
+            <HeroTitle
+              prefix="The Agentic"
+              className={styles.heroTitle}
+              accentClassName={styles.heroTitleAccent}
+            />
             <p className={styles.heroSubtitle}>
               Kritzel is a framework-agnostic infinite canvas library that helps you build agentic whiteboard
               experiences with React, Vue and Angular.
@@ -285,7 +286,9 @@ export default function Hero({
           ))}
         </div>
       </div>
-      <MockChatBox />
+      <div className={styles.chatViewport}>
+        <MockChatBox />
+      </div>
     </div>
   );
 }
