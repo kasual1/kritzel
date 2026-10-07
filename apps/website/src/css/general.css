@@ -48,6 +48,12 @@ nav[aria-label="Breadcrumbs"] {
   color: inherit;
 }
 
+html:not(.plugin-docs)::selection,
+html:not(.plugin-docs) ::selection {
+  background-color: #4a7dff;
+  color: #ffffff;
+}
+
 article a[aria-label^="Read more about "] {
   font-size: 0.93rem;
 }
