@@ -338,14 +338,16 @@
   top: 25%;
   width: clamp(150px, 16vw, 230px);
   transform: rotate(-5deg);
+  container-type: inline-size;
 }
 
+/* Inner sizes are cqw fractions of the 230px design width so the calculator scales proportionally. */
 .calculator {
   display: grid;
-  gap: 8px;
-  padding: 14px;
+  gap: 3.478cqw;
+  padding: 6.087cqw;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 5.217cqw;
   box-shadow: 0 12px 32px rgba(32, 33, 36, 0.12);
   background: #ffffff;
   color: #202124;
@@ -356,7 +358,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: 6.087cqw;
   font-weight: 700;
 }
 
@@ -366,11 +368,11 @@
 
 .calculatorDisplay {
   display: block;
-  padding: 6px 10px;
+  padding: 2.609cqw 4.348cqw;
   border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border-radius: 2.609cqw;
   background: #fafafa;
-  font-size: 24px;
+  font-size: 10.435cqw;
   font-weight: 700;
   text-align: right;
   overflow-wrap: anywhere;
@@ -379,19 +381,19 @@
 .calculatorKeypad {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-rows: repeat(5, 30px);
-  gap: 6px;
+  grid-template-rows: repeat(5, 13.043cqw);
+  gap: 2.609cqw;
 }
 
 .calculatorKeypad button {
   min-width: 0;
   padding: 0;
   border: 1px solid #dadce0;
-  border-radius: 6px;
+  border-radius: 2.609cqw;
   background: #ffffff;
   color: #202124;
   font: inherit;
-  font-size: 13px;
+  font-size: 5.652cqw;
   font-weight: 600;
   cursor: pointer;
 }
