@@ -459,6 +459,58 @@
   background: #ececef;
 }
 
+.toolbarNotificationRegion {
+  position: absolute;
+  bottom: calc(100% + 24px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.toolbarNotification {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(20, 18, 31, 0.06);
+  font-size: 14px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 180ms ease, visibility 0s 180ms;
+}
+
+.toolbarNotification[data-visible] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+
+.toolbarNotification button {
+  display: flex;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--landing-ink);
+}
+
+.page .toolbarNotification a,
+.page .toolbarNotification a:hover {
+  color: #007aff;
+  text-decoration: underline;
+}
+
+.tool:focus-visible,
+.historyButton:focus-visible,
+.toolbarNotification button:focus-visible {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}
+
 .historyButton {
   display: flex;
   align-items: center;
@@ -466,10 +518,16 @@
   width: 40px;
   height: 36px;
   color: #a1a1aa;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
 }
 
 .historyButton[data-active] {
   color: var(--landing-ink);
+  pointer-events: auto;
+  cursor: var(--kritzel-site-pointer-cursor);
 }
 
 .historyDivider {
@@ -497,12 +555,25 @@
   height: 48px;
   border-radius: 10px;
   color: var(--landing-ink);
+  pointer-events: auto;
+  cursor: var(--kritzel-site-pointer-cursor);
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.tool:hover {
+  background: #ececef;
 }
 
 .tool[data-selected] {
   border-radius: 14px;
   background: var(--landing-ink);
   color: #ffffff;
+}
+
+.tool[data-selected]:hover {
+  background: #444444;
 }
 
 /* ---------- Call to action bar ---------- */
@@ -1034,6 +1105,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .wordmarkLetter,
+  .toolbarNotification,
   .faqIcon {
     transition: none;
   }
