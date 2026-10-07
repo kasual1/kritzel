@@ -228,27 +228,9 @@
   outline-offset: 6px;
 }
 
-.photoParabola:focus-within,
-.pieChartAnchor:focus-within,
-.photoCube:focus-within {
+.smileyAnchor:focus-within,
+.pieChartAnchor:focus-within {
   z-index: 2;
-}
-
-.photoParabola,
-.photoCube {
-  position: absolute;
-  z-index: 1;
-  width: clamp(150px, 16vw, 230px);
-}
-
-.photoParabola {
-  left: 4%;
-  top: 25%;
-}
-
-.photoCube {
-  right: calc(4% + 50px);
-  top: 60%;
 }
 
 .pieChartAnchor {
@@ -263,6 +245,37 @@
 
 .pieChart {
   display: block;
+}
+
+.smileyAnchor {
+  position: absolute;
+  z-index: 1;
+  right: calc(4% + 50px);
+  top: 60%;
+  width: clamp(140px, 14vw, 202px);
+  transform: rotate(8deg);
+}
+
+.smiley {
+  display: block;
+}
+
+.smileyStroke {
+  visibility: hidden;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1;
+  animation: agentic-smiley-draw linear forwards;
+}
+
+@keyframes agentic-smiley-draw {
+  from {
+    visibility: visible;
+    stroke-dashoffset: 1;
+  }
+  to {
+    visibility: visible;
+    stroke-dashoffset: 0;
+  }
 }
 
 .pieChartScene {
@@ -280,39 +293,6 @@
   display: block;
   width: 100%;
   height: 100%;
-}
-
-.photoFrame {
-  transform: rotate(var(--photo-rotate, 0deg));
-  padding: 8px 8px 28px;
-  border-radius: 6px;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(20, 18, 31, 0.08), 0 18px 36px -14px rgba(20, 18, 31, 0.35);
-}
-
-.photoImage {
-  aspect-ratio: 24 / 17;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.photoImage svg {
-  display: block;
-}
-
-.noteCube,
-.noteEquation {
-  margin-top: 24px;
-  font-family: var(--landing-hand) !important;
-  font-size: clamp(22px, 2vw, 28px);
-  font-weight: 500;
-  line-height: 1.15;
-  color: #1f2937;
-}
-
-.noteEquation {
-  margin-top: 36px;
-  margin-left: 12px;
 }
 
 .caret {
@@ -1044,6 +1024,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .smileyStroke {
+    animation: none;
+    visibility: visible;
+    stroke-dashoffset: 0;
+  }
+
   .wordmarkLetter,
   .faqIcon {
     transition: none;
@@ -1146,43 +1132,14 @@
     font-size: 1.319cqw;
   }
 
-  .photoParabola,
-  .photoCube {
-    width: 14cqw;
-  }
-
-  .photoParabola {
-    left: 4cqw;
-  }
-
   .pieChartAnchor {
     right: 4cqw;
     width: 20cqw;
   }
 
-  .photoFrame {
-    padding: 0.556cqw 0.556cqw 1.944cqw;
-    border-radius: 0.417cqw;
-  }
-
-  .photoCube {
+  .smileyAnchor {
     right: calc(4cqw + 50px);
-    top: 60%;
-  }
-
-  .photoImage {
-    border-radius: 0.208cqw;
-  }
-
-  .noteCube,
-  .noteEquation {
-    margin-top: 1.667cqw;
-    font-size: 1.944cqw;
-  }
-
-  .noteEquation {
-    margin-top: 2.5cqw;
-    margin-left: 0.833cqw;
+    width: 14cqw;
   }
 
   .caret {
@@ -1321,15 +1278,6 @@
     display: none;
   }
 
-  .noteCube {
-    display: none;
-  }
-
-  .photoCube {
-    left: auto;
-    right: 6%;
-    top: 62%;
-  }
 }
 
 @media (max-width: 768px) {
@@ -1365,25 +1313,11 @@
     padding: 100px 16px 210px;
   }
 
-  .photoParabola,
-  .photoCube {
-    width: 120px;
-  }
-
-  .photoParabola {
-    left: 17%;
-    top: auto;
-    bottom: 50px;
-  }
-
-  .photoCube {
+  .smileyAnchor {
     right: 6%;
     top: auto;
     bottom: 50px;
-  }
-
-  .noteEquation {
-    display: none;
+    width: 120px;
   }
 
   .toolbar {

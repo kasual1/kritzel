@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import Icon, { GitHubIcon } from "../Landing/Icon";
 import HeroTitle from "../Landing/HeroTitle";
@@ -6,9 +6,6 @@ import PieChart from "./PieChart";
 import { CallToActionBar } from "./CallToActionBar";
 import { KRITZEL_LOGO_PATH } from "../Landing/paths";
 import styles from "./styles.module.css";
-
-const GRID_X = [20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220];
-const GRID_Y = [10, 30, 50, 70, 90, 110, 130, 150];
 
 function DraggableCanvasItem({
   children,
@@ -103,69 +100,11 @@ function DraggableCanvasItem({
   );
 }
 
-function PhotoGrid({ stroke }: { stroke: string }) {
-  return (
-    <g stroke={stroke} strokeWidth="1">
-      {GRID_X.map((x) => (
-        <path key={`x${x}`} d={`M${x} 0V170`} />
-      ))}
-      {GRID_Y.map((y) => (
-        <path key={`y${y}`} d={`M0 ${y}H240`} />
-      ))}
-    </g>
-  );
-}
-
-/** Hand-drawn style sketches shown as "photos" placed on the mock canvas. */
-const PHOTOS: ReadonlyArray<{
-  className: string;
-  rotate: number;
-  art: ReactNode;
-  note: { className: string; text: string; caret: string };
-}> = [
-  {
-    className: styles.photoParabola,
-    rotate: -5,
-    note: { className: styles.noteEquation, text: "f(x) = −x² + 4x", caret: "#4a7dff" },
-    art: (
-      <>
-        <rect width="240" height="170" fill="#ffc7a8" />
-        <PhotoGrid stroke="#ffb48f" />
-        <path d="M20 130 H224 M40 154 V16" stroke="#3a3160" strokeWidth="2.5" strokeLinecap="round" />
-        <path d="M60 150 Q120 -10 180 150" fill="none" stroke="#e2603a" strokeWidth="4" strokeLinecap="round" />
-        <path d="M120 70 V130" stroke="#3a3160" strokeWidth="1.5" strokeDasharray="4 4" />
-        <circle cx="120" cy="70" r="6" fill="#ffffff" stroke="#3a3160" strokeWidth="3" />
-        <circle cx="68" cy="130" r="4.5" fill="#3a3160" />
-        <circle cx="172" cy="130" r="4.5" fill="#3a3160" />
-      </>
-    ),
-  },
-  {
-    className: styles.photoCube,
-    rotate: -3,
-    note: { className: styles.noteCube, text: "a cube has 6 faces and 12 edges", caret: "#8b5cf6" },
-    art: (
-      <>
-        <rect width="240" height="170" fill="#a8d9b4" />
-        <PhotoGrid stroke="#8cc49a" />
-        <path d="M80 48 L124 70 L124 122 L80 100 Z" fill="#5a9c6b" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M124 70 L168 48 L168 100 L124 122 Z" fill="#2c6a45" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M80 48 L124 26 L168 48 L124 70 Z" fill="#cfeedd" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M80 100 L124 78 L168 100" fill="none" stroke="#1f5636" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.6" />
-        <path d="M186 142 L204 96 L226 142 Z" fill="#5a9c6b" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M204 96 L212 142" stroke="#1f5636" strokeWidth="2" />
-        <ellipse cx="44" cy="132" rx="22" ry="8" fill="#cfeedd" stroke="#1f5636" strokeWidth="3" />
-        <path d="M22 132 L44 90 L66 132" fill="none" stroke="#1f5636" strokeWidth="3" strokeLinejoin="round" />
-      </>
-    ),
-  },
-];
-
 function MockChatBox() {
   return (
     <div className={styles.chatDock} aria-hidden="true">
       <div className={styles.chatBox}>
-        <span className={styles.chatMessage}>Lets look at the image at the bottom right</span>
+        <span className={styles.chatMessage}>Lets look at the pie chart at the top right</span>
         <span className={styles.chatSend}>
           <Icon size={20}>
             <path d="M12 19V5M6 11l6-6 6 6" />
@@ -294,23 +233,40 @@ export default function Hero({
               } />
             </DraggableCanvasItem>
           </div>
-          {PHOTOS.map((photo) => (
-            <div key={photo.className} className={photo.className}>
-              <DraggableCanvasItem label={`${photo.note.text} image`}>
-                <div className={styles.photoFrame} style={{ "--photo-rotate": `${photo.rotate}deg` } as CSSProperties}>
-                <div className={styles.photoImage}>
-                  <svg aria-hidden="true" viewBox="0 0 240 170" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
-                    {photo.art}
-                  </svg>
-                </div>
-                </div>
-              </DraggableCanvasItem>
-              <DraggableCanvasItem className={photo.note.className} label={photo.note.text}>
-                {photo.note.text}
-                <span aria-hidden="true" className={styles.caret} style={{ background: photo.note.caret }} />
-              </DraggableCanvasItem>
-            </div>
-          ))}
+          <div className={styles.smileyAnchor}>
+            <DraggableCanvasItem label="hand-drawn smiley face">
+              <svg
+                className={styles.smiley}
+                aria-hidden="true"
+                viewBox="0 0 180 180"
+                width="100%"
+                fill="none"
+                stroke="#42b883"
+                strokeWidth="5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {[
+                  { d: "M92 22 C128 18 155 47 157 83 C161 120 134 155 94 158 C55 163 24 134 22 95 C18 57 47 24 84 22 C88 21 94 23 99 24", delay: 300, duration: 800 },
+                  { d: "M62 66 C59 73 60 81 63 84", delay: 1100, duration: 120 },
+                  { d: "M116 65 C113 72 115 79 117 82", delay: 1220, duration: 120 },
+                  { d: "M51 106 C61 132 103 142 129 108", delay: 1340, duration: 350 },
+                  { d: "M65 27 C57 19 54 12 58 8", delay: 1690, duration: 100 },
+                  { d: "M82 22 C77 13 79 7 84 5", delay: 1790, duration: 100 },
+                  { d: "M99 23 C99 14 104 8 111 9", delay: 1890, duration: 100 },
+                  { d: "M115 28 C120 20 128 17 133 20", delay: 1990, duration: 100 },
+                ].map(({ d, delay, duration }) => (
+                  <path
+                    key={d}
+                    d={d}
+                    pathLength={1}
+                    className={styles.smileyStroke}
+                    style={{ animationDelay: `${delay}ms`, animationDuration: `${duration}ms` }}
+                  />
+                ))}
+              </svg>
+            </DraggableCanvasItem>
+          </div>
         </div>
       </div>
       <div className={styles.chatViewport}>
