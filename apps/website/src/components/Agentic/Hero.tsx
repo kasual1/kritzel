@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 
 import Link from "@docusaurus/Link";
 import Icon, { GitHubIcon } from "../Landing/Icon";
 import HeroTitle from "../Landing/HeroTitle";
+import PieChart from "./PieChart";
 import { CallToActionBar } from "./CallToActionBar";
 import { KRITZEL_LOGO_PATH } from "../Landing/paths";
 import styles from "./styles.module.css";
@@ -140,23 +141,6 @@ const PHOTOS: ReadonlyArray<{
     ),
   },
   {
-    className: styles.photoShapes,
-    rotate: 5,
-    note: { className: styles.noteVertex, text: "the vertex is the highest point, at x = 2!", caret: "#f97316" },
-    art: (
-      <>
-        <rect width="240" height="170" fill="#9fd3ff" />
-        <PhotoGrid stroke="#84c3f2" />
-        <circle cx="92" cy="86" r="44" fill="#4c9bd6" opacity="0.85" />
-        <rect x="108" y="44" width="78" height="78" fill="#e3f3ff" opacity="0.85" stroke="#1f4d7a" strokeWidth="3" />
-        <circle cx="92" cy="86" r="44" fill="none" stroke="#1f4d7a" strokeWidth="3" />
-        <path d="M150 140 L190 66 L226 140 Z" fill="#3f6283" opacity="0.9" stroke="#1f4d7a" strokeWidth="3" strokeLinejoin="round" />
-        <path d="M92 86 L136 86" stroke="#1f4d7a" strokeWidth="2" strokeDasharray="4 4" />
-        <circle cx="92" cy="86" r="3.5" fill="#1f4d7a" />
-      </>
-    ),
-  },
-  {
     className: styles.photoCube,
     rotate: -3,
     note: { className: styles.noteCube, text: "a cube has 6 faces and 12 edges", caret: "#8b5cf6" },
@@ -267,6 +251,49 @@ export default function Hero({
         </div>
 
         <div className={styles.canvasLayer}>
+          <div className={styles.pieChartAnchor}>
+            <DraggableCanvasItem label="3D pie chart with 75%, 20%, and 5% slices">
+              <PieChart fallback={
+              <svg aria-hidden="true" className={styles.pieChart} viewBox="0 0 260 180" width="100%">
+                <g transform="rotate(-12 130 90)">
+                  <path
+                    d="M34 78 A96 45 0 0 0 226 78 L226 100 A96 45 0 0 1 34 100 Z"
+                    fill="#3157b8"
+                  />
+                  <path
+                    d="M226 78 A96 45 0 0 1 130 123 L130 145 A96 45 0 0 0 226 100 Z"
+                    fill="#7398f0"
+                  />
+                  <path
+                    d="M226 78 A96 45 0 0 1 221.301 91.906 L221.301 113.906 A96 45 0 0 0 226 100 Z"
+                    fill="#5276cf"
+                  />
+                  <path
+                    d="M130 78 L226 78 A96 45 0 1 0 130 123 Z"
+                    fill="#4a7dff"
+                    stroke="#3157b8"
+                    strokeWidth="1"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M130 78 L221.301 91.906 A96 45 0 0 1 130 123 Z"
+                    fill="#a3bcff"
+                    stroke="#7398f0"
+                    strokeWidth="1"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M130 78 L226 78 A96 45 0 0 1 221.301 91.906 Z"
+                    fill="#7398f0"
+                    stroke="#5276cf"
+                    strokeWidth="1"
+                    strokeLinejoin="round"
+                  />
+                </g>
+              </svg>
+              } />
+            </DraggableCanvasItem>
+          </div>
           {PHOTOS.map((photo) => (
             <div key={photo.className} className={photo.className}>
               <DraggableCanvasItem label={`${photo.note.text} image`}>
