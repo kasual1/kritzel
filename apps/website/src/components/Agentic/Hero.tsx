@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "../Landing/Icon";
@@ -13,10 +13,14 @@ function DraggableCanvasItem({
   children,
   className,
   label,
+  selected,
+  onSelect,
 }: {
   children: ReactNode;
   className?: string;
   label: string;
+  selected?: boolean;
+  onSelect?: () => void;
 }) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
@@ -35,14 +39,17 @@ function DraggableCanvasItem({
       role="button"
       tabIndex={0}
       aria-label={`Move ${label}`}
+      aria-pressed={selected}
       aria-description="Drag to move, or use arrow keys. Hold Shift for larger steps."
       data-dragging={dragging || undefined}
       style={{ transform: `translate(${offset.x * 100}%, ${offset.y * 100}%)` }}
+      onClick={onSelect}
       onPointerDown={(event) => {
         if (event.button !== 0 || dragRef.current) {
           return;
         }
         event.preventDefault();
+        onSelect?.();
         event.currentTarget.focus({ preventScroll: true });
         const { width, height } = event.currentTarget.getBoundingClientRect();
         dragRef.current = {
@@ -78,6 +85,11 @@ function DraggableCanvasItem({
         setDragging(false);
       }}
       onKeyDown={(event) => {
+        if (onSelect && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          onSelect();
+          return;
+        }
         const directions: Record<string, { x: number; y: number }> = {
           ArrowLeft: { x: -1, y: 0 },
           ArrowRight: { x: 1, y: 0 },
@@ -89,6 +101,7 @@ function DraggableCanvasItem({
           return;
         }
         event.preventDefault();
+        onSelect?.();
         const { width, height } = event.currentTarget.getBoundingClientRect();
         const step = event.shiftKey ? 20 : 5;
         setOffset((current) => ({
@@ -102,16 +115,71 @@ function DraggableCanvasItem({
   );
 }
 
-function MockChatBox() {
+const INITIAL_COMMAND = "Lets focus on the image with the red running shoe";
+const NEXT_COMMAND = "Create 2 variants of the red running shoe";
+
+function MockChatBox({
+  onSubmit,
+  shoeFocused,
+  variantsLoading,
+}: {
+  onSubmit: () => void;
+  shoeFocused: boolean;
+  variantsLoading: boolean;
+}) {
+  const [visibleCount, setVisibleCount] = useState(0);
+
+  useEffect(() => {
+    if (!shoeFocused) {
+      return;
+    }
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (motionPreference.matches) {
+      setVisibleCount(NEXT_COMMAND.length);
+      return;
+    }
+    setVisibleCount(0);
+    let count = 0;
+    const timer = window.setInterval(() => {
+      count += 1;
+      setVisibleCount(count);
+      if (count === NEXT_COMMAND.length) window.clearInterval(timer);
+    }, 40);
+    const finish = () => {
+      if (!motionPreference.matches) return;
+      window.clearInterval(timer);
+      setVisibleCount(NEXT_COMMAND.length);
+    };
+    motionPreference.addEventListener("change", finish);
+    return () => {
+      window.clearInterval(timer);
+      motionPreference.removeEventListener("change", finish);
+    };
+  }, [shoeFocused]);
+
+  const command = shoeFocused ? NEXT_COMMAND : INITIAL_COMMAND;
+
   return (
-    <div className={styles.chatDock} aria-hidden="true">
+    <div className={styles.chatDock}>
       <div className={styles.chatBox}>
-        <span className={styles.chatMessage}>Lets look at the pie chart at the top right</span>
-        <span className={styles.chatSend}>
+        <span className={styles.chatMessage} aria-label={command}>
+          <span className={styles.chatMessageSizer} aria-hidden="true">{command}</span>
+          <span className={styles.chatMessageText} aria-hidden="true">
+            {shoeFocused ? NEXT_COMMAND.slice(0, visibleCount) : INITIAL_COMMAND}
+            {shoeFocused && visibleCount < NEXT_COMMAND.length && <span className={styles.chatTypingCursor} />}
+          </span>
+        </span>
+        <button
+          type="button"
+          className={styles.chatSend}
+          aria-label={shoeFocused ? "Create two shoe variants" : "Focus on the red running shoe"}
+          disabled={variantsLoading}
+          onClick={onSubmit}
+        >
           <Icon size={20}>
             <path d="M12 19V5M6 11l6-6 6 6" />
           </Icon>
-        </span>
+        </button>
       </div>
     </div>
   );
@@ -125,7 +193,73 @@ export default function Hero({
   variant?: "infinite" | "agentic";
 }) {
   const navRef = useRef<HTMLElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
+  const copyInnerRef = useRef<HTMLDivElement>(null);
+  const shoeRef = useRef<HTMLDivElement>(null);
+  const [focusRequest, setFocusRequest] = useState(0);
+  const [variantStatus, setVariantStatus] = useState<"idle" | "loading" | "ready">("idle");
+  const [selectedImage, setSelectedImage] = useState<"shoe" | "left" | "right" | null>(null);
+  const [focusLayout, setFocusLayout] = useState({ copyShift: 0, shoeTop: 0, minHeight: 520 });
+  const shoeFocused = focusRequest > 0;
   const shoeImageUrl = useBaseUrl("/img/red_running_shoe_3.jpg");
+  const leftVariantUrl = useBaseUrl("/img/red_running_shoe_variant_1.jpg");
+  const rightVariantUrl = useBaseUrl("/img/red_running_shoe_variant_2.jpg");
+
+  useEffect(() => {
+    const deselectOutsideHero = (event: PointerEvent) => {
+      if (event.target instanceof Node && !wrapperRef.current?.contains(event.target)) {
+        setSelectedImage(null);
+      }
+    };
+    document.addEventListener("pointerdown", deselectOutsideHero);
+    return () => document.removeEventListener("pointerdown", deselectOutsideHero);
+  }, []);
+
+  useEffect(() => {
+    if (variantStatus !== "loading") return;
+    const timer = window.setTimeout(() => setVariantStatus("ready"), 800);
+    return () => window.clearTimeout(timer);
+  }, [variantStatus]);
+
+  useLayoutEffect(() => {
+    if (!shoeFocused) {
+      return;
+    }
+    const wrapper = wrapperRef.current;
+    const canvas = canvasRef.current;
+    const copy = copyRef.current;
+    const inner = copyInnerRef.current;
+    const shoe = shoeRef.current;
+    const nav = navRef.current;
+    const chat = wrapper?.querySelector<HTMLElement>(`.${styles.chatDock}`);
+    const toggle = inner?.querySelector<HTMLElement>(`.${styles.canvasToggle}`);
+    if (!canvas || !copy || !inner || !shoe || !nav || !chat || !toggle) {
+      return;
+    }
+    const updateLayout = () => {
+      const copyTop = copy.offsetTop + inner.offsetTop;
+      const toggleGap = parseFloat(getComputedStyle(toggle).bottom) - inner.offsetHeight;
+      const raisedTop = nav.offsetTop + nav.offsetHeight + toggle.offsetHeight + toggleGap + 16;
+      const copyShift = copyTop - raisedTop;
+      const availableTop = copyTop - copyShift + inner.offsetHeight + 24;
+      const chatTop = canvas.clientHeight - parseFloat(getComputedStyle(chat).bottom) - chat.offsetHeight * 0.85;
+      const availableBottom = chatTop - 24;
+      const halfShoeHeight = shoe.offsetHeight / 2;
+      const minHeight = availableTop + shoe.offsetHeight + 24
+        + chat.offsetHeight * 0.85 + parseFloat(getComputedStyle(chat).bottom);
+      const shoeTop = Math.max(
+        availableTop + halfShoeHeight,
+        Math.min(canvas.clientHeight / 2, availableBottom - halfShoeHeight),
+      );
+      setFocusLayout({ copyShift, shoeTop, minHeight });
+    };
+    updateLayout();
+    const observer = new ResizeObserver(updateLayout);
+    [canvas, inner, shoe, nav, chat, toggle].forEach((element) => observer.observe(element));
+    return () => observer.disconnect();
+  }, [shoeFocused, focusRequest]);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -146,8 +280,22 @@ export default function Hero({
   }, []);
 
   return (
-    <div className={styles.heroWrapper}>
-      <div className={styles.heroCanvas}>
+    <div
+      ref={wrapperRef}
+      onPointerDownCapture={() => setSelectedImage(null)}
+      onClickCapture={(event) => {
+        if (event.target instanceof Element && !event.target.closest(`.${styles.draggableItem}`)) {
+          setSelectedImage(null);
+        }
+      }}
+      className={`${styles.heroWrapper} ${shoeFocused ? styles.heroFocused : ""}`}
+      style={{
+        "--focus-copy-shift": `${focusLayout.copyShift}px`,
+        "--focus-shoe-top": `${focusLayout.shoeTop}px`,
+        "--focus-min-height": `${focusLayout.minHeight}px`,
+      } as CSSProperties}
+    >
+      <div ref={canvasRef} className={styles.heroCanvas}>
         <Link to="/" className={styles.brand}>
           <svg width="40" height="35" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
             <path fill="currentColor" d={KRITZEL_LOGO_PATH} />
@@ -169,8 +317,8 @@ export default function Hero({
           </Link>
         </nav>
 
-        <div className={styles.heroCopy}>
-          <div className={styles.heroCopyInner}>
+        <div ref={copyRef} className={styles.heroCopy}>
+          <div ref={copyInnerRef} className={styles.heroCopyInner}>
             <nav className={styles.canvasToggle} aria-label="Canvas experience">
               <Link to="/" aria-current={variant === "infinite" ? "page" : undefined}>
                 Infinite
@@ -184,7 +332,7 @@ export default function Hero({
               className={styles.heroTitle}
               accentClassName={styles.heroTitleAccent}
             />
-            <p className={styles.heroSubtitle}>
+            <p className={styles.heroSubtitle} hidden={shoeFocused}>
               Kritzel is a framework-agnostic infinite canvas library that helps you build agentic whiteboard
               experiences with React, Vue and Angular.
             </p>
@@ -193,8 +341,46 @@ export default function Hero({
         </div>
 
         <div className={styles.canvasLayer}>
-          <div className={styles.slippersImageAnchor}>
-            <DraggableCanvasItem label="running shoe image">
+          {variantStatus !== "idle" && (
+            <>
+              <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderLeft}`}>
+                <DraggableCanvasItem
+                  label="left shoe variant"
+                  selected={selectedImage === "left"}
+                  onSelect={() => setSelectedImage("left")}
+                  className={selectedImage === "left" ? styles.selectedImage : undefined}
+                >
+                  <ImageCard>
+                    {variantStatus === "loading" ? <div className={styles.variantSkeleton} aria-hidden="true" /> : (
+                      <img className={styles.variantImage} src={leftVariantUrl} alt="Red running shoe variant with a knitted ankle cuff" draggable={false} />
+                    )}
+                  </ImageCard>
+                </DraggableCanvasItem>
+              </div>
+              <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderRight}`}>
+                <DraggableCanvasItem
+                  label="right shoe variant"
+                  selected={selectedImage === "right"}
+                  onSelect={() => setSelectedImage("right")}
+                  className={selectedImage === "right" ? styles.selectedImage : undefined}
+                >
+                  <ImageCard>
+                    {variantStatus === "loading" ? <div className={styles.variantSkeleton} aria-hidden="true" /> : (
+                      <img className={styles.variantImage} src={rightVariantUrl} alt="Red running shoe variant with a buckle strap" draggable={false} />
+                    )}
+                  </ImageCard>
+                </DraggableCanvasItem>
+              </div>
+            </>
+          )}
+          <div ref={shoeRef} className={styles.slippersImageAnchor}>
+            <DraggableCanvasItem
+              key={focusRequest}
+              label="running shoe image"
+              selected={selectedImage === "shoe"}
+              onSelect={() => setSelectedImage("shoe")}
+              className={selectedImage === "shoe" ? styles.selectedImage : undefined}
+            >
               <ImageCard>
                 <img
                   className={styles.slippersImage}
@@ -205,7 +391,7 @@ export default function Hero({
               </ImageCard>
             </DraggableCanvasItem>
           </div>
-          <div className={styles.pieChartAnchor}>
+          <div className={styles.pieChartAnchor} inert={shoeFocused} aria-hidden={shoeFocused}>
             <DraggableCanvasItem label="3D pie chart with 75%, 20%, and 5% slices">
               <PieChart fallback={
               <svg aria-hidden="true" className={styles.pieChart} viewBox="0 0 260 180" width="100%">
@@ -248,7 +434,7 @@ export default function Hero({
               } />
             </DraggableCanvasItem>
           </div>
-          <div className={styles.smileyAnchor}>
+          <div className={styles.smileyAnchor} inert={shoeFocused} aria-hidden={shoeFocused}>
             <DraggableCanvasItem label="hand-drawn smiley face">
               <svg
                 className={styles.smiley}
@@ -289,8 +475,26 @@ export default function Hero({
         </div>
       </div>
       <div className={styles.chatViewport}>
-        <MockChatBox />
+        <MockChatBox
+          shoeFocused={shoeFocused}
+          variantsLoading={variantStatus !== "idle"}
+          onSubmit={() => {
+            if (shoeFocused) {
+              setVariantStatus("loading");
+            } else {
+              setSelectedImage("shoe");
+              setFocusRequest((current) => current + 1);
+            }
+          }}
+        />
       </div>
+      <span className={styles.focusAnnouncement} role="status">
+        {variantStatus === "ready"
+          ? "Two red running shoe variants created."
+          : variantStatus === "loading"
+          ? "Loading two red running shoe variants."
+          : shoeFocused ? "Red running shoe selected and centered." : ""}
+      </span>
     </div>
   );
 }
