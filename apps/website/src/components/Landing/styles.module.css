@@ -429,12 +429,22 @@
 
 /* ---------- Mock toolbar ---------- */
 
+.toolbarViewport {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .toolbarDock {
+  --toolbar-bottom: 24px;
   position: absolute;
   left: 50%;
-  bottom: -48px;
+  bottom: var(--toolbar-bottom);
   z-index: 2;
   transform: translateX(-50%);
+  animation: landing-toolbar-enter 600ms cubic-bezier(0.22, 1, 0.36, 1) 300ms backwards;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -971,6 +981,15 @@
   }
 }
 
+@keyframes landing-toolbar-enter {
+  from {
+    translate: 0 calc(100% + var(--toolbar-bottom));
+  }
+  to {
+    translate: 0 0;
+  }
+}
+
 @keyframes landing-caret {
   0% {
     opacity: 1;
@@ -1020,6 +1039,7 @@
   }
 
   .terminalCursorBlink,
+  .toolbarDock,
   .calculatorAnchor,
   .halloStroke,
   .halloExclamation,
@@ -1146,7 +1166,7 @@
   }
 
   .toolbarDock {
-    bottom: 1.667cqw;
+    --toolbar-bottom: 1.667cqw;
   }
 
   .heroSpacer {

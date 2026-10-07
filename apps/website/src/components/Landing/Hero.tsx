@@ -319,7 +319,9 @@ export default function Hero({
           </div>
         </div>
       </div>
-      <MockToolbar />
+      <div className={styles.toolbarViewport}>
+        <MockToolbar />
+      </div>
     </div>
   );
 }
