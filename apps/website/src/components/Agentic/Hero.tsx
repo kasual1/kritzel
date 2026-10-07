@@ -15,15 +15,18 @@ function DraggableCanvasItem({
   label,
   selected,
   onSelect,
+  resetOffset = false,
 }: {
   children: ReactNode;
   className?: string;
   label: string;
   selected?: boolean;
   onSelect?: () => void;
+  resetOffset?: boolean;
 }) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
+  const [centering, setCentering] = useState(false);
   const dragRef = useRef<{
     pointerId: number;
     x: number;
@@ -33,9 +36,19 @@ function DraggableCanvasItem({
     height: number;
   } | null>(null);
 
+  useLayoutEffect(() => {
+    if (!resetOffset) return;
+    const animate = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setCentering(animate);
+    setOffset({ x: 0, y: 0 });
+    if (!animate) return;
+    const timer = window.setTimeout(() => setCentering(false), 700);
+    return () => window.clearTimeout(timer);
+  }, [resetOffset]);
+
   return (
     <div
-      className={`${styles.draggableItem} ${className ?? ""}`}
+      className={`${styles.draggableItem} ${centering ? styles.centeringItem : ""} ${className ?? ""}`}
       role="button"
       tabIndex={0}
       aria-label={`Move ${label}`}
@@ -45,7 +58,7 @@ function DraggableCanvasItem({
       style={{ transform: `translate(${offset.x * 100}%, ${offset.y * 100}%)` }}
       onClick={onSelect}
       onPointerDown={(event) => {
-        if (event.button !== 0 || dragRef.current) {
+        if (event.button !== 0 || dragRef.current || centering) {
           return;
         }
         event.preventDefault();
@@ -101,6 +114,7 @@ function DraggableCanvasItem({
           return;
         }
         event.preventDefault();
+        if (centering) return;
         onSelect?.();
         const { width, height } = event.currentTarget.getBoundingClientRect();
         const step = event.shiftKey ? 20 : 5;
@@ -419,7 +433,7 @@ function HeroScene({
           )}
           <div ref={shoeRef} className={styles.slippersImageAnchor}>
             <DraggableCanvasItem
-              key={focusRequest}
+              resetOffset={shoeFocused}
               label="running shoe image"
               selected={selectedImage === "shoe"}
               onSelect={() => setSelectedImage("shoe")}
