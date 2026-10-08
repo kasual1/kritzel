@@ -115,14 +115,14 @@ const customTheme: KritzelTheme = {
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
-| accentColor | #007bff | #0A84FF |
+| accentColor | #4A7DFF | #5B8CFF |
 | background | #ffffff | #1a1a1a |
 | borderColor | #dbdbdb | #4a4a4a |
 | borderRadius | 6px | 6px |
 | hoverBackgroundColor | #f0f0f0 | #3a3a3a |
 | hoverBorderColor | #cccccc | #5a5a5a |
 | menuBorderRadius | 6px | 6px |
-| selectedBackgroundColor | #007bff1a | rgba(10, 132, 255, 0.2) |
+| selectedBackgroundColor | #4A7DFF1A | rgba(91, 140, 255, 0.2) |
 | textColor | #333333 | #e0e0e0 |
 
 ## Editor
@@ -135,7 +135,7 @@ const customTheme: KritzelTheme = {
 | loadingOverlaySpinnerColor | #cccccc | #555555 |
 | syncIndicatorBackground | rgba(255, 255, 255, 0.92) | rgba(30, 30, 30, 0.95) |
 | syncIndicatorColor | #334155 | #e0e0e0 |
-| syncIndicatorSpinnerColor | #007AFF | #0A84FF |
+| syncIndicatorSpinnerColor | #4A7DFF | #5B8CFF |
 | syncIndicatorSpinnerTrack | rgba(148, 163, 184, 0.35) | rgba(160, 160, 160, 0.3) |
 | syncIndicatorZIndex | 10001 | 10001 |
 
@@ -193,9 +193,9 @@ const customTheme: KritzelTheme = {
 | menuItemDisabledColor | #aaaaaa | #666666 |
 | menuItemFocusOutline | 2px solid #333333 | 2px solid #ffffff |
 | menuItemHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
-| menuItemSelectedBackgroundColor | #007AFF | #0A84FF |
+| menuItemSelectedBackgroundColor | #4A7DFF | #5B8CFF |
 | menuItemSelectedColor | #ffffff | #ffffff |
-| menuItemSelectedHoverBackgroundColor | #007AFF | #0A84FF |
+| menuItemSelectedHoverBackgroundColor | #4A7DFF | #5B8CFF |
 
 ## Menu
 
@@ -212,12 +212,12 @@ const customTheme: KritzelTheme = {
 | itemInputBorderColorOnSelected | #ffffff | #ffffff |
 | itemInputCaretColor | #333333 | #e0e0e0 |
 | itemInputCaretColorOnSelected | #ffffff | #ffffff |
-| itemInputSelectionColor | #007aff | #b0b0b0 |
+| itemInputSelectionColor | #4A7DFF | #b0b0b0 |
 | itemInputSelectionColorOnSelected | rgba(255, 255, 255, 0.55) | rgba(255, 255, 255, 0.35) |
 | itemInputSelectionTextColor | #ffffff | #ffffff |
 | itemInputSelectionTextColorOnSelected | #ffffff | #ffffff |
 | itemOverlayBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
-| itemSelectedBackgroundColor | #007aff | #0A84FF |
+| itemSelectedBackgroundColor | #4A7DFF | #5B8CFF |
 | itemSelectedColor | #ffffff | #ffffff |
 
 ## More Menu
@@ -282,7 +282,7 @@ const customTheme: KritzelTheme = {
 | hoverBorderColor | #cccccc | #5a5a5a |
 | inputBackground | #ffffff | #1a1a1a |
 | labelColor | #666666 | #999999 |
-| selectionBackground | #007AFF | #0A84FF |
+| selectionBackground | #4A7DFF | #5B8CFF |
 | selectionColor | #ffffff | #ffffff |
 | spinnerActiveBackground | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
 | spinnerBackground | transparent | transparent |
@@ -295,8 +295,8 @@ const customTheme: KritzelTheme = {
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
-| activeColor | #007AFF | #0A84FF |
-| thumbBorderColor | #007AFF | #0A84FF |
+| activeColor | #4A7DFF | #5B8CFF |
+| thumbBorderColor | #4A7DFF | #5B8CFF |
 | thumbColor | #ffffff | #ffffff |
 | trackColor | #e0e0e0 | #4a4a4a |
 
@@ -318,11 +318,11 @@ const customTheme: KritzelTheme = {
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
-| borderColor | #007AFF | #0A84FF |
-| boxBackgroundColor | rgba(0, 122, 255, 0.2) | rgba(10, 132, 255, 0.2) |
-| boxBorderColor | rgba(0, 122, 255, 0.5) | rgba(10, 132, 255, 0.5) |
+| borderColor | #4A7DFF | #5B8CFF |
+| boxBackgroundColor | rgba(74, 125, 255, 0.2) | rgba(91, 140, 255, 0.2) |
+| boxBorderColor | rgba(74, 125, 255, 0.5) | rgba(91, 140, 255, 0.5) |
 | handleColor | #ffffff | #1a1a1a |
-| handleStrokeColor | #007AFF | #0A84FF |
+| handleStrokeColor | #4A7DFF | #5B8CFF |
 
 ## Settings
 
@@ -365,7 +365,7 @@ const customTheme: KritzelTheme = {
 | revokeButtonColor | #dc3545 | - |
 | revokeButtonHoverBackground | #dc3545 | - |
 | revokeButtonHoverColor | #ffffff | - |
-| selectionColor | #cce5ff | #0A84FF |
+| selectionColor | #cce5ff | #5B8CFF |
 
 ## Slide Toggle
 
@@ -373,7 +373,7 @@ const customTheme: KritzelTheme = {
 |----------|---------------|--------------|
 | thumbColor | #fff | #ffffff |
 | thumbSize | 18px | - |
-| trackCheckedColor | #007AFF | #0A84FF |
+| trackCheckedColor | #4A7DFF | #5B8CFF |
 | trackColor | #ccc | #4a4a4a |
 | transitionDuration | - | 0.2s |
 
@@ -381,10 +381,10 @@ const customTheme: KritzelTheme = {
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
-| indicatorFill | rgba(59, 130, 246, 0.3) | rgba(10, 132, 255, 0.35) |
-| indicatorFillInactive | rgba(59, 130, 246, 0.18) | rgba(10, 132, 255, 0.2) |
-| indicatorStroke | #007bff | #0A84FF |
-| indicatorStrokeInactive | rgba(59, 130, 246, 0.5) | rgba(255, 255, 255, 0.45) |
+| indicatorFill | rgba(74, 125, 255, 0.3) | rgba(91, 140, 255, 0.35) |
+| indicatorFillInactive | rgba(74, 125, 255, 0.18) | rgba(91, 140, 255, 0.2) |
+| indicatorStroke | #4A7DFF | #5B8CFF |
+| indicatorStrokeInactive | rgba(74, 125, 255, 0.5) | rgba(255, 255, 255, 0.45) |
 | lineStroke | rgba(0, 0, 0, 0.2) | rgba(255, 255, 255, 0.35) |
 
 ## Split Button
@@ -416,7 +416,7 @@ const customTheme: KritzelTheme = {
 | hoverBorderColor | #cccccc | #5a5a5a |
 | labelColor | #333333 | #e0e0e0 |
 | placeholderColor | #999999 | #777777 |
-| selectionBackground | #007AFF | #0A84FF |
+| selectionBackground | #4A7DFF | #5B8CFF |
 | selectionColor | #ffffff | #ffffff |
 | suffixBackground | #f5f5f5 | #3a3a3a |
 | suffixColor | #666666 | #aaaaaa |
@@ -432,7 +432,7 @@ const customTheme: KritzelTheme = {
 | controlActiveBackgroundColor | hsl(0, 0%, 0%, 8.6%) | hsl(0, 0%, 100%, 12%) |
 | controlColor | #000000 | #ffffff |
 | controlHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
-| controlSelectedBackgroundColor | #007AFF | #0A84FF |
+| controlSelectedBackgroundColor | #4A7DFF | #5B8CFF |
 | controlSelectedColor | #ffffff | #ffffff |
 | separatorColor | #ebebeb | #3a3a3a |
 
