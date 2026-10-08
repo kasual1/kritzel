@@ -10,6 +10,7 @@ toc_max_heading_level: 2
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
+import SkillInstallation from '@site/src/components/SkillInstallation';
 
 # Quick Start
 
@@ -23,11 +24,15 @@ Run the following command to install the Kritzel editor in your project.
 npm install @kritzel/angular-editor
 ```
 
+<SkillInstallation>
+
 Install the related Kritzel skill for coding assistance:
 
 ```bash
 npx skills add kasual1/kritzel
 ```
+
+</SkillInstallation>
 
 ## Setup
 
