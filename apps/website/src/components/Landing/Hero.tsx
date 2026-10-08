@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "./Icon";
@@ -229,7 +229,21 @@ export default function Hero({
   variant?: "infinite" | "agentic";
 }) {
   const navRef = useRef<HTMLElement>(null);
+  const halloRef = useRef<SVGSVGElement>(null);
   const grassImageUrl = useBaseUrl("/img/wet_grass.webp");
+
+  useLayoutEffect(() => {
+    const svg = halloRef.current;
+    const item = svg?.parentElement;
+    if (!svg || !item) return;
+    const bounds = svg.getBBox();
+    const viewBox = svg.viewBox.baseVal;
+    const strokePadding = 2.5;
+    item.style.setProperty("--hallo-selection-left", `${(bounds.x - strokePadding - viewBox.x) / viewBox.width * 100}%`);
+    item.style.setProperty("--hallo-selection-top", `${(bounds.y - strokePadding - viewBox.y) / viewBox.height * 100}%`);
+    item.style.setProperty("--hallo-selection-width", `${(bounds.width + strokePadding * 2) / viewBox.width * 100}%`);
+    item.style.setProperty("--hallo-selection-height", `${(bounds.height + strokePadding * 2) / viewBox.height * 100}%`);
+  }, []);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -307,7 +321,7 @@ export default function Hero({
           </div>
           <div className={styles.halloDrawing}>
             <DraggableCanvasItem label="handwritten hallo!">
-              <svg aria-hidden="true" viewBox="0 0 260 120" width="100%" height="100%">
+              <svg ref={halloRef} aria-hidden="true" viewBox="0 0 260 120" width="100%" height="100%">
                 <path
                   d="M18 88 C27 62 49 12 38 16 C24 20 20 72 22 88
                      C31 49 52 48 49 72 C47 91 53 93 65 80

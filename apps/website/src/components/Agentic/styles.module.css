@@ -417,6 +417,29 @@
   display: block;
 }
 
+.smileyAnchor .selectedImage,
+.smileyAnchor .draggableItem:focus-visible {
+  outline: none;
+}
+
+.smileyAnchor .selectedImage::after,
+.smileyAnchor .draggableItem:focus-visible::after {
+  content: "";
+  position: absolute;
+  left: var(--smiley-selection-left);
+  top: var(--smiley-selection-top);
+  width: var(--smiley-selection-width);
+  height: var(--smiley-selection-height);
+  pointer-events: none;
+  outline: 2px solid #4a7dff;
+  outline-offset: 5px;
+}
+
+.smileyAnchor .draggableItem:focus-visible::after {
+  outline-color: #007AFF;
+  outline-offset: 6px;
+}
+
 .smileyStroke {
   visibility: hidden;
   stroke-dasharray: 1 2;
@@ -469,6 +492,26 @@
 .pieChartScene {
   position: relative;
   aspect-ratio: 26 / 18;
+}
+
+.pieChartAnchor .selectedImage,
+.pieChartAnchor .draggableItem:focus-visible {
+  outline: none;
+}
+
+.pieChartSelection {
+  position: absolute;
+  pointer-events: none;
+}
+
+.selectedImage .pieChartSelection {
+  outline: 2px solid #4a7dff;
+  outline-offset: 5px;
+}
+
+.draggableItem:focus-visible .pieChartSelection {
+  outline: 2px solid #007AFF;
+  outline-offset: 6px;
 }
 
 .pieChartWebGL {

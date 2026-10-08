@@ -285,6 +285,22 @@
   display: block;
 }
 
+.halloDrawing .draggableItem:focus {
+  outline: none;
+}
+
+.halloDrawing .draggableItem:focus::after {
+  content: "";
+  position: absolute;
+  left: var(--hallo-selection-left);
+  top: var(--hallo-selection-top);
+  width: var(--hallo-selection-width);
+  height: var(--hallo-selection-height);
+  pointer-events: none;
+  outline: 2px solid #007AFF;
+  outline-offset: 6px;
+}
+
 /* Hidden until their animation starts; the gap exceeds the path length so no zero-length dash caps render as dots. */
 .halloStroke,
 .halloExclamation,
