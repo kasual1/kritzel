@@ -154,7 +154,7 @@
 
 .heroFocused .slippersImageAnchor {
   left: 50%;
-  top: calc(var(--focus-shoe-top) + 20px);
+  top: var(--focus-shoe-top);
   bottom: auto;
   transform: translate(-50%, -50%);
 }
@@ -207,7 +207,7 @@
 
 .variantPlaceholder {
   position: absolute;
-  top: calc(var(--focus-shoe-top) + 20px);
+  top: var(--focus-shoe-top);
   width: var(--active-card-width);
   z-index: 1;
   animation: agentic-variant-enter 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -388,14 +388,24 @@
 .slippersImageAnchor {
   position: absolute;
   z-index: 1;
-  left: 4%;
-  top: calc(25% + 20px);
-  width: clamp(180px, 20vw, 288px);
-  transform: rotate(-5deg);
+  width: var(--shoe-card-width);
   animation: agentic-image-enter 1500ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
   transition: left 700ms cubic-bezier(0.22, 1, 0.36, 1),
     top 700ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.shoeDesktop {
+  left: 4%;
+  top: calc(25% + 20px);
+  transform: rotate(-5deg);
+}
+
+.shoeCompact {
+  display: none;
+  left: 50%;
+  top: var(--focus-shoe-top);
+  transform: translate(-50%, -50%);
 }
 
 .slippersImage {
@@ -1286,6 +1296,18 @@
   }
 }
 
+/* Uses scale/opacity only: compact cards center themselves with the individual translate property. */
+@keyframes agentic-shoe-place {
+  from {
+    opacity: 0;
+    scale: 1.14;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 @keyframes agentic-chat-enter {
   from {
     translate: 0 calc(100% + var(--chat-bottom));
@@ -1338,7 +1360,7 @@
   }
 }
 
-/* Scale the non-mobile composition from a 1440px-wide canvas. */
+/* Scale canvas objects independently of the readable, screen-space UI. */
 @media (min-width: 769px) {
   .heroWrapper {
     --shoe-card-width: 20cqw;
@@ -1348,83 +1370,30 @@
   }
 
   .heroCanvas {
-    min-height: 520px;
+    min-height: 720px;
     height: 100svh;
     max-height: min(100svh, 880px);
     overflow: visible;
   }
 
-  .brand {
-    top: 1.389cqw;
-    left: 2.222cqw;
-    gap: 0.694cqw;
-    min-height: 3.333cqw;
-    font-size: 1.806cqw;
-  }
-
-  .brand svg {
-    width: 2.5cqw;
-    height: 2.188cqw;
-  }
-
   .topNav {
-    top: 1.389cqw;
-    right: 2.222cqw;
-    min-height: 3.333cqw;
-    font-size: 1.042cqw;
     flex-wrap: nowrap;
   }
 
-  .topNavLink {
-    min-height: 3.056cqw;
-    padding: 0 0.972cqw;
-  }
-
-  .page .topNavCta {
-    min-height: 3.056cqw;
-    padding: 0 1.25cqw;
-    margin: 0 0.278cqw;
-    border-radius: 0.833cqw;
-  }
-
-  .topNavIcon {
-    width: 3.056cqw;
-    height: 3.056cqw;
-  }
-
-  .topNavIcon img {
-    width: 1.528cqw;
-    height: 1.528cqw;
-  }
-
-  .heroCopy {
-    padding: 0;
-  }
-
   .heroCopyInner {
-    width: 46cqw;
-    max-width: none;
-    gap: 1.528cqw;
+    width: min(720px, 48cqw);
   }
 
   .heroTitle {
-    font-size: 4.2cqw;
-  }
-
-  .canvasToggle {
-    bottom: calc(100% + 1.528cqw);
-    gap: 0.139cqw;
-    padding: 0.139cqw;
-    font-size: 0.764cqw;
-  }
-
-  .canvasToggle a {
-    padding: 0.278cqw 0.625cqw;
+    font-size: clamp(48px, 4.2cqw, 60px);
   }
 
   .page .heroSubtitle {
-    max-width: 43.056cqw;
-    font-size: 1.319cqw;
+    font-size: 19px;
+  }
+
+  .heroFocused .heroCanvas {
+    min-height: max(720px, var(--focus-min-height));
   }
 
   .pieChartAnchor {
@@ -1432,7 +1401,7 @@
     width: 20cqw;
   }
 
-  .slippersImageAnchor {
+  .shoeDesktop {
     left: 4cqw;
     width: 20cqw;
   }
@@ -1442,139 +1411,128 @@
     width: 14cqw;
   }
 
-  .caret {
-    width: 0.174cqw;
-    margin-left: 0.278cqw;
-    margin-top: 0.139cqw;
-  }
-
-  .toolbarDock {
-    bottom: 1.667cqw;
-  }
-
   .chatDock {
-    --chat-bottom: 1.667cqw;
-    width: 44.444cqw;
-    padding: 0.694cqw;
-    border-radius: 1.806cqw;
-  }
-
-  .chatBox {
-    min-height: 9.722cqw;
-    padding: 1.389cqw 1.528cqw 4.028cqw;
-    border-radius: 1.25cqw;
-  }
-
-  .chatMessage {
-    font-size: 1.389cqw;
-  }
-
-  .chatSend {
-    right: 1.389cqw;
-    bottom: 0.972cqw;
-    width: 2.639cqw;
-    height: 2.639cqw;
-  }
-
-  .chatSend svg {
-    width: 1.111cqw;
-    height: 1.111cqw;
+    --chat-bottom: 24px;
   }
 
   .heroSpacer {
     height: 0;
   }
 
-  .historyTab {
-    margin-left: 0.972cqw;
-    padding: 0 0.278cqw;
-    border-radius: 0.833cqw 0.833cqw 0 0;
+}
+
+/* Narrow desktop and tablet: reserve a separate stage below the copy. */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .heroWrapper {
+    --shoe-card-width: 240px;
   }
 
-  .historyButton {
-    width: 2.778cqw;
-    height: 2.5cqw;
+  .heroCanvas {
+    min-height: 800px;
+    max-height: 880px;
   }
 
-  .historyButton svg {
-    width: 1.25cqw;
-    height: 1.25cqw;
+  .heroFocused .heroCanvas {
+    min-height: max(800px, var(--focus-min-height));
   }
 
-  .historyDivider {
-    height: 1.389cqw;
+  .heroCopy {
+    top: 156px;
+    padding: 0 32px;
   }
 
-  .toolbar {
-    gap: 0.833cqw;
-    padding: 0.556cqw 0.694cqw;
-    border-radius: 1.389cqw;
+  .heroCopyInner {
+    width: 100%;
+    max-width: 720px;
   }
 
-  .tool {
-    width: 3.333cqw;
-    height: 3.333cqw;
-    border-radius: 0.694cqw;
+  /* Matches the mobile copy size to leave more room for the image stack. */
+  .heroTitle {
+    font-size: 40px;
   }
 
-  .tool svg {
-    width: 1.389cqw;
-    height: 1.389cqw;
+  .page .heroSubtitle {
+    font-size: 16px;
   }
 
-  .tool[data-selected] {
-    border-radius: 0.972cqw;
+  .pieChartAnchor,
+  .smileyAnchor {
+    display: none;
   }
 
-  .ctaBar {
-    gap: 0.833cqw;
-    flex-wrap: nowrap;
+  .shoeDesktop {
+    display: none;
   }
 
-  .ctaPrimary,
-  .ctaSecondary,
-  .ctaInstall {
-    gap: 0.694cqw;
-    min-height: 3.611cqw;
-    border-radius: 0.972cqw;
-    font-size: 1.111cqw;
-    white-space: nowrap;
+  .shoeCompact {
+    display: block;
+  }
+}
+
+/* Tablet and mobile: variants are laid onto the centered shoe like a fanned stack of photos. */
+@media (max-width: 1199px) {
+  /* Cards keep a fixed size and a slimmer frame instead of following the viewport. */
+  .heroWrapper {
+    --image-card-padding: 6px;
   }
 
-  .page .ctaPrimary {
-    padding: 0 1.806cqw;
+  .heroWrapper .shoeCompact,
+  .heroWrapper .variantPlaceholder {
+    left: 50%;
+    width: var(--shoe-card-width);
+    translate: -50% -50%;
+    transform: rotate(0deg);
+    /* Selecting a card raises it; the order is tracked in Hero.tsx. */
+    z-index: var(--stack-z, 3);
   }
 
-  .page .ctaSecondary {
-    padding: 0 1.667cqw;
+  .heroWrapper .shoeCompact {
+    animation: agentic-shoe-place 800ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
+    transition: translate 600ms cubic-bezier(0.22, 1, 0.36, 1), transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .ctaInstall {
-    gap: 0.417cqw;
-    padding: 0 0.556cqw 0 1.25cqw;
+  .heroWrapper .variantPlaceholder {
+    animation: agentic-shoe-place 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
-  .ctaCode {
-    font-size: 0.972cqw;
+  /* Each card is offset so a strip of every card stays visible and grabbable. */
+  .heroPair .shoeCompact,
+  .heroTrio .shoeCompact {
+    translate: calc(-50% - 16px) calc(-50% + 8px);
   }
 
-  .ctaCopy {
-    width: 2.5cqw;
-    height: 2.5cqw;
-    margin-left: 0.417cqw;
-    border-radius: 0.556cqw;
+  /* A dragged card leaves its wrapper behind, which must not block the cards beneath. */
+  .heroWrapper .shoeCompact,
+  .heroWrapper .variantPlaceholder {
+    pointer-events: none;
   }
 
-  .ctaBar svg {
-    width: 1.111cqw;
-    height: 1.111cqw;
+  .heroWrapper .shoeCompact .draggableItem,
+  .heroWrapper .variantPlaceholder .draggableItem {
+    pointer-events: auto;
+  }
+
+  .heroWrapper .variantPlaceholderLeft {
+    transform: rotate(4deg);
+  }
+
+  .heroWrapper .variantPlaceholderRight {
+    translate: calc(-50% + 16px) calc(-50% - 8px);
+    transform: rotate(-3.5deg);
+  }
+}
+
+@media (max-width: 1199px) and (prefers-reduced-motion: reduce) {
+  .heroWrapper .shoeCompact {
+    transition: none;
   }
 }
 
 /* ---------- Small screens ---------- */
 
 @media (max-width: 768px) {
-  .pieChartAnchor {
+  .pieChartAnchor,
+  .smileyAnchor {
     display: none;
   }
 
@@ -1583,11 +1541,17 @@
 @media (max-width: 768px) {
   .heroCanvas {
     aspect-ratio: auto;
-    min-height: 580px;
+    min-height: 800px;
+    height: 100svh;
+    max-height: 880px;
+  }
+
+  .heroFocused .heroCanvas {
+    min-height: max(800px, var(--focus-min-height));
   }
 
   .heroWrapper {
-    --shoe-card-width: 120px;
+    --shoe-card-width: min(220px, calc(100% - 64px));
   }
 
   .brand {
@@ -1607,32 +1571,35 @@
     gap: 0;
   }
 
-  .topNavLink {
+  .topNavLink,
+  .page .topNavCta {
     display: none;
   }
 
   .heroCopy {
     position: relative;
     top: auto;
-    padding: 100px 16px 210px;
+    padding: clamp(138px, calc(15svh + 28px), 160px) 16px 0;
   }
 
-  .heroFocused .heroCopy {
-    padding-bottom: 350px;
+  .heroCopyInner {
+    width: 100%;
   }
 
-  .smileyAnchor {
-    right: 6%;
-    top: auto;
-    bottom: 50px;
-    width: 120px;
+  .heroTitle {
+    font-size: clamp(30px, 9vw, 40px);
   }
 
-  .slippersImageAnchor {
-    left: 6%;
-    top: auto;
-    bottom: 30px;
-    width: 120px;
+  .shoeDesktop {
+    display: none;
+  }
+
+  .shoeCompact {
+    display: block;
+  }
+
+  .chatDock {
+    --chat-bottom: 24px;
   }
 
   .toolbar {
@@ -1646,24 +1613,33 @@
   }
 
   .heroSpacer {
-    height: 48px;
+    height: 0;
   }
 
   .ctaBar {
     width: 100%;
     max-width: 420px;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
 
   .ctaPrimary,
-  .ctaSecondary,
-  .ctaInstall {
+  .ctaSecondary {
     justify-content: center;
+    white-space: nowrap;
+  }
+
+  .page .ctaPrimary,
+  .page .ctaSecondary {
+    padding: 0 18px;
+  }
+
+  .ctaInstall {
+    display: none;
   }
 
   .features {
-    margin-top: 48px;
+    margin-top: 0;
     padding: 72px 0 72px;
   }
 

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "../Landing/Icon";
@@ -129,6 +129,47 @@ function DraggableCanvasItem({
   );
 }
 
+type StackCard = "shoe" | "left" | "right";
+
+function RunningShoe({
+  anchorRef,
+  className,
+  imageUrl,
+  focused,
+  selected,
+  onSelect,
+  style,
+}: {
+  anchorRef: RefObject<HTMLDivElement | null>;
+  className: string;
+  imageUrl: string;
+  focused: boolean;
+  selected: boolean;
+  onSelect: () => void;
+  style?: CSSProperties;
+}) {
+  return (
+    <div ref={anchorRef} className={`${styles.slippersImageAnchor} ${className}`} style={style}>
+      <DraggableCanvasItem
+        resetOffset={focused}
+        label="running shoe image"
+        selected={selected}
+        onSelect={onSelect}
+        className={selected ? styles.selectedImage : undefined}
+      >
+        <ImageCard>
+          <img
+            className={styles.slippersImage}
+            src={imageUrl}
+            alt="Running shoe with red accents on a white background"
+            draggable={false}
+          />
+        </ImageCard>
+      </DraggableCanvasItem>
+    </div>
+  );
+}
+
 const INITIAL_COMMAND = "Lets focus on the image with the red running shoe";
 const CASUAL_COMMAND = "Create a more casual variant of the red running shoe.";
 const SUMMER_COMMAND = "Create a summer variant of the red running shoe";
@@ -182,7 +223,7 @@ function MockChatBox({
         <span className={styles.chatMessage} aria-label={command}>
           <span className={styles.chatMessageSizer} aria-hidden="true">{command}</span>
           <span className={styles.chatMessageText} aria-hidden="true">
-            {shoeFocused ? command.slice(0, visibleCount) : INITIAL_COMMAND}
+            {shoeFocused ? command.slice(0, visibleCount) : command}
             {shoeFocused && visibleCount < command.length && <span className={styles.chatTypingCursor} />}
           </span>
         </span>
@@ -241,15 +282,35 @@ function HeroScene({
   const copyRef = useRef<HTMLDivElement>(null);
   const copyInnerRef = useRef<HTMLDivElement>(null);
   const shoeRef = useRef<HTMLDivElement>(null);
+  const compactShoeRef = useRef<HTMLDivElement>(null);
   const smileyRef = useRef<SVGSVGElement>(null);
   const [focusRequest, setFocusRequest] = useState(0);
+  const [compactViewport, setCompactViewport] = useState(false);
   const [variantStatus, setVariantStatus] = useState<"idle" | "left-loading" | "left-ready" | "right-loading" | "ready">("idle");
   const [selectedImage, setSelectedImage] = useState<"shoe" | "left" | "right" | "pie" | "smiley" | null>(null);
+  const [stackOrder, setStackOrder] = useState<StackCard[]>(["shoe", "left", "right"]);
   const [focusLayout, setFocusLayout] = useState({ copyShift: 0, shoeTop: 0, minHeight: 520 });
   const shoeFocused = focusRequest > 0;
+
+  // Selected or newly added cards move to the top of the compact stack.
+  const selectCard = (card: StackCard) => {
+    setSelectedImage(card);
+    setStackOrder((current) =>
+      current[current.length - 1] === card ? current : [...current.filter((item) => item !== card), card],
+    );
+  };
+  const stackStyle = (card: StackCard) => ({ "--stack-z": 3 + stackOrder.indexOf(card) }) as CSSProperties;
   const shoeImageUrl = useBaseUrl("/img/red_running_shoe_3.jpg");
   const leftVariantUrl = useBaseUrl("/img/red_running_shoe_variant_1.jpg");
   const rightVariantUrl = useBaseUrl("/img/red_running_shoe_variant_2.jpg");
+
+  useEffect(() => {
+    const breakpoint = window.matchMedia("(max-width: 1199px)");
+    const updateViewport = () => setCompactViewport(breakpoint.matches);
+    updateViewport();
+    breakpoint.addEventListener("change", updateViewport);
+    return () => breakpoint.removeEventListener("change", updateViewport);
+  }, []);
 
   useLayoutEffect(() => {
     const svg = smileyRef.current;
@@ -292,42 +353,47 @@ function HeroScene({
   }, [variantStatus]);
 
   useLayoutEffect(() => {
-    if (!shoeFocused) {
-      return;
-    }
     const wrapper = wrapperRef.current;
     const canvas = canvasRef.current;
     const copy = copyRef.current;
     const inner = copyInnerRef.current;
-    const shoe = shoeRef.current;
+    const desktopShoe = shoeRef.current;
+    const compactShoe = compactShoeRef.current;
     const nav = navRef.current;
     const chat = wrapper?.querySelector<HTMLElement>(`.${styles.chatDock}`);
     const toggle = inner?.querySelector<HTMLElement>(`.${styles.canvasToggle}`);
-    if (!canvas || !copy || !inner || !shoe || !nav || !chat || !toggle) {
+    if (!canvas || !copy || !inner || !desktopShoe || !compactShoe || !nav || !chat || !toggle) {
       return;
     }
     const updateLayout = () => {
+      const shoe = desktopShoe.offsetWidth > 0 ? desktopShoe : compactShoe;
       const copyTop = copy.offsetTop + inner.offsetTop;
       const toggleGap = parseFloat(getComputedStyle(toggle).bottom) - inner.offsetHeight;
       const raisedTop = nav.offsetTop + nav.offsetHeight + toggle.offsetHeight + toggleGap + 16;
-      const copyShift = copyTop - raisedTop;
+      const copyShift = shoeFocused && !compactViewport ? copyTop - raisedTop : 0;
       const availableTop = copyTop - copyShift + inner.offsetHeight + 24;
       const chatTop = canvas.clientHeight - parseFloat(getComputedStyle(chat).bottom) - chat.offsetHeight * 0.85;
       const availableBottom = chatTop - 24;
-      const halfShoeHeight = shoe.offsetHeight / 2;
       const minHeight = availableTop + shoe.offsetHeight + 24
         + chat.offsetHeight * 0.85 + parseFloat(getComputedStyle(chat).bottom);
-      const shoeTop = Math.max(
-        availableTop + halfShoeHeight,
-        Math.min(canvas.clientHeight / 2, availableBottom - halfShoeHeight),
-      );
+      const shoeTop = (availableTop + availableBottom) / 2;
       setFocusLayout({ copyShift, shoeTop, minHeight });
     };
     updateLayout();
     const observer = new ResizeObserver(updateLayout);
-    [canvas, inner, shoe, nav, chat, toggle].forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
-  }, [shoeFocused, focusRequest]);
+    [canvas, inner, desktopShoe, compactShoe, nav, chat, toggle].forEach((element) => observer.observe(element));
+    let resizeFrame = 0;
+    const updateAfterResize = () => {
+      window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(updateLayout);
+    };
+    window.addEventListener("resize", updateAfterResize);
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(resizeFrame);
+      window.removeEventListener("resize", updateAfterResize);
+    };
+  }, [shoeFocused, focusRequest, compactViewport]);
 
   useEffect(() => {
     const nav = navRef.current;
@@ -402,7 +468,7 @@ function HeroScene({
               className={styles.heroTitle}
               accentClassName={styles.heroTitleAccent}
             />
-            <p className={styles.heroSubtitle} hidden={shoeFocused}>
+            <p className={styles.heroSubtitle} hidden={shoeFocused && !compactViewport}>
               Kritzel is a framework-agnostic infinite canvas library that helps you build agentic whiteboard
               experiences with React, Vue and Angular.
             </p>
@@ -413,11 +479,11 @@ function HeroScene({
         <div className={styles.canvasLayer}>
           {variantStatus !== "idle" && (
             <>
-              <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderLeft}`}>
+              <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderLeft}`} style={stackStyle("left")}>
                 <DraggableCanvasItem
                   label="casual shoe variant"
                   selected={selectedImage === "left"}
-                  onSelect={() => setSelectedImage("left")}
+                  onSelect={() => selectCard("left")}
                   className={selectedImage === "left" ? styles.selectedImage : undefined}
                 >
                   <ImageCard>
@@ -428,11 +494,11 @@ function HeroScene({
                 </DraggableCanvasItem>
               </div>
               {(variantStatus === "right-loading" || variantStatus === "ready") && (
-              <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderRight}`}>
+              <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderRight}`} style={stackStyle("right")}>
                 <DraggableCanvasItem
                   label="summer shoe variant"
                   selected={selectedImage === "right"}
-                  onSelect={() => setSelectedImage("right")}
+                  onSelect={() => selectCard("right")}
                   className={selectedImage === "right" ? styles.selectedImage : undefined}
                 >
                   <ImageCard>
@@ -445,24 +511,23 @@ function HeroScene({
               )}
             </>
           )}
-          <div ref={shoeRef} className={styles.slippersImageAnchor}>
-            <DraggableCanvasItem
-              resetOffset={shoeFocused}
-              label="running shoe image"
-              selected={selectedImage === "shoe"}
-              onSelect={() => setSelectedImage("shoe")}
-              className={selectedImage === "shoe" ? styles.selectedImage : undefined}
-            >
-              <ImageCard>
-                <img
-                  className={styles.slippersImage}
-                  src={shoeImageUrl}
-                  alt="Running shoe with red accents on a white background"
-                  draggable={false}
-                />
-              </ImageCard>
-            </DraggableCanvasItem>
-          </div>
+          <RunningShoe
+            anchorRef={shoeRef}
+            className={styles.shoeDesktop}
+            imageUrl={shoeImageUrl}
+            focused={shoeFocused}
+            selected={selectedImage === "shoe"}
+            onSelect={() => selectCard("shoe")}
+          />
+          <RunningShoe
+            anchorRef={compactShoeRef}
+            className={styles.shoeCompact}
+            imageUrl={shoeImageUrl}
+            focused={shoeFocused}
+            selected={selectedImage === "shoe"}
+            onSelect={() => selectCard("shoe")}
+            style={stackStyle("shoe")}
+          />
           <div className={styles.pieChartAnchor} inert={shoeFocused} aria-hidden={shoeFocused}>
             <DraggableCanvasItem
               label="3D pie chart with 75%, 20%, and 5% slices"
@@ -560,15 +625,16 @@ function HeroScene({
       <div className={styles.chatViewport}>
         <MockChatBox
           onReset={onReset}
-          shoeFocused={shoeFocused}
-          command={!shoeFocused ? INITIAL_COMMAND : variantStatus === "idle" || variantStatus === "left-loading" ? CASUAL_COMMAND : SUMMER_COMMAND}
+          shoeFocused={shoeFocused || compactViewport}
+          command={!shoeFocused && !compactViewport ? INITIAL_COMMAND : variantStatus === "idle" || variantStatus === "left-loading" ? CASUAL_COMMAND : SUMMER_COMMAND}
           canReset={variantStatus === "right-loading" || variantStatus === "ready"}
           onSubmit={() => {
             if (variantStatus === "left-ready") {
-              setSelectedImage("right");
+              selectCard("right");
               setVariantStatus("right-loading");
-            } else if (shoeFocused && variantStatus === "idle") {
-              setSelectedImage("left");
+            } else if ((shoeFocused || compactViewport) && variantStatus === "idle") {
+              if (!shoeFocused) setFocusRequest((current) => current + 1);
+              selectCard("left");
               setVariantStatus("left-loading");
             } else if (!shoeFocused) {
               setSelectedImage("shoe");

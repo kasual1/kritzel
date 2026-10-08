@@ -110,8 +110,30 @@ export default function PieChart({ fallback }: { fallback: ReactNode }) {
         };
 
         let progress = 0;
+        let frame = 0;
+        let wasVisible = false;
+        const startAnimation = () => {
+          window.cancelAnimationFrame(frame);
+          const start = performance.now() + 300;
+          progress = 0;
+          const animate = (time: number) => {
+            const elapsed = Math.max(0, Math.min(1, (time - start) / 1500));
+            progress = elapsed * elapsed * (3 - 2 * elapsed);
+            draw(progress);
+            if (elapsed < 1) frame = window.requestAnimationFrame(animate);
+          };
+          frame = window.requestAnimationFrame(animate);
+        };
         const resize = () => {
-          if (host.clientHeight === 0) return;
+          // Hidden (display: none) charts must not animate; they replay once visible again.
+          if (host.clientHeight === 0) {
+            if (wasVisible) {
+              window.cancelAnimationFrame(frame);
+              progress = 0;
+              wasVisible = false;
+            }
+            return;
+          }
           depth = 0.22 + 30 * (camera.top - camera.bottom)
             / (host.clientHeight * projectedVerticalScale);
           renderer.setSize(host.clientWidth, host.clientHeight);
@@ -141,21 +163,15 @@ export default function PieChart({ fallback }: { fallback: ReactNode }) {
           bottom = Math.min(100, bottom);
           setBounds({ left, top, width: right - left, height: bottom - top });
           draw(progress);
+          if (!wasVisible) {
+            wasVisible = true;
+            startAnimation();
+          }
         };
         const observer = new ResizeObserver(resize);
         observer.observe(host);
         resize();
         setStatus("ready");
-
-        let frame = 0;
-        const start = performance.now() + 300;
-        const animate = (time: number) => {
-          const elapsed = Math.max(0, Math.min(1, (time - start) / 1500));
-          progress = elapsed * elapsed * (3 - 2 * elapsed);
-          draw(progress);
-          if (elapsed < 1) frame = window.requestAnimationFrame(animate);
-        };
-        frame = window.requestAnimationFrame(animate);
 
         const contextLost = (event: Event) => {
           event.preventDefault();

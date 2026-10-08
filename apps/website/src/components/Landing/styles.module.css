@@ -285,6 +285,10 @@
   display: block;
 }
 
+.halloTablet {
+  display: none;
+}
+
 .halloDrawing .draggableItem:focus {
   outline: none;
 }
@@ -1149,92 +1153,36 @@
   }
 }
 
-/* Scale the non-mobile composition from a 1440px-wide canvas. */
+/* Scale canvas objects independently of the readable, screen-space UI. */
 @media (min-width: 769px) {
   .heroWrapper {
+    --hero-height: clamp(720px, 100svh, 880px);
     container-type: inline-size;
     max-width: 1440px;
     margin: 0 auto;
   }
 
   .heroCanvas {
-    min-height: 520px;
+    min-height: 720px;
     height: 100svh;
     max-height: min(100svh, 880px);
     overflow: visible;
   }
 
-  .brand {
-    top: 1.389cqw;
-    left: 2.222cqw;
-    gap: 0.694cqw;
-    min-height: 3.333cqw;
-    font-size: 1.806cqw;
-  }
-
-  .brand svg {
-    width: 2.5cqw;
-    height: 2.188cqw;
-  }
-
   .topNav {
-    top: 1.389cqw;
-    right: 2.222cqw;
-    min-height: 3.333cqw;
-    font-size: 1.042cqw;
     flex-wrap: nowrap;
   }
 
-  .topNavLink {
-    min-height: 3.056cqw;
-    padding: 0 0.972cqw;
-  }
-
-  .page .topNavCta {
-    min-height: 3.056cqw;
-    padding: 0 1.25cqw;
-    margin: 0 0.278cqw;
-    border-radius: 0.833cqw;
-  }
-
-  .topNavIcon {
-    width: 3.056cqw;
-    height: 3.056cqw;
-  }
-
-  .topNavIcon img {
-    width: 1.528cqw;
-    height: 1.528cqw;
-  }
-
-  .heroCopy {
-    padding: 0;
-  }
-
   .heroCopyInner {
-    width: 46cqw;
-    max-width: none;
-    gap: 1.528cqw;
+    width: min(720px, 48cqw);
   }
 
   .heroTitle {
-    font-size: 4.2cqw;
-  }
-
-  .canvasToggle {
-    bottom: calc(100% + 1.528cqw);
-    gap: 0.139cqw;
-    padding: 0.139cqw;
-    font-size: 0.764cqw;
-  }
-
-  .canvasToggle a {
-    padding: 0.278cqw 0.625cqw;
+    font-size: clamp(48px, 4.2cqw, 60px);
   }
 
   .page .heroSubtitle {
-    max-width: 43.056cqw;
-    font-size: 1.319cqw;
+    font-size: 19px;
   }
 
   .calculatorAnchor {
@@ -1242,123 +1190,125 @@
     width: 16cqw;
   }
 
-  .halloDrawing {
+  .halloDesktop {
     right: 4cqw;
     width: 20cqw;
   }
 
+  .halloTablet {
+    display: block;
+    left: 50%;
+    right: auto;
+    top: var(--hallo-center-top);
+    width: min(clamp(320px, 36cqw, 400px), calc((var(--hero-height) - 580px) * 2.166667));
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 200ms ease, visibility 0s 200ms;
+  }
+
+  .halloTablet .halloStroke,
+  .halloTablet .halloExclamation,
+  .halloTablet .halloDot {
+    animation-name: none;
+    visibility: inherit;
+    stroke-dashoffset: 0;
+  }
+
   .grassImageAnchor {
     right: calc(4cqw + 50px);
+    top: max(60%, calc(31% + 240px));
     width: 19.8cqw;
   }
 
   .toolbarDock {
-    --toolbar-bottom: 1.667cqw;
+    --toolbar-bottom: 24px;
   }
 
   .heroSpacer {
     height: 0;
   }
 
-  .historyTab {
-    margin-left: 0.972cqw;
-    padding: 0 0.278cqw;
-    border-radius: 0.833cqw 0.833cqw 0 0;
+}
+
+/* Narrow desktop and tablet: reserve a separate stage below the copy. */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .heroCanvas {
+    min-height: 720px;
+    height: var(--hero-height);
+    max-height: 880px;
   }
 
-  .historyButton {
-    width: 2.778cqw;
-    height: 2.5cqw;
+  .heroCopy {
+    top: 156px;
+    padding: 0 32px;
   }
 
-  .historyButton svg {
-    width: 1.25cqw;
-    height: 1.25cqw;
+  .heroCopyInner {
+    width: 100%;
+    max-width: 720px;
   }
 
-  .historyDivider {
-    height: 1.389cqw;
+  .heroTitle {
+    font-size: 48px;
   }
 
-  .toolbar {
-    gap: 0.833cqw;
-    padding: 0.556cqw 0.694cqw;
-    border-radius: 1.389cqw;
+  .halloDesktop {
+    display: none;
   }
 
-  .tool {
-    width: 3.333cqw;
-    height: 3.333cqw;
-    border-radius: 0.694cqw;
+  .halloTablet {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: none;
   }
 
-  .tool svg {
-    width: 1.389cqw;
-    height: 1.389cqw;
+  .halloTablet .halloStroke,
+  .halloTablet .halloExclamation {
+    animation-name: landing-hallo-draw;
+    visibility: hidden;
+    stroke-dashoffset: 1;
   }
 
-  .tool[data-selected] {
-    border-radius: 0.972cqw;
+  .halloTablet .halloDot {
+    animation-name: landing-hallo-show;
+    visibility: hidden;
   }
 
-  .ctaBar {
-    gap: 0.833cqw;
-    flex-wrap: nowrap;
+  .calculatorAnchor,
+  .grassImageAnchor {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .halloTablet {
+    transition: none;
   }
 
-  .ctaPrimary,
-  .ctaSecondary,
-  .ctaInstall {
-    gap: 0.694cqw;
-    min-height: 3.611cqw;
-    border-radius: 0.972cqw;
-    font-size: 1.111cqw;
-    white-space: nowrap;
-  }
-
-  .page .ctaPrimary {
-    padding: 0 1.806cqw;
-  }
-
-  .page .ctaSecondary {
-    padding: 0 1.667cqw;
-  }
-
-  .ctaInstall {
-    gap: 0.417cqw;
-    padding: 0 0.556cqw 0 1.25cqw;
-  }
-
-  .ctaCode {
-    font-size: 0.972cqw;
-  }
-
-  .ctaCopy {
-    width: 2.5cqw;
-    height: 2.5cqw;
-    margin-left: 0.417cqw;
-    border-radius: 0.556cqw;
-  }
-
-  .ctaBar svg {
-    width: 1.111cqw;
-    height: 1.111cqw;
+  .halloTablet .halloStroke,
+  .halloTablet .halloExclamation,
+  .halloTablet .halloDot {
+    visibility: inherit;
   }
 }
 
 /* ---------- Small screens ---------- */
 
 @media (max-width: 768px) {
-  .halloDrawing {
+  .halloDesktop {
     display: none;
   }
-
 }
 
 @media (max-width: 768px) {
   .heroCanvas {
     aspect-ratio: auto;
-    min-height: 580px;
+    min-height: 720px;
+    height: 100svh;
+    max-height: 880px;
   }
 
   .brand {
@@ -1378,28 +1328,37 @@
     gap: 0;
   }
 
-  .topNavLink {
+  .topNavLink,
+  .page .topNavCta {
     display: none;
   }
 
   .heroCopy {
     position: relative;
     top: auto;
-    padding: 100px 16px 330px;
+    padding: clamp(138px, calc(15svh + 28px), 160px) 16px 0;
   }
 
-  .calculatorAnchor {
-    left: 6%;
-    top: auto;
-    bottom: 50px;
-    width: 160px;
+  .heroCopyInner {
+    width: 100%;
   }
 
+  .heroTitle {
+    font-size: clamp(30px, 9vw, 40px);
+  }
+
+  .halloTablet {
+    display: block;
+    left: 50%;
+    right: auto;
+    top: var(--hallo-center-top);
+    width: min(300px, calc(100% - 48px));
+    transform: translate(-50%, -50%);
+  }
+
+  .calculatorAnchor,
   .grassImageAnchor {
-    right: 6%;
-    top: auto;
-    bottom: 50px;
-    width: 165px;
+    display: none;
   }
 
   .toolbar {
@@ -1408,29 +1367,38 @@
   }
 
   .tool {
-    width: 40px;
+    width: clamp(36px, 10vw, 40px);
     height: 40px;
   }
 
   .heroSpacer {
-    height: 48px;
+    height: 0;
   }
 
   .ctaBar {
     width: 100%;
     max-width: 420px;
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: nowrap;
   }
 
   .ctaPrimary,
-  .ctaSecondary,
-  .ctaInstall {
+  .ctaSecondary {
     justify-content: center;
+    white-space: nowrap;
+  }
+
+  .page .ctaPrimary,
+  .page .ctaSecondary {
+    padding: 0 18px;
+  }
+
+  .ctaInstall {
+    display: none;
   }
 
   .features {
-    margin-top: 48px;
+    margin-top: 0;
     padding: 72px 0 72px;
   }
 
