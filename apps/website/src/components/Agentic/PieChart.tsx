@@ -1,9 +1,32 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import styles from "./styles.module.css";
 
 export default function PieChart({ fallback }: { fallback: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "fallback">("loading");
+  const [bounds, setBounds] = useState<{ left: number; top: number; width: number; height: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (status !== "fallback") return;
+    const scene = hostRef.current?.parentElement;
+    const chart = scene?.querySelector("svg g");
+    if (!scene || !chart) return;
+    const updateBounds = () => {
+      const frame = scene.getBoundingClientRect();
+      if (!frame.width || !frame.height) return;
+      const rect = chart.getBoundingClientRect();
+      setBounds({
+        left: (rect.left - frame.left) / frame.width * 100,
+        top: (rect.top - frame.top) / frame.height * 100,
+        width: rect.width / frame.width * 100,
+        height: rect.height / frame.height * 100,
+      });
+    };
+    const observer = new ResizeObserver(updateBounds);
+    observer.observe(scene);
+    updateBounds();
+    return () => observer.disconnect();
+  }, [status]);
 
   useEffect(() => {
     const host = hostRef.current;
@@ -92,6 +115,31 @@ export default function PieChart({ fallback }: { fallback: ReactNode }) {
           depth = 0.22 + 30 * (camera.top - camera.bottom)
             / (host.clientHeight * projectedVerticalScale);
           renderer.setSize(host.clientWidth, host.clientHeight);
+          // Use the completed chart's projected geometry, not the canvas's transparent margins.
+          draw(1);
+          scene.updateMatrixWorld(true);
+          const point = new THREE.Vector3();
+          let left = Infinity;
+          let top = Infinity;
+          let right = -Infinity;
+          let bottom = -Infinity;
+          slices.forEach((slice) => {
+            const positions = slice.geometry.getAttribute("position");
+            for (let index = 0; index < positions.count; index += 1) {
+              point.fromBufferAttribute(positions, index).applyMatrix4(slice.matrixWorld).project(camera);
+              const x = (point.x + 1) * 50;
+              const y = (1 - point.y) * 50;
+              left = Math.min(left, x);
+              top = Math.min(top, y);
+              right = Math.max(right, x);
+              bottom = Math.max(bottom, y);
+            }
+          });
+          left = Math.max(0, left);
+          top = Math.max(0, top);
+          right = Math.min(100, right);
+          bottom = Math.min(100, bottom);
+          setBounds({ left, top, width: right - left, height: bottom - top });
           draw(progress);
         };
         const observer = new ResizeObserver(resize);
@@ -149,6 +197,17 @@ export default function PieChart({ fallback }: { fallback: ReactNode }) {
     <div className={styles.pieChartScene} aria-hidden="true">
       <div ref={hostRef} className={styles.pieChartWebGL} />
       {status === "fallback" && fallback}
+      {bounds && (
+        <span
+          className={styles.pieChartSelection}
+          style={{
+            left: `${bounds.left}%`,
+            top: `${bounds.top}%`,
+            width: `${bounds.width}%`,
+            height: `${bounds.height}%`,
+          }}
+        />
+      )}
     </div>
   );
 }

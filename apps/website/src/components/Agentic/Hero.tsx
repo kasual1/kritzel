@@ -241,6 +241,7 @@ function HeroScene({
   const copyRef = useRef<HTMLDivElement>(null);
   const copyInnerRef = useRef<HTMLDivElement>(null);
   const shoeRef = useRef<HTMLDivElement>(null);
+  const smileyRef = useRef<SVGSVGElement>(null);
   const [focusRequest, setFocusRequest] = useState(0);
   const [variantStatus, setVariantStatus] = useState<"idle" | "left-loading" | "left-ready" | "right-loading" | "ready">("idle");
   const [selectedImage, setSelectedImage] = useState<"shoe" | "left" | "right" | "pie" | "smiley" | null>(null);
@@ -249,6 +250,19 @@ function HeroScene({
   const shoeImageUrl = useBaseUrl("/img/red_running_shoe_3.jpg");
   const leftVariantUrl = useBaseUrl("/img/red_running_shoe_variant_1.jpg");
   const rightVariantUrl = useBaseUrl("/img/red_running_shoe_variant_2.jpg");
+
+  useLayoutEffect(() => {
+    const svg = smileyRef.current;
+    const item = svg?.parentElement;
+    if (!svg || !item) return;
+    const bounds = svg.getBBox();
+    const viewBox = svg.viewBox.baseVal;
+    const strokePadding = Number(svg.getAttribute("stroke-width")) / 2;
+    item.style.setProperty("--smiley-selection-left", `${(bounds.x - strokePadding - viewBox.x) / viewBox.width * 100}%`);
+    item.style.setProperty("--smiley-selection-top", `${(bounds.y - strokePadding - viewBox.y) / viewBox.height * 100}%`);
+    item.style.setProperty("--smiley-selection-width", `${(bounds.width + strokePadding * 2) / viewBox.width * 100}%`);
+    item.style.setProperty("--smiley-selection-height", `${(bounds.height + strokePadding * 2) / viewBox.height * 100}%`);
+  }, []);
 
   useEffect(() => {
     const deselectOutsideHero = (event: PointerEvent) => {
@@ -505,6 +519,7 @@ function HeroScene({
               className={selectedImage === "smiley" ? styles.selectedImage : undefined}
             >
               <svg
+                ref={smileyRef}
                 className={styles.smiley}
                 aria-hidden="true"
                 viewBox="0 0 180 180"
