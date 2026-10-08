@@ -5,6 +5,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
+    "prebuild": "npm run thumbnails",
     "build": "docusaurus build",
     "postbuild": "node scripts/normalize-llms-links.mjs",
     "test": "vitest run --exclude tests/llms-output.spec.ts",
@@ -16,7 +17,8 @@
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "thumbnails": "node scripts/thumbnails/generate.mjs"
   },
   "dependencies": {
     "@docusaurus/core": "^3.10.0",
