@@ -54,6 +54,12 @@ html:not(.plugin-docs) ::selection {
   color: #ffffff;
 }
 
+html.plugin-docs::selection,
+html.plugin-docs ::selection {
+  background-color: var(--ifm-link-color);
+  color: #ffffff;
+}
+
 article a[aria-label^="Read more about "] {
   font-size: 0.93rem;
 }

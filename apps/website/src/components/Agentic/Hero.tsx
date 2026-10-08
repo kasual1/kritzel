@@ -401,7 +401,7 @@ function HeroScene({
             <>
               <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderLeft}`}>
                 <DraggableCanvasItem
-                  label="left shoe variant"
+                  label="casual shoe variant"
                   selected={selectedImage === "left"}
                   onSelect={() => setSelectedImage("left")}
                   className={selectedImage === "left" ? styles.selectedImage : undefined}
@@ -416,7 +416,7 @@ function HeroScene({
               {(variantStatus === "right-loading" || variantStatus === "ready") && (
               <div className={`${styles.variantPlaceholder} ${styles.variantPlaceholderRight}`}>
                 <DraggableCanvasItem
-                  label="right shoe variant"
+                  label="summer shoe variant"
                   selected={selectedImage === "right"}
                   onSelect={() => setSelectedImage("right")}
                   className={selectedImage === "right" ? styles.selectedImage : undefined}
