@@ -67,7 +67,7 @@ const placingToastStyle: CSSProperties = {
   top: "16px",
   left: "50%",
   transform: "translateX(-50%)",
-  background: "rgba(9, 89, 164, 0.96)",
+  background: "rgba(74, 125, 255, 0.96)",
   color: "white",
   padding: "8px 20px",
   borderRadius: "99px",
@@ -88,8 +88,8 @@ const badgeStyle: CSSProperties = {
   fontSize: "11px",
   fontWeight: 700,
   textTransform: "uppercase",
-  backgroundColor: "rgba(9, 89, 164, 0.1)",
-  color: "#0959a4",
+  backgroundColor: "rgba(74, 125, 255, 0.1)",
+  color: "#4A7DFF",
   padding: "2px 8px",
   borderRadius: "99px",
   letterSpacing: "0.5px",
@@ -100,7 +100,7 @@ const mapControlsStyle: CSSProperties = {
   display: "flex",
   gap: "8px",
   padding: "12px 16px",
-  background: "rgba(9, 89, 164, 0.03)",
+  background: "rgba(74, 125, 255, 0.03)",
   borderBottom: "1px solid #d8e8ee",
 };
 
@@ -108,10 +108,10 @@ function actionBtnStyle(active: boolean): CSSProperties {
   return {
     flex: 1,
     padding: "8px 12px",
-    border: "1px solid #0959a4",
+    border: "1px solid #4A7DFF",
     borderRadius: "6px",
-    background: active ? "#0959a4" : "#ffffff",
-    color: active ? "#ffffff" : "#0959a4",
+    background: active ? "#4A7DFF" : "#ffffff",
+    color: active ? "#ffffff" : "#4A7DFF",
     fontSize: "13px",
     fontWeight: 600,
     cursor: "pointer",
@@ -127,7 +127,7 @@ const resetBtnStyle: CSSProperties = {
   border: "1px solid #cfe0e7",
   borderRadius: "6px",
   background: "#ffffff",
-  color: "#07437c",
+  color: "#3F6AD9",
   fontSize: "13px",
   fontWeight: 500,
   cursor: "pointer",
@@ -162,7 +162,7 @@ const defectCardStyle: CSSProperties = {
 };
 
 const statusColors: Record<DefectStatus, string> = {
-  Outstanding: "#0959a4",
+  Outstanding: "#4A7DFF",
   "In Progress": "#f59e0b",
   Resolved: "#10b981",
 };
