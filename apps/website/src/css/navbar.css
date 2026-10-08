@@ -38,6 +38,72 @@ html.landing-page:not(.landing-nav-visible) .navbar {
   pointer-events: none;
 }
 
+.blog-navigation {
+  position: relative;
+  height: 5.5rem;
+  flex-shrink: 0;
+}
+
+.blog-navigation .navbar {
+  position: relative;
+  top: 0;
+  height: 4rem;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.blog-navigation .navbar::before {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.blog-navigation .navbar__logo,
+.blog-navigation .navbar__logo img,
+.blog-sidebar-brand .navbar__logo,
+.blog-sidebar-brand .navbar__logo img {
+  width: 36px;
+  height: 36px;
+}
+
+.blog-navigation .navbar__title,
+.blog-sidebar-brand .navbar__title {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.blog-sidebar-brand {
+  display: none;
+}
+
+@media (min-width: 997px) {
+  .blog-navigation {
+    display: none;
+  }
+
+  .blog-wrapper aside > nav {
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blog-wrapper aside > nav > .margin-bottom--md {
+    display: none;
+  }
+
+  .blog-post-page main + .col--2 > .thin-scrollbar {
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+  }
+
+  .blog-sidebar-brand {
+    display: block;
+    order: -1;
+    margin-bottom: 1.5rem;
+  }
+}
+
 .navbar::before {
   position: absolute;
   inset: 0;

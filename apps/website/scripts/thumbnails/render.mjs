@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import zlib from 'node:zlib';
-import { W } from './lib.mjs';
+import { W, H } from './lib.mjs';
 import { renderArtwork, thumbnailSvg } from './painting.mjs';
 
 // The navbar logo (static/img/logo.svg, a single path), read at runtime so thumbnails follow logo changes.
@@ -94,5 +94,28 @@ export function renderThumbnail(seed, outFile, { scale = 1 } = {}) {
   });
   fs.mkdirSync(path.dirname(outFile), { recursive: true });
   fs.writeFileSync(outFile, withSeed(resvg.render().asPng(), art.seed));
+  return outFile;
+}
+
+// Experiment: the artwork only shines through the shape of the Kritzel logo (no label, no seed).
+// `background` is a CSS color, 'transparent', or 'dim' (the artwork itself, darkened, around the logo).
+export const LOGO_MASK_BACKGROUNDS = { white: '#ffffff', dark: '#141a2b', dim: 'dim', transparent: 'transparent' };
+
+export function renderLogoMask(seed, outFile, { scale = 1, background = 'white', logoHeight = 0.82 } = {}) {
+  const art = renderArtwork(seed, { scale });
+  const imageHref = `data:image/png;base64,${encodePng(art.width, art.height, art.rgba).toString('base64')}`;
+  const bg = LOGO_MASK_BACKGROUNDS[background] ?? background;
+  // logo centered, `logoHeight` of the canvas height
+  const k = (H * logoHeight) / LOGO.h;
+  const x = (W - LOGO.w * k) / 2, y = (H - LOGO.h * k) / 2;
+  const image = `<image width="${W}" height="${H}" href="${imageHref}"/>`;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W * scale}" height="${H * scale}" viewBox="0 0 ${W} ${H}">
+  <defs><clipPath id="logo"><path transform="translate(${x} ${y}) scale(${k})" d="${LOGO.d}"/></clipPath></defs>
+  ${bg === 'dim' ? `${image}<rect width="${W}" height="${H}" fill="#000" fill-opacity="0.72"/>` : bg === 'transparent' ? '' : `<rect width="${W}" height="${H}" fill="${bg}"/>`}
+  <g clip-path="url(#logo)">${image}</g>
+</svg>`;
+  const png = new Resvg(svg, { fitTo: { mode: 'width', value: W * scale } }).render().asPng();
+  fs.mkdirSync(path.dirname(outFile), { recursive: true });
+  fs.writeFileSync(outFile, withSeed(png, art.seed));
   return outFile;
 }

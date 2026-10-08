@@ -6,6 +6,8 @@
 //   npm run thumbnails -- --seed 5b1192ef [--scale 4] [--out file.png]   # one seed, e.g. in high res
 //   npm run thumbnails -- --seed "hello kritzel"                         # any text works as a seed
 //   npm run thumbnails -- --seed random [--scale 2]                      # a fresh random seed
+//   npm run thumbnails -- --seed 5b1192ef --logo-mask dim                # experiment: artwork inside the logo
+//                                                     (backgrounds: white, dark, dim, transparent or a color)
 //
 // Every image is fully determined by its seed, an arbitrary string of up to 32 characters (see painting.mjs).
 // For each post in blog/ (`*.md(x)` or `<dir>/index.md(x)`) the seed comes from `thumbnailSeed` in the front
@@ -17,7 +19,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseSeed, randomSeed, seedFor } from './painting.mjs';
-import { readSeed, renderThumbnail } from './render.mjs';
+import { readSeed, renderLogoMask, renderThumbnail } from './render.mjs';
 
 const SITE_DIR = fileURLToPath(new URL('../../', import.meta.url));
 const BLOG_DIR = path.join(SITE_DIR, 'blog');
@@ -96,7 +98,10 @@ if (seedArg) {
   const scale = Number(option('--scale') ?? 1);
   const name = seed.replace(/[^\w-]+/g, '_');
   const out = path.resolve(option('--out') ?? `thumbnail-${name}${scale > 1 ? `@${scale}x` : ''}.png`);
-  timed(`thumbnail ${out}`, () => renderThumbnail(seed, out, { scale }));
+  const background = option('--logo-mask');
+  timed(`thumbnail ${out}`, () =>
+    background ? renderLogoMask(seed, out, { scale, background }) : renderThumbnail(seed, out, { scale }),
+  );
   process.exit(0);
 }
 
