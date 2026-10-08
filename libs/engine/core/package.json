@@ -51,6 +51,7 @@
   },
   "scripts": {
     "build": "stencil build",
+    "postbuild": "node ../../../scripts/strip-angular-rxjs-output.mjs",
     "build:editor-dev": "stencil build",
     "dev": "stencil build --dev --watch",
     "start": "stencil build --dev --watch --serve",
