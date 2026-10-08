@@ -7,6 +7,7 @@ export default function SkillInstallation({children}: {children: React.ReactNode
   return (
     <>
       <p>
+        Additionally install the{' '}
         <a
           href={`#${guideId}`}
           aria-expanded={isVisible}
@@ -16,7 +17,7 @@ export default function SkillInstallation({children}: {children: React.ReactNode
             setIsVisible((visible) => !visible);
           }}
         >
-          Additionally install the kritzel skill
+          Kritzel skill
         </a>
       </p>
       <div id={guideId} hidden={!isVisible}>
