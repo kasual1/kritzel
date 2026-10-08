@@ -221,6 +221,73 @@ function MockToolbar() {
   );
 }
 
+function HalloDrawing({ className }: { className: string }) {
+  const halloRef = useRef<SVGSVGElement>(null);
+
+  useLayoutEffect(() => {
+    const svg = halloRef.current;
+    const item = svg?.parentElement;
+    if (!svg || !item) return;
+    const updateBounds = () => {
+      if (svg.getClientRects().length === 0) return;
+      const bounds = svg.getBBox();
+      const viewBox = svg.viewBox.baseVal;
+      const strokePadding = 2.5;
+      item.style.setProperty("--hallo-selection-left", `${(bounds.x - strokePadding - viewBox.x) / viewBox.width * 100}%`);
+      item.style.setProperty("--hallo-selection-top", `${(bounds.y - strokePadding - viewBox.y) / viewBox.height * 100}%`);
+      item.style.setProperty("--hallo-selection-width", `${(bounds.width + strokePadding * 2) / viewBox.width * 100}%`);
+      item.style.setProperty("--hallo-selection-height", `${(bounds.height + strokePadding * 2) / viewBox.height * 100}%`);
+    };
+    updateBounds();
+    const observer = new ResizeObserver(updateBounds);
+    observer.observe(svg);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div className={`${styles.halloDrawing} ${className}`}>
+      <DraggableCanvasItem label="handwritten hallo!">
+        <svg ref={halloRef} aria-hidden="true" viewBox="0 0 260 120" width="100%" height="100%">
+          <path
+            d="M18 88 C27 62 49 12 38 16 C24 20 20 72 22 88
+               C31 49 52 48 49 72 C47 91 53 93 65 80
+               C73 52 88 51 86 69 C83 91 58 99 60 77
+               C62 59 80 52 86 62 C84 75 78 94 90 88 C94 85 96 81 98 77
+               C112 57 132 8 117 16 C101 26 96 77 105 88 C114 100 128 88 138 70
+               C153 43 163 10 150 17 C136 25 126 78 139 89 C151 101 169 83 176 70
+               C184 52 207 53 207 72 C207 94 179 104 174 83 C170 66 183 57 194 60
+               C207 65 211 90 225 77"
+            fill="none"
+            className={styles.halloStroke}
+            pathLength={1}
+            stroke="#4a7dff"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M240 32 C239 45 237 59 236 72"
+            fill="none"
+            className={styles.halloExclamation}
+            pathLength={1}
+            stroke="#4a7dff"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+          <path
+            d="M235 88 L235 90"
+            fill="none"
+            className={styles.halloDot}
+            stroke="#4a7dff"
+            strokeWidth="5"
+            strokeLinecap="round"
+          />
+        </svg>
+      </DraggableCanvasItem>
+    </div>
+  );
+}
+
 export default function Hero({
   docsPath,
   variant = "infinite",
@@ -229,20 +296,45 @@ export default function Hero({
   variant?: "infinite" | "agentic";
 }) {
   const navRef = useRef<HTMLElement>(null);
-  const halloRef = useRef<SVGSVGElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLDivElement>(null);
   const grassImageUrl = useBaseUrl("/img/wet_grass.webp");
 
   useLayoutEffect(() => {
-    const svg = halloRef.current;
-    const item = svg?.parentElement;
-    if (!svg || !item) return;
-    const bounds = svg.getBBox();
-    const viewBox = svg.viewBox.baseVal;
-    const strokePadding = 2.5;
-    item.style.setProperty("--hallo-selection-left", `${(bounds.x - strokePadding - viewBox.x) / viewBox.width * 100}%`);
-    item.style.setProperty("--hallo-selection-top", `${(bounds.y - strokePadding - viewBox.y) / viewBox.height * 100}%`);
-    item.style.setProperty("--hallo-selection-width", `${(bounds.width + strokePadding * 2) / viewBox.width * 100}%`);
-    item.style.setProperty("--hallo-selection-height", `${(bounds.height + strokePadding * 2) / viewBox.height * 100}%`);
+    const wrapper = wrapperRef.current;
+    const canvas = canvasRef.current;
+    const copy = copyRef.current;
+    const toolbar = wrapper?.querySelector<HTMLElement>(`.${styles.toolbarDock}`);
+    const drawing = wrapper?.querySelector<SVGSVGElement>(`.${styles.halloTablet} svg`);
+    if (!wrapper || !canvas || !copy || !toolbar || !drawing) return;
+
+    const updatePosition = () => {
+      const canvasTop = canvas.getBoundingClientRect().top;
+      const copyBottom = copy.getBoundingClientRect().bottom;
+      // offsetTop ignores the toolbar's entrance translate animation, which getBoundingClientRect includes.
+      const toolbarParent = toolbar.offsetParent;
+      const toolbarTop = (toolbarParent?.getBoundingClientRect().top ?? canvasTop) + toolbar.offsetTop;
+      const bounds = drawing.getBBox();
+      const viewBox = drawing.viewBox.baseVal;
+      const scale = drawing.getBoundingClientRect().height / viewBox.height;
+      const strokeCenterOffset = (bounds.y + bounds.height / 2 - viewBox.y - viewBox.height / 2) * scale;
+      wrapper.style.setProperty("--hallo-center-top", `${(copyBottom + toolbarTop) / 2 - canvasTop - strokeCenterOffset}px`);
+    };
+    updatePosition();
+    const observer = new ResizeObserver(updatePosition);
+    [canvas, copy, toolbar, drawing].forEach((element) => observer.observe(element));
+    let resizeFrame = 0;
+    const updateAfterResize = () => {
+      window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(updatePosition);
+    };
+    window.addEventListener("resize", updateAfterResize);
+    return () => {
+      observer.disconnect();
+      window.cancelAnimationFrame(resizeFrame);
+      window.removeEventListener("resize", updateAfterResize);
+    };
   }, []);
 
   useEffect(() => {
@@ -264,8 +356,8 @@ export default function Hero({
   }, []);
 
   return (
-    <div className={styles.heroWrapper}>
-      <div className={styles.heroCanvas}>
+    <div ref={wrapperRef} className={styles.heroWrapper}>
+      <div ref={canvasRef} className={styles.heroCanvas}>
         <Link to="/" className={styles.brand}>
           <svg width="40" height="35" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
             <path fill="currentColor" d={KRITZEL_LOGO_PATH} />
@@ -288,7 +380,7 @@ export default function Hero({
         </nav>
 
         <div className={styles.heroCopy}>
-          <div className={styles.heroCopyInner}>
+          <div ref={copyRef} className={styles.heroCopyInner}>
             <nav className={styles.canvasToggle} aria-label="Canvas experience">
               <Link to="/" aria-current={variant === "infinite" ? "page" : undefined}>
                 Infinite
@@ -319,46 +411,8 @@ export default function Hero({
               <Calculator />
             </DraggableCanvasItem>
           </div>
-          <div className={styles.halloDrawing}>
-            <DraggableCanvasItem label="handwritten hallo!">
-              <svg ref={halloRef} aria-hidden="true" viewBox="0 0 260 120" width="100%" height="100%">
-                <path
-                  d="M18 88 C27 62 49 12 38 16 C24 20 20 72 22 88
-                     C31 49 52 48 49 72 C47 91 53 93 65 80
-                     C73 52 88 51 86 69 C83 91 58 99 60 77
-                     C62 59 80 52 86 62 C84 75 78 94 90 88 C94 85 96 81 98 77
-                     C112 57 132 8 117 16 C101 26 96 77 105 88 C114 100 128 88 138 70
-                     C153 43 163 10 150 17 C136 25 126 78 139 89 C151 101 169 83 176 70
-                     C184 52 207 53 207 72 C207 94 179 104 174 83 C170 66 183 57 194 60
-                     C207 65 211 90 225 77"
-                  fill="none"
-                  className={styles.halloStroke}
-                  pathLength={1}
-                  stroke="#4a7dff"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M240 32 C239 45 237 59 236 72"
-                  fill="none"
-                  className={styles.halloExclamation}
-                  pathLength={1}
-                  stroke="#4a7dff"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M235 88 L235 90"
-                  fill="none"
-                  className={styles.halloDot}
-                  stroke="#4a7dff"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </DraggableCanvasItem>
-          </div>
+          <HalloDrawing className={styles.halloDesktop} />
+          <HalloDrawing className={styles.halloTablet} />
         </div>
       </div>
       <div className={styles.toolbarViewport}>
