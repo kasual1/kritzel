@@ -75,6 +75,18 @@ Hero images and captions can be dragged independently or moved with arrow keys
 while focused (Shift increases the step). Drag offsets scale with the item size
 on resize and reset when the landing page is remounted.
 
+## Blog navigation
+
+On desktop, blog listings and individual posts show the linked Kritzel logo and
+name above the post list in the sticky left sidebar, without an "All posts"
+heading. The brand stays with the post
+list as the page scrolls. On mobile, where the sidebar is absent, the brand appears
+in a flat header that scrolls away with the page. Blog pages have no top navigation
+links, GitHub icon, mobile menu, or floating navbar. Navigation on other pages is
+unchanged.
+The right-hand table of contents on individual posts uses the same 2rem top
+offset as the left sidebar, without reserving space for a navbar.
+
 ## Installation
 
 The website's default and link cursors use 24px SVG assets in `static/img/cursor-*.svg`,
