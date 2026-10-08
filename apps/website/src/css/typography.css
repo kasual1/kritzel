@@ -45,13 +45,13 @@ h3 {
 
 p {
   font-size: 0.9rem;
-  opacity: 0.75;
+  color: var(--ifm-text-color-light);
   font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
 .markdown p {
   font-size: 0.9rem;
-  opacity: 0.75;
+  color: var(--ifm-text-color-light);
   font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
 }
 
