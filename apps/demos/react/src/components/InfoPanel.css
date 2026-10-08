@@ -58,14 +58,14 @@
 
 .demo-toolbar > .info-panel-toolbar-toggle:hover,
 .demo-toolbar > .info-panel-toolbar-toggle:focus-visible {
-  border-color: #0959a4;
-  background: #0959a4;
+  border-color: #4A7DFF;
+  background: #4A7DFF;
   color: #fff;
   outline: 0;
 }
 
 .demo-toolbar > .info-panel-toolbar-toggle:focus-visible {
-  box-shadow: 0 0 0 2px rgb(8 126 164 / 25%);
+  box-shadow: 0 0 0 2px rgb(74 125 255 / 25%);
 }
 
 @media (max-width: 720px) {
@@ -148,14 +148,14 @@
 
   .info-panel-close:hover,
   .info-panel-close:focus-visible {
-    border-color: #0959a4;
-    background: #0959a4;
+    border-color: #4A7DFF;
+    background: #4A7DFF;
     color: #fff;
     outline: 0;
   }
 
   .info-panel-close:focus-visible {
-    box-shadow: 0 0 0 2px rgb(8 126 164 / 25%);
+    box-shadow: 0 0 0 2px rgb(74 125 255 / 25%);
   }
 
   .info-panel.show-on-mobile.is-open > .info-panel-body {
