@@ -9,7 +9,7 @@
   --ifm-code-font-size: 95%;
   --ifm-background-color: #ffffff;
   --ifm-text-color: #000000;
-  --ifm-text-color-light: hsla(0, 0%, 0%, 0.75);
+  --ifm-text-color-light: #5c5c5c;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --button-icon-color: #ffffff;
 }
