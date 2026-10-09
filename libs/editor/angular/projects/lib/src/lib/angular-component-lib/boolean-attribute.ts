@@ -32,8 +32,8 @@
  * Declared as a function rather than an arrow constant because Angular has to resolve input
  * transforms statically when compiling a library in partial compilation mode.
  *
- * This lives in its own file, separate from `utils.ts`, so that it carries no runtime imports
- * and remains independently type-checkable.
+ * This lives in its own file, separate from `utils.ts`, so that it carries no runtime imports.
+ * That keeps it independently type-checkable without pulling `rxjs` in for `proxyOutputs`.
  */
 export function nullableBooleanAttribute(value: boolean | string | null | undefined): boolean | null | undefined {
   if (value === null || value === undefined) {
