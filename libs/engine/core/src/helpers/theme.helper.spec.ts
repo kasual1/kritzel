@@ -1,5 +1,6 @@
 import { ThemeHelper } from './theme.helper';
 import { KritzelTheme } from '../interfaces/theme.interface';
+import { darkTheme } from '../themes/dark-theme';
 import { lightTheme } from '../themes/light-theme';
 
 describe('ThemeHelper', () => {
@@ -58,7 +59,13 @@ describe('ThemeHelper', () => {
       expect(variables.get('--kritzel-global-focus-color')).toBe('#333333');
       expect(variables.get('--kritzel-global-icon-color')).toBe('currentColor');
       expect(variables.get('--kritzel-global-divider-color')).toBe('#e0e0e0');
-      expect(variables.get('--kritzel-selection-border-color')).toBe('#007AFF');
+      expect(variables.get('--kritzel-selection-border-color')).toBe('#4A7DFF');
+    });
+
+    it('should correctly flatten dark-theme accent variables', () => {
+      const variables = ThemeHelper.flattenThemeToVariables(darkTheme);
+      expect(variables.get('--kritzel-selection-border-color')).toBe('#5B8CFF');
+      expect(variables.get('--kritzel-snap-indicator-fill')).toBe('rgba(91, 140, 255, 0.35)');
     });
 
     it('should correctly flatten engine variables', () => {
@@ -68,10 +75,10 @@ describe('ThemeHelper', () => {
 
     it('should flatten snap indicator styling variables for custom themes', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.get('--kritzel-snap-indicator-fill')).toBe('rgba(59, 130, 246, 0.3)');
-      expect(variables.get('--kritzel-snap-indicator-fill-inactive')).toBe('rgba(59, 130, 246, 0.18)');
-      expect(variables.get('--kritzel-snap-indicator-stroke')).toBe('#007bff');
-      expect(variables.get('--kritzel-snap-indicator-stroke-inactive')).toBe('rgba(59, 130, 246, 0.5)');
+      expect(variables.get('--kritzel-snap-indicator-fill')).toBe('rgba(74, 125, 255, 0.3)');
+      expect(variables.get('--kritzel-snap-indicator-fill-inactive')).toBe('rgba(74, 125, 255, 0.18)');
+      expect(variables.get('--kritzel-snap-indicator-stroke')).toBe('#4A7DFF');
+      expect(variables.get('--kritzel-snap-indicator-stroke-inactive')).toBe('rgba(74, 125, 255, 0.5)');
     });
 
     it('should correctly flatten toolbar variables', () => {
@@ -79,7 +86,7 @@ describe('ThemeHelper', () => {
       expect(variables.get('--kritzel-toolbar-background-color')).toBe('#ffffff');
       expect(variables.get('--kritzel-toolbar-border')).toBe('1px solid #ebebeb');
       expect(variables.get('--kritzel-toolbar-control-hover-background-color')).toBe('hsl(0, 0%, 0%, 4.3%)');
-      expect(variables.get('--kritzel-toolbar-control-selected-background-color')).toBe('#007AFF');
+      expect(variables.get('--kritzel-toolbar-control-selected-background-color')).toBe('#4A7DFF');
     });
 
     it('should correctly flatten tooltip variables', () => {
@@ -90,7 +97,7 @@ describe('ThemeHelper', () => {
 
     it('should correctly flatten menu variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.get('--kritzel-menu-item-selected-background-color')).toBe('#007aff');
+      expect(variables.get('--kritzel-menu-item-selected-background-color')).toBe('#4A7DFF');
       expect(variables.get('--kritzel-menu-item-color')).toBe('#333333');
       expect(variables.get('--kritzel-menu-background-color')).toBe('#ffffff');
     });
@@ -99,7 +106,7 @@ describe('ThemeHelper', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
       expect(variables.get('--kritzel-dropdown-text-color')).toBe('#333333');
       expect(variables.get('--kritzel-dropdown-hover-background-color')).toBe('#f0f0f0');
-      expect(variables.get('--kritzel-dropdown-selected-background-color')).toBe('#007bff1a');
+      expect(variables.get('--kritzel-dropdown-selected-background-color')).toBe('#4A7DFF1A');
     });
 
     it('should use custom prefix when provided', () => {

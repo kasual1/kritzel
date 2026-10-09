@@ -39,8 +39,7 @@
 }
 
 .color-container.selected {
-  border-color: var(--kritzel-selection-border-color, #007AFF);
+  border-color: var(--kritzel-selection-border-color, #4A7DFF);
   background-color: var(--kritzel-color-palette-selected-background-color);
 }
-
 

@@ -10,6 +10,7 @@ toc_max_heading_level: 2
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
+import SkillInstallation from '@site/src/components/SkillInstallation';
 
 # Quick Start
 
@@ -17,27 +18,21 @@ The following guide gets you a full Kritzel editor setup in under five minutes.
 
 ## Installation
 
-Optionally, let the CLI detect your existing application and install the matching editor packages and required peers:
-
-```bash
-npx @kritzel/cli@latest init
-```
-
-This installs dependencies only. Add `--generate-component` to opt in to a TypeScript starter, then follow the printed manual setup steps. See [CLI Setup](./cli.md) for engine selection, workspace targeting, and all options.
-
-Direct installation remains supported:
-
 Run the following command to install the Kritzel editor in your project.
 
 ```bash
 npm install @kritzel/angular-editor
 ```
 
+<SkillInstallation>
+
 Install the related Kritzel skill for coding assistance:
 
 ```bash
 npx skills add kasual1/kritzel
 ```
+
+</SkillInstallation>
 
 ## Setup
 

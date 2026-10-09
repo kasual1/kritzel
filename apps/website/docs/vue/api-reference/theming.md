@@ -55,9 +55,18 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 
 `accentColor`, `background`, `borderColor`, `borderRadius`, `hoverBackgroundColor`, `hoverBorderColor`, `menuBorderRadius`, `selectedBackgroundColor`, `textColor`.
 
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| accentColor | #4A7DFF | #5B8CFF |
+| selectedBackgroundColor | #4A7DFF1A | rgba(91, 140, 255, 0.2) |
+
 ## Editor
 
 `loadingOverlayBackground`, `loadingOverlayColor`, `loadingOverlaySpinnerActiveColor`, `loadingOverlaySpinnerColor`, `syncIndicatorBackground`, `syncIndicatorColor`, `syncIndicatorSpinnerColor`, `syncIndicatorSpinnerTrack`, `syncIndicatorZIndex`.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| syncIndicatorSpinnerColor | #4A7DFF | #5B8CFF |
 
 ## Engine
 
@@ -79,9 +88,19 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 
 `backButtonColor`, `backgroundColor`, `detailBackgroundColor`, `detailFocusOutline`, `menuBackgroundColor`, `menuBorderRight`, `menuItemActiveBackgroundColor`, `menuItemBackgroundColor`, `menuItemChevronColor`, `menuItemColor`, `menuItemDisabledColor`, `menuItemFocusOutline`, `menuItemHoverBackgroundColor`, `menuItemSelectedBackgroundColor`, `menuItemSelectedColor`, `menuItemSelectedHoverBackgroundColor`.
 
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| menuItemSelectedBackgroundColor | #4A7DFF | #5B8CFF |
+| menuItemSelectedHoverBackgroundColor | #4A7DFF | #5B8CFF |
+
 ## Menu
 
 `backgroundColor`, `border`, `boxShadow`, `itemButtonHoverBackgroundColor`, `itemChildOpenBackgroundColor`, `itemColor`, `itemEditingBackgroundColor`, `itemInputBorder`, `itemInputBorderColorOnSelected`, `itemInputCaretColor`, `itemInputCaretColorOnSelected`, `itemInputSelectionColor`, `itemInputSelectionColorOnSelected`, `itemInputSelectionTextColor`, `itemInputSelectionTextColorOnSelected`, `itemOverlayBackgroundColor`, `itemSelectedBackgroundColor`, `itemSelectedColor`.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| itemInputSelectionColor | #4A7DFF | #b0b0b0 |
+| itemSelectedBackgroundColor | #4A7DFF | #5B8CFF |
 
 ## More Menu
 
@@ -95,9 +114,18 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 
 `borderColor`, `borderRadius`, `focusBorderColor`, `hoverBorderColor`, `inputBackground`, `labelColor`, `selectionBackground`, `selectionColor`, `spinnerActiveBackground`, `spinnerBackground`, `spinnerBorderRadius`, `spinnerColor`, `spinnerHoverBackground`, `textColor`.
 
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| selectionBackground | #4A7DFF | #5B8CFF |
+
 ## Opacity Slider
 
 `activeColor`, `thumbBorderColor`, `thumbColor`, `trackColor`.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| activeColor | #4A7DFF | #5B8CFF |
+| thumbBorderColor | #4A7DFF | #5B8CFF |
 
 ## Pill Tabs
 
@@ -106,6 +134,13 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 ## Selection
 
 `borderColor`, `boxBackgroundColor`, `boxBorderColor`, `handleColor`, `handleStrokeColor`.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| borderColor | #4A7DFF | #5B8CFF |
+| boxBackgroundColor | rgba(74, 125, 255, 0.2) | rgba(91, 140, 255, 0.2) |
+| boxBorderColor | rgba(74, 125, 255, 0.5) | rgba(91, 140, 255, 0.5) |
+| handleStrokeColor | #4A7DFF | #5B8CFF |
 
 ## Settings
 
@@ -119,13 +154,28 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 
 `borderColor`, `copyButtonBackground`, `copyButtonColor`, `copyButtonHoverBackground`, `copyButtonHoverColor`, `copySuccessBackground`, `copySuccessColor`, `descriptionColor`, `inputBackground`, `inputBorderColor`, `inputTextColor`, `labelColor`, `revokeButtonBorderColor`, `revokeButtonColor`, `revokeButtonHoverBackground`, `revokeButtonHoverColor`, `selectionColor`.
 
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| selectionColor | #cce5ff | #5B8CFF |
+
 ## Slide Toggle
 
 `thumbColor`, `thumbSize`, `trackCheckedColor`, `trackColor`, `transitionDuration`.
 
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| trackCheckedColor | #4A7DFF | #5B8CFF |
+
 ## Snap
 
 `indicatorFill`, `indicatorFillInactive`, `indicatorStroke`, `indicatorStrokeInactive`, `lineStroke`.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| indicatorFill | rgba(74, 125, 255, 0.3) | rgba(91, 140, 255, 0.35) |
+| indicatorFillInactive | rgba(74, 125, 255, 0.18) | rgba(91, 140, 255, 0.2) |
+| indicatorStroke | #4A7DFF | #5B8CFF |
+| indicatorStrokeInactive | rgba(74, 125, 255, 0.5) | rgba(255, 255, 255, 0.45) |
 
 ## Split Button
 
@@ -139,9 +189,17 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 
 `background`, `borderColor`, `borderRadius`, `focusBorderColor`, `hoverBorderColor`, `labelColor`, `placeholderColor`, `selectionBackground`, `selectionColor`, `suffixBackground`, `suffixColor`, `textColor`.
 
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| selectionBackground | #4A7DFF | #5B8CFF |
+
 ## Toolbar
 
 `backgroundColor`, `border`, `boxShadow`, `controlActiveBackgroundColor`, `controlColor`, `controlHoverBackgroundColor`, `controlSelectedBackgroundColor`, `controlSelectedColor`, `separatorColor`.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| controlSelectedBackgroundColor | #4A7DFF | #5B8CFF |
 
 ## Tooltip
 

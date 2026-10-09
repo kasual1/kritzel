@@ -9,7 +9,7 @@
   --ifm-code-font-size: 95%;
   --ifm-background-color: #ffffff;
   --ifm-text-color: #000000;
-  --ifm-text-color-light: hsla(0, 0%, 0%, 0.75);
+  --ifm-text-color-light: #5c5c5c;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --button-icon-color: #ffffff;
 }
@@ -21,8 +21,8 @@ html.plugin-id-angular .menu__link:not(.menu__link--sublist) {
 }
 
 html.plugin-id-react .menu__link:not(.menu__link--sublist) {
-  --ifm-menu-color-active: #0959a4;
-  --ifm-menu-color-background-active: rgba(11, 107, 196, 0.1);
+  --ifm-menu-color-active: #4a7dff;
+  --ifm-menu-color-background-active: #4a7dff1a;
   --ifm-menu-color-hover: rgba(255, 0, 0, 0.05);
 }
 
@@ -38,8 +38,8 @@ html.plugin-id-angular .navbar__item.dropdown .dropdown__link--active {
 }
 
 html.plugin-id-react .navbar__item.dropdown .dropdown__link--active {
-  background-color: rgba(11, 107, 196, 0.1);
-  color: #0959a4;
+  background-color: #4a7dff1a;
+  color: #4a7dff;
 }
 
 html.plugin-id-vue .navbar__item.dropdown .dropdown__link--active {
@@ -76,8 +76,8 @@ html.plugin-id-angular .table-of-contents__link--active {
 }
 
 html.plugin-id-react {
-  --ifm-toc-link-color-active: #0959a4;
-  --ifm-link-color: #0959a4;
+  --ifm-toc-link-color-active: #4a7dff;
+  --ifm-link-color: #4a7dff;
 }
 
 html.plugin-id-react .table-of-contents__link--active {

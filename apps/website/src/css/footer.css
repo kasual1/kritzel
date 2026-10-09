@@ -1,26 +1,30 @@
 .footer {
-  background-color: #000 !important;
+  border-top: 1.5px solid #0a0a0a;
+  background-color: #fff !important;
+  color: #0a0a0a;
 }
 
 .footer ::selection {
-  background-color: rgba(255, 255, 255, 0.9);
-  color: #111111;
+  background-color: rgba(0, 0, 0, 0.2);
+  color: #0a0a0a;
 }
 
 .footer__link-item {
+  color: #0a0a0a;
   font-size: 0.93rem;
   line-height: 1.5;
 }
 
 .footer__link-item:hover {
-  color: #aaaaaa !important;
+  color: #5c5c5c !important;
 }
 
 .footer__links {
-  margin-bottom: 6rem;
+  margin-bottom: 3rem;
 }
 
 .footer__copyright {
+  color: #0a0a0a;
   font-size: 0.72rem;
   margin-top: 2rem;
   text-align: left;
@@ -65,8 +69,9 @@
   align-items: center;
   justify-content: center;
   background: #ffffff;
+  border: 1.5px solid #0a0a0a;
   padding: 0.32rem;
-  border-radius: 0.65rem;
+  border-radius: 0.875rem;
   margin-bottom: 0.9rem;
 }
 
@@ -78,7 +83,8 @@
 
 .kritzel-footer-brand__description {
   margin: 0;
-  color: var(--ifm-footer-color);
+  color: #0a0a0a;
+  opacity: 1;
   line-height: 1.55;
   font-size: 0.93rem;
 }
