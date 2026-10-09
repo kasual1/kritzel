@@ -21,6 +21,8 @@ function BlogPostItemHeaderImage(): ReactNode {
       className={styles.image}
       src={src}
       alt=""
+      // placeholder size so lazy loading sees a box before the image arrives (generated thumbnails are
+      // 1200×630); once loaded, `width: auto` in CSS switches to the image's own aspect ratio
       width={1200}
       height={630}
       loading={isBlogPostPage ? 'eager' : 'lazy'}

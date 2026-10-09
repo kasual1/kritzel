@@ -104,6 +104,12 @@ yarn
 yarn start
 ```
 
+From the repository root, you can also run `npm run docs:start`.
+On Windows, development uses Webpack to avoid the Rspack 1.7.12
+`cssExtractHmr.js` module-graph panic. CSS hot reload remains enabled.
+Production builds and development on other platforms still use Rspack;
+the other Docusaurus v4 and faster options remain enabled.
+
 To point LiveDemo previews to a local demo app while running docs locally, set `DEMO_BASE_URL` before starting:
 
 ```powershell
