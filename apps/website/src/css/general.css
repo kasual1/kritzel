@@ -48,6 +48,18 @@ nav[aria-label="Breadcrumbs"] {
   color: inherit;
 }
 
+html:not(.plugin-docs)::selection,
+html:not(.plugin-docs) ::selection {
+  background-color: #4a7dff;
+  color: #ffffff;
+}
+
+html.plugin-docs::selection,
+html.plugin-docs ::selection {
+  background-color: var(--ifm-link-color);
+  color: #ffffff;
+}
+
 article a[aria-label^="Read more about "] {
   font-size: 0.93rem;
 }
@@ -223,4 +235,38 @@ article a[aria-label^="Read more about "] {
   .pagination-nav__link--next {
     grid-column: 1;
   }
+}
+:root {
+  --kritzel-site-default-cursor: url("/img/cursor-default.svg") 4 4, auto;
+  --kritzel-site-pointer-cursor: url("/img/cursor-pointer.svg") 12 12, pointer;
+  --kritzel-site-hand-cursor: url("/img/cursor-hand.svg") 12 12, grab;
+  --kritzel-site-grab-cursor: url("/img/cursor-grab.svg") 12 12, grabbing;
+}
+
+html,
+body {
+  cursor: var(--kritzel-site-default-cursor);
+}
+
+a[href],
+button,
+summary,
+[role="button"],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+select,
+label[for],
+label:has(input[type="checkbox"], input[type="radio"]),
+[class*="wordmarkLetter"] {
+  cursor: var(--kritzel-site-pointer-cursor) !important;
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed !important;
 }

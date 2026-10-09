@@ -17,6 +17,27 @@
   padding: 0.3rem 1rem;
 }
 
+html.landing-page .navbar {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s;
+}
+
+html.landing-page.landing-nav-visible .navbar {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s;
+}
+
+html.landing-page:not(.landing-nav-visible) .navbar {
+  opacity: 0;
+  transform: translateY(calc(-100% - 1rem));
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .navbar::before {
   position: absolute;
   inset: 0;
@@ -27,6 +48,10 @@
   backdrop-filter: blur(12px);
   content: "";
   pointer-events: none;
+}
+
+.navbar--fixed-top {
+  top: 0.75rem;
 }
 
 body:has(.theme-doc-markdown) .navbar {
@@ -43,12 +68,15 @@ body:has(.theme-doc-markdown) .navbar::before {
   border-radius: 0;
 }
 
-.navbar--fixed-top {
-  top: 0.75rem;
-}
-
 body:has(.theme-doc-markdown) .navbar--fixed-top {
   top: 0;
+}
+
+html.landing-page .navbar--fixed-top {
+  position: fixed;
+  right: 0;
+  left: 0;
+  margin-top: 0;
 }
 
 .navbar > .container,

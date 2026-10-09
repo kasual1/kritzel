@@ -2,7 +2,85 @@
 
 This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
 
+## Landing hero layout
+
+The `/agentic` page has its own hero, CTA controls, and stylesheet under
+`src/components/Agentic`; edit these independently of `src/components/Landing`.
+The sections below the hero and basic icon assets remain shared.
+
+Above 768px, the canvas is centered and capped at 1440px, with a viewport-height
+target capped at 880px and a 720px minimum. Navigation, descriptions, CTA controls,
+and the toolbar/chat retain readable screen-space sizes. Headings scale only
+between 48px and 60px. Canvas objects still use container-relative `cqw` units;
+1cqw is 1% of the canvas width.
+
+From 769px through 1199px, the hero uses an art-directed tablet/narrow-desktop
+composition: the copy has a wider central column. The landing hero hides the
+calculator and grass image and centers the handwritten "hallo!" beneath the copy
+and CTAs. Separate tablet and desktop instances share the same drawing component.
+On entering desktop, the tablet instance fades out over 200ms, then the desktop
+instance replays its drawing animation after its 300ms delay. Returning to tablet
+replays the centered instance's drawing animation as well; fading is only used
+when it disappears. Reduced-motion users see instant changes.
+The landing tablet canvas follows the viewport height between 720px and 880px.
+On tablet and mobile, the visible SVG strokes' vertical center is measured dynamically
+between the bottom of the copy/CTAs and the top of the toolbar. Resize observers
+update it as content and viewport dimensions change. Its size adjusts on shorter
+tablet screens; screens shorter than 720px can scroll.
+The agentic tablet and mobile compositions center the unrotated running shoe
+below the copy and hide both the chart and smiley. Separate desktop and compact
+shoe instances share a drawing-card component, with independent drag offsets
+and entrance animations. Selection and the chat sequence remain shared; focus
+layout measures only the visible instance. The shoe is dynamically centered
+between the bottom of the copy/CTAs and the
+top of the scaled chat box. Resize observers recalculate this space when content
+or viewport dimensions change, including during variant generation.
+Compact layouts skip the initial chat centering command: the first submission creates the
+casual shoe variant directly, and the hero description stays visible and in place
+throughout. Desktop retains its initial centering step, which hides the description
+and raises the copy to make room for the focused shoe.
+The compact canvas has an 800px minimum and an 880px cap, allowing extra room for the chat.
+Short screens scroll rather than shrinking the UI. The focus/variant sequence
+still centers its cards between the copy and chat and can increase the minimum
+height if needed to prevent overlap. On tablet and mobile (1199px and below) the
+shoe fades and settles in place at its center instead of sliding in from the left.
+Generated variants are stacked on top of it at the same center and width, each
+with a slight alternating rotation (+4° and −3.5°), rather than sitting side by
+side as on desktop. The cards are fanned out by a few pixels so a strip of each
+stays visible. Every card remains selectable and draggable (also by keyboard);
+selecting or dragging a card raises it to the top, and that order persists after
+deselecting. Card wrappers ignore pointer events so a dragged-away card never
+blocks the ones beneath it. Reduced-motion users see the final stack immediately.
+Stacked cards keep a fixed width (240px on tablet, 220px on mobile) instead of
+scaling with the viewport, and use a slimmer 6px white frame (desktop keeps 10px,
+set through the `--image-card-padding` variable of `ImageCard`). On tablet the
+hero title (40px) and description (16px) use the mobile sizes to give the stack
+more room.
+The desktop 3D pie chart plays its drawing animation whenever it becomes visible
+(not at mount), so it replays after widening from a tablet or mobile viewport, where
+it is hidden.
+
+At 768px and below, the landing hero shows the centered, unrotated handwritten
+drawing instead of the calculator and grass image. Demo and Get started remain
+side by side; the npm install control is hidden. The canvas follows the viewport
+height with a 720px minimum and an 880px cap, spacing the copy, drawing, and
+toolbar vertically rather than sizing itself from the copy's bottom padding.
+Very short screens scroll to preserve readability. The agentic mobile hero uses
+the same side-by-side CTAs and hides the npm install control and Get License
+navigation button, while retaining its interactive chat.
+
+Photo captions start beneath their photo wrapper but can be moved independently.
+
+Hero images and captions can be dragged independently or moved with arrow keys
+while focused (Shift increases the step). Drag offsets scale with the item size
+on resize and reset when the landing page is remounted.
+
 ## Installation
+
+The website's default and link cursors use 24px SVG assets in `static/img/cursor-*.svg`,
+matching the engine's white-filled, black-outline arrow and hand. Hotspots match
+`KritzelCursorHelper`: 4,4 for the arrow and 12,12 for the hand. Text fields and
+disabled controls keep semantic cursors; embedded demo frames manage their own cursors.
 
 ```bash
 yarn
