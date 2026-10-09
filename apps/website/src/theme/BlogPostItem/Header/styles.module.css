@@ -1,13 +1,16 @@
 .link {
-  display: block;
+  display: inline-block;
 }
 
+/* Small, left-aligned thumbnail: fixed height, natural width (generated thumbnails are 1200×630,
+   custom images may have any aspect ratio). */
 .image {
   display: block;
-  width: 100%;
-  height: auto;
-  aspect-ratio: 1200 / 630;
-  object-fit: cover;
+  height: 220px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: left center;
   border-radius: 10px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }

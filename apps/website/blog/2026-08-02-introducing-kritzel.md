@@ -2,8 +2,7 @@
 title: "Introducing Kritzel: The Infinite Canvas Library for React, Vue, and Angular"
 description: "After 2.5 years of development, we are thrilled to announce Kritzel—a framework-agnostic infinite canvas library designed for spatial UI."
 date: 2026-08-02
-image: /img/blog/introducing-kritzel.png
-thumbnailSeed: "ceb13c83"
+image: /img/blog/introducing-kritzel-flowers.png
 ---
 
 import QuickStartLink from '@site/src/components/QuickStartLink';
