@@ -77,15 +77,20 @@ on resize and reset when the landing page is remounted.
 
 ## Blog navigation
 
-On desktop, blog listings and individual posts show the linked Kritzel logo and
-name above the post list in the sticky left sidebar, without an "All posts"
-heading. The brand stays with the post
-list as the page scrolls. On mobile, where the sidebar is absent, the brand appears
-in a flat header that scrolls away with the page. Blog pages have no top navigation
+Blog listings show the linked Kritzel logo and name in a flat top header. Entries
+use the full content width and align with the logo's left edge, without a post-list
+sidebar. Listing thumbnails reuse the hero's white image-card frame and shadow.
+Both blog layouts use a centered, 1080px maximum-width container with extra
+desktop side gutters, keeping the header and content left edges aligned.
+Individual posts have no left sidebar. Their flat header replaces the logo with
+a back arrow linking to the blog overview. The thumbnail and article use the
+left content area, with a sticky table of contents on the right on desktop.
+The header scrolls away with the page. Blog pages have no top navigation
 links, GitHub icon, mobile menu, or floating navbar. Navigation on other pages is
 unchanged.
-The right-hand table of contents on individual posts uses the same 2rem top
-offset as the left sidebar, without reserving space for a navbar.
+The right-hand table of contents on individual posts uses a 2rem top offset.
+Blog listings and individual posts leave extra responsive space below the content
+and reuse the landing page's stylized KRITZEL wordmark immediately above the footer.
 
 ## Installation
 

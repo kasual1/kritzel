@@ -5,6 +5,7 @@ import { useBlogPost } from '@docusaurus/plugin-content-blog/client';
 import BlogPostItemHeaderTitle from '@theme/BlogPostItem/Header/Title';
 import BlogPostItemHeaderInfo from '@theme/BlogPostItem/Header/Info';
 import BlogPostItemHeaderAuthors from '@theme/BlogPostItem/Header/Authors';
+import ImageCard from '@site/src/components/Landing/ImageCard';
 import styles from './styles.module.css';
 
 // Shows the post's front matter `image` (the generated thumbnail, see scripts/thumbnails) above the title:
@@ -33,7 +34,9 @@ function BlogPostItemHeaderImage(): ReactNode {
     img
   ) : (
     <Link to={metadata.permalink} tabIndex={-1} aria-hidden="true" className={styles.link}>
-      {img}
+      <div className={styles.thumbnail}>
+        <ImageCard>{img}</ImageCard>
+      </div>
     </Link>
   );
 }
