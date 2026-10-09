@@ -1,5 +1,17 @@
 .link {
   display: inline-block;
+  max-width: 100%;
+}
+
+.thumbnail {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 1.25rem;
+}
+
+.thumbnail .image {
+  border-radius: 0;
+  margin-bottom: 0;
 }
 
 /* Small, left-aligned thumbnail: fixed height, natural width (generated thumbnails are 1200×630,

@@ -1,3 +1,9 @@
+.blog-footer-wordmark {
+  flex-shrink: 0;
+  padding-top: clamp(64px, 8vw, 120px);
+  overflow: hidden;
+}
+
 .footer {
   border-top: 1.5px solid #0a0a0a;
   background-color: #fff !important;
