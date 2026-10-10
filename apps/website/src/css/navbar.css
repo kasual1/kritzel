@@ -42,14 +42,13 @@ html.landing-page:not(.landing-nav-visible) .navbar {
 
 .blog-navigation {
   position: relative;
-  height: 5.5rem;
   flex-shrink: 0;
 }
 
 .blog-navigation .navbar {
   position: relative;
   top: 0;
-  height: 4rem;
+  height: auto;
   border-color: transparent;
   box-shadow: none;
 }
@@ -101,6 +100,13 @@ html.landing-page:not(.landing-nav-visible) .navbar {
   max-width: var(--ifm-container-width);
   margin-inline: auto;
   padding-inline: var(--ifm-spacing-horizontal);
+}
+
+/* Less space between the flat blog navbar and the content. The container's top margin comes from
+   Infima's .margin-vert--lg, a layered !important we can't override, so pull the wrapper up instead. */
+.blog-list-page .main-wrapper,
+.blog-post-page .main-wrapper {
+  margin-top: -1rem;
 }
 
 .blog-list-page main {
