@@ -9,6 +9,9 @@ const DEFAULT_WIDTH = 640;
 const DEFAULT_HEIGHT = 360;
 const DEFAULT_OUT_DIR = path.join(__dirname, 'recordings');
 const PROFILE_DIR = path.join(__dirname, '.profile');
+const ICON_REGISTRY = path.join(__dirname, '../../libs/engine/core/src/classes/registries/icon-registry.class.ts');
+// Same hotspot KritzelCursorHelper.getCursor() uses for the default cursor.
+const CURSOR_HOTSPOT = { x: 4, y: 4 };
 
 function getArgValue(name) {
 	const prefix = `--${name}=`;
@@ -43,6 +46,18 @@ function toUrl(value) {
 	} catch {
 		throw new Error(`Invalid url "${value}".`);
 	}
+}
+
+// Reads the engine's default cursor (the `mousePointer` icon) so the recording
+// shows the same cursor as the Kritzel engine.
+function loadEngineCursorSvg() {
+	const source = fs.readFileSync(ICON_REGISTRY, 'utf8');
+	const match = source.match(/^\s*mousePointer:\s*'([^']*)'/m);
+	if (!match) {
+		throw new Error(`Could not find the mousePointer icon in ${ICON_REGISTRY}.`);
+	}
+
+	return match[1].replace(/currentColor/g, 'black');
 }
 
 function defaultName() {
@@ -80,7 +95,7 @@ function defaultName() {
 		});
 
 		if (withCursor) {
-			await context.addInitScript(installRecorderCursor);
+			await context.addInitScript(installRecorderCursor, { svg: loadEngineCursorSvg(), hotspot: CURSOR_HOTSPOT });
 		}
 
 		const page = context.pages()[0] || (await context.newPage());

@@ -1,22 +1,17 @@
 // Injected into every page of the recording context. Playwright's screencast does
-// not capture the OS cursor, so we draw our own cursor and click ripple in the DOM.
-function installRecorderCursor() {
+// not capture the OS cursor, so we draw the Kritzel cursor and a click ripple in the DOM.
+function installRecorderCursor({ svg, hotspot }) {
 	if (window.__kritzelRecorderCursor) {
 		return;
 	}
 	window.__kritzelRecorderCursor = true;
-
-	const CURSOR_SVG =
-		'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">' +
-		'<path d="M3 2 L3 19 L7.5 14.8 L10.4 21.3 L13.2 20.1 L10.4 13.7 L16.5 13.7 Z" ' +
-		'fill="#111" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 
 	const STYLE = `
 		html, html * { cursor: none !important; }
 		#__recorder-cursor {
 			position: fixed; left: 0; top: 0; width: 24px; height: 24px;
 			pointer-events: none; z-index: 2147483647; opacity: 0;
-			transform-origin: 3px 2px; transition: opacity 120ms ease;
+			transform-origin: ${hotspot.x}px ${hotspot.y}px; transition: opacity 120ms ease;
 			will-change: transform;
 		}
 		#__recorder-cursor.visible { opacity: 1; }
@@ -40,7 +35,7 @@ function installRecorderCursor() {
 
 	function render() {
 		if (cursor) {
-			cursor.style.transform = `translate(${x - 3}px, ${y - 2}px) scale(${pressed ? 0.85 : 1})`;
+			cursor.style.transform = `translate(${x - hotspot.x}px, ${y - hotspot.y}px) scale(${pressed ? 0.85 : 1})`;
 		}
 	}
 
@@ -51,7 +46,7 @@ function installRecorderCursor() {
 
 		cursor = document.createElement('div');
 		cursor.id = '__recorder-cursor';
-		cursor.innerHTML = CURSOR_SVG;
+		cursor.innerHTML = svg;
 		document.documentElement.appendChild(cursor);
 		render();
 	}
