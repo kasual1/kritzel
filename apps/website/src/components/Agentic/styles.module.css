@@ -1579,7 +1579,7 @@
   .heroCopy {
     position: relative;
     top: auto;
-    padding: clamp(138px, calc(15svh + 28px), 160px) 16px 0;
+    padding: clamp(168px, calc(15svh + 58px), 190px) 16px 0;
   }
 
   .heroCopyInner {
