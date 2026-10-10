@@ -33,7 +33,7 @@ html.landing-page.landing-nav-visible[data-landing-nav-animated] .navbar {
     visibility 0s;
 }
 
-html.landing-page:not(.landing-nav-visible) .navbar {
+html.landing-page:not(.landing-nav-visible) .navbar:not(.navbar-sidebar--show) {
   opacity: 0;
   transform: translateY(calc(-100% - 1rem));
   visibility: hidden;
