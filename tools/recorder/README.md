@@ -27,8 +27,9 @@ A Chromium window opens at the given size. Interact with the page, then close th
 
 - The browser profile is kept in `tools/recorder/.profile` (git-ignored), so logins and app state
   survive between takes. Use `--fresh` for a clean start.
-- Screen recordings don't capture the OS cursor, so the tool draws its own cursor and click ripple
-  into the page. The real cursor is hidden inside the page so you see exactly what gets recorded.
+- Screen recordings don't capture the OS cursor, so the tool draws the Kritzel engine's default cursor
+  (the `mousePointer` icon, read from `libs/engine/core/src/classes/registries/icon-registry.class.ts`)
+  and a click ripple into the page. The real cursor is hidden inside the page so you see exactly what gets recorded.
 - Only the first tab is recorded.
 - Output is Playwright's native `.webm` (VP8). Recording starts when the browser opens, so the first
   moment shows the page loading; trim it when converting to the final blog format.
