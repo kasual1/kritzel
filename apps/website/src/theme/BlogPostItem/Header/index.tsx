@@ -5,7 +5,6 @@ import { useBlogPost } from '@docusaurus/plugin-content-blog/client';
 import BlogPostItemHeaderTitle from '@theme/BlogPostItem/Header/Title';
 import BlogPostItemHeaderInfo from '@theme/BlogPostItem/Header/Info';
 import BlogPostItemHeaderAuthors from '@theme/BlogPostItem/Header/Authors';
-import ImageCard from '@site/src/components/Landing/ImageCard';
 import styles from './styles.module.css';
 
 // Shows the post's front matter `thumbnail` video, or else its `image` (the generated thumbnail, see
@@ -39,7 +38,7 @@ function BlogPostItemHeaderImage(): ReactNode {
       src={src}
       alt=""
       // placeholder size so lazy loading sees a box before the image arrives (generated thumbnails are
-      // 1200×630); once loaded, `width: auto` in CSS switches to the image's own aspect ratio
+      // 1200×630); `height: auto` in CSS keeps the image's own aspect ratio
       width={1200}
       height={630}
       loading={isBlogPostPage ? 'eager' : 'lazy'}
@@ -50,9 +49,7 @@ function BlogPostItemHeaderImage(): ReactNode {
     img
   ) : (
     <Link to={metadata.permalink} tabIndex={-1} aria-hidden="true" className={styles.link}>
-      <div className={styles.thumbnail}>
-        <ImageCard>{img}</ImageCard>
-      </div>
+      {img}
     </Link>
   );
 }

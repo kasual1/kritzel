@@ -1,28 +1,16 @@
 .link {
-  display: inline-block;
-  max-width: 100%;
+  display: block;
+  max-width: 640px;
 }
 
-.thumbnail {
-  display: inline-block;
-  max-width: 100%;
-  margin-bottom: 1.25rem;
-}
-
-.thumbnail .image {
-  border-radius: 0;
-  margin-bottom: 0;
-}
-
-/* Small, left-aligned thumbnail: fixed height, natural width (generated thumbnails are 1200×630,
-   custom images may have any aspect ratio). */
+/* Thumbnail above the title, same on the blog list and the post page: up to 640px wide, natural
+   aspect ratio (recordings are 16:9, generated thumbnails 1200×630). */
 .image {
   display: block;
-  height: 220px;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  object-position: left center;
-  border-radius: 10px;
-  margin-bottom: 1.25rem;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(32, 33, 36, 0.14);
+  margin-bottom: 1.75rem;
 }
