@@ -407,9 +407,17 @@ function HeroScene({
     });
     observer.observe(nav);
 
+    // Only animate the floating navbar once the page has settled, so arriving here from another
+    // page hides it instantly instead of sliding it away.
+    let frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => root.setAttribute("data-landing-nav-animated", ""));
+    });
+
     return () => {
       observer.disconnect();
+      window.cancelAnimationFrame(frame);
       root.classList.remove("landing-nav-visible");
+      root.removeAttribute("data-landing-nav-animated");
     };
   }, []);
 
