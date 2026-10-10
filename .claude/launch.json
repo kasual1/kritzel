@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "website",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "--workspace", "apps/website", "--", "--port", "3001", "--no-open"],
+      "port": 3001,
+      "autoPort": false
+    }
+  ]
+}
