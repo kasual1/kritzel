@@ -1412,6 +1412,24 @@
     padding: 80px 16px 96px;
   }
 
+  /* Shrink the terminal text with the viewport so its widest lines (the ASCII logo and the framework
+     question, about 30 characters' worth at 1em) fit without horizontal scrolling. 66px is the section
+     padding, terminal border and body padding around the text. */
+  .terminalBody {
+    padding: 20px 16px 24px;
+    font-size: min(14px, calc((100vw - 66px) / 30));
+  }
+
+  .terminalAscii {
+    font-size: 0.86em;
+  }
+
+  .terminalCursor {
+    width: 0.64em;
+    height: 1.28em;
+    vertical-align: -0.21em;
+  }
+
   .frameworkTileAnchor {
     right: -8px;
     bottom: -40px;
