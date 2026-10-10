@@ -33,11 +33,33 @@ html.landing-page.landing-nav-visible[data-landing-nav-animated] .navbar {
     visibility 0s;
 }
 
-html.landing-page:not(.landing-nav-visible) .navbar:not(.navbar-sidebar--show) {
+html.landing-page:not(.landing-nav-visible) .navbar {
   opacity: 0;
   transform: translateY(calc(-100% - 1rem));
   visibility: hidden;
   pointer-events: none;
+}
+
+/* The hero's menu button (Landing/MenuButton.tsx) opens the mobile sidebar while the navbar is hidden.
+   The sidebar lives inside the navbar, so un-hide the navbar in place but keep the bar itself invisible. */
+html.landing-page[data-hero-menu] .navbar {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+  transition: none !important;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+html.landing-page[data-hero-menu] .navbar::before,
+html.landing-page[data-hero-menu] .navbar__inner {
+  visibility: hidden;
+}
+
+html.landing-page[data-hero-menu] .navbar-sidebar,
+html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .blog-navigation {
