@@ -1,14 +1,28 @@
 {
   "name": "@kritzel/cli",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Install Kritzel into an existing Angular, React or Vue application.",
   "license": "PolyForm-Noncommercial-1.0.0",
-  "repository": { "type": "git", "url": "https://github.com/kasual1/kritzel-private.git", "directory": "libs/cli" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kasual1/kritzel-private.git",
+    "directory": "libs/cli"
+  },
   "homepage": "https://kritzel.io",
-  "bin": { "kritzel": "dist/bin.js" },
-  "files": ["dist", "README.md", "LICENSE"],
-  "engines": { "node": ">=22" },
-  "publishConfig": { "access": "public" },
+  "bin": {
+    "kritzel": "dist/bin.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "prepack": "tsc -p tsconfig.json",
