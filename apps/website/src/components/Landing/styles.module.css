@@ -1365,6 +1365,11 @@
     top: var(--hallo-center-top);
     width: min(300px, calc(100% - 48px));
     transform: translate(-50%, -50%);
+    /* Decoration only on phones: not draggable or selectable, and swipes over it scroll the page. */
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
 
   .calculatorAnchor,
