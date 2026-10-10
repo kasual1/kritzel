@@ -4,7 +4,7 @@ Records a website and your live interactions with it as a video, at a fixed size
 consistent clips of app.kritzel.io for the blog.
 
 ```bash
-npm run record -- --url=https://app.kritzel.io --width=1280 --height=720 --name=whiteboard-intro
+npm run record -- --url=https://app.kritzel.io --width=640 --height=360 --name=whiteboard-intro
 ```
 
 A Chromium window opens at the given size. Interact with the page, then close the window or press
@@ -15,8 +15,8 @@ A Chromium window opens at the given size. Interact with the page, then close th
 | Option        | Default                     | Description                                                        |
 | ------------- | --------------------------- | ------------------------------------------------------------------ |
 | `--url`       | (required)                  | Page to open.                                                      |
-| `--width`     | `1280`                      | Viewport and video width in px.                                    |
-| `--height`    | `720`                       | Viewport and video height in px.                                   |
+| `--width`     | `640`                       | Viewport and video width in px.                                    |
+| `--height`    | `360`                       | Viewport and video height in px.                                   |
 | `--name`      | timestamp                   | Output file name (without extension).                              |
 | `--out`       | `tools/recorder/recordings` | Output directory.                                                  |
 | `--no-cursor` |                             | Don't draw the recorded cursor and click ripples.                  |

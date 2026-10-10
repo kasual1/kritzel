@@ -5,8 +5,8 @@ const path = require('path');
 const { chromium } = require('@playwright/test');
 const { installRecorderCursor } = require('./cursor');
 
-const DEFAULT_WIDTH = 1280;
-const DEFAULT_HEIGHT = 720;
+const DEFAULT_WIDTH = 640;
+const DEFAULT_HEIGHT = 360;
 const DEFAULT_OUT_DIR = path.join(__dirname, 'recordings');
 const PROFILE_DIR = path.join(__dirname, '.profile');
 
