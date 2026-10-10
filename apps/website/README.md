@@ -75,6 +75,23 @@ Hero images and captions can be dragged independently or moved with arrow keys
 while focused (Shift increases the step). Drag offsets scale with the item size
 on resize and reset when the landing page is remounted.
 
+## Blog navigation
+
+Blog listings show the linked Kritzel logo and name in a flat top header. Entries
+use the full content width and align with the logo's left edge, without a post-list
+sidebar. Listing thumbnails reuse the hero's white image-card frame and shadow.
+Both blog layouts use a centered, 1080px maximum-width container with extra
+desktop side gutters, keeping the header and content left edges aligned.
+Individual posts have no left sidebar. Their flat header replaces the logo with
+a back arrow linking to the blog overview. The thumbnail and article use the
+left content area, with a sticky table of contents on the right on desktop.
+The header scrolls away with the page. Blog pages have no top navigation
+links, GitHub icon, mobile menu, or floating navbar. Navigation on other pages is
+unchanged.
+The right-hand table of contents on individual posts uses a 2rem top offset.
+Blog listings and individual posts leave extra responsive space below the content
+and reuse the landing page's stylized KRITZEL wordmark immediately above the footer.
+
 ## Installation
 
 The website's default and link cursors use 24px SVG assets in `static/img/cursor-*.svg`,
@@ -91,6 +108,12 @@ yarn
 ```bash
 yarn start
 ```
+
+From the repository root, you can also run `npm run docs:start`.
+On Windows, development uses Webpack to avoid the Rspack 1.7.12
+`cssExtractHmr.js` module-graph panic. CSS hot reload remains enabled.
+Production builds and development on other platforms still use Rspack;
+the other Docusaurus v4 and faster options remain enabled.
 
 To point LiveDemo previews to a local demo app while running docs locally, set `DEMO_BASE_URL` before starting:
 
@@ -115,6 +138,14 @@ yarn build
 ```
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
+
+## Blog thumbnails
+
+Every blog post gets a generated thumbnail (a blurred, squeegee-style painting rendered in resolution steps of dithered pixels). `npm run thumbnails` renders `static/img/blog/<slug>.png` for each post and adds `image: /img/blog/<slug>.png` to its front matter, which Docusaurus uses as the post's `og:image`. It also runs automatically before `npm run build`.
+
+Each image is fully determined by its seed, an arbitrary string of up to 32 characters (`5b1192ef`, `hello kritzel`, …). Eight hex digits are used as the seed number directly, any other text is hashed; the seed also picks the color family (Angular, React or Vue). The seed is printed in the image's bottom right corner and stored in the post's `thumbnailSeed` front matter; posts without one get a stable hex seed from their slug. Edit `thumbnailSeed` to re-roll a thumbnail: the PNG stores its seed, so the next run re-renders it. `--force` regenerates everything and `--slug <slug>` targets one post. Commit the generated PNGs.
+
+`npm run thumbnails -- --seed 5b1192ef --scale 4` renders any seed on its own (here at 4800×2520); `--seed random` picks a fresh one. The generator core (`scripts/thumbnails/lib.mjs`, `palettes.mjs`, `painting.mjs`) has no Node dependencies and renders the same picture at every scale, so it can also run in the browser; `render.mjs` adds PNG output via resvg. The label is drawn with system fonts, so generate thumbnails on a machine with Inter or Segoe UI installed.
 
 ## LLM Documentation
 
