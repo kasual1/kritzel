@@ -128,6 +128,12 @@
   height: 44px;
 }
 
+/* Opens the navbar's mobile sidebar; only shown where the hero hides its links (see max-width: 768px). */
+.topNavMenu {
+  display: none;
+  color: var(--landing-ink);
+}
+
 .heroCopy {
   position: absolute;
   left: 0;
@@ -1332,6 +1338,10 @@
   .topNavLink,
   .page .topNavCta {
     display: none;
+  }
+
+  .topNavMenu {
+    display: flex;
   }
 
   .heroCopy {

@@ -4,6 +4,7 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "../Landing/Icon";
 import HeroTitle from "../Landing/HeroTitle";
 import ImageCard from "../Landing/ImageCard";
+import MenuButton from "../Landing/MenuButton";
 import PieChart from "./PieChart";
 import { CallToActionBar } from "./CallToActionBar";
 import { KRITZEL_LOGO_PATH } from "../Landing/paths";
@@ -459,6 +460,7 @@ function HeroScene({
           <Link href="https://github.com/kasual1/kritzel" aria-label="GitHub" className={styles.topNavIcon}>
             <GitHubIcon />
           </Link>
+          <MenuButton />
         </nav>
 
         <div ref={copyRef} className={styles.heroCopy}>

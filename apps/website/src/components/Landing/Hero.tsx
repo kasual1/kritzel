@@ -6,6 +6,7 @@ import { CallToActionBar } from "./Sections";
 import Calculator from "./Calculator";
 import HeroTitle from "./HeroTitle";
 import ImageCard from "./ImageCard";
+import MenuButton from "./MenuButton";
 import { KRITZEL_LOGO_PATH } from "./paths";
 import styles from "./styles.module.css";
 
@@ -385,6 +386,7 @@ export default function Hero({
           <Link href="https://github.com/kasual1/kritzel" aria-label="GitHub" className={styles.topNavIcon}>
             <GitHubIcon />
           </Link>
+          <MenuButton />
         </nav>
 
         <div className={styles.heroCopy}>
