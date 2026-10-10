@@ -4,6 +4,13 @@
   overflow: hidden;
 }
 
+/* The KRITZEL wordmark above the footer is desktop only (see Landing/styles.module.css). */
+@media (max-width: 768px) {
+  .blog-footer-wordmark {
+    display: none;
+  }
+}
+
 .footer {
   border-top: 1.5px solid #0a0a0a;
   background-color: #fff !important;
