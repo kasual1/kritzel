@@ -5,7 +5,7 @@ import Link from '@docusaurus/Link';
 import { ArrowLeft } from 'lucide-react';
 import NavbarLayout from '@theme/Navbar/Layout';
 import NavbarContent from '@theme/Navbar/Content';
-import NavbarLogo from '@theme/Navbar/Logo';
+import { KRITZEL_LOGO_PATH } from '@site/src/components/Landing/paths';
 
 export default function Navbar(): ReactNode {
   const { pathname } = useLocation();
@@ -17,7 +17,13 @@ export default function Navbar(): ReactNode {
         <div className="navbar">
           <div className="navbar__inner container">
             <div className="blog-navigation-brand">
-              <NavbarLogo />
+              {/* same logo and wordmark as the landing pages' hero (Landing/Hero.tsx) */}
+              <Link to="/" className="blog-navigation-logo">
+                <svg width="40" height="35" viewBox="0 0 321.05759 277.97299" aria-hidden="true">
+                  <path fill="currentColor" d={KRITZEL_LOGO_PATH} />
+                </svg>
+                Kritzel
+              </Link>
             </div>
             <Link
               to={blogPath}

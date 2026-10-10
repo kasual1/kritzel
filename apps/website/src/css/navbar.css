@@ -81,18 +81,46 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   backdrop-filter: none;
 }
 
-.blog-navigation .navbar__logo,
-.blog-navigation .navbar__logo img,
 .blog-sidebar-brand .navbar__logo,
 .blog-sidebar-brand .navbar__logo img {
   width: 36px;
   height: 36px;
 }
 
-.blog-navigation .navbar__title,
 .blog-sidebar-brand .navbar__title {
   font-size: 26px;
   letter-spacing: -0.02em;
+}
+
+/* Matches the landing pages' hero brand (.brand in Landing/styles.module.css). */
+.blog-navigation-logo,
+.blog-navigation-logo:hover {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  color: #0a0a0a;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.blog-navigation-logo svg {
+  width: 36px;
+  height: 31.5px;
+}
+
+@media (max-width: 768px) {
+  .blog-navigation-logo,
+  .blog-navigation-logo:hover {
+    font-size: 22px;
+  }
+
+  .blog-navigation-logo svg {
+    width: 28px;
+    height: 24.5px;
+  }
 }
 
 .blog-sidebar-brand {
