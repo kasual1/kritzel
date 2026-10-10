@@ -182,8 +182,10 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   color: var(--ifm-font-color-base);
 }
 
+/* Room between the end of the post and the footer, like the blog list's article margin. */
 .blog-post-page main {
   margin-left: 0;
+  padding-bottom: 5rem;
 }
 
 @media (min-width: 1440px) {
