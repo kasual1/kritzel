@@ -17,14 +17,16 @@
   padding: 0.3rem 1rem;
 }
 
-html.landing-page .navbar {
+/* Transitions are enabled by the hero once the page has settled (see Landing/Hero.tsx), so the
+   navbar doesn't visibly slide away when navigating to a landing page. */
+html.landing-page[data-landing-nav-animated] .navbar {
   transition:
     opacity 0.2s ease,
     transform 0.2s ease,
     visibility 0s linear 0.2s;
 }
 
-html.landing-page.landing-nav-visible .navbar {
+html.landing-page.landing-nav-visible[data-landing-nav-animated] .navbar {
   transition:
     opacity 0.2s ease,
     transform 0.2s ease,
