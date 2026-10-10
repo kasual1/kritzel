@@ -10,6 +10,10 @@ import { CallToActionBar } from "./CallToActionBar";
 import { KRITZEL_LOGO_PATH } from "../Landing/paths";
 import styles from "./styles.module.css";
 
+// On phones the canvas items can't be selected by hand (see styles.module.css), so a tap anywhere in the
+// hero keeps the selection the chat command made.
+const isPhoneViewport = () => window.matchMedia("(max-width: 768px)").matches;
+
 function DraggableCanvasItem({
   children,
   className,
@@ -425,9 +429,11 @@ function HeroScene({
   return (
     <div
       ref={wrapperRef}
-      onPointerDownCapture={() => setSelectedImage(null)}
+      onPointerDownCapture={() => {
+        if (!isPhoneViewport()) setSelectedImage(null);
+      }}
       onClickCapture={(event) => {
-        if (event.target instanceof Element && !event.target.closest(`.${styles.draggableItem}`)) {
+        if (!isPhoneViewport() && event.target instanceof Element && !event.target.closest(`.${styles.draggableItem}`)) {
           setSelectedImage(null);
         }
       }}
