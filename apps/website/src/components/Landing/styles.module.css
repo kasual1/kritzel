@@ -321,7 +321,9 @@
 .halloStroke {
   stroke-dasharray: 1 2;
   stroke-dashoffset: 1;
-  animation: landing-hallo-draw var(--hallo-draw-duration) linear var(--hallo-draw-delay) forwards;
+  /* Separate strokes share the word's timeline via --stroke-offset and --stroke-duration. */
+  animation: landing-hallo-draw var(--stroke-duration, var(--hallo-draw-duration)) linear
+    calc(var(--hallo-draw-delay) + var(--stroke-offset, 0ms)) forwards;
 }
 
 .halloExclamation {
