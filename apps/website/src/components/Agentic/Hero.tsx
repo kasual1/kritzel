@@ -4,10 +4,15 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "../Landing/Icon";
 import HeroTitle from "../Landing/HeroTitle";
 import ImageCard from "../Landing/ImageCard";
+import MenuButton from "../Landing/MenuButton";
 import PieChart from "./PieChart";
 import { CallToActionBar } from "./CallToActionBar";
 import { KRITZEL_LOGO_PATH } from "../Landing/paths";
 import styles from "./styles.module.css";
+
+// On phones the canvas items can't be selected by hand (see styles.module.css), so a tap anywhere in the
+// hero keeps the selection the chat command made.
+const isPhoneViewport = () => window.matchMedia("(max-width: 768px)").matches;
 
 function DraggableCanvasItem({
   children,
@@ -407,18 +412,28 @@ function HeroScene({
     });
     observer.observe(nav);
 
+    // Only animate the floating navbar once the page has settled, so arriving here from another
+    // page hides it instantly instead of sliding it away.
+    let frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => root.setAttribute("data-landing-nav-animated", ""));
+    });
+
     return () => {
       observer.disconnect();
+      window.cancelAnimationFrame(frame);
       root.classList.remove("landing-nav-visible");
+      root.removeAttribute("data-landing-nav-animated");
     };
   }, []);
 
   return (
     <div
       ref={wrapperRef}
-      onPointerDownCapture={() => setSelectedImage(null)}
+      onPointerDownCapture={() => {
+        if (!isPhoneViewport()) setSelectedImage(null);
+      }}
       onClickCapture={(event) => {
-        if (event.target instanceof Element && !event.target.closest(`.${styles.draggableItem}`)) {
+        if (!isPhoneViewport() && event.target instanceof Element && !event.target.closest(`.${styles.draggableItem}`)) {
           setSelectedImage(null);
         }
       }}
@@ -451,6 +466,7 @@ function HeroScene({
           <Link href="https://github.com/kasual1/kritzel" aria-label="GitHub" className={styles.topNavIcon}>
             <GitHubIcon />
           </Link>
+          <MenuButton />
         </nav>
 
         <div ref={copyRef} className={styles.heroCopy}>

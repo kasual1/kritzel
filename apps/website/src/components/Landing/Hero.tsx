@@ -6,6 +6,7 @@ import { CallToActionBar } from "./Sections";
 import Calculator from "./Calculator";
 import HeroTitle from "./HeroTitle";
 import ImageCard from "./ImageCard";
+import MenuButton from "./MenuButton";
 import { KRITZEL_LOGO_PATH } from "./paths";
 import styles from "./styles.module.css";
 
@@ -349,9 +350,17 @@ export default function Hero({
     });
     observer.observe(nav);
 
+    // Only animate the floating navbar once the page has settled, so arriving here from another
+    // page hides it instantly instead of sliding it away.
+    let frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => root.setAttribute("data-landing-nav-animated", ""));
+    });
+
     return () => {
       observer.disconnect();
+      window.cancelAnimationFrame(frame);
       root.classList.remove("landing-nav-visible");
+      root.removeAttribute("data-landing-nav-animated");
     };
   }, []);
 
@@ -377,6 +386,7 @@ export default function Hero({
           <Link href="https://github.com/kasual1/kritzel" aria-label="GitHub" className={styles.topNavIcon}>
             <GitHubIcon />
           </Link>
+          <MenuButton />
         </nav>
 
         <div className={styles.heroCopy}>
