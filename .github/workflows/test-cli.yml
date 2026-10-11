@@ -4,6 +4,9 @@ on:
   push:
     branches-ignore:
       - main
+    paths-ignore:
+      - "apps/app/**"
+      - ".github/workflows/*-app.yml"
   workflow_dispatch:
 
 permissions:
