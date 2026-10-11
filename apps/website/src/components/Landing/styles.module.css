@@ -280,7 +280,7 @@
   z-index: 1;
   right: 4%;
   top: 15%;
-  width: clamp(165px, 20vw, 286px);
+  width: clamp(98px, 11.85vw, 169px);
   transform: rotate(-8deg);
 }
 
@@ -1198,7 +1198,7 @@
 
   .halloDesktop {
     right: 4cqw;
-    width: 20cqw;
+    width: 11.85cqw;
   }
 
   .halloTablet {
@@ -1206,7 +1206,7 @@
     left: 50%;
     right: auto;
     top: var(--hallo-center-top);
-    width: min(clamp(320px, 36cqw, 400px), calc((var(--hero-height) - 580px) * 2.166667));
+    width: min(clamp(190px, 21.3cqw, 237px), calc((var(--hero-height) - 580px) * 1.283333));
     transform: translate(-50%, -50%);
     opacity: 0;
     visibility: hidden;
@@ -1363,7 +1363,7 @@
     left: 50%;
     right: auto;
     top: var(--hallo-center-top);
-    width: min(300px, calc(100% - 48px));
+    width: min(178px, calc(100% - 48px));
     transform: translate(-50%, -50%);
     /* Decoration only on phones: not draggable or selectable, and swipes over it scroll the page. */
     pointer-events: none;
