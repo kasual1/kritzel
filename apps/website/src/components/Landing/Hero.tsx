@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import Icon, { GitHubIcon } from "./Icon";
@@ -225,6 +225,21 @@ function MockToolbar() {
   );
 }
 
+// Drawn in order within --hallo-draw-duration (1500ms): the H's two stems and crossbar, then "ello".
+const HELLO_STROKES: ReadonlyArray<{ d: string; offset: string; duration: string }> = [
+  { d: "M24 18 C23 42 21 66 19 88", offset: "0ms", duration: "250ms" },
+  { d: "M58 16 C57 40 55 64 53 88", offset: "280ms", duration: "250ms" },
+  { d: "M21 55 C32 54 44 52 56 51", offset: "560ms", duration: "180ms" },
+  {
+    d: `M68 76 C78 74 90 67 88 59 C86 51 70 53 66 69 C62 85 74 95 88 90 C93 88 96 83 98 77
+        C112 57 132 8 117 16 C101 26 96 77 105 88 C114 100 128 88 138 70
+        C153 43 163 10 150 17 C136 25 126 78 139 89 C151 101 169 83 176 70
+        C184 52 207 53 207 72 C207 94 179 104 174 83 C170 66 183 57 194 60 C207 65 211 90 225 77`,
+    offset: "780ms",
+    duration: "720ms",
+  },
+];
+
 function HalloDrawing({ className }: { className: string }) {
   const halloRef = useRef<SVGSVGElement>(null);
 
@@ -250,32 +265,24 @@ function HalloDrawing({ className }: { className: string }) {
 
   return (
     <div className={`${styles.halloDrawing} ${className}`}>
-      <DraggableCanvasItem label="handwritten Hi!">
-        <svg ref={halloRef} aria-hidden="true" viewBox="0 0 154 120" width="100%" height="100%">
+      <DraggableCanvasItem label="handwritten Hello!">
+        <svg ref={halloRef} aria-hidden="true" viewBox="0 0 260 120" width="100%" height="100%">
+          {HELLO_STROKES.map((stroke) => (
+            <path
+              key={stroke.d}
+              d={stroke.d}
+              fill="none"
+              className={styles.halloStroke}
+              style={{ "--stroke-offset": stroke.offset, "--stroke-duration": stroke.duration } as CSSProperties}
+              pathLength={1}
+              stroke="#4a7dff"
+              strokeWidth="5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ))}
           <path
-            d="M34 16 C32 40 28 64 24 88
-               C21 72 28 57 42 54 C54 52 66 50 76 46
-               C82 36 84 16 78 16 C72 18 68 60 66 86
-               C70 94 82 90 89 74 C93 66 97 59 99 56
-               C97 70 95 84 99 88 C103 92 111 86 117 78"
-            fill="none"
-            className={styles.halloStroke}
-            pathLength={1}
-            stroke="#4a7dff"
-            strokeWidth="5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M102 38 L102 40"
-            fill="none"
-            className={styles.halloDot}
-            stroke="#4a7dff"
-            strokeWidth="5"
-            strokeLinecap="round"
-          />
-          <path
-            d="M136 32 C135 45 133 59 132 72"
+            d="M240 32 C239 45 237 59 236 72"
             fill="none"
             className={styles.halloExclamation}
             pathLength={1}
@@ -284,7 +291,7 @@ function HalloDrawing({ className }: { className: string }) {
             strokeLinecap="round"
           />
           <path
-            d="M131 88 L131 90"
+            d="M235 88 L235 90"
             fill="none"
             className={styles.halloDot}
             stroke="#4a7dff"
