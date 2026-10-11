@@ -1,3 +1,5 @@
+// Temporarily hidden: the leading underscore excludes this page from Docusaurus routing.
+// Rename back to agentic.tsx (and set SHOW_CANVAS_TOGGLE in Landing/Hero.tsx) to restore /agentic.
 import { useEffect, useState, type ReactNode } from "react";
 import Head from "@docusaurus/Head";
 import Layout from "@theme/Layout";
