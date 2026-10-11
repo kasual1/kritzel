@@ -1,0 +1,13 @@
+html,
+body,
+main {
+  width: 100dvw;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  overscroll-behavior-x: none;
+  min-height: 0;
+  min-width: 0;
+  display: block;
+}

@@ -1,0 +1,48 @@
+# Deploys apps/app (client, api, websocket, nginx, postgres) to AWS Lightsail via Docker Compose.
+name: Deploy app
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/app/**"
+      - ".github/workflows/deploy-app.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-app
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: app-prod
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # strip_components drops the "apps/app" prefix so the server keeps its existing
+      # ~/kritzel-app layout (compose project name, .env and pgdata volume stay the same).
+      - name: Copy files to Lightsail
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ vars.LIGHTSAIL_HOST }}
+          username: ${{ vars.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          source: "apps/app"
+          target: ~/kritzel-app
+          strip_components: 2
+          overwrite: true
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ vars.LIGHTSAIL_HOST }}
+          username: ${{ vars.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script: |
+            set -eu
+            cd ~/kritzel-app
+            docker compose -f docker-compose.prod.yml build
+            docker compose -f docker-compose.prod.yml up -d --force-recreate --remove-orphans
+            docker image prune -f
