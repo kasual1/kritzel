@@ -17,14 +17,16 @@
   padding: 0.3rem 1rem;
 }
 
-html.landing-page .navbar {
+/* Transitions are enabled by the hero once the page has settled (see Landing/Hero.tsx), so the
+   navbar doesn't visibly slide away when navigating to a landing page. */
+html.landing-page[data-landing-nav-animated] .navbar {
   transition:
     opacity 0.2s ease,
     transform 0.2s ease,
     visibility 0s linear 0.2s;
 }
 
-html.landing-page.landing-nav-visible .navbar {
+html.landing-page.landing-nav-visible[data-landing-nav-animated] .navbar {
   transition:
     opacity 0.2s ease,
     transform 0.2s ease,
@@ -36,6 +38,201 @@ html.landing-page:not(.landing-nav-visible) .navbar {
   transform: translateY(calc(-100% - 1rem));
   visibility: hidden;
   pointer-events: none;
+}
+
+/* The hero's menu button (Landing/MenuButton.tsx) opens the mobile sidebar while the navbar is hidden.
+   The sidebar lives inside the navbar, so un-hide the navbar in place but keep the bar itself invisible. */
+html.landing-page[data-hero-menu] .navbar {
+  opacity: 1 !important;
+  transform: none !important;
+  visibility: visible !important;
+  transition: none !important;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+html.landing-page[data-hero-menu] .navbar::before,
+html.landing-page[data-hero-menu] .navbar__inner {
+  visibility: hidden;
+}
+
+html.landing-page[data-hero-menu] .navbar-sidebar,
+html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.blog-navigation {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.blog-navigation .navbar {
+  position: relative;
+  top: 0;
+  height: auto;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.blog-navigation .navbar::before {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.blog-sidebar-brand .navbar__logo,
+.blog-sidebar-brand .navbar__logo img {
+  width: 36px;
+  height: 36px;
+}
+
+.blog-sidebar-brand .navbar__title {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+/* Matches the landing pages' hero brand (.brand in Landing/styles.module.css). */
+.blog-navigation-logo,
+.blog-navigation-logo:hover {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  color: #0a0a0a;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.blog-navigation-logo svg {
+  width: 36px;
+  height: 31.5px;
+}
+
+@media (max-width: 768px) {
+  .blog-navigation-logo,
+  .blog-navigation-logo:hover {
+    font-size: 22px;
+  }
+
+  .blog-navigation-logo svg {
+    width: 28px;
+    height: 24.5px;
+  }
+}
+
+.blog-sidebar-brand {
+  display: none;
+}
+
+.blog-list-page,
+.blog-post-page {
+  --ifm-container-width: 1080px;
+  --ifm-container-width-xl: 1080px;
+}
+
+.blog-list-page .blog-navigation,
+.blog-post-page .blog-navigation {
+  display: block;
+}
+
+.blog-list-page .blog-navigation .navbar,
+.blog-post-page .blog-navigation .navbar {
+  width: 100%;
+  padding-inline: 0;
+  border: 0;
+}
+
+.blog-list-page .blog-navigation .container,
+.blog-post-page .blog-navigation .container {
+  max-width: var(--ifm-container-width);
+  margin-inline: auto;
+  padding-inline: var(--ifm-spacing-horizontal);
+}
+
+/* Less space between the flat blog navbar and the content. The container's top margin comes from
+   Infima's .margin-vert--lg, a layered !important we can't override, so pull the wrapper up instead. */
+.blog-list-page .main-wrapper,
+.blog-post-page .main-wrapper {
+  margin-top: -1rem;
+}
+
+.blog-list-page main {
+  flex-basis: 100%;
+  max-width: 100%;
+  margin-left: 0;
+}
+
+.blog-navigation-back {
+  display: none;
+}
+
+.blog-post-page .blog-navigation-brand {
+  display: none;
+}
+
+.blog-post-page .blog-navigation-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--ifm-font-color-base);
+}
+
+/* Room between the end of the post and the footer, like the blog list's article margin. */
+.blog-post-page main {
+  margin-left: 0;
+  padding-bottom: 5rem;
+}
+
+@media (min-width: 1440px) {
+  .blog-list-page .blog-navigation .container,
+  .blog-post-page .blog-navigation .container {
+    max-width: var(--ifm-container-width-xl);
+  }
+}
+
+@media (min-width: 997px) {
+  .blog-list-page .main-wrapper > .container,
+  .blog-post-page .main-wrapper > .container,
+  .blog-list-page .blog-navigation .container,
+  .blog-post-page .blog-navigation .container {
+    width: calc(100% - 64px);
+  }
+
+  .blog-navigation {
+    display: none;
+  }
+
+  .blog-post-page main {
+    flex-basis: 83.333333%;
+    max-width: 83.333333%;
+  }
+
+  .blog-wrapper aside > nav {
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blog-wrapper aside > nav > .margin-bottom--md {
+    display: none;
+  }
+
+  .blog-post-page main + .col--2 > .thin-scrollbar {
+    top: 2rem;
+    max-height: calc(100vh - 4rem);
+  }
+
+  .blog-sidebar-brand {
+    display: block;
+    order: -1;
+    margin-bottom: 1.5rem;
+  }
 }
 
 .navbar::before {

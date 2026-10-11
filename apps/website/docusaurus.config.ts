@@ -8,6 +8,7 @@ import type { PluginOptions as LlmsPluginOptions } from "docusaurus-plugin-llms"
 const SITE_URL = "https://kritzel.io";
 const SITE_BASE_URL = process.env.Docusaurus_BASE_URL || "/";
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
+const USE_RSPACK = IS_PRODUCTION || process.platform !== "win32";
 const DEFAULT_DEMO_BASE_URLS = IS_PRODUCTION
   ? {
     angular: "https://kasual1.github.io/kritzel/angular",
@@ -73,6 +74,11 @@ const config: Config = {
   favicon: "img/favicon.svg",
   future: {
     v4: true,
+    faster: {
+      // Rspack 1.7.12 panics in cssExtractHmr.js during Windows development.
+      rspackBundler: USE_RSPACK,
+      rspackPersistentCache: USE_RSPACK,
+    },
   },
   url: SITE_URL,
   baseUrl: SITE_BASE_URL,

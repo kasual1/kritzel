@@ -64,6 +64,18 @@ article a[aria-label^="Read more about "] {
   font-size: 0.93rem;
 }
 
+.blog-wrapper aside nav .clean-list a,
+.blog-wrapper article .markdown:not([id]) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.blog-wrapper article .markdown:not([id]) > p {
+  margin-bottom: 0;
+}
+
 /* Doc overview cards */
 .doc-cards {
   display: grid;
