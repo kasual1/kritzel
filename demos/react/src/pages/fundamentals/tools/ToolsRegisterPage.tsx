@@ -31,7 +31,7 @@ const toolbarItems: KritzelToolbarItem[] = [
       size: 6,
       palette: [
         { light: "#1f2937", dark: "#f3f4f6", label: "Ink" },
-          { light: "#0959a4", dark: "#2f8be0", label: "React Blue" },
+        { light: "#4A7DFF", dark: "#5B8CFF", label: "React Blue" },
       ],
     },
   },
@@ -61,7 +61,7 @@ const toolbarItems: KritzelToolbarItem[] = [
       fontFamily: "Arial",
       palette: [
         { light: "#1f2937", dark: "#f3f4f6" },
-        { light: "#0959a4", dark: "#2f8be0" },
+        { light: "#4A7DFF", dark: "#5B8CFF" },
       ],
     },
   },

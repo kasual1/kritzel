@@ -38,9 +38,9 @@ export const editorStyle: CSSProperties = {
 export function buttonStyle(active = false): CSSProperties {
   return {
     padding: "6px 12px",
-    border: `1px solid ${active ? "#0959a4" : "#d9d9d9"}`,
+    border: `1px solid ${active ? "#4A7DFF" : "#d9d9d9"}`,
     borderRadius: "6px",
-    background: active ? "#0959a4" : "#ffffff",
+    background: active ? "#4A7DFF" : "#ffffff",
     color: active ? "#ffffff" : "#333333",
     fontSize: "13px",
     cursor: "pointer",

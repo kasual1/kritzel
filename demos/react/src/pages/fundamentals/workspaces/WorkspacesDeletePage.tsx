@@ -110,8 +110,8 @@ export function WorkspacesDeletePage() {
               key={workspace.id}
               style={{
                 ...tabStyle,
-                borderColor: isActive ? "#0959a4" : "#cccccc",
-                background: isActive ? "#0959a4" : "#ffffff",
+                borderColor: isActive ? "#4A7DFF" : "#cccccc",
+                background: isActive ? "#4A7DFF" : "#ffffff",
                 color: isActive ? "#ffffff" : "#333333",
               }}
             >

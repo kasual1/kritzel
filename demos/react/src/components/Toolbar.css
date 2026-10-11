@@ -21,15 +21,15 @@
 }
 
 .demo-toolbar > button:hover:not(:disabled) {
-  background: #0959a4;
+  background: #4A7DFF;
   color: #ffffff;
-  border-color: #0959a4;
+  border-color: #4A7DFF;
 }
 
 .demo-toolbar > button.active {
-  background: #0959a4;
+  background: #4A7DFF;
   color: #ffffff;
-  border-color: #0959a4;
+  border-color: #4A7DFF;
 }
 
 .demo-toolbar > button:disabled {
