@@ -70,6 +70,9 @@
     "docs:build": "cd apps/website && npm run build",
     "docs:serve": "cd apps/website && npm run serve",
     "app:install": "node ./apps/app/.scripts/install-deps.js",
+    "app:client": "npm run build && npm run app:client:refresh && npm run app:client:start",
+    "app:client:refresh": "cd apps/app/client && node -e \"require('fs').rmSync('node_modules/@kritzel',{recursive:true,force:true})\" && npm install --no-audit --no-fund",
+    "app:client:start": "cd apps/app/client && npm start",
     "app:clean": "node ./apps/app/.scripts/clean-deps.js",
     "app:dev": "docker compose --env-file apps/app/.env.dev -f apps/app/docker-compose.dev.yml up -d --build",
     "app:stop": "docker compose --env-file apps/app/.env.dev -f apps/app/docker-compose.dev.yml down"
