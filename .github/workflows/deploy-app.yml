@@ -16,7 +16,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: prod
+    environment: app-prod
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
