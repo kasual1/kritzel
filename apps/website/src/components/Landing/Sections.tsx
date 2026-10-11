@@ -5,7 +5,7 @@ import Icon, { ArrowIcon } from "./Icon";
 import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
 
-const INSTALL_COMMAND = "npm i kritzel";
+const INSTALL_COMMAND = "npm i @kritzel/cli";
 
 export function CallToActionBar({ docsPath }: { docsPath: string }) {
   const [copied, setCopied] = useState(false);

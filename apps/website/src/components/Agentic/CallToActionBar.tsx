@@ -3,7 +3,7 @@ import Link from "@docusaurus/Link";
 import Icon, { ArrowIcon } from "../Landing/Icon";
 import styles from "./styles.module.css";
 
-const INSTALL_COMMAND = "npm i kritzel";
+const INSTALL_COMMAND = "npm i @kritzel/cli";
 
 export function CallToActionBar({ docsPath }: { docsPath: string }) {
   const [copied, setCopied] = useState(false);
