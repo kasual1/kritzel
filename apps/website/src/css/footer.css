@@ -1,3 +1,16 @@
+.blog-footer-wordmark {
+  flex-shrink: 0;
+  padding-top: clamp(64px, 8vw, 120px);
+  overflow: hidden;
+}
+
+/* The KRITZEL wordmark above the footer is desktop only (see Landing/styles.module.css). */
+@media (max-width: 768px) {
+  .blog-footer-wordmark {
+    display: none;
+  }
+}
+
 .footer {
   border-top: 1.5px solid #0a0a0a;
   background-color: #fff !important;

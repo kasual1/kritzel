@@ -128,6 +128,12 @@
   height: 44px;
 }
 
+/* Opens the navbar's mobile sidebar; only shown where the hero hides its links (see max-width: 768px). */
+.topNavMenu {
+  display: none;
+  color: var(--landing-ink);
+}
+
 .heroCopy {
   position: absolute;
   left: 0;
@@ -1298,7 +1304,8 @@
 /* ---------- Small screens ---------- */
 
 @media (max-width: 768px) {
-  .halloDesktop {
+  .halloDesktop,
+  .wordmark {
     display: none;
   }
 }
@@ -1333,10 +1340,14 @@
     display: none;
   }
 
+  .topNavMenu {
+    display: flex;
+  }
+
   .heroCopy {
     position: relative;
     top: auto;
-    padding: clamp(138px, calc(15svh + 28px), 160px) 16px 0;
+    padding: clamp(168px, calc(15svh + 58px), 190px) 16px 0;
   }
 
   .heroCopyInner {
@@ -1354,6 +1365,11 @@
     top: var(--hallo-center-top);
     width: min(300px, calc(100% - 48px));
     transform: translate(-50%, -50%);
+    /* Decoration only on phones: not draggable or selectable, and swipes over it scroll the page. */
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
 
   .calculatorAnchor,
@@ -1410,6 +1426,24 @@
   .cli,
   .faq {
     padding: 80px 16px 96px;
+  }
+
+  /* Shrink the terminal text with the viewport so its widest lines (the ASCII logo and the framework
+     question, about 30 characters' worth at 1em) fit without horizontal scrolling. 66px is the section
+     padding, terminal border and body padding around the text. */
+  .terminalBody {
+    padding: 20px 16px 24px;
+    font-size: min(14px, calc((100vw - 66px) / 30));
+  }
+
+  .terminalAscii {
+    font-size: 0.86em;
+  }
+
+  .terminalCursor {
+    width: 0.64em;
+    height: 1.28em;
+    vertical-align: -0.21em;
   }
 
   .frameworkTileAnchor {
