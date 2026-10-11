@@ -1,0 +1,39 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "App: Clean Dependencies",
+      "type": "shell",
+      "command": "node",
+      "args": ["apps/app/.scripts/clean-deps.js"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "App: Install Dependencies",
+      "type": "shell",
+      "command": "node",
+      "args": ["apps/app/.scripts/install-deps.js"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "App: Reinstall Dependencies (Clean + Install)",
+      "dependsOn": ["App: Clean Dependencies", "App: Install Dependencies"],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    }
+  ]
+}

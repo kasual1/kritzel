@@ -1,0 +1,39 @@
+# Builds the showcase app (client, api, websocket) when app files change.
+name: Test app
+
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - "apps/app/**"
+      - ".github/workflows/test-app.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [client, server/api, server/websocket]
+    defaults:
+      run:
+        working-directory: apps/app/${{ matrix.project }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/app/${{ matrix.project }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build
+        run: npm run build
