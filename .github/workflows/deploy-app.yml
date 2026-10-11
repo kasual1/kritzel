@@ -16,6 +16,51 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+
+      # Locally the client uses the kritzel libs from this repo (file: deps). Production uses the
+      # published npm packages matching the version currently declared in libs/.
+      - name: Switch client to published kritzel packages
+        run: |
+          set -eu
+          VERSION=$(jq -r .version libs/editor/core/package.json)
+          for pkg in angular-editor editor engine; do
+            if [ -z "$(npm view "@kritzel/$pkg@$VERSION" version 2>/dev/null)" ]; then
+              echo "::error::@kritzel/$pkg@$VERSION is not published on npm. Publish the libraries first."
+              exit 1
+            fi
+          done
+          cd apps/app/client
+          jq --arg v "$VERSION" '
+            .dependencies["@kritzel/angular-editor"] = $v
+            | .dependencies["@kritzel/editor"] = $v
+            | .dependencies["@kritzel/engine"] = $v
+          ' package.json > package.json.tmp
+          mv package.json.tmp package.json
+          # Drop the file: lock entries, otherwise npm keeps them (same version) instead of resolving from the registry.
+          jq '.packages |= with_entries(select(.key | startswith("node_modules/@kritzel/") | not))' \
+            package-lock.json > package-lock.json.tmp
+          mv package-lock.json.tmp package-lock.json
+          npm install --package-lock-only --no-audit --no-fund
+          if grep -q '"resolved": "file:' package-lock.json; then
+            echo "::error::package-lock.json still references local file: packages."
+            exit 1
+          fi
+          echo "Using @kritzel/*@$VERSION"
+
+      # Fails the workflow before anything is copied to the server if the published packages break the build.
+      - name: Build client with published packages
+        working-directory: apps/app/client
+        run: |
+          npm ci --no-audit --no-fund
+          npm run build -- --configuration=production
+
+      - name: Remove local build output before upload
+        run: rm -rf apps/app/client/node_modules apps/app/client/dist apps/app/client/.angular
+
       # strip_components drops the "apps/app" prefix so the server keeps its existing
       # ~/kritzel-app layout (compose project name, .env and pgdata volume stay the same).
       - name: Copy files to Lightsail

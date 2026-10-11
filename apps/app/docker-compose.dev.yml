@@ -1,4 +1,4 @@
-version: '3.8'
+name: kritzel-app
 
 services:
   postgres:
@@ -63,16 +63,6 @@ services:
       api:
         condition: service_started
 
-  client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile.dev
-    expose:
-      - "4200"
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-
   nginx:
     build:
       context: ./nginx
@@ -81,11 +71,13 @@ services:
       - "8080:80"
     volumes:
       - ./nginx/nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    # The Angular client runs on the host (npm run app:client) so it can use the local kritzel libs.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - postgres
       - api
       - websocket
-      - client
 
 volumes:
   pgdata_dev:
