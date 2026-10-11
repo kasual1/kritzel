@@ -2,11 +2,6 @@
 name: Deploy app
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "apps/app/**"
-      - ".github/workflows/deploy-app.yml"
   workflow_dispatch:
 
 concurrency:
