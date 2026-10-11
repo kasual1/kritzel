@@ -237,6 +237,15 @@
   .heroTitleCursor {
     animation: none;
   }
+
+  /* No typing animation here: show the title from the first paint, before hydration. */
+  .heroTitleCharacter[data-hidden] {
+    visibility: visible;
+  }
+
+  .heroTitleCursor[data-start] {
+    display: none;
+  }
 }
 
 .page .heroSubtitle {

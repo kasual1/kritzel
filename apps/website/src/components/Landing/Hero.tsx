@@ -131,8 +131,8 @@ const TOOLS: ReadonlyArray<{ label: string; icon: ReactNode }> = [
     label: "Arrow",
     icon: (
       <>
-        <path d="M7 17 17 7" />
-        <path d="M7 7h10v10" />
+        <path d="M5 19 19 5" />
+        <path d="M15 5h4v4" />
       </>
     ),
   },
