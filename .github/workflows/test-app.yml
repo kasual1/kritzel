@@ -1,4 +1,5 @@
-# Builds the showcase app (client, api, websocket) when app files change.
+# Builds the showcase app when app or library files change. The client is built against the
+# local kritzel libraries (file: deps), the servers are built standalone.
 name: Test app
 
 on:
@@ -7,17 +8,48 @@ on:
       - main
     paths:
       - "apps/app/**"
+      - "libs/**"
       - ".github/workflows/test-app.yml"
   workflow_dispatch:
 
 jobs:
-  build:
+  build-client:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24.18.0"
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            apps/app/client/package-lock.json
+
+      - name: Install root dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Build Kritzel libraries
+        run: npm run build
+
+      - name: Install client dependencies
+        working-directory: apps/app/client
+        run: npm ci --no-audit --no-fund
+
+      - name: Build client
+        working-directory: apps/app/client
+        run: npm run build -- --configuration=production
+
+  build-server:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        project: [client, server/api, server/websocket]
+        project: [server/api, server/websocket]
     defaults:
       run:
         working-directory: apps/app/${{ matrix.project }}

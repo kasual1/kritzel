@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --host 127.0.0.1",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
@@ -29,7 +29,9 @@
     "@angular/platform-browser": "^21.2.24",
     "@angular/router": "^21.2.24",
     "@angular/service-worker": "^21.2.24",
-    "@kritzel/angular-editor": "^0.5.3",
+    "@kritzel/angular-editor": "file:../../../libs/editor/angular/dist/lib",
+    "@kritzel/editor": "file:../../../libs/editor/core",
+    "@kritzel/engine": "file:../../../libs/engine/core",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
