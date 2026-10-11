@@ -68,7 +68,11 @@
     "e2e:demos:report": "npx playwright show-report apps/demos/_e2e/playwright-report",
     "docs:start": "cd apps/website && npm run start",
     "docs:build": "cd apps/website && npm run build",
-    "docs:serve": "cd apps/website && npm run serve"
+    "docs:serve": "cd apps/website && npm run serve",
+    "app:install": "node ./apps/app/.scripts/install-deps.js",
+    "app:clean": "node ./apps/app/.scripts/clean-deps.js",
+    "app:dev": "docker compose --env-file apps/app/.env.dev -f apps/app/docker-compose.dev.yml up -d --build",
+    "app:stop": "docker compose --env-file apps/app/.env.dev -f apps/app/docker-compose.dev.yml down"
   },
   "overrides": {
     "axios": "^0.30.0",

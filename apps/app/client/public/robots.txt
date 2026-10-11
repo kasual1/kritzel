@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /ws
+Disallow: /admin/
+Disallow: /auth/
+
+# Allow access to assets
+Allow: /*.js
+Allow: /*.css
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.svg
+Allow: /*.ico
+
+Sitemap: https://app.kritzel.io/sitemap.xml
