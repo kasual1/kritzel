@@ -1536,6 +1536,12 @@
     display: none;
   }
 
+  /* Decoration only on phones: the images can't be selected or dragged (the chat command still marks
+     them as selected, see Hero.tsx), and swipes over them scroll the page. */
+  .heroWrapper .canvasLayer .draggableItem {
+    pointer-events: none;
+    -webkit-touch-callout: none;
+  }
 }
 
 @media (max-width: 768px) {
@@ -1579,7 +1585,7 @@
   .heroCopy {
     position: relative;
     top: auto;
-    padding: clamp(138px, calc(15svh + 28px), 160px) 16px 0;
+    padding: clamp(168px, calc(15svh + 58px), 190px) 16px 0;
   }
 
   .heroCopyInner {
