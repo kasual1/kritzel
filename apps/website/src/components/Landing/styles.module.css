@@ -286,7 +286,7 @@
 
 .halloDrawing svg {
   --hallo-draw-delay: 300ms;
-  --hallo-draw-duration: 1500ms;
+  --hallo-draw-duration: 1140ms;
   --hallo-exclamation-duration: 200ms;
   display: block;
 }
