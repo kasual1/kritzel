@@ -1204,6 +1204,64 @@ describe('KritzelCore', () => {
     });
   });
 
+  describe('z-order with groups', () => {
+    const createObj = (id: string, zIndex: number) => ({ id, zIndex, onAfterUpdate: jest.fn() }) as any;
+    let childA: any;
+    let childB: any;
+    let group: any;
+    let other: any;
+
+    beforeEach(() => {
+      childA = createObj('child-a', 1);
+      childB = createObj('child-b', 2);
+      group = { ...createObj('group', 3), __class__: 'KritzelGroup', children: [childA, childB] };
+      other = createObj('other', 4);
+      mockStore.selectionGroup = { objects: [group] } as any;
+      mockStore.allNonSelectionObjects = [childA, childB, group, other];
+    });
+
+    it('bringToFront moves group children above other objects, preserving order', () => {
+      core.bringToFront();
+
+      expect([childA.zIndex, childB.zIndex, group.zIndex]).toEqual([5, 6, 7]);
+      expect(other.zIndex).toBe(4);
+    });
+
+    it('sendToBack moves group children below other objects, preserving order', () => {
+      other.zIndex = 0;
+
+      core.sendToBack();
+
+      expect([childA.zIndex, childB.zIndex, group.zIndex]).toEqual([-3, -2, -1]);
+      expect(other.zIndex).toBe(0);
+    });
+
+    it('bringForward shifts group and its children together', () => {
+      core.bringForward();
+
+      expect([childA.zIndex, childB.zIndex, group.zIndex]).toEqual([2, 3, 4]);
+    });
+
+    it('sendBackward shifts group and its children together', () => {
+      other.zIndex = 0;
+
+      core.sendBackward();
+
+      expect([childA.zIndex, childB.zIndex, group.zIndex]).toEqual([0, 1, 2]);
+    });
+
+    it('includes nested group descendants', () => {
+      const nestedChild = createObj('nested-child', 0);
+      const nested = { ...createObj('nested', 0.5), __class__: 'KritzelGroup', children: [nestedChild] };
+      group.children = [childA, childB, nested];
+      mockStore.allNonSelectionObjects = [nestedChild, nested, childA, childB, group, other];
+
+      core.bringToFront();
+
+      expect([nestedChild.zIndex, nested.zIndex, childA.zIndex, childB.zIndex, group.zIndex]).toEqual([5, 6, 7, 8, 9]);
+    });
+  });
+
   describe('selectObjects', () => {
     it('should do nothing with empty array', () => {
       core.selectObjects([]);

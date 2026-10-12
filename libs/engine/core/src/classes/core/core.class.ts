@@ -1121,55 +1121,103 @@ export class KritzelCore {
   }
 
   /**
+   * Collects the objects affected by a z-order operation, sorted by ascending zIndex.
+   * Group children are rendered as independent objects with their own zIndex, so a
+   * group has to be expanded into itself plus all of its descendants for its
+   * visual stacking order to change.
+   * @param object - Optional specific object; defaults to all selected objects
+   */
+  private getZOrderTargets(object?: KritzelBaseObject<any>): KritzelBaseObject<any>[] {
+    const roots = object ? [object] : this._store.selectionGroup?.objects || [];
+    const targets = new Map<string, KritzelBaseObject<any>>();
+
+    const collect = (obj: KritzelBaseObject<any>) => {
+      if (targets.has(obj.id)) {
+        return;
+      }
+      targets.set(obj.id, obj);
+      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
+        obj.children.forEach(child => collect(child));
+      }
+    };
+
+    roots.forEach(root => collect(root));
+
+    return Array.from(targets.values()).sort((a, b) => a.zIndex - b.zIndex);
+  }
+
+  /**
+   * Returns all non-selection objects that are not part of the given z-order targets.
+   */
+  private getZOrderOthers(targets: KritzelBaseObject<any>[]): KritzelBaseObject<any>[] {
+    const targetIds = new Set(targets.map(obj => obj.id));
+    return this._store.allNonSelectionObjects.filter(o => !targetIds.has(o.id));
+  }
+
+  /**
    * Moves objects one step forward in the z-order stack.
+   * Groups are moved together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
   bringForward(object?: KritzelBaseObject<any>) {
-    const selectionGroup = this._store.selectionGroup;
-    const objects = object ? [object] : selectionGroup?.objects || [];
-    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
-    const max = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1 : 0;
+    const targets = this.getZOrderTargets(object);
+    if (targets.length === 0) {
+      return;
+    }
 
-    objects.forEach(obj => {
-      if (obj.zIndex !== max) {
-        this.updateObject(obj, { zIndex: obj.zIndex + 1 });
-      }
-    });
+    const others = this.getZOrderOthers(targets);
+    const maxOther = others.length > 0 ? Math.max(...others.map(obj => obj.zIndex)) : -Infinity;
+    const maxTarget = targets[targets.length - 1].zIndex;
+
+    if (maxTarget <= maxOther) {
+      this._store.objects.transaction(() => {
+        targets.forEach(obj => this.updateObject(obj, { zIndex: obj.zIndex + 1 }));
+      });
+    }
 
     this.rerender();
   }
 
   /**
    * Moves objects one step backward in the z-order stack.
+   * Groups are moved together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
   sendBackward(object?: KritzelBaseObject<any>) {
-    const selectionGroup = this._store.selectionGroup;
-    const objects = object ? [object] : selectionGroup?.objects || [];
-    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
-    const min = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1 : 0;
+    const targets = this.getZOrderTargets(object);
+    if (targets.length === 0) {
+      return;
+    }
 
-    objects.forEach(obj => {
-      if (obj.zIndex !== min) {
-        this.updateObject(obj, { zIndex: obj.zIndex - 1 });
-      }
-    });
+    const others = this.getZOrderOthers(targets);
+    const minOther = others.length > 0 ? Math.min(...others.map(obj => obj.zIndex)) : Infinity;
+    const minTarget = targets[0].zIndex;
+
+    if (minTarget >= minOther) {
+      this._store.objects.transaction(() => {
+        targets.forEach(obj => this.updateObject(obj, { zIndex: obj.zIndex - 1 }));
+      });
+    }
 
     this.rerender();
   }
 
   /**
    * Moves objects to the very front of the z-order stack.
+   * Groups are moved together with all of their descendants, preserving their relative order.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
   bringToFront(object?: KritzelBaseObject<any>) {
-    const selectionGroup = this._store.selectionGroup;
-    const objects = object ? [object] : selectionGroup?.objects || [];
-    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
-    const max = Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1;
+    const targets = this.getZOrderTargets(object);
+    const others = this.getZOrderOthers(targets);
+    if (targets.length === 0 || others.length === 0) {
+      return;
+    }
 
-    objects.forEach(obj => {
-      this.updateObject(obj, { zIndex: max });
+    const base = Math.max(...others.map(obj => obj.zIndex)) + 1;
+
+    this._store.objects.transaction(() => {
+      targets.forEach((obj, index) => this.updateObject(obj, { zIndex: base + index }));
     });
 
     this.rerender();
@@ -1177,16 +1225,20 @@ export class KritzelCore {
 
   /**
    * Moves objects to the very back of the z-order stack.
+   * Groups are moved together with all of their descendants, preserving their relative order.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
   sendToBack(object?: KritzelBaseObject<any>) {
-    const selectionGroup = this._store.selectionGroup;
-    const objects = object ? [object] : selectionGroup?.objects || [];
-    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
-    const min = Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1;
+    const targets = this.getZOrderTargets(object);
+    const others = this.getZOrderOthers(targets);
+    if (targets.length === 0 || others.length === 0) {
+      return;
+    }
 
-    objects.forEach(obj => {
-      this.updateObject(obj, { zIndex: min });
+    const base = Math.min(...others.map(obj => obj.zIndex)) - targets.length;
+
+    this._store.objects.transaction(() => {
+      targets.forEach((obj, index) => this.updateObject(obj, { zIndex: base + index }));
     });
 
     this.rerender();
