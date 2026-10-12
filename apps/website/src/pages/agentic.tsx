@@ -47,9 +47,9 @@ export default function Agentic(): ReactNode {
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} variant="agentic" />
             <div aria-hidden="true" className={styles.heroSpacer} />
-            <Features />
+            <Features variant="agentic" />
           </div>
-          <CliSection />
+          <CliSection variant="skill" />
           <Faq />
           <Wordmark />
         </div>
