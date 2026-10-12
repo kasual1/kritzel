@@ -21,8 +21,9 @@ jobs:
         with:
           node-version: "22"
 
-      # Locally the client uses the kritzel libs from this repo (file: deps). Production uses the
-      # published npm packages matching the version currently declared in libs/.
+      # Locally the client uses the kritzel libs from this repo (a file: dep on @kritzel/angular-editor,
+      # plus overrides pointing its @kritzel/editor and @kritzel/engine deps at libs/). Production uses
+      # the published npm packages matching the version currently declared in libs/.
       - name: Switch client to published kritzel packages
         run: |
           set -eu
@@ -36,8 +37,7 @@ jobs:
           cd apps/app/client
           jq --arg v "$VERSION" '
             .dependencies["@kritzel/angular-editor"] = $v
-            | .dependencies["@kritzel/editor"] = $v
-            | .dependencies["@kritzel/engine"] = $v
+            | del(.overrides["@kritzel/editor"], .overrides["@kritzel/engine"])
           ' package.json > package.json.tmp
           mv package.json.tmp package.json
           # Drop the file: lock entries, otherwise npm keeps them (same version) instead of resolving from the registry.
