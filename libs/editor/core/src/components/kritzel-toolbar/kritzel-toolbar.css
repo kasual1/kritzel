@@ -106,12 +106,12 @@
 .kritzel-control.selected,
 .kritzel-control.selected:hover,
 .kritzel-control.selected:active {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #4A7DFF) !important;
+  background-color: var(--kritzel-toolbar-control-selected-background-color, #007AFF) !important;
   color: var(--kritzel-toolbar-control-selected-color, #ffffff) !important;
 }
 
 .kritzel-control.selected:focus {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #4A7DFFE3) !important;
+  background-color: var(--kritzel-toolbar-control-selected-background-color, #007bffe3) !important;
 
 }
 
@@ -200,7 +200,7 @@
 }
 
 .kritzel-control-split.selected {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #4A7DFF) !important;
+  background-color: var(--kritzel-toolbar-control-selected-background-color, #007AFF) !important;
   color: var(--kritzel-toolbar-control-selected-color, #ffffff) !important;
 }
 
@@ -247,12 +247,12 @@
 }
 
 .kritzel-submenu-item.active {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #4A7DFF);
+  background-color: var(--kritzel-toolbar-control-selected-background-color, #007AFF);
   color: var(--kritzel-toolbar-control-selected-color, #ffffff);
 }
 
 .kritzel-submenu-item.active:hover {
-  background-color: var(--kritzel-toolbar-control-selected-background-color, #4A7DFF);
+  background-color: var(--kritzel-toolbar-control-selected-background-color, #007AFF);
 }
 
 .kritzel-config-container {
