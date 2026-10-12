@@ -256,14 +256,17 @@
   color: var(--ifm-text-color-light);
 }
 
+/* Above the hero copy so dragged items overlay it; only the items themselves take pointer input. */
 .canvasLayer {
   position: absolute;
   inset: 0;
-  z-index: 0;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .canvasLayer .draggableItem {
   position: relative;
+  pointer-events: auto;
   touch-action: none;
   user-select: none;
   cursor: var(--kritzel-site-hand-cursor) !important;
