@@ -5,6 +5,7 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
@@ -287,7 +288,7 @@ export class KritzelStore {
    * @returns The incomplete line object, or null if no line is being drawn
    */
   get currentLine(): KritzelLine | null {
-    const drawingLines = this.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
+    const drawingLines = this.objects.filter(o => KritzelClassHelper.isInstanceOf<KritzelLine>(o, 'KritzelLine') && (o as KritzelLine).isCompleted === false);
     return drawingLines.length > 0 ? (drawingLines[0] as KritzelLine) : null;
   }
 

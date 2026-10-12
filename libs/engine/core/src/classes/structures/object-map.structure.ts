@@ -3,6 +3,7 @@ import { Awareness } from 'y-protocols/awareness';
 import { KritzelReviver } from '../core/reviver.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelLine } from '../objects/line.class';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import type { KritzelCore } from '../core/core.class';
@@ -559,7 +560,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
       if (change && change.action === 'delete') {
         objectsToDelete.push(key);
-        if (this._idMap.get(key) instanceof KritzelLine) {
+        if (KritzelClassHelper.isInstanceOf<KritzelLine>(this._idMap.get(key), 'KritzelLine')) {
           anchorIndexNeedsRebuild = true;
         }
       } else {
@@ -572,7 +573,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
             selectionGroupsToUpdate.push(object);
           } else {
             objectsToUpdate.push(object);
-            if (object instanceof KritzelLine) {
+            if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
               anchorIndexNeedsRebuild = true;
             }
           }
