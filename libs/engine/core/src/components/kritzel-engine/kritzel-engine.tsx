@@ -2729,7 +2729,7 @@ export class KritzelEngine {
 
     this._hasLoggedUnlicensedWelcomeBanner = true;
 
-    console.info('%c👋 Welcome to Kritzel', 'color: #4A7DFF; font-weight: 700;');
+    console.info('%c👋 Welcome to Kritzel', 'color: #007AFF; font-weight: 700;');
     console.info(`This version of Kritzel is not licensed. Get a license at: https://kritzel.io`);
   }
 
@@ -3737,9 +3737,9 @@ export class KritzelEngine {
                     }
 
                     const selectionBorderColor =
-                      remoteUserColor ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #4A7DFF)');
+                      remoteUserColor ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #007AFF)');
 
-                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #4A7DFF)';
+                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #007AFF)';
                     const lineObject = object as KritzelLine;
                     const activeSnapCandidate = this.core.store.state.snapCandidate;
                     const previewSnapCandidate = this.core.store.state.snapPreviewCandidate;

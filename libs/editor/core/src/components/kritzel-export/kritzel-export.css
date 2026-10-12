@@ -38,7 +38,7 @@
 .export-primary-button {
   width: 100%;
   padding: 12px 24px;
-  background-color: var(--kritzel-global-primary-color, #4A7DFF);
+  background-color: var(--kritzel-global-primary-color, #007AFF);
   color: var(--kritzel-global-primary-text-color, #fff);
   border: none;
   border-radius: var(--kritzel-button-border-radius, 8px);
