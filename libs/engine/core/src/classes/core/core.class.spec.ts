@@ -1131,134 +1131,187 @@ describe('KritzelCore', () => {
     });
   });
 
-  describe('bringForward', () => {
-    it('should increment zIndex of selected objects', () => {
-      const obj = { id: 'obj-1', zIndex: 3, onAfterUpdate: jest.fn() } as any;
-      const sg = { objects: [obj] } as any;
-      mockStore.selectionGroup = sg;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 5 },
-      ];
-
-      core.bringForward();
-
-      expect(obj.zIndex).toBe(4);
-      expect(mockEngine.forceUpdate).toBe(1);
-    });
-
-    it('should accept an explicit object parameter', () => {
-      const obj = { id: 'obj-1', zIndex: 2, onAfterUpdate: jest.fn() } as any;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 5 },
-      ];
-
-      core.bringForward(obj);
-
-      expect(obj.zIndex).toBe(3);
-    });
-  });
-
-  describe('sendBackward', () => {
-    it('should decrement zIndex of selected objects', () => {
-      const obj = { id: 'obj-1', zIndex: 5, onAfterUpdate: jest.fn() } as any;
-      const sg = { objects: [obj] } as any;
-      mockStore.selectionGroup = sg;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 2 },
-      ];
-
-      core.sendBackward();
-
-      expect(obj.zIndex).toBe(4);
-      expect(mockEngine.forceUpdate).toBe(1);
-    });
-  });
-
-  describe('bringToFront', () => {
-    it('should set zIndex to max + 1 of all other objects', () => {
-      const obj = { id: 'obj-1', zIndex: 1, onAfterUpdate: jest.fn() } as any;
-      const sg = { objects: [obj] } as any;
-      mockStore.selectionGroup = sg;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 10 },
-      ];
-
-      core.bringToFront();
-
-      expect(obj.zIndex).toBe(11);
-    });
-  });
-
-  describe('sendToBack', () => {
-    it('should set zIndex to min - 1 of all other objects', () => {
-      const obj = { id: 'obj-1', zIndex: 5, onAfterUpdate: jest.fn() } as any;
-      const sg = { objects: [obj] } as any;
-      mockStore.selectionGroup = sg;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 3 },
-      ];
-
-      core.sendToBack();
-
-      expect(obj.zIndex).toBe(2);
-    });
-  });
-
-  describe('z-order with groups', () => {
+  describe('z-order', () => {
     const createObj = (id: string, zIndex: number) => ({ id, zIndex, onAfterUpdate: jest.fn() }) as any;
-    let childA: any;
-    let childB: any;
-    let group: any;
-    let other: any;
+    const zIndices = (...objs: any[]) => objs.map(obj => obj.zIndex);
 
-    beforeEach(() => {
-      childA = createObj('child-a', 1);
-      childB = createObj('child-b', 2);
-      group = { ...createObj('group', 3), __class__: 'KritzelGroup', children: [childA, childB] };
-      other = createObj('other', 4);
-      mockStore.selectionGroup = { objects: [group] } as any;
-      mockStore.allNonSelectionObjects = [childA, childB, group, other];
+    describe('ungrouped objects', () => {
+      let obj: any;
+      let other: any;
+
+      beforeEach(() => {
+        obj = createObj('obj-1', 3);
+        other = createObj('other', 5);
+        mockStore.selectionGroup = { objects: [obj] } as any;
+        mockStore.allNonSelectionObjects = [obj, other];
+      });
+
+      it('bringForward moves the object past the next object above', () => {
+        core.bringForward();
+
+        expect(zIndices(other, obj)).toEqual([3, 5]);
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('bringForward accepts an explicit object parameter', () => {
+        mockStore.selectionGroup = null;
+        mockStore.allNonSelectionObjects = [other];
+
+        core.bringForward(obj);
+
+        expect(zIndices(other, obj)).toEqual([3, 5]);
+      });
+
+      it('bringForward does nothing when the object is already on top', () => {
+        obj.zIndex = 6;
+
+        core.bringForward();
+
+        expect(zIndices(other, obj)).toEqual([5, 6]);
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      });
+
+      it('sendBackward moves the object past the next object below', () => {
+        other.zIndex = 2;
+
+        core.sendBackward();
+
+        expect(zIndices(obj, other)).toEqual([2, 3]);
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('sendBackward after bringForward restores the original order in a single step', () => {
+        const below = createObj('below', 1);
+        mockStore.allNonSelectionObjects = [below, obj, other];
+
+        core.bringForward();
+        expect(zIndices(below, other, obj)).toEqual([1, 3, 5]);
+
+        core.sendBackward();
+        expect(zIndices(below, obj, other)).toEqual([1, 3, 5]);
+      });
+
+      it('bringForward resolves zIndex ties with the next object', () => {
+        other.zIndex = 3;
+        mockStore.allNonSelectionObjects = [other, obj];
+
+        core.bringForward();
+
+        expect(obj.zIndex).toBeGreaterThan(other.zIndex);
+      });
+
+      it('sendBackward resolves zIndex ties with the next object', () => {
+        obj.zIndex = 5;
+
+        core.sendBackward();
+
+        expect(obj.zIndex).toBeLessThan(other.zIndex);
+      });
+
+      it('bringToFront moves the object above all other objects', () => {
+        obj.zIndex = 1;
+        other.zIndex = 10;
+
+        core.bringToFront();
+
+        expect(obj.zIndex).toBeGreaterThan(other.zIndex);
+      });
+
+      it('sendToBack moves the object below all other objects', () => {
+        other.zIndex = 3;
+
+        core.sendToBack();
+
+        expect(obj.zIndex).toBeLessThan(other.zIndex);
+      });
     });
 
-    it('bringToFront moves group children above other objects, preserving order', () => {
-      core.bringToFront();
+    describe('groups', () => {
+      let childA: any;
+      let childB: any;
+      let group: any;
+      let other: any;
 
-      expect([childA.zIndex, childB.zIndex, group.zIndex]).toEqual([5, 6, 7]);
-      expect(other.zIndex).toBe(4);
-    });
+      beforeEach(() => {
+        childA = createObj('child-a', 1);
+        childB = createObj('child-b', 2);
+        group = { ...createObj('group', 3), __class__: 'KritzelGroup', children: [childA, childB] };
+        other = createObj('other', 4);
+        mockStore.selectionGroup = { objects: [group] } as any;
+        mockStore.allNonSelectionObjects = [childA, childB, group, other];
+      });
 
-    it('sendToBack moves group children below other objects, preserving order', () => {
-      other.zIndex = 0;
+      it('bringToFront moves group children above other objects, preserving order', () => {
+        core.bringToFront();
 
-      core.sendToBack();
+        expect(zIndices(other, childA, childB, group)).toEqual([1, 2, 3, 4]);
+      });
 
-      expect([childA.zIndex, childB.zIndex, group.zIndex]).toEqual([-3, -2, -1]);
-      expect(other.zIndex).toBe(0);
-    });
+      it('sendToBack moves group children below other objects, preserving order', () => {
+        other.zIndex = 0;
 
-    it('bringForward shifts group and its children together', () => {
-      core.bringForward();
+        core.sendToBack();
 
-      expect([childA.zIndex, childB.zIndex, group.zIndex]).toEqual([2, 3, 4]);
-    });
+        expect(zIndices(childA, childB, group, other)).toEqual([0, 1, 2, 3]);
+      });
 
-    it('sendBackward shifts group and its children together', () => {
-      other.zIndex = 0;
+      it('bringForward moves the whole group past the next object above', () => {
+        core.bringForward();
 
-      core.sendBackward();
+        expect(zIndices(other, childA, childB, group)).toEqual([1, 2, 3, 4]);
+      });
 
-      expect([childA.zIndex, childB.zIndex, group.zIndex]).toEqual([0, 1, 2]);
-    });
+      it('sendBackward moves the whole group past the next object below', () => {
+        other.zIndex = 0;
 
-    it('includes nested group descendants', () => {
-      const nestedChild = createObj('nested-child', 0);
-      const nested = { ...createObj('nested', 0.5), __class__: 'KritzelGroup', children: [nestedChild] };
-      group.children = [childA, childB, nested];
-      mockStore.allNonSelectionObjects = [nestedChild, nested, childA, childB, group, other];
+        core.sendBackward();
 
-      core.bringToFront();
+        expect(zIndices(childA, childB, group, other)).toEqual([0, 1, 2, 3]);
+      });
 
-      expect([nestedChild.zIndex, nested.zIndex, childA.zIndex, childB.zIndex, group.zIndex]).toEqual([5, 6, 7, 8, 9]);
+      it('bringForward and sendBackward can be repeated and stay reversible', () => {
+        const top = createObj('top', 5);
+        mockStore.allNonSelectionObjects = [childA, childB, group, other, top];
+
+        core.bringForward();
+        expect(zIndices(other, childA, childB, group, top)).toEqual([1, 2, 3, 4, 5]);
+
+        core.bringForward();
+        expect(zIndices(other, top, childA, childB, group)).toEqual([1, 2, 3, 4, 5]);
+
+        core.sendBackward();
+        expect(zIndices(other, childA, childB, group, top)).toEqual([1, 2, 3, 4, 5]);
+
+        core.sendBackward();
+        expect(zIndices(childA, childB, group, other, top)).toEqual([1, 2, 3, 4, 5]);
+      });
+
+      it('bringForward lifts all children past the next object when they are interleaved with it', () => {
+        childB.zIndex = 4;
+        other.zIndex = 2;
+        group.zIndex = 5;
+        const top = createObj('top', 6);
+        mockStore.allNonSelectionObjects = [childA, other, childB, group, top];
+
+        core.bringForward();
+
+        expect(zIndices(other, top, childA, childB, group)).toEqual([1, 2, 4, 5, 6]);
+      });
+
+      it('includes nested group descendants', () => {
+        const nestedChild = createObj('nested-child', 1);
+        const nested = { ...createObj('nested', 2), __class__: 'KritzelGroup', children: [nestedChild] };
+        childA.zIndex = 3;
+        childB.zIndex = 4;
+        group.zIndex = 5;
+        other.zIndex = 6;
+        group.children = [childA, childB, nested];
+        mockStore.allNonSelectionObjects = [nestedChild, nested, childA, childB, group, other];
+
+        core.bringToFront();
+
+        expect(zIndices(other, nestedChild, nested, childA, childB, group)).toEqual([1, 2, 3, 4, 5, 6]);
+      });
     });
   });
 
