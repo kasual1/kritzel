@@ -57,7 +57,16 @@ export const config: Config = {
     : {
         rollupConfig: {
           inputOptions: {
-            external: ['@kritzel/engine', '@kritzel/engine/loader', '@kritzel/engine/dist/components'],
+            // The engine's components are compiled into this bundle from its Stencil collection.
+            // Keep yjs and its companions external (as the engine build does), otherwise the
+            // editor ships its own copy next to the one @kritzel/engine imports and Yjs warns
+            // "Yjs was already imported", breaking its constructor checks.
+            external: [
+              '@kritzel/engine',
+              '@kritzel/engine/loader',
+              '@kritzel/engine/dist/components',
+              /^(yjs|y-websocket|y-indexeddb|lib0)(\/.*)?$/,
+            ],
           },
         },
       }),
