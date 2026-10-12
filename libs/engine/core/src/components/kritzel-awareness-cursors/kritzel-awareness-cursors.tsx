@@ -2,6 +2,7 @@ import { Component, Host, Prop, State, h } from '@stencil/core';
 import { KritzelCore } from '../../classes/core/core.class';
 import { KritzelPath } from '../../classes/objects/path.class';
 import { KritzelLine } from '../../classes/objects/line.class';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelRemoteCursorState } from '../../interfaces/remote-cursor.interface';
 import { IKritzelUser } from '../../interfaces/user.interface';
 
@@ -164,7 +165,7 @@ export class KritzelAwarenessCursors {
       };
     }
 
-    if (obj instanceof KritzelLine && !obj.isCompleted) {
+    if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine') && !obj.isCompleted) {
       return {
         x: (obj.endX - obj.x) / obj.scale + obj.translateX,
         y: (obj.endY - obj.y) / obj.scale + obj.translateY,

@@ -407,6 +407,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should return world coords for a KritzelLine end point', () => {
       const mockLine = Object.create(MockKritzelLine.prototype);
       Object.assign(mockLine, {
+        __class__: 'KritzelLine',
         endX: 50,
         endY: 60,
         x: 5,
@@ -429,6 +430,7 @@ describe('KritzelAwarenessCursors', () => {
     it('should return null for a completed KritzelLine', () => {
       const mockLine = Object.create(MockKritzelLine.prototype);
       Object.assign(mockLine, {
+        __class__: 'KritzelLine',
         endX: 50,
         endY: 60,
         translateX: 0,
