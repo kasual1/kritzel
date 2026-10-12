@@ -28,7 +28,7 @@ button {
 }
 
 button.primary {
-  background-color: var(--kritzel-button-primary-background-color, #4A7DFF);
+  background-color: var(--kritzel-button-primary-background-color, #007AFF);
   color: var(--kritzel-button-primary-color, #ffffff);
 }
 
@@ -55,15 +55,15 @@ button.secondary:active {
 
 button.text {
   background-color: transparent;
-  color: var(--kritzel-button-text-color, #4A7DFF);
+  color: var(--kritzel-button-text-color, #007AFF);
 }
 
 button.text:hover {
-  background-color: var(--kritzel-button-text-hover-background-color, rgba(74, 125, 255, 0.08));
+  background-color: var(--kritzel-button-text-hover-background-color, rgba(0, 122, 255, 0.08));
 }
 
 button.text:active {
-  background-color: var(--kritzel-button-text-active-background-color, rgba(74, 125, 255, 0.15));
+  background-color: var(--kritzel-button-text-active-background-color, rgba(0, 122, 255, 0.15));
 }
 
 button.disabled {
