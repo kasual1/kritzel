@@ -3,7 +3,7 @@
 Use Kritzel's asset storage provider configuration to store images and other binary assets outside the Yjs document. For an external HTTP service, configure `assetStorage.providers` with `HttpAssetProvider.with(...)`.
 
 ```ts
-import { HttpAssetProvider, IndexedDBAssetProvider } from '@kritzel/engine';
+import { HttpAssetProvider, IndexedDBAssetProvider } from '@kritzel/angular-editor';
 
 const assetStorage = {
   providers: [
