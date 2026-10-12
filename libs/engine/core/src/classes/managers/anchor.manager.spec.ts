@@ -144,8 +144,10 @@ describe('KritzelAnchorManager', () => {
 
     manager = new KritzelAnchorManager(mockCore);
 
-    // Default: KritzelClassHelper.isInstanceOf returns false
-    (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
+    // Default: KritzelClassHelper.isInstanceOf compares __class__ like the real implementation
+    (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation(
+      (object: any, className: string) => !!object && object.__class__ === className,
+    );
   });
 
   afterEach(() => {
@@ -1125,17 +1127,19 @@ describe('KritzelAnchorManager', () => {
     it('should rebuild the index from all lines in the store', () => {
       const line1 = new KritzelLine();
       Object.assign(line1, {
+        __class__: 'KritzelLine',
         id: 'line-1',
         startAnchor: { objectId: 'obj-1' },
         endAnchor: { objectId: 'obj-2' },
       });
       const line2 = new KritzelLine();
       Object.assign(line2, {
+        __class__: 'KritzelLine',
         id: 'line-2',
         startAnchor: { objectId: 'obj-1' },
       });
 
-      // KritzelLine instances must pass instanceof check
+      // KritzelLine instances must pass the __class__ check
       mockCore.store.allObjects = [line1, line2];
 
       manager.rebuildIndex();
