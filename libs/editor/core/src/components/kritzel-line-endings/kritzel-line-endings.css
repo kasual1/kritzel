@@ -45,13 +45,13 @@
 }
 
 .ending-option.selected {
-  border-color: var(--kritzel-selection-border-color, #4A7DFF);
+  border-color: var(--kritzel-selection-border-color, #007AFF);
   background-color: var(--kritzel-line-endings-selected-background-color, #ebebeb);
 }
 
 .ending-option:focus {
   outline: none;
-  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(74, 125, 255, 0.3));
+  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
 }
 
 .ending-icon {
