@@ -4,13 +4,15 @@ import {
   ActiveWorkspaceChangeEvent,
   EditorIsReadyEvent,
   HocuspocusSyncProvider,
+  HttpAssetProvider,
+  IndexedDBAssetProvider,
   IndexedDBSyncProvider,
+  KritzelAssetStorageConfig,
   KritzelDynamicObject,
   KritzelEditor,
   KritzelSyncConfig,
   LoginEvent
 } from '@kritzel/angular-editor';
-import { HttpAssetProvider, IndexedDBAssetProvider, KritzelAssetStorageConfig } from '@kritzel/engine';
 import { UserData } from '../resolvers/user.resolver';
 import { AuthService } from '../services/auth.service';
 import { ConfigService } from '../services/config.service';
