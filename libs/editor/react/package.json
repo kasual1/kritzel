@@ -25,11 +25,9 @@
     "access": "public"
   },
   "dependencies": {
-    "@stencil/react-output-target": "^1.2.0"
-  },
-  "peerDependencies": {
     "@kritzel/editor": "^0.5.4",
-    "@kritzel/engine": "^0.5.4"
+    "@kritzel/engine": "^0.5.4",
+    "@stencil/react-output-target": "^1.2.0"
   },
   "repository": {
     "type": "git",
