@@ -46,6 +46,7 @@ describe('KritzelSelectionTool', () => {
   const createMockLine = (props: any = {}) => {
     const obj = Object.create(KritzelLine.prototype);
     return Object.assign(obj, {
+      __class__: 'KritzelLine',
       stroke: DEFAULT_COLOR_PALETTE[1],
       strokeWidth: 4,
       opacity: 1,
