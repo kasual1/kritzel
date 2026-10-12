@@ -706,7 +706,7 @@ export class KritzelAnchorManager {
     const objects = this._core.store.allObjects;
 
     for (const object of objects) {
-      if (object instanceof KritzelLine) {
+      if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
         if (object.startAnchor) {
           this.addToIndex(object.startAnchor.objectId, object.id, 'start');
         }
@@ -786,7 +786,7 @@ export class KritzelAnchorManager {
       return null;
     }
     const object = objects[0];
-    return object instanceof KritzelLine ? object : null;
+    return KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') ? object : null;
   }
 
   /**
@@ -1803,7 +1803,7 @@ export class KritzelAnchorManager {
     }
 
     // Exclude line objects - lines cannot be anchored to other lines
-    if (object instanceof KritzelLine) {
+    if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
       return false;
     }
 

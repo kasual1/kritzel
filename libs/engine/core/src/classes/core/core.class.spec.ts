@@ -1383,6 +1383,7 @@ describe('KritzelCore', () => {
 
     it('should return false for selected KritzelLine when no selection group', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       mockStore.selectionGroup = null;
 
@@ -1406,6 +1407,7 @@ describe('KritzelCore', () => {
       localGroup.id = 'sg-1';
       localGroup.isSelected = true;
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
       mockStore.selectionGroup = localGroup;
 
@@ -1428,6 +1430,7 @@ describe('KritzelCore', () => {
       remoteGroup.isSelected = true;
       remoteGroup.userId = 'remote-user';
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       Object.defineProperty(remoteGroup, 'objects', { value: [line], writable: true });
       core.setUser({ id: 'local-user', displayName: 'Local' } as any);
 
@@ -1442,8 +1445,26 @@ describe('KritzelCore', () => {
       expect(core.displaySelectionLineUI(obj)).toBe(false);
     });
 
+    it('should show line UI and hide group UI for a line created from a different KritzelLine class copy', () => {
+      // Consumer-constructed objects (e.g. imported via a framework wrapper package) are
+      // not instances of the engine's own KritzelLine class, but carry the same __class__.
+      class ForeignKritzelLine {
+        __class__ = 'KritzelLine';
+      }
+      const line = Object.assign(new ForeignKritzelLine(), { id: 'line-1', isSelected: true }) as any;
+      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      localGroup.id = 'group-1';
+      localGroup.isSelected = true;
+      Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
+      mockStore.selectionGroup = localGroup;
+
+      expect(core.displaySelectionLineUI(line)).toBe(true);
+      expect(core.displaySelectionGroupUI(localGroup)).toBe(false);
+    });
+
     it('should return true for selected line when no selection group', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = null;
@@ -1453,6 +1474,7 @@ describe('KritzelCore', () => {
 
     it('should return false for unselected line when no selection group', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = false;
       mockStore.selectionGroup = null;
 
@@ -1461,6 +1483,7 @@ describe('KritzelCore', () => {
 
     it('should return false when selection group is not selected', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = { isSelected: false, objects: [line] };
@@ -1470,6 +1493,7 @@ describe('KritzelCore', () => {
 
     it('should return true for a single selected line in selection group', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = { isSelected: true, objects: [line] };
@@ -1479,6 +1503,7 @@ describe('KritzelCore', () => {
 
     it('should return false when selection group has multiple objects', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       line.id = 'line-1';
       const otherObj = { id: 'other' };

@@ -1604,7 +1604,7 @@ export class KritzelCore {
     const selectionGroup = this._store.selectionGroup;
     if (!selectionGroup) {
       // During selection phase (no group yet), hide UI for KritzelLine objects
-      return !(object instanceof KritzelLine);
+      return !KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine');
     }
 
     // Once a local selection group exists, only the selection-group object
@@ -1621,7 +1621,7 @@ export class KritzelCore {
     // Hide UI if selection contains a single KritzelLine
     if (selectionGroup.objects.length === 1) {
       const selectedObject = selectionGroup.objects[0];
-      return !(selectedObject instanceof KritzelLine);
+      return !KritzelClassHelper.isInstanceOf<KritzelLine>(selectedObject, 'KritzelLine');
     }
 
     return true;
@@ -1635,7 +1635,7 @@ export class KritzelCore {
    */
   displaySelectionLineUI(object: KritzelBaseObject<any>): boolean {
     // Only show line UI on KritzelLine objects, not on selection groups
-    if (!(object instanceof KritzelLine)) {
+    if (!KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
       return false;
     }
 
@@ -1652,7 +1652,7 @@ export class KritzelCore {
     // Show UI only if selection contains exactly one KritzelLine and it's this object
     if (selectionGroup.objects.length === 1) {
       const selectedObject = selectionGroup.objects[0];
-      return selectedObject instanceof KritzelLine && selectedObject.id === object.id;
+      return KritzelClassHelper.isInstanceOf<KritzelLine>(selectedObject, 'KritzelLine') && selectedObject.id === object.id;
     }
 
     return false;
