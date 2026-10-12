@@ -1,9 +1,7 @@
 name: Test CLI
 
 on:
-  push:
-    branches-ignore:
-      - main
+  pull_request:
     paths-ignore:
       - "apps/app/**"
       - ".github/workflows/*-app.yml"
