@@ -197,6 +197,20 @@ const config: Config = {
         },
       };
     },
+    function productionSourceMaps() {
+      return {
+        name: "production-source-maps",
+        configureWebpack(_config, isServer) {
+          // Emit source maps for the client bundles so production JS can be debugged
+          if (isServer || process.env.NODE_ENV !== "production") {
+            return {};
+          }
+          return {
+            devtool: "source-map",
+          };
+        },
+      };
+    },
     [
       "@docusaurus/plugin-client-redirects",
       {
