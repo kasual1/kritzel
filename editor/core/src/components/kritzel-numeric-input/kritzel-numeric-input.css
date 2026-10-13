@@ -44,7 +44,7 @@
 }
 
 .numeric-input::selection {
-  background-color: var(--kritzel-numeric-input-selection-background, #4A7DFF);
+  background-color: var(--kritzel-numeric-input-selection-background, #007AFF);
   color: var(--kritzel-numeric-input-selection-color, #ffffff);
 }
 

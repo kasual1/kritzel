@@ -26,7 +26,7 @@
 }
 
 :host(.selected) {
-  background-color: var(--kritzel-menu-item-selected-background-color, #4A7DFF);
+  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
   color: var(--kritzel-menu-item-selected-color, #ffffff);
 }
 
@@ -35,7 +35,7 @@
 }
 
 :host(.selected.editing) {
-  background-color: var(--kritzel-menu-item-selected-background-color, #4A7DFF);
+  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
 }
 
 :host(.selected) .edit-input {
@@ -75,7 +75,7 @@ kritzel-icon {
 }
 
 :host(.child-open.selected) {
-  background-color: var(--kritzel-menu-item-selected-background-color, #4A7DFF);
+  background-color: var(--kritzel-menu-item-selected-background-color, #007aff);
 }
 
 .menu-item-overlay {
@@ -139,7 +139,7 @@ kritzel-icon {
 }
 
 .edit-input::selection {
-  background-color: var(--kritzel-menu-item-input-selection-color, #4A7DFF);
+  background-color: var(--kritzel-menu-item-input-selection-color, #007bff);
   color: var(--kritzel-menu-item-input-selection-text-color, #ffffff);
 }
 

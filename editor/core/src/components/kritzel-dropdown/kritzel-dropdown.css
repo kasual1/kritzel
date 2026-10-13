@@ -160,7 +160,7 @@
 
 .dropdown-option.is-selected {
   font-weight: 600;
-  background-color: var(--kritzel-dropdown-selected-background-color, #4A7DFF1A);
+  background-color: var(--kritzel-dropdown-selected-background-color, #007bff1a);
 }
 
 .dropdown-option-check {
@@ -170,7 +170,7 @@
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  color: var(--kritzel-dropdown-accent-color, #4A7DFF);
+  color: var(--kritzel-dropdown-accent-color, #007bff);
 }
 
 .dropdown-option-check svg {
