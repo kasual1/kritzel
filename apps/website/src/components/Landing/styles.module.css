@@ -246,6 +246,15 @@
   .heroTitleCursor[data-start] {
     display: none;
   }
+
+  /* Nothing is hidden, so the not-yet-typed accent characters can share the gradient safely. */
+  .heroTitleAccentPending {
+    background: linear-gradient(100deg, #0a0a0a 10%, #5b5b66 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
 }
 
 .page .heroSubtitle {

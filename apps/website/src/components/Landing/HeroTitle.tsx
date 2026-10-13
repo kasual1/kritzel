@@ -59,20 +59,28 @@ export default function HeroTitle({
     </span>
   );
 
+  const accentCharacters = Array.from(TITLE_ACCENT).map((letter, index) =>
+    character(letter, index + prefix.length),
+  );
+  const revealedAccentCount = Math.min(Math.max(visibleCount - prefix.length, 0), accentCharacters.length);
+
   return (
     <>
       {/* Without JavaScript the typing animation never runs, so show the full title instead.
           Kept outside the h1 so its CSS text is never read as part of the heading. */}
       <noscript>
-        <style>{`.${styles.heroTitleCharacter}[data-hidden] { visibility: visible; } .${styles.heroTitleCursor} { display: none; }`}</style>
+        <style>{`.${styles.heroTitleCharacter}[data-hidden] { visibility: visible; } .${styles.heroTitleCursor} { display: none; } .${styles.heroTitleAccentPending} { background: linear-gradient(100deg, #0a0a0a 10%, #5b5b66 90%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }`}</style>
       </noscript>
       <h1 className={className} aria-label={`${prefix} Canvas ${SECOND_LINE}`}>
         <span aria-hidden="true">
           <span className={styles.heroTitleLine}>
             {Array.from(prefix).map((letter, index) => character(letter, index))}
+            {/* WebKit ignores visibility: hidden on descendants of a background-clip: text element and
+                paints them anyway, so only revealed characters go inside the gradient span. */}
             <span className={accentClassName}>
-              {Array.from(TITLE_ACCENT).map((letter, index) => character(letter, index + prefix.length))}
+              {accentCharacters.slice(0, revealedAccentCount)}
             </span>
+            <span className={styles.heroTitleAccentPending}>{accentCharacters.slice(revealedAccentCount)}</span>
           </span>
           <span className={styles.heroTitleLine}>
             {Array.from(SECOND_LINE).map((letter, index) => character(letter, index + firstLine.length))}
