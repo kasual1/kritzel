@@ -36,7 +36,7 @@ export default function Agentic(): ReactNode {
   return (
     <HtmlClassNameProvider className="landing-page agentic-page">
       <Layout description={siteConfig.tagline}>
-        <div className={styles.page}>
+        <main className={styles.page}>
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} variant="agentic" />
             <div aria-hidden="true" className={styles.heroSpacer} />
@@ -45,7 +45,7 @@ export default function Agentic(): ReactNode {
           <CliSection />
           <Faq />
           <Wordmark />
-        </div>
+        </main>
       </Layout>
     </HtmlClassNameProvider>
   );
