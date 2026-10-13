@@ -2403,6 +2403,11 @@ export class KritzelEngine {
 
   private _lastHadSelectionGroup: boolean = false;
   private _isViewportReady: boolean = false;
+
+  /** Forwards visual viewport resizes (e.g. virtual keyboard open/close) to the viewport. */
+  private readonly handleVisualViewportResize = () => {
+    this.viewport?.handleVisualViewportResize();
+  };
   private _isYjsInitialized: boolean = false;
   private _isAssetStorageInitialized: boolean = false;
   private _isResolvingActiveWorkspaceId: boolean = false;
@@ -2566,6 +2571,7 @@ export class KritzelEngine {
 
   disconnectedCallback() {
     this.throttledPointerMoveMulti.cancel();
+    window.visualViewport?.removeEventListener('resize', this.handleVisualViewportResize);
     this._revealedImageKeys.clear();
 
     if (this._sceneBootstrapTransitionTimer !== null) {
@@ -2637,6 +2643,7 @@ export class KritzelEngine {
       this.keyHandler = new KritzelKeyHandler(this.core);
       this.viewport = new KritzelViewport(this.core, this.host);
       this._isViewportReady = true;
+      window.visualViewport?.addEventListener('resize', this.handleVisualViewportResize);
 
       // Initialize cursor manager with target element and shadow root
       this.core.cursorManager.setTargetElement(this.cursorTarget || document.body);
