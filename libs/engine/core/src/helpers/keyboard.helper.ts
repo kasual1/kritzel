@@ -39,18 +39,53 @@ export class KritzelKeyboardHelper {
     }
   }
 
+  /** Ratio of visible height to full height below which the virtual keyboard is considered open. */
+  private static readonly KEYBOARD_OPEN_HEIGHT_RATIO = 0.75;
+
   /**
-   * Returns whether a mobile virtual keyboard is currently open, based on how much
-   * the visual viewport is reduced compared to the screen height.
+   * Largest viewport height seen per viewport width, i.e. the height without a virtual keyboard.
+   * Keyed by width so portrait and landscape keep separate baselines.
+   */
+  private static readonly viewportBaselineHeights = new Map<number, number>();
+
+  /**
+   * Records the current viewport height as the keyboard-free baseline for the current width,
+   * if it is the largest seen so far. Called automatically by {@link isKeyboardOpen}; call it
+   * early (before any keyboard can be open) so the first check has a reliable baseline.
+   */
+  static recordViewportBaseline(visualViewport: VisualViewport | null | undefined = window.visualViewport): void {
+    if (!visualViewport) {
+      return;
+    }
+    const key = Math.round(visualViewport.width);
+    const height = Math.max(visualViewport.height * visualViewport.scale, window.innerHeight);
+    const baseline = KritzelKeyboardHelper.viewportBaselineHeights.get(key) ?? 0;
+    if (height > baseline) {
+      KritzelKeyboardHelper.viewportBaselineHeights.set(key, height);
+    }
+  }
+
+  /** Clears the recorded viewport baselines. */
+  static resetViewportBaseline(): void {
+    KritzelKeyboardHelper.viewportBaselineHeights.clear();
+  }
+
+  /**
+   * Returns whether a virtual keyboard is currently open on a mobile device (iOS, iPadOS, Android).
+   * Always returns false on other devices, regardless of their viewport size.
+   * Compares the visible height to the keyboard-free height recorded for the same viewport width,
+   * so it works in both portrait and landscape.
    */
   static isKeyboardOpen(visualViewport: VisualViewport | null | undefined = window.visualViewport): boolean {
-    if (!visualViewport) {
+    if (!visualViewport || !KritzelDevicesHelper.isMobile()) {
       return false;
     }
-    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
-    const isMobileDevice = KritzelDevicesHelper.isMobile();
-    const isViewportReduced = (visualViewport.height * visualViewport.scale) / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO;
-    return isMobileDevice && isViewportReduced;
+    KritzelKeyboardHelper.recordViewportBaseline(visualViewport);
+    const baseline = KritzelKeyboardHelper.viewportBaselineHeights.get(Math.round(visualViewport.width));
+    if (!baseline) {
+      return false;
+    }
+    return (visualViewport.height * visualViewport.scale) / baseline < KritzelKeyboardHelper.KEYBOARD_OPEN_HEIGHT_RATIO;
   }
 
   static onKeyboardVisibleChanged(callback: (isOpen: boolean) => void): () => void {

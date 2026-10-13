@@ -3,6 +3,7 @@ import { KritzelCore } from './core.class';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
+import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 
 jest.mock('lodash', () => ({
   debounce: (fn: Function) => {
@@ -1876,6 +1877,7 @@ describe('KritzelViewport', () => {
         value: { offsetTop: 0, height: 400, addEventListener: jest.fn(), removeEventListener: jest.fn() },
       });
       animateSpy = jest.spyOn(viewport, 'animateViewportTo').mockImplementation(() => {});
+      jest.spyOn(KritzelDevicesHelper, 'isMobile').mockReturnValue(true);
       mockState.translateX = 10;
       mockState.translateY = 50;
       mockState.scale = 2;
@@ -1942,6 +1944,24 @@ describe('KritzelViewport', () => {
       viewport.handleVisualViewportResize();
 
       expect(animateSpy).toHaveBeenCalled();
+    });
+
+    it('should not run on visual viewport resize on non-mobile devices', () => {
+      (KritzelDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
+      (mockCore.store as any).activeText = createEditingObject(600, 620);
+
+      viewport.handleVisualViewportResize();
+
+      expect(animateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not run on window resize on non-mobile devices', () => {
+      (KritzelDevicesHelper.isMobile as jest.Mock).mockReturnValue(false);
+      (mockCore.store as any).activeText = createEditingObject(600, 620);
+
+      viewport.handleResize();
+
+      expect(animateSpy).not.toHaveBeenCalled();
     });
 
     describe('restoring after the keyboard closes', () => {
