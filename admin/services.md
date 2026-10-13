@@ -35,4 +35,13 @@
   - Username / Email: seifertluk11@gmail.com
   - Notes: Only use
 
+- **Reddit**
+  - URL: https://www.reddit.com/
+  - Username / Email: seifertluk11@gmail.com
+  - Notes: 
+
+- **HackerNews**
+  - URL: https://news.ycombinator.com/
+  - Username / Email: seifertluk11@gmail.com
+  - Notes: 
 
