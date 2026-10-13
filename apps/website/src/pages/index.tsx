@@ -34,7 +34,7 @@ export default function Home(): ReactNode {
   return (
     <HtmlClassNameProvider className="landing-page">
       <Layout description={siteConfig.tagline}>
-        <div className={styles.page}>
+        <main className={styles.page}>
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} />
             <div aria-hidden="true" className={styles.heroSpacer} />
@@ -43,7 +43,7 @@ export default function Home(): ReactNode {
           <CliSection />
           <Faq />
           <Wordmark />
-        </div>
+        </main>
       </Layout>
     </HtmlClassNameProvider>
   );
