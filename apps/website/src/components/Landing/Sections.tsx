@@ -124,7 +124,10 @@ const FEATURES: ReadonlyArray<{ title: string; description: string; icon: ReactN
 
 export function Features() {
   return (
-    <section aria-label="Features" className={styles.features}>
+    <section aria-labelledby="features-heading" className={styles.features}>
+      <h2 id="features-heading" className={styles.visuallyHidden}>
+        Features
+      </h2>
       <div className={styles.featuresGrid}>
         {FEATURES.map((feature) => (
           <article key={feature.title} className={styles.feature}>
@@ -299,7 +302,7 @@ export function CliSection() {
             </div>
           )}
         </div>
-        <div aria-label={`Selected framework: ${framework.name}`} className={styles.frameworkTileAnchor}>
+        <div role="img" aria-label={`Selected framework: ${framework.name}`} className={styles.frameworkTileAnchor}>
           <div key={state.round} className={styles.frameworkTileMotion} data-leaving={state.leaving ? "true" : undefined}>
             <div
               className={styles.frameworkTile}

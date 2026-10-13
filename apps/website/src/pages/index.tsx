@@ -1,5 +1,4 @@
 import { useEffect, useState, type ReactNode } from "react";
-import Head from "@docusaurus/Head";
 import Layout from "@theme/Layout";
 import { HtmlClassNameProvider } from "@docusaurus/theme-common";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
@@ -35,14 +34,6 @@ export default function Home(): ReactNode {
   return (
     <HtmlClassNameProvider className="landing-page">
       <Layout description={siteConfig.tagline}>
-        <Head>
-          <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-          <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Caveat:wght@500;700&display=swap"
-          />
-        </Head>
         <div className={styles.page}>
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} />
