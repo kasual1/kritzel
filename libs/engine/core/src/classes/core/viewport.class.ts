@@ -17,6 +17,12 @@ export class KritzelViewport {
   private readonly _debounceUpdate: DebouncedFunc<() => void>;
   /** Debounced function to end scaling state after pinch gestures */
   private readonly _debounceEndScaling: DebouncedFunc<() => void>;
+
+  /** Debounced version of {@link keepEditingCaretVisible}, used while the virtual keyboard animates in/out */
+  private readonly _debounceKeepEditingCaretVisible: DebouncedFunc<() => void>;
+
+  /** Gap in pixels kept between the editing caret and the edge of the visible area */
+  private static readonly EDITING_CARET_VISIBLE_PADDING = 24;
   /** Animation frame ID for cancellable viewport animations */
   private _animationFrameId: number | null = null;
 
@@ -64,6 +70,8 @@ export class KritzelViewport {
       this._core.store.state.isScaling = false;
       this._core.rerender();
     }, 100);
+
+    this._debounceKeepEditingCaretVisible = debounce(() => this.keepEditingCaretVisible(), 100);
   }
 
   /**
@@ -73,6 +81,7 @@ export class KritzelViewport {
    */
   cancelPendingUpdates(): void {
     this._debounceUpdate.cancel();
+    this._debounceKeepEditingCaretVisible.cancel();
   }
 
   /**
@@ -157,6 +166,61 @@ export class KritzelViewport {
     this._core.store.state.viewportHeight = this._core.store.host.clientHeight;
     this._core.store.state.hasViewportChanged = true;
     this._core.rerender();
+    this._debounceKeepEditingCaretVisible();
+  }
+
+  /**
+   * Handles visual viewport resize events (e.g. the mobile virtual keyboard opening or closing).
+   * Schedules a check that pans the canvas so the caret of the text or shape being edited
+   * is not hidden behind the keyboard.
+   */
+  handleVisualViewportResize(): void {
+    this._debounceKeepEditingCaretVisible();
+  }
+
+  /**
+   * Pans the canvas vertically so the caret of the text or shape currently being edited
+   * lies within the visible area. The visible area is the intersection of the host element
+   * and the visual viewport, which excludes the space covered by a mobile virtual keyboard.
+   * Does nothing if no object is being edited or the caret is already visible.
+   */
+  keepEditingCaretVisible(): void {
+    const activeObject = this._core.store.activeText ?? this._core.store.activeShape;
+    const editor = activeObject?.editor;
+    if (!activeObject?.isEditing || !editor || !editor.hasFocus()) {
+      return;
+    }
+
+    let caretRect: { top: number; bottom: number };
+    try {
+      caretRect = editor.coordsAtPos(editor.state.selection.head);
+    } catch {
+      return;
+    }
+
+    const hostRect = this._core.store.host.getBoundingClientRect();
+    const visualViewport = window.visualViewport;
+    const visibleTop = Math.max(hostRect.top, visualViewport ? visualViewport.offsetTop : 0);
+    const visibleBottom = Math.min(hostRect.bottom, visualViewport ? visualViewport.offsetTop + visualViewport.height : window.innerHeight);
+    const padding = KritzelViewport.EDITING_CARET_VISIBLE_PADDING;
+
+    if (visibleBottom - visibleTop < caretRect.bottom - caretRect.top + padding * 2) {
+      return;
+    }
+
+    let deltaY = 0;
+    if (caretRect.bottom + padding > visibleBottom) {
+      deltaY = visibleBottom - padding - caretRect.bottom;
+    } else if (caretRect.top - padding < visibleTop) {
+      deltaY = visibleTop + padding - caretRect.top;
+    }
+
+    if (deltaY === 0) {
+      return;
+    }
+
+    const { translateX, translateY, scale } = this._core.store.state;
+    this.animateViewportTo(translateX, translateY + deltaY, scale);
   }
 
   /**

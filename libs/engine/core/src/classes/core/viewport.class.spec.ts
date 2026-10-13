@@ -1855,4 +1855,92 @@ describe('KritzelViewport', () => {
       expect(mockState.scale).toBeCloseTo(2);
     });
   });
+  describe('keepEditingCaretVisible', () => {
+    const createEditingObject = (caretTop: number, caretBottom: number, hasFocus = true) => ({
+      isEditing: true,
+      editor: {
+        hasFocus: jest.fn().mockReturnValue(hasFocus),
+        state: { selection: { head: 1 } },
+        coordsAtPos: jest.fn().mockReturnValue({ top: caretTop, bottom: caretBottom, left: 0, right: 0 }),
+      },
+    });
+
+    let animateSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      (mockHost.getBoundingClientRect as jest.Mock).mockReturnValue({ left: 0, top: 0, right: 1000, bottom: 800, width: 1000, height: 800 });
+      // Virtual keyboard covers the bottom 400px of the screen
+      Object.defineProperty(window, 'visualViewport', {
+        configurable: true,
+        value: { offsetTop: 0, height: 400, addEventListener: jest.fn(), removeEventListener: jest.fn() },
+      });
+      animateSpy = jest.spyOn(viewport, 'animateViewportTo').mockImplementation(() => {});
+      mockState.translateX = 10;
+      mockState.translateY = 50;
+      mockState.scale = 2;
+    });
+
+    afterEach(() => {
+      delete (window as any).visualViewport;
+    });
+
+    it('should pan the canvas up when the caret is hidden behind the keyboard', () => {
+      (mockCore.store as any).activeText = createEditingObject(600, 620);
+
+      viewport.keepEditingCaretVisible();
+
+      // Caret bottom (620) must move to visible bottom (400) minus padding (24)
+      expect(animateSpy).toHaveBeenCalledWith(10, 50 - (620 - 376), 2);
+    });
+
+    it('should use the active shape when no text is being edited', () => {
+      (mockCore.store as any).activeText = null;
+      (mockCore.store as any).activeShape = createEditingObject(500, 520);
+
+      viewport.keepEditingCaretVisible();
+
+      expect(animateSpy).toHaveBeenCalledWith(10, 50 - (520 - 376), 2);
+    });
+
+    it('should pan the canvas down when the caret is above the visible area', () => {
+      (mockCore.store as any).activeText = createEditingObject(-100, -80);
+
+      viewport.keepEditingCaretVisible();
+
+      expect(animateSpy).toHaveBeenCalledWith(10, 50 + 124, 2);
+    });
+
+    it('should not pan when the caret is already visible', () => {
+      (mockCore.store as any).activeText = createEditingObject(100, 120);
+
+      viewport.keepEditingCaretVisible();
+
+      expect(animateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not pan when nothing is being edited', () => {
+      (mockCore.store as any).activeText = null;
+      (mockCore.store as any).activeShape = null;
+
+      viewport.keepEditingCaretVisible();
+
+      expect(animateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not pan when the editor does not have focus', () => {
+      (mockCore.store as any).activeText = createEditingObject(600, 620, false);
+
+      viewport.keepEditingCaretVisible();
+
+      expect(animateSpy).not.toHaveBeenCalled();
+    });
+
+    it('should run when the visual viewport resizes', () => {
+      (mockCore.store as any).activeText = createEditingObject(600, 620);
+
+      viewport.handleVisualViewportResize();
+
+      expect(animateSpy).toHaveBeenCalled();
+    });
+  });
 });
