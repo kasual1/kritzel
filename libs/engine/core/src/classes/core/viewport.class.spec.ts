@@ -2,6 +2,7 @@ import { KritzelViewport } from './viewport.class';
 import { KritzelCore } from './core.class';
 import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelBaseObject } from '../objects/base-object.class';
+import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 
 jest.mock('lodash', () => ({
   debounce: (fn: Function) => {
@@ -1941,6 +1942,92 @@ describe('KritzelViewport', () => {
       viewport.handleVisualViewportResize();
 
       expect(animateSpy).toHaveBeenCalled();
+    });
+
+    describe('restoring after the keyboard closes', () => {
+      let isKeyboardOpenSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        isKeyboardOpenSpy = jest.spyOn(KritzelKeyboardHelper, 'isKeyboardOpen').mockReturnValue(true);
+      });
+
+      it('should pan back by the applied offset once the keyboard closes', () => {
+        (mockCore.store as any).activeText = createEditingObject(600, 620);
+        viewport.handleVisualViewportResize();
+        expect(animateSpy).toHaveBeenLastCalledWith(10, 50 - 244, 2);
+
+        // Simulate the pan having been applied
+        mockState.translateY = 50 - 244;
+        isKeyboardOpenSpy.mockReturnValue(false);
+        viewport.handleVisualViewportResize();
+
+        expect(animateSpy).toHaveBeenLastCalledWith(10, 50, 2);
+      });
+
+      it('should accumulate multiple adjustments while the keyboard is open', () => {
+        (mockCore.store as any).activeText = createEditingObject(600, 620);
+        viewport.handleVisualViewportResize();
+        mockState.translateY = 50 - 244;
+
+        (mockCore.store as any).activeText = createEditingObject(420, 440);
+        viewport.handleVisualViewportResize();
+        mockState.translateY = 50 - 244 - 64;
+
+        isKeyboardOpenSpy.mockReturnValue(false);
+        viewport.handleVisualViewportResize();
+
+        expect(animateSpy).toHaveBeenLastCalledWith(10, 50, 2);
+      });
+
+      it('should keep manual panning done while the keyboard was open', () => {
+        (mockCore.store as any).activeText = createEditingObject(600, 620);
+        viewport.handleVisualViewportResize();
+        mockState.translateY = 50 - 244 + 30;
+
+        isKeyboardOpenSpy.mockReturnValue(false);
+        viewport.handleVisualViewportResize();
+
+        expect(animateSpy).toHaveBeenLastCalledWith(10, 50 + 30, 2);
+      });
+
+      it('should not restore if the scale changed while the keyboard was open', () => {
+        (mockCore.store as any).activeText = createEditingObject(600, 620);
+        viewport.handleVisualViewportResize();
+        animateSpy.mockClear();
+        mockState.scale = 3;
+
+        isKeyboardOpenSpy.mockReturnValue(false);
+        viewport.handleVisualViewportResize();
+
+        expect(animateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should restore only once', () => {
+        (mockCore.store as any).activeText = createEditingObject(600, 620);
+        viewport.handleVisualViewportResize();
+        mockState.translateY = 50 - 244;
+
+        (mockCore.store as any).activeText = null;
+        isKeyboardOpenSpy.mockReturnValue(false);
+        viewport.handleVisualViewportResize();
+        animateSpy.mockClear();
+        viewport.handleVisualViewportResize();
+
+        expect(animateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not record an offset when no keyboard is open', () => {
+        isKeyboardOpenSpy.mockReturnValue(false);
+        (mockCore.store as any).activeText = createEditingObject(600, 620);
+        viewport.handleVisualViewportResize();
+        mockState.translateY = 50 - 244;
+        animateSpy.mockClear();
+
+        (mockCore.store as any).activeText = null;
+        viewport.handleVisualViewportResize();
+
+        expect(animateSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });

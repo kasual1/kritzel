@@ -4,6 +4,7 @@ import { KritzelCore } from './core.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelViewportState } from '../../interfaces/viewport-state.interface';
 import { debounce, DebouncedFunc } from 'lodash';
+import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 
 /**
  * Manages viewport transformations including panning, zooming, and centering.
@@ -18,8 +19,14 @@ export class KritzelViewport {
   /** Debounced function to end scaling state after pinch gestures */
   private readonly _debounceEndScaling: DebouncedFunc<() => void>;
 
-  /** Debounced version of {@link keepEditingCaretVisible}, used while the virtual keyboard animates in/out */
-  private readonly _debounceKeepEditingCaretVisible: DebouncedFunc<() => void>;
+  /** Debounced version of {@link syncWithVirtualKeyboard}, used while the virtual keyboard animates in/out */
+  private readonly _debounceSyncWithVirtualKeyboard: DebouncedFunc<() => void>;
+
+  /**
+   * Vertical pan applied to keep the editing caret above the open virtual keyboard,
+   * together with the scale it was applied at. Reverted once the keyboard closes.
+   */
+  private _keyboardPanOffset: { deltaY: number; scale: number } | null = null;
 
   /** Gap in pixels kept between the editing caret and the edge of the visible area */
   private static readonly EDITING_CARET_VISIBLE_PADDING = 24;
@@ -71,7 +78,7 @@ export class KritzelViewport {
       this._core.rerender();
     }, 100);
 
-    this._debounceKeepEditingCaretVisible = debounce(() => this.keepEditingCaretVisible(), 100);
+    this._debounceSyncWithVirtualKeyboard = debounce(() => this.syncWithVirtualKeyboard(), 100);
   }
 
   /**
@@ -81,7 +88,8 @@ export class KritzelViewport {
    */
   cancelPendingUpdates(): void {
     this._debounceUpdate.cancel();
-    this._debounceKeepEditingCaretVisible.cancel();
+    this._debounceSyncWithVirtualKeyboard.cancel();
+    this._keyboardPanOffset = null;
   }
 
   /**
@@ -166,16 +174,46 @@ export class KritzelViewport {
     this._core.store.state.viewportHeight = this._core.store.host.clientHeight;
     this._core.store.state.hasViewportChanged = true;
     this._core.rerender();
-    this._debounceKeepEditingCaretVisible();
+    this._debounceSyncWithVirtualKeyboard();
   }
 
   /**
    * Handles visual viewport resize events (e.g. the mobile virtual keyboard opening or closing).
    * Schedules a check that pans the canvas so the caret of the text or shape being edited
-   * is not hidden behind the keyboard.
+   * is not hidden behind the keyboard, and restores the previous position once it closes.
    */
   handleVisualViewportResize(): void {
-    this._debounceKeepEditingCaretVisible();
+    this._debounceSyncWithVirtualKeyboard();
+  }
+
+  /**
+   * Restores the viewport position from before the virtual keyboard opened if the keyboard
+   * has closed; otherwise keeps the editing caret visible above the keyboard.
+   */
+  syncWithVirtualKeyboard(): void {
+    if (this._keyboardPanOffset && !KritzelKeyboardHelper.isKeyboardOpen()) {
+      this.restoreKeyboardPanOffset();
+      return;
+    }
+
+    this.keepEditingCaretVisible();
+  }
+
+  /**
+   * Reverts the vertical pan applied while the virtual keyboard was open.
+   * Applied as a delta so any panning the user did in the meantime is preserved.
+   * Skipped if the user zoomed in the meantime, since the offset no longer applies.
+   */
+  private restoreKeyboardPanOffset(): void {
+    const offset = this._keyboardPanOffset;
+    this._keyboardPanOffset = null;
+
+    const { translateX, translateY, scale } = this._core.store.state;
+    if (!offset || offset.deltaY === 0 || scale !== offset.scale) {
+      return;
+    }
+
+    this.animateViewportTo(translateX, translateY - offset.deltaY, scale);
   }
 
   /**
@@ -220,6 +258,13 @@ export class KritzelViewport {
     }
 
     const { translateX, translateY, scale } = this._core.store.state;
+    const targetTranslateY = this.clampTranslate(translateX, translateY + deltaY).translateY;
+
+    if (KritzelKeyboardHelper.isKeyboardOpen()) {
+      const previousDeltaY = this._keyboardPanOffset?.scale === scale ? this._keyboardPanOffset.deltaY : 0;
+      this._keyboardPanOffset = { deltaY: previousDeltaY + (targetTranslateY - translateY), scale };
+    }
+
     this.animateViewportTo(translateX, translateY + deltaY, scale);
   }
 

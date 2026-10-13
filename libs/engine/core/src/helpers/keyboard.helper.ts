@@ -39,15 +39,24 @@ export class KritzelKeyboardHelper {
     }
   }
 
+  /**
+   * Returns whether a mobile virtual keyboard is currently open, based on how much
+   * the visual viewport is reduced compared to the screen height.
+   */
+  static isKeyboardOpen(visualViewport: VisualViewport | null | undefined = window.visualViewport): boolean {
+    if (!visualViewport) {
+      return false;
+    }
+    const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
+    const isMobileDevice = KritzelDevicesHelper.isMobile();
+    const isViewportReduced = (visualViewport.height * visualViewport.scale) / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO;
+    return isMobileDevice && isViewportReduced;
+  }
+
   static onKeyboardVisibleChanged(callback: (isOpen: boolean) => void): () => void {
     if ('visualViewport' in window) {
-      const VIEWPORT_VS_CLIENT_HEIGHT_RATIO = 0.75;
       const onResize = (event: Event) => {
-        const target = event.target as VisualViewport;
-        const isMobileDevice = KritzelDevicesHelper.isMobile();
-        const isViewportReduced = (target.height * target.scale) / window.screen.height < VIEWPORT_VS_CLIENT_HEIGHT_RATIO;
-        const isOpen = isMobileDevice && isViewportReduced;
-        callback(isOpen);
+        callback(KritzelKeyboardHelper.isKeyboardOpen(event.target as VisualViewport));
       };
 
       window.visualViewport?.addEventListener('resize', onResize);
