@@ -5,6 +5,7 @@ import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelViewportState } from '../../interfaces/viewport-state.interface';
 import { debounce, DebouncedFunc } from 'lodash';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
+import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 
 /**
  * Manages viewport transformations including panning, zooming, and centering.
@@ -79,6 +80,11 @@ export class KritzelViewport {
     }, 100);
 
     this._debounceSyncWithVirtualKeyboard = debounce(() => this.syncWithVirtualKeyboard(), 100);
+
+    // Capture the keyboard-free viewport height while no keyboard can be open yet
+    if (KritzelDevicesHelper.isMobile()) {
+      KritzelKeyboardHelper.recordViewportBaseline();
+    }
   }
 
   /**
@@ -189,8 +195,13 @@ export class KritzelViewport {
   /**
    * Restores the viewport position from before the virtual keyboard opened if the keyboard
    * has closed; otherwise keeps the editing caret visible above the keyboard.
+   * Only runs on mobile devices (iOS, iPadOS, Android), so resizing a desktop window never pans.
    */
   syncWithVirtualKeyboard(): void {
+    if (!KritzelDevicesHelper.isMobile()) {
+      return;
+    }
+
     if (this._keyboardPanOffset && !KritzelKeyboardHelper.isKeyboardOpen()) {
       this.restoreKeyboardPanOffset();
       return;
