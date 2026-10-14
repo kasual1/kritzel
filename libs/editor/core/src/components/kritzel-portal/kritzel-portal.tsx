@@ -1,6 +1,7 @@
 ﻿import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
 import { ObjectHelper } from '@kritzel/engine';
 import { KritzelHTMLHelper } from '@kritzel/engine';
+import { KritzelKeyboardHelper } from '@kritzel/engine';
 
 @Component({
   tag: 'kritzel-portal',
@@ -342,6 +343,13 @@ export class KritzelPortal {
 
   private calculatePosition() {
     if (!this.anchor || !this.portal) return;
+
+    // Keep the current size and position while the virtual keyboard is open. The keyboard
+    // shrinks the viewport drastically (especially in landscape), which would otherwise
+    // collapse the portal's max-height. Layout is recalculated once the keyboard closes.
+    const isPositioned = this.portal.style.visibility === 'visible';
+    if (isPositioned && KritzelKeyboardHelper.isKeyboardOpen()) return;
+
     const top = this.calculateTop();
     const left = this.calculateLeft();
     this.portal.style.top = `${top}px`;
