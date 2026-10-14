@@ -101,7 +101,7 @@ export class KritzelPortal {
 
   @Listen('resize', { target: 'window', capture: true })
   handleResize() {
-    this.calculatePosition();
+    this.updatePosition();
   }
 
   @Listen('scroll', { target: 'window', capture: true })
@@ -111,7 +111,7 @@ export class KritzelPortal {
     // Scrolling inside the portal content (e.g. a height-constrained menu scrolling a
     // focused input into view) must not close the portal.
     if (event.composedPath().includes(this.host)) {
-      this.calculatePosition();
+      this.updatePosition();
       return;
     }
 
@@ -120,7 +120,7 @@ export class KritzelPortal {
     // pushes the anchor out of view; closing here would blur the field and dismiss the
     // keyboard immediately.
     if (this.isEditingInside()) {
-      this.calculatePosition();
+      this.updatePosition();
       return;
     }
 
@@ -140,6 +140,8 @@ export class KritzelPortal {
   private defaultOffset = 0;
   private minLeft = 0;
   private themeObserver: MutationObserver;
+  private visualViewportFrame: number | null = null;
+  private readonly keyboardPadding = 8;
 
   private focusFirstElement() {
     requestAnimationFrame(() => {
@@ -162,7 +164,11 @@ export class KritzelPortal {
     const isEditable = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable;
     if (!isEditable) return false;
 
-    let current: Node | null = activeElement;
+    return this.isInsideHost(activeElement);
+  }
+
+  private isInsideHost(node: Node | null): boolean {
+    let current: Node | null = node;
     while (current) {
       if (current === this.host) return true;
       current = current.parentNode ?? (current as ShadowRoot).host ?? null;
@@ -330,25 +336,97 @@ export class KritzelPortal {
 
     this.portal.appendChild(this.host);
     document.body.append(this.portal);
+
+    // On iOS the window does not resize when the virtual keyboard opens; only the visual
+    // viewport does, so listen to it directly.
+    window.visualViewport?.addEventListener('resize', this.handleVisualViewportChange);
+    window.visualViewport?.addEventListener('scroll', this.handleVisualViewportChange);
   }
 
   private closePortal() {
     this.themeObserver?.disconnect();
     this.themeObserver = null;
+    window.visualViewport?.removeEventListener('resize', this.handleVisualViewportChange);
+    window.visualViewport?.removeEventListener('scroll', this.handleVisualViewportChange);
+    if (this.visualViewportFrame !== null) {
+      cancelAnimationFrame(this.visualViewportFrame);
+      this.visualViewportFrame = null;
+    }
     const portal = document.getElementById(this.id);
     if (!portal) return;
     document.body.removeChild(portal);
     this.host.remove();
   }
 
-  private calculatePosition() {
+  private handleVisualViewportChange = () => {
+    if (this.visualViewportFrame !== null) return;
+    this.visualViewportFrame = requestAnimationFrame(() => {
+      this.visualViewportFrame = null;
+      this.updatePosition();
+    });
+  };
+
+  /**
+   * Repositions the portal after a viewport change. While the virtual keyboard is open the
+   * portal keeps its size, since the keyboard shrinks the viewport drastically (especially in
+   * landscape) and would otherwise collapse its max-height. Instead, only a focused text field
+   * inside the portal is kept visible above the keyboard. Layout is recalculated once the
+   * keyboard closes.
+   */
+  private updatePosition() {
     if (!this.anchor || !this.portal) return;
 
-    // Keep the current size and position while the virtual keyboard is open. The keyboard
-    // shrinks the viewport drastically (especially in landscape), which would otherwise
-    // collapse the portal's max-height. Layout is recalculated once the keyboard closes.
     const isPositioned = this.portal.style.visibility === 'visible';
-    if (isPositioned && KritzelKeyboardHelper.isKeyboardOpen()) return;
+    if (isPositioned && KritzelKeyboardHelper.isKeyboardOpen()) {
+      this.keepFocusedFieldVisible();
+      return;
+    }
+
+    this.calculatePosition();
+  }
+
+  /**
+   * Makes sure the focused text field inside the portal lies within the visual viewport,
+   * i.e. is not covered by the virtual keyboard. First scrolls the portal content (e.g. a long
+   * menu), then shifts the whole portal if that is not enough.
+   */
+  private keepFocusedFieldVisible() {
+    const viewport = window.visualViewport;
+    if (!viewport || !this.portal || !this.isEditingInside()) return;
+
+    const field = this.getDeepActiveElement() as HTMLElement;
+    const visibleTop = viewport.offsetTop + this.keyboardPadding;
+    const visibleBottom = viewport.offsetTop + viewport.height - this.keyboardPadding;
+
+    let rect = field.getBoundingClientRect();
+    if (rect.top >= visibleTop && rect.bottom <= visibleBottom) return;
+
+    if (rect.bottom > visibleBottom) {
+      const scrollContainer = KritzelHTMLHelper.getScrollableParent(field);
+      if (scrollContainer instanceof HTMLElement && this.isInsideHost(scrollContainer)) {
+        // Scroll no further than bringing the field to the top of the scroll container.
+        const maxScroll = Math.max(0, rect.top - scrollContainer.getBoundingClientRect().top - this.keyboardPadding);
+        scrollContainer.scrollTop += Math.min(rect.bottom - visibleBottom, maxScroll);
+        rect = field.getBoundingClientRect();
+      }
+    }
+
+    let shift = 0;
+    if (rect.bottom > visibleBottom) {
+      shift = visibleBottom - rect.bottom;
+    }
+    if (rect.top + shift < visibleTop) {
+      shift = visibleTop - rect.top;
+    }
+
+    if (shift !== 0) {
+      const currentTop = parseFloat(this.portal.style.top) || 0;
+      this.portal.style.top = `${Math.round(currentTop + shift)}px`;
+    }
+  }
+
+  private calculatePosition() {
+    if (!this.anchor || !this.portal) return;
 
     const top = this.calculateTop();
     const left = this.calculateLeft();
