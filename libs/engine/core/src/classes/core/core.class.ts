@@ -24,6 +24,7 @@ import { KritzelBrowserPermissionManager } from '../managers/browser-permission.
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelZOrderHelper, KritzelZOrderItem, KritzelZOrderOperation } from '../../helpers/z-order.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
 import type { KritzelText } from '../objects/text.class';
 import type { KritzelImage } from '../objects/image.class';
@@ -635,7 +636,7 @@ export class KritzelCore {
     return this._store.objects
       .query(viewportBounds)
       .filter(obj => !(obj instanceof KritzelSelectionGroup) && !(obj instanceof KritzelSelectionBox))
-      .sort((a, b) => a.zIndex - b.zIndex);
+      .sort(KritzelZOrderHelper.compareStackOrder);
   }
 
   /**
@@ -1121,75 +1122,109 @@ export class KritzelCore {
   }
 
   /**
-   * Moves objects one step forward in the z-order stack.
+   * Collects every object of the workspace (not limited by viewport boundaries) for z-order planning.
+   * @returns The objects by id and their z-order view in store order.
+   */
+  private getZOrderItems(): { objects: Map<string, KritzelBaseObject<any>>; items: KritzelZOrderItem[] } {
+    const objects = new Map<string, KritzelBaseObject<any>>();
+    const items: KritzelZOrderItem[] = [];
+
+    for (const object of this._store.objects?.allObjects() ?? []) {
+      if (object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox || objects.has(object.id)) {
+        continue;
+      }
+      objects.set(object.id, object);
+      items.push(KritzelZOrderHelper.toItem(object));
+    }
+
+    return { objects, items };
+  }
+
+  /**
+   * Persists planned zIndex values as a single undo step.
+   * @param updates - New zIndex values keyed by object id
+   * @param objects - Store instances by id
+   * @param inTransaction - Optional additional work that belongs to the same undo step
+   * @returns The updated objects
+   */
+  private applyZIndexUpdates(updates: Map<string, number>, objects: Map<string, KritzelBaseObject<any>>, inTransaction?: () => void): KritzelBaseObject<any>[] {
+    const updated: KritzelBaseObject<any>[] = [];
+    if (updates.size === 0 && !inTransaction) {
+      return updated;
+    }
+
+    this._store.objects.stopUndoCapturing();
+    this._store.objects.transaction(() => {
+      inTransaction?.();
+      updates.forEach((zIndex, id) => {
+        const object = objects.get(id);
+        if (object) {
+          this.updateObject(object, { zIndex });
+          updated.push(object);
+        }
+      });
+    });
+    this._store.objects.stopUndoCapturing();
+
+    if (updated.length > 0) {
+      this.engine.emitObjectsUpdated(updated.map(object => ({ object, changedProperties: ['zIndex'] })));
+    }
+
+    return updated;
+  }
+
+  /**
+   * Applies a z-order operation to an object or the current selection.
+   * Groups move as one layer together with all of their descendants; a grouped object moves within its group.
+   * @param operation - The z-order operation
+   * @param object - Optional specific object; defaults to all selected objects
+   */
+  private reorder(operation: KritzelZOrderOperation, object?: KritzelBaseObject<any>): void {
+    const roots = object ? [object] : this._store.selectionGroup?.objects || [];
+    const { objects, items } = this.getZOrderItems();
+    const updates = KritzelZOrderHelper.reorder(items, roots.map(root => root.id), operation);
+
+    if (this.applyZIndexUpdates(updates, objects).length > 0) {
+      this.engine.emitObjectsChange();
+    }
+
+    this.rerender();
+  }
+
+  /**
+   * Moves objects one layer forward, past the next layer above them.
+   * Groups move as one layer together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
   bringForward(object?: KritzelBaseObject<any>) {
-    const selectionGroup = this._store.selectionGroup;
-    const objects = object ? [object] : selectionGroup?.objects || [];
-    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
-    const max = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1 : 0;
-
-    objects.forEach(obj => {
-      if (obj.zIndex !== max) {
-        this.updateObject(obj, { zIndex: obj.zIndex + 1 });
-      }
-    });
-
-    this.rerender();
+    this.reorder('forward', object);
   }
 
   /**
-   * Moves objects one step backward in the z-order stack.
+   * Moves objects one layer backward, past the next layer below them.
+   * Groups move as one layer together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
   sendBackward(object?: KritzelBaseObject<any>) {
-    const selectionGroup = this._store.selectionGroup;
-    const objects = object ? [object] : selectionGroup?.objects || [];
-    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
-    const min = allNonSelectionObjectsWithoutCurrent.length > 0 ? Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1 : 0;
-
-    objects.forEach(obj => {
-      if (obj.zIndex !== min) {
-        this.updateObject(obj, { zIndex: obj.zIndex - 1 });
-      }
-    });
-
-    this.rerender();
+    this.reorder('backward', object);
   }
 
   /**
-   * Moves objects to the very front of the z-order stack.
+   * Moves objects to the very front of the z-order stack, preserving their relative order.
+   * Groups move as one layer together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
   bringToFront(object?: KritzelBaseObject<any>) {
-    const selectionGroup = this._store.selectionGroup;
-    const objects = object ? [object] : selectionGroup?.objects || [];
-    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
-    const max = Math.max(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) + 1;
-
-    objects.forEach(obj => {
-      this.updateObject(obj, { zIndex: max });
-    });
-
-    this.rerender();
+    this.reorder('front', object);
   }
 
   /**
-   * Moves objects to the very back of the z-order stack.
+   * Moves objects to the very back of the z-order stack, preserving their relative order.
+   * Groups move as one layer together with all of their descendants.
    * @param object - Optional specific object to move; defaults to all selected objects
    */
   sendToBack(object?: KritzelBaseObject<any>) {
-    const selectionGroup = this._store.selectionGroup;
-    const objects = object ? [object] : selectionGroup?.objects || [];
-    const allNonSelectionObjectsWithoutCurrent = this._store.allNonSelectionObjects.filter(o => objects.findIndex(obj => obj.id === o.id) === -1);
-    const min = Math.min(...allNonSelectionObjectsWithoutCurrent.map(obj => obj.zIndex)) - 1;
-
-    objects.forEach(obj => {
-      this.updateObject(obj, { zIndex: min });
-    });
-
-    this.rerender();
+    this.reorder('back', object);
   }
 
   /**
@@ -1224,7 +1259,10 @@ export class KritzelCore {
 
   /**
    * Groups the currently selected objects into a KritzelGroup.
-   * Requires at least 2 objects to be selected.
+   * Requires at least 2 objects to be selected. The grouped objects become one contiguous layer at the
+   * position of the topmost selected object; objects stacked in between end up below the group.
+   * Objects inside a common group are grouped within it; objects from different groups are grouped at the
+   * level that contains all of them, so every object keeps a single parent.
    */
   group(): void {
     const selectionGroup = this._store.selectionGroup;
@@ -1232,11 +1270,32 @@ export class KritzelCore {
       return;
     }
 
-    // Create a group from the selected objects
-    const group = KritzelGroup.createFromObjects(this, selectionGroup.objects);
+    const { objects, items } = this.getZOrderItems();
+    const plan = KritzelZOrderHelper.planGroup(items, selectionGroup.objects.map(obj => obj.id));
+    if (!plan) {
+      return;
+    }
 
-    // Add the group to the object store
-    this.addObject(group);
+    // Create a group from the selected objects, ordered bottom to top
+    const group = KritzelGroup.createFromObjects(this, plan.childIds.map(id => objects.get(id)));
+    if (plan.groupZIndex !== null) {
+      group.zIndex = plan.groupZIndex;
+    }
+
+    // A nested group takes its parent's frame, so the parent's bounds and transforms stay unchanged
+    const parent = plan.parentId ? (objects.get(plan.parentId) as KritzelGroup) : null;
+    if (parent) {
+      group.rotation = parent.rotation;
+      group.finalize();
+    }
+
+    // Add the group to the object store together with the restacked members
+    this.applyZIndexUpdates(plan.updates, objects, () => {
+      this.addObject(group);
+      if (parent) {
+        this.replaceChildIds(parent, plan.childIds, [group.id]);
+      }
+    });
 
     // Remove the selection group and create a new one with just the group
     this.removeSelectionGroup();
@@ -1253,7 +1312,7 @@ export class KritzelCore {
 
   /**
    * Ungroups any KritzelGroup objects in the current selection.
-   * Children are extracted and become top-level objects.
+   * Children are extracted and become top-level objects, keeping their stacking order.
    */
   ungroup(): void {
     const selectionGroup = this._store.selectionGroup;
@@ -1261,36 +1320,72 @@ export class KritzelCore {
       return;
     }
 
-    const groups = selectionGroup.objects.filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) as KritzelGroup[];
+    const { objects, items } = this.getZOrderItems();
+    const groups = selectionGroup.objects
+      .filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'))
+      .map(obj => (objects.get(obj.id) ?? obj) as KritzelGroup);
     if (groups.length === 0) {
       return;
     }
 
     // Collect all children from all groups
-    const allChildren: KritzelBaseObject<any>[] = [];
+    const allChildren = new Map<string, KritzelBaseObject<any>>();
     const nonGroupObjects = selectionGroup.objects.filter(obj => !KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'));
 
-    groups.forEach(group => {
-      // Get children before removing the group
-      const children = group.ungroup();
-      allChildren.push(...children);
+    // Tied children get unique values so they keep their stacking order
+    const updates = KritzelZOrderHelper.planUngroup(items, groups.map(group => group.id));
 
-      // Remove the group from the store (but keep children)
-      this.removeObject(group, true);
+    this.applyZIndexUpdates(updates, objects, () => {
+      groups.forEach(group => {
+        // Get children before removing the group
+        const children = group.ungroup();
+        children.forEach(child => allChildren.set(child.id, child));
+
+        // A nested group's children stay in its parent group
+        const parent = KritzelGroup.findParentGroup(this, group.id);
+        if (parent) {
+          this.replaceChildIds(parent, [group.id], children.map(child => child.id));
+        }
+
+        // Remove the group from the store (but keep children)
+        this.removeObject(group, true);
+      });
     });
 
     // Create a new selection group with all the ungrouped children and non-group objects
     this.removeSelectionGroup();
 
+    // Each object once (addOrRemove toggles), without the dissolved groups
+    const dissolvedIds = new Set(groups.map(group => group.id));
+    const selection = new Map<string, KritzelBaseObject<any>>();
+    [...allChildren.values(), ...nonGroupObjects].forEach(object => !dissolvedIds.has(object.id) && selection.set(object.id, object));
+
     const newSelectionGroup = KritzelSelectionGroup.create(this);
-    [...allChildren, ...nonGroupObjects].forEach(child => {
-      newSelectionGroup.addOrRemove(child);
+    selection.forEach(object => {
+      newSelectionGroup.addOrRemove(object);
     });
     newSelectionGroup.isSelected = true;
     this.addSelectionGroup(newSelectionGroup);
 
     this.engine.emitObjectsChange();
     this.rerender();
+  }
+
+  /**
+   * Replaces children of a group, keeping the position of the first replaced child, and persists the group.
+   * @param group - The group whose children change
+   * @param removedIds - Ids of the children to replace
+   * @param addedIds - Ids of the children to insert in their place
+   */
+  private replaceChildIds(group: KritzelGroup, removedIds: string[], addedIds: string[]): void {
+    const removed = new Set(removedIds);
+    const index = group.childIds.findIndex(id => removed.has(id));
+    const childIds = group.childIds.filter(id => !removed.has(id));
+    childIds.splice(index === -1 ? childIds.length : Math.min(index, childIds.length), 0, ...addedIds);
+
+    group.childIds = childIds;
+    group.finalize();
+    this._store.objects.update(group);
   }
 
   /**
