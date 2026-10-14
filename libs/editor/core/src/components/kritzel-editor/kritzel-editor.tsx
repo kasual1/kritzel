@@ -1747,7 +1747,7 @@ export class KritzelEditor {
             onIsToolbarReady={() => (this.isToolbarReady = true)}
           ></kritzel-toolbar>
 
-          <div class="bottom-left-buttons">
+          <div class={{ 'bottom-left-buttons': true, 'keyboard-open': this.isVirtualKeyboardOpen }}>
             <kritzel-zoom-panel
               visible={this.isZoomPanelVisible}
               zoomPercent={this.currentZoomPercent}
