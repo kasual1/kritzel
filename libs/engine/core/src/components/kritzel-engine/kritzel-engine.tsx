@@ -880,7 +880,8 @@ export class KritzelEngine {
   }
 
   /**
-   * Moves an object one layer forward in the z-order.
+   * Moves an object, or each selected layer, one layer forward in the z-order, past the next layer above it.
+   * A group is one layer: all of its children move together. A grouped object moves within its group.
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
@@ -889,7 +890,8 @@ export class KritzelEngine {
   }
 
   /**
-   * Moves an object one layer backward in the z-order.
+   * Moves an object, or each selected layer, one layer backward in the z-order, past the next layer below it.
+   * A group is one layer: all of its children move together. A grouped object moves within its group.
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
@@ -898,7 +900,9 @@ export class KritzelEngine {
   }
 
   /**
-   * Moves an object to the very front of the z-order.
+   * Moves an object, or the selected layers, to the very front of the z-order, keeping the relative order
+   * of the moved layers. A group moves together with all of its children; a grouped object moves to the
+   * front of its group.
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
@@ -907,7 +911,9 @@ export class KritzelEngine {
   }
 
   /**
-   * Moves an object to the very back of the z-order.
+   * Moves an object, or the selected layers, to the very back of the z-order, keeping the relative order
+   * of the moved layers. A group moves together with all of its children; a grouped object moves to the
+   * back of its group.
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
@@ -924,13 +930,18 @@ export class KritzelEngine {
     this.core.alignObjects(alignment);
   }
 
-  /** Groups the currently selected objects into a single selection group. */
+  /**
+   * Creates a group (`KritzelGroup`) from the currently selected objects. Requires at least two selected objects.
+   * The grouped objects become one layer at the position of the topmost selected object.
+   */
   @Method()
   async group() {
     this.core.group();
   }
 
-  /** Ungroups the currently selected group back into individual objects. */
+  /**
+   * Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+   */
   @Method()
   async ungroup() {
     this.core.ungroup();

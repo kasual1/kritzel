@@ -1131,187 +1131,521 @@ describe('KritzelCore', () => {
     });
   });
 
-  describe('z-order', () => {
-    const createObj = (id: string, zIndex: number) => ({ id, zIndex, onAfterUpdate: jest.fn() }) as any;
-    const zIndices = (...objs: any[]) => objs.map(obj => obj.zIndex);
+  // Plain store objects for the z-order tests; groups reference their children via childIds.
+  const createObj = (id: string, zIndex: number) => ({ id, zIndex, onAfterUpdate: jest.fn() }) as any;
+  const createGroup = (id: string, zIndex: number, childIds: string[]) => ({ ...createObj(id, zIndex), __class__: 'KritzelGroup', childIds }) as any;
+  const zIndices = (...objs: any[]) => objs.map(obj => obj.zIndex);
 
+  /** Sets the objects of the whole workspace (store order), independent of the viewport. */
+  const setStoreObjects = (...objs: any[]) => {
+    mockObjectsMap.allObjects.mockReturnValue(objs);
+    mockObjectsMap.filter.mockImplementation((predicate: (obj: any) => boolean) => objs.filter(predicate));
+  };
+
+  const select = (...objs: any[]) => {
+    mockStore.selectionGroup = { objects: objs } as any;
+  };
+
+  const emittedUpdates = () => mockEngine.emitObjectsUpdated.mock.calls.flatMap(([updates]: any[]) => updates);
+
+  /**
+   * Records how a change is bracketed into undo steps and which store writes happen inside a transaction.
+   * @param objs - Store objects used to resolve which ids a `remove` predicate matches
+   */
+  const trackStoreWrites = (objs: any[] = []) => {
+    const events: string[] = [];
+    const inside: string[] = [];
+    const outside: string[] = [];
+    const insertedZIndex = new Map<string, number>();
+    let depth = 0;
+    const record = (label: string) => (depth > 0 ? inside : outside).push(label);
+
+    mockObjectsMap.stopUndoCapturing.mockImplementation(() => events.push('stopUndoCapturing'));
+    mockObjectsMap.transaction.mockImplementation((cb: () => void) => {
+      events.push('transaction');
+      depth++;
+      try {
+        cb();
+      } finally {
+        depth--;
+      }
+    });
+    mockObjectsMap.update.mockImplementation((obj: any) => {
+      record(`update:${obj.id}`);
+      return true;
+    });
+    mockObjectsMap.insert.mockImplementation((obj: any) => {
+      record(`insert:${obj.id}`);
+      insertedZIndex.set(obj.id, obj.zIndex);
+      return true;
+    });
+    mockObjectsMap.remove.mockImplementation((predicate: (obj: any) => boolean) => {
+      objs.filter(predicate).forEach(obj => record(`remove:${obj.id}`));
+    });
+
+    return { events, inside, outside, insertedZIndex };
+  };
+
+  describe('z-order', () => {
     describe('ungrouped objects', () => {
-      let obj: any;
-      let other: any;
+      let s1: any;
+      let s2: any;
+      let s3: any;
 
       beforeEach(() => {
-        obj = createObj('obj-1', 3);
-        other = createObj('other', 5);
-        mockStore.selectionGroup = { objects: [obj] } as any;
-        mockStore.allNonSelectionObjects = [obj, other];
+        s1 = createObj('s1', 1);
+        s2 = createObj('s2', 2);
+        s3 = createObj('s3', 3);
+        setStoreObjects(s1, s2, s3);
       });
 
-      it('bringForward moves the object past the next object above', () => {
+      it('bringForward swaps the object with the next object above', () => {
+        select(s1);
+
         core.bringForward();
 
-        expect(zIndices(other, obj)).toEqual([3, 5]);
+        expect(zIndices(s1, s2, s3)).toEqual([2, 1, 3]);
         expect(mockEngine.forceUpdate).toBe(1);
       });
 
-      it('bringForward accepts an explicit object parameter', () => {
-        mockStore.selectionGroup = null;
-        mockStore.allNonSelectionObjects = [other];
-
-        core.bringForward(obj);
-
-        expect(zIndices(other, obj)).toEqual([3, 5]);
-      });
-
-      it('bringForward does nothing when the object is already on top', () => {
-        obj.zIndex = 6;
-
-        core.bringForward();
-
-        expect(zIndices(other, obj)).toEqual([5, 6]);
-        expect(mockObjectsMap.update).not.toHaveBeenCalled();
-      });
-
-      it('sendBackward moves the object past the next object below', () => {
-        other.zIndex = 2;
+      it('sendBackward swaps the object with the next object below', () => {
+        select(s3);
 
         core.sendBackward();
 
-        expect(zIndices(obj, other)).toEqual([2, 3]);
+        expect(zIndices(s1, s2, s3)).toEqual([1, 3, 2]);
         expect(mockEngine.forceUpdate).toBe(1);
-      });
-
-      it('sendBackward after bringForward restores the original order in a single step', () => {
-        const below = createObj('below', 1);
-        mockStore.allNonSelectionObjects = [below, obj, other];
-
-        core.bringForward();
-        expect(zIndices(below, other, obj)).toEqual([1, 3, 5]);
-
-        core.sendBackward();
-        expect(zIndices(below, obj, other)).toEqual([1, 3, 5]);
-      });
-
-      it('bringForward resolves zIndex ties with the next object', () => {
-        other.zIndex = 3;
-        mockStore.allNonSelectionObjects = [other, obj];
-
-        core.bringForward();
-
-        expect(obj.zIndex).toBeGreaterThan(other.zIndex);
-      });
-
-      it('sendBackward resolves zIndex ties with the next object', () => {
-        obj.zIndex = 5;
-
-        core.sendBackward();
-
-        expect(obj.zIndex).toBeLessThan(other.zIndex);
       });
 
       it('bringToFront moves the object above all other objects', () => {
-        obj.zIndex = 1;
-        other.zIndex = 10;
+        select(s1);
 
         core.bringToFront();
 
-        expect(obj.zIndex).toBeGreaterThan(other.zIndex);
+        expect(zIndices(s1, s2, s3)).toEqual([4, 2, 3]);
       });
 
       it('sendToBack moves the object below all other objects', () => {
-        other.zIndex = 3;
+        select(s3);
 
         core.sendToBack();
 
-        expect(obj.zIndex).toBeLessThan(other.zIndex);
+        expect(zIndices(s1, s2, s3)).toEqual([1, 2, 0]);
+      });
+
+      it('sendBackward after bringForward restores the original values', () => {
+        select(s1);
+
+        core.bringForward();
+        core.sendBackward();
+
+        expect(zIndices(s1, s2, s3)).toEqual([1, 2, 3]);
+      });
+
+      it('persists all changes as one undo step and emits them', () => {
+        const store = trackStoreWrites();
+        select(s1);
+
+        core.bringForward();
+
+        expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
+        expect(store.inside.sort()).toEqual(['update:s1', 'update:s2']);
+        expect(store.outside).toEqual([]);
+        expect(mockEngine.emitObjectsUpdated).toHaveBeenCalledTimes(1);
+        expect(emittedUpdates()).toHaveLength(2);
+        expect(emittedUpdates()).toEqual(
+          expect.arrayContaining([
+            { object: s1, changedProperties: ['zIndex'] },
+            { object: s2, changedProperties: ['zIndex'] },
+          ]),
+        );
+        expect(mockEngine.emitObjectsChange).toHaveBeenCalledTimes(1);
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('writes and emits nothing when the object is already on top, but still rerenders', () => {
+        select(s3);
+
+        core.bringForward();
+
+        expect(zIndices(s1, s2, s3)).toEqual([1, 2, 3]);
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+        expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
+        expect(mockObjectsMap.stopUndoCapturing).not.toHaveBeenCalled();
+        expect(mockEngine.emitObjectsUpdated).not.toHaveBeenCalled();
+        expect(mockEngine.emitObjectsChange).not.toHaveBeenCalled();
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('moves an explicitly passed object instead of the selection', () => {
+        select(s1);
+
+        core.bringForward(s2);
+
+        expect(zIndices(s1, s2, s3)).toEqual([1, 3, 2]);
+      });
+
+      it('writes nothing for an explicitly passed object that is not in the store', () => {
+        const unknown = createObj('unknown', 1);
+
+        core.bringForward(unknown);
+
+        expect(zIndices(s1, s2, s3, unknown)).toEqual([1, 2, 3, 1]);
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+        expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('updates the store instance when the selection holds a stale copy', () => {
+        const stale = createObj('s1', 1);
+        select(stale);
+
+        core.bringForward();
+
+        const updated = mockObjectsMap.update.mock.calls.map(([obj]: any[]) => obj);
+        expect(zIndices(s1, s2, s3)).toEqual([2, 1, 3]);
+        expect(stale.zIndex).toBe(1);
+        expect(updated).toContain(s1);
+        expect(updated).not.toContain(stale);
+      });
+
+      it('considers objects outside of the viewport boundaries', () => {
+        // s2 is only known to the object map, not to the viewport-limited store getters.
+        mockStore.allObjects = [s1, s3];
+        mockStore.allNonSelectionObjects = [s1, s3];
+        select(s1);
+
+        core.bringForward();
+
+        expect(zIndices(s1, s2, s3)).toEqual([2, 1, 3]);
+      });
+
+      it('steps every selected object past its own next unselected object', () => {
+        const [a, b, c, d, e] = ['A', 'B', 'C', 'D', 'E'].map((id, index) => createObj(id, index + 1));
+        setStoreObjects(a, b, c, d, e);
+        select(a, d);
+
+        core.bringForward();
+
+        expect(zIndices(a, b, c, d, e)).toEqual([2, 1, 3, 5, 4]);
       });
     });
 
     describe('groups', () => {
-      let childA: any;
-      let childB: any;
+      let a: any;
+      let b: any;
       let group: any;
-      let other: any;
+      let x: any;
 
       beforeEach(() => {
-        childA = createObj('child-a', 1);
-        childB = createObj('child-b', 2);
-        group = { ...createObj('group', 3), __class__: 'KritzelGroup', children: [childA, childB] };
-        other = createObj('other', 4);
-        mockStore.selectionGroup = { objects: [group] } as any;
-        mockStore.allNonSelectionObjects = [childA, childB, group, other];
-      });
-
-      it('bringToFront moves group children above other objects, preserving order', () => {
-        core.bringToFront();
-
-        expect(zIndices(other, childA, childB, group)).toEqual([1, 2, 3, 4]);
-      });
-
-      it('sendToBack moves group children below other objects, preserving order', () => {
-        other.zIndex = 0;
-
-        core.sendToBack();
-
-        expect(zIndices(childA, childB, group, other)).toEqual([0, 1, 2, 3]);
+        // Well-formed group: its zIndex equals the zIndex of its top member.
+        a = createObj('a', 1);
+        b = createObj('b', 2);
+        group = createGroup('group', 2, ['a', 'b']);
+        x = createObj('x', 3);
+        setStoreObjects(a, b, group, x);
       });
 
       it('bringForward moves the whole group past the next object above', () => {
+        select(group);
+
         core.bringForward();
 
-        expect(zIndices(other, childA, childB, group)).toEqual([1, 2, 3, 4]);
+        expect(zIndices(a, b, group, x)).toEqual([2, 3, 3, 1]);
+        expect(mockEngine.forceUpdate).toBe(1);
       });
 
-      it('sendBackward moves the whole group past the next object below', () => {
-        other.zIndex = 0;
+      it('sendBackward moves an object below the whole group in one step', () => {
+        select(x);
 
         core.sendBackward();
 
-        expect(zIndices(childA, childB, group, other)).toEqual([0, 1, 2, 3]);
+        expect(zIndices(a, b, group, x)).toEqual([2, 3, 3, 1]);
       });
 
-      it('bringForward and sendBackward can be repeated and stay reversible', () => {
-        const top = createObj('top', 5);
-        mockStore.allNonSelectionObjects = [childA, childB, group, other, top];
-
-        core.bringForward();
-        expect(zIndices(other, childA, childB, group, top)).toEqual([1, 2, 3, 4, 5]);
-
-        core.bringForward();
-        expect(zIndices(other, top, childA, childB, group)).toEqual([1, 2, 3, 4, 5]);
-
-        core.sendBackward();
-        expect(zIndices(other, childA, childB, group, top)).toEqual([1, 2, 3, 4, 5]);
-
-        core.sendBackward();
-        expect(zIndices(childA, childB, group, other, top)).toEqual([1, 2, 3, 4, 5]);
-      });
-
-      it('bringForward lifts all children past the next object when they are interleaved with it', () => {
-        childB.zIndex = 4;
-        other.zIndex = 2;
-        group.zIndex = 5;
-        const top = createObj('top', 6);
-        mockStore.allNonSelectionObjects = [childA, other, childB, group, top];
+      it('bringForward moves an object past the whole group in one step', () => {
+        const below = createObj('below', 1);
+        const above = createObj('above', 4);
+        a.zIndex = 2;
+        b.zIndex = 3;
+        group.zIndex = 3;
+        setStoreObjects(below, a, b, group, above);
+        select(below);
 
         core.bringForward();
 
-        expect(zIndices(other, top, childA, childB, group)).toEqual([1, 2, 4, 5, 6]);
+        expect(zIndices(a, b, group, below, above)).toEqual([1, 2, 2, 3, 4]);
       });
 
-      it('includes nested group descendants', () => {
-        const nestedChild = createObj('nested-child', 1);
-        const nested = { ...createObj('nested', 2), __class__: 'KritzelGroup', children: [nestedChild] };
-        childA.zIndex = 3;
-        childB.zIndex = 4;
-        group.zIndex = 5;
-        other.zIndex = 6;
-        group.children = [childA, childB, nested];
-        mockStore.allNonSelectionObjects = [nestedChild, nested, childA, childB, group, other];
+      it('bringToFront moves the whole group above all other objects', () => {
+        select(group);
 
         core.bringToFront();
 
-        expect(zIndices(other, nestedChild, nested, childA, childB, group)).toEqual([1, 2, 3, 4, 5, 6]);
+        expect(zIndices(a, b, group, x)).toEqual([4, 5, 5, 3]);
       });
+
+      it('sendToBack moves the whole group below all other objects', () => {
+        x.zIndex = 1;
+        a.zIndex = 2;
+        b.zIndex = 3;
+        group.zIndex = 3;
+        setStoreObjects(x, a, b, group);
+        select(group);
+
+        core.sendToBack();
+
+        expect(zIndices(a, b, group, x)).toEqual([-1, 0, 0, 1]);
+      });
+
+      it('bringForward on a grouped object moves it within its group', () => {
+        select(a);
+
+        core.bringForward();
+
+        expect(zIndices(a, b, group, x)).toEqual([2, 1, 2, 3]);
+      });
+    });
+
+    describe('nested groups', () => {
+      let x: any;
+      let c: any;
+      let d: any;
+      let inner: any;
+      let y: any;
+      let outer: any;
+      let z: any;
+
+      beforeEach(() => {
+        x = createObj('x', 1);
+        c = createObj('c', 2);
+        d = createObj('d', 3);
+        inner = createGroup('inner', 3, ['c', 'd']);
+        y = createObj('y', 4);
+        outer = createGroup('outer', 4, ['x', 'inner', 'y']);
+        z = createObj('z', 5);
+        setStoreObjects(x, c, d, inner, y, outer, z);
+      });
+
+      it('bringForward on an inner group keeps it within its parent group', () => {
+        select(inner);
+
+        core.bringForward();
+
+        expect(zIndices(x, c, d, inner, y, outer, z)).toEqual([1, 3, 4, 4, 2, 4, 5]);
+        const updatedIds = mockObjectsMap.update.mock.calls.map(([obj]: any[]) => obj.id);
+        expect(updatedIds).not.toContain('outer');
+        expect(updatedIds).not.toContain('z');
+      });
+
+      it('bringForward on the outer group moves it together with all of its descendants', () => {
+        select(outer);
+
+        core.bringForward();
+
+        expect(zIndices(x, c, d, inner, y, outer, z)).toEqual([2, 3, 4, 4, 5, 5, 1]);
+      });
+
+      it('treats a group selected together with its descendants like the group alone', () => {
+        select(outer, x, inner, c, d, y);
+
+        core.bringForward();
+
+        expect(zIndices(x, c, d, inner, y, outer, z)).toEqual([2, 3, 4, 4, 5, 5, 1]);
+      });
+    });
+  });
+
+  describe('group', () => {
+    // KritzelGroup.createFromObjects is real and needs the children's polygons for its bounding box.
+    const createShape = (id: string, zIndex: number) =>
+      ({
+        ...createObj(id, zIndex),
+        rotatedPolygon: { topLeft: { x: 0, y: 0 }, topRight: { x: 10, y: 0 }, bottomRight: { x: 10, y: 10 }, bottomLeft: { x: 0, y: 10 } },
+      }) as any;
+
+    let newSelectionGroup: any;
+    let createSelectionGroupSpy: jest.SpyInstance;
+    let createFromObjectsSpy: jest.SpyInstance;
+
+    const createdGroup = (): KritzelGroup => createFromObjectsSpy.mock.results[0]?.value;
+
+    beforeEach(() => {
+      newSelectionGroup = { id: 'new-selection', objects: [], isSelected: false, rotation: 0 };
+      newSelectionGroup.addOrRemove = jest.fn((obj: any) => newSelectionGroup.objects.push(obj));
+      createSelectionGroupSpy = jest.spyOn(KritzelSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
+      createFromObjectsSpy = jest.spyOn(KritzelGroup, 'createFromObjects');
+    });
+
+    afterEach(() => {
+      createSelectionGroupSpy.mockRestore();
+      createFromObjectsSpy.mockRestore();
+    });
+
+    it('does nothing without a selection or with fewer than two selected objects', () => {
+      const a = createShape('a', 1);
+      setStoreObjects(a);
+
+      core.group();
+      select(a);
+      core.group();
+
+      expect(createFromObjectsSpy).not.toHaveBeenCalled();
+      expect(mockObjectsMap.insert).not.toHaveBeenCalled();
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+    });
+
+    it('groups adjacent objects without changing their zIndex and selects the group', () => {
+      const [w, a, b, x, y] = ['w', 'a', 'b', 'x', 'y'].map((id, index) => createShape(id, index));
+      setStoreObjects(w, a, b, x, y);
+      select(a, b);
+
+      core.group();
+
+      const group = createdGroup();
+      expect(group.childIds).toEqual(['a', 'b']);
+      expect(group.zIndex).toBe(2);
+      expect(zIndices(w, a, b, x, y)).toEqual([0, 1, 2, 3, 4]);
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(group);
+      expect(newSelectionGroup.objects).toEqual([group]);
+      expect(newSelectionGroup.isSelected).toBe(true);
+      expect(mockStore.setSelectionGroup).toHaveBeenLastCalledWith(newSelectionGroup);
+    });
+
+    it('moves interleaved objects below the group and orders the children bottom to top', () => {
+      const a = createShape('a', 1);
+      const x = createShape('x', 2);
+      const b = createShape('b', 3);
+      const y = createShape('y', 4);
+      setStoreObjects(a, x, b, y);
+      select(b, a);
+
+      core.group();
+
+      const group = createdGroup();
+      expect(zIndices(a, x, b, y)).toEqual([2, 1, 3, 4]);
+      expect(group.childIds).toEqual(['a', 'b']);
+      expect(group.zIndex).toBe(3);
+    });
+
+    it('inserts the group and restacks its members in one undo step', () => {
+      const a = createShape('a', 1);
+      const x = createShape('x', 2);
+      const b = createShape('b', 3);
+      const y = createShape('y', 4);
+      setStoreObjects(a, x, b, y);
+      const store = trackStoreWrites([a, x, b, y]);
+      select(a, b);
+
+      core.group();
+
+      const group = createdGroup();
+      expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
+      expect(store.inside.sort()).toEqual([`insert:${group.id}`, 'update:a', 'update:x'].sort());
+      expect(store.insertedZIndex.get(group.id)).toBe(3);
+      expect(emittedUpdates()).toHaveLength(2);
+      expect(emittedUpdates()).toEqual(
+        expect.arrayContaining([
+          { object: a, changedProperties: ['zIndex'] },
+          { object: x, changedProperties: ['zIndex'] },
+        ]),
+      );
+      expect(mockEngine.emitObjectsChange).toHaveBeenCalled();
+      expect(mockEngine.forceUpdate).toBe(1);
+    });
+
+    it('creates no group for a single group selected together with its descendants', () => {
+      const a = createShape('a', 1);
+      const b = createShape('b', 2);
+      const group = createGroup('group', 2, ['a', 'b']);
+      setStoreObjects(a, b, group);
+      select(group, a, b);
+
+      core.group();
+
+      expect(createFromObjectsSpy).not.toHaveBeenCalled();
+      expect(mockObjectsMap.insert).not.toHaveBeenCalled();
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('ungroup', () => {
+    // A real KritzelGroup, because ungroup() reads the children through group.ungroup().
+    const createKritzelGroup = (id: string, zIndex: number, childIds: string[]) => Object.assign(new KritzelGroup(), { _core: core, id, zIndex, childIds, isMounted: true });
+    const createChild = (id: string, zIndex: number) => ({ ...createObj(id, zIndex), isMounted: true }) as any;
+
+    let newSelectionGroup: any;
+    let createSelectionGroupSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      newSelectionGroup = { id: 'new-selection', objects: [], isSelected: false, rotation: 0 };
+      newSelectionGroup.addOrRemove = jest.fn((obj: any) => newSelectionGroup.objects.push(obj));
+      createSelectionGroupSpy = jest.spyOn(KritzelSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
+    });
+
+    afterEach(() => {
+      createSelectionGroupSpy.mockRestore();
+    });
+
+    it('removes the group, keeps its children and selects them', () => {
+      const c1 = createChild('c1', 1);
+      const c2 = createChild('c2', 2);
+      const group = createKritzelGroup('group', 2, ['c1', 'c2']);
+      const objs = [c1, c2, group];
+      setStoreObjects(...objs);
+      const store = trackStoreWrites(objs);
+      select(group);
+
+      core.ungroup();
+
+      expect(group.isMounted).toBe(false);
+      expect([c1.isMounted, c2.isMounted]).toEqual([true, true]);
+      expect(store.inside.filter(label => label.startsWith('remove:'))).toEqual(['remove:group']);
+      expect(newSelectionGroup.objects).toEqual([c1, c2]);
+      expect(mockEngine.emitObjectsChange).toHaveBeenCalled();
+      expect(mockEngine.forceUpdate).toBe(1);
+    });
+
+    it('writes no zIndex for a well-formed group', () => {
+      const c1 = createChild('c1', 1);
+      const c2 = createChild('c2', 2);
+      const group = createKritzelGroup('group', 2, ['c1', 'c2']);
+      // Ties outside of the group are left alone.
+      const p = createChild('p', 4);
+      const q = createChild('q', 4);
+      setStoreObjects(c1, c2, group, p, q);
+      select(group);
+
+      core.ungroup();
+
+      expect(zIndices(c1, c2, p, q)).toEqual([1, 2, 4, 4]);
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+    });
+
+    it('gives tied children unique increasing values in store order within one undo step', () => {
+      // Groups created by the engine used to give all members the same zIndex.
+      const c1 = createChild('c1', 2);
+      const c2 = createChild('c2', 2);
+      const c3 = createChild('c3', 2);
+      const group = createKritzelGroup('group', 2, ['c1', 'c2', 'c3']);
+      const x = createChild('x', 5);
+      const objs = [c1, c2, c3, group, x];
+      setStoreObjects(...objs);
+      const store = trackStoreWrites(objs);
+      select(group);
+
+      core.ungroup();
+
+      expect(c1.zIndex).toBeLessThan(c2.zIndex);
+      expect(c2.zIndex).toBeLessThan(c3.zIndex);
+      expect(c3.zIndex).toBeLessThan(x.zIndex);
+      expect(x.zIndex).toBe(5);
+      expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
+      expect(store.inside).toContain('remove:group');
+      expect(store.inside.some(label => label.startsWith('update:'))).toBe(true);
+      expect(store.outside.filter(label => label.startsWith('update:'))).toEqual([]);
     });
   });
 
@@ -1475,6 +1809,18 @@ describe('KritzelCore', () => {
       const result = core.getObjectsInViewport();
 
       expect(result[0].zIndex).toBeLessThanOrEqual(result[1].zIndex);
+    });
+
+    it('should sort a group above its tied top member regardless of query order', () => {
+      const below = { id: 'below', zIndex: 1 } as any;
+      const member = { id: 'member', zIndex: 2 } as any;
+      const group = { id: 'group', zIndex: 2, __class__: 'KritzelGroup' } as any;
+
+      mockObjectsMap.query.mockReturnValue([group, member, below]);
+      expect(core.getObjectsInViewport()).toEqual([below, member, group]);
+
+      mockObjectsMap.query.mockReturnValue([member, below, group]);
+      expect(core.getObjectsInViewport()).toEqual([below, member, group]);
     });
   });
 
