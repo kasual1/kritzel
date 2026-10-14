@@ -104,7 +104,25 @@ export class KritzelPortal {
   }
 
   @Listen('scroll', { target: 'window', capture: true })
-  handleWindowScroll() {
+  handleWindowScroll(event: Event) {
+    if (!this.portal) return;
+
+    // Scrolling inside the portal content (e.g. a height-constrained menu scrolling a
+    // focused input into view) must not close the portal.
+    if (event.composedPath().includes(this.host)) {
+      this.calculatePosition();
+      return;
+    }
+
+    // While a text field inside the portal is focused, the virtual keyboard shrinks the
+    // viewport and the browser scrolls the page to reveal the field. In landscape this
+    // pushes the anchor out of view; closing here would blur the field and dismiss the
+    // keyboard immediately.
+    if (this.isEditingInside()) {
+      this.calculatePosition();
+      return;
+    }
+
     const isInViewport = KritzelHTMLHelper.isElementInViewport(this.anchor);
 
     if (!isInViewport) {
@@ -134,6 +152,21 @@ export class KritzelPortal {
       activeEl = activeEl.shadowRoot.activeElement;
     }
     return activeEl;
+  }
+
+  private isEditingInside(): boolean {
+    const activeElement = this.getDeepActiveElement() as HTMLElement | null;
+    if (!activeElement) return false;
+
+    const isEditable = activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable;
+    if (!isEditable) return false;
+
+    let current: Node | null = activeElement;
+    while (current) {
+      if (current === this.host) return true;
+      current = current.parentNode ?? (current as ShadowRoot).host ?? null;
+    }
+    return false;
   }
 
   private trapFocus(event: KeyboardEvent) {
