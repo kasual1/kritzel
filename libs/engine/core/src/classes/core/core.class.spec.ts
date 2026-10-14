@@ -1555,6 +1555,44 @@ describe('KritzelCore', () => {
       expect(mockEngine.forceUpdate).toBe(1);
     });
 
+    it('nests the new group in place of its members inside their common parent group', () => {
+      const a = createShape('a', 1);
+      const b = createShape('b', 2);
+      const c = createShape('c', 3);
+      const parent = { ...createGroup('parent', 3, ['a', 'b', 'c']), finalize: jest.fn() };
+      const objs = [a, b, c, parent];
+      setStoreObjects(...objs);
+      const store = trackStoreWrites(objs);
+      select(a, b);
+
+      core.group();
+
+      const group = createdGroup();
+      expect(group.childIds).toEqual(['a', 'b']);
+      expect(parent.childIds).toEqual([group.id, 'c']);
+      expect(parent.finalize).toHaveBeenCalled();
+      expect(store.inside).toEqual([`insert:${group.id}`, 'update:parent']);
+    });
+
+    it('groups an inner group selected with a top-level object as its top-level group', () => {
+      // outer{x, inner{c, d}, y} and a top-level object: a click on c selects inner.
+      const x = createShape('x', 1);
+      const c = createShape('c', 2);
+      const d = createShape('d', 3);
+      const inner = createGroup('inner', 3, ['c', 'd']);
+      const y = createShape('y', 4);
+      const outer = { ...createGroup('outer', 4, ['x', 'inner', 'y']), rotatedPolygon: x.rotatedPolygon };
+      const top = createShape('top', 5);
+      setStoreObjects(x, c, d, inner, y, outer, top);
+      select(inner, top);
+
+      core.group();
+
+      expect(createdGroup().childIds).toEqual(['outer', 'top']);
+      expect(outer.childIds).toEqual(['x', 'inner', 'y']);
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+    });
+
     it('creates no group for a single group selected together with its descendants', () => {
       const a = createShape('a', 1);
       const b = createShape('b', 2);
@@ -1622,6 +1660,58 @@ describe('KritzelCore', () => {
 
       expect(zIndices(c1, c2, p, q)).toEqual([1, 2, 4, 4]);
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
+    });
+
+    /** A store whose remove() drops objects right away, like KritzelObjectMap. */
+    const setMutableStoreObjects = (...objs: any[]) => {
+      const live = [...objs];
+      mockObjectsMap.allObjects.mockImplementation(() => [...live]);
+      mockObjectsMap.filter.mockImplementation((predicate: (obj: any) => boolean) => live.filter(predicate));
+      mockObjectsMap.remove.mockImplementation((predicate: (obj: any) => boolean) => {
+        for (let i = live.length - 1; i >= 0; i--) {
+          if (predicate(live[i])) live.splice(i, 1);
+        }
+      });
+      return live;
+    };
+
+    it('keeps the children of a nested group inside its parent group', () => {
+      const x = createChild('x', 1);
+      const c = createChild('c', 2);
+      const d = createChild('d', 3);
+      const inner = createKritzelGroup('inner', 3, ['c', 'd']);
+      const y = createChild('y', 4);
+      const parent = { ...createGroup('parent', 4, ['x', 'inner', 'y']), finalize: jest.fn() };
+      const live = setMutableStoreObjects(x, c, d, inner, y, parent);
+      select(inner);
+
+      core.ungroup();
+
+      expect(parent.childIds).toEqual(['x', 'c', 'd', 'y']);
+      expect(parent.finalize).toHaveBeenCalled();
+      expect(live).not.toContain(inner);
+      expect(zIndices(x, c, d, y, parent)).toEqual([1, 2, 3, 4, 4]);
+      expect(newSelectionGroup.objects).toEqual([c, d]);
+    });
+
+    it('resolves ties of several groups before they are removed from the store', () => {
+      // Pasted by older versions: tied members and a tie across the two groups.
+      const a = createChild('a', 2);
+      const b = createChild('b', 2);
+      const g1 = createKritzelGroup('g1', 2, ['a', 'b']);
+      const c = createChild('c', 3);
+      const d = createChild('d', 3);
+      const g2 = createKritzelGroup('g2', 3, ['c', 'd']);
+      setMutableStoreObjects(a, b, g1, c, d, g2);
+      select(g1, g2);
+
+      core.ungroup();
+
+      const values = zIndices(a, b, c, d);
+      expect(new Set(values).size).toBe(4);
+      expect(values).toEqual([...values].sort((p, q) => p - q));
+      expect(emittedUpdates().every((update: any) => update.changedProperties[0] === 'zIndex')).toBe(true);
+      expect(newSelectionGroup.objects).toEqual([a, b, c, d]);
     });
 
     it('gives tied children unique increasing values in store order within one undo step', () => {

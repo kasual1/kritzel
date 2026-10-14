@@ -1261,6 +1261,8 @@ export class KritzelCore {
    * Groups the currently selected objects into a KritzelGroup.
    * Requires at least 2 objects to be selected. The grouped objects become one contiguous layer at the
    * position of the topmost selected object; objects stacked in between end up below the group.
+   * Objects inside a common group are grouped within it; objects from different groups are grouped at the
+   * level that contains all of them, so every object keeps a single parent.
    */
   group(): void {
     const selectionGroup = this._store.selectionGroup;
@@ -1281,7 +1283,13 @@ export class KritzelCore {
     }
 
     // Add the group to the object store together with the restacked members
-    this.applyZIndexUpdates(plan.updates, objects, () => this.addObject(group));
+    const parent = plan.parentId ? (objects.get(plan.parentId) as KritzelGroup) : null;
+    this.applyZIndexUpdates(plan.updates, objects, () => {
+      this.addObject(group);
+      if (parent) {
+        this.replaceChildIds(parent, plan.childIds, [group.id]);
+      }
+    });
 
     // Remove the selection group and create a new one with just the group
     this.removeSelectionGroup();
@@ -1306,42 +1314,43 @@ export class KritzelCore {
       return;
     }
 
-    const groups = selectionGroup.objects.filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) as KritzelGroup[];
+    const { objects, items } = this.getZOrderItems();
+    const groups = selectionGroup.objects
+      .filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'))
+      .map(obj => (objects.get(obj.id) ?? obj) as KritzelGroup);
     if (groups.length === 0) {
       return;
     }
 
     // Collect all children from all groups
-    const allChildren: KritzelBaseObject<any>[] = [];
+    const allChildren = new Map<string, KritzelBaseObject<any>>();
     const nonGroupObjects = selectionGroup.objects.filter(obj => !KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'));
 
-    this._store.objects.stopUndoCapturing();
-    this._store.objects.transaction(() => {
+    // Tied children get unique values so they keep their stacking order
+    const updates = KritzelZOrderHelper.planUngroup(items, groups.map(group => group.id));
+
+    this.applyZIndexUpdates(updates, objects, () => {
       groups.forEach(group => {
         // Get children before removing the group
         const children = group.ungroup();
-        allChildren.push(...children);
+        children.forEach(child => allChildren.set(child.id, child));
 
-        // Give tied children unique values so they keep their stacking order
-        const { objects, items } = this.getZOrderItems();
-        KritzelZOrderHelper.planUngroup(items, group.id).forEach((zIndex, id) => {
-          const object = objects.get(id);
-          if (object) {
-            this.updateObject(object, { zIndex });
-          }
-        });
+        // A nested group's children stay in its parent group
+        const parent = KritzelGroup.findParentGroup(this, group.id);
+        if (parent) {
+          this.replaceChildIds(parent, [group.id], children.map(child => child.id));
+        }
 
         // Remove the group from the store (but keep children)
         this.removeObject(group, true);
       });
     });
-    this._store.objects.stopUndoCapturing();
 
     // Create a new selection group with all the ungrouped children and non-group objects
     this.removeSelectionGroup();
 
     const newSelectionGroup = KritzelSelectionGroup.create(this);
-    [...allChildren, ...nonGroupObjects].forEach(child => {
+    [...allChildren.values(), ...nonGroupObjects].forEach(child => {
       newSelectionGroup.addOrRemove(child);
     });
     newSelectionGroup.isSelected = true;
@@ -1349,6 +1358,23 @@ export class KritzelCore {
 
     this.engine.emitObjectsChange();
     this.rerender();
+  }
+
+  /**
+   * Replaces children of a group, keeping the position of the first replaced child, and persists the group.
+   * @param group - The group whose children change
+   * @param removedIds - Ids of the children to replace
+   * @param addedIds - Ids of the children to insert in their place
+   */
+  private replaceChildIds(group: KritzelGroup, removedIds: string[], addedIds: string[]): void {
+    const removed = new Set(removedIds);
+    const index = group.childIds.findIndex(id => removed.has(id));
+    const childIds = group.childIds.filter(id => !removed.has(id));
+    childIds.splice(index === -1 ? childIds.length : Math.min(index, childIds.length), 0, ...addedIds);
+
+    group.childIds = childIds;
+    group.finalize();
+    this._store.objects.update(group);
   }
 
   /**

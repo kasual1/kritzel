@@ -1797,11 +1797,12 @@ export class KritzelAnchorManager {
    * @param object - The potential ancestor group.
    * @param descendant - The potential descendant.
    */
-  private containsDescendant(object: KritzelBaseObject<Element>, descendant: KritzelBaseObject<Element>): boolean {
-    if (!KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+  private containsDescendant(object: KritzelBaseObject<Element> | undefined, descendant: KritzelBaseObject<Element>, visited = new Set<string>()): boolean {
+    if (!KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') || visited.has(object.id)) {
       return false;
     }
-    return object.children.some(child => child.id === descendant.id || this.containsDescendant(child, descendant));
+    visited.add(object.id);
+    return object.childIds.some(id => id === descendant.id || this.containsDescendant(this._core.store.objects.findById(id), descendant, visited));
   }
 
   /**
