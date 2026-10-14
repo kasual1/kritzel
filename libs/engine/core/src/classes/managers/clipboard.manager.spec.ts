@@ -413,5 +413,140 @@ describe('KritzelClipboardManager', () => {
       expect(first.updatePosition).toHaveBeenCalledWith(125, 225);
       expect(second.updatePosition).toHaveBeenCalledWith(150, 250);
     });
+
+    describe('zIndex allocation', () => {
+      /** A copied object with its copied zIndex; entries with children are groups. */
+      type PasteEntry = { id: string; zIndex: number; children?: PasteEntry[] };
+
+      /** zIndex of every object at the moment it was inserted, keyed by id. */
+      let inserted: Record<string, number>;
+
+      beforeEach(() => {
+        inserted = {};
+        mockCore.addObject.mockImplementation((object: any) => (inserted[object.id] = object.zIndex));
+        (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, name: string) => obj?.__class__ === name);
+        (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
+      });
+
+      afterEach(() => {
+        (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
+      });
+
+      /** Puts the entries on the clipboard and lets the reviver return a matching object (keeping its id) per entry. */
+      const setClipboardObjects = (entries: PasteEntry[]): void => {
+        const revivedById: Record<string, any> = {};
+        const serialize = (entry: PasteEntry): Record<string, any> => {
+          const __class__ = entry.children ? 'KritzelGroup' : 'KritzelShape';
+          revivedById[entry.id] = makeRevived({
+            __class__,
+            id: entry.id,
+            zIndex: entry.zIndex,
+            generateId: jest.fn().mockReturnValue(entry.id),
+            ...(entry.children ? { childIds: [], _pendingChildren: [], finalize: jest.fn() } : {}),
+          });
+          return { id: entry.id, __class__, ...(entry.children ? { __children__: entry.children.map(serialize) } : {}) };
+        };
+        const objects = entries.map(serialize);
+
+        jest.spyOn(KritzelReviver.prototype, 'revive').mockImplementation((data: any) => revivedById[data.id]);
+        setClipboardText(`${PAYLOAD_PREFIX}${JSON.stringify({ version: 1, objects })}`);
+      };
+
+      it('stacks a group as one contiguous band ordered by the copied zIndex of its children', async () => {
+        setClipboardObjects([
+          {
+            id: 'g',
+            zIndex: 5,
+            children: [
+              { id: 'c1', zIndex: 5 },
+              { id: 'c2', zIndex: 3 },
+            ],
+          },
+          { id: 'x', zIndex: 9 },
+        ]);
+
+        await manager.paste();
+
+        // The group takes its top child's value; the next top-level object lands above the group.
+        expect(inserted).toEqual({ c2: 10, c1: 11, g: 11, x: 12 });
+      });
+
+      it('ranks a legacy group by where its members are, not by its own zIndex', async () => {
+        setClipboardObjects([
+          { id: 'x', zIndex: 3 },
+          {
+            id: 'g',
+            zIndex: 4,
+            children: [
+              { id: 'a', zIndex: 1 },
+              { id: 'b', zIndex: 2 },
+            ],
+          },
+        ]);
+
+        await manager.paste();
+
+        expect(inserted).toEqual({ a: 10, b: 11, g: 11, x: 12 });
+      });
+
+      it('gives plain objects consecutive values from currentZIndex in their stacking order', async () => {
+        setClipboardObjects([
+          { id: 'a', zIndex: 2 },
+          { id: 'b', zIndex: 5 },
+          { id: 'c', zIndex: 9 },
+        ]);
+
+        await manager.paste();
+
+        expect(inserted).toEqual({ a: 10, b: 11, c: 12 });
+      });
+
+      it('keeps the paste order for objects that share a zIndex', async () => {
+        const first = new File(['first'], 'first.gif', { type: 'image/gif' });
+        const second = new File(['second'], 'second.gif', { type: 'image/gif' });
+        // Freshly created images all start at the same zIndex.
+        const images = new Map([
+          [first, makeRevived({ id: 'img-1', zIndex: 10 })],
+          [second, makeRevived({ id: 'img-2', zIndex: 10 })],
+        ]);
+        jest.spyOn(KritzelImage, 'fromBlob').mockImplementation(async (_core: any, file: any) => images.get(file));
+
+        await manager.paste(undefined, undefined, {
+          clipboardData: {
+            files: [first, second],
+            types: [],
+            getData: jest.fn(),
+          },
+        } as any);
+
+        expect(inserted).toEqual({ 'img-1': 10, 'img-2': 11 });
+      });
+
+      it('gives a nested group a contiguous band inside its parent band', async () => {
+        setClipboardObjects([
+          {
+            id: 'g',
+            zIndex: 4,
+            children: [
+              { id: 'd', zIndex: 4 },
+              {
+                id: 'inner',
+                zIndex: 3,
+                children: [
+                  { id: 'c', zIndex: 3 },
+                  { id: 'b', zIndex: 2 },
+                ],
+              },
+              { id: 'a', zIndex: 1 },
+            ],
+          },
+          { id: 'x', zIndex: 5 },
+        ]);
+
+        await manager.paste();
+
+        expect(inserted).toEqual({ a: 10, b: 11, c: 12, inner: 12, d: 13, g: 13, x: 14 });
+      });
+    });
   });
 });
