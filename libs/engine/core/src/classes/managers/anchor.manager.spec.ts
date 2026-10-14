@@ -114,12 +114,27 @@ describe('KritzelAnchorManager', () => {
     return Object.assign(obj, overrides) as unknown as KritzelBaseObject<Element>;
   };
 
+  // Children of mock groups, resolvable through store.objects.findById.
+  const knownObjects = new Map<string, KritzelBaseObject<Element>>();
+
+  const createMockGroup = (id: string, zIndex: number, children: KritzelBaseObject<Element>[]): KritzelBaseObject<Element> => {
+    children.forEach(child => knownObjects.set(child.id, child));
+    return createMockObject({ __class__: 'KritzelGroup', id, zIndex, childIds: children.map(child => child.id) } as Partial<KritzelBaseObject<Element>>);
+  };
+
+  // Resolves objects by id in the given order.
+  const inOrder = (objects: Record<string, KritzelBaseObject<Element>>, ids: string[]): KritzelBaseObject<Element>[] => {
+    return ids.map(id => objects[id]);
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
 
+    knownObjects.clear();
     mockObjectsMap = {
       filter: jest.fn().mockReturnValue([]),
       update: jest.fn().mockReturnValue(true),
+      findById: jest.fn((id: string) => knownObjects.get(id)),
     };
 
     mockState = {
@@ -705,6 +720,95 @@ describe('KritzelAnchorManager', () => {
         objectId: 'obj-1',
         centerX: obj.centerX,
         centerY: obj.centerY,
+      });
+    });
+
+    describe('z-order ties', () => {
+      beforeEach(() => {
+        (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation(
+          (obj: any, className: string) => obj?.__class__ === className
+        );
+        (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
+      });
+
+      // Group shares its zIndex with its top member (child-b).
+      const createGroupStack = () => {
+        const childA = createMockObject({ id: 'child-a', zIndex: 1 });
+        const childB = createMockObject({ id: 'child-b', zIndex: 2 });
+        const group = createMockGroup('group-1', 2, [childA, childB]);
+        return { 'child-a': childA, 'child-b': childB, 'group-1': group };
+      };
+
+      it.each([
+        ['the member comes first', ['child-a', 'child-b', 'group-1']],
+        ['the group comes first', ['group-1', 'child-b', 'child-a']],
+      ])('should prefer a group over its tied top member when %s', (_label, ids) => {
+        mockCore.store.allNonSelectionObjects = inOrder(createGroupStack(), ids);
+
+        expect(manager.findSnapPreviewTarget(125, 125, 'line-1')?.objectId).toBe('group-1');
+      });
+
+      it.each([
+        ['innermost first', ['child-c', 'inner', 'outer']],
+        ['outermost first', ['outer', 'inner', 'child-c']],
+        ['member before outer group', ['child-c', 'outer', 'inner']],
+      ])('should prefer the outermost tied group over nested descendants (%s)', (_label, ids) => {
+        const childC = createMockObject({ id: 'child-c', zIndex: 3 });
+        const inner = createMockGroup('inner', 3, [childC]);
+        const outer = createMockGroup('outer', 3, [createMockObject({ id: 'child-x', zIndex: 1 }), inner]);
+        mockCore.store.allNonSelectionObjects = inOrder({ 'child-c': childC, inner, outer }, ids);
+
+        expect(manager.findSnapPreviewTarget(125, 125, 'line-1')?.objectId).toBe('outer');
+      });
+
+      it('should prefer a group over a tied descendant that is nested deeper', () => {
+        const childC = createMockObject({ id: 'child-c', zIndex: 3 });
+        const outer = createMockGroup('outer', 3, [createMockGroup('inner', 3, [childC])]);
+        mockCore.store.allNonSelectionObjects = [childC, outer];
+
+        expect(manager.findSnapPreviewTarget(125, 125, 'line-1')?.objectId).toBe('outer');
+      });
+
+      it.each([
+        ['obj-a first', ['obj-a', 'obj-c'], 'obj-a'],
+        ['obj-c first', ['obj-c', 'obj-a'], 'obj-c'],
+      ])('should keep the first object for a tie between unrelated objects (%s)', (_label, ids, expected) => {
+        const objects = {
+          'obj-a': createMockObject({ id: 'obj-a', zIndex: 2 }),
+          'obj-c': createMockObject({ id: 'obj-c', zIndex: 2 }),
+        };
+        mockCore.store.allNonSelectionObjects = inOrder(objects, ids);
+
+        expect(manager.findSnapPreviewTarget(125, 125, 'line-1')?.objectId).toBe(expected);
+      });
+
+      it('should not prefer a group over an unrelated object with the same zIndex', () => {
+        const loose = createMockObject({ id: 'obj-loose', zIndex: 2 });
+        const group = createMockGroup('group-1', 2, [createMockObject({ id: 'child-b', zIndex: 2 })]);
+        mockCore.store.allNonSelectionObjects = [loose, group];
+
+        expect(manager.findSnapPreviewTarget(125, 125, 'line-1')?.objectId).toBe('obj-loose');
+      });
+
+      it.each([
+        ['the higher object comes first', ['obj-d', 'group-1', 'child-b', 'child-a']],
+        ['the higher object comes last', ['child-a', 'child-b', 'group-1', 'obj-d']],
+      ])('should prefer a strictly higher object over the group when %s', (_label, ids) => {
+        const objects = { ...createGroupStack(), 'obj-d': createMockObject({ id: 'obj-d', zIndex: 3 }) };
+        mockCore.store.allNonSelectionObjects = inOrder(objects, ids);
+
+        expect(manager.findSnapPreviewTarget(125, 125, 'line-1')?.objectId).toBe('obj-d');
+      });
+
+      it('should prefer a group over its tied top member when snapping to the center', () => {
+        const objects = createGroupStack();
+        mockCore.store.allNonSelectionObjects = inOrder(objects, ['child-b', 'group-1']);
+
+        expect(manager.findSnapTarget(125, 125, 'line-1')).toEqual({
+          objectId: 'group-1',
+          centerX: objects['group-1'].centerX,
+          centerY: objects['group-1'].centerY,
+        });
       });
     });
   });

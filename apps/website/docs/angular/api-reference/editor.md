@@ -592,7 +592,7 @@ No ordering-specific events.
 
 #### bringForward
 
-Moves an object one layer forward in the z-order. If omitted, applies to the current selection.
+Moves an object one layer forward in the z-order, past the next layer above it. If omitted, applies to the current selection and moves each selected layer. A group is one layer, so all of its children move together; a grouped object moves within its group.
 
 ```ts
 bringForward(object?: KritzelBaseObject<any>): Promise<void>
@@ -600,7 +600,7 @@ bringForward(object?: KritzelBaseObject<any>): Promise<void>
 
 #### sendBackward
 
-Moves an object one layer backward in the z-order. If omitted, applies to the current selection.
+Moves an object one layer backward in the z-order, past the next layer below it. If omitted, applies to the current selection and moves each selected layer. A group is one layer, so all of its children move together; a grouped object moves within its group.
 
 ```ts
 sendBackward(object?: KritzelBaseObject<any>): Promise<void>
@@ -608,7 +608,7 @@ sendBackward(object?: KritzelBaseObject<any>): Promise<void>
 
 #### bringToFront
 
-Moves an object to the very front of the z-order. If omitted, applies to the current selection.
+Moves an object to the very front of the z-order. If omitted, applies to the current selection, keeping the relative order of the selected layers. A group moves together with all of its children; a grouped object moves to the front of its group.
 
 ```ts
 bringToFront(object?: KritzelBaseObject<any>): Promise<void>
@@ -616,7 +616,7 @@ bringToFront(object?: KritzelBaseObject<any>): Promise<void>
 
 #### sendToBack
 
-Moves an object to the very back of the z-order. If omitted, applies to the current selection.
+Moves an object to the very back of the z-order. If omitted, applies to the current selection, keeping the relative order of the selected layers. A group moves together with all of its children; a grouped object moves to the back of its group.
 
 ```ts
 sendToBack(object?: KritzelBaseObject<any>): Promise<void>
@@ -662,7 +662,7 @@ No grouping-specific events.
 
 #### group
 
-Groups the currently selected objects into a single group object.
+Creates a group (`KritzelGroup`) from the currently selected objects (at least two). They become one layer at the position of the topmost selected object.
 
 ```ts
 group(): Promise<void>
@@ -670,7 +670,7 @@ group(): Promise<void>
 
 #### ungroup
 
-Ungroups the currently selected group back into individual objects.
+Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
 
 ```ts
 ungroup(): Promise<void>
