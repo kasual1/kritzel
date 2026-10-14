@@ -114,8 +114,12 @@ describe('KritzelAnchorManager', () => {
     return Object.assign(obj, overrides) as unknown as KritzelBaseObject<Element>;
   };
 
+  // Children of mock groups, resolvable through store.objects.findById.
+  const knownObjects = new Map<string, KritzelBaseObject<Element>>();
+
   const createMockGroup = (id: string, zIndex: number, children: KritzelBaseObject<Element>[]): KritzelBaseObject<Element> => {
-    return createMockObject({ __class__: 'KritzelGroup', id, zIndex, children } as Partial<KritzelBaseObject<Element>>);
+    children.forEach(child => knownObjects.set(child.id, child));
+    return createMockObject({ __class__: 'KritzelGroup', id, zIndex, childIds: children.map(child => child.id) } as Partial<KritzelBaseObject<Element>>);
   };
 
   // Resolves objects by id in the given order.
@@ -126,9 +130,11 @@ describe('KritzelAnchorManager', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
+    knownObjects.clear();
     mockObjectsMap = {
       filter: jest.fn().mockReturnValue([]),
       update: jest.fn().mockReturnValue(true),
+      findById: jest.fn((id: string) => knownObjects.get(id)),
     };
 
     mockState = {

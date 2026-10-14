@@ -625,8 +625,8 @@ describe('KritzelContextMenuHandler', () => {
   });
 
   describe('open', () => {
-    it('should select the parent group when opened for a grouped object', () => {
-      const child = { id: 'child-1', rotation: 0, isSelected: true };
+    it('should select exactly the requested object when opened for a grouped object', () => {
+      const child = { id: 'child-1', rotation: 0.3, isSelected: true };
       const group = createGroup('group-1', ['child-1'], 0.4);
       storeObjects = [child, group];
       const selectionGroup = stubSelectionGroup();
@@ -634,10 +634,10 @@ describe('KritzelContextMenuHandler', () => {
       contextMenuHandler.open({ x: 50, y: 60, objectId: 'child-1' });
 
       expect(selectionGroup.objects).toHaveLength(1);
-      expect(selectionGroup.objects[0]).toBe(group);
+      expect(selectionGroup.objects[0]).toBe(child);
       expect(selectionGroup.isSelected).toBe(true);
-      expect(selectionGroup.rotation).toBe(0.4);
-      expect(child.isSelected).toBe(false);
+      expect(selectionGroup.rotation).toBe(0.3);
+      expect(child.isSelected).toBe(true);
       expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(selectionGroup);
       expect(mockState.isContextMenuVisible).toBe(true);
     });

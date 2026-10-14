@@ -62,9 +62,9 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   }
 
   /**
-   * Resolves a grouped object to its parent group, like a left click does, so menu actions
+   * Resolves a right-clicked grouped object to its parent group, like a left click does, so menu actions
    * (e.g. ordering) apply to the whole group.
-   * @param object - The object that was hit or requested.
+   * @param object - The right-clicked object.
    * @returns The parent group, or the object itself when it is not grouped.
    */
   private resolveSelectableObject(object: KritzelBaseObject<any>): KritzelBaseObject<any> {
@@ -185,9 +185,8 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     }
 
     if (objectId) {
-      const foundObject = this._core.store.allObjects.find(obj => obj.id === objectId);
-      if (foundObject && !(foundObject instanceof KritzelSelectionGroup) && !(foundObject instanceof KritzelSelectionBox)) {
-        const targetObject = this.resolveSelectableObject(foundObject);
+      const targetObject = this._core.store.allObjects.find(obj => obj.id === objectId);
+      if (targetObject && !(targetObject instanceof KritzelSelectionGroup) && !(targetObject instanceof KritzelSelectionBox)) {
         const selectionGroup = KritzelSelectionGroup.create(this._core);
         selectionGroup.addOrRemove(targetObject);
         selectionGroup.isSelected = true;

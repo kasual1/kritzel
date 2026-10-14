@@ -23,6 +23,8 @@ export type KritzelZOrderOperation = 'forward' | 'backward' | 'front' | 'back';
 export interface KritzelGroupZOrderPlan {
   /** Ids of the objects to group, ordered bottom to top. */
   childIds: string[];
+  /** The group that contains all grouped objects and receives the new group, or null for the top level. */
+  parentId: string | null;
   /** zIndex for the new group object, or null when it has no visible member. */
   groupZIndex: number | null;
   /** New zIndex values of existing objects, keyed by id. */
@@ -65,15 +67,17 @@ export class KritzelZOrderHelper {
   }
 
   /**
-   * Plans grouping the given objects. Their members are made contiguous at the position of the topmost
-   * selected object; objects that were stacked in between end up below the group.
+   * Plans grouping the given objects. Objects from different groups are grouped at the deepest level that
+   * contains all of them (e.g. an inner group selected with a top-level object groups its top-level group),
+   * so every object keeps a single parent. Their members are made contiguous at the position of the topmost
+   * object; objects that were stacked in between end up below the group.
    * @param items - All objects of the workspace in store order.
    * @param rootIds - Ids of the objects to group.
    * @returns The plan, or null when fewer than two independent objects remain.
    */
   static planGroup(items: KritzelZOrderItem[], rootIds: string[]): KritzelGroupZOrderPlan | null {
     const planner = new KritzelZOrderPlanner(items);
-    const roots = planner.tree.resolveRoots(rootIds);
+    const { parentId, roots } = planner.tree.liftToCommonScope(planner.tree.resolveRoots(rootIds));
     if (roots.length < 2) {
       return null;
     }
@@ -83,19 +87,19 @@ export class KritzelZOrderHelper {
     const visibleMembers = childIds.flatMap(id => planner.tree.visibleMembers(id));
     const groupZIndex = visibleMembers.length > 0 ? Math.max(...visibleMembers.map(id => updates.get(id) ?? planner.tree.item(id).zIndex)) : null;
 
-    return { childIds, groupZIndex, updates };
+    return { childIds, parentId, groupZIndex, updates };
   }
 
   /**
-   * Plans ungrouping a group. Its members keep their stacking order; tied members get unique values.
+   * Plans ungrouping groups. Their members keep their stacking order; members that share a zIndex get unique values.
    * @param items - All objects of the workspace in store order.
-   * @param groupId - Id of the group that is dissolved.
+   * @param groupIds - Ids of the groups that are dissolved.
    * @returns New zIndex values keyed by object id; empty when nothing has to change.
    */
-  static planUngroup(items: KritzelZOrderItem[], groupId: string): Map<string, number> {
+  static planUngroup(items: KritzelZOrderItem[], groupIds: string[]): Map<string, number> {
     const planner = new KritzelZOrderPlanner(items);
-    planner.ungroup(groupId);
-    return planner.finish(groupId);
+    planner.ungroup(groupIds);
+    return planner.finish(new Set(groupIds));
   }
 
   /**
@@ -237,6 +241,19 @@ class KritzelZOrderTree {
     return known.filter(id => !this.ancestors(id).some(ancestor => included.has(ancestor)));
   }
 
+  /** Replaces each root with its ancestor directly inside the deepest group that contains all roots. */
+  liftToCommonScope(roots: string[]): { parentId: string | null; roots: string[] } {
+    const paths = roots.map(id => [...this.ancestors(id).reverse(), id]);
+    let depth = 0;
+    while (paths.every(path => depth < path.length - 1 && path[depth] === paths[0][depth])) {
+      depth++;
+    }
+    return {
+      parentId: depth > 0 ? paths[0][depth - 1] : null,
+      roots: [...new Set(paths.map(path => path[depth]))],
+    };
+  }
+
   private isAncestorOrSelf(candidate: string, id: string): boolean {
     for (let current: string | undefined = id; current !== undefined; current = this.parentOf.get(current)) {
       if (current === candidate) {
@@ -331,13 +348,10 @@ class KritzelZOrderPlanner {
     return [...visibleRoots, ...emptyRoots];
   }
 
-  /** Keeps the stacking order and only separates members of the group that share a zIndex. */
-  ungroup(groupId: string): void {
-    if (!this.tree.has(groupId) || this.tree.isVisible(groupId)) {
-      return;
-    }
-
-    const members = this.tree.visibleMembers(groupId);
+  /** Keeps the stacking order and only separates members of the groups that share a zIndex. */
+  ungroup(groupIds: string[]): void {
+    const groups = groupIds.filter(id => this.tree.has(id) && !this.tree.isVisible(id));
+    const members = [...new Set(groups.flatMap(id => this.tree.visibleMembers(id)))];
     const counts = new Map<number, number>();
     members.forEach(id => counts.set(this.current.get(id), (counts.get(this.current.get(id)) ?? 0) + 1));
     members.filter(id => counts.get(this.current.get(id)) > 1).forEach(id => this.touched.add(id));
@@ -346,9 +360,9 @@ class KritzelZOrderPlanner {
   /**
    * Computes the new values: positional reuse for touched objects, fresh values beyond the extremes for
    * root front/back moves, then the derived values of affected groups.
-   * @param removedGroupId - A group that is about to be removed and needs no value.
+   * @param removedGroupIds - Groups that are about to be removed and need no value.
    */
-  finish(removedGroupId?: string): Map<string, number> {
+  finish(removedGroupIds: Set<string> = new Set()): Map<string, number> {
     const values = new KritzelZOrderValueAssigner(this.order, this.current, this.touched, this.fresh, this.moving, this.tree.items).assign();
 
     const groups = new Set<string>();
@@ -356,7 +370,7 @@ class KritzelZOrderPlanner {
       this.tree.ancestors(id).forEach(ancestor => groups.add(ancestor));
     }
     this.moving.forEach(id => !this.tree.isVisible(id) && groups.add(id));
-    groups.delete(removedGroupId);
+    removedGroupIds.forEach(id => groups.delete(id));
 
     for (const groupId of groups) {
       const members = this.tree.visibleMembers(groupId);
@@ -413,7 +427,8 @@ class KritzelZOrderPlanner {
   }
 
   private toFront(scope: string | null, selected: string[], units: string[]): void {
-    if (units.every(unit => selected.includes(unit))) {
+    const selectedSet = new Set(selected);
+    if (units.every(unit => selectedSet.has(unit))) {
       return;
     }
     const sorted = this.sortByAnchor(selected);
@@ -428,7 +443,8 @@ class KritzelZOrderPlanner {
   }
 
   private toBack(scope: string | null, selected: string[], units: string[]): void {
-    if (units.every(unit => selected.includes(unit))) {
+    const selectedSet = new Set(selected);
+    if (units.every(unit => selectedSet.has(unit))) {
       return;
     }
     const sorted = this.sortByAnchor(selected);
@@ -451,6 +467,16 @@ class KritzelZOrderPlanner {
     const removedPositions = [...removed].map(id => this.position.get(id));
     const minRemoved = Math.min(...removedPositions);
     const maxRemoved = Math.max(...removedPositions);
+
+    // Fast path: a contiguous block that stays in its own range passes nothing else.
+    if (removed.size === maxRemoved - minRemoved + 1 && boundary >= minRemoved && boundary <= maxRemoved + 1) {
+      block.forEach((id, offset) => {
+        this.order[minRemoved + offset] = id;
+        this.position.set(id, minRemoved + offset);
+      });
+      removed.forEach(id => this.touched.add(id));
+      return removed;
+    }
 
     const rest = this.order.filter(id => !removed.has(id));
     const slot = rest.filter(id => this.position.get(id) < boundary).length;
