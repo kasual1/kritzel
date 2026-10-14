@@ -129,6 +129,11 @@ kritzel-toolbar.keyboard-open {
   display: flex;
   align-items: flex-end;
   pointer-events: none;
+  transition: transform var(--kritzel-editor-toolbar-transition-duration, 0.1s) var(--kritzel-editor-toolbar-transition, ease-in-out);
+}
+
+.bottom-left-buttons.keyboard-open {
+  transform: var(--kritzel-editor-toolbar-transform, translateY(300%));
 }
 
 /* Hide the zoom panel when the editor container is narrow. */
