@@ -18,6 +18,7 @@ import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import type { KritzelGroup } from '../objects/group.class';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 
@@ -326,6 +327,7 @@ export class KritzelAnchorManager {
     predicate: (object: KritzelBaseObject<Element>) => boolean
   ): SnapTarget | null {
     let bestTarget: SnapTarget | null = null;
+    let bestObject: KritzelBaseObject<Element> | null = null;
     let highestZIndex = -Infinity;
 
     const objects = this._core.store.allNonSelectionObjects;
@@ -358,8 +360,10 @@ export class KritzelAnchorManager {
         continue;
       }
 
-      if (object.zIndex > highestZIndex) {
+      // A group shares its zIndex with its top member; prefer the group, which is the selectable layer.
+      if (object.zIndex > highestZIndex || (object.zIndex === highestZIndex && bestObject && this.containsDescendant(object, bestObject))) {
         highestZIndex = object.zIndex;
+        bestObject = object;
         bestTarget = {
           objectId: object.id,
           centerX: object.centerX,
@@ -1786,6 +1790,18 @@ export class KritzelAnchorManager {
 
   private isFinitePathData(pathD: string): boolean {
     return !pathD.includes('Infinity') && !pathD.includes('NaN');
+  }
+
+  /**
+   * Checks whether an object is a group that contains the given object at any depth.
+   * @param object - The potential ancestor group.
+   * @param descendant - The potential descendant.
+   */
+  private containsDescendant(object: KritzelBaseObject<Element>, descendant: KritzelBaseObject<Element>): boolean {
+    if (!KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+      return false;
+    }
+    return object.children.some(child => child.id === descendant.id || this.containsDescendant(child, descendant));
   }
 
   /**
