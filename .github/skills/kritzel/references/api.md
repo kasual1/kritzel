@@ -1,6 +1,6 @@
 # Kritzel component API
 
-Source version: @kritzel/engine and @kritzel/editor 0.4.35.
+Source version: @kritzel/engine and @kritzel/editor 0.5.4.
 
 Generated from Stencil docs JSON. For framework bindings, use the matching setup and events references.
 
@@ -46,8 +46,8 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | alignObjects | alignObjects(alignment: KritzelAlignment) => Promise<void> | Aligns the currently selected objects according to the specified alignment. |
 | backToContent | backToContent() => Promise<boolean> | Pans and zooms the viewport to fit the nearest content, with padding. Useful when the user has panned away from all objects. |
 | beginSceneBootstrap | beginSceneBootstrap() => Promise<void> | Starts a scene bootstrap phase by hiding the scene immediately. |
-| bringForward | bringForward(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object one layer forward in the z-order. |
-| bringToFront | bringToFront(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object to the very front of the z-order. |
+| bringForward | bringForward(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object, or each selected layer, one layer forward in the z-order, past the next layer above it. A group is one layer: all of its children move together. A grouped object moves within its group. |
+| bringToFront | bringToFront(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object, or the selected layers, to the very front of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the front of its group. |
 | canExportSelectedObjectAs | canExportSelectedObjectAs(format: KritzelObjectExportFormat) => Promise<boolean> | Checks whether the currently selected object supports a specific export format. Returns false when none or multiple objects are selected. |
 | cancelImportFromFile | cancelImportFromFile() => Promise<void> | Cancels an active file picker opened by importFromFile. |
 | centerAllObjects | centerAllObjects(animate?: boolean) => Promise<boolean> | Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered. Calculates the combined bounding box of all objects and centers the viewport to show them. |
@@ -86,7 +86,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | getTool | getTool(toolName: string) => Promise<KritzelBaseTool \| null> | Returns a tool registered in this engine instance. |
 | getViewport | getViewport() => Promise<KritzelViewportState> | Returns the current viewport state including position, scale, and dimensions. |
 | getWorkspaces | getWorkspaces() => Promise<KritzelWorkspace[]> | Returns all available workspaces. |
-| group | group() => Promise<void> | Groups the currently selected objects into a single selection group. |
+| group | group() => Promise<void> | Creates a group (\`KritzelGroup\`) from the currently selected objects. Requires at least two selected objects. The grouped objects become one layer at the position of the topmost selected object. |
 | hideContextMenu | hideContextMenu() => Promise<void> | Hides the context menu and resets any associated selection state. |
 | importFromFile | importFromFile() => Promise<void> | Opens a file picker dialog and imports the selected JSON file into the workspace. This method creates a hidden file input, triggers the browser's file chooser, reads the selected JSON file, and imports it using importFromJson. |
 | importFromJson | importFromJson(json: string) => Promise<void> | Imports a workspace from a JSON string into a new workspace. Creates a new workspace with the imported data and automatically switches to it. |
@@ -107,8 +107,8 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | screenToWorld | screenToWorld(x: number, y: number) => Promise<{ x: number; y: number; }> | Converts screen-relative pixel coordinates to world coordinates. |
 | selectAllObjectsInViewport | selectAllObjectsInViewport() => Promise<void> | Selects all objects currently visible in the viewport. Switches to the selection tool automatically. |
 | selectObjects | selectObjects(objects: KritzelBaseObject[]) => Promise<void> | Programmatically selects the given objects. Switches to the selection tool automatically. |
-| sendBackward | sendBackward(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object one layer backward in the z-order. |
-| sendToBack | sendToBack(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object to the very back of the z-order. |
+| sendBackward | sendBackward(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object, or each selected layer, one layer backward in the z-order, past the next layer below it. A group is one layer: all of its children move together. A grouped object moves within its group. |
+| sendToBack | sendToBack(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object, or the selected layers, to the very back of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the back of its group. |
 | setActiveTool | setActiveTool(toolName: string) => Promise<void> | Switches the active drawing tool by its registered name. |
 | setActiveWorkspace | setActiveWorkspace(id: string) => Promise<void> | Switches the active workspace in the engine by ID. |
 | setLocale | setLocale(code: LocaleCode) => Promise<void> | Sets the active locale (language) and re-renders the UI. |
@@ -116,7 +116,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | t | t(key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string> | Resolves a term key to its translated string for the active locale. |
 | triggerSelectionChange | triggerSelectionChange() => Promise<void> | Manually triggers the \`objectsSelectionChange\` event. |
 | undo | undo() => Promise<void> | Undoes the last action. |
-| ungroup | ungroup() => Promise<void> | Ungroups the currently selected group back into individual objects. |
+| ungroup | ungroup() => Promise<void> | Ungroups the selected groups. Their children become individual objects again and keep their stacking order. |
 | updateObject | updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T \| null> | Updates properties of an existing canvas object. |
 | updateWorkspace | updateWorkspace(workspace: KritzelWorkspace) => Promise<void> | Applies a workspace as declared and emits a \`workspacesChange\` event. Metadata and viewport are always applied. When \`workspace.objects\` is set it is treated as the complete desired object set (\`undefined\` leaves objects untouched, \`[]\` removes them all); updating objects of a non-active workspace requires a configured sync provider. |
 | worldToScreen | worldToScreen(x: number, y: number) => Promise<{ x: number; y: number; }> | Converts world coordinates to screen-relative pixel coordinates. |
