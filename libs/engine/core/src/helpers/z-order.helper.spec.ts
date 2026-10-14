@@ -293,6 +293,12 @@ describe('KritzelZOrderHelper', () => {
       expect(Object.fromEntries(plan.updates)).toEqual({});
     });
 
+    it('returns null when the selected ids are not in the store', () => {
+      expect(KritzelZOrderHelper.planGroup(board(), [])).toBeNull();
+      expect(KritzelZOrderHelper.planGroup(board(), ['missing', 'gone'])).toBeNull();
+      expect(KritzelZOrderHelper.planGroup(board(), ['x', 'gone'])).toBeNull();
+    });
+
     it('groups an inner group selected with a top-level object as its top-level group', () => {
       const plan = KritzelZOrderHelper.planGroup(board(), ['H', 'X']);
 
