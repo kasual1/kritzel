@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/editor.fixture';
+import { test, expect, type EditorPage } from '../fixtures/editor.fixture';
 
 test.describe('Ordering', () => {
   test.beforeEach(async ({ editorPage }) => {
@@ -158,6 +158,94 @@ test.describe('Ordering', () => {
     for (const obj of others) {
       expect(updated3.zIndex).toBeLessThan((obj as any).zIndex);
     }
+  });
+
+  test.describe('groups', () => {
+    // Adds three overlapping shapes, stacked bottom to top (zIndex 1, 2, 3).
+    const addThreeShapes = async (editorPage: EditorPage) => {
+      const shapes = [];
+      for (const [index, shapeType] of (['rectangle', 'ellipse', 'triangle'] as const).entries()) {
+        shapes.push(
+          await editorPage.addShape({
+            shapeType,
+            translateX: 100 + index * 50,
+            translateY: 100 + index * 50,
+            width: 150,
+            height: 150,
+          }),
+        );
+      }
+      return shapes;
+    };
+
+    const getZIndices = async (editorPage: EditorPage) => {
+      const allObjects = await editorPage.getAllObjects<any>();
+      const zIndexOf = (id: string) => allObjects.find((o: any) => o.id === id).zIndex;
+      const group = allObjects.find((o: any) => o.__class__ === 'KritzelGroup');
+      return { zIndexOf, group };
+    };
+
+    test('should move a group forward past the next object as one layer', async ({ editorPage }) => {
+      const [shape1, shape2, shape3] = await addThreeShapes(editorPage);
+
+      await editorPage.selectObjects([shape1, shape2]);
+      await editorPage.group();
+      await editorPage.bringForward();
+      await editorPage.clearSelection();
+
+      const { zIndexOf, group } = await getZIndices(editorPage);
+      expect(zIndexOf(shape3.id)).toBeLessThan(zIndexOf(shape1.id));
+      expect(zIndexOf(shape1.id)).toBeLessThan(zIndexOf(shape2.id));
+      expect(group.zIndex).toBe(zIndexOf(shape2.id));
+    });
+
+    test('should move an object past a whole group in a single step', async ({ editorPage }) => {
+      const [shape1, shape2, shape3] = await addThreeShapes(editorPage);
+
+      await editorPage.selectObjects([shape2, shape3]);
+      await editorPage.group();
+      await editorPage.selectObjects([shape1]);
+      await editorPage.bringForward();
+      await editorPage.clearSelection();
+
+      const { zIndexOf } = await getZIndices(editorPage);
+      expect(zIndexOf(shape2.id)).toBeLessThan(zIndexOf(shape3.id));
+      expect(zIndexOf(shape3.id)).toBeLessThan(zIndexOf(shape1.id));
+    });
+
+    test('should send a group to the back and bring it to the front with all of its children', async ({ editorPage }) => {
+      const [shape1, shape2, shape3] = await addThreeShapes(editorPage);
+
+      await editorPage.selectObjects([shape2, shape3]);
+      await editorPage.group();
+      await editorPage.sendToBack();
+
+      let { zIndexOf } = await getZIndices(editorPage);
+      expect(zIndexOf(shape2.id)).toBeLessThan(zIndexOf(shape3.id));
+      expect(zIndexOf(shape3.id)).toBeLessThan(zIndexOf(shape1.id));
+
+      await editorPage.bringToFront();
+      await editorPage.clearSelection();
+
+      ({ zIndexOf } = await getZIndices(editorPage));
+      expect(zIndexOf(shape1.id)).toBeLessThan(zIndexOf(shape2.id));
+      expect(zIndexOf(shape2.id)).toBeLessThan(zIndexOf(shape3.id));
+    });
+
+    test('should keep the stacking order with unique zIndex values after ungrouping', async ({ editorPage }) => {
+      const [shape1, shape2, shape3] = await addThreeShapes(editorPage);
+
+      // Grouping the outer shapes stacks them together at the top; the middle shape ends up below the group.
+      await editorPage.selectObjects([shape1, shape3]);
+      await editorPage.group();
+      await editorPage.ungroup();
+      await editorPage.clearSelection();
+
+      const { zIndexOf, group } = await getZIndices(editorPage);
+      expect(group).toBeUndefined();
+      expect(zIndexOf(shape2.id)).toBeLessThan(zIndexOf(shape1.id));
+      expect(zIndexOf(shape1.id)).toBeLessThan(zIndexOf(shape3.id));
+    });
   });
 
   test.describe('visual regression', () => {

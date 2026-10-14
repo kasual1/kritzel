@@ -3,6 +3,8 @@ import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
+import { KritzelGroup } from '../objects/group.class';
+import { KritzelBaseObject } from '../objects/base-object.class';
 import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
 import { KritzelTermKey } from '../../interfaces/localization.interface';
 
@@ -60,6 +62,23 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
   }
 
   /**
+   * Resolves a grouped object to its parent group, like a left click does, so menu actions
+   * (e.g. ordering) apply to the whole group.
+   * @param object - The object that was hit or requested.
+   * @returns The parent group, or the object itself when it is not grouped.
+   */
+  private resolveSelectableObject(object: KritzelBaseObject<any>): KritzelBaseObject<any> {
+    const parentGroup = KritzelGroup.findParentGroup(this._core, object.id);
+    if (!parentGroup) {
+      return object;
+    }
+
+    // Clear the child's own flag so it does not linger as selected.
+    object.isSelected = false;
+    return parentGroup;
+  }
+
+  /**
    * Handles the context menu event (typically triggered by right-click).
    * This method performs the following operations:
    * 1. Validates that the selection tool is active; exits early otherwise.
@@ -92,9 +111,10 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       this._core.store.state.isSelecting = false;
     }
 
-    const selectedObject = this._core.getObjectFromPointerEvent(event, '.object');
+    const hitObject = this._core.getObjectFromPointerEvent(event, '.object');
 
-    if (selectedObject && !(selectedObject instanceof KritzelSelectionGroup) && !(selectedObject instanceof KritzelSelectionBox)) {
+    if (hitObject && !(hitObject instanceof KritzelSelectionGroup) && !(hitObject instanceof KritzelSelectionBox)) {
+      const selectedObject = this.resolveSelectableObject(hitObject);
       const selectionGroup = KritzelSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(selectedObject);
       selectionGroup.isSelected = true;
@@ -165,8 +185,9 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
     }
 
     if (objectId) {
-      const targetObject = this._core.store.allObjects.find(obj => obj.id === objectId);
-      if (targetObject && !(targetObject instanceof KritzelSelectionGroup) && !(targetObject instanceof KritzelSelectionBox)) {
+      const foundObject = this._core.store.allObjects.find(obj => obj.id === objectId);
+      if (foundObject && !(foundObject instanceof KritzelSelectionGroup) && !(foundObject instanceof KritzelSelectionBox)) {
+        const targetObject = this.resolveSelectableObject(foundObject);
         const selectionGroup = KritzelSelectionGroup.create(this._core);
         selectionGroup.addOrRemove(targetObject);
         selectionGroup.isSelected = true;

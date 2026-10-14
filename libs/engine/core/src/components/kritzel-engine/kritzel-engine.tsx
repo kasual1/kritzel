@@ -25,6 +25,7 @@ import { KritzelContextMenuHandler } from '../../classes/handlers/context-menu.h
 import { KritzelBaseObject } from '../../classes/objects/base-object.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../constants/engine.constants';
 import { KritzelDynamicObject } from '../../classes/objects/dynamic-object.class';
 import { KritzelIframeObject } from '../../classes/objects/iframe.class';
@@ -1058,6 +1059,9 @@ export class KritzelEngine {
       const idRemapping = new Map<string, string>();
       const allFlushedChildren: KritzelBaseObject<any>[] = [];
 
+      // Children stack bottom to top in the order they were added; the group takes its top child's zIndex.
+      KritzelZOrderHelper.allocate(object, this.core.store.currentZIndex, group => group._pendingChildren);
+
       const flushGroup = (group: KritzelGroup): void => {
         if (group._pendingChildren.length === 0) {
           return;
@@ -1072,7 +1076,6 @@ export class KritzelEngine {
           child.id = child.generateId();
           child._core = this.core;
           child.scale = child.scale ?? this.core.store.state.scale;
-          child.zIndex = this.core.store.currentZIndex;
           child.workspaceId = this.core.store.state.activeWorkspace!.id;
 
           idRemapping.set(oldId, child.id);
@@ -1171,6 +1174,8 @@ export class KritzelEngine {
           const idRemapping = new Map<string, string>();
           const allFlushedChildren: KritzelBaseObject<any>[] = [];
 
+          KritzelZOrderHelper.allocate(object, this.core.store.currentZIndex, group => group._pendingChildren);
+
           const flushGroup = (group: KritzelGroup): void => {
             if (group._pendingChildren.length === 0) {
               return;
@@ -1185,7 +1190,6 @@ export class KritzelEngine {
               child.id = child.generateId();
               child._core = this.core;
               child.scale = child.scale ?? this.core.store.state.scale;
-              child.zIndex = this.core.store.currentZIndex;
               child.workspaceId = this.core.store.state.activeWorkspace!.id;
 
               idRemapping.set(oldId, child.id);
