@@ -6,6 +6,7 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 import { KritzelReviver } from '../core/reviver.class';
 import { KritzelPasteIntentProviderRegistry } from '../registries/paste-intent-provider.registry';
 import { KritzelEventPasteIntentProvider } from '../providers/paste-intent/event-paste-intent.provider';
@@ -332,10 +333,25 @@ export class KritzelClipboardManager {
 
     const selectionGroup = KritzelSelectionGroup.create(this._core);
 
-    const baseZIndex = this._core.store.currentZIndex;
+    // Stack the pasted objects above everything in their original order; each group becomes one contiguous layer.
+    const getPendingChildren = (group: KritzelGroup) => group._pendingChildren;
+    const sortByStackOrder = (objects: KritzelBaseObject<any>[]) =>
+      objects
+        .map(object => ({ object, anchor: KritzelZOrderHelper.stackAnchor(object, getPendingChildren) }))
+        .sort((a, b) => a.anchor - b.anchor)
+        .map(({ object }) => object);
+    const sortPendingChildren = (object: KritzelBaseObject<any>): void => {
+      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+        object._pendingChildren.forEach(sortPendingChildren);
+        object._pendingChildren = sortByStackOrder(object._pendingChildren);
+      }
+    };
+    copiedObjects.forEach(sortPendingChildren);
+    let nextZIndex = this._core.store.currentZIndex;
+    sortByStackOrder(copiedObjects).forEach(obj => (nextZIndex = KritzelZOrderHelper.allocate(obj, nextZIndex, getPendingChildren)));
 
     this._core.store.objects.transaction(() => {
-      const flushPendingChildren = (group: KritzelGroup, parentZIndex: number): void => {
+      const flushPendingChildren = (group: KritzelGroup): void => {
         if (group._pendingChildren.length === 0) {
           return;
         }
@@ -343,16 +359,15 @@ export class KritzelClipboardManager {
         const pendingChildren = group._pendingChildren;
         group._pendingChildren = [];
 
-        pendingChildren.forEach((child, childIndex) => {
+        pendingChildren.forEach(child => {
           if (child.workspaceId !== activeWorkspace.id) {
             child.workspaceId = activeWorkspace.id;
           }
 
           child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
-          child.zIndex = parentZIndex + childIndex + 1;
 
           if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
-            flushPendingChildren(child, child.zIndex);
+            flushPendingChildren(child);
           }
 
           this._core.addObject(child);
@@ -363,16 +378,15 @@ export class KritzelClipboardManager {
 
       const newlyAddedObjects: KritzelBaseObject<any>[] = [];
 
-      copiedObjects.forEach((obj, i) => {
+      copiedObjects.forEach(obj => {
         if (obj.workspaceId !== activeWorkspace.id) {
           obj.workspaceId = activeWorkspace.id;
         }
 
         obj.updatePosition(obj.translateX + offsetX, obj.translateY + offsetY);
-        obj.zIndex = baseZIndex + i;
 
         if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
-          flushPendingChildren(obj, obj.zIndex);
+          flushPendingChildren(obj);
         }
 
         this._core.addObject(obj);

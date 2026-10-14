@@ -3,6 +3,7 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionTool } from '../tools/selection-tool.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
+import { KritzelGroup } from '../objects/group.class';
 
 jest.mock('../objects/selection-group.class');
 
@@ -17,6 +18,8 @@ describe('KritzelContextMenuHandler', () => {
     objects: unknown[];
   } | null;
   let globalContextMenuItems: unknown[];
+  // Objects backing store.objects.filter and store.allObjects.
+  let storeObjects: unknown[];
   let objectContextMenuItems: unknown[];
   let mockState: {
     activeTool: unknown;
@@ -34,7 +37,7 @@ describe('KritzelContextMenuHandler', () => {
     isEnabled: boolean;
     viewportWidth: number;
     viewportHeight: number;
-    objects: { remove: jest.Mock };
+    objects: { remove: jest.Mock; filter: jest.Mock };
   };
 
   const createPointerEvent = (
@@ -50,6 +53,27 @@ describe('KritzelContextMenuHandler', () => {
     } as PointerEvent;
   };
 
+  const createGroup = (id: string, childIds: string[], rotation = 0): KritzelGroup => {
+    const group = new KritzelGroup();
+    group.id = id;
+    group.childIds = childIds;
+    group.rotation = rotation;
+    return group;
+  };
+
+  // Selection group returned by the next KritzelSelectionGroup.create call; records what gets selected.
+  const stubSelectionGroup = () => {
+    const selectionGroup = {
+      addOrRemove: jest.fn(),
+      isSelected: false,
+      rotation: 0,
+      objects: [] as unknown[],
+    };
+    selectionGroup.addOrRemove.mockImplementation((object: unknown) => selectionGroup.objects.push(object));
+    (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(selectionGroup);
+    return selectionGroup;
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -57,6 +81,7 @@ describe('KritzelContextMenuHandler', () => {
     objectContextMenuItems = [{ label: 'Copy' }, { label: 'Delete' }];
 
     mockSelectionGroup = null;
+    storeObjects = [];
 
     mockSelectionTool = {
       toolType: 'selection',
@@ -84,7 +109,10 @@ describe('KritzelContextMenuHandler', () => {
       isEnabled: true,
       viewportWidth: 1024,
       viewportHeight: 768,
-      objects: { remove: jest.fn() },
+      objects: {
+        remove: jest.fn(),
+        filter: jest.fn((predicate: (object: unknown) => boolean) => storeObjects.filter(predicate)),
+      },
     };
 
     mockCore = {
@@ -94,6 +122,9 @@ describe('KritzelContextMenuHandler', () => {
         },
         get objects() {
           return mockState.objects;
+        },
+        get allObjects() {
+          return storeObjects;
         },
         get selectionGroup() {
           return mockSelectionGroup;
@@ -350,6 +381,50 @@ describe('KritzelContextMenuHandler', () => {
         // Should be called twice: once after selection, once at end
         expect(mockCore.rerender).toHaveBeenCalled();
       });
+
+      describe('grouped objects', () => {
+        it('should select the parent group instead of the right-clicked grouped object', () => {
+          const sibling = { id: 'child-0', rotation: 0, isSelected: false };
+          const child = { id: 'child-1', rotation: 0, isSelected: false };
+          const group = createGroup('group-1', ['child-0', 'child-1'], 0.4);
+          storeObjects = [sibling, child, group];
+          const selectionGroup = stubSelectionGroup();
+          (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(child);
+
+          contextMenuHandler.handleContextMenu(createPointerEvent());
+
+          expect(selectionGroup.objects).toHaveLength(1);
+          expect(selectionGroup.objects[0]).toBe(group);
+          expect(selectionGroup.isSelected).toBe(true);
+          expect(selectionGroup.rotation).toBe(0.4);
+          expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(selectionGroup);
+        });
+
+        it('should clear the isSelected flag of the right-clicked grouped object', () => {
+          const child = { id: 'child-1', rotation: 0, isSelected: true };
+          storeObjects = [child, createGroup('group-1', ['child-1'])];
+          stubSelectionGroup();
+          (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(child);
+
+          contextMenuHandler.handleContextMenu(createPointerEvent());
+
+          expect(child.isSelected).toBe(false);
+        });
+
+        it('should select an ungrouped object itself when unrelated groups exist', () => {
+          const object = { id: 'obj-1', rotation: 0.2, isSelected: true };
+          storeObjects = [object, createGroup('group-1', ['other-1'])];
+          const selectionGroup = stubSelectionGroup();
+          (mockCore.getObjectFromPointerEvent as jest.Mock).mockReturnValue(object);
+
+          contextMenuHandler.handleContextMenu(createPointerEvent());
+
+          expect(selectionGroup.objects).toHaveLength(1);
+          expect(selectionGroup.objects[0]).toBe(object);
+          expect(selectionGroup.rotation).toBe(0.2);
+          expect(object.isSelected).toBe(true);
+        });
+      });
     });
 
     describe('context menu items assignment', () => {
@@ -546,6 +621,39 @@ describe('KritzelContextMenuHandler', () => {
       contextMenuHandler.handleContextMenu(event);
 
       expect(mockCore.rerender).toHaveBeenCalled();
+    });
+  });
+
+  describe('open', () => {
+    it('should select exactly the requested object when opened for a grouped object', () => {
+      const child = { id: 'child-1', rotation: 0.3, isSelected: true };
+      const group = createGroup('group-1', ['child-1'], 0.4);
+      storeObjects = [child, group];
+      const selectionGroup = stubSelectionGroup();
+
+      contextMenuHandler.open({ x: 50, y: 60, objectId: 'child-1' });
+
+      expect(selectionGroup.objects).toHaveLength(1);
+      expect(selectionGroup.objects[0]).toBe(child);
+      expect(selectionGroup.isSelected).toBe(true);
+      expect(selectionGroup.rotation).toBe(0.3);
+      expect(child.isSelected).toBe(true);
+      expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(selectionGroup);
+      expect(mockState.isContextMenuVisible).toBe(true);
+    });
+
+    it('should select an ungrouped object itself when opened for it', () => {
+      const object = { id: 'obj-1', rotation: 0.2, isSelected: true };
+      storeObjects = [object, createGroup('group-1', ['other-1'])];
+      const selectionGroup = stubSelectionGroup();
+
+      contextMenuHandler.open({ x: 50, y: 60, objectId: 'obj-1' });
+
+      expect(selectionGroup.objects).toHaveLength(1);
+      expect(selectionGroup.objects[0]).toBe(object);
+      expect(selectionGroup.rotation).toBe(0.2);
+      expect(object.isSelected).toBe(true);
+      expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(selectionGroup);
     });
   });
 });
