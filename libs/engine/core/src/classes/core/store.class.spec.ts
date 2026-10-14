@@ -8,6 +8,7 @@ import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
 import { KritzelDynamicObject } from '../objects/dynamic-object.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
+import { KritzelGroup } from '../objects/group.class';
 
 type TestState = Omit<KritzelEngineState, 'objects'> & { objects: NonNullable<KritzelEngineState['objects']> };
 
@@ -212,6 +213,49 @@ describe('KritzelStore', () => {
 
       const result = store.objectsInViewport;
       expect(result[0].zIndex).toBeLessThanOrEqual(result[result.length - 1].zIndex);
+    });
+
+    describe('group tied with its top member', () => {
+      const createObject = (zIndex: number): KritzelBaseObject<Element> => {
+        const object = new KritzelBaseObject<Element>();
+        object.zIndex = zIndex;
+        return object;
+      };
+
+      // A group's zIndex equals the zIndex of its top member.
+      const createStack = () => {
+        const bottom = createObject(1);
+        const top = createObject(2);
+        const above = createObject(3);
+        const group = new KritzelGroup();
+        group.childIds = [bottom.id, top.id];
+        group.zIndex = 2;
+        return { bottom, top, group, above };
+      };
+
+      it('should place the group after its top member when the query returns the group first', () => {
+        const { bottom, top, group, above } = createStack();
+        jest.spyOn(mockState.objects, 'query').mockReturnValue([above, group, top, bottom]);
+
+        expect(store.objectsInViewport).toEqual([bottom, top, group, above]);
+      });
+
+      it('should place the group after its top member when the query returns the member first', () => {
+        const { bottom, top, group, above } = createStack();
+        jest.spyOn(mockState.objects, 'query').mockReturnValue([top, bottom, above, group]);
+
+        expect(store.objectsInViewport).toEqual([bottom, top, group, above]);
+      });
+
+      it('should keep the result sorted by non-decreasing zIndex', () => {
+        const { bottom, top, group, above } = createStack();
+        jest.spyOn(mockState.objects, 'query').mockReturnValue([group, above, top, bottom]);
+
+        const result = store.objectsInViewport;
+        for (let i = 1; i < result.length; i++) {
+          expect(result[i].zIndex).toBeGreaterThanOrEqual(result[i - 1].zIndex);
+        }
+      });
     });
   });
 
