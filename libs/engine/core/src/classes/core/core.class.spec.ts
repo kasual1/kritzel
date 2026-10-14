@@ -1574,6 +1574,20 @@ describe('KritzelCore', () => {
       expect(store.inside).toEqual([`insert:${group.id}`, 'update:parent']);
     });
 
+    it('gives a nested group the rotation of its parent group', () => {
+      const a = createShape('a', 1);
+      const b = createShape('b', 2);
+      const c = createShape('c', 3);
+      const parent = { ...createGroup('parent', 3, ['a', 'b', 'c']), rotation: Math.PI / 4, finalize: jest.fn() };
+      setStoreObjects(a, b, c, parent);
+      select(a, b);
+
+      core.group();
+
+      expect(createdGroup().rotation).toBe(Math.PI / 4);
+      expect(newSelectionGroup.rotation).toBe(Math.PI / 4);
+    });
+
     it('groups an inner group selected with a top-level object as its top-level group', () => {
       // outer{x, inner{c, d}, y} and a top-level object: a click on c selects inner.
       const x = createShape('x', 1);
@@ -1692,6 +1706,21 @@ describe('KritzelCore', () => {
       expect(live).not.toContain(inner);
       expect(zIndices(x, c, d, y, parent)).toEqual([1, 2, 3, 4, 4]);
       expect(newSelectionGroup.objects).toEqual([c, d]);
+    });
+
+    it('selects every child once when the groups were selected together with their children', () => {
+      // Select all adds groups together with all of their descendants.
+      const a = createChild('a', 1);
+      const b = createChild('b', 2);
+      const c = createChild('c', 3);
+      const inner = createKritzelGroup('inner', 3, ['b', 'c']);
+      const outer = createKritzelGroup('outer', 3, ['a', 'inner']);
+      setMutableStoreObjects(a, b, c, inner, outer);
+      select(outer, inner, a, b, c);
+
+      core.ungroup();
+
+      expect(newSelectionGroup.objects.map((obj: any) => obj.id).sort()).toEqual(['a', 'b', 'c']);
     });
 
     it('resolves ties of several groups before they are removed from the store', () => {

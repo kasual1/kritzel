@@ -1282,8 +1282,14 @@ export class KritzelCore {
       group.zIndex = plan.groupZIndex;
     }
 
-    // Add the group to the object store together with the restacked members
+    // A nested group takes its parent's frame, so the parent's bounds and transforms stay unchanged
     const parent = plan.parentId ? (objects.get(plan.parentId) as KritzelGroup) : null;
+    if (parent) {
+      group.rotation = parent.rotation;
+      group.finalize();
+    }
+
+    // Add the group to the object store together with the restacked members
     this.applyZIndexUpdates(plan.updates, objects, () => {
       this.addObject(group);
       if (parent) {
@@ -1349,9 +1355,14 @@ export class KritzelCore {
     // Create a new selection group with all the ungrouped children and non-group objects
     this.removeSelectionGroup();
 
+    // Each object once (addOrRemove toggles), without the dissolved groups
+    const dissolvedIds = new Set(groups.map(group => group.id));
+    const selection = new Map<string, KritzelBaseObject<any>>();
+    [...allChildren.values(), ...nonGroupObjects].forEach(object => !dissolvedIds.has(object.id) && selection.set(object.id, object));
+
     const newSelectionGroup = KritzelSelectionGroup.create(this);
-    [...allChildren.values(), ...nonGroupObjects].forEach(child => {
-      newSelectionGroup.addOrRemove(child);
+    selection.forEach(object => {
+      newSelectionGroup.addOrRemove(object);
     });
     newSelectionGroup.isSelected = true;
     this.addSelectionGroup(newSelectionGroup);

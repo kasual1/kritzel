@@ -77,7 +77,12 @@ export class KritzelZOrderHelper {
    */
   static planGroup(items: KritzelZOrderItem[], rootIds: string[]): KritzelGroupZOrderPlan | null {
     const planner = new KritzelZOrderPlanner(items);
-    const { parentId, roots } = planner.tree.liftToCommonScope(planner.tree.resolveRoots(rootIds));
+    const resolved = planner.tree.resolveRoots(rootIds);
+    if (resolved.length < 2) {
+      return null;
+    }
+
+    const { parentId, roots } = planner.tree.liftToCommonScope(resolved);
     if (roots.length < 2) {
       return null;
     }
@@ -245,7 +250,7 @@ class KritzelZOrderTree {
   liftToCommonScope(roots: string[]): { parentId: string | null; roots: string[] } {
     const paths = roots.map(id => [...this.ancestors(id).reverse(), id]);
     let depth = 0;
-    while (paths.every(path => depth < path.length - 1 && path[depth] === paths[0][depth])) {
+    while (paths.length > 0 && paths.every(path => depth < path.length - 1 && path[depth] === paths[0][depth])) {
       depth++;
     }
     return {
