@@ -343,14 +343,15 @@ export namespace Components {
          */
         "isPanningEnabled": boolean;
         /**
+          * Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project.
+          * @default true
+         */
+        "isWatermarkVisible": boolean;
+        /**
           * When false, Ctrl+wheel events do not zoom the viewport.
           * @default true
          */
         "isZoomingEnabled": boolean;
-        /**
-          * License key that, when valid, removes the "Powered by Kritzel" watermark.
-         */
-        "licenseKey"?: string;
         /**
           * Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready.
           * @param json - A JSON string containing workspace data (from exportAsJson).
@@ -618,11 +619,10 @@ export namespace Components {
         "size": number;
     }
     /**
-     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
-     * when the editor is not licensed.
-     * Rendered inside the engine's Shadow DOM and gated by the license manager on
-     * the engine's reactive render path, so removing the node simply causes it to
-     * reappear on the next render. The badge links to the Kritzel website.
+     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+     * Rendered inside the engine's Shadow DOM unless the engine's
+     * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+     * website.
      */
     interface KritzelWatermark {
         /**
@@ -692,11 +692,10 @@ declare global {
         new (): HTMLKritzelIconElement;
     };
     /**
-     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
-     * when the editor is not licensed.
-     * Rendered inside the engine's Shadow DOM and gated by the license manager on
-     * the engine's reactive render path, so removing the node simply causes it to
-     * reappear on the next render. The badge links to the Kritzel website.
+     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+     * Rendered inside the engine's Shadow DOM unless the engine's
+     * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+     * website.
      */
     interface HTMLKritzelWatermarkElement extends Components.KritzelWatermark, HTMLStencilElement {
     }
@@ -763,14 +762,15 @@ declare namespace LocalJSX {
          */
         "isPanningEnabled"?: boolean;
         /**
+          * Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project.
+          * @default true
+         */
+        "isWatermarkVisible"?: boolean;
+        /**
           * When false, Ctrl+wheel events do not zoom the viewport.
           * @default true
          */
         "isZoomingEnabled"?: boolean;
-        /**
-          * License key that, when valid, removes the "Powered by Kritzel" watermark.
-         */
-        "licenseKey"?: string;
         /**
           * The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.
           * @default 'en'
@@ -923,11 +923,10 @@ declare namespace LocalJSX {
         "size"?: number;
     }
     /**
-     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
-     * when the editor is not licensed.
-     * Rendered inside the engine's Shadow DOM and gated by the license manager on
-     * the engine's reactive render path, so removing the node simply causes it to
-     * reappear on the next render. The badge links to the Kritzel website.
+     * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+     * Rendered inside the engine's Shadow DOM unless the engine's
+     * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+     * website.
      */
     interface KritzelWatermark {
         /**
@@ -951,7 +950,7 @@ declare namespace LocalJSX {
         "scaleMin": number;
         "lockDrawingScale": boolean;
         "theme": ThemeName;
-        "licenseKey": string;
+        "isWatermarkVisible": boolean;
         "locale": LocaleCode;
         "fallbackLocale": LocaleCode;
         "viewportBoundaryLeft": number;
@@ -987,11 +986,10 @@ declare module "@stencil/core" {
             "kritzel-engine": LocalJSX.IntrinsicElements["kritzel-engine"] & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
             "kritzel-icon": LocalJSX.IntrinsicElements["kritzel-icon"] & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
             /**
-             * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
-             * when the editor is not licensed.
-             * Rendered inside the engine's Shadow DOM and gated by the license manager on
-             * the engine's reactive render path, so removing the node simply causes it to
-             * reappear on the next render. The badge links to the Kritzel website.
+             * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
+             * Rendered inside the engine's Shadow DOM unless the engine's
+             * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+             * website.
              */
             "kritzel-watermark": LocalJSX.IntrinsicElements["kritzel-watermark"] & JSXBase.HTMLAttributes<HTMLKritzelWatermarkElement>;
         }

@@ -28,7 +28,6 @@ export {
     HocuspocusSyncProvider,
     KritzelThemeManager,
     KritzelLocalizationManager,
-    KritzelLicenseManager,
     ShapeType,
     KritzelAlignment,
     lightTheme,

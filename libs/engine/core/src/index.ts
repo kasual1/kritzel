@@ -58,7 +58,6 @@ export * from './classes/core/workspace.class';
 export * from './classes/managers/anchor.manager';
 export * from './classes/managers/theme.manager';
 export * from './classes/managers/localization.manager';
-export * from './classes/managers/license.manager';
 
 export * from './classes/registries/dynamic-object-renderer.registry';
 export * from './classes/registries/font-registry.class';
