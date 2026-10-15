@@ -18,7 +18,7 @@
   position: relative;
   display: flex;
   box-sizing: border-box;
-  min-height: var(--kritzel-chat-box-input-min-height, 88px);
+  overflow: hidden;
   border-radius: var(--kritzel-chat-box-input-border-radius, 14px);
   background-color: var(--kritzel-chat-box-input-background-color, #f3f4f6);
 }
@@ -29,7 +29,10 @@
   box-sizing: border-box;
   width: 100%;
   margin: 0;
-  padding: 12px 14px 44px;
+  padding: 12px 14px calc(44px - 1.4em);
+  /* Explicit heights in both modes let the collapse/expand transition animate (min-height would snap). */
+  height: max(var(--kritzel-chat-box-input-min-height, 88px), calc(1.4em + 56px), var(--chat-input-height, 0px));
+  max-height: calc(5.6em + 56px);
   border-radius: inherit;
   cursor: text;
   border: none;
@@ -40,10 +43,17 @@
   font-family: var(--kritzel-global-font-family, sans-serif);
   font-size: var(--kritzel-chat-box-font-size, 15px);
   line-height: 1.4;
-  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
+  scrollbar-color: var(--kritzel-chat-box-scrollbar-thumb-color, var(--kritzel-global-scrollbar-thumb-color, #d4d4d4)) transparent;
   scrollbar-width: thin;
   /* The visible caret is drawn by .chat-caret so its width can be themed. */
   caret-color: transparent;
+  overflow-y: hidden;
+  transition: height 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Scrolling starts only when the content exceeds five visible rows. */
+.chat-input.scrollable {
+  overflow-y: auto;
 }
 
 .chat-caret {
@@ -68,6 +78,11 @@
   }
 }
 
+.chat-input::selection {
+  background-color: var(--kritzel-chat-box-selection-background-color, #4A7DFF);
+  color: var(--kritzel-chat-box-selection-color, #ffffff);
+}
+
 .chat-input::placeholder {
   color: var(--kritzel-chat-box-placeholder-color, #9ca3af);
 }
@@ -80,6 +95,7 @@
 .chat-submit {
   position: absolute;
   right: 10px;
+  /* Anchored to the bottom in both modes so it rides the height transition without its own animation. */
   bottom: 10px;
   display: flex;
   align-items: center;
@@ -111,18 +127,40 @@
 }
 
 /* Collapsed mode: a single row with the submit button inline. */
-.chat-input-container.collapsed {
-  min-height: 0;
-}
-
 .collapsed .chat-input {
   height: calc(1.4em + 28px);
   padding: 14px 48px 14px 14px;
   overflow: hidden;
 }
 
-.collapsed .chat-submit {
-  top: 50%;
-  bottom: auto;
-  transform: translateY(-50%);
+/* Long text in an unfocused collapsed box stays on one line instead of peeking into the padding. */
+.collapsed .chat-input:not(:focus) {
+  white-space: pre;
+  text-overflow: ellipsis;
+}
+
+/* Multi-line text is hidden behind a first-line preview while collapsed and unfocused. */
+.has-preview .chat-input {
+  color: transparent;
+}
+
+.chat-preview {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  padding: 14px 48px 14px 14px;
+  overflow: hidden;
+  white-space: pre;
+  text-overflow: ellipsis;
+  color: var(--kritzel-chat-box-text-color, #0a0a0a);
+  font-family: var(--kritzel-global-font-family, sans-serif);
+  font-size: var(--kritzel-chat-box-font-size, 15px);
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-input {
+    transition: none;
+  }
 }

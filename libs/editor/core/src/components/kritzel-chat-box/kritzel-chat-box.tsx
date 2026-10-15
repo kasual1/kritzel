@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, h, Host, Listen, Prop, Watch } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, h, Host, Listen, Prop, State, Watch } from '@stencil/core';
 import { KritzelTermKey } from '@kritzel/engine';
 
 export type KritzelChatBoxMode = 'collapsed' | 'expanded';
@@ -14,7 +14,8 @@ export class KritzelChatBox {
 
   /**
    * Display mode. `collapsed` shows a single row and switches to `expanded`
-   * automatically once the text no longer fits on one line.
+   * automatically while focused once the text no longer fits on one line,
+   * collapsing again when focus is lost.
    */
   @Prop({ mutable: true, reflect: true }) mode: KritzelChatBoxMode = 'collapsed';
 
@@ -41,7 +42,15 @@ export class KritzelChatBox {
 
   private caretFrame?: number;
 
+  private resizeObserver?: ResizeObserver;
+
+  private shouldRevealCaret = false;
+
   @Element() host!: HTMLKritzelChatBoxElement;
+
+  @State() isFocused = false;
+
+  @State() isScrollable = false;
 
   /** True while the box is expanded only because the text overflowed the collapsed row. */
   private isAutoExpanded = false;
@@ -109,12 +118,21 @@ export class KritzelChatBox {
 
   connectedCallback(): void {
     document.addEventListener('selectionchange', this.scheduleCaretUpdate);
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(() => {
+        this.expandIfOverflowing();
+        this.scheduleCaretUpdate();
+      });
+      this.resizeObserver.observe(this.host);
+    }
   }
 
   disconnectedCallback(): void {
     document.removeEventListener('selectionchange', this.scheduleCaretUpdate);
+    this.resizeObserver?.disconnect();
     if (this.caretFrame !== undefined) {
       cancelAnimationFrame(this.caretFrame);
+      this.caretFrame = undefined;
     }
     this.caretMirror?.remove();
   }
@@ -125,6 +143,7 @@ export class KritzelChatBox {
     }
     this.caretFrame = requestAnimationFrame(() => {
       this.caretFrame = undefined;
+      this.updateInputHeight();
       this.updateCaret();
     });
   };
@@ -142,10 +161,48 @@ export class KritzelChatBox {
 
     const isFocused = this.host.shadowRoot?.activeElement === textarea;
     if (!isFocused || this.disabled || textarea.selectionStart !== textarea.selectionEnd) {
+      this.shouldRevealCaret = false;
       caret.classList.remove('visible');
       return;
     }
 
+    const mirror = this.getTextMirror(textarea);
+    const marker = document.createElement('span');
+    marker.textContent = '\u200b';
+    mirror.textContent = textarea.value.slice(0, textarea.selectionStart);
+    mirror.appendChild(marker);
+
+    if (this.mode === 'expanded' && !this.isScrollable) {
+      // Growing content fits the final height; scrolling against the animated height makes it jump.
+      textarea.scrollTop = 0;
+      this.shouldRevealCaret = false;
+    } else if (this.shouldRevealCaret) {
+      this.shouldRevealCaret = false;
+      const style = getComputedStyle(textarea);
+      const caretTop = marker.offsetTop - textarea.scrollTop;
+      const visibleTop = parseFloat(style.paddingTop);
+      const visibleBottom = textarea.clientHeight - parseFloat(style.paddingBottom);
+      if (caretTop + marker.offsetHeight > visibleBottom) {
+        textarea.scrollTop += caretTop + marker.offsetHeight - visibleBottom;
+      } else if (caretTop < visibleTop) {
+        textarea.scrollTop -= visibleTop - caretTop;
+      }
+    }
+
+    const top = textarea.offsetTop + marker.offsetTop - textarea.scrollTop;
+    const left = textarea.offsetLeft + marker.offsetLeft - textarea.scrollLeft;
+
+    caret.style.height = `${marker.offsetHeight}px`;
+    caret.style.transform = `translate(${left}px, ${top}px)`;
+    caret.classList.add('visible');
+
+    // Restart the blink so the caret stays solid while the user types or moves it.
+    caret.style.animation = 'none';
+    void caret.offsetWidth;
+    caret.style.animation = '';
+  }
+
+  private getTextMirror(textarea: HTMLTextAreaElement): HTMLDivElement {
     const style = getComputedStyle(textarea);
     const mirror = this.caretMirror ?? (this.caretMirror = document.createElement('div'));
     if (!mirror.isConnected) {
@@ -174,27 +231,29 @@ export class KritzelChatBox {
       pointerEvents: 'none',
     });
 
-    const marker = document.createElement('span');
-    marker.textContent = '\u200b';
-    mirror.textContent = textarea.value.slice(0, textarea.selectionStart);
-    mirror.appendChild(marker);
+    return mirror;
+  }
 
-    const top = textarea.offsetTop + marker.offsetTop - textarea.scrollTop;
-    const left = textarea.offsetLeft + marker.offsetLeft - textarea.scrollLeft;
+  private updateInputHeight(): void {
+    const textarea = this.textareaRef;
+    if (!textarea || this.mode === 'collapsed') {
+      this.isScrollable = false;
+      return;
+    }
 
-    caret.style.height = `${marker.offsetHeight}px`;
-    caret.style.transform = `translate(${left}px, ${top}px)`;
-    caret.classList.add('visible');
-
-    // Restart the blink so the caret stays solid while the user types or moves it.
-    caret.style.animation = 'none';
-    void caret.offsetWidth;
-    caret.style.animation = '';
+    const style = getComputedStyle(textarea);
+    const maxHeight = Math.ceil(5 * parseFloat(style.lineHeight) + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom));
+    const mirror = this.getTextMirror(textarea);
+    // Include the empty row after a trailing newline, just like the native textarea.
+    mirror.textContent = `${textarea.value}\u200b`;
+    const contentHeight = mirror.scrollHeight;
+    textarea.style.setProperty('--chat-input-height', `${Math.min(contentHeight, maxHeight)}px`);
+    this.isScrollable = contentHeight > maxHeight;
   }
 
   private expandIfOverflowing(): void {
     const textarea = this.textareaRef;
-    if (this.mode !== 'collapsed' || !textarea) {
+    if (this.mode !== 'collapsed' || !textarea || this.host.shadowRoot?.activeElement !== textarea) {
       return;
     }
 
@@ -213,11 +272,65 @@ export class KritzelChatBox {
   }
 
   private handleInput = (event: Event): void => {
+    this.shouldRevealCaret = true;
     this.value = (event.target as HTMLTextAreaElement).value;
     this.expandIfOverflowing();
+    this.scheduleCaretUpdate();
+  };
+
+  private handleFocus = (): void => {
+    this.shouldRevealCaret = true;
+    const wasCollapsed = this.mode === 'collapsed';
+    this.isFocused = true;
+    this.expandIfOverflowing();
+    if (wasCollapsed) {
+      this.moveCaretToEnd();
+    }
+    this.scheduleCaretUpdate();
+  };
+
+  /** Focusing a collapsed box resumes typing at the end instead of where the user clicked. */
+  private handlePointerDown = (event: PointerEvent): void => {
+    if (this.isFocused || this.mode !== 'collapsed' || event.button !== 0 || !this.textareaRef) {
+      return;
+    }
+    event.preventDefault();
+    this.textareaRef.focus();
+  };
+
+  private moveCaretToEnd(): void {
+    const textarea = this.textareaRef;
+    if (!textarea) {
+      return;
+    }
+    const end = textarea.value.length;
+    textarea.setSelectionRange(end, end);
+    // Re-apply after layout settles: the box may have just expanded, and touch taps place the caret after focus.
+    requestAnimationFrame(() => {
+      if (this.host.shadowRoot?.activeElement === textarea) {
+        const latestEnd = textarea.value.length;
+        textarea.setSelectionRange(latestEnd, latestEnd);
+        this.shouldRevealCaret = true;
+        this.scheduleCaretUpdate();
+      }
+    });
+  }
+
+  private handleBlur = (): void => {
+    this.isFocused = false;
+    if (this.isAutoExpanded) {
+      this.isAutoExpanded = false;
+      this.mode = 'collapsed';
+      if (this.textareaRef) {
+        this.textareaRef.scrollTop = 0;
+        this.textareaRef.scrollLeft = 0;
+      }
+    }
+    this.scheduleCaretUpdate();
   };
 
   private handleKeyDown = (event: KeyboardEvent): void => {
+    this.shouldRevealCaret = true;
     this.scheduleCaretUpdate();
 
     if (event.key === 'Escape' && !event.isComposing) {
@@ -233,6 +346,11 @@ export class KritzelChatBox {
     }
   };
 
+  private handleSelect = (): void => {
+    this.shouldRevealCaret = true;
+    this.scheduleCaretUpdate();
+  };
+
   private submit = (): void => {
     if (!this.canSubmit) {
       return;
@@ -244,14 +362,17 @@ export class KritzelChatBox {
 
   render() {
     const submitLabel = this.terms['chatBox.submit'] ?? 'Send';
+    // A collapsed, unfocused box previews only the first line, since textareas cannot truncate explicit line breaks.
+    const lines = (this.value ?? '').split('\n');
+    const showPreview = this.mode === 'collapsed' && !this.isFocused && lines.length > 1;
 
     return (
       <Host>
         <div class="chat-box">
-          <div class={{ 'chat-input-container': true, collapsed: this.mode === 'collapsed' }}>
+          <div class={{ 'chat-input-container': true, collapsed: this.mode === 'collapsed', 'has-preview': showPreview }}>
             <textarea
               ref={el => (this.textareaRef = el)}
-              class="chat-input"
+              class={{ 'chat-input': true, scrollable: this.isScrollable }}
               value={this.value}
               placeholder={this.resolvedPlaceholder}
               aria-label={this.resolvedPlaceholder}
@@ -259,12 +380,19 @@ export class KritzelChatBox {
               rows={this.mode === 'collapsed' ? 1 : 2}
               onInput={this.handleInput}
               onKeyDown={this.handleKeyDown}
-              onFocus={this.scheduleCaretUpdate}
-              onBlur={this.scheduleCaretUpdate}
+              onFocus={this.handleFocus}
+              onBlur={this.handleBlur}
               onScroll={this.scheduleCaretUpdate}
-              onSelect={this.scheduleCaretUpdate}
+              onSelect={this.handleSelect}
+              onPointerDown={this.handlePointerDown}
               onPointerUp={this.scheduleCaretUpdate}
+              onTransitionEnd={this.scheduleCaretUpdate}
             ></textarea>
+            {showPreview && (
+              <div class="chat-preview" aria-hidden="true">
+                {lines[0]}…
+              </div>
+            )}
             <div class="chat-caret" ref={el => (this.caretRef = el)} aria-hidden="true"></div>
             <button class="chat-submit" type="button" aria-label={submitLabel} title={submitLabel} disabled={!this.canSubmit} onClick={this.submit}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
