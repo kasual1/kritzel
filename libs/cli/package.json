@@ -2,7 +2,7 @@
   "name": "@kritzel/cli",
   "version": "0.5.5",
   "description": "Install Kritzel into an existing Angular, React or Vue application.",
-  "license": "PolyForm-Noncommercial-1.0.0",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/kasual1/kritzel-private.git",
