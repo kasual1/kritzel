@@ -33,7 +33,7 @@ To support the development workflow of "Kritzel" the following commands may be u
 
 Locally the client uses the kritzel libraries from this repo (`file:` dependencies, installed as copies via `apps/app/client/.npmrc`). The deployment (`.github/workflows/deploy-app.yml`, run manually) swaps them for the **published** npm packages matching the version in `libs/`, builds the client with them and fails if that version is not published or doesn't build.
 
-1. Start the backend services via Docker (requires `apps/app/.env.dev`) `npm run app:dev`
+1. Copy `apps/app/.env.example` to `apps/app/.env.dev` and fill in the values, then start the backend services via Docker `npm run app:dev`
 2. Build the libraries and start the client on the host `npm run app:client`, then open http://localhost:8080
 3. After changing a library, rebuild it (`npm run build`) and run `npm run app:client:refresh`
 4. Stop the backend services `npm run app:stop`
