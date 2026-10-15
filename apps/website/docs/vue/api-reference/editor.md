@@ -32,6 +32,7 @@ All methods are async and return Promises. The editor exposes all the same metho
 | customSvgIcons | Record&lt;string, string&gt; | {} | Custom SVG icon definitions by name |
 | isToolbarVisible | boolean | true | Show/hide the toolbar |
 | isUtilityPanelVisible | boolean | true | Show/hide the utility panel (undo/redo, zoom) |
+| isWatermarkVisible | boolean | true | Show/hide the "Powered by Kritzel" watermark |
 | syncConfig | KritzelSyncConfig | undefined | Sync provider configuration |
 | workspaces | KritzelWorkspace[] | undefined | Optional authoritative workspace catalog for this editor instance. Provider-only workspaces are hidden but not deleted. |
 
@@ -82,6 +83,7 @@ endSceneBootstrap(): Promise<void>
 | isMoreMenuVisible | boolean | Controls visibility of the More menu. |
 | isToolbarVisible | boolean | Controls toolbar visibility. |
 | isUtilityPanelVisible | boolean | Controls utility panel visibility. |
+| isWatermarkVisible | boolean | Show or hide the "Powered by Kritzel" watermark (default `true`). Keeping it visible helps support the project. |
 | isWorkspaceManagerVisible | boolean | Controls workspace manager visibility. |
 | isZoomPanelVisible | boolean | Controls zoom panel visibility. |
 | moreMenuItems | IKritzelMenuItem[] | Custom entries for the More dropdown menu. |

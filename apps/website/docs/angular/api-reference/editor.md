@@ -20,7 +20,6 @@ The `<kritzel-editor>` is the high-level, full-featured whiteboard component. It
 | assetStorageConfig | KritzelAssetStorageConfig | Asset storage provider configuration for uploaded/rendered assets. |
 | debugInfo | KritzelDebugInfo | Debug overlay configuration options. |
 | editorId | string | Optional editor identifier for namespacing storage keys across instances. |
-| licenseKey | string | Valid license removes the Powered by Kritzel watermark. |
 | lockDrawingScale | boolean | Keeps drawn objects at fixed visual size across zoom levels. |
 
 ### Events
@@ -61,6 +60,7 @@ endSceneBootstrap(): Promise<void>
 | isMoreMenuVisible | boolean | Controls visibility of the More menu. |
 | isToolbarVisible | boolean | Controls toolbar visibility. |
 | isUtilityPanelVisible | boolean | Controls utility panel visibility. |
+| isWatermarkVisible | boolean | Show or hide the "Powered by Kritzel" watermark (default `true`). Keeping it visible helps support the project. |
 | isWorkspaceManagerVisible | boolean | Controls workspace manager visibility. |
 | isZoomPanelVisible | boolean | Controls zoom panel visibility. |
 | moreMenuItems | IKritzelMenuItem[] | Custom entries for the More dropdown menu. |
