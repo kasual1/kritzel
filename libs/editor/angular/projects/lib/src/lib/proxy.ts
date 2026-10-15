@@ -15,19 +15,20 @@ import { defineCustomElement as defineKritzelSplitButton } from '@kritzel/editor
 import { defineCustomElement as defineKritzelStrokeSize } from '@kritzel/editor/dist/components/kritzel-stroke-size.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelChatBox,
-  inputs: ['disabled', 'placeholder', 'terms', 'value']
+  inputs: ['disabled', 'mode', 'placeholder', 'terms', 'value']
 })
 @Component({
   selector: 'kritzel-chat-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'placeholder', 'terms', 'value'],
-  outputs: ['chatSubmit'],
+  inputs: ['disabled', 'mode', 'placeholder', 'terms', 'value'],
+  outputs: ['chatSubmit', 'modeChange'],
 })
 export class KritzelChatBox {
   protected el: HTMLKritzelChatBoxElement;
   @Output() chatSubmit = new EventEmitter<KritzelChatBoxCustomEvent<string>>();
+  @Output() modeChange = new EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxMode>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -36,18 +37,23 @@ export class KritzelChatBox {
 
 
 import type { KritzelChatBoxCustomEvent } from '@kritzel/editor/dist/components';
+import type { KritzelChatBoxMode as IKritzelChatBoxKritzelChatBoxMode } from '@kritzel/editor/dist/components';
 
 export declare interface KritzelChatBox extends Components.KritzelChatBox {
   /**
    * Emitted with the current text when the user submits the chat box.
    */
   chatSubmit: EventEmitter<KritzelChatBoxCustomEvent<string>>;
+  /**
+   * Emitted when the mode changes, including automatic expansion.
+   */
+  modeChange: EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxMode>>;
 }
 
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   methods: ['getObjectById', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'setActiveWorkspace', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'loadSharedWorkspace', 'reinitSync', 'registerTool', 'setActiveTool', 'disable', 'enable', 'copy', 'cut', 'paste', 'delete', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectSupportedExportFormats', 'canExportSelectedObjectAs', 'exportSelectedObject', 'exportAsJson', 'importFromJson', 'downloadAsJson', 'importFromFile', 'loadObjectsFromJson', 'getObjectsTotalCount', 'getAllObjects', 'findObjects', 'getObjectsInViewport', 'hideContextMenu', 'openContextMenu', 'openWorkspaceManagerMenu', 'closeWorkspaceManagerMenu', 'openMoreMenu', 'closeMoreMenu', 'openUserDialog', 'closeUserDialog', 'openExportDialog', 'closeExportDialog', 'openImportDialog', 'closeImportDialog', 'openSettingsDialog', 'closeSettingsDialog', 'openShareDialog', 'closeShareDialog', 'triggerSelectionChange', 'beginSceneBootstrap', 'endSceneBootstrap', 'getDisplayableShortcuts', 'openLoginDialog', 'closeLoginDialog', 'setLoginLoading', 'setLocale', 'getLocale', 'getAvailableLocales', 'registerLocales', 'registerFonts', 't', 'triggerNotification']
 })
 @Component({
@@ -55,7 +61,7 @@ export declare interface KritzelChatBox extends Components.KritzelChatBox {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit'],
 })
 export class KritzelEditor {

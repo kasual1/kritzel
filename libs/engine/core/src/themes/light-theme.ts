@@ -371,6 +371,8 @@ export const lightTheme: KritzelTheme = {
     buttonBackgroundColor: '#4A7DFF',
     buttonColor: '#ffffff',
     buttonHoverBackgroundColor: '#3A6AE8',
+    caretColor: '#4A7DFF',
+    caretWidth: '2px',
     fontSize: '15px',
     inputBackgroundColor: '#f3f4f6',
     inputBorderRadius: '14px',

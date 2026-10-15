@@ -108,6 +108,8 @@ export interface KritzelTheme {
     buttonBackgroundColor?: string;
     buttonColor?: string;
     buttonHoverBackgroundColor?: string;
+    caretColor?: string;
+    caretWidth?: string;
     fontSize?: string;
     inputBackgroundColor?: string;
     inputBorderRadius?: string;

@@ -40,6 +40,32 @@
   font-family: var(--kritzel-global-font-family, sans-serif);
   font-size: var(--kritzel-chat-box-font-size, 15px);
   line-height: 1.4;
+  scrollbar-color: var(--kritzel-global-scrollbar-thumb-color, #ebebeb) transparent;
+  scrollbar-width: thin;
+  /* The visible caret is drawn by .chat-caret so its width can be themed. */
+  caret-color: transparent;
+}
+
+.chat-caret {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--kritzel-chat-box-caret-width, 2px);
+  border-radius: 1px;
+  background-color: var(--kritzel-chat-box-caret-color, #4A7DFF);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.chat-caret.visible {
+  visibility: visible;
+  animation: chat-caret-blink 1s step-end infinite;
+}
+
+@keyframes chat-caret-blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 .chat-input::placeholder {
@@ -82,4 +108,21 @@
 .chat-submit:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Collapsed mode: a single row with the submit button inline. */
+.chat-input-container.collapsed {
+  min-height: 0;
+}
+
+.collapsed .chat-input {
+  height: calc(1.4em + 28px);
+  padding: 14px 48px 14px 14px;
+  overflow: hidden;
+}
+
+.collapsed .chat-submit {
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
 }

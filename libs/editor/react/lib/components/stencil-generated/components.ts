@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelIsPublicChangeEvent, type IKritzelMenuItem, type IKritzelMenuItemSelectEvent, type IKritzelMenuItemToggleChildMenuEvent, type KritzelBaseObject, type KritzelChatBoxCustomEvent, type KritzelEditorCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelShareDialogCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelStrokeSizeCustomEvent, type KritzelUndoState, type KritzelViewportState, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ShapeFillType, type ThemeName } from "@kritzel/editor";
+import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelIsPublicChangeEvent, type IKritzelMenuItem, type IKritzelMenuItemSelectEvent, type IKritzelMenuItemToggleChildMenuEvent, type KritzelBaseObject, type KritzelChatBoxCustomEvent, type KritzelChatBoxMode, type KritzelEditorCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelShareDialogCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelStrokeSizeCustomEvent, type KritzelUndoState, type KritzelViewportState, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ShapeFillType, type ThemeName } from "@kritzel/editor";
 import type { Components } from "@kritzel/editor/dist/components";
 import { KritzelChatBox as KritzelChatBoxElement, defineCustomElement as defineKritzelChatBox } from "@kritzel/editor/dist/components/kritzel-chat-box.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "@kritzel/editor/dist/components/kritzel-editor.js";
@@ -21,14 +21,20 @@ import { KritzelShareDialog as KritzelShareDialogElement, defineCustomElement as
 import { KritzelSplitButton as KritzelSplitButtonElement, defineCustomElement as defineKritzelSplitButton } from "@kritzel/editor/dist/components/kritzel-split-button.js";
 import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as defineKritzelStrokeSize } from "@kritzel/editor/dist/components/kritzel-stroke-size.js";
 
-export type KritzelChatBoxEvents = { onChatSubmit: EventName<KritzelChatBoxCustomEvent<string>> };
+export type KritzelChatBoxEvents = {
+    onChatSubmit: EventName<KritzelChatBoxCustomEvent<string>>,
+    onModeChange: EventName<KritzelChatBoxCustomEvent<KritzelChatBoxMode>>
+};
 
 export const KritzelChatBox: StencilReactComponent<KritzelChatBoxElement, KritzelChatBoxEvents, Components.KritzelChatBox> = /*@__PURE__*/ createComponent<KritzelChatBoxElement, KritzelChatBoxEvents, Components.KritzelChatBox>({
     tagName: 'kritzel-chat-box',
     elementClass: KritzelChatBoxElement,
     // @ts-ignore - ignore potential React type mismatches between the Stencil Output Target and your project.
     react: React,
-    events: { onChatSubmit: 'chatSubmit' } as KritzelChatBoxEvents,
+    events: {
+        onChatSubmit: 'chatSubmit',
+        onModeChange: 'modeChange'
+    } as KritzelChatBoxEvents,
     defineCustomElement: defineKritzelChatBox
 });
 

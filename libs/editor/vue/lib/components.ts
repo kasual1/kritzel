@@ -16,12 +16,15 @@ import { defineCustomElement as defineKritzelStrokeSize } from '@kritzel/editor/
 
 export const KritzelChatBox: StencilVueComponent<JSX.KritzelChatBox> = /*@__PURE__*/ defineContainer<JSX.KritzelChatBox>('kritzel-chat-box', defineKritzelChatBox, [
   'value',
+  'mode',
   'placeholder',
   'disabled',
   'terms',
-  'chatSubmit'
+  'chatSubmit',
+  'modeChange'
 ], [
-  'chatSubmit'
+  'chatSubmit',
+  'modeChange'
 ]);
 
 
@@ -51,11 +54,12 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isPanningEnabled',
   'isZoomingEnabled',
   'isToolbarVisible',
+  'isChatBoxVisible',
+  'chatBoxMode',
   'isUtilityPanelVisible',
   'isWorkspaceManagerVisible',
   'isMoreMenuVisible',
   'isZoomPanelVisible',
-  'isChatBoxVisible',
   'syncConfig',
   'assetStorageConfig',
   'cursorTarget',
