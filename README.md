@@ -43,6 +43,7 @@ See `apps/app/DOCKER_DEV_COMMANDS.md` for more commands.
 ## ngrok for Remote Preview
 You can expose local dev servers through ngrok to test on mobile devices or share previews.
 
+0. Copy `.env.example` to `.env` in the repository root and set `NGROK_AUTHTOKEN` to your own ngrok auth token.
 1. Start the local server you want to share:
 	- Stencil library preview: `npm run start`
 	- Documentation website: `npm run docs:start`
