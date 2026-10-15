@@ -2,6 +2,12 @@ node_modules/
 dist/
 .stencil/
 loader/
+
+# Environment files (local secrets such as NGROK_AUTHTOKEN)
+.env
+.env.*
+!.env.example
+
 .agents/skills/kritzel/
 .claude/skills/kritzel/
 
