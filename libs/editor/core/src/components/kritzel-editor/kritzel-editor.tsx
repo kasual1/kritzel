@@ -333,6 +333,9 @@ export class KritzelEditor {
   @State() availableLocaleOptions: { code: LocaleCode; label: string }[] = [];
   @State() currentZoomPercent: number = 100;
   @State() shortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [];
+
+  /** Shortcuts handled by editor-level components (not the engine), shown alongside engine shortcuts. */
+  @State() editorShortcuts: Omit<KritzelShortcut, 'action' | 'condition'>[] = [{ key: 'i', ctrl: true, label: 'Focus Chat Box', category: 'General' }];
   @State() currentIsPublic: boolean = false;
   @State() isEditorVisible: boolean = false;
   @State() activeNotification?: KritzelNotification;
@@ -1781,7 +1784,7 @@ export class KritzelEditor {
                   this.settingsRef = el;
                 }
               }}
-              shortcuts={this.shortcuts}
+              shortcuts={[...this.shortcuts, ...this.editorShortcuts]}
               availableThemes={this.themes && this.themes.length > 0 ? this.themes.map(t => t.name) : ['light', 'dark']}
               availableLocales={this.availableLocaleOptions}
               settings={this.currentSettingsConfig}

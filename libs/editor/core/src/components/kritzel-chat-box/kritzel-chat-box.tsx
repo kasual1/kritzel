@@ -46,6 +46,27 @@ export class KritzelChatBox {
   /** True while the box is expanded only because the text overflowed the collapsed row. */
   private isAutoExpanded = false;
 
+  /** Ctrl+I focuses the chat box from anywhere, unless another editable element owns the keystroke. */
+  @Listen('keydown', { target: 'window' })
+  handleWindowKeyDown(event: KeyboardEvent): void {
+    if (this.disabled || event.isComposing || !event.ctrlKey || event.shiftKey || event.altKey || event.metaKey || event.key.toLowerCase() !== 'i') {
+      return;
+    }
+
+    const path = event.composedPath();
+    if (!path.includes(this.host)) {
+      const isInsideDialog = path.some(el => el instanceof HTMLElement && (el.tagName === 'DIALOG' || el.tagName === 'KRITZEL-DIALOG' || el.getAttribute('role') === 'dialog'));
+      const target = path[0];
+      const isEditableTarget = target instanceof HTMLElement && (target.isContentEditable || target.matches('input, textarea, select'));
+      if (isInsideDialog || isEditableTarget) {
+        return;
+      }
+    }
+
+    event.preventDefault();
+    this.textareaRef?.focus();
+  }
+
   /**
    * The canvas prevents default on pointer events, so clicking it does not move focus.
    * Blur the textarea explicitly on any pointerdown outside the chat box.
