@@ -11,7 +11,7 @@ loader/
 .agents/skills/kritzel/
 .claude/skills/kritzel/
 
-# License signing keys — the private key must never be committed.
+# Former license signing keys — kept ignored so a leftover local private key is never committed.
 scripts/license/keys/
 
 # Playwright
