@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelIsPublicChangeEvent, type IKritzelMenuItem, type IKritzelMenuItemSelectEvent, type IKritzelMenuItemToggleChildMenuEvent, type KritzelBaseObject, type KritzelEditorCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelShareDialogCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelStrokeSizeCustomEvent, type KritzelUndoState, type KritzelViewportState, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ShapeFillType, type ThemeName } from "@kritzel/editor";
+import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelIsPublicChangeEvent, type IKritzelMenuItem, type IKritzelMenuItemSelectEvent, type IKritzelMenuItemToggleChildMenuEvent, type KritzelAgenticCursorDetachedEvent, type KritzelBaseObject, type KritzelEditorCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelShareDialogCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelStrokeSizeCustomEvent, type KritzelUndoState, type KritzelViewportState, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ShapeFillType, type ThemeName } from "@kritzel/editor";
 import type { Components } from "@kritzel/editor/dist/components";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "@kritzel/editor/dist/components/kritzel-editor.js";
 import { KritzelSettings as KritzelSettingsElement, defineCustomElement as defineKritzelSettings } from "@kritzel/editor/dist/components/kritzel-settings.js";
@@ -35,7 +35,8 @@ export type KritzelEditorEvents = {
     onLogout: EventName<KritzelEditorCustomEvent<void>>,
     onLogin: EventName<KritzelEditorCustomEvent<LoginEvent>>,
     onIsPublicChange: EventName<KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>>,
-    onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>
+    onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>,
+    onAgenticCursorDetached: EventName<KritzelEditorCustomEvent<KritzelAgenticCursorDetachedEvent>>
 };
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor>({
@@ -58,7 +59,8 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
         onLogout: 'logout',
         onLogin: 'login',
         onIsPublicChange: 'isPublicChange',
-        onAwarenessChange: 'awarenessChange'
+        onAwarenessChange: 'awarenessChange',
+        onAgenticCursorDetached: 'agenticCursorDetached'
     } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
 });

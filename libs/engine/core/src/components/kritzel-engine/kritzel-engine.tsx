@@ -46,6 +46,15 @@ import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../.
 import { KritzelShortcut } from '../../interfaces/shortcut.interface';
 import { KritzelAlignment } from '../../enums/alignment.enum';
 import { KritzelViewportState } from '../../interfaces/viewport-state.interface';
+import {
+  KritzelAgenticCursor,
+  KritzelAgenticCursorDetachedEvent,
+  KritzelAgenticCursorMoveOptions,
+  KritzelAgenticCursorMoveResult,
+  KritzelAgenticCursorOptions,
+  KritzelAgenticCursorPatch,
+  KritzelAgenticCursorTarget,
+} from '../../interfaces/agentic-cursor.interface';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelWheelHelper } from '../../helpers/wheel.helper';
 import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../interfaces/object-change-event.interface';
@@ -376,6 +385,9 @@ export class KritzelEngine {
 
   /** Emitted while the selected workspace's objects are being initialized and synchronized. */
   @Event() isLoadingChange!: EventEmitter<boolean>;
+
+  /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
+  @Event() agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
 
   @State() forceUpdate: number = 0;
 
@@ -1502,6 +1514,81 @@ export class KritzelEngine {
   }
 
   /**
+   * Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
+   * @param options - Name, color, status, visibility and initial position (defaults to the viewport center).
+   * @returns A snapshot of the created cursor.
+   */
+  @Method()
+  async addAgenticCursor(options: KritzelAgenticCursorOptions = {}): Promise<KritzelAgenticCursor> {
+    return this.core.agenticCursorManager.add(options);
+  }
+
+  /**
+   * Updates the name, color, status or visibility of an agentic cursor.
+   * @param id - The cursor ID.
+   * @param patch - The properties to change. Pass `status: null` to clear the status.
+   * @returns A snapshot of the updated cursor.
+   */
+  @Method()
+  async updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch): Promise<KritzelAgenticCursor> {
+    return this.core.agenticCursorManager.update(id, patch);
+  }
+
+  /**
+   * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
+   * Object targets attach the cursor by default, so it follows the object afterwards.
+   * @param id - The cursor ID.
+   * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
+   * @param options - Duration, easing, speed and whether to attach to an object target.
+   * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+   */
+  @Method()
+  async moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
+    return this.core.agenticCursorManager.move(id, target, options);
+  }
+
+  /**
+   * Detaches an agentic cursor from its object. The cursor stays at its current position.
+   * @param id - The cursor ID.
+   */
+  @Method()
+  async detachAgenticCursor(id: string): Promise<void> {
+    this.core.agenticCursorManager.detach(id);
+  }
+
+  /**
+   * Removes an agentic cursor. A running move resolves with `completed: false`.
+   * @param id - The cursor ID.
+   * @returns `true` if the cursor existed.
+   */
+  @Method()
+  async removeAgenticCursor(id: string): Promise<boolean> {
+    return this.core.agenticCursorManager.remove(id);
+  }
+
+  /** Removes all agentic cursors. */
+  @Method()
+  async clearAgenticCursors(): Promise<void> {
+    this.core.agenticCursorManager.clear();
+  }
+
+  /**
+   * Returns a snapshot of an agentic cursor.
+   * @param id - The cursor ID.
+   * @returns The cursor, or `null` if it doesn't exist.
+   */
+  @Method()
+  async getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null> {
+    return this.core.agenticCursorManager.get(id);
+  }
+
+  /** Returns snapshots of all agentic cursors. */
+  @Method()
+  async getAgenticCursors(): Promise<KritzelAgenticCursor[]> {
+    return this.core.agenticCursorManager.getAll();
+  }
+
+  /**
    * Captures a screenshot of the current viewport as a data URL.
    * @param format - The image format: `'png'` (default) or `'svg'`.
    * @returns A data URL string of the captured image.
@@ -2562,6 +2649,7 @@ export class KritzelEngine {
 
   constructor() {
     this.core = new KritzelCore(this);
+    this.core.agenticCursorManager.onDetached(event => this.agenticCursorDetached?.emit(event));
   }
 
   disconnectedCallback() {
@@ -2595,6 +2683,7 @@ export class KritzelEngine {
 
     // Clean up managers
     this.core.cursorManager.cleanup();
+    this.core.agenticCursorManager.cleanup();
     this.core.themeManager.cleanup();
     this.core.licenseManager.destroy();
   }
@@ -4288,6 +4377,8 @@ export class KritzelEngine {
         </div>
 
         {this.core.store.objects?.hasAwareness && <kritzel-awareness-cursors core={this.core}></kritzel-awareness-cursors>}
+
+        <kritzel-agentic-cursors core={this.core}></kritzel-agentic-cursors>
 
         {this.core.store.state?.activeTool?.toolType === 'eraser' && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
 

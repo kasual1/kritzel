@@ -42,6 +42,13 @@ const sidebars: SidebarsConfig = {
           },
         },
         'advanced/import-export',
+        {
+          type: 'doc',
+          id: 'advanced/agentic-cursors',
+          customProps: {
+            badge: 'Preview',
+          },
+        },
       ],
     },
     {

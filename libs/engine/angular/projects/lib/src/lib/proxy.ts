@@ -10,7 +10,7 @@ import { defineCustomElement as defineKritzelEngine } from '@kritzel/engine/dist
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEngine,
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isPanningEnabled', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'tools', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
-  methods: ['triggerSelectionChange', 'beginSceneBootstrap', 'endSceneBootstrap', 'registerTool', 'setActiveTool', 'disable', 'enable', 'delete', 'copy', 'cut', 'paste', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'hideContextMenu', 'openContextMenu', 'getObjectById', 'getAllObjects', 'findObjects', 'getObjectsTotalCount', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'getDisplayableShortcuts', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'getObjectsInViewport', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectSupportedExportFormats', 'canExportSelectedObjectAs', 'exportSelectedObject', 'exportAsJson', 'importFromJson', 'loadObjectsFromJson', 'downloadAsJson', 'importFromFile', 'cancelImportFromFile', 'setActiveWorkspace', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'getIsPublic', 'loadSharedWorkspace', 'reinitSync', 'saveSettings', 'loadSettings', 'registerLocales', 'configureLocales', 'setLocale', 'getLocale', 'getAvailableLocales', 'getAvailableLocaleOptions', 't', 'getResolvedTerms', 'getTool']
+  methods: ['triggerSelectionChange', 'beginSceneBootstrap', 'endSceneBootstrap', 'registerTool', 'setActiveTool', 'disable', 'enable', 'delete', 'copy', 'cut', 'paste', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'hideContextMenu', 'openContextMenu', 'getObjectById', 'getAllObjects', 'findObjects', 'getObjectsTotalCount', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'getDisplayableShortcuts', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'getObjectsInViewport', 'addAgenticCursor', 'updateAgenticCursor', 'moveAgenticCursor', 'detachAgenticCursor', 'removeAgenticCursor', 'clearAgenticCursors', 'getAgenticCursor', 'getAgenticCursors', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectSupportedExportFormats', 'canExportSelectedObjectAs', 'exportSelectedObject', 'exportAsJson', 'importFromJson', 'loadObjectsFromJson', 'downloadAsJson', 'importFromFile', 'cancelImportFromFile', 'setActiveWorkspace', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'getIsPublic', 'loadSharedWorkspace', 'reinitSync', 'saveSettings', 'loadSettings', 'registerLocales', 'configureLocales', 'setLocale', 'getLocale', 'getAvailableLocales', 'getAvailableLocaleOptions', 't', 'getResolvedTerms', 'getTool']
 })
 @Component({
   selector: 'kritzel-engine',
@@ -18,7 +18,7 @@ import { defineCustomElement as defineKritzelEngine } from '@kritzel/engine/dist
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeWorkspaceId', 'assetStorageConfig', 'cursorTarget', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isPanningEnabled', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'tools', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
-  outputs: ['isEngineReady', 'activeToolChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'contextMenuStateChange', 'isLoadingChange'],
+  outputs: ['isEngineReady', 'activeToolChange', 'workspacesChange', 'activeWorkspaceChange', 'longpress', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'objectsInViewportChange', 'viewportChange', 'awarenessChange', 'notificationsChange', 'contextMenuStateChange', 'isLoadingChange', 'agenticCursorDetached'],
 })
 export class KritzelEngine {
   protected el: HTMLKritzelEngineElement;
@@ -39,6 +39,7 @@ export class KritzelEngine {
   @Output() notificationsChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelNotification>>();
   @Output() contextMenuStateChange = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelContextMenuState>>();
   @Output() isLoadingChange = new EventEmitter<KritzelEngineCustomEvent<boolean>>();
+  @Output() agenticCursorDetached = new EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelAgenticCursorDetachedEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -59,6 +60,7 @@ import type { ObjectsInViewportChangeEvent as IKritzelEngineObjectsInViewportCha
 import type { KritzelViewportState as IKritzelEngineKritzelViewportState } from '@kritzel/engine/dist/components';
 import type { KritzelNotification as IKritzelEngineKritzelNotification } from '@kritzel/engine/dist/components';
 import type { KritzelContextMenuState as IKritzelEngineKritzelContextMenuState } from '@kritzel/engine/dist/components';
+import type { KritzelAgenticCursorDetachedEvent as IKritzelEngineKritzelAgenticCursorDetachedEvent } from '@kritzel/engine/dist/components';
 
 export declare interface KritzelEngine extends Components.KritzelEngine {
   /**
@@ -129,6 +131,10 @@ export declare interface KritzelEngine extends Components.KritzelEngine {
    * Emitted while the selected workspace's objects are being initialized and synchronized.
    */
   isLoadingChange: EventEmitter<KritzelEngineCustomEvent<boolean>>;
+  /**
+   * Emitted when an agentic cursor is detached from an object, either manually or because the object was removed.
+   */
+  agenticCursorDetached: EventEmitter<KritzelEngineCustomEvent<IKritzelEngineKritzelAgenticCursorDetachedEvent>>;
 }
 
 

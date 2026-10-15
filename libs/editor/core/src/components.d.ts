@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectExportFormat, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
+import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectExportFormat, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
 import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 import { Element } from "@stencil/core";
@@ -13,7 +13,7 @@ import { FontOption } from "./components/kritzel-font-family/kritzel-font-family
 import { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
 import { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs";
 import { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
-export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectExportFormat, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
+export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectExportFormat, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
 export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
 export { Element } from "@stencil/core";
@@ -239,6 +239,12 @@ export namespace Components {
           * Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID.
          */
         "activeWorkspaceId"?: string;
+        /**
+          * Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
+          * @param options - Name, color, status, visibility and initial position (defaults to the viewport center).
+          * @returns A snapshot of the created cursor.
+         */
+        "addAgenticCursor": (options?: KritzelAgenticCursorOptions) => Promise<KritzelAgenticCursor>;
         "addObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "addObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         "alignObjects": (alignment: KritzelAlignment) => Promise<void>;
@@ -254,6 +260,10 @@ export namespace Components {
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
+        /**
+          * Removes all agentic cursors.
+         */
+        "clearAgenticCursors": () => Promise<void>;
         "clearSelection": () => Promise<void>;
         "closeExportDialog": () => Promise<void>;
         "closeImportDialog": () => Promise<void>;
@@ -285,6 +295,11 @@ export namespace Components {
         "debugInfo": KritzelDebugInfo;
         "delete": () => Promise<void>;
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * Detaches an agentic cursor from its object. The cursor stays at its current position.
+          * @param id - The cursor ID.
+         */
+        "detachAgenticCursor": (id: string) => Promise<void>;
         "disable": () => Promise<void>;
         "downloadAsJson": (filename?: string) => Promise<void>;
         /**
@@ -304,6 +319,16 @@ export namespace Components {
         "fallbackLocale": LocaleCode;
         "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
+        /**
+          * Returns a snapshot of an agentic cursor.
+          * @param id - The cursor ID.
+          * @returns The cursor, or `null` if it doesn't exist.
+         */
+        "getAgenticCursor": (id: string) => Promise<KritzelAgenticCursor | null>;
+        /**
+          * Returns snapshots of all agentic cursors.
+         */
+        "getAgenticCursors": () => Promise<KritzelAgenticCursor[]>;
         "getAllObjects": <T extends KritzelBaseObject>() => Promise<T[]>;
         /**
           * Gets the list of available locale codes (built-in and registered).
@@ -386,6 +411,14 @@ export namespace Components {
          */
         "moreMenuItems"?: IKritzelMenuItem[];
         /**
+          * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards.
+          * @param id - The cursor ID.
+          * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
+          * @param options - Duration, easing, speed and whether to attach to an object target.
+          * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+         */
+        "moveAgenticCursor": (id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>;
+        /**
           * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.export',       icon: 'upload',       group: 'clipboard',       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bringToFront', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'sendToBack', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrowUpFromDot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrowDownFromDot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'alignStartVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'alignCenterHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'alignEndVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'alignStartHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'alignCenterVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'alignEndHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
@@ -415,6 +448,12 @@ export namespace Components {
         "registerLocales": (locales: KritzelLocale[]) => Promise<void>;
         "registerTool": (toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig | KritzelBrushToolConfig | KritzelLineToolConfig | KritzelShapeToolConfig) => Promise<KritzelBaseTool | null>;
         "reinitSync": () => Promise<void>;
+        /**
+          * Removes an agentic cursor. A running move resolves with `completed: false`.
+          * @param id - The cursor ID.
+          * @returns `true` if the cursor existed.
+         */
+        "removeAgenticCursor": (id: string) => Promise<boolean>;
         "removeObject": <T extends KritzelBaseObject>(object: T) => Promise<T | null>;
         "removeObjects": <T extends KritzelBaseObject>(objects: T[]) => Promise<T[]>;
         /**
@@ -466,6 +505,13 @@ export namespace Components {
         "triggerSelectionChange": () => Promise<void>;
         "undo": () => Promise<void>;
         "ungroup": () => Promise<void>;
+        /**
+          * Updates the name, color, status or visibility of an agentic cursor.
+          * @param id - The cursor ID.
+          * @param patch - The properties to change. Pass `status: null` to clear the status.
+          * @returns A snapshot of the updated cursor.
+         */
+        "updateAgenticCursor": (id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor>;
         "updateObject": <T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>;
         "updateWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
         "user"?: IKritzelUser;
@@ -1338,6 +1384,7 @@ declare global {
         "login": LoginEvent;
         "isPublicChange": IKritzelIsPublicChangeEvent;
         "awarenessChange": Map<number, Record<string, any>>;
+        "agenticCursorDetached": KritzelAgenticCursorDetachedEvent;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2236,6 +2283,10 @@ declare namespace LocalJSX {
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
+        /**
+          * Emitted when an agentic cursor is detached from an object, either manually or because the object was removed.
+         */
+        "onAgenticCursorDetached"?: (event: KritzelEditorCustomEvent<KritzelAgenticCursorDetachedEvent>) => void;
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
         "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>) => void;
         "onIsReady"?: (event: KritzelEditorCustomEvent<EditorIsReadyEvent>) => void;

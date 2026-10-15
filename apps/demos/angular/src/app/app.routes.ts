@@ -49,6 +49,7 @@ import { DynamicObjectsIframeComponent } from './pages/advanced/dynamic-objects/
 import { ImportExportViewportExportComponent } from './pages/advanced/import-export/import-export-viewport-export.component';
 import { ImportExportWorkspaceExportComponent } from './pages/advanced/import-export/import-export-workspace-export.component';
 import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-export/import-export-workspace-import.component';
+import { AgenticCursorsBasicComponent } from './pages/advanced/agentic-cursors/agentic-cursors-basic.component';
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
 import { ThemingListenComponent } from './pages/customization/theming/theming-listen.component';
@@ -187,6 +188,10 @@ export const routes: Routes = [
           { path: 'workspace-export', component: ImportExportWorkspaceExportComponent },
           { path: 'workspace-import', component: ImportExportWorkspaceImportComponent },
         ],
+      },
+      {
+        path: 'agentic-cursors',
+        children: [{ path: 'basic', component: AgenticCursorsBasicComponent }],
       },
     ],
   },

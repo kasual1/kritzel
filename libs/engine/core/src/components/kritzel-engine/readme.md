@@ -39,28 +39,45 @@
 
 ## Events
 
-| Event                     | Description                                                                                         | Type                                                          |
-| ------------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `activeToolChange`        | Emitted when the active drawing tool changes.                                                       | `CustomEvent<KritzelBaseTool>`                                |
-| `activeWorkspaceChange`   | Emitted when the active workspace changes (e.g., after import).                                     | `CustomEvent<KritzelWorkspace>`                               |
-| `awarenessChange`         | Emitted when the awareness state changes (remote user cursors, presence).                           | `CustomEvent<Map<number, Record<string, any>>>`               |
-| `contextMenuStateChange`  | Emitted when context-menu visibility, items, or position changes.                                   | `CustomEvent<KritzelContextMenuState>`                        |
-| `isEngineReady`           | Emitted when the engine has fully initialized and is ready for interaction.                         | `CustomEvent<KritzelEngineState>`                             |
-| `isLoadingChange`         | Emitted while the selected workspace's objects are being initialized and synchronized.              | `CustomEvent<boolean>`                                        |
-| `longpress`               | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.               | `CustomEvent<PointerEvent>`                                   |
-| `notificationsChange`     | Emitted when notifications change.                                                                  | `CustomEvent<KritzelNotification>`                            |
-| `objectsAdded`            | Emitted when one or more objects are added to the canvas.                                           | `CustomEvent<ObjectsAddedEvent>`                              |
-| `objectsChange`           | Emitted when objects on the canvas are added, removed, or modified.                                 | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsInViewportChange` | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).  | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
-| `objectsRemoved`          | Emitted when one or more objects are removed from the canvas.                                       | `CustomEvent<ObjectsRemovedEvent>`                            |
-| `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                   | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsUpdated`          | Emitted when one or more objects are updated on the canvas.                                         | `CustomEvent<ObjectsUpdatedEvent>`                            |
-| `undoStateChange`         | Emitted when the undo/redo state changes, providing current undo availability.                      | `CustomEvent<KritzelUndoState>`                               |
-| `viewportChange`          | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). | `CustomEvent<KritzelViewportState>`                           |
-| `workspacesChange`        | Emitted when workspaces are created, updated, or deleted.                                           | `CustomEvent<KritzelWorkspace[]>`                             |
+| Event                     | Description                                                                                                   | Type                                                          |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `activeToolChange`        | Emitted when the active drawing tool changes.                                                                 | `CustomEvent<KritzelBaseTool>`                                |
+| `activeWorkspaceChange`   | Emitted when the active workspace changes (e.g., after import).                                               | `CustomEvent<KritzelWorkspace>`                               |
+| `agenticCursorDetached`   | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. | `CustomEvent<KritzelAgenticCursorDetachedEvent>`              |
+| `awarenessChange`         | Emitted when the awareness state changes (remote user cursors, presence).                                     | `CustomEvent<Map<number, Record<string, any>>>`               |
+| `contextMenuStateChange`  | Emitted when context-menu visibility, items, or position changes.                                             | `CustomEvent<KritzelContextMenuState>`                        |
+| `isEngineReady`           | Emitted when the engine has fully initialized and is ready for interaction.                                   | `CustomEvent<KritzelEngineState>`                             |
+| `isLoadingChange`         | Emitted while the selected workspace's objects are being initialized and synchronized.                        | `CustomEvent<boolean>`                                        |
+| `longpress`               | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                         | `CustomEvent<PointerEvent>`                                   |
+| `notificationsChange`     | Emitted when notifications change.                                                                            | `CustomEvent<KritzelNotification>`                            |
+| `objectsAdded`            | Emitted when one or more objects are added to the canvas.                                                     | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsChange`           | Emitted when objects on the canvas are added, removed, or modified.                                           | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsInViewportChange` | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).            | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
+| `objectsRemoved`          | Emitted when one or more objects are removed from the canvas.                                                 | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsUpdated`          | Emitted when one or more objects are updated on the canvas.                                                   | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `undoStateChange`         | Emitted when the undo/redo state changes, providing current undo availability.                                | `CustomEvent<KritzelUndoState>`                               |
+| `viewportChange`          | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).           | `CustomEvent<KritzelViewportState>`                           |
+| `workspacesChange`        | Emitted when workspaces are created, updated, or deleted.                                                     | `CustomEvent<KritzelWorkspace[]>`                             |
 
 
 ## Methods
+
+### `addAgenticCursor(options?: KritzelAgenticCursorOptions) => Promise<KritzelAgenticCursor>`
+
+Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
+
+#### Parameters
+
+| Name      | Type                          | Description                                                                               |
+| --------- | ----------------------------- | ----------------------------------------------------------------------------------------- |
+| `options` | `KritzelAgenticCursorOptions` | - Name, color, status, visibility and initial position (defaults to the viewport center). |
+
+#### Returns
+
+Type: `Promise<KritzelAgenticCursor>`
+
+A snapshot of the created cursor.
 
 ### `addObject<T extends KritzelBaseObject>(object: T) => Promise<T | null>`
 
@@ -244,6 +261,16 @@ Type: `Promise<boolean>`
 
 `true` if objects were provided and the viewport was adjusted, `false` otherwise.
 
+### `clearAgenticCursors() => Promise<void>`
+
+Removes all agentic cursors.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `clearSelection() => Promise<void>`
 
 Deselects all currently selected objects.
@@ -327,6 +354,22 @@ Deletes a workspace and emits a `workspacesChange` event.
 | Name        | Type               | Description                |
 | ----------- | ------------------ | -------------------------- |
 | `workspace` | `KritzelWorkspace` | - The workspace to delete. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `detachAgenticCursor(id: string) => Promise<void>`
+
+Detaches an agentic cursor from its object. The cursor stays at its current position.
+
+#### Parameters
+
+| Name | Type     | Description      |
+| ---- | -------- | ---------------- |
+| `id` | `string` | - The cursor ID. |
 
 #### Returns
 
@@ -452,6 +495,32 @@ Returns the currently active workspace.
 #### Returns
 
 Type: `Promise<KritzelWorkspace>`
+
+
+
+### `getAgenticCursor(id: string) => Promise<KritzelAgenticCursor | null>`
+
+Returns a snapshot of an agentic cursor.
+
+#### Parameters
+
+| Name | Type     | Description      |
+| ---- | -------- | ---------------- |
+| `id` | `string` | - The cursor ID. |
+
+#### Returns
+
+Type: `Promise<KritzelAgenticCursor>`
+
+The cursor, or `null` if it doesn't exist.
+
+### `getAgenticCursors() => Promise<KritzelAgenticCursor[]>`
+
+Returns snapshots of all agentic cursors.
+
+#### Returns
+
+Type: `Promise<KritzelAgenticCursor[]>`
 
 
 
@@ -730,6 +799,25 @@ Type: `Promise<void>`
 
 
 
+### `moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>`
+
+Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
+Object targets attach the cursor by default, so it follows the object afterwards.
+
+#### Parameters
+
+| Name      | Type                                                                  | Description                                                            |
+| --------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `id`      | `string`                                                              | - The cursor ID.                                                       |
+| `target`  | `KritzelAgenticCursorPointTarget \| KritzelAgenticCursorObjectTarget` | - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`. |
+| `options` | `KritzelAgenticCursorMoveOptions`                                     | - Duration, easing, speed and whether to attach to an object target.   |
+
+#### Returns
+
+Type: `Promise<KritzelAgenticCursorMoveResult>`
+
+Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+
 ### `openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void>`
 
 Programmatically opens the context menu at a specified world-coordinate position.
@@ -856,6 +944,22 @@ Call this after updating the syncConfig prop (e.g. after authentication state ch
 Type: `Promise<void>`
 
 
+
+### `removeAgenticCursor(id: string) => Promise<boolean>`
+
+Removes an agentic cursor. A running move resolves with `completed: false`.
+
+#### Parameters
+
+| Name | Type     | Description      |
+| ---- | -------- | ---------------- |
+| `id` | `string` | - The cursor ID. |
+
+#### Returns
+
+Type: `Promise<boolean>`
+
+`true` if the cursor existed.
 
 ### `removeObject<T extends KritzelBaseObject>(object: T) => Promise<T | null>`
 
@@ -1096,6 +1200,23 @@ Type: `Promise<void>`
 
 
 
+### `updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor>`
+
+Updates the name, color, status or visibility of an agentic cursor.
+
+#### Parameters
+
+| Name    | Type                        | Description                                                          |
+| ------- | --------------------------- | -------------------------------------------------------------------- |
+| `id`    | `string`                    | - The cursor ID.                                                     |
+| `patch` | `KritzelAgenticCursorPatch` | - The properties to change. Pass `status: null` to clear the status. |
+
+#### Returns
+
+Type: `Promise<KritzelAgenticCursor>`
+
+A snapshot of the updated cursor.
+
 ### `updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T | null>`
 
 Updates properties of an existing canvas object.
@@ -1209,6 +1330,7 @@ Type: `Promise<void>`
 
 - [kritzel-icon](../kritzel-icon)
 - [kritzel-awareness-cursors](../kritzel-awareness-cursors)
+- [kritzel-agentic-cursors](../kritzel-agentic-cursors)
 - [kritzel-cursor-trail](../kritzel-cursor-trail)
 - [kritzel-watermark](../kritzel-watermark)
 
@@ -1217,6 +1339,7 @@ Type: `Promise<void>`
 graph TD;
   kritzel-engine --> kritzel-icon
   kritzel-engine --> kritzel-awareness-cursors
+  kritzel-engine --> kritzel-agentic-cursors
   kritzel-engine --> kritzel-cursor-trail
   kritzel-engine --> kritzel-watermark
   style kritzel-engine fill:#f9f,stroke:#333,stroke-width:4px
