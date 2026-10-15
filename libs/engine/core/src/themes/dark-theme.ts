@@ -358,6 +358,24 @@ export const darkTheme: KritzelTheme = {
     color: 'rgba(220, 220, 220, 0.8)',
   },
 
+  chatBox: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    borderRadius: '20px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2), 0 18px 36px -14px rgba(0, 0, 0, 0.6)',
+    buttonBackgroundColor: '#5B8CFF',
+    buttonColor: '#ffffff',
+    buttonHoverBackgroundColor: '#4A7DFF',
+    fontSize: '15px',
+    inputBackgroundColor: '#1f1f1f',
+    inputBorderRadius: '14px',
+    inputMinHeight: '88px',
+    padding: '6px',
+    placeholderColor: '#777777',
+    textColor: '#e0e0e0',
+    width: '480px',
+  },
+
   zoomPanel: {
     backgroundColor: '#2a2a2a',
     border: '1px solid #3a3a3a',

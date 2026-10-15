@@ -275,7 +275,8 @@ export class KritzelEditor {
   @Prop() customFonts: KritzelFontMap = {};
   @Prop({ mutable: true }) isPanningEnabled: boolean = true;
   @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
-  @Prop() isToolbarVisible: boolean = true;
+  @Prop() isToolbarVisible: boolean = false;
+  @Prop() isChatBoxVisible: boolean = true;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
@@ -313,6 +314,8 @@ export class KritzelEditor {
   @Event() login!: EventEmitter<LoginEvent>;
   @Event() isPublicChange!: EventEmitter<IKritzelIsPublicChangeEvent>;
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
+  /** Emitted with the chat box text when the user submits it. */
+  @Event() chatSubmit!: EventEmitter<string>;
   @State() isEngineReady: boolean = false;
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
@@ -1732,7 +1735,7 @@ export class KritzelEditor {
           ></kritzel-engine>
 
           <kritzel-toolbar
-            visible={this.isToolbarVisible}
+            visible={this.isToolbarVisible && !this.isChatBoxVisible}
             class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
             ref={el => {
               if (el) {
@@ -1746,6 +1749,16 @@ export class KritzelEditor {
             terms={this.resolvedTerms}
             onIsToolbarReady={() => (this.isToolbarReady = true)}
           ></kritzel-toolbar>
+
+          {this.isChatBoxVisible && (
+            <kritzel-chat-box
+              terms={this.resolvedTerms}
+              onChatSubmit={event => {
+                event.stopPropagation();
+                this.chatSubmit.emit(event.detail);
+              }}
+            ></kritzel-chat-box>
+          )}
 
           <div class="bottom-left-buttons">
             <kritzel-zoom-panel
