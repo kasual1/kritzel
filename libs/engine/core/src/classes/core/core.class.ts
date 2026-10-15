@@ -22,6 +22,7 @@ import { KritzelLocalizationManager } from '../managers/localization.manager';
 import { KritzelLicenseManager } from '../managers/license.manager';
 import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
+import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
@@ -75,6 +76,8 @@ export class KritzelCore {
   private readonly _permissionManager: KritzelBrowserPermissionManager;
   /** Manager for clipboard copy/cut/paste orchestration */
   private readonly _clipboardManager: KritzelClipboardManager;
+  /** Manager for programmatically controlled (agentic) cursors */
+  private readonly _agenticCursorManager: KritzelAgenticCursorManager;
   /** Per-core registry of drawing tools (one instance per editor). */
   private readonly _toolRegistry: KritzelToolRegistry;
   /** Optional unique identifier for namespacing storage keys across multiple editor instances */
@@ -171,6 +174,14 @@ export class KritzelCore {
   }
 
   /**
+   * Gets the agentic cursor manager.
+   * @returns The KritzelAgenticCursorManager for programmatically controlled cursors
+   */
+  get agenticCursorManager(): KritzelAgenticCursorManager {
+    return this._agenticCursorManager;
+  }
+
+  /**
    * Gets the editor ID used for namespacing storage keys.
    * @returns The editor ID or undefined if not set
    */
@@ -223,6 +234,7 @@ export class KritzelCore {
     this._licenseManager = new KritzelLicenseManager(this);
     this._permissionManager = new KritzelBrowserPermissionManager(this);
     this._clipboardManager = new KritzelClipboardManager(this);
+    this._agenticCursorManager = new KritzelAgenticCursorManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();
     this._assetResolver.setShowInfo(this._store.state.debugInfo?.showAssetResolverInfo ?? false);

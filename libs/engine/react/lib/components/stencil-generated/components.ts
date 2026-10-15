@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type KritzelBaseObject, type KritzelBaseTool, type KritzelContextMenuState, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelNotification, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent } from "@kritzel/engine";
+import { type KritzelAgenticCursorDetachedEvent, type KritzelBaseObject, type KritzelBaseTool, type KritzelContextMenuState, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelNotification, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent } from "@kritzel/engine";
 import type { Components } from "@kritzel/engine/dist/components";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "@kritzel/engine/dist/components/kritzel-engine.js";
 
@@ -32,7 +32,8 @@ export type KritzelEngineEvents = {
     onAwarenessChange: EventName<KritzelEngineCustomEvent<Map<number, Record<string, any>>>>,
     onNotificationsChange: EventName<KritzelEngineCustomEvent<KritzelNotification>>,
     onContextMenuStateChange: EventName<KritzelEngineCustomEvent<KritzelContextMenuState>>,
-    onIsLoadingChange: EventName<KritzelEngineCustomEvent<boolean>>
+    onIsLoadingChange: EventName<KritzelEngineCustomEvent<boolean>>,
+    onAgenticCursorDetached: EventName<KritzelEngineCustomEvent<KritzelAgenticCursorDetachedEvent>>
 };
 
 export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelEngineEvents, Components.KritzelEngine> = /*@__PURE__*/ createComponent<KritzelEngineElement, KritzelEngineEvents, Components.KritzelEngine>({
@@ -57,7 +58,8 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
         onAwarenessChange: 'awarenessChange',
         onNotificationsChange: 'notificationsChange',
         onContextMenuStateChange: 'contextMenuStateChange',
-        onIsLoadingChange: 'isLoadingChange'
+        onIsLoadingChange: 'isLoadingChange',
+        onAgenticCursorDetached: 'agenticCursorDetached'
     } as KritzelEngineEvents,
     defineCustomElement: defineKritzelEngine
 });

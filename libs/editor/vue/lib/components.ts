@@ -64,7 +64,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'logout',
   'login',
   'isPublicChange',
-  'awarenessChange'
+  'awarenessChange',
+  'agenticCursorDetached'
 ], [
   'isReady',
   'activeWorkspaceChange',
@@ -80,7 +81,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'logout',
   'login',
   'isPublicChange',
-  'awarenessChange'
+  'awarenessChange',
+  'agenticCursorDetached'
 ]);
 
 
