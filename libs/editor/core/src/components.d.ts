@@ -113,7 +113,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Display mode. `collapsed` shows a single row and switches to `expanded` automatically once the text no longer fits on one line.
+          * Display mode. `collapsed` shows a single row and switches to `expanded` automatically while focused once the text no longer fits on one line, collapsing again when focus is lost.
           * @default 'collapsed'
          */
         "mode": KritzelChatBoxMode;
@@ -2066,7 +2066,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * Display mode. `collapsed` shows a single row and switches to `expanded` automatically once the text no longer fits on one line.
+          * Display mode. `collapsed` shows a single row and switches to `expanded` automatically while focused once the text no longer fits on one line, collapsing again when focus is lost.
           * @default 'collapsed'
          */
         "mode"?: KritzelChatBoxMode;

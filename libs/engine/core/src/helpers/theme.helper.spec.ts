@@ -117,7 +117,7 @@ describe('ThemeHelper', () => {
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.size).toBe(284);
+      expect(variables.size).toBe(287);
     });
   });
 
@@ -175,7 +175,7 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      expect(setPropertyMock).toHaveBeenCalledTimes(284);
+      expect(setPropertyMock).toHaveBeenCalledTimes(287);
     });
 
     it('should apply specific theme values correctly', () => {

@@ -116,6 +116,9 @@ export interface KritzelTheme {
     inputMinHeight?: string;
     padding?: string;
     placeholderColor?: string;
+    scrollbarThumbColor?: string;
+    selectionBackgroundColor?: string;
+    selectionColor?: string;
     textColor?: string;
     width?: string;
   };
