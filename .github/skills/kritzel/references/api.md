@@ -1,6 +1,6 @@
 # Kritzel component API
 
-Source version: @kritzel/engine and @kritzel/editor 0.4.35.
+Source version: @kritzel/engine and @kritzel/editor 0.5.5.
 
 Generated from Stencil docs JSON. For framework bindings, use the matching setup and events references.
 
@@ -18,8 +18,8 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | fallbackLocale | "de" \| "en" \| "fr" \| string & {} |  | The locale used to resolve terms missing from the active locale. |
 | globalContextMenuItems | ContextMenuItem[] |  | Context menu items shown when right-clicking the canvas background. |
 | isPanningEnabled | boolean |  | When false, non-modified wheel events do not pan the viewport. |
+| isWatermarkVisible | boolean |  | Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project. |
 | isZoomingEnabled | boolean |  | When false, Ctrl+wheel events do not zoom the viewport. |
-| licenseKey | string |  | License key that, when valid, removes the "Powered by Kritzel" watermark. |
 | locale | "de" \| "en" \| "fr" \| string & {} |  | The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'. |
 | locales | KritzelLocale[] |  | An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty. |
 | lockDrawingScale | boolean |  | When true, objects are drawn at a fixed visual size regardless of zoom level |
@@ -166,10 +166,10 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | isPanningEnabled | boolean |  |  |
 | isToolbarVisible | boolean |  |  |
 | isUtilityPanelVisible | boolean |  |  |
+| isWatermarkVisible | boolean |  | Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project. |
 | isWorkspaceManagerVisible | boolean |  |  |
 | isZoomPanelVisible | boolean |  |  |
 | isZoomingEnabled | boolean |  |  |
-| licenseKey | string |  | License key that, when valid, removes the "Powered by Kritzel" watermark. |
 | locale | "de" \| "en" \| "fr" \| string & {} |  | The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'. |
 | locales | KritzelLocale[] |  | An array of available locale definitions (with optional partial term overrides). |
 | lockDrawingScale | boolean |  |  |

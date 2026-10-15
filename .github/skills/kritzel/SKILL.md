@@ -2,7 +2,7 @@
 name: kritzel
 description: 'Integrate the Kritzel infinite canvas (kritzel-editor or kritzel-engine) in Angular, React, or Vue. Use when installing @kritzel/angular-editor, @kritzel/react-editor, or @kritzel/vue-editor; adding a whiteboard or drawing canvas; creating objects; controlling the viewport; registering tools; configuring themes, workspaces, persistence, or collaboration.'
 metadata:
-  kritzel-version: '0.4.35'
+  kritzel-version: '0.5.5'
 ---
 
 # Kritzel
