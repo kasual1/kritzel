@@ -1,0 +1,85 @@
+:host {
+  display: block;
+  box-sizing: border-box;
+  width: var(--kritzel-chat-box-width, 480px);
+  max-width: 100%;
+}
+
+.chat-box {
+  box-sizing: border-box;
+  padding: var(--kritzel-chat-box-padding, 6px);
+  border: var(--kritzel-chat-box-border, 1px solid #e4e4e7);
+  border-radius: var(--kritzel-chat-box-border-radius, 20px);
+  background-color: var(--kritzel-chat-box-background-color, #ffffff);
+  box-shadow: var(--kritzel-chat-box-box-shadow, 0 4px 8px rgba(20, 18, 31, 0.04), 0 18px 36px -14px rgba(20, 18, 31, 0.2));
+}
+
+.chat-input-container {
+  position: relative;
+  display: flex;
+  box-sizing: border-box;
+  min-height: var(--kritzel-chat-box-input-min-height, 88px);
+  border-radius: var(--kritzel-chat-box-input-border-radius, 14px);
+  background-color: var(--kritzel-chat-box-input-background-color, #f3f4f6);
+}
+
+/* Padding lives on the textarea so the whole grey area is clickable. */
+.chat-input {
+  flex: 1;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px 44px;
+  border-radius: inherit;
+  cursor: text;
+  border: none;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--kritzel-chat-box-text-color, #0a0a0a);
+  font-family: var(--kritzel-global-font-family, sans-serif);
+  font-size: var(--kritzel-chat-box-font-size, 15px);
+  line-height: 1.4;
+}
+
+.chat-input::placeholder {
+  color: var(--kritzel-chat-box-placeholder-color, #9ca3af);
+}
+
+.chat-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.chat-submit {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background-color: var(--kritzel-chat-box-button-background-color, #4A7DFF);
+  color: var(--kritzel-chat-box-button-color, #ffffff);
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  transition: background-color 150ms ease, opacity 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chat-submit:hover:not(:disabled) {
+  background-color: var(--kritzel-chat-box-button-hover-background-color, #3A6AE8);
+}
+
+.chat-submit:focus-visible {
+  outline: 2px solid var(--kritzel-chat-box-button-background-color, #4A7DFF);
+  outline-offset: 4px;
+}
+
+.chat-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

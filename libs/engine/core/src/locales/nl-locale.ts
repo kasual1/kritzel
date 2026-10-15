@@ -96,6 +96,10 @@ export const NL_LOCALE: KritzelLocale = {
     'zoom.zoomIn': 'Inzoomen',
     'zoom.zoomOut': 'Uitzoomen',
 
+    // Chat box
+    'chatBox.placeholder': 'Vraag het de AI...',
+    'chatBox.submit': 'Versturen',
+
     // Utility panel
     'utility.undo': 'Ongedaan maken',
     'utility.redo': 'Opnieuw uitvoeren',

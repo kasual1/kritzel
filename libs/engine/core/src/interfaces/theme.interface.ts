@@ -17,6 +17,7 @@ export interface KritzelTheme {
     dividerColor?: string;
     focusColor?: string;
     borderColor?: string;
+    defaultCursor?: string;
     focusRingColor?: string;
     fontFamily?: string;
     iconColor?: string;
@@ -27,6 +28,8 @@ export interface KritzelTheme {
     scrollbarThumbColor?: string;
     textPrimary?: string;
     textSecondary?: string;
+    iframeDefaultCursor?: string;
+    iframePointerCursor?: string;
     name?: string;
   };
 
@@ -93,6 +96,25 @@ export interface KritzelTheme {
     textActiveBackgroundColor?: string;
     textColor?: string;
     textHoverBackgroundColor?: string;
+    width?: string;
+  };
+
+  /** Chat box variables */
+  chatBox?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    buttonBackgroundColor?: string;
+    buttonColor?: string;
+    buttonHoverBackgroundColor?: string;
+    fontSize?: string;
+    inputBackgroundColor?: string;
+    inputBorderRadius?: string;
+    inputMinHeight?: string;
+    padding?: string;
+    placeholderColor?: string;
+    textColor?: string;
     width?: string;
   };
 

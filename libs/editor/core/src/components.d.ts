@@ -102,6 +102,27 @@ export namespace Components {
          */
         "variant": 'primary' | 'secondary' | 'text';
     }
+    interface KritzelChatBox {
+        /**
+          * Whether the chat box is disabled.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Placeholder text shown when the chat box is empty. Falls back to the localized term.
+         */
+        "placeholder"?: string;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms": Partial<Record<KritzelTermKey, string>>;
+        /**
+          * Current text value of the chat box.
+          * @default ''
+         */
+        "value": string;
+    }
     interface KritzelColor {
         /**
           * @default 24
@@ -333,13 +354,17 @@ export namespace Components {
         /**
           * @default true
          */
+        "isChatBoxVisible": boolean;
+        /**
+          * @default true
+         */
         "isMoreMenuVisible": boolean;
         /**
           * @default true
          */
         "isPanningEnabled": boolean;
         /**
-          * @default true
+          * @default false
          */
         "isToolbarVisible": boolean;
         /**
@@ -1027,6 +1052,10 @@ export interface KritzelButtonCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelButtonElement;
 }
+export interface KritzelChatBoxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelChatBoxElement;
+}
 export interface KritzelColorPaletteCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelColorPaletteElement;
@@ -1223,6 +1252,23 @@ declare global {
         prototype: HTMLKritzelButtonElement;
         new (): HTMLKritzelButtonElement;
     };
+    interface HTMLKritzelChatBoxElementEventMap {
+        "chatSubmit": string;
+    }
+    interface HTMLKritzelChatBoxElement extends Components.KritzelChatBox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelChatBoxElementEventMap>(type: K, listener: (this: HTMLKritzelChatBoxElement, ev: KritzelChatBoxCustomEvent<HTMLKritzelChatBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelChatBoxElementEventMap>(type: K, listener: (this: HTMLKritzelChatBoxElement, ev: KritzelChatBoxCustomEvent<HTMLKritzelChatBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelChatBoxElement: {
+        prototype: HTMLKritzelChatBoxElement;
+        new (): HTMLKritzelChatBoxElement;
+    };
     interface HTMLKritzelColorElement extends Components.KritzelColor, HTMLStencilElement {
     }
     var HTMLKritzelColorElement: {
@@ -1338,6 +1384,7 @@ declare global {
         "login": LoginEvent;
         "isPublicChange": IKritzelIsPublicChangeEvent;
         "awarenessChange": Map<number, Record<string, any>>;
+        "chatSubmit": string;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1867,6 +1914,7 @@ declare global {
         "kritzel-back-to-content": HTMLKritzelBackToContentElement;
         "kritzel-brush-style": HTMLKritzelBrushStyleElement;
         "kritzel-button": HTMLKritzelButtonElement;
+        "kritzel-chat-box": HTMLKritzelChatBoxElement;
         "kritzel-color": HTMLKritzelColorElement;
         "kritzel-color-palette": HTMLKritzelColorPaletteElement;
         "kritzel-context-menu": HTMLKritzelContextMenuElement;
@@ -1995,6 +2043,31 @@ declare namespace LocalJSX {
           * @default 'primary'
          */
         "variant"?: 'primary' | 'secondary' | 'text';
+    }
+    interface KritzelChatBox {
+        /**
+          * Whether the chat box is disabled.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Emitted with the current text when the user submits the chat box.
+         */
+        "onChatSubmit"?: (event: KritzelChatBoxCustomEvent<string>) => void;
+        /**
+          * Placeholder text shown when the chat box is empty. Falls back to the localized term.
+         */
+        "placeholder"?: string;
+        /**
+          * Resolved localized strings keyed by term key, supplied by the editor.
+          * @default {}
+         */
+        "terms"?: Partial<Record<KritzelTermKey, string>>;
+        /**
+          * Current text value of the chat box.
+          * @default ''
+         */
+        "value"?: string;
     }
     interface KritzelColor {
         /**
@@ -2181,13 +2254,17 @@ declare namespace LocalJSX {
         /**
           * @default true
          */
+        "isChatBoxVisible"?: boolean;
+        /**
+          * @default true
+         */
         "isMoreMenuVisible"?: boolean;
         /**
           * @default true
          */
         "isPanningEnabled"?: boolean;
         /**
-          * @default true
+          * @default false
          */
         "isToolbarVisible"?: boolean;
         /**
@@ -2237,6 +2314,10 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
+        /**
+          * Emitted with the chat box text when the user submits it.
+         */
+        "onChatSubmit"?: (event: KritzelEditorCustomEvent<string>) => void;
         "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>) => void;
         "onIsReady"?: (event: KritzelEditorCustomEvent<EditorIsReadyEvent>) => void;
         "onLocaleChange"?: (event: KritzelEditorCustomEvent<LocaleCode>) => void;
@@ -2897,6 +2978,11 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "type": 'button' | 'submit' | 'reset';
     }
+    interface KritzelChatBoxAttributes {
+        "value": string;
+        "placeholder": string;
+        "disabled": boolean;
+    }
     interface KritzelColorAttributes {
         "value": string | ThemeAwareColor;
         "theme": ThemeName;
@@ -2943,6 +3029,7 @@ declare namespace LocalJSX {
         "isPanningEnabled": boolean;
         "isZoomingEnabled": boolean;
         "isToolbarVisible": boolean;
+        "isChatBoxVisible": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
@@ -3066,6 +3153,7 @@ declare namespace LocalJSX {
         "kritzel-back-to-content": Omit<KritzelBackToContent, keyof KritzelBackToContentAttributes> & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes]?: KritzelBackToContent[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `attr:${K}`]?: KritzelBackToContentAttributes[K] } & { [K in keyof KritzelBackToContent & keyof KritzelBackToContentAttributes as `prop:${K}`]?: KritzelBackToContent[K] };
         "kritzel-brush-style": Omit<KritzelBrushStyle, keyof KritzelBrushStyleAttributes> & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes]?: KritzelBrushStyle[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `attr:${K}`]?: KritzelBrushStyleAttributes[K] } & { [K in keyof KritzelBrushStyle & keyof KritzelBrushStyleAttributes as `prop:${K}`]?: KritzelBrushStyle[K] };
         "kritzel-button": Omit<KritzelButton, keyof KritzelButtonAttributes> & { [K in keyof KritzelButton & keyof KritzelButtonAttributes]?: KritzelButton[K] } & { [K in keyof KritzelButton & keyof KritzelButtonAttributes as `attr:${K}`]?: KritzelButtonAttributes[K] } & { [K in keyof KritzelButton & keyof KritzelButtonAttributes as `prop:${K}`]?: KritzelButton[K] };
+        "kritzel-chat-box": Omit<KritzelChatBox, keyof KritzelChatBoxAttributes> & { [K in keyof KritzelChatBox & keyof KritzelChatBoxAttributes]?: KritzelChatBox[K] } & { [K in keyof KritzelChatBox & keyof KritzelChatBoxAttributes as `attr:${K}`]?: KritzelChatBoxAttributes[K] } & { [K in keyof KritzelChatBox & keyof KritzelChatBoxAttributes as `prop:${K}`]?: KritzelChatBox[K] };
         "kritzel-color": Omit<KritzelColor, keyof KritzelColorAttributes> & { [K in keyof KritzelColor & keyof KritzelColorAttributes]?: KritzelColor[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `attr:${K}`]?: KritzelColorAttributes[K] } & { [K in keyof KritzelColor & keyof KritzelColorAttributes as `prop:${K}`]?: KritzelColor[K] };
         "kritzel-color-palette": Omit<KritzelColorPalette, keyof KritzelColorPaletteAttributes> & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes]?: KritzelColorPalette[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `attr:${K}`]?: KritzelColorPaletteAttributes[K] } & { [K in keyof KritzelColorPalette & keyof KritzelColorPaletteAttributes as `prop:${K}`]?: KritzelColorPalette[K] };
         "kritzel-context-menu": KritzelContextMenu;
@@ -3114,6 +3202,7 @@ declare module "@stencil/core" {
             "kritzel-back-to-content": LocalJSX.IntrinsicElements["kritzel-back-to-content"] & JSXBase.HTMLAttributes<HTMLKritzelBackToContentElement>;
             "kritzel-brush-style": LocalJSX.IntrinsicElements["kritzel-brush-style"] & JSXBase.HTMLAttributes<HTMLKritzelBrushStyleElement>;
             "kritzel-button": LocalJSX.IntrinsicElements["kritzel-button"] & JSXBase.HTMLAttributes<HTMLKritzelButtonElement>;
+            "kritzel-chat-box": LocalJSX.IntrinsicElements["kritzel-chat-box"] & JSXBase.HTMLAttributes<HTMLKritzelChatBoxElement>;
             "kritzel-color": LocalJSX.IntrinsicElements["kritzel-color"] & JSXBase.HTMLAttributes<HTMLKritzelColorElement>;
             "kritzel-color-palette": LocalJSX.IntrinsicElements["kritzel-color-palette"] & JSXBase.HTMLAttributes<HTMLKritzelColorPaletteElement>;
             "kritzel-context-menu": LocalJSX.IntrinsicElements["kritzel-context-menu"] & JSXBase.HTMLAttributes<HTMLKritzelContextMenuElement>;

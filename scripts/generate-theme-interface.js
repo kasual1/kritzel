@@ -57,6 +57,7 @@ const KNOWN_CATEGORIES = [
   'awareness',
   'watermark',
   'zoom-panel',
+  'chat-box',
   'sync-indicator'
 ];
 
