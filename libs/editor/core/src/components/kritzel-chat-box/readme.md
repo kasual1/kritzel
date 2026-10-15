@@ -4,6 +4,7 @@ The focused input grows with typed or wrapped text up to five visible rows.
 Starting with the sixth row, its height stays capped and vertical scrolling is enabled.
 The active typing row stays above the bottom padding, leaving a gap below the caret even while scrolling.
 While the input grows, text stays top-aligned without temporary internal scrolling.
+Press Ctrl+I to focus the input; press it again while focused to blur and collapse it without clearing the text.
 
 
 <!-- Auto Generated Below -->

@@ -55,7 +55,7 @@ export class KritzelChatBox {
   /** True while the box is expanded only because the text overflowed the collapsed row. */
   private isAutoExpanded = false;
 
-  /** Ctrl+I focuses the chat box from anywhere, unless another editable element owns the keystroke. */
+  /** Ctrl+I toggles chat focus, unless another editable element owns the keystroke. */
   @Listen('keydown', { target: 'window' })
   handleWindowKeyDown(event: KeyboardEvent): void {
     if (this.disabled || event.isComposing || !event.ctrlKey || event.shiftKey || event.altKey || event.metaKey || event.key.toLowerCase() !== 'i') {
@@ -73,7 +73,19 @@ export class KritzelChatBox {
     }
 
     event.preventDefault();
-    this.textareaRef?.focus();
+    if (event.repeat) {
+      return;
+    }
+
+    const textarea = this.textareaRef;
+    if (textarea && this.host.shadowRoot?.activeElement === textarea) {
+      textarea.blur();
+      this.mode = 'collapsed';
+      textarea.scrollTop = 0;
+      textarea.scrollLeft = 0;
+    } else {
+      textarea?.focus();
+    }
   }
 
   /**
