@@ -1,34 +1,23 @@
 ---
 
-sidebar_label: License Activation
+sidebar_label: License & Watermark
 displayed_sidebar: tutorialSidebar
-title: "License Activation | Kritzel for Angular"
-description: "Activate Kritzel with a license key for production use in your Angular application."
+title: "License & Watermark | Kritzel for Angular"
+description: "Kritzel is free and open source under the MIT License. Learn how to show or hide the Powered by Kritzel watermark in your Angular application."
 ---
 
-# License Activation
+# License & Watermark
 
-Kritzel is a commercial library. To use it in production, you need a valid license key.
+Kritzel is free and open source software released under the [MIT License](/license). You can use it in personal and commercial projects without a license key.
 
-## Getting a License
+## The "Powered by Kritzel" Watermark
 
-License keys are available [here](/get-license). Contact us and we will provide you with a license key for your project.
+By default, the canvas shows a small "Powered by Kritzel" badge in the bottom-right corner that links to the Kritzel website. Keeping it visible is an easy way to support the project and help other developers discover Kritzel.
 
-## Activating Your License
+## Hiding the Watermark
 
-Pass your license key to the `<kritzel-editor>` or `<kritzel-engine>` component via the `licenseKey` prop:
+If you prefer not to show the badge, set the `isWatermarkVisible` prop on `<kritzel-editor>` or `<kritzel-engine>` to `false`:
 
-```tsx
-import { KritzelEditor } from '@kritzel/react-editor';
-
-function App() {
-  return (
-    <KritzelEditor
-      licenseKey="YOUR_LICENSE_KEY"
-      style={{ width: '100%', height: '100vh' }}
-    />
-  );
-}
+```html
+<kritzel-editor [isWatermarkVisible]="false"></kritzel-editor>
 ```
-
-The license key is validated at runtime. If the key is missing or invalid, the canvas will render with a watermark.
