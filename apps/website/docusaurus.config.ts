@@ -285,12 +285,6 @@ const config: Config = {
           ],
         },
         {
-          label: 'Get License',
-          to: '/get-license',
-          position: 'right',
-          className: 'navbar-get-license-link',
-        },
-        {
           label: 'GitHub',
           href: 'https://github.com/kasual1/kritzel',
           position: 'right',
@@ -469,13 +463,6 @@ const config: Config = {
             name: "Vue",
             description: "Use Kritzel in Vue applications.",
             url: ABSOLUTE_URL("/docs/vue/getting-started/quick-start"),
-          },
-          {
-            "@type": "SiteNavigationElement",
-            position: 7,
-            name: "Get License",
-            description: "Contact us to remove the Kritzel editor watermark with a commercial license.",
-            url: ABSOLUTE_URL("/get-license"),
           },
         ],
       }),
