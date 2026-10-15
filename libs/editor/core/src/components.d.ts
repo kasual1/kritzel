@@ -7,7 +7,9 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectExportFormat, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
 import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
+import { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
 import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
+import { KritzelChatBoxMode as KritzelChatBoxMode1 } from "./components/kritzel-chat-box/kritzel-chat-box";
 import { Element } from "@stencil/core";
 import { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
 import { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
@@ -15,7 +17,9 @@ import { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs
 import { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
 export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectExportFormat, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
 export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
+export { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
 export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
+export { KritzelChatBoxMode as KritzelChatBoxMode1 } from "./components/kritzel-chat-box/kritzel-chat-box";
 export { Element } from "@stencil/core";
 export { FontOption } from "./components/kritzel-font-family/kritzel-font-family";
 export { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
@@ -108,6 +112,11 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Display mode. `collapsed` shows a single row and switches to `expanded` automatically once the text no longer fits on one line.
+          * @default 'collapsed'
+         */
+        "mode": KritzelChatBoxMode;
         /**
           * Placeholder text shown when the chat box is empty. Falls back to the localized term.
          */
@@ -275,6 +284,11 @@ export namespace Components {
         "centerAllObjects": (animate?: boolean) => Promise<boolean>;
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
+        /**
+          * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
+          * @default 'collapsed'
+         */
+        "chatBoxMode": KritzelChatBoxMode1;
         "clearSelection": () => Promise<void>;
         "closeExportDialog": () => Promise<void>;
         "closeImportDialog": () => Promise<void>;
@@ -1254,6 +1268,7 @@ declare global {
     };
     interface HTMLKritzelChatBoxElementEventMap {
         "chatSubmit": string;
+        "modeChange": KritzelChatBoxMode;
     }
     interface HTMLKritzelChatBoxElement extends Components.KritzelChatBox, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelChatBoxElementEventMap>(type: K, listener: (this: HTMLKritzelChatBoxElement, ev: KritzelChatBoxCustomEvent<HTMLKritzelChatBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2051,9 +2066,18 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * Display mode. `collapsed` shows a single row and switches to `expanded` automatically once the text no longer fits on one line.
+          * @default 'collapsed'
+         */
+        "mode"?: KritzelChatBoxMode;
+        /**
           * Emitted with the current text when the user submits the chat box.
          */
         "onChatSubmit"?: (event: KritzelChatBoxCustomEvent<string>) => void;
+        /**
+          * Emitted when the mode changes, including automatic expansion.
+         */
+        "onModeChange"?: (event: KritzelChatBoxCustomEvent<KritzelChatBoxMode>) => void;
         /**
           * Placeholder text shown when the chat box is empty. Falls back to the localized term.
          */
@@ -2221,6 +2245,11 @@ declare namespace LocalJSX {
           * @default DEFAULT_ASSET_STORAGE_CONFIG
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
+        /**
+          * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
+          * @default 'collapsed'
+         */
+        "chatBoxMode"?: KritzelChatBoxMode1;
         /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
@@ -2980,6 +3009,7 @@ declare namespace LocalJSX {
     }
     interface KritzelChatBoxAttributes {
         "value": string;
+        "mode": KritzelChatBoxMode;
         "placeholder": string;
         "disabled": boolean;
     }
@@ -3030,6 +3060,7 @@ declare namespace LocalJSX {
         "isZoomingEnabled": boolean;
         "isToolbarVisible": boolean;
         "isChatBoxVisible": boolean;
+        "chatBoxMode": KritzelChatBoxMode;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;

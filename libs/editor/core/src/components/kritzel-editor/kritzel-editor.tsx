@@ -56,6 +56,7 @@ import { resolveTextToolAvailableFonts } from '@kritzel/engine';
 import { KritzelContextMenuState } from '@kritzel/engine';
 import { KritzelObjectExportFormat } from '@kritzel/engine';
 import { KritzelSvgIconMap } from '@kritzel/engine';
+import { KritzelChatBoxMode } from '../kritzel-chat-box/kritzel-chat-box';
 
 @Component({
   tag: 'kritzel-editor',
@@ -277,6 +278,8 @@ export class KritzelEditor {
   @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
   @Prop() isToolbarVisible: boolean = false;
   @Prop() isChatBoxVisible: boolean = true;
+  /** Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. */
+  @Prop() chatBoxMode: KritzelChatBoxMode = 'collapsed';
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
@@ -1752,6 +1755,7 @@ export class KritzelEditor {
 
           {this.isChatBoxVisible && (
             <kritzel-chat-box
+              mode={this.chatBoxMode}
               terms={this.resolvedTerms}
               onChatSubmit={event => {
                 event.stopPropagation();
