@@ -113,6 +113,11 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
+          * Whether to show a circulating progress indicator around the chat box border.
+          * @default false
+         */
+        "loading": boolean;
+        /**
           * Display mode. `collapsed` shows a single row and switches to `expanded` automatically while focused once the text no longer fits on one line, collapsing again when focus is lost.
           * @default 'collapsed'
          */
@@ -1268,6 +1273,7 @@ declare global {
     };
     interface HTMLKritzelChatBoxElementEventMap {
         "chatSubmit": string;
+        "chatStop": void;
         "modeChange": KritzelChatBoxMode;
     }
     interface HTMLKritzelChatBoxElement extends Components.KritzelChatBox, HTMLStencilElement {
@@ -1400,6 +1406,7 @@ declare global {
         "isPublicChange": IKritzelIsPublicChangeEvent;
         "awarenessChange": Map<number, Record<string, any>>;
         "chatSubmit": string;
+        "chatStop": void;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2066,10 +2073,19 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * Whether to show a circulating progress indicator around the chat box border.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
           * Display mode. `collapsed` shows a single row and switches to `expanded` automatically while focused once the text no longer fits on one line, collapsing again when focus is lost.
           * @default 'collapsed'
          */
         "mode"?: KritzelChatBoxMode;
+        /**
+          * Emitted when the user stops the current response.
+         */
+        "onChatStop"?: (event: KritzelChatBoxCustomEvent<void>) => void;
         /**
           * Emitted with the current text when the user submits the chat box.
          */
@@ -2343,6 +2359,10 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
+        /**
+          * Emitted when the user stops the current chat response.
+         */
+        "onChatStop"?: (event: KritzelEditorCustomEvent<void>) => void;
         /**
           * Emitted with the chat box text when the user submits it.
          */
@@ -3012,6 +3032,7 @@ declare namespace LocalJSX {
         "mode": KritzelChatBoxMode;
         "placeholder": string;
         "disabled": boolean;
+        "loading": boolean;
     }
     interface KritzelColorAttributes {
         "value": string | ThemeAwareColor;

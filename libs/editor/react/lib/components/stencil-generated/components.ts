@@ -23,6 +23,7 @@ import { KritzelStrokeSize as KritzelStrokeSizeElement, defineCustomElement as d
 
 export type KritzelChatBoxEvents = {
     onChatSubmit: EventName<KritzelChatBoxCustomEvent<string>>,
+    onChatStop: EventName<KritzelChatBoxCustomEvent<void>>,
     onModeChange: EventName<KritzelChatBoxCustomEvent<KritzelChatBoxMode>>
 };
 
@@ -33,6 +34,7 @@ export const KritzelChatBox: StencilReactComponent<KritzelChatBoxElement, Kritze
     react: React,
     events: {
         onChatSubmit: 'chatSubmit',
+        onChatStop: 'chatStop',
         onModeChange: 'modeChange'
     } as KritzelChatBoxEvents,
     defineCustomElement: defineKritzelChatBox
@@ -54,7 +56,8 @@ export type KritzelEditorEvents = {
     onLogin: EventName<KritzelEditorCustomEvent<LoginEvent>>,
     onIsPublicChange: EventName<KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>>,
     onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>,
-    onChatSubmit: EventName<KritzelEditorCustomEvent<string>>
+    onChatSubmit: EventName<KritzelEditorCustomEvent<string>>,
+    onChatStop: EventName<KritzelEditorCustomEvent<void>>
 };
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor>({
@@ -78,7 +81,8 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
         onLogin: 'login',
         onIsPublicChange: 'isPublicChange',
         onAwarenessChange: 'awarenessChange',
-        onChatSubmit: 'chatSubmit'
+        onChatSubmit: 'chatSubmit',
+        onChatStop: 'chatStop'
     } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
 });
