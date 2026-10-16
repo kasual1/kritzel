@@ -295,6 +295,8 @@ function HeroScene({
   const [selectedImage, setSelectedImage] = useState<"shoe" | "left" | "right" | "pie" | "smiley" | null>(null);
   const [stackOrder, setStackOrder] = useState<StackCard[]>(["shoe", "left", "right"]);
   const [focusLayout, setFocusLayout] = useState({ copyShift: 0, shoeTop: 0, minHeight: 520 });
+  // The server-rendered page has no shoeTop yet, so the compact shoe stays hidden until it is measured.
+  const [layoutMeasured, setLayoutMeasured] = useState(false);
   const shoeFocused = focusRequest > 0;
 
   // Selected or newly added cards move to the top of the compact stack.
@@ -383,6 +385,7 @@ function HeroScene({
         + chat.offsetHeight * 0.85 + parseFloat(getComputedStyle(chat).bottom);
       const shoeTop = (availableTop + availableBottom) / 2;
       setFocusLayout({ copyShift, shoeTop, minHeight });
+      setLayoutMeasured(true);
     };
     updateLayout();
     const observer = new ResizeObserver(updateLayout);
@@ -437,6 +440,7 @@ function HeroScene({
           setSelectedImage(null);
         }
       }}
+      data-layout-measured={layoutMeasured || undefined}
       className={`${styles.heroWrapper} ${shoeFocused ? styles.heroFocused : ""} ${
         variantStatus === "left-loading" || variantStatus === "left-ready" ? styles.heroPair : ""
       } ${variantStatus === "right-loading" || variantStatus === "ready" ? styles.heroTrio : ""}`}
