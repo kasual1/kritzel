@@ -145,6 +145,10 @@ describe('KritzelEngine', () => {
       setTargetElement: jest.fn(),
       cleanup: jest.fn(),
     },
+    agenticCursorManager: {
+      onDetached: jest.fn(),
+      cleanup: jest.fn(),
+    },
     themeManager: {
       setTargetElement: jest.fn(),
       setTheme: jest.fn(),

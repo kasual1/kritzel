@@ -8,6 +8,7 @@ const INTERNAL_COMPONENTS = [
   'kritzel-icon',
   'kritzel-watermark',
   'kritzel-awareness-cursors',
+  'kritzel-agentic-cursors',
 ];
 
 const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');

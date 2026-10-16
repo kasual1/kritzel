@@ -23,6 +23,7 @@ import { KritzelUndoState } from "./interfaces/undo-state.interface";
 import { KritzelViewportState } from "./interfaces/viewport-state.interface";
 import { KritzelNotification } from "./interfaces/notification.interface";
 import { KritzelContextMenuState } from "./interfaces/context-menu-state.interface";
+import { KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget } from "./interfaces/agentic-cursor.interface";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from "./interfaces/toolbar-item.interface";
 import { KritzelAlignment } from "./enums/alignment.enum";
 import { Element, Event } from "@stencil/core";
@@ -52,6 +53,7 @@ export { KritzelUndoState } from "./interfaces/undo-state.interface";
 export { KritzelViewportState } from "./interfaces/viewport-state.interface";
 export { KritzelNotification } from "./interfaces/notification.interface";
 export { KritzelContextMenuState } from "./interfaces/context-menu-state.interface";
+export { KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget } from "./interfaces/agentic-cursor.interface";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from "./interfaces/toolbar-item.interface";
 export { KritzelAlignment } from "./enums/alignment.enum";
 export { Element, Event } from "@stencil/core";
@@ -64,6 +66,23 @@ export { KritzelObjectExportFormat } from "./interfaces/object-export.interface"
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { KritzelIconName } from "./classes/registries/icon-registry.class";
 export namespace Components {
+    /**
+     * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
+     * Structural changes (added/removed cursors, name, color, status) re-render through
+     * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
+     * the cursor element, so animations and object tracking don't lag a frame behind.
+     */
+    interface KritzelAgenticCursors {
+        "core": KritzelCore;
+        /**
+          * @default 8
+         */
+        "edgeIndicatorPadding": number;
+        /**
+          * @default true
+         */
+        "showEdgeIndicators": boolean;
+    }
     interface KritzelAwarenessCursors {
         "core": KritzelCore;
         /**
@@ -83,6 +102,12 @@ export namespace Components {
           * Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID.
          */
         "activeWorkspaceId"?: string;
+        /**
+          * Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
+          * @param options - Name, color, status, visibility and initial position (defaults to the viewport center).
+          * @returns A snapshot of the created cursor.
+         */
+        "addAgenticCursor": (options?: KritzelAgenticCursorOptions) => Promise<KritzelAgenticCursor>;
         /**
           * Adds a new object to the canvas. The object will be assigned an ID, core reference, and z-index automatically.
           * @param object - The object instance to add.
@@ -151,6 +176,10 @@ export namespace Components {
          */
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
+          * Removes all agentic cursors.
+         */
+        "clearAgenticCursors": () => Promise<void>;
+        /**
           * Deselects all currently selected objects.
          */
         "clearSelection": () => Promise<void>;
@@ -190,6 +219,11 @@ export namespace Components {
           * @param workspace - The workspace to delete.
          */
         "deleteWorkspace": (workspace: KritzelWorkspace) => Promise<void>;
+        /**
+          * Detaches an agentic cursor from its object. The cursor stays at its current position.
+          * @param id - The cursor ID.
+         */
+        "detachAgenticCursor": (id: string) => Promise<void>;
         /**
           * Disables all user interaction with the engine (pointer, keyboard, etc.).
          */
@@ -244,6 +278,16 @@ export namespace Components {
           * Returns the currently active workspace.
          */
         "getActiveWorkspace": () => Promise<KritzelWorkspace>;
+        /**
+          * Returns a snapshot of an agentic cursor.
+          * @param id - The cursor ID.
+          * @returns The cursor, or `null` if it doesn't exist.
+         */
+        "getAgenticCursor": (id: string) => Promise<KritzelAgenticCursor | null>;
+        /**
+          * Returns snapshots of all agentic cursors.
+         */
+        "getAgenticCursors": () => Promise<KritzelAgenticCursor[]>;
         /**
           * Returns all objects on the canvas across all layers.
          */
@@ -383,6 +427,14 @@ export namespace Components {
          */
         "lockDrawingScale": boolean;
         /**
+          * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards.
+          * @param id - The cursor ID.
+          * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
+          * @param options - Duration, easing, speed and whether to attach to an object target.
+          * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+         */
+        "moveAgenticCursor": (id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>;
+        /**
           * Context menu items shown when right-clicking a selected object.
          */
         "objectContextMenuItems"?: ContextMenuItem[];
@@ -431,6 +483,12 @@ export namespace Components {
           * Reinitializes sync by performing a full teardown and re-initialization. Destroys the current Yjs documents and providers, then rebuilds everything from the current syncConfig. Data reloads from IndexedDB nearly instantly. Call this after updating the syncConfig prop (e.g. after authentication state changes).
          */
         "reinitSync": () => Promise<void>;
+        /**
+          * Removes an agentic cursor. A running move resolves with `completed: false`.
+          * @param id - The cursor ID.
+          * @returns `true` if the cursor existed.
+         */
+        "removeAgenticCursor": (id: string) => Promise<boolean>;
         /**
           * Removes an object from the canvas.
           * @param object - The object to remove.
@@ -543,6 +601,13 @@ export namespace Components {
          */
         "ungroup": () => Promise<void>;
         /**
+          * Updates the name, color, status or visibility of an agentic cursor.
+          * @param id - The cursor ID.
+          * @param patch - The properties to change. Pass `status: null` to clear the status.
+          * @returns A snapshot of the updated cursor.
+         */
+        "updateAgenticCursor": (id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor>;
+        /**
           * Updates properties of an existing canvas object.
           * @param object - The object to update.
           * @param updatedProperties - A partial set of properties to apply.
@@ -640,6 +705,18 @@ export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
     target: HTMLKritzelEngineElement;
 }
 declare global {
+    /**
+     * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
+     * Structural changes (added/removed cursors, name, color, status) re-render through
+     * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
+     * the cursor element, so animations and object tracking don't lag a frame behind.
+     */
+    interface HTMLKritzelAgenticCursorsElement extends Components.KritzelAgenticCursors, HTMLStencilElement {
+    }
+    var HTMLKritzelAgenticCursorsElement: {
+        prototype: HTMLKritzelAgenticCursorsElement;
+        new (): HTMLKritzelAgenticCursorsElement;
+    };
     interface HTMLKritzelAwarenessCursorsElement extends Components.KritzelAwarenessCursors, HTMLStencilElement {
     }
     var HTMLKritzelAwarenessCursorsElement: {
@@ -670,6 +747,7 @@ declare global {
         "notificationsChange": KritzelNotification;
         "contextMenuStateChange": KritzelContextMenuState;
         "isLoadingChange": boolean;
+        "agenticCursorDetached": KritzelAgenticCursorDetachedEvent;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -705,6 +783,7 @@ declare global {
         new (): HTMLKritzelWatermarkElement;
     };
     interface HTMLElementTagNameMap {
+        "kritzel-agentic-cursors": HTMLKritzelAgenticCursorsElement;
         "kritzel-awareness-cursors": HTMLKritzelAwarenessCursorsElement;
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-engine": HTMLKritzelEngineElement;
@@ -713,6 +792,23 @@ declare global {
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
+     * Structural changes (added/removed cursors, name, color, status) re-render through
+     * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
+     * the cursor element, so animations and object tracking don't lag a frame behind.
+     */
+    interface KritzelAgenticCursors {
+        "core": KritzelCore;
+        /**
+          * @default 8
+         */
+        "edgeIndicatorPadding"?: number;
+        /**
+          * @default true
+         */
+        "showEdgeIndicators"?: boolean;
+    }
     interface KritzelAwarenessCursors {
         "core": KritzelCore;
         /**
@@ -797,6 +893,10 @@ declare namespace LocalJSX {
           * Emitted when the active workspace changes (e.g., after import).
          */
         "onActiveWorkspaceChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace>) => void;
+        /**
+          * Emitted when an agentic cursor is detached from an object, either manually or because the object was removed.
+         */
+        "onAgenticCursorDetached"?: (event: KritzelEngineCustomEvent<KritzelAgenticCursorDetachedEvent>) => void;
         /**
           * Emitted when the awareness state changes (remote user cursors, presence).
          */
@@ -940,6 +1040,10 @@ declare namespace LocalJSX {
         "label"?: string;
     }
 
+    interface KritzelAgenticCursorsAttributes {
+        "showEdgeIndicators": boolean;
+        "edgeIndicatorPadding": number;
+    }
     interface KritzelAwarenessCursorsAttributes {
         "showEdgeIndicators": boolean;
         "edgeIndicatorPadding": number;
@@ -971,6 +1075,7 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "kritzel-agentic-cursors": Omit<KritzelAgenticCursors, keyof KritzelAgenticCursorsAttributes> & { [K in keyof KritzelAgenticCursors & keyof KritzelAgenticCursorsAttributes]?: KritzelAgenticCursors[K] } & { [K in keyof KritzelAgenticCursors & keyof KritzelAgenticCursorsAttributes as `attr:${K}`]?: KritzelAgenticCursorsAttributes[K] } & { [K in keyof KritzelAgenticCursors & keyof KritzelAgenticCursorsAttributes as `prop:${K}`]?: KritzelAgenticCursors[K] };
         "kritzel-awareness-cursors": Omit<KritzelAwarenessCursors, keyof KritzelAwarenessCursorsAttributes> & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes]?: KritzelAwarenessCursors[K] } & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes as `attr:${K}`]?: KritzelAwarenessCursorsAttributes[K] } & { [K in keyof KritzelAwarenessCursors & keyof KritzelAwarenessCursorsAttributes as `prop:${K}`]?: KritzelAwarenessCursors[K] };
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-engine": Omit<KritzelEngine, keyof KritzelEngineAttributes> & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes]?: KritzelEngine[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `attr:${K}`]?: KritzelEngineAttributes[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `prop:${K}`]?: KritzelEngine[K] };
@@ -982,6 +1087,13 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
+             * Structural changes (added/removed cursors, name, color, status) re-render through
+             * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
+             * the cursor element, so animations and object tracking don't lag a frame behind.
+             */
+            "kritzel-agentic-cursors": LocalJSX.IntrinsicElements["kritzel-agentic-cursors"] & JSXBase.HTMLAttributes<HTMLKritzelAgenticCursorsElement>;
             "kritzel-awareness-cursors": LocalJSX.IntrinsicElements["kritzel-awareness-cursors"] & JSXBase.HTMLAttributes<HTMLKritzelAwarenessCursorsElement>;
             "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-engine": LocalJSX.IntrinsicElements["kritzel-engine"] & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
