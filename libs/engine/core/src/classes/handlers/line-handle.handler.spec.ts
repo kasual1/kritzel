@@ -55,6 +55,7 @@ describe('KritzelLineHandleHandler', () => {
 
   const createMockLine = (): jest.Mocked<KritzelLine> => {
     const line = {
+      __class__: 'KritzelLine',
       id: 'line-1',
       startX: 0,
       startY: 0,

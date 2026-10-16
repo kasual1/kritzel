@@ -25,6 +25,7 @@ import { KritzelContextMenuHandler } from '../../classes/handlers/context-menu.h
 import { KritzelBaseObject } from '../../classes/objects/base-object.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../constants/engine.constants';
 import { KritzelDynamicObject } from '../../classes/objects/dynamic-object.class';
 import { KritzelIframeObject } from '../../classes/objects/iframe.class';
@@ -891,7 +892,8 @@ export class KritzelEngine {
   }
 
   /**
-   * Moves an object one layer forward in the z-order.
+   * Moves an object, or each selected layer, one layer forward in the z-order, past the next layer above it.
+   * A group is one layer: all of its children move together. A grouped object moves within its group.
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
@@ -900,7 +902,8 @@ export class KritzelEngine {
   }
 
   /**
-   * Moves an object one layer backward in the z-order.
+   * Moves an object, or each selected layer, one layer backward in the z-order, past the next layer below it.
+   * A group is one layer: all of its children move together. A grouped object moves within its group.
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
@@ -909,7 +912,9 @@ export class KritzelEngine {
   }
 
   /**
-   * Moves an object to the very front of the z-order.
+   * Moves an object, or the selected layers, to the very front of the z-order, keeping the relative order
+   * of the moved layers. A group moves together with all of its children; a grouped object moves to the
+   * front of its group.
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
@@ -918,7 +923,9 @@ export class KritzelEngine {
   }
 
   /**
-   * Moves an object to the very back of the z-order.
+   * Moves an object, or the selected layers, to the very back of the z-order, keeping the relative order
+   * of the moved layers. A group moves together with all of its children; a grouped object moves to the
+   * back of its group.
    * @param object - The object to move. If omitted, applies to the current selection.
    */
   @Method()
@@ -935,13 +942,18 @@ export class KritzelEngine {
     this.core.alignObjects(alignment);
   }
 
-  /** Groups the currently selected objects into a single selection group. */
+  /**
+   * Creates a group (`KritzelGroup`) from the currently selected objects. Requires at least two selected objects.
+   * The grouped objects become one layer at the position of the topmost selected object.
+   */
   @Method()
   async group() {
     this.core.group();
   }
 
-  /** Ungroups the currently selected group back into individual objects. */
+  /**
+   * Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+   */
   @Method()
   async ungroup() {
     this.core.ungroup();
@@ -1070,6 +1082,9 @@ export class KritzelEngine {
       const idRemapping = new Map<string, string>();
       const allFlushedChildren: KritzelBaseObject<any>[] = [];
 
+      // Children stack bottom to top in the order they were added; the group takes its top child's zIndex.
+      KritzelZOrderHelper.allocate(object, this.core.store.currentZIndex, group => group._pendingChildren);
+
       const flushGroup = (group: KritzelGroup): void => {
         if (group._pendingChildren.length === 0) {
           return;
@@ -1084,7 +1099,6 @@ export class KritzelEngine {
           child.id = child.generateId();
           child._core = this.core;
           child.scale = child.scale ?? this.core.store.state.scale;
-          child.zIndex = this.core.store.currentZIndex;
           child.workspaceId = this.core.store.state.activeWorkspace!.id;
 
           idRemapping.set(oldId, child.id);
@@ -1183,6 +1197,8 @@ export class KritzelEngine {
           const idRemapping = new Map<string, string>();
           const allFlushedChildren: KritzelBaseObject<any>[] = [];
 
+          KritzelZOrderHelper.allocate(object, this.core.store.currentZIndex, group => group._pendingChildren);
+
           const flushGroup = (group: KritzelGroup): void => {
             if (group._pendingChildren.length === 0) {
               return;
@@ -1197,7 +1213,6 @@ export class KritzelEngine {
               child.id = child.generateId();
               child._core = this.core;
               child.scale = child.scale ?? this.core.store.state.scale;
-              child.zIndex = this.core.store.currentZIndex;
               child.workspaceId = this.core.store.state.activeWorkspace!.id;
 
               idRemapping.set(oldId, child.id);
@@ -2490,6 +2505,11 @@ export class KritzelEngine {
 
   private _lastHadSelectionGroup: boolean = false;
   private _isViewportReady: boolean = false;
+
+  /** Forwards visual viewport resizes (e.g. virtual keyboard open/close) to the viewport. */
+  private readonly handleVisualViewportResize = () => {
+    this.viewport?.handleVisualViewportResize();
+  };
   private _isYjsInitialized: boolean = false;
   private _isAssetStorageInitialized: boolean = false;
   private _isResolvingActiveWorkspaceId: boolean = false;
@@ -2654,6 +2674,7 @@ export class KritzelEngine {
 
   disconnectedCallback() {
     this.throttledPointerMoveMulti.cancel();
+    window.visualViewport?.removeEventListener('resize', this.handleVisualViewportResize);
     this._revealedImageKeys.clear();
 
     if (this._sceneBootstrapTransitionTimer !== null) {
@@ -2726,6 +2747,7 @@ export class KritzelEngine {
       this.keyHandler = new KritzelKeyHandler(this.core);
       this.viewport = new KritzelViewport(this.core, this.host);
       this._isViewportReady = true;
+      window.visualViewport?.addEventListener('resize', this.handleVisualViewportResize);
 
       // Initialize cursor manager with target element and shadow root
       this.core.cursorManager.setTargetElement(this.cursorTarget || document.body);
@@ -2818,7 +2840,7 @@ export class KritzelEngine {
 
     this._hasLoggedUnlicensedWelcomeBanner = true;
 
-    console.info('%c👋 Welcome to Kritzel', 'color: #4A7DFF; font-weight: 700;');
+    console.info('%c👋 Welcome to Kritzel', 'color: #007AFF; font-weight: 700;');
     console.info(`This version of Kritzel is not licensed. Get a license at: https://kritzel.io`);
   }
 
@@ -3826,9 +3848,9 @@ export class KritzelEngine {
                     }
 
                     const selectionBorderColor =
-                      remoteUserColor ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #4A7DFF)');
+                      remoteUserColor ?? (KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme) || 'var(--kritzel-selection-border-color, #007AFF)');
 
-                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #4A7DFF)';
+                    const selectionHandleStrokeColor = remoteUserColor ?? 'var(--kritzel-selection-handle-stroke-color, #007AFF)';
                     const lineObject = object as KritzelLine;
                     const activeSnapCandidate = this.core.store.state.snapCandidate;
                     const previewSnapCandidate = this.core.store.state.snapPreviewCandidate;

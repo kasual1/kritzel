@@ -18,6 +18,7 @@ import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelClassHelper } from '../../helpers/class.helper';
+import type { KritzelGroup } from '../objects/group.class';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 
@@ -326,6 +327,7 @@ export class KritzelAnchorManager {
     predicate: (object: KritzelBaseObject<Element>) => boolean
   ): SnapTarget | null {
     let bestTarget: SnapTarget | null = null;
+    let bestObject: KritzelBaseObject<Element> | null = null;
     let highestZIndex = -Infinity;
 
     const objects = this._core.store.allNonSelectionObjects;
@@ -358,8 +360,10 @@ export class KritzelAnchorManager {
         continue;
       }
 
-      if (object.zIndex > highestZIndex) {
+      // A group shares its zIndex with its top member; prefer the group, which is the selectable layer.
+      if (object.zIndex > highestZIndex || (object.zIndex === highestZIndex && bestObject && this.containsDescendant(object, bestObject))) {
         highestZIndex = object.zIndex;
+        bestObject = object;
         bestTarget = {
           objectId: object.id,
           centerX: object.centerX,
@@ -706,7 +710,7 @@ export class KritzelAnchorManager {
     const objects = this._core.store.allObjects;
 
     for (const object of objects) {
-      if (object instanceof KritzelLine) {
+      if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
         if (object.startAnchor) {
           this.addToIndex(object.startAnchor.objectId, object.id, 'start');
         }
@@ -786,7 +790,7 @@ export class KritzelAnchorManager {
       return null;
     }
     const object = objects[0];
-    return object instanceof KritzelLine ? object : null;
+    return KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') ? object : null;
   }
 
   /**
@@ -1789,6 +1793,19 @@ export class KritzelAnchorManager {
   }
 
   /**
+   * Checks whether an object is a group that contains the given object at any depth.
+   * @param object - The potential ancestor group.
+   * @param descendant - The potential descendant.
+   */
+  private containsDescendant(object: KritzelBaseObject<Element> | undefined, descendant: KritzelBaseObject<Element>, visited = new Set<string>()): boolean {
+    if (!KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') || visited.has(object.id)) {
+      return false;
+    }
+    visited.add(object.id);
+    return object.childIds.some(id => id === descendant.id || this.containsDescendant(this._core.store.objects.findById(id), descendant, visited));
+  }
+
+  /**
    * Checks if an object can be used as an anchor target.
    * Excludes selection-related objects (SelectionBox, SelectionGroup) and
    * line objects (lines cannot anchor to other lines).
@@ -1803,7 +1820,7 @@ export class KritzelAnchorManager {
     }
 
     // Exclude line objects - lines cannot be anchored to other lines
-    if (object instanceof KritzelLine) {
+    if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
       return false;
     }
 

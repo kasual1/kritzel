@@ -49,7 +49,7 @@
 }
 
 .pill-tab:focus-visible {
-  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(74, 125, 255, 0.3));
+  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
 }
 
 .pill-tab-label {

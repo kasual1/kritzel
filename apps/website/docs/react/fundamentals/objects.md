@@ -87,7 +87,7 @@ Objects can be grouped together so they can be moved and transformed as a single
 
 ## Ordering Objects
 
-Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward.
+Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward. A group counts as one layer: reordering it moves all of its children together, while a grouped object is reordered within its group.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"

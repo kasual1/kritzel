@@ -1825,6 +1825,21 @@ export class KritzelEditor {
             onAgenticCursorDetached={event => this.handleAgenticCursorDetached(event)}
           ></kritzel-engine>
 
+          {this.isChatBoxVisible && (
+            <kritzel-chat-box
+              mode={this.chatBoxMode}
+              terms={this.resolvedTerms}
+              onChatSubmit={event => {
+                event.stopPropagation();
+                this.chatSubmit.emit(event.detail);
+              }}
+              onChatStop={event => {
+                event.stopPropagation();
+                this.chatStop.emit();
+              }}
+            ></kritzel-chat-box>
+          )}
+
           <kritzel-toolbar
             visible={this.isToolbarVisible && !this.isChatBoxVisible}
             class={{ 'keyboard-open': this.isVirtualKeyboardOpen }}
@@ -1841,22 +1856,7 @@ export class KritzelEditor {
             onIsToolbarReady={() => (this.isToolbarReady = true)}
           ></kritzel-toolbar>
 
-          {this.isChatBoxVisible && (
-            <kritzel-chat-box
-              mode={this.chatBoxMode}
-              terms={this.resolvedTerms}
-              onChatSubmit={event => {
-                event.stopPropagation();
-                this.chatSubmit.emit(event.detail);
-              }}
-              onChatStop={event => {
-                event.stopPropagation();
-                this.chatStop.emit();
-              }}
-            ></kritzel-chat-box>
-          )}
-
-          <div class="bottom-left-buttons">
+          <div class={{ 'bottom-left-buttons': true, 'keyboard-open': this.isVirtualKeyboardOpen }}>
             <kritzel-zoom-panel
               visible={this.isZoomPanelVisible}
               zoomPercent={this.currentZoomPercent}

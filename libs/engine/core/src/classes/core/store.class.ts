@@ -5,7 +5,9 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
+import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
@@ -132,7 +134,7 @@ export class KritzelStore {
 
   /**
    * Gets all objects currently visible in the viewport.
-   * Uses spatial querying for efficient retrieval and sorts by z-index.
+   * Uses spatial querying for efficient retrieval and sorts by z-index (a group above its tied top member).
    * @returns Array of objects within the current viewport, sorted by z-index ascending
    */
   get objectsInViewport(): KritzelBaseObject<Element>[] {
@@ -145,7 +147,7 @@ export class KritzelStore {
       depth: 100,
     };
 
-    return this.objects.query(viewportBounds).sort((a, b) => a.zIndex - b.zIndex);
+    return this.objects.query(viewportBounds).sort(KritzelZOrderHelper.compareStackOrder);
   }
 
   /**
@@ -287,7 +289,7 @@ export class KritzelStore {
    * @returns The incomplete line object, or null if no line is being drawn
    */
   get currentLine(): KritzelLine | null {
-    const drawingLines = this.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
+    const drawingLines = this.objects.filter(o => KritzelClassHelper.isInstanceOf<KritzelLine>(o, 'KritzelLine') && (o as KritzelLine).isCompleted === false);
     return drawingLines.length > 0 ? (drawingLines[0] as KritzelLine) : null;
   }
 

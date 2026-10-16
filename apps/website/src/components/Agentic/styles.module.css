@@ -10,8 +10,8 @@
   --landing-ink: #0a0a0a;
   --landing-muted: #4a4a55;
   --landing-border: 1.5px solid #0a0a0a;
-  --landing-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --landing-hand: "Caveat", cursive;
+  --landing-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --landing-hand: "Caveat Variable", "Caveat", cursive;
   background: #ffffff;
 }
 
@@ -950,7 +950,7 @@
 }
 
 .terminalPath {
-  color: #8a8a93;
+  color: #71717a;
 }
 
 .terminalCursor {

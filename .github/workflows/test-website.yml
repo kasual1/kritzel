@@ -2,9 +2,7 @@
 name: Test website
 
 on:
-  push:
-    branches-ignore:
-      - main
+  pull_request:
     paths-ignore:
       - "apps/app/**"
       - ".github/workflows/*-app.yml"

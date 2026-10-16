@@ -65,6 +65,15 @@ jobs:
             ' "$pkg" > tmp.json && mv tmp.json "$pkg"
           done
 
+      # Regenerate the lockfile from scratch so it matches the synced package.json files and
+      # the published versions. A stale lockfile makes npm keep old placements and nest
+      # @kritzel/* packages instead of hoisting them, which breaks the editor builds.
+      - name: Regenerate package-lock.json
+        run: |
+          cd public-repo
+          rm -f package-lock.json
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+
       - name: Commit and push
         run: |
           cd public-repo

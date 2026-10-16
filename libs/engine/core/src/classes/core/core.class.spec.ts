@@ -1131,76 +1131,640 @@ describe('KritzelCore', () => {
     });
   });
 
-  describe('bringForward', () => {
-    it('should increment zIndex of selected objects', () => {
-      const obj = { id: 'obj-1', zIndex: 3, onAfterUpdate: jest.fn() } as any;
-      const sg = { objects: [obj] } as any;
-      mockStore.selectionGroup = sg;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 5 },
-      ];
+  // Plain store objects for the z-order tests; groups reference their children via childIds.
+  const createObj = (id: string, zIndex: number) => ({ id, zIndex, onAfterUpdate: jest.fn() }) as any;
+  const createGroup = (id: string, zIndex: number, childIds: string[]) => ({ ...createObj(id, zIndex), __class__: 'KritzelGroup', childIds }) as any;
+  const zIndices = (...objs: any[]) => objs.map(obj => obj.zIndex);
 
-      core.bringForward();
+  /** Sets the objects of the whole workspace (store order), independent of the viewport. */
+  const setStoreObjects = (...objs: any[]) => {
+    mockObjectsMap.allObjects.mockReturnValue(objs);
+    mockObjectsMap.filter.mockImplementation((predicate: (obj: any) => boolean) => objs.filter(predicate));
+  };
 
-      expect(obj.zIndex).toBe(4);
+  const select = (...objs: any[]) => {
+    mockStore.selectionGroup = { objects: objs } as any;
+  };
+
+  const emittedUpdates = () => mockEngine.emitObjectsUpdated.mock.calls.flatMap(([updates]: any[]) => updates);
+
+  /**
+   * Records how a change is bracketed into undo steps and which store writes happen inside a transaction.
+   * @param objs - Store objects used to resolve which ids a `remove` predicate matches
+   */
+  const trackStoreWrites = (objs: any[] = []) => {
+    const events: string[] = [];
+    const inside: string[] = [];
+    const outside: string[] = [];
+    const insertedZIndex = new Map<string, number>();
+    let depth = 0;
+    const record = (label: string) => (depth > 0 ? inside : outside).push(label);
+
+    mockObjectsMap.stopUndoCapturing.mockImplementation(() => events.push('stopUndoCapturing'));
+    mockObjectsMap.transaction.mockImplementation((cb: () => void) => {
+      events.push('transaction');
+      depth++;
+      try {
+        cb();
+      } finally {
+        depth--;
+      }
+    });
+    mockObjectsMap.update.mockImplementation((obj: any) => {
+      record(`update:${obj.id}`);
+      return true;
+    });
+    mockObjectsMap.insert.mockImplementation((obj: any) => {
+      record(`insert:${obj.id}`);
+      insertedZIndex.set(obj.id, obj.zIndex);
+      return true;
+    });
+    mockObjectsMap.remove.mockImplementation((predicate: (obj: any) => boolean) => {
+      objs.filter(predicate).forEach(obj => record(`remove:${obj.id}`));
+    });
+
+    return { events, inside, outside, insertedZIndex };
+  };
+
+  describe('z-order', () => {
+    describe('ungrouped objects', () => {
+      let s1: any;
+      let s2: any;
+      let s3: any;
+
+      beforeEach(() => {
+        s1 = createObj('s1', 1);
+        s2 = createObj('s2', 2);
+        s3 = createObj('s3', 3);
+        setStoreObjects(s1, s2, s3);
+      });
+
+      it('bringForward swaps the object with the next object above', () => {
+        select(s1);
+
+        core.bringForward();
+
+        expect(zIndices(s1, s2, s3)).toEqual([2, 1, 3]);
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('sendBackward swaps the object with the next object below', () => {
+        select(s3);
+
+        core.sendBackward();
+
+        expect(zIndices(s1, s2, s3)).toEqual([1, 3, 2]);
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('bringToFront moves the object above all other objects', () => {
+        select(s1);
+
+        core.bringToFront();
+
+        expect(zIndices(s1, s2, s3)).toEqual([4, 2, 3]);
+      });
+
+      it('sendToBack moves the object below all other objects', () => {
+        select(s3);
+
+        core.sendToBack();
+
+        expect(zIndices(s1, s2, s3)).toEqual([1, 2, 0]);
+      });
+
+      it('sendBackward after bringForward restores the original values', () => {
+        select(s1);
+
+        core.bringForward();
+        core.sendBackward();
+
+        expect(zIndices(s1, s2, s3)).toEqual([1, 2, 3]);
+      });
+
+      it('persists all changes as one undo step and emits them', () => {
+        const store = trackStoreWrites();
+        select(s1);
+
+        core.bringForward();
+
+        expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
+        expect(store.inside.sort()).toEqual(['update:s1', 'update:s2']);
+        expect(store.outside).toEqual([]);
+        expect(mockEngine.emitObjectsUpdated).toHaveBeenCalledTimes(1);
+        expect(emittedUpdates()).toHaveLength(2);
+        expect(emittedUpdates()).toEqual(
+          expect.arrayContaining([
+            { object: s1, changedProperties: ['zIndex'] },
+            { object: s2, changedProperties: ['zIndex'] },
+          ]),
+        );
+        expect(mockEngine.emitObjectsChange).toHaveBeenCalledTimes(1);
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('writes and emits nothing when the object is already on top, but still rerenders', () => {
+        select(s3);
+
+        core.bringForward();
+
+        expect(zIndices(s1, s2, s3)).toEqual([1, 2, 3]);
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+        expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
+        expect(mockObjectsMap.stopUndoCapturing).not.toHaveBeenCalled();
+        expect(mockEngine.emitObjectsUpdated).not.toHaveBeenCalled();
+        expect(mockEngine.emitObjectsChange).not.toHaveBeenCalled();
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('moves an explicitly passed object instead of the selection', () => {
+        select(s1);
+
+        core.bringForward(s2);
+
+        expect(zIndices(s1, s2, s3)).toEqual([1, 3, 2]);
+      });
+
+      it('writes nothing for an explicitly passed object that is not in the store', () => {
+        const unknown = createObj('unknown', 1);
+
+        core.bringForward(unknown);
+
+        expect(zIndices(s1, s2, s3, unknown)).toEqual([1, 2, 3, 1]);
+        expect(mockObjectsMap.update).not.toHaveBeenCalled();
+        expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('updates the store instance when the selection holds a stale copy', () => {
+        const stale = createObj('s1', 1);
+        select(stale);
+
+        core.bringForward();
+
+        const updated = mockObjectsMap.update.mock.calls.map(([obj]: any[]) => obj);
+        expect(zIndices(s1, s2, s3)).toEqual([2, 1, 3]);
+        expect(stale.zIndex).toBe(1);
+        expect(updated).toContain(s1);
+        expect(updated).not.toContain(stale);
+      });
+
+      it('considers objects outside of the viewport boundaries', () => {
+        // s2 is only known to the object map, not to the viewport-limited store getters.
+        mockStore.allObjects = [s1, s3];
+        mockStore.allNonSelectionObjects = [s1, s3];
+        select(s1);
+
+        core.bringForward();
+
+        expect(zIndices(s1, s2, s3)).toEqual([2, 1, 3]);
+      });
+
+      it('steps every selected object past its own next unselected object', () => {
+        const [a, b, c, d, e] = ['A', 'B', 'C', 'D', 'E'].map((id, index) => createObj(id, index + 1));
+        setStoreObjects(a, b, c, d, e);
+        select(a, d);
+
+        core.bringForward();
+
+        expect(zIndices(a, b, c, d, e)).toEqual([2, 1, 3, 5, 4]);
+      });
+    });
+
+    describe('groups', () => {
+      let a: any;
+      let b: any;
+      let group: any;
+      let x: any;
+
+      beforeEach(() => {
+        // Well-formed group: its zIndex equals the zIndex of its top member.
+        a = createObj('a', 1);
+        b = createObj('b', 2);
+        group = createGroup('group', 2, ['a', 'b']);
+        x = createObj('x', 3);
+        setStoreObjects(a, b, group, x);
+      });
+
+      it('bringForward moves the whole group past the next object above', () => {
+        select(group);
+
+        core.bringForward();
+
+        expect(zIndices(a, b, group, x)).toEqual([2, 3, 3, 1]);
+        expect(mockEngine.forceUpdate).toBe(1);
+      });
+
+      it('sendBackward moves an object below the whole group in one step', () => {
+        select(x);
+
+        core.sendBackward();
+
+        expect(zIndices(a, b, group, x)).toEqual([2, 3, 3, 1]);
+      });
+
+      it('bringForward moves an object past the whole group in one step', () => {
+        const below = createObj('below', 1);
+        const above = createObj('above', 4);
+        a.zIndex = 2;
+        b.zIndex = 3;
+        group.zIndex = 3;
+        setStoreObjects(below, a, b, group, above);
+        select(below);
+
+        core.bringForward();
+
+        expect(zIndices(a, b, group, below, above)).toEqual([1, 2, 2, 3, 4]);
+      });
+
+      it('bringToFront moves the whole group above all other objects', () => {
+        select(group);
+
+        core.bringToFront();
+
+        expect(zIndices(a, b, group, x)).toEqual([4, 5, 5, 3]);
+      });
+
+      it('sendToBack moves the whole group below all other objects', () => {
+        x.zIndex = 1;
+        a.zIndex = 2;
+        b.zIndex = 3;
+        group.zIndex = 3;
+        setStoreObjects(x, a, b, group);
+        select(group);
+
+        core.sendToBack();
+
+        expect(zIndices(a, b, group, x)).toEqual([-1, 0, 0, 1]);
+      });
+
+      it('bringForward on a grouped object moves it within its group', () => {
+        select(a);
+
+        core.bringForward();
+
+        expect(zIndices(a, b, group, x)).toEqual([2, 1, 2, 3]);
+      });
+    });
+
+    describe('nested groups', () => {
+      let x: any;
+      let c: any;
+      let d: any;
+      let inner: any;
+      let y: any;
+      let outer: any;
+      let z: any;
+
+      beforeEach(() => {
+        x = createObj('x', 1);
+        c = createObj('c', 2);
+        d = createObj('d', 3);
+        inner = createGroup('inner', 3, ['c', 'd']);
+        y = createObj('y', 4);
+        outer = createGroup('outer', 4, ['x', 'inner', 'y']);
+        z = createObj('z', 5);
+        setStoreObjects(x, c, d, inner, y, outer, z);
+      });
+
+      it('bringForward on an inner group keeps it within its parent group', () => {
+        select(inner);
+
+        core.bringForward();
+
+        expect(zIndices(x, c, d, inner, y, outer, z)).toEqual([1, 3, 4, 4, 2, 4, 5]);
+        const updatedIds = mockObjectsMap.update.mock.calls.map(([obj]: any[]) => obj.id);
+        expect(updatedIds).not.toContain('outer');
+        expect(updatedIds).not.toContain('z');
+      });
+
+      it('bringForward on the outer group moves it together with all of its descendants', () => {
+        select(outer);
+
+        core.bringForward();
+
+        expect(zIndices(x, c, d, inner, y, outer, z)).toEqual([2, 3, 4, 4, 5, 5, 1]);
+      });
+
+      it('treats a group selected together with its descendants like the group alone', () => {
+        select(outer, x, inner, c, d, y);
+
+        core.bringForward();
+
+        expect(zIndices(x, c, d, inner, y, outer, z)).toEqual([2, 3, 4, 4, 5, 5, 1]);
+      });
+    });
+  });
+
+  describe('group', () => {
+    // KritzelGroup.createFromObjects is real and needs the children's polygons for its bounding box.
+    const createShape = (id: string, zIndex: number) =>
+      ({
+        ...createObj(id, zIndex),
+        rotatedPolygon: { topLeft: { x: 0, y: 0 }, topRight: { x: 10, y: 0 }, bottomRight: { x: 10, y: 10 }, bottomLeft: { x: 0, y: 10 } },
+      }) as any;
+
+    let newSelectionGroup: any;
+    let createSelectionGroupSpy: jest.SpyInstance;
+    let createFromObjectsSpy: jest.SpyInstance;
+
+    const createdGroup = (): KritzelGroup => createFromObjectsSpy.mock.results[0]?.value;
+
+    beforeEach(() => {
+      newSelectionGroup = { id: 'new-selection', objects: [], isSelected: false, rotation: 0 };
+      newSelectionGroup.addOrRemove = jest.fn((obj: any) => newSelectionGroup.objects.push(obj));
+      createSelectionGroupSpy = jest.spyOn(KritzelSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
+      createFromObjectsSpy = jest.spyOn(KritzelGroup, 'createFromObjects');
+    });
+
+    afterEach(() => {
+      createSelectionGroupSpy.mockRestore();
+      createFromObjectsSpy.mockRestore();
+    });
+
+    it('does nothing without a selection or with fewer than two selected objects', () => {
+      const a = createShape('a', 1);
+      setStoreObjects(a);
+
+      core.group();
+      select(a);
+      core.group();
+
+      expect(createFromObjectsSpy).not.toHaveBeenCalled();
+      expect(mockObjectsMap.insert).not.toHaveBeenCalled();
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+    });
+
+    it('groups adjacent objects without changing their zIndex and selects the group', () => {
+      const [w, a, b, x, y] = ['w', 'a', 'b', 'x', 'y'].map((id, index) => createShape(id, index));
+      setStoreObjects(w, a, b, x, y);
+      select(a, b);
+
+      core.group();
+
+      const group = createdGroup();
+      expect(group.childIds).toEqual(['a', 'b']);
+      expect(group.zIndex).toBe(2);
+      expect(zIndices(w, a, b, x, y)).toEqual([0, 1, 2, 3, 4]);
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(group);
+      expect(newSelectionGroup.objects).toEqual([group]);
+      expect(newSelectionGroup.isSelected).toBe(true);
+      expect(mockStore.setSelectionGroup).toHaveBeenLastCalledWith(newSelectionGroup);
+    });
+
+    it('moves interleaved objects below the group and orders the children bottom to top', () => {
+      const a = createShape('a', 1);
+      const x = createShape('x', 2);
+      const b = createShape('b', 3);
+      const y = createShape('y', 4);
+      setStoreObjects(a, x, b, y);
+      select(b, a);
+
+      core.group();
+
+      const group = createdGroup();
+      expect(zIndices(a, x, b, y)).toEqual([2, 1, 3, 4]);
+      expect(group.childIds).toEqual(['a', 'b']);
+      expect(group.zIndex).toBe(3);
+    });
+
+    it('inserts the group and restacks its members in one undo step', () => {
+      const a = createShape('a', 1);
+      const x = createShape('x', 2);
+      const b = createShape('b', 3);
+      const y = createShape('y', 4);
+      setStoreObjects(a, x, b, y);
+      const store = trackStoreWrites([a, x, b, y]);
+      select(a, b);
+
+      core.group();
+
+      const group = createdGroup();
+      expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
+      expect(store.inside.sort()).toEqual([`insert:${group.id}`, 'update:a', 'update:x'].sort());
+      expect(store.insertedZIndex.get(group.id)).toBe(3);
+      expect(emittedUpdates()).toHaveLength(2);
+      expect(emittedUpdates()).toEqual(
+        expect.arrayContaining([
+          { object: a, changedProperties: ['zIndex'] },
+          { object: x, changedProperties: ['zIndex'] },
+        ]),
+      );
+      expect(mockEngine.emitObjectsChange).toHaveBeenCalled();
       expect(mockEngine.forceUpdate).toBe(1);
     });
 
-    it('should accept an explicit object parameter', () => {
-      const obj = { id: 'obj-1', zIndex: 2, onAfterUpdate: jest.fn() } as any;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 5 },
-      ];
+    it('nests the new group in place of its members inside their common parent group', () => {
+      const a = createShape('a', 1);
+      const b = createShape('b', 2);
+      const c = createShape('c', 3);
+      const parent = { ...createGroup('parent', 3, ['a', 'b', 'c']), finalize: jest.fn() };
+      const objs = [a, b, c, parent];
+      setStoreObjects(...objs);
+      const store = trackStoreWrites(objs);
+      select(a, b);
 
-      core.bringForward(obj);
+      core.group();
 
-      expect(obj.zIndex).toBe(3);
+      const group = createdGroup();
+      expect(group.childIds).toEqual(['a', 'b']);
+      expect(parent.childIds).toEqual([group.id, 'c']);
+      expect(parent.finalize).toHaveBeenCalled();
+      expect(store.inside).toEqual([`insert:${group.id}`, 'update:parent']);
+    });
+
+    it('gives a nested group the rotation of its parent group', () => {
+      const a = createShape('a', 1);
+      const b = createShape('b', 2);
+      const c = createShape('c', 3);
+      const parent = { ...createGroup('parent', 3, ['a', 'b', 'c']), rotation: Math.PI / 4, finalize: jest.fn() };
+      setStoreObjects(a, b, c, parent);
+      select(a, b);
+
+      core.group();
+
+      expect(createdGroup().rotation).toBe(Math.PI / 4);
+      expect(newSelectionGroup.rotation).toBe(Math.PI / 4);
+    });
+
+    it('groups an inner group selected with a top-level object as its top-level group', () => {
+      // outer{x, inner{c, d}, y} and a top-level object: a click on c selects inner.
+      const x = createShape('x', 1);
+      const c = createShape('c', 2);
+      const d = createShape('d', 3);
+      const inner = createGroup('inner', 3, ['c', 'd']);
+      const y = createShape('y', 4);
+      const outer = { ...createGroup('outer', 4, ['x', 'inner', 'y']), rotatedPolygon: x.rotatedPolygon };
+      const top = createShape('top', 5);
+      setStoreObjects(x, c, d, inner, y, outer, top);
+      select(inner, top);
+
+      core.group();
+
+      expect(createdGroup().childIds).toEqual(['outer', 'top']);
+      expect(outer.childIds).toEqual(['x', 'inner', 'y']);
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+    });
+
+    it('creates no group for a single group selected together with its descendants', () => {
+      const a = createShape('a', 1);
+      const b = createShape('b', 2);
+      const group = createGroup('group', 2, ['a', 'b']);
+      setStoreObjects(a, b, group);
+      select(group, a, b);
+
+      core.group();
+
+      expect(createFromObjectsSpy).not.toHaveBeenCalled();
+      expect(mockObjectsMap.insert).not.toHaveBeenCalled();
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
+      expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
     });
   });
 
-  describe('sendBackward', () => {
-    it('should decrement zIndex of selected objects', () => {
-      const obj = { id: 'obj-1', zIndex: 5, onAfterUpdate: jest.fn() } as any;
-      const sg = { objects: [obj] } as any;
-      mockStore.selectionGroup = sg;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 2 },
-      ];
+  describe('ungroup', () => {
+    // A real KritzelGroup, because ungroup() reads the children through group.ungroup().
+    const createKritzelGroup = (id: string, zIndex: number, childIds: string[]) => Object.assign(new KritzelGroup(), { _core: core, id, zIndex, childIds, isMounted: true });
+    const createChild = (id: string, zIndex: number) => ({ ...createObj(id, zIndex), isMounted: true }) as any;
 
-      core.sendBackward();
+    let newSelectionGroup: any;
+    let createSelectionGroupSpy: jest.SpyInstance;
 
-      expect(obj.zIndex).toBe(4);
+    beforeEach(() => {
+      newSelectionGroup = { id: 'new-selection', objects: [], isSelected: false, rotation: 0 };
+      newSelectionGroup.addOrRemove = jest.fn((obj: any) => newSelectionGroup.objects.push(obj));
+      createSelectionGroupSpy = jest.spyOn(KritzelSelectionGroup, 'create').mockReturnValue(newSelectionGroup);
+    });
+
+    afterEach(() => {
+      createSelectionGroupSpy.mockRestore();
+    });
+
+    it('removes the group, keeps its children and selects them', () => {
+      const c1 = createChild('c1', 1);
+      const c2 = createChild('c2', 2);
+      const group = createKritzelGroup('group', 2, ['c1', 'c2']);
+      const objs = [c1, c2, group];
+      setStoreObjects(...objs);
+      const store = trackStoreWrites(objs);
+      select(group);
+
+      core.ungroup();
+
+      expect(group.isMounted).toBe(false);
+      expect([c1.isMounted, c2.isMounted]).toEqual([true, true]);
+      expect(store.inside.filter(label => label.startsWith('remove:'))).toEqual(['remove:group']);
+      expect(newSelectionGroup.objects).toEqual([c1, c2]);
+      expect(mockEngine.emitObjectsChange).toHaveBeenCalled();
       expect(mockEngine.forceUpdate).toBe(1);
     });
-  });
 
-  describe('bringToFront', () => {
-    it('should set zIndex to max + 1 of all other objects', () => {
-      const obj = { id: 'obj-1', zIndex: 1, onAfterUpdate: jest.fn() } as any;
-      const sg = { objects: [obj] } as any;
-      mockStore.selectionGroup = sg;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 10 },
-      ];
+    it('writes no zIndex for a well-formed group', () => {
+      const c1 = createChild('c1', 1);
+      const c2 = createChild('c2', 2);
+      const group = createKritzelGroup('group', 2, ['c1', 'c2']);
+      // Ties outside of the group are left alone.
+      const p = createChild('p', 4);
+      const q = createChild('q', 4);
+      setStoreObjects(c1, c2, group, p, q);
+      select(group);
 
-      core.bringToFront();
+      core.ungroup();
 
-      expect(obj.zIndex).toBe(11);
+      expect(zIndices(c1, c2, p, q)).toEqual([1, 2, 4, 4]);
+      expect(mockObjectsMap.update).not.toHaveBeenCalled();
     });
-  });
 
-  describe('sendToBack', () => {
-    it('should set zIndex to min - 1 of all other objects', () => {
-      const obj = { id: 'obj-1', zIndex: 5, onAfterUpdate: jest.fn() } as any;
-      const sg = { objects: [obj] } as any;
-      mockStore.selectionGroup = sg;
-      mockStore.allNonSelectionObjects = [
-        { id: 'other', zIndex: 3 },
-      ];
+    /** A store whose remove() drops objects right away, like KritzelObjectMap. */
+    const setMutableStoreObjects = (...objs: any[]) => {
+      const live = [...objs];
+      mockObjectsMap.allObjects.mockImplementation(() => [...live]);
+      mockObjectsMap.filter.mockImplementation((predicate: (obj: any) => boolean) => live.filter(predicate));
+      mockObjectsMap.remove.mockImplementation((predicate: (obj: any) => boolean) => {
+        for (let i = live.length - 1; i >= 0; i--) {
+          if (predicate(live[i])) live.splice(i, 1);
+        }
+      });
+      return live;
+    };
 
-      core.sendToBack();
+    it('keeps the children of a nested group inside its parent group', () => {
+      const x = createChild('x', 1);
+      const c = createChild('c', 2);
+      const d = createChild('d', 3);
+      const inner = createKritzelGroup('inner', 3, ['c', 'd']);
+      const y = createChild('y', 4);
+      const parent = { ...createGroup('parent', 4, ['x', 'inner', 'y']), finalize: jest.fn() };
+      const live = setMutableStoreObjects(x, c, d, inner, y, parent);
+      select(inner);
 
-      expect(obj.zIndex).toBe(2);
+      core.ungroup();
+
+      expect(parent.childIds).toEqual(['x', 'c', 'd', 'y']);
+      expect(parent.finalize).toHaveBeenCalled();
+      expect(live).not.toContain(inner);
+      expect(zIndices(x, c, d, y, parent)).toEqual([1, 2, 3, 4, 4]);
+      expect(newSelectionGroup.objects).toEqual([c, d]);
+    });
+
+    it('selects every child once when the groups were selected together with their children', () => {
+      // Select all adds groups together with all of their descendants.
+      const a = createChild('a', 1);
+      const b = createChild('b', 2);
+      const c = createChild('c', 3);
+      const inner = createKritzelGroup('inner', 3, ['b', 'c']);
+      const outer = createKritzelGroup('outer', 3, ['a', 'inner']);
+      setMutableStoreObjects(a, b, c, inner, outer);
+      select(outer, inner, a, b, c);
+
+      core.ungroup();
+
+      expect(newSelectionGroup.objects.map((obj: any) => obj.id).sort()).toEqual(['a', 'b', 'c']);
+    });
+
+    it('resolves ties of several groups before they are removed from the store', () => {
+      // Pasted by older versions: tied members and a tie across the two groups.
+      const a = createChild('a', 2);
+      const b = createChild('b', 2);
+      const g1 = createKritzelGroup('g1', 2, ['a', 'b']);
+      const c = createChild('c', 3);
+      const d = createChild('d', 3);
+      const g2 = createKritzelGroup('g2', 3, ['c', 'd']);
+      setMutableStoreObjects(a, b, g1, c, d, g2);
+      select(g1, g2);
+
+      core.ungroup();
+
+      const values = zIndices(a, b, c, d);
+      expect(new Set(values).size).toBe(4);
+      expect(values).toEqual([...values].sort((p, q) => p - q));
+      expect(emittedUpdates().every((update: any) => update.changedProperties[0] === 'zIndex')).toBe(true);
+      expect(newSelectionGroup.objects).toEqual([a, b, c, d]);
+    });
+
+    it('gives tied children unique increasing values in store order within one undo step', () => {
+      // Groups created by the engine used to give all members the same zIndex.
+      const c1 = createChild('c1', 2);
+      const c2 = createChild('c2', 2);
+      const c3 = createChild('c3', 2);
+      const group = createKritzelGroup('group', 2, ['c1', 'c2', 'c3']);
+      const x = createChild('x', 5);
+      const objs = [c1, c2, c3, group, x];
+      setStoreObjects(...objs);
+      const store = trackStoreWrites(objs);
+      select(group);
+
+      core.ungroup();
+
+      expect(c1.zIndex).toBeLessThan(c2.zIndex);
+      expect(c2.zIndex).toBeLessThan(c3.zIndex);
+      expect(c3.zIndex).toBeLessThan(x.zIndex);
+      expect(x.zIndex).toBe(5);
+      expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
+      expect(store.inside).toContain('remove:group');
+      expect(store.inside.some(label => label.startsWith('update:'))).toBe(true);
+      expect(store.outside.filter(label => label.startsWith('update:'))).toEqual([]);
     });
   });
 
@@ -1365,6 +1929,18 @@ describe('KritzelCore', () => {
 
       expect(result[0].zIndex).toBeLessThanOrEqual(result[1].zIndex);
     });
+
+    it('should sort a group above its tied top member regardless of query order', () => {
+      const below = { id: 'below', zIndex: 1 } as any;
+      const member = { id: 'member', zIndex: 2 } as any;
+      const group = { id: 'group', zIndex: 2, __class__: 'KritzelGroup' } as any;
+
+      mockObjectsMap.query.mockReturnValue([group, member, below]);
+      expect(core.getObjectsInViewport()).toEqual([below, member, group]);
+
+      mockObjectsMap.query.mockReturnValue([member, below, group]);
+      expect(core.getObjectsInViewport()).toEqual([below, member, group]);
+    });
   });
 
   describe('displaySelectionGroupUI', () => {
@@ -1383,6 +1959,7 @@ describe('KritzelCore', () => {
 
     it('should return false for selected KritzelLine when no selection group', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       mockStore.selectionGroup = null;
 
@@ -1406,6 +1983,7 @@ describe('KritzelCore', () => {
       localGroup.id = 'sg-1';
       localGroup.isSelected = true;
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
       mockStore.selectionGroup = localGroup;
 
@@ -1428,6 +2006,7 @@ describe('KritzelCore', () => {
       remoteGroup.isSelected = true;
       remoteGroup.userId = 'remote-user';
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       Object.defineProperty(remoteGroup, 'objects', { value: [line], writable: true });
       core.setUser({ id: 'local-user', displayName: 'Local' } as any);
 
@@ -1442,8 +2021,26 @@ describe('KritzelCore', () => {
       expect(core.displaySelectionLineUI(obj)).toBe(false);
     });
 
+    it('should show line UI and hide group UI for a line created from a different KritzelLine class copy', () => {
+      // Consumer-constructed objects (e.g. imported via a framework wrapper package) are
+      // not instances of the engine's own KritzelLine class, but carry the same __class__.
+      class ForeignKritzelLine {
+        __class__ = 'KritzelLine';
+      }
+      const line = Object.assign(new ForeignKritzelLine(), { id: 'line-1', isSelected: true }) as any;
+      const localGroup = Object.create(KritzelSelectionGroup.prototype);
+      localGroup.id = 'group-1';
+      localGroup.isSelected = true;
+      Object.defineProperty(localGroup, 'objects', { value: [line], writable: true });
+      mockStore.selectionGroup = localGroup;
+
+      expect(core.displaySelectionLineUI(line)).toBe(true);
+      expect(core.displaySelectionGroupUI(localGroup)).toBe(false);
+    });
+
     it('should return true for selected line when no selection group', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = null;
@@ -1453,6 +2050,7 @@ describe('KritzelCore', () => {
 
     it('should return false for unselected line when no selection group', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = false;
       mockStore.selectionGroup = null;
 
@@ -1461,6 +2059,7 @@ describe('KritzelCore', () => {
 
     it('should return false when selection group is not selected', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = { isSelected: false, objects: [line] };
@@ -1470,6 +2069,7 @@ describe('KritzelCore', () => {
 
     it('should return true for a single selected line in selection group', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       line.id = 'line-1';
       mockStore.selectionGroup = { isSelected: true, objects: [line] };
@@ -1479,6 +2079,7 @@ describe('KritzelCore', () => {
 
     it('should return false when selection group has multiple objects', () => {
       const line = Object.create(KritzelLine.prototype);
+      line.__class__ = 'KritzelLine';
       line.isSelected = true;
       line.id = 'line-1';
       const otherObj = { id: 'other' };

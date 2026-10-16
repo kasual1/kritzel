@@ -35,7 +35,7 @@ export const KRITZEL_VERSION = '${version}';
 }
 
 // Bumps @kritzel/engine, @kritzel/editor, @kritzel/cli and all framework wrappers to the
-// same new version, keeping cross-package peerDependencies in sync.
+// same new version, keeping cross-package (peer) dependencies in sync.
 function bump(bumpVersion) {
   const enginePackage = readJson(paths.engineCore);
   const newVersion = bumpVersion(enginePackage.version);
@@ -74,11 +74,12 @@ function bump(bumpVersion) {
   ['editorAngular', 'editorReact', 'editorVue'].forEach((key) => {
     const packageJson = readJson(paths[key]);
     packageJson.version = newVersion;
-    if (packageJson.peerDependencies?.['@kritzel/editor']) {
-      packageJson.peerDependencies['@kritzel/editor'] = `^${newVersion}`;
-    }
-    if (packageJson.peerDependencies?.['@kritzel/engine']) {
-      packageJson.peerDependencies['@kritzel/engine'] = `^${newVersion}`;
+    for (const field of ['dependencies', 'peerDependencies']) {
+      for (const name of ['@kritzel/editor', '@kritzel/engine']) {
+        if (packageJson[field]?.[name]) {
+          packageJson[field][name] = `^${newVersion}`;
+        }
+      }
     }
     writeJson(paths[key], packageJson);
     console.log(`Updated ${packageJson.name} package to version ${newVersion}`);

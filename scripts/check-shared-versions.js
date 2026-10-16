@@ -16,7 +16,7 @@ function checkSharedVersions() {
     if (pkg.version !== version) {
       errors.push(`${pkg.name}: expected ${version}, received ${pkg.version}`);
     }
-    for (const field of ['peerDependencies', 'devDependencies']) {
+    for (const field of ['dependencies', 'peerDependencies', 'devDependencies']) {
       for (const name of ['@kritzel/engine', '@kritzel/editor']) {
         const range = pkg[field]?.[name];
         if (range && range !== `^${version}` && range !== version) {

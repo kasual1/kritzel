@@ -133,6 +133,9 @@ describe('KritzelEngine', () => {
       cut: jest.fn(),
       paste: jest.fn(),
     },
+    anchorManager: {
+      rebuildIndex: jest.fn(),
+    },
     permissionManager: {
       requestPermission: jest.fn().mockResolvedValue('granted'),
     },
@@ -2766,6 +2769,62 @@ describe('KritzelEngine', () => {
       await engine.updateObject(makeObject(), { scale: 2 } as any);
 
       expect(callOrder).toEqual(['objectsChange', 'objectsUpdated']);
+    });
+  });
+
+  describe('addObject / addObjects group zIndex allocation', () => {
+    /** zIndex of every object in the simulated store at the moment it was inserted, keyed by id. */
+    let stored: Map<string, number>;
+
+    const makeObject = (id: string): any => ({
+      id,
+      scale: 1,
+      workspaceId: '',
+      zIndex: 0,
+      _core: null,
+      generateId: jest.fn().mockReturnValue(id),
+    });
+
+    const makeGroup = (id: string, children: any[]): any => ({
+      ...makeObject(id),
+      __class__: 'KritzelGroup',
+      childIds: children.map(child => child.id),
+      _pendingChildren: children,
+      finalize: jest.fn(),
+    });
+
+    beforeEach(() => {
+      core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
+      jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, className: string) => obj?.__class__ === className);
+
+      // Like the real store, currentZIndex is one above the highest stored zIndex.
+      stored = new Map([['existing', 4]]);
+      core.addObject.mockImplementation((object: any) => stored.set(object.id, object.zIndex));
+      Object.defineProperty(core.store, 'currentZIndex', { get: () => Math.max(0, ...stored.values()) + 1, configurable: true });
+    });
+
+    afterEach(() => {
+      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
+    });
+
+    it('addObject stacks pending children bottom to top in the order they were added', async () => {
+      const inner = makeGroup('inner', [makeObject('r2'), makeObject('r3')]);
+      const group = makeGroup('group', [makeObject('r1'), inner, makeObject('r4')]);
+
+      await engine.addObject(group);
+
+      // Each group takes the value of its top child.
+      expect(Object.fromEntries(stored)).toEqual({ existing: 4, r1: 5, r2: 6, r3: 7, inner: 7, r4: 8, group: 8 });
+    });
+
+    it('addObjects places a plain object that follows a group above the group band', async () => {
+      const group = makeGroup('group', [makeObject('a'), makeObject('b')]);
+      const plain = makeObject('plain');
+
+      await engine.addObjects([group, plain]);
+
+      expect(Object.fromEntries(stored)).toEqual({ existing: 4, a: 5, b: 6, group: 6, plain: 7 });
     });
   });
 });

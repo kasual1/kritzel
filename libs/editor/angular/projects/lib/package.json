@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/angular-editor",
-  "version": "0.5.4",
+  "version": "0.5.7",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite canvas experiences with Angular.",
   "keywords": [
@@ -13,11 +13,11 @@
   "license": "PolyForm-Noncommercial-1.0.0",
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
-    "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
-    "@kritzel/editor": "^0.5.4",
-    "@kritzel/engine": "^0.5.4"
+    "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0"
   },
   "dependencies": {
+    "@kritzel/editor": "^0.5.7",
+    "@kritzel/engine": "^0.5.7",
     "tslib": "^2.3.0"
   },
   "sideEffects": false,

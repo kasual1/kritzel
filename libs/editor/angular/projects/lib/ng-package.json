@@ -4,5 +4,6 @@
   "assets": ["./LICENSE.md"],
   "lib": {
     "entryFile": "src/public-api.ts"
-  }
+  },
+  "allowedNonPeerDependencies": ["@kritzel/editor", "@kritzel/engine"]
 }

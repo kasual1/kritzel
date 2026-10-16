@@ -8,7 +8,7 @@
 }
 
 :host(:focus-visible) .toggle-track {
-  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(74, 125, 255, 0.3));
+  box-shadow: 0 0 0 2px var(--kritzel-global-focus-ring-color, rgba(0, 122, 255, 0.3));
 }
 
 :host(.disabled) {
@@ -27,7 +27,7 @@
 }
 
 :host(.checked) .toggle-track {
-  background-color: var(--kritzel-slide-toggle-track-checked-color, #4A7DFF);
+  background-color: var(--kritzel-slide-toggle-track-checked-color, #007AFF);
 }
 
 .toggle-thumb {

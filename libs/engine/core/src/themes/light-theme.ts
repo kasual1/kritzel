@@ -37,7 +37,7 @@ export const lightTheme: KritzelTheme = {
     hoverBorderColor: '#cccccc',
     labelColor: '#333333',
     placeholderColor: '#999999',
-    selectionBackground: '#4A7DFF',
+    selectionBackground: '#007AFF',
     selectionColor: '#ffffff',
     suffixBackground: '#f5f5f5',
     suffixColor: '#666666',
@@ -45,11 +45,11 @@ export const lightTheme: KritzelTheme = {
   },
 
   selection: {
-    borderColor: '#4A7DFF',
-    boxBackgroundColor: 'rgba(74, 125, 255, 0.2)',
-    boxBorderColor: 'rgba(74, 125, 255, 0.5)',
+    borderColor: '#007AFF',
+    boxBackgroundColor: 'rgba(0, 122, 255, 0.2)',
+    boxBorderColor: 'rgba(0, 122, 255, 0.5)',
     handleColor: '#ffffff',
-    handleStrokeColor: '#4A7DFF'
+    handleStrokeColor: '#007AFF'
   },
 
   checkerboard: {
@@ -90,7 +90,7 @@ export const lightTheme: KritzelTheme = {
     controlActiveBackgroundColor: 'hsl(0, 0%, 0%, 8.6%)',
     controlColor: '#000000',
     controlHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
-    controlSelectedBackgroundColor: '#4A7DFF',
+    controlSelectedBackgroundColor: '#007AFF',
     controlSelectedColor: '#ffffff',
     separatorColor: '#ebebeb',
   },
@@ -128,14 +128,14 @@ export const lightTheme: KritzelTheme = {
   },
 
   dropdown: {
-    accentColor: '#4A7DFF',
+    accentColor: '#007bff',
     background: '#ffffff',
     borderColor: '#dbdbdb',
     borderRadius: '6px',
     hoverBorderColor: '#cccccc',
     hoverBackgroundColor: '#f0f0f0',
     menuBorderRadius: '6px',
-    selectedBackgroundColor: '#4A7DFF1A',
+    selectedBackgroundColor: '#007bff1a',
     textColor: '#333333',
   },
 
@@ -151,10 +151,10 @@ export const lightTheme: KritzelTheme = {
   },
 
   snap: {
-    indicatorFill: 'rgba(74, 125, 255, 0.3)',
-    indicatorFillInactive: 'rgba(74, 125, 255, 0.18)',
-    indicatorStroke: '#4A7DFF',
-    indicatorStrokeInactive: 'rgba(74, 125, 255, 0.5)',
+    indicatorFill: 'rgba(59, 130, 246, 0.3)',
+    indicatorFillInactive: 'rgba(59, 130, 246, 0.18)',
+    indicatorStroke: '#007bff',
+    indicatorStrokeInactive: 'rgba(59, 130, 246, 0.5)',
     lineStroke: 'rgba(0, 0, 0, 0.2)',
   },
 
@@ -185,9 +185,9 @@ export const lightTheme: KritzelTheme = {
     menuItemDisabledColor: '#aaaaaa',
     menuItemFocusOutline: '2px solid #333333',
     menuItemHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
-    menuItemSelectedBackgroundColor: '#4A7DFF',
+    menuItemSelectedBackgroundColor: '#007AFF',
     menuItemSelectedColor: '#ffffff',
-    menuItemSelectedHoverBackgroundColor: '#4A7DFF',
+    menuItemSelectedHoverBackgroundColor: '#007AFF',
   },
 
   menu: {
@@ -202,12 +202,12 @@ export const lightTheme: KritzelTheme = {
     itemInputBorderColorOnSelected: '#ffffff',
     itemInputCaretColor: '#333333',
     itemInputCaretColorOnSelected: '#ffffff',
-    itemInputSelectionColor: '#4A7DFF',
+    itemInputSelectionColor: '#007aff',
     itemInputSelectionColorOnSelected: 'rgba(255, 255, 255, 0.55)',
     itemInputSelectionTextColor: '#ffffff',
     itemInputSelectionTextColorOnSelected: '#ffffff',
     itemOverlayBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
-    itemSelectedBackgroundColor: '#4A7DFF',
+    itemSelectedBackgroundColor: '#007aff',
     itemSelectedColor: '#ffffff',
   },
 
@@ -266,7 +266,7 @@ export const lightTheme: KritzelTheme = {
     hoverBorderColor: '#cccccc',
     inputBackground: '#ffffff',
     labelColor: '#666666',
-    selectionBackground: '#4A7DFF',
+    selectionBackground: '#007AFF',
     selectionColor: '#ffffff',
     spinnerActiveBackground: 'hsl(0, 0%, 0%, 8.6%)',
     spinnerBackground: 'transparent',
@@ -277,8 +277,8 @@ export const lightTheme: KritzelTheme = {
   },
 
   opacitySlider: {
-    activeColor: '#4A7DFF',
-    thumbBorderColor: '#4A7DFF',
+    activeColor: '#007AFF',
+    thumbBorderColor: '#007AFF',
     thumbColor: '#ffffff',
     trackColor: '#e0e0e0',
   },
@@ -323,7 +323,7 @@ export const lightTheme: KritzelTheme = {
   slideToggle: {
     thumbColor: '#fff',
     thumbSize: '18px',
-    trackCheckedColor: '#4A7DFF',
+    trackCheckedColor: '#007AFF',
     trackColor: '#ccc',
   },
 
