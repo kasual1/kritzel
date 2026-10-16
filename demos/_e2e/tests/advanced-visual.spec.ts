@@ -56,4 +56,18 @@ test.describe('Advanced Pages Visual Regression', () => {
     await expectAdvancedScreenshot(editorPage, '/advanced/dynamic-objects/iframe', 'advanced-dynamic-objects-iframe');
   });
 
+  test('should match screenshot for advanced-agentic-cursors-basic', async ({ editorPage }) => {
+    await editorPage.goto('/advanced/agentic-cursors/basic');
+    await waitForAdvancedPage(editorPage);
+    await editorPage.page.waitForFunction(async () => {
+      const editor = document.querySelector('kritzel-editor') as HTMLElement & { getAgenticCursors(): Promise<unknown[]> };
+      return (await editor.getAgenticCursors()).length === 2;
+    });
+    await editorPage.page.evaluate(
+      () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))),
+    );
+
+    await expect(editorPage.page).toHaveScreenshot('advanced-agentic-cursors-basic.png');
+  });
+
 });

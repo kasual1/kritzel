@@ -383,6 +383,13 @@ export const demoRoutes = [
     component: () => import('./pages/advanced/import-export/ImportExportWorkspaceImportPage.vue'),
   },
   {
+    path: '/advanced/agentic-cursors/basic',
+    title: 'Agentic Cursors',
+    category: 'advanced',
+    context: 'Agentic Cursors',
+    component: () => import('./pages/advanced/agentic-cursors/AgenticCursorsBasicPage.vue'),
+  },
+  {
     path: '/customization/theming/apply',
     title: 'Apply',
     category: 'customization',

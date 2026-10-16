@@ -47,6 +47,16 @@ kritzel-toolbar.keyboard-open {
   transform: var(--kritzel-editor-toolbar-transform, translateY(300%));
 }
 
+kritzel-chat-box {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  max-width: calc(100% - 16px);
+  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
+}
+
 .top-left-buttons {
   position: absolute;
   z-index: 2;
@@ -129,6 +139,11 @@ kritzel-toolbar.keyboard-open {
   display: flex;
   align-items: flex-end;
   pointer-events: none;
+  transition: transform var(--kritzel-editor-toolbar-transition-duration, 0.1s) var(--kritzel-editor-toolbar-transition, ease-in-out);
+}
+
+.bottom-left-buttons.keyboard-open {
+  transform: var(--kritzel-editor-toolbar-transform, translateY(300%));
 }
 
 /* Hide the zoom panel when the editor container is narrow. */
