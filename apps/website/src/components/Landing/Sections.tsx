@@ -428,7 +428,7 @@ export function CliSection({ variant = "frameworks" }: { variant?: CliVariant })
     <section aria-labelledby="cli-heading" className={styles.cli}>
       <div className={styles.sectionIntro}>
         <h2 id="cli-heading" className={styles.sectionTitle}>
-          {isSkill ? "Teach your agent Kritzel" : "Set up Kritzel in seconds"}
+          {isSkill ? "Agents love Kritzel" : "Set up Kritzel in seconds"}
         </h2>
         <p className={styles.sectionText}>
           {isSkill
@@ -550,8 +550,37 @@ const FAQ_ITEMS = [
   },
 ];
 
-export function Faq() {
+const AGENTIC_FAQ_ITEMS = [
+  {
+    question: "What makes a canvas agentic?",
+    answer:
+      "An agentic canvas lets your application give an AI agent control of the board. With Kritzel, your app can create, move, and delete objects, control the viewport, and respond to canvas changes through code.",
+  },
+  {
+    question: "Can people see what an AI agent is doing?",
+    answer:
+      "Yes. Add an agentic cursor with a name, color, and status, then move it across the canvas or attach it to an object to show what the agent is working on. Agentic cursors are local to each client and are not synchronized to collaborators.",
+  },
+  {
+    question: "Can people and agents work on the same canvas?",
+    answer:
+      "Yes. People can interact with the board while your application and agents make changes through Kritzel's API, so both can work with the same canvas objects.",
+  },
+  {
+    question: "Which frameworks can I use to build an agentic canvas?",
+    answer:
+      "Kritzel supports React, Vue, Angular, and Vanilla JavaScript. Its Web Component-based engine and framework wrappers let you integrate an agentic canvas into your existing app.",
+  },
+  {
+    question: "Is Kritzel free to use?",
+    answer:
+      "Kritzel is completely free for personal, open-source, and evaluation projects (which display a subtle watermark). For production SaaS apps and commercial deployments, you can purchase a Commercial License to remove the watermark.",
+  },
+];
+
+export function Faq({ variant = "default" }: { variant?: "default" | "agentic" }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const faqItems = variant === "agentic" ? AGENTIC_FAQ_ITEMS : FAQ_ITEMS;
 
   return (
     <section aria-labelledby="faq-heading" className={styles.faq}>
@@ -559,10 +588,14 @@ export function Faq() {
         <h2 id="faq-heading" className={styles.sectionTitle}>
           Frequently Asked Questions
         </h2>
-        <p className={styles.sectionText}>Answers to common questions about adopting Kritzel in production projects.</p>
+        <p className={styles.sectionText}>
+          {variant === "agentic"
+            ? "Answers to common questions about building agentic canvases with Kritzel."
+            : "Answers to common questions about adopting Kritzel in production projects."}
+        </p>
       </div>
       <div className={styles.faqList}>
-        {FAQ_ITEMS.map((item, index) => {
+        {faqItems.map((item, index) => {
           const isOpen = openIndex === index;
           return (
             <div key={item.question} className={styles.faqItem}>
