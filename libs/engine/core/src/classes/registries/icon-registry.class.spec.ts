@@ -42,6 +42,14 @@ describe('KritzelIconRegistry', () => {
   });
 
   describe('built-in icons', () => {
+    it('registers the chat submit and loading icons', () => {
+      expect(KritzelIconRegistry.get('arrowUp')).toContain('<path d="m5 12 7-7 7 7"/>');
+      expect(KritzelIconRegistry.get('square')).toContain('<rect width="18" height="18" x="3" y="3" rx="2"/>');
+      for (const name of ['arrowUp', 'square']) {
+        expect(KritzelIconRegistry.get(name)).toContain('stroke-width="1.5"');
+      }
+    });
+
     it('should have registered default icons on import', () => {
       expect(KritzelIconRegistry.has('cursor')).toBe(true);
       expect(KritzelIconRegistry.has('pen')).toBe(true);

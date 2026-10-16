@@ -96,6 +96,11 @@ export const PT_LOCALE: KritzelLocale = {
     'zoom.zoomIn': 'Aumentar zoom',
     'zoom.zoomOut': 'Diminuir zoom',
 
+    // Chat box
+    'chatBox.placeholder': 'Pergunte à IA...',
+    'chatBox.submit': 'Enviar',
+    'chatBox.stop': 'Parar',
+
     // Utility panel
     'utility.undo': 'Desfazer',
     'utility.redo': 'Refazer',

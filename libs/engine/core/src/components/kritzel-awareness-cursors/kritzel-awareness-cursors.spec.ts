@@ -21,6 +21,7 @@ jest.mock('../../classes/objects/shape.class', () => ({
 
 import { KritzelAwarenessCursors } from './kritzel-awareness-cursors';
 import { KritzelCore } from '../../classes/core/core.class';
+import { KritzelViewportOverlayHelper } from '../../helpers/viewport-overlay.helper';
 
 describe('KritzelAwarenessCursors', () => {
   let component: KritzelAwarenessCursors;
@@ -245,28 +246,28 @@ describe('KritzelAwarenessCursors', () => {
 
   describe('clampToEdge', () => {
     it('should clamp coordinates to left edge', () => {
-      const result = (component as any).clampToEdge(-100, 400);
+      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, -100, 400, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(40); // edgeIndicatorPadding
       expect(result.y).toBe(400);
     });
 
     it('should clamp coordinates to top edge', () => {
-      const result = (component as any).clampToEdge(500, -200);
+      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 500, -200, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(500);
       expect(result.y).toBe(40);
     });
 
     it('should clamp coordinates to right edge', () => {
-      const result = (component as any).clampToEdge(1500, 400);
+      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 1500, 400, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(960); // viewportWidth - padding
       expect(result.y).toBe(400);
     });
 
     it('should clamp coordinates to bottom edge', () => {
-      const result = (component as any).clampToEdge(500, 1200);
+      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 1200, component.edgeIndicatorPadding);
 
       expect(result.x).toBe(500);
       expect(result.y).toBe(760); // viewportHeight - padding
@@ -274,14 +275,14 @@ describe('KritzelAwarenessCursors', () => {
 
     it('should compute correct angle for off-screen cursor', () => {
       // Cursor far to the right: angle should be ~0 (pointing right)
-      const result = (component as any).clampToEdge(2000, 400);
+      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 2000, 400, component.edgeIndicatorPadding);
 
       expect(result.angle).toBeCloseTo(0, 1);
     });
 
     it('should compute correct angle for cursor below viewport', () => {
       // Cursor far below: angle should be ~π/2 (pointing down)
-      const result = (component as any).clampToEdge(500, 2000);
+      const result = KritzelViewportOverlayHelper.clampToEdge(component.core.store.state, 500, 2000, component.edgeIndicatorPadding);
 
       expect(result.angle).toBeCloseTo(Math.PI / 2, 1);
     });
@@ -289,23 +290,23 @@ describe('KritzelAwarenessCursors', () => {
 
   describe('getInitials', () => {
     it('should return two initials for full name', () => {
-      expect((component as any).getInitials('John Doe')).toBe('JD');
+      expect(KritzelViewportOverlayHelper.getInitials('John Doe')).toBe('JD');
     });
 
     it('should return single initial for single name', () => {
-      expect((component as any).getInitials('Alice')).toBe('A');
+      expect(KritzelViewportOverlayHelper.getInitials('Alice')).toBe('A');
     });
 
     it('should use first and last for multi-part names', () => {
-      expect((component as any).getInitials('John Michael Doe')).toBe('JD');
+      expect(KritzelViewportOverlayHelper.getInitials('John Michael Doe')).toBe('JD');
     });
 
     it('should handle empty string', () => {
-      expect((component as any).getInitials('?')).toBe('?');
+      expect(KritzelViewportOverlayHelper.getInitials('?')).toBe('?');
     });
 
     it('should uppercase initials', () => {
-      expect((component as any).getInitials('john doe')).toBe('JD');
+      expect(KritzelViewportOverlayHelper.getInitials('john doe')).toBe('JD');
     });
   });
 

@@ -1,5 +1,3 @@
-// Temporarily hidden: the leading underscore excludes this page from Docusaurus routing.
-// Rename back to agentic.tsx (and set SHOW_CANVAS_TOGGLE in Landing/Hero.tsx) to restore /agentic.
 import { useEffect, useState, type ReactNode } from "react";
 import Layout from "@theme/Layout";
 import { HtmlClassNameProvider } from "@docusaurus/theme-common";
@@ -40,9 +38,9 @@ export default function Agentic(): ReactNode {
           <div className={styles.heroArea}>
             <Hero docsPath={docsPath} variant="agentic" />
             <div aria-hidden="true" className={styles.heroSpacer} />
-            <Features />
+            <Features variant="agentic" />
           </div>
-          <CliSection />
+          <CliSection variant="skill" />
           <Faq />
           <Wordmark />
         </main>

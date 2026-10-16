@@ -111,9 +111,6 @@ function DraggableCanvasItem({
   );
 }
 
-// Temporarily hidden while the /agentic page is disabled.
-const SHOW_CANVAS_TOGGLE = false;
-
 const TOOLS: ReadonlyArray<{ label: string; icon: ReactNode }> = [
   { label: "Select", icon: <path d="M4.04 4.65a.5.5 0 0 1 .61-.61l15.5 5.94a.5.5 0 0 1-.05.95l-6.1 1.88a1 1 0 0 0-.66.66l-1.88 6.1a.5.5 0 0 1-.95.05z" /> },
   { label: "Pen", icon: <path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z" /> },
@@ -408,16 +405,14 @@ export default function Hero({
 
         <div className={styles.heroCopy}>
           <div ref={copyRef} className={styles.heroCopyInner}>
-            {SHOW_CANVAS_TOGGLE && (
-              <nav className={styles.canvasToggle} aria-label="Canvas experience">
-                <Link to="/" aria-current={variant === "infinite" ? "page" : undefined}>
-                  Infinite
-                </Link>
-                <Link to="/agentic" aria-current={variant === "agentic" ? "page" : undefined}>
-                  Agentic
-                </Link>
-              </nav>
-            )}
+            <nav className={styles.canvasToggle} aria-label="Canvas experience">
+              <Link to="/" aria-current={variant === "infinite" ? "page" : undefined}>
+                Infinite
+              </Link>
+              <Link to="/agentic" aria-current={variant === "agentic" ? "page" : undefined}>
+                Agentic
+              </Link>
+            </nav>
             <HeroTitle />
             <p className={styles.heroSubtitle}>
               Kritzel is a framework-agnostic infinite canvas library that helps you build custom whiteboard
