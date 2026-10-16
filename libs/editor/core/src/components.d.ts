@@ -396,7 +396,7 @@ export namespace Components {
         "importFromFile": () => Promise<void>;
         "importFromJson": (json: string) => Promise<void>;
         /**
-          * @default true
+          * @default false
          */
         "isChatBoxVisible": boolean;
         /**
@@ -408,7 +408,7 @@ export namespace Components {
          */
         "isPanningEnabled": boolean;
         /**
-          * @default false
+          * @default true
          */
         "isToolbarVisible": boolean;
         /**
@@ -2344,7 +2344,7 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * @default true
+          * @default false
          */
         "isChatBoxVisible"?: boolean;
         /**
@@ -2356,7 +2356,7 @@ declare namespace LocalJSX {
          */
         "isPanningEnabled"?: boolean;
         /**
-          * @default false
+          * @default true
          */
         "isToolbarVisible"?: boolean;
         /**
