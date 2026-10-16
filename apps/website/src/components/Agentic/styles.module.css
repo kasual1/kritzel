@@ -1479,10 +1479,19 @@
 
   .heroWrapper .variantPlaceholder {
     animation: agentic-shoe-place 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transition: translate 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* Each card is offset so a strip of every card stays visible and grabbable. */
-  .heroPair .shoeCompact,
+  /* Each card is offset so a strip of every card stays visible and grabbable. The offsets are
+     symmetric around the hero's center, so the stack as a whole stays centered. */
+  .heroPair .shoeCompact {
+    translate: calc(-50% - 8px) calc(-50% + 4px);
+  }
+
+  .heroPair .variantPlaceholderLeft {
+    translate: calc(-50% + 8px) calc(-50% - 4px);
+  }
+
   .heroTrio .shoeCompact {
     translate: calc(-50% - 16px) calc(-50% + 8px);
   }
@@ -1509,7 +1518,8 @@
 }
 
 @media (max-width: 1199px) and (prefers-reduced-motion: reduce) {
-  .heroWrapper .shoeCompact {
+  .heroWrapper .shoeCompact,
+  .heroWrapper .variantPlaceholder {
     transition: none;
   }
 }
