@@ -41,7 +41,7 @@ export default function Agentic(): ReactNode {
             <Features variant="agentic" />
           </div>
           <CliSection variant="skill" />
-          <Faq />
+          <Faq variant="agentic" />
           <Wordmark />
         </main>
       </Layout>
