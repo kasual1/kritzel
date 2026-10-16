@@ -1,5 +1,5 @@
 import { Component, Host, Listen, Prop, Element, h, Method, Event, State, EventEmitter, Watch } from '@stencil/core';
-import { KritzelIconRegistry } from '@kritzel/engine';
+import { KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelIconRegistry } from '@kritzel/engine';
 import { KritzelToolbarItem } from '@kritzel/engine';
 import { KritzelToolDefinition } from '@kritzel/engine';
 import { ShapeType } from '@kritzel/engine';
@@ -276,8 +276,8 @@ export class KritzelEditor {
   @Prop() customFonts: KritzelFontMap = {};
   @Prop({ mutable: true }) isPanningEnabled: boolean = true;
   @Prop({ mutable: true }) isZoomingEnabled: boolean = true;
-  @Prop() isToolbarVisible: boolean = false;
-  @Prop() isChatBoxVisible: boolean = true;
+  @Prop() isToolbarVisible: boolean = true;
+  @Prop() isChatBoxVisible: boolean = false;
   /** Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. */
   @Prop() chatBoxMode: KritzelChatBoxMode = 'collapsed';
   @Prop() isUtilityPanelVisible: boolean = true;
@@ -321,6 +321,8 @@ export class KritzelEditor {
   @Event() chatSubmit!: EventEmitter<string>;
   /** Emitted when the user stops the current chat response. */
   @Event() chatStop!: EventEmitter<void>;
+  /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
+  @Event() agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
   @State() isEngineReady: boolean = false;
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
@@ -824,6 +826,81 @@ export class KritzelEditor {
     return this.engineRef.getObjectsInViewport();
   }
 
+  /**
+   * Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
+   * @param options - Name, color, status, visibility and initial position (defaults to the viewport center).
+   * @returns A snapshot of the created cursor.
+   */
+  @Method()
+  async addAgenticCursor(options: KritzelAgenticCursorOptions = {}): Promise<KritzelAgenticCursor> {
+    return this.engineRef.addAgenticCursor(options);
+  }
+
+  /**
+   * Updates the name, color, status or visibility of an agentic cursor.
+   * @param id - The cursor ID.
+   * @param patch - The properties to change. Pass `status: null` to clear the status.
+   * @returns A snapshot of the updated cursor.
+   */
+  @Method()
+  async updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch): Promise<KritzelAgenticCursor> {
+    return this.engineRef.updateAgenticCursor(id, patch);
+  }
+
+  /**
+   * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
+   * Object targets attach the cursor by default, so it follows the object afterwards.
+   * @param id - The cursor ID.
+   * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
+   * @param options - Duration, easing, speed and whether to attach to an object target.
+   * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+   */
+  @Method()
+  async moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
+    return this.engineRef.moveAgenticCursor(id, target, options);
+  }
+
+  /**
+   * Detaches an agentic cursor from its object. The cursor stays at its current position.
+   * @param id - The cursor ID.
+   */
+  @Method()
+  async detachAgenticCursor(id: string): Promise<void> {
+    return this.engineRef.detachAgenticCursor(id);
+  }
+
+  /**
+   * Removes an agentic cursor. A running move resolves with `completed: false`.
+   * @param id - The cursor ID.
+   * @returns `true` if the cursor existed.
+   */
+  @Method()
+  async removeAgenticCursor(id: string): Promise<boolean> {
+    return this.engineRef.removeAgenticCursor(id);
+  }
+
+  /** Removes all agentic cursors. */
+  @Method()
+  async clearAgenticCursors(): Promise<void> {
+    return this.engineRef.clearAgenticCursors();
+  }
+
+  /**
+   * Returns a snapshot of an agentic cursor.
+   * @param id - The cursor ID.
+   * @returns The cursor, or `null` if it doesn't exist.
+   */
+  @Method()
+  async getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null> {
+    return this.engineRef.getAgenticCursor(id);
+  }
+
+  /** Returns snapshots of all agentic cursors. */
+  @Method()
+  async getAgenticCursors(): Promise<KritzelAgenticCursor[]> {
+    return this.engineRef.getAgenticCursors();
+  }
+
   @Method()
   async hideContextMenu() {
     return this.engineRef.hideContextMenu();
@@ -1260,6 +1337,11 @@ export class KritzelEditor {
   handleAwarenessChange(event: CustomEvent<Map<number, Record<string, any>>>) {
     event.stopPropagation();
     this.awarenessChange.emit(event.detail);
+  }
+
+  handleAgenticCursorDetached(event: CustomEvent<KritzelAgenticCursorDetachedEvent>) {
+    event.stopPropagation();
+    this.agenticCursorDetached.emit(event.detail);
   }
 
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
@@ -1740,6 +1822,7 @@ export class KritzelEditor {
             onNotificationsChange={event => this.handleNotificationsChange(event)}
             onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
             onIsLoadingChange={event => this.handleIsLoadingChange(event)}
+            onAgenticCursorDetached={event => this.handleAgenticCursorDetached(event)}
           ></kritzel-engine>
 
           <kritzel-toolbar

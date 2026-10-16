@@ -86,7 +86,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isPublicChange',
   'awarenessChange',
   'chatSubmit',
-  'chatStop'
+  'chatStop',
+  'agenticCursorDetached'
 ], [
   'isReady',
   'activeWorkspaceChange',
@@ -104,7 +105,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isPublicChange',
   'awarenessChange',
   'chatSubmit',
-  'chatStop'
+  'chatStop',
+  'agenticCursorDetached'
 ]);
 
 

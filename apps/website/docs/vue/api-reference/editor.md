@@ -771,3 +771,81 @@ Reinitializes the active synchronization provider connection.
 ```ts
 reinitSync(): Promise<void>
 ```
+
+## Agentic Cursors
+
+### Props
+
+No agentic-cursor-specific props.
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| agenticCursorDetached | KritzelAgenticCursorDetachedEvent | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. |
+
+### Methods
+
+#### addAgenticCursor
+
+Adds a programmatically controlled cursor. Agentic cursors are rendered locally only.
+
+```ts
+addAgenticCursor(options?: KritzelAgenticCursorOptions): Promise<KritzelAgenticCursor>
+```
+
+#### updateAgenticCursor
+
+Updates the name, color, status or visibility of an agentic cursor. Pass `status: null` to clear the status.
+
+```ts
+updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch): Promise<KritzelAgenticCursor>
+```
+
+#### moveAgenticCursor
+
+Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default. Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+
+```ts
+moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions): Promise<KritzelAgenticCursorMoveResult>
+```
+
+#### detachAgenticCursor
+
+Detaches an agentic cursor from its object. The cursor stays at its current position.
+
+```ts
+detachAgenticCursor(id: string): Promise<void>
+```
+
+#### removeAgenticCursor
+
+Removes an agentic cursor. A running move resolves with `completed: false`.
+
+```ts
+removeAgenticCursor(id: string): Promise<boolean>
+```
+
+#### clearAgenticCursors
+
+Removes all agentic cursors.
+
+```ts
+clearAgenticCursors(): Promise<void>
+```
+
+#### getAgenticCursor
+
+Returns a snapshot of an agentic cursor, or `null` if it doesn't exist.
+
+```ts
+getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null>
+```
+
+#### getAgenticCursors
+
+Returns snapshots of all agentic cursors.
+
+```ts
+getAgenticCursors(): Promise<KritzelAgenticCursor[]>
+```
