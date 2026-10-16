@@ -2,9 +2,7 @@
 name: Test libraries
 
 on:
-  push:
-    branches-ignore:
-      - main
+  pull_request:
     paths-ignore:
       - "apps/app/**"
       - ".github/workflows/*-app.yml"

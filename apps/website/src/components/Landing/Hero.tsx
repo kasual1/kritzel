@@ -313,7 +313,8 @@ export default function Hero({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const copyRef = useRef<HTMLDivElement>(null);
-  const grassImageUrl = useBaseUrl("/img/wet_grass.webp");
+  const grassImageSmallUrl = useBaseUrl("/img/wet_grass-480w.webp");
+  const grassImageUrl = useBaseUrl("/img/wet_grass-960w.webp");
 
   useLayoutEffect(() => {
     const wrapper = wrapperRef.current;
@@ -425,7 +426,15 @@ export default function Hero({
           <div className={styles.grassImageAnchor}>
             <DraggableCanvasItem label="wet grass image">
               <ImageCard>
-                <img className={styles.grassImage} src={grassImageUrl} alt="Wet grass" draggable={false} />
+                <img
+                  className={styles.grassImage}
+                  src={grassImageUrl}
+                  srcSet={`${grassImageSmallUrl} 480w, ${grassImageUrl} 960w`}
+                  sizes="315px"
+                  decoding="async"
+                  alt="Wet grass"
+                  draggable={false}
+                />
               </ImageCard>
             </DraggableCanvasItem>
           </div>

@@ -197,6 +197,51 @@ const config: Config = {
         },
       };
     },
+    function productionSourceMaps() {
+      return {
+        name: "production-source-maps",
+        configureWebpack(_config, isServer) {
+          // Emit source maps for the client bundles so production JS can be debugged
+          if (isServer || process.env.NODE_ENV !== "production") {
+            return {};
+          }
+          return {
+            devtool: "source-map",
+          };
+        },
+      };
+    },
+    function preloadCriticalFonts() {
+      // Fonts are only discovered after styles.css is parsed, so preload the
+      // above-the-fold ones to fetch them in parallel with the stylesheet.
+      // Their hashed file names are only known after bundling.
+      const fontPrefixes = ["inter-latin-wght-normal-", "jetbrains-mono-latin-wght-normal-"];
+      return {
+        name: "preload-critical-fonts",
+        async postBuild({ outDir, baseUrl }) {
+          const fontsDir = nodePath.join(outDir, "assets", "fonts");
+          const fontFiles = fs.readdirSync(fontsDir);
+          const preloadTags = fontPrefixes
+            .map((prefix) => {
+              const file = fontFiles.find((name) => name.startsWith(prefix) && name.endsWith(".woff2"));
+              if (!file) throw new Error(`Missing font to preload: ${prefix}*.woff2`);
+              return `<link rel="preload" href="${baseUrl}assets/fonts/${file}" as="font" type="font/woff2" crossorigin>`;
+            })
+            .join("");
+
+          const htmlFiles = fs
+            .readdirSync(outDir, { recursive: true, encoding: "utf8" })
+            .filter((file) => file.endsWith(".html"));
+          for (const file of htmlFiles) {
+            const filePath = nodePath.join(outDir, file);
+            const html = fs.readFileSync(filePath, "utf8");
+            const stylesheet = html.search(/<link rel="?stylesheet"?/);
+            if (stylesheet === -1) continue;
+            fs.writeFileSync(filePath, html.slice(0, stylesheet) + preloadTags + html.slice(stylesheet));
+          }
+        },
+      };
+    },
     [
       "@docusaurus/plugin-client-redirects",
       {

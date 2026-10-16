@@ -24,7 +24,7 @@ export const config: Config = {
   ...(isDev ? {} : {
     rollupConfig: {
       inputOptions: {
-        external: ['yjs', 'y-websocket', 'y-indexeddb', 'lib0'],
+        external: [/^(yjs|y-websocket|y-indexeddb|lib0)(\/.*)?$/],
       },
     },
   }),

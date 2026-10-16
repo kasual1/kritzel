@@ -37,7 +37,7 @@ export const darkTheme: KritzelTheme = {
     hoverBorderColor: '#5a5a5a',
     labelColor: '#e0e0e0',
     placeholderColor: '#777777',
-    selectionBackground: '#5B8CFF',
+    selectionBackground: '#0A84FF',
     selectionColor: '#ffffff',
     suffixBackground: '#3a3a3a',
     suffixColor: '#aaaaaa',
@@ -45,11 +45,11 @@ export const darkTheme: KritzelTheme = {
   },
 
   selection: {
-    borderColor: '#5B8CFF',
-    boxBackgroundColor: 'rgba(91, 140, 255, 0.2)',
-    boxBorderColor: 'rgba(91, 140, 255, 0.5)',
+    borderColor: '#0A84FF',
+    boxBackgroundColor: 'rgba(10, 132, 255, 0.2)',
+    boxBorderColor: 'rgba(10, 132, 255, 0.5)',
     handleColor: '#1a1a1a',
-    handleStrokeColor: '#5B8CFF'
+    handleStrokeColor: '#0A84FF'
   },
 
   checkerboard: {
@@ -90,7 +90,7 @@ export const darkTheme: KritzelTheme = {
     controlActiveBackgroundColor: 'hsl(0, 0%, 100%, 12%)',
     controlColor: '#ffffff',
     controlHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
-    controlSelectedBackgroundColor: '#5B8CFF',
+    controlSelectedBackgroundColor: '#0A84FF',
     controlSelectedColor: '#ffffff',
     separatorColor: '#3a3a3a',
   },
@@ -128,14 +128,14 @@ export const darkTheme: KritzelTheme = {
   },
 
   dropdown: {
-    accentColor: '#5B8CFF',
+    accentColor: '#0A84FF',
     borderColor: '#4a4a4a',
     borderRadius: '6px',
     hoverBorderColor: '#5a5a5a',
     background: '#1a1a1a',
     hoverBackgroundColor: '#3a3a3a',
     menuBorderRadius: '6px',
-    selectedBackgroundColor: 'rgba(91, 140, 255, 0.2)',
+    selectedBackgroundColor: 'rgba(10, 132, 255, 0.2)',
     textColor: '#e0e0e0',
   },
 
@@ -151,9 +151,9 @@ export const darkTheme: KritzelTheme = {
   },
 
   snap: {
-    indicatorFill: 'rgba(91, 140, 255, 0.35)',
-    indicatorFillInactive: 'rgba(91, 140, 255, 0.2)',
-    indicatorStroke: '#5B8CFF',
+    indicatorFill: 'rgba(10, 132, 255, 0.35)',
+    indicatorFillInactive: 'rgba(10, 132, 255, 0.2)',
+    indicatorStroke: '#0A84FF',
     indicatorStrokeInactive: 'rgba(255, 255, 255, 0.45)',
     lineStroke: 'rgba(255, 255, 255, 0.35)',
   },
@@ -185,9 +185,9 @@ export const darkTheme: KritzelTheme = {
     menuItemDisabledColor: '#666666',
     menuItemFocusOutline: '2px solid #ffffff',
     menuItemHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
-    menuItemSelectedBackgroundColor: '#5B8CFF',
+    menuItemSelectedBackgroundColor: '#0A84FF',
     menuItemSelectedColor: '#ffffff',
-    menuItemSelectedHoverBackgroundColor: '#5B8CFF',
+    menuItemSelectedHoverBackgroundColor: '#0A84FF',
   },
 
   menu: {
@@ -207,7 +207,7 @@ export const darkTheme: KritzelTheme = {
     itemInputSelectionTextColor: '#ffffff',
     itemInputSelectionTextColorOnSelected: '#ffffff',
     itemOverlayBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
-    itemSelectedBackgroundColor: '#5B8CFF',
+    itemSelectedBackgroundColor: '#0A84FF',
     itemSelectedColor: '#ffffff',
   },
 
@@ -266,7 +266,7 @@ export const darkTheme: KritzelTheme = {
     hoverBorderColor: '#5a5a5a',
     inputBackground: '#1a1a1a',
     labelColor: '#999999',
-    selectionBackground: '#5B8CFF',
+    selectionBackground: '#0A84FF',
     selectionColor: '#ffffff',
     spinnerActiveBackground: 'hsl(0, 0%, 100%, 12%)',
     spinnerBackground: 'transparent',
@@ -277,8 +277,8 @@ export const darkTheme: KritzelTheme = {
   },
 
   opacitySlider: {
-    activeColor: '#5B8CFF',
-    thumbBorderColor: '#5B8CFF',
+    activeColor: '#0A84FF',
+    thumbBorderColor: '#0A84FF',
     thumbColor: '#ffffff',
     trackColor: '#4a4a4a',
   },
@@ -306,7 +306,7 @@ export const darkTheme: KritzelTheme = {
     inputBackground: '#1a1a1a',
     inputBorderColor: '#4a4a4a',
     inputTextColor: '#e0e0e0',
-    selectionColor: '#5B8CFF',
+    selectionColor: '#0A84FF',
     copyButtonBackground: '#2a2a2a',
     copyButtonColor: '#e0e0e0',
     copyButtonHoverBackground: '#3a3a3a',
@@ -317,7 +317,7 @@ export const darkTheme: KritzelTheme = {
 
   slideToggle: {
     thumbColor: '#ffffff',
-    trackCheckedColor: '#5B8CFF',
+    trackCheckedColor: '#0A84FF',
     trackColor: '#4a4a4a',
     transitionDuration: '0.2s',
   },

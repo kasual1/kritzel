@@ -10,8 +10,8 @@
   --landing-ink: #0a0a0a;
   --landing-muted: #4a4a55;
   --landing-border: 1.5px solid #0a0a0a;
-  --landing-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --landing-hand: "Caveat", cursive;
+  --landing-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --landing-hand: "Caveat Variable", "Caveat", cursive;
   background: #ffffff;
 }
 
@@ -245,6 +245,15 @@
 
   .heroTitleCursor[data-start] {
     display: none;
+  }
+
+  /* Nothing is hidden, so the not-yet-typed accent characters can share the gradient safely. */
+  .heroTitleAccentPending {
+    background: linear-gradient(100deg, #0a0a0a 10%, #5b5b66 90%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
   }
 }
 
@@ -730,6 +739,18 @@
   background: #ffffff;
 }
 
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .featuresGrid {
   max-width: 1180px;
   margin: 0 auto;
@@ -862,7 +883,7 @@
 }
 
 .terminalPath {
-  color: #8a8a93;
+  color: #71717a;
 }
 
 .terminalCursor {

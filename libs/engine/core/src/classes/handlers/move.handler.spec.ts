@@ -738,6 +738,7 @@ describe('KritzelMoveHandler', () => {
 
     beforeEach(() => {
       mockLine = {
+        __class__: 'KritzelLine',
         id: 'line-1',
         startAnchor: { objectId: 'obj-1', position: 'top' },
         endAnchor: { objectId: 'obj-2', position: 'bottom' },

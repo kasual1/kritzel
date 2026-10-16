@@ -191,7 +191,10 @@ export function Features({ variant = "default" }: { variant?: "default" | "agent
   const features = variant === "agentic" ? AGENTIC_FEATURES : FEATURES;
 
   return (
-    <section aria-label="Features" className={styles.features}>
+    <section aria-labelledby="features-heading" className={styles.features}>
+      <h2 id="features-heading" className={styles.visuallyHidden}>
+        Features
+      </h2>
       <div className={styles.featuresGrid}>
         {features.map((feature) => (
           <article key={feature.title} className={styles.feature}>

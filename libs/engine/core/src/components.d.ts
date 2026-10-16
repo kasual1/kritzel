@@ -139,12 +139,12 @@ export namespace Components {
          */
         "beginSceneBootstrap": () => Promise<void>;
         /**
-          * Moves an object one layer forward in the z-order.
+          * Moves an object, or each selected layer, one layer forward in the z-order, past the next layer above it. A group is one layer: all of its children move together. A grouped object moves within its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
         "bringForward": (object?: KritzelBaseObject<any>) => Promise<void>;
         /**
-          * Moves an object to the very front of the z-order.
+          * Moves an object, or the selected layers, to the very front of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the front of its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
         "bringToFront": (object?: KritzelBaseObject<any>) => Promise<void>;
@@ -363,7 +363,7 @@ export namespace Components {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * Groups the currently selected objects into a single selection group.
+          * Creates a group (`KritzelGroup`) from the currently selected objects. Requires at least two selected objects. The grouped objects become one layer at the position of the topmost selected object.
          */
         "group": () => Promise<void>;
         /**
@@ -533,12 +533,12 @@ export namespace Components {
          */
         "selectObjects": (objects: KritzelBaseObject[]) => Promise<void>;
         /**
-          * Moves an object one layer backward in the z-order.
+          * Moves an object, or each selected layer, one layer backward in the z-order, past the next layer below it. A group is one layer: all of its children move together. A grouped object moves within its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
         "sendBackward": (object?: KritzelBaseObject<any>) => Promise<void>;
         /**
-          * Moves an object to the very back of the z-order.
+          * Moves an object, or the selected layers, to the very back of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the back of its group.
           * @param object - The object to move. If omitted, applies to the current selection.
          */
         "sendToBack": (object?: KritzelBaseObject<any>) => Promise<void>;
@@ -597,7 +597,7 @@ export namespace Components {
          */
         "undo": () => Promise<void>;
         /**
-          * Ungroups the currently selected group back into individual objects.
+          * Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
          */
         "ungroup": () => Promise<void>;
         /**

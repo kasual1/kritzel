@@ -1,5 +1,7 @@
 @import "@fontsource-variable/inter";
 @import "@fontsource-variable/inter/wght-italic.css";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/caveat";
 
 *:not(kritzel-button) {
   font-family: "Inter Variable", Inter, "Segoe UI", Helvetica, Arial, sans-serif !important;
