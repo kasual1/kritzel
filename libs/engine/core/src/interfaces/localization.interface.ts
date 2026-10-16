@@ -106,6 +106,7 @@ export interface KritzelTerms {
   // Chat box
   'chatBox.placeholder': string;
   'chatBox.submit': string;
+  'chatBox.stop': string;
 
   // Utility panel
   'utility.undo': string;

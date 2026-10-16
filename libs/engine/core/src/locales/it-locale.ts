@@ -99,6 +99,7 @@ export const IT_LOCALE: KritzelLocale = {
     // Chat box
     'chatBox.placeholder': 'Chiedi all\'IA...',
     'chatBox.submit': 'Invia',
+    'chatBox.stop': 'Interrompi',
 
     // Utility panel
     'utility.undo': 'Annulla',

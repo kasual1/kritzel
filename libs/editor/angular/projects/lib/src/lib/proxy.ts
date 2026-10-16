@@ -15,19 +15,20 @@ import { defineCustomElement as defineKritzelSplitButton } from '@kritzel/editor
 import { defineCustomElement as defineKritzelStrokeSize } from '@kritzel/editor/dist/components/kritzel-stroke-size.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelChatBox,
-  inputs: ['disabled', 'mode', 'placeholder', 'terms', 'value']
+  inputs: ['disabled', 'loading', 'mode', 'placeholder', 'terms', 'value']
 })
 @Component({
   selector: 'kritzel-chat-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'mode', 'placeholder', 'terms', 'value'],
-  outputs: ['chatSubmit', 'modeChange'],
+  inputs: ['disabled', 'loading', 'mode', 'placeholder', 'terms', 'value'],
+  outputs: ['chatSubmit', 'chatStop', 'modeChange'],
 })
 export class KritzelChatBox {
   protected el: HTMLKritzelChatBoxElement;
   @Output() chatSubmit = new EventEmitter<KritzelChatBoxCustomEvent<string>>();
+  @Output() chatStop = new EventEmitter<KritzelChatBoxCustomEvent<void>>();
   @Output() modeChange = new EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxMode>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
@@ -44,6 +45,10 @@ export declare interface KritzelChatBox extends Components.KritzelChatBox {
    * Emitted with the current text when the user submits the chat box.
    */
   chatSubmit: EventEmitter<KritzelChatBoxCustomEvent<string>>;
+  /**
+   * Emitted when the user stops the current response.
+   */
+  chatStop: EventEmitter<KritzelChatBoxCustomEvent<void>>;
   /**
    * Emitted when the mode changes, including automatic expansion.
    */
@@ -62,7 +67,7 @@ export declare interface KritzelChatBox extends Components.KritzelChatBox {
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
   inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'licenseKey', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit', 'chatStop'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
@@ -82,6 +87,7 @@ export class KritzelEditor {
   @Output() isPublicChange = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorIKritzelIsPublicChangeEvent>>();
   @Output() awarenessChange = new EventEmitter<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>();
   @Output() chatSubmit = new EventEmitter<KritzelEditorCustomEvent<string>>();
+  @Output() chatStop = new EventEmitter<KritzelEditorCustomEvent<void>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -138,6 +144,10 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
    * Emitted with the chat box text when the user submits it.
    */
   chatSubmit: EventEmitter<KritzelEditorCustomEvent<string>>;
+  /**
+   * Emitted when the user stops the current chat response.
+   */
+  chatStop: EventEmitter<KritzelEditorCustomEvent<void>>;
 }
 
 

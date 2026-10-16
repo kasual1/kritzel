@@ -319,6 +319,8 @@ export class KritzelEditor {
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
   /** Emitted with the chat box text when the user submits it. */
   @Event() chatSubmit!: EventEmitter<string>;
+  /** Emitted when the user stops the current chat response. */
+  @Event() chatStop!: EventEmitter<void>;
   @State() isEngineReady: boolean = false;
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
@@ -1763,6 +1765,10 @@ export class KritzelEditor {
               onChatSubmit={event => {
                 event.stopPropagation();
                 this.chatSubmit.emit(event.detail);
+              }}
+              onChatStop={event => {
+                event.stopPropagation();
+                this.chatStop.emit();
               }}
             ></kritzel-chat-box>
           )}

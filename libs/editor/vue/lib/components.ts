@@ -19,11 +19,14 @@ export const KritzelChatBox: StencilVueComponent<JSX.KritzelChatBox> = /*@__PURE
   'mode',
   'placeholder',
   'disabled',
+  'loading',
   'terms',
   'chatSubmit',
+  'chatStop',
   'modeChange'
 ], [
   'chatSubmit',
+  'chatStop',
   'modeChange'
 ]);
 
@@ -82,7 +85,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'login',
   'isPublicChange',
   'awarenessChange',
-  'chatSubmit'
+  'chatSubmit',
+  'chatStop'
 ], [
   'isReady',
   'activeWorkspaceChange',
@@ -99,7 +103,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'login',
   'isPublicChange',
   'awarenessChange',
-  'chatSubmit'
+  'chatSubmit',
+  'chatStop'
 ]);
 
 

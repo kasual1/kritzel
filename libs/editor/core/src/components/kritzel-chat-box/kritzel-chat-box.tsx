@@ -25,11 +25,17 @@ export class KritzelChatBox {
   /** Whether the chat box is disabled. */
   @Prop() disabled: boolean = false;
 
+  /** Whether to show a circulating progress indicator around the chat box border. */
+  @Prop() loading: boolean = false;
+
   /** Resolved localized strings keyed by term key, supplied by the editor. */
   @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
   /** Emitted with the current text when the user submits the chat box. */
   @Event() chatSubmit!: EventEmitter<string>;
+
+  /** Emitted when the user stops the current response. */
+  @Event() chatStop!: EventEmitter<void>;
 
   /** Emitted when the mode changes, including automatic expansion. */
   @Event() modeChange!: EventEmitter<KritzelChatBoxMode>;
@@ -372,15 +378,30 @@ export class KritzelChatBox {
     this.value = '';
   };
 
+  private handleButtonClick = (): void => {
+    if (this.loading) {
+      this.chatStop.emit();
+      return;
+    }
+
+    this.submit();
+  };
+
   render() {
     const submitLabel = this.terms['chatBox.submit'] ?? 'Send';
+    const buttonLabel = this.loading ? this.terms['chatBox.stop'] ?? 'Stop' : submitLabel;
     // A collapsed, unfocused box previews only the first line, since textareas cannot truncate explicit line breaks.
     const lines = (this.value ?? '').split('\n');
     const showPreview = this.mode === 'collapsed' && !this.isFocused && lines.length > 1;
 
     return (
       <Host>
-        <div class="chat-box">
+        <div class="chat-box" aria-busy={this.loading ? 'true' : 'false'}>
+          {this.loading && (
+            <svg class="chat-progress" aria-hidden="true">
+              <rect class="chat-progress-ring" x="1" y="1" pathLength="100" />
+            </svg>
+          )}
           <div class={{ 'chat-input-container': true, collapsed: this.mode === 'collapsed', 'has-preview': showPreview }}>
             <textarea
               ref={el => (this.textareaRef = el)}
@@ -406,10 +427,14 @@ export class KritzelChatBox {
               </div>
             )}
             <div class="chat-caret" ref={el => (this.caretRef = el)} aria-hidden="true"></div>
-            <button class="chat-submit" type="button" aria-label={submitLabel} title={submitLabel} disabled={!this.canSubmit} onClick={this.submit}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 19V5M6 11l6-6 6 6" />
-              </svg>
+            <button
+              class="chat-submit"
+              type="button"
+              aria-label={buttonLabel}
+              disabled={this.disabled || (!this.loading && !this.canSubmit)}
+              onClick={this.handleButtonClick}
+            >
+              <kritzel-icon name={this.loading ? 'square' : 'arrowUp'} size={16} aria-hidden="true"></kritzel-icon>
             </button>
           </div>
         </div>

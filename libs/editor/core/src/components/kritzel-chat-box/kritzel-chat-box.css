@@ -6,12 +6,40 @@
 }
 
 .chat-box {
+  position: relative;
   box-sizing: border-box;
   padding: var(--kritzel-chat-box-padding, 6px);
   border: var(--kritzel-chat-box-border, 1px solid #e4e4e7);
   border-radius: var(--kritzel-chat-box-border-radius, 20px);
   background-color: var(--kritzel-chat-box-background-color, #ffffff);
   box-shadow: var(--kritzel-chat-box-box-shadow, 0 4px 8px rgba(20, 18, 31, 0.04), 0 18px 36px -14px rgba(20, 18, 31, 0.2));
+}
+
+.chat-progress {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.chat-progress-ring {
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  rx: calc(var(--kritzel-chat-box-border-radius, 20px) - 1px);
+  fill: none;
+  stroke: var(--kritzel-chat-box-button-background-color, #4A7DFF);
+  stroke-width: 2px;
+  stroke-linecap: round;
+  stroke-dasharray: 18 82;
+  animation: chat-progress-orbit 1.8s linear infinite;
+}
+
+@keyframes chat-progress-orbit {
+  to {
+    stroke-dashoffset: -100;
+  }
 }
 
 .chat-input-container {
@@ -160,6 +188,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .chat-progress-ring {
+    animation: none;
+  }
+
   .chat-input {
     transition: none;
   }
