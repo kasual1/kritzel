@@ -5,12 +5,30 @@ import { defineContainer, type StencilVueComponent } from '@stencil/vue-output-t
 
 import type { JSX } from '@kritzel/editor/dist/components';
 
+import { defineCustomElement as defineKritzelChatBox } from '@kritzel/editor/dist/components/kritzel-chat-box.js';
 import { defineCustomElement as defineKritzelEditor } from '@kritzel/editor/dist/components/kritzel-editor.js';
 import { defineCustomElement as defineKritzelSettings } from '@kritzel/editor/dist/components/kritzel-settings.js';
 import { defineCustomElement as defineKritzelShapeFill } from '@kritzel/editor/dist/components/kritzel-shape-fill.js';
 import { defineCustomElement as defineKritzelShareDialog } from '@kritzel/editor/dist/components/kritzel-share-dialog.js';
 import { defineCustomElement as defineKritzelSplitButton } from '@kritzel/editor/dist/components/kritzel-split-button.js';
 import { defineCustomElement as defineKritzelStrokeSize } from '@kritzel/editor/dist/components/kritzel-stroke-size.js';
+
+
+export const KritzelChatBox: StencilVueComponent<JSX.KritzelChatBox> = /*@__PURE__*/ defineContainer<JSX.KritzelChatBox>('kritzel-chat-box', defineKritzelChatBox, [
+  'value',
+  'mode',
+  'placeholder',
+  'disabled',
+  'loading',
+  'terms',
+  'chatSubmit',
+  'chatStop',
+  'modeChange'
+], [
+  'chatSubmit',
+  'chatStop',
+  'modeChange'
+]);
 
 
 export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__*/ defineContainer<JSX.KritzelEditor>('kritzel-editor', defineKritzelEditor, [
@@ -39,6 +57,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isPanningEnabled',
   'isZoomingEnabled',
   'isToolbarVisible',
+  'isChatBoxVisible',
+  'chatBoxMode',
   'isUtilityPanelVisible',
   'isWorkspaceManagerVisible',
   'isMoreMenuVisible',
@@ -64,7 +84,10 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'logout',
   'login',
   'isPublicChange',
-  'awarenessChange'
+  'awarenessChange',
+  'chatSubmit',
+  'chatStop',
+  'agenticCursorDetached'
 ], [
   'isReady',
   'activeWorkspaceChange',
@@ -80,7 +103,10 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'logout',
   'login',
   'isPublicChange',
-  'awarenessChange'
+  'awarenessChange',
+  'chatSubmit',
+  'chatStop',
+  'agenticCursorDetached'
 ]);
 
 

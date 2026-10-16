@@ -17,6 +17,7 @@ import { KritzelQuadtree } from './quadtree.structure';
 import { IKritzelUser } from '../../interfaces/user.interface';
 import { runMigrations } from '../../helpers/migration.helper';
 import { WORKSPACE_MIGRATIONS } from '../../migrations/workspace.migrations';
+import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
 
 /**
  * A synchronized object map that stores and manages drawable objects on the canvas.
@@ -125,17 +126,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this._awareness.setLocalStateField('user', {
       id: user.id,
       displayName,
-      color: user.color || this.generateColorFromName(displayName),
+      color: user.color || KritzelUserColorHelper.generateColorFromName(displayName),
     });
-  }
-
-  private generateColorFromName(name: string): string {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const hue = Math.abs(hash % 360);
-    return `hsl(${hue}, 45%, 55%)`;
   }
 
   /**

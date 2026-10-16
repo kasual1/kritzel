@@ -103,6 +103,11 @@ export interface KritzelTerms {
   'zoom.zoomIn': string;
   'zoom.zoomOut': string;
 
+  // Chat box
+  'chatBox.placeholder': string;
+  'chatBox.submit': string;
+  'chatBox.stop': string;
+
   // Utility panel
   'utility.undo': string;
   'utility.redo': string;

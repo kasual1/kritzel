@@ -47,6 +47,16 @@ kritzel-toolbar.keyboard-open {
   transform: var(--kritzel-editor-toolbar-transform, translateY(300%));
 }
 
+kritzel-chat-box {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  max-width: calc(100% - 16px);
+  bottom: var(--kritzel-editor-toolbar-bottom, 14px);
+}
+
 .top-left-buttons {
   position: absolute;
   z-index: 2;
