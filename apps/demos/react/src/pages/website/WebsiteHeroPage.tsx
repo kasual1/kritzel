@@ -427,7 +427,7 @@ export function WebsiteHeroPage() {
         <KritzelEditor
           ref={editorRef}
           editorId="website-hero"
-          licenseKey="KRTZL1.eyJzdWIiOiJLcml0emVsLmlvIiwicGxhbiI6ImVudGVycHJpc2UiLCJpYXQiOjE3ODYyNjc2NjEsImFsbG93ZWREb21haW5zIjpbImthc3VhbDEuZ2l0aHViLmlvIl19.tgeIfEBY1ARcU9kwhsHX_QI8migRQ59u82MW0JoEmeb-n-Ly2yZJdkMr0D7jdOJ0gdvmfHoqSQA8CkdaOKaSBQ"
+          isWatermarkVisible={false}
           customFonts={WEBSITE_HERO_CUSTOM_FONTS}
           toolbarItems={WEBSITE_HERO_CONTROLS}
           isPanningEnabled={false}

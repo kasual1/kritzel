@@ -3,12 +3,11 @@ import { KritzelCore } from '../../classes/core/core.class';
 import { KRITZEL_WEBSITE_URL } from '../../constants/engine.constants';
 
 /**
- * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine
- * when the editor is not licensed.
+ * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
  *
- * Rendered inside the engine's Shadow DOM and gated by the license manager on
- * the engine's reactive render path, so removing the node simply causes it to
- * reappear on the next render. The badge links to the Kritzel website.
+ * Rendered inside the engine's Shadow DOM unless the engine's
+ * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
+ * website.
  */
 @Component({
   tag: 'kritzel-watermark',

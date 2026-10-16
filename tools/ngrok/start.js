@@ -4,7 +4,6 @@ const ngrok = require('@ngrok/ngrok');
 const DEFAULT_PORT = 3333;
 const DEFAULT_NAME = 'stencil-lib';
 const DEFAULT_TRAFFIC_POLICY = '{"on_http_request": [{"actions": [{"type": "oauth","config": {"provider": "google"}}]}]}';
-const LEGACY_AUTHTOKEN = '3D6YKVvW6NgR6D4WgTN3v_6CywEPo3gBrBQbGA5TYGW';
 
 function getArgValue(name) {
 	const prefix = `--${name}=`;
@@ -30,7 +29,10 @@ function toPortNumber(value) {
 		const port = toPortNumber(getArgValue('port') || process.env.NGROK_PORT);
 		const name = getArgValue('name') || process.env.NGROK_NAME || DEFAULT_NAME;
 		const trafficPolicy = getArgValue('traffic-policy') || process.env.NGROK_TRAFFIC_POLICY || DEFAULT_TRAFFIC_POLICY;
-		const authtoken = process.env.NGROK_AUTHTOKEN || LEGACY_AUTHTOKEN;
+		const authtoken = process.env.NGROK_AUTHTOKEN;
+		if (!authtoken) {
+			throw new Error('NGROK_AUTHTOKEN is not set. Add it to a .env file in the repository root (see .env.example).');
+		}
 
 		const listener = await ngrok.forward({
 			addr: port,

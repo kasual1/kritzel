@@ -70,7 +70,7 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
-      label: 'License',
+      label: 'License & Watermark',
       collapsed: true,
       items: ['license'],
     },

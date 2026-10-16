@@ -93,4 +93,4 @@ Learn more in the [full documentation](https://kritzel.io/docs/react/getting-sta
 
 ## License
 
-See the [Kritzel License](https://kritzel.io/license). Kritzel is free for personal, hobby, and educational use. Commercial use requires a license — visit [kritzel.io](https://kritzel.io) for details.
+Kritzel is released under the [MIT License](./LICENSE.md).

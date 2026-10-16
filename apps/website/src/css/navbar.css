@@ -402,24 +402,6 @@ html.landing-page .navbar--fixed-top {
   pointer-events: auto !important;
 }
 
-a.navbar-get-license-link {
-  border-radius: 0.6rem;
-  border: 1px solid #000;
-  background: #000;
-  color: #fff !important;
-  font-weight: 620;
-  padding: 0.3rem 0.75rem;
-  line-height: 1.1;
-}
-
-a.navbar-get-license-link:hover,
-a.navbar-get-license-link.navbar__link--active {
-  background: #1f1f1f;
-  border-color: #1f1f1f;
-  color: #fff !important;
-}
-
-body:has(.theme-doc-markdown) .navbar__inner a.navbar-get-license-link,
 body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
   display: none;
 }
@@ -516,7 +498,6 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
     padding: 0.22rem 0.55rem;
   }
 
-  body:has(.theme-doc-markdown) .navbar-sidebar .menu__link.navbar-get-license-link,
   body:has(.theme-doc-markdown) .navbar-sidebar .menu__link.navbar-main-github-link {
     display: none !important;
   }
@@ -571,14 +552,6 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
     font-size: 0.93rem !important;
     padding-right: 1rem;
     border-radius: 0.6rem;
-  }
-
-  .navbar-sidebar a.navbar-get-license-link {
-    min-height: calc(
-      1.4em + var(--ifm-menu-link-padding-vertical) +
-        var(--ifm-menu-link-padding-vertical)
-    );
-    line-height: 1.4;
   }
 
   .navbar-sidebar .menu__caret::before {
