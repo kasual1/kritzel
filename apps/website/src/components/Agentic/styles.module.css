@@ -1282,7 +1282,7 @@
   }
 }
 
-/* Uses scale/opacity only: compact cards center themselves with transform, which this must not override. */
+/* Uses scale/opacity only, on the compact cards' inner item, so it never overrides the transform that centers them. */
 @keyframes agentic-shoe-place {
   from {
     opacity: 0;
@@ -1473,14 +1473,27 @@
     z-index: var(--stack-z, 3);
   }
 
-  .heroWrapper .shoeCompact {
-    animation: agentic-shoe-place 800ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
+  .heroWrapper .shoeCompact,
+  .heroWrapper .variantPlaceholder {
+    animation: none;
     transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .heroWrapper .variantPlaceholder {
+  /* The entrance zoom runs on the inner item: the scale property is applied outside transform, so on
+     the positioned wrapper it would pivot off the card's center and make the card drift in. */
+  .heroWrapper .shoeCompact > .draggableItem {
+    animation: agentic-shoe-place 800ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
+  }
+
+  /* Before Hero.tsx measures the layout, --focus-shoe-top is 0 and the card would sit at the top of
+     the hero, so it stays hidden and its entrance waits until then. */
+  .heroWrapper:not([data-layout-measured]) .shoeCompact > .draggableItem {
+    visibility: hidden;
+    animation-play-state: paused;
+  }
+
+  .heroWrapper .variantPlaceholder > .draggableItem {
     animation: agentic-shoe-place 450ms cubic-bezier(0.22, 1, 0.36, 1) both;
-    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   /* A dragged card leaves its wrapper behind, which must not block the cards beneath. */
@@ -1521,6 +1534,11 @@
   .heroWrapper .shoeCompact,
   .heroWrapper .variantPlaceholder {
     transition: none;
+  }
+
+  .heroWrapper .shoeCompact > .draggableItem,
+  .heroWrapper .variantPlaceholder > .draggableItem {
+    animation: none;
   }
 }
 
