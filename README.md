@@ -19,7 +19,7 @@ The Infinite Canvas Development Kit
 
 # Overview
 
-Kritzel is a toolkit for building infinite-canvas experiences such as whiteboards, visual planning tools, knowledge maps, and collaborative spatial workspaces.
+Kritzel is an open-source toolkit for building infinite-canvas experiences such as whiteboards, visual planning tools, knowledge maps, and collaborative spatial workspaces.
 
 It gives you a framework-neutral whiteboard foundation for creating interactive, browser-based canvases with objects, tools, navigation, and editing workflows without locking you into a specific UI stack.
 
