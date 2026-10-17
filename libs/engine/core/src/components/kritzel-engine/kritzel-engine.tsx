@@ -252,12 +252,8 @@ export class KritzelEngine {
     this.core.themeManager.setTheme(newValue);
   }
 
-  /** License key that, when valid, removes the "Powered by Kritzel" watermark. */
-  @Prop() licenseKey?: string;
-  @Watch('licenseKey')
-  onLicenseKeyChange(newValue?: string) {
-    this.core.licenseManager.validate(newValue);
-  }
+  /** Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project. */
+  @Prop() isWatermarkVisible: boolean = true;
 
   /** An array of available themes for the editor. */
   @Prop() themes?: KritzelTheme[];
@@ -2523,7 +2519,6 @@ export class KritzelEngine {
   private _syncConfigRevision: number = 0;
   private _assetStorageConfigRevision: number = 0;
   private _workspacesRevision: number = 0;
-  private _hasLoggedUnlicensedWelcomeBanner: boolean = false;
   private _previousVisibleDynamicObjects: Set<string> = new Set();
   private _revealedImageKeys: Set<string> = new Set();
   private _sceneBootstrapOpacity: number = 1;
@@ -2706,7 +2701,6 @@ export class KritzelEngine {
     this.core.cursorManager.cleanup();
     this.core.agenticCursorManager.cleanup();
     this.core.themeManager.cleanup();
-    this.core.licenseManager.destroy();
   }
 
   componentWillLoad() {
@@ -2723,9 +2717,6 @@ export class KritzelEngine {
     this.core.localizationManager.configureLocales(this.locales);
     this.core.localizationManager.setFallbackLocale(this.fallbackLocale);
     this.core.localizationManager.setLocale(this.core.localizationManager.resolveActiveLocale(this.locale));
-
-    this.core.licenseManager.validate(this.licenseKey);
-    this.core.licenseManager.startPeriodicValidation();
 
     this.core.setUser(this.user);
     this.validateScaleMax(this.scaleMax);
@@ -2766,7 +2757,6 @@ export class KritzelEngine {
 
       if (this.core.store.state.isReady === false) {
         this.core.store.state.isReady = true;
-        this.logUnlicensedWelcomeBanner();
         this.isEngineReady.emit(this.core.store.state);
       }
     }, 50);
@@ -2831,17 +2821,6 @@ export class KritzelEngine {
     }
 
     this._isAssetStorageInitialized = true;
-  }
-
-  private logUnlicensedWelcomeBanner(): void {
-    if (this.core.licenseManager.isLicensed || this._hasLoggedUnlicensedWelcomeBanner) {
-      return;
-    }
-
-    this._hasLoggedUnlicensedWelcomeBanner = true;
-
-    console.info('%c👋 Welcome to Kritzel', 'color: #007AFF; font-weight: 700;');
-    console.info(`This version of Kritzel is not licensed. Get a license at: https://kritzel.io`);
   }
 
   private async doInitializeSyncAndWorkspace() {
@@ -4404,7 +4383,7 @@ export class KritzelEngine {
 
         {this.core.store.state?.activeTool?.toolType === 'eraser' && !this.core.store.state.isScaling && <kritzel-cursor-trail core={this.core}></kritzel-cursor-trail>}
 
-        {!this.core.licenseManager.isLicensed && <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>}
+        {this.isWatermarkVisible && <kritzel-watermark core={this.core} label={this.core.localizationManager.translate('watermark.poweredBy')}></kritzel-watermark>}
       </Host>
     );
   }

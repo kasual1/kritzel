@@ -10,7 +10,7 @@
     "drawing",
     "editor"
   ],
-  "license": "PolyForm-Noncommercial-1.0.0",
+  "license": "MIT",
   "main": "dist/index.cjs.js",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",

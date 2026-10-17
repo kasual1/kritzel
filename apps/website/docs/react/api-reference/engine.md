@@ -811,7 +811,7 @@ loadSettings(): Promise<Partial<KritzelSettingsConfig> | null>
 | debugInfo | KritzelDebugInfo | Debug overlay configuration. |
 | editorId | string | Identifier for namespacing storage keys. |
 | globalContextMenuItems | ContextMenuItem[] | Canvas background menu items. |
-| licenseKey | string | Valid key removes the watermark. |
+| isWatermarkVisible | boolean | Show or hide the "Powered by Kritzel" watermark (default `true`). Keeping it visible helps support the project. |
 | lockDrawingScale | boolean | Keeps objects at a fixed visual size across zoom. |
 | objectContextMenuItems | ContextMenuItem[] | Selected-object menu items. |
 

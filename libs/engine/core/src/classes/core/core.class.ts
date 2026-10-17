@@ -19,7 +19,6 @@ import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelCursorManager } from '../managers/cursor.manager';
 import { KritzelThemeManager } from '../managers/theme.manager';
 import { KritzelLocalizationManager } from '../managers/localization.manager';
-import { KritzelLicenseManager } from '../managers/license.manager';
 import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
@@ -71,8 +70,6 @@ export class KritzelCore {
   private readonly _themeManager: KritzelThemeManager;
   /** Manager for localization / translated UI strings */
   private readonly _localizationManager: KritzelLocalizationManager;
-  /** Manager for license validation and watermark gating */
-  private readonly _licenseManager: KritzelLicenseManager;
   /** Manager for browser permission checks and permission prompts */
   private readonly _permissionManager: KritzelBrowserPermissionManager;
   /** Manager for clipboard copy/cut/paste orchestration */
@@ -140,14 +137,6 @@ export class KritzelCore {
    */
   get localizationManager(): KritzelLocalizationManager {
     return this._localizationManager;
-  }
-
-  /**
-   * Gets the license manager.
-   * @returns The KritzelLicenseManager for validating licenses and gating the watermark
-   */
-  get licenseManager(): KritzelLicenseManager {
-    return this._licenseManager;
   }
 
   /**
@@ -232,7 +221,6 @@ export class KritzelCore {
     this._cursorManager = new KritzelCursorManager(this);
     this._themeManager = new KritzelThemeManager(this);
     this._localizationManager = new KritzelLocalizationManager(this);
-    this._licenseManager = new KritzelLicenseManager(this);
     this._permissionManager = new KritzelBrowserPermissionManager(this);
     this._clipboardManager = new KritzelClipboardManager(this);
     this._agenticCursorManager = new KritzelAgenticCursorManager(this);

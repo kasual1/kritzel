@@ -416,6 +416,11 @@ export namespace Components {
          */
         "isUtilityPanelVisible": boolean;
         /**
+          * Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project.
+          * @default true
+         */
+        "isWatermarkVisible": boolean;
+        /**
           * @default true
          */
         "isWorkspaceManagerVisible": boolean;
@@ -427,10 +432,6 @@ export namespace Components {
           * @default true
          */
         "isZoomingEnabled": boolean;
-        /**
-          * License key that, when valid, removes the "Powered by Kritzel" watermark.
-         */
-        "licenseKey"?: string;
         "loadObjectsFromJson": (json: string) => Promise<number>;
         "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
@@ -2364,6 +2365,11 @@ declare namespace LocalJSX {
          */
         "isUtilityPanelVisible"?: boolean;
         /**
+          * Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project.
+          * @default true
+         */
+        "isWatermarkVisible"?: boolean;
+        /**
           * @default true
          */
         "isWorkspaceManagerVisible"?: boolean;
@@ -2375,10 +2381,6 @@ declare namespace LocalJSX {
           * @default true
          */
         "isZoomingEnabled"?: boolean;
-        /**
-          * License key that, when valid, removes the "Powered by Kritzel" watermark.
-         */
-        "licenseKey"?: string;
         /**
           * The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'.
           * @default 'en'
@@ -3125,7 +3127,6 @@ declare namespace LocalJSX {
         "viewportBoundaryTop": number;
         "viewportBoundaryBottom": number;
         "theme": ThemeName;
-        "licenseKey": string;
         "locale": LocaleCode;
         "fallbackLocale": LocaleCode;
         "isPanningEnabled": boolean;
@@ -3137,6 +3138,7 @@ declare namespace LocalJSX {
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
         "isZoomPanelVisible": boolean;
+        "isWatermarkVisible": boolean;
         "editorId": string;
         "activeWorkspaceId": string;
     }

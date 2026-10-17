@@ -36,7 +36,6 @@ export {
     DEFAULT_ASSET_STORAGE_CONFIG,
     KritzelThemeManager,
     KritzelLocalizationManager,
-    KritzelLicenseManager,
     ShapeType,
     KritzelAlignment,
     lightTheme,

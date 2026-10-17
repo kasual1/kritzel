@@ -10,7 +10,7 @@
     "drawing",
     "angular"
   ],
-  "license": "PolyForm-Noncommercial-1.0.0",
+  "license": "MIT",
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",

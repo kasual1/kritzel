@@ -394,9 +394,6 @@ export default function Hero({
           <Link to={docsPath} className={styles.topNavLink}>
             Documentation
           </Link>
-          <Link to="/get-license" className={styles.topNavCta}>
-            Get License
-          </Link>
           <Link href="https://github.com/kasual1/kritzel" aria-label="GitHub" className={styles.topNavIcon}>
             <GitHubIcon />
           </Link>

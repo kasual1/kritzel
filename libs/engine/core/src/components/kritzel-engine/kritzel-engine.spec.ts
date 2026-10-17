@@ -158,13 +158,6 @@ describe('KritzelEngine', () => {
       getStoredTheme: jest.fn().mockReturnValue('light'),
       cleanup: jest.fn(),
     },
-    licenseManager: {
-      isLicensed: false,
-      validate: jest.fn(),
-      startPeriodicValidation: jest.fn(),
-      stopPeriodicValidation: jest.fn(),
-      destroy: jest.fn(),
-    },
     store: {
       isDisabled: false,
       currentZIndex: 0,
@@ -292,6 +285,12 @@ describe('KritzelEngine', () => {
     jest.clearAllMocks();
   });
 
+  describe('watermark', () => {
+    it('shows the watermark by default', () => {
+      expect(engine.isWatermarkVisible).toBe(true);
+    });
+  });
+
   describe('startup readiness', () => {
     it('emits isEngineReady after the initialized workspace has rendered', async () => {
       jest.useFakeTimers();
@@ -338,20 +337,6 @@ describe('KritzelEngine', () => {
 
       animationFrameSpy.mockRestore();
       jest.useRealTimers();
-    });
-  });
-
-  describe('license key watcher', () => {
-    it('validates the license key when the prop changes after initialization', () => {
-      engine.onLicenseKeyChange('new-license-key');
-
-      expect(core.licenseManager.validate).toHaveBeenCalledWith('new-license-key');
-    });
-
-    it('treats clearing the license key as an unlicensed re-validation', () => {
-      engine.onLicenseKeyChange(undefined);
-
-      expect(core.licenseManager.validate).toHaveBeenCalledWith(undefined);
     });
   });
 

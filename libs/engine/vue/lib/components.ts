@@ -23,7 +23,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'cursorTarget',
   'lockDrawingScale',
   'theme',
-  'licenseKey',
+  'isWatermarkVisible',
   'themes',
   'locale',
   'locales',

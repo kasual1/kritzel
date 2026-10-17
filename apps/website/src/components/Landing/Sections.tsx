@@ -546,7 +546,7 @@ const FAQ_ITEMS = [
   {
     question: "Is Kritzel free to use?",
     answer:
-      "Kritzel is completely free for personal, open-source, and evaluation projects (which display a subtle watermark). For production SaaS apps and commercial deployments, you can purchase a Commercial License to remove the watermark.",
+      "Yes. Kritzel is open source under the MIT License, so you can use it for free in personal and commercial projects. The editor shows a small \"Powered by Kritzel\" badge by default; keeping it helps the project grow, but you can hide it with the isWatermarkVisible prop.",
   },
 ];
 

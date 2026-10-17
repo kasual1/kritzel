@@ -66,8 +66,8 @@ side by side; the npm install control is hidden. The canvas follows the viewport
 height with a 720px minimum and an 880px cap, spacing the copy, drawing, and
 toolbar vertically rather than sizing itself from the copy's bottom padding.
 Very short screens scroll to preserve readability. The agentic mobile hero uses
-the same side-by-side CTAs and hides the npm install control and Get License
-navigation button, while retaining its interactive chat.
+the same side-by-side CTAs and hides the npm install control, while retaining
+its interactive chat.
 
 Photo captions start beneath their photo wrapper but can be moved independently.
 
