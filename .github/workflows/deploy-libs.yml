@@ -1,5 +1,5 @@
-# Publishes a new version of the libraries to npm, and pushes a new git tag
-name: Publish libraries
+# Deploys a new version of the libraries to npm, and pushes a new git tag
+name: Deploy libraries
 
 on:
   workflow_dispatch:
