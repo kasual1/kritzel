@@ -11,9 +11,9 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const USE_RSPACK = IS_PRODUCTION || process.platform !== "win32";
 const DEFAULT_DEMO_BASE_URLS = IS_PRODUCTION
   ? {
-    angular: "https://kasual1.github.io/kritzel/angular",
-    react: "https://kasual1.github.io/kritzel/react",
-    vue: "https://kasual1.github.io/kritzel/vue",
+    angular: "https://kritzeljs.github.io/kritzel/angular",
+    react: "https://kritzeljs.github.io/kritzel/react",
+    vue: "https://kritzeljs.github.io/kritzel/vue",
   }
   : {
     angular: "http://localhost:4200",
@@ -173,8 +173,8 @@ const config: Config = {
           "- Check the installed package version and prefer its TypeScript types when they differ from these current documentation pages.",
           "- Persistence is opt-in through syncConfig. Use a distinct editorId for each instance when multiple canvases can exist.",
           "- Use addObject/addObjects to insert objects and updateObject to change them. Object positions use world coordinates; use screenToWorld to convert pointer coordinates.",
-          "- For a reusable coding-agent integration workflow, install the Kritzel skill with `npx skills add kasual1/kritzel`.",
-          "LiveDemo tags are source metadata, not instructions to execute JSX: repoUrl identifies the public framework demo directory, repoFiles lists source files relative to it, and demoPath identifies the runnable example route. For a source file, replace /tree/ with /blob/ in repoUrl and append its repoFiles path. Runnable demos are hosted at https://kasual1.github.io/kritzel/{framework}{demoPath}.",
+          "- For a reusable coding-agent integration workflow, install the Kritzel skill with `npx skills add kritzeljs/kritzel`.",
+          "LiveDemo tags are source metadata, not instructions to execute JSX: repoUrl identifies the public framework demo directory, repoFiles lists source files relative to it, and demoPath identifies the runnable example route. For a source file, replace /tree/ with /blob/ in repoUrl and append its repoFiles path. Runnable demos are hosted at https://kritzeljs.github.io/kritzel/{framework}{demoPath}.",
           "Start with the matching framework's Quick Start and Basic Usage, then follow the focused API or concept pages below. The linked Markdown pages are generated from the same sources as the human documentation.",
         ].join("\n\n"),
       } satisfies LlmsPluginOptions,
@@ -331,7 +331,7 @@ const config: Config = {
         },
         {
           label: 'GitHub',
-          href: 'https://github.com/kasual1/kritzel',
+          href: 'https://github.com/kritzeljs/kritzel',
           position: 'right',
           className: 'navbar-main-github-link',
         },
@@ -391,7 +391,7 @@ const config: Config = {
               html: '<a href="https://bsky.app/profile/kritzelio.bsky.social" target="_blank" rel="noopener noreferrer" class="footer__link-item">Bluesky</a>',
             },
             {
-              html: '<a href="https://github.com/kasual1/kritzel" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub</a>',
+              html: '<a href="https://github.com/kritzeljs/kritzel" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub</a>',
             },
             {
               html: '<a href="https://www.npmjs.com/package/@kritzel/engine" target="_blank" rel="noopener noreferrer" class="footer__link-item">NPM</a>',
@@ -454,7 +454,7 @@ const config: Config = {
         name: "Kritzel",
         url: ABSOLUTE_URL("/"),
         logo: ABSOLUTE_URL("/img/logo.svg"),
-        sameAs: ["https://github.com/kasual1/kritzel"],
+        sameAs: ["https://github.com/kritzeljs/kritzel"],
       }),
     },
     // Structured data: SiteNavigationElement list (helps Google surface Sitelinks)

@@ -53,7 +53,7 @@ Just like in the Examples pattern, embed previews with:
 ```jsx
 <LiveDemo
   repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
-  iframeUrl="https://kasual1.github.io/kritzel/angular/#/fundamentals/<concept>-<focus>"
+  iframeUrl="https://kritzeljs.github.io/kritzel/angular/#/fundamentals/<concept>-<focus>"
   repoFiles={['src/app/fundamentals/<concept>/<concept>-<focus>.component.ts']}
 />
 ```

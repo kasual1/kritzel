@@ -127,7 +127,7 @@ yarn start
 If these are not set, defaults are chosen by environment:
 
 - Development (`yarn start`): Angular `http://localhost:4200`, React `http://localhost:5173`, Vue `http://localhost:5174`
-- Production build (`yarn build`): `https://kasual1.github.io/kritzel/{angular|react|vue}`
+- Production build (`yarn build`): `https://kritzeljs.github.io/kritzel/{angular|react|vue}`
 
 This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
 

@@ -223,7 +223,7 @@ const CLI_SESSIONS = {
     question: "Which framework do you want to use?",
   },
   skill: {
-    command: "npx skills add kasual1/kritzel",
+    command: "npx skills add kritzeljs/kritzel",
     question: "Install the kritzel skill for your agent?",
   },
 } as const;

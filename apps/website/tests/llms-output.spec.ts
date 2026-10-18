@@ -76,7 +76,7 @@ describe('Generated LLM documentation', () => {
   test('publishes integration guidance and one section per framework, without a combined bundle', () => {
     const index = readOutput('llms.txt');
     expect(index).toMatch(/^# Kritzel\n\n> /);
-    for (const guidance of ['isReady', 'isEngineReady', 'syncConfig', 'editorId', 'TypeScript types', 'npx skills add kasual1/kritzel']) {
+    for (const guidance of ['isReady', 'isEngineReady', 'syncConfig', 'editorId', 'TypeScript types', 'npx skills add kritzeljs/kritzel']) {
       expect(index).toContain(guidance);
     }
     const headings = nodes(index).filter((node) => node.type === 'heading' && node.depth === 2);

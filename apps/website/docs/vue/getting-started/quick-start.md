@@ -29,7 +29,7 @@ npm install @kritzel/vue-editor
 Install the related Kritzel skill for coding assistance:
 
 ```bash
-npx skills add kasual1/kritzel
+npx skills add kritzeljs/kritzel
 ```
 
 </SkillInstallation>
