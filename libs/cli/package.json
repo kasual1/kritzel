@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kasual1/kritzel-private.git",
+    "url": "https://github.com/kritzeljs/kritzel.git",
     "directory": "libs/cli"
   },
   "homepage": "https://kritzel.io",

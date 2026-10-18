@@ -104,4 +104,4 @@ Exit codes are `0` for success, `1` for validation/installation/generation failu
 
 ## Source and license
 
-The CLI source lives in [`libs/cli` in the private repository](https://github.com/kasual1/kritzel-private/tree/main/libs/cli); repository access is required. npm publication does not imply that CLI source is mirrored to the public repository. The package uses the repository's `PolyForm-Noncommercial-1.0.0` license.
+The CLI source is available in [`libs/cli` in the public repository](https://github.com/kritzeljs/kritzel/tree/main/libs/cli). The package is licensed under the [MIT License](./LICENSE).
