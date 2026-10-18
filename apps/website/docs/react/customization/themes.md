@@ -22,7 +22,7 @@ The full list of customizable properties is available in the [Theming API Refere
 To switch between light and dark themes, keep the active name in React state and pass it to `theme`. Define the `themes` array outside the component so its reference remains stable across renders.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/customization/theming/apply"
   repoFiles={['src/pages/customization/theming/ThemingApplyPage.tsx']}
 />
@@ -32,7 +32,7 @@ To switch between light and dark themes, keep the active name in React state and
 Use `onThemeChange` to react whenever the active theme changes. The callback receives a `CustomEvent<string>` and the new theme name is available as `event.detail`. This is useful for synchronizing React state when a theme changes from inside Kritzel settings.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/customization/theming/listen"
   repoFiles={['src/pages/customization/theming/ThemingListenPage.tsx']}
 />
@@ -42,7 +42,7 @@ Use `onThemeChange` to react whenever the active theme changes. The callback rec
 Create a custom theme by extending a built-in theme and overriding the relevant `KritzelTheme` groups. Add the result to the `themes` prop and activate it by passing its `name` to `theme`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/customization/theming/custom"
   repoFiles={['src/pages/customization/theming/ThemingCustomPage.tsx']}
 />

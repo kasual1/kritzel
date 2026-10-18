@@ -32,7 +32,7 @@ This example makes use of the following core concepts. Click on the links below 
 Users pick a color from a row of circular swatches in a custom bottom toolbar, then sketch freehand annotations directly over the image. A mode toggle switches between brush drawing and text placement for callouts. The built-in editor toolbar are hidden — all interaction flows through the external toolbar.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/examples/image-annotation-studio"
   repoFiles={['src/app/pages/examples/image-annotation-studio.component.ts']}
 />

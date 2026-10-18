@@ -23,7 +23,7 @@ The simplest way to use a dynamic object is to build a plain DOM subtree and pas
 If the native HTML owns runtime behavior, such as event listeners or local counter state, use a registered renderer even when the content is plain DOM rather than an Angular component. Clipboard copy serializes the object while it is still mounted, so a renderer can return the latest serializable state from `onSerialize` and recreate fresh DOM listeners from `rendererData` after paste.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/advanced/dynamic-objects/html"
   repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-html.component.ts']}
 />
@@ -41,7 +41,7 @@ State flows through `rendererData`:
 Always unregister the renderer, and detach/destroy any mounted component views, when the hosting page is destroyed.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/advanced/dynamic-objects/component"
   repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-component.component.ts']}
 />
@@ -53,7 +53,7 @@ For user-authored or LLM-authored content, `KritzelIframeObject` provides a sand
 This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with a loading view displayed during the change.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/advanced/dynamic-objects/iframe"
   repoFiles={['src/app/pages/advanced/dynamic-objects/dynamic-objects-iframe.component.ts']}
 />

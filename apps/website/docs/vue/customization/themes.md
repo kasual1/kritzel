@@ -22,7 +22,7 @@ The full list of customizable properties can be found in the [API Reference](../
 To toggle between the default light and dark theme, pass the respective theme name to the `theme` prop.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/customization/theming/apply"
   repoFiles={['src/pages/customization/theming/ThemingApplyPage.vue']}
 />
@@ -32,7 +32,7 @@ To toggle between the default light and dark theme, pass the respective theme na
 Listen for the `themeChange` event to react whenever the active theme changes. The event provides the new theme name through `event.detail`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/customization/theming/listen"
   repoFiles={['src/pages/customization/theming/ThemingListenPage.vue']}
 />
@@ -42,7 +42,7 @@ Listen for the `themeChange` event to react whenever the active theme changes. T
 Create a custom theme by overriding the groups and properties of `KritzelTheme`, then provide it through the editor's `themes` prop. Activate it by passing its name to the `theme` prop.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/customization/theming/custom"
   repoFiles={['src/pages/customization/theming/ThemingCustomPage.vue']}
 />

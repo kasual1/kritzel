@@ -18,7 +18,7 @@ The `<KritzelEditor>` includes a complete set of whiteboard controls, including 
 The toolbar provides the configured drawing and selection tools, while the utility panel exposes undo, redo, and delete actions. Set `isToolbarVisible` or `isUtilityPanelVisible` to `false` independently to replace either control surface without changing the editor's core functionality.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/toolbar-utility-panel"
   repoFiles={['src/pages/fundamentals/controls/ToolbarUtilityPanelPage.tsx']}
 />
@@ -28,7 +28,7 @@ The toolbar provides the configured drawing and selection tools, while the utili
 The workspace manager in the top-left corner lets people switch between workspaces and create, rename, or delete them. Set `isWorkspaceManagerVisible` to `false` to hide it. Use a typed editor ref and await `openWorkspaceManagerMenu()` to programmatically open the workspace manager's menu after `onIsReady` fires.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/workspace-manager-open"
   repoFiles={['src/pages/fundamentals/controls/WorkspaceManagerOpenPage.tsx']}
 />
@@ -38,7 +38,7 @@ The workspace manager in the top-left corner lets people switch between workspac
 The Editor separates right-click actions into two arrays: `globalContextMenuItems` for empty-canvas interactions and `objectContextMenuItems` for selected-object interactions. Each item accepts a `label`, an `icon`, and an `action` handler. Keep these array props stable with `useMemo` or module-level constants.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/context-menus-canvas-quick-actions"
   repoFiles={['src/pages/fundamentals/controls/ContextMenusCanvasQuickActionsPage.tsx']}
 />
@@ -46,7 +46,7 @@ The Editor separates right-click actions into two arrays: `globalContextMenuItem
 Items can also call clipboard methods such as `copy`, `paste`, and `delete`, wiring the menu to the same actions available from keyboard shortcuts.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/context-menus-clipboard-actions"
   repoFiles={['src/pages/fundamentals/controls/ContextMenusClipboardActionsPage.tsx']}
 />
@@ -54,7 +54,7 @@ Items can also call clipboard methods such as `copy`, `paste`, and `delete`, wir
 Use `group` to cluster related entries with a separator, and `children` to nest a submenu of arbitrary depth for actions that do not need a top-level entry.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/context-menus-object-inspector"
   repoFiles={['src/pages/fundamentals/controls/ContextMenusObjectInspectorPage.tsx']}
 />
@@ -62,7 +62,7 @@ Use `group` to cluster related entries with a separator, and `children` to nest 
 The optional `isVisible` and `isDisabled` conditions accept booleans or async functions, so entries can react to editor state, such as disabling "Select All" when the viewport is empty.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/context-menus-smart-conditional"
   repoFiles={['src/pages/fundamentals/controls/ContextMenusSmartConditionalPage.tsx']}
 />
@@ -72,7 +72,7 @@ The optional `isVisible` and `isDisabled` conditions accept booleans or async fu
 The more menu in the top-right corner groups secondary editor actions. Set `isMoreMenuVisible` to `false` to hide it. Await `openMoreMenu()` to programmatically open it. Pass a stable array of menu items to the `moreMenuItems` prop to configure the actions shown in the menu.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/more-menu-open"
   repoFiles={['src/pages/fundamentals/controls/MoreMenuOpenPage.tsx']}
 />
@@ -82,7 +82,7 @@ The more menu in the top-right corner groups secondary editor actions. Set `isMo
 The export dialog allows users to save the current viewport as an image or export the current workspace as JSON. You can open it from the default more menu or await `openExportDialog()` on the editor ref after the editor is ready.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/export-dialog"
   repoFiles={['src/pages/fundamentals/controls/ExportDialogPage.tsx']}
 />
@@ -92,7 +92,7 @@ The export dialog allows users to save the current viewport as an image or expor
 The import dialog allows users to load a workspace stored as JSON. You can open it from the default more menu or await `openImportDialog()` on the editor ref.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/import-dialog"
   repoFiles={['src/pages/fundamentals/controls/ImportDialogPage.tsx']}
 />
@@ -102,7 +102,7 @@ The import dialog allows users to load a workspace stored as JSON. You can open 
 The zoom panel shows the current zoom level and provides zoom-in and zoom-out buttons. Set `isZoomPanelVisible` to `false` to hide it. On small screens, the zoom panel is automatically hidden to save space.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/zoom-panel-toggle"
   repoFiles={['src/pages/fundamentals/controls/ZoomPanelTogglePage.tsx']}
 />
@@ -112,7 +112,7 @@ The zoom panel shows the current zoom level and provides zoom-in and zoom-out bu
 Call `triggerNotification()` to display a transient message in the editor. Notifications have `info`, `warning`, and `error` types, allowing your application to provide feedback without building a separate notification surface.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/controls/notifications-trigger"
   repoFiles={['src/pages/fundamentals/controls/NotificationsTriggerPage.tsx']}
 />

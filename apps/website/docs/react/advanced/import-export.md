@@ -20,7 +20,7 @@ You can either use the dedicated export and import dialogs described under [Cont
 Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor ref to export the current viewport and trigger a browser download.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/advanced/import-export/viewport-export"
   repoFiles={['src/pages/advanced/import-export/ImportExportViewportExportPage.tsx']}
 />
@@ -30,7 +30,7 @@ Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor ref to exp
 Call `exportAsJson()` on the editor ref to serialize the active workspace into a JSON string. If you just need a file download instead of the raw string, call `downloadAsJson()`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/advanced/import-export/workspace-export"
   repoFiles={['src/pages/advanced/import-export/ImportExportWorkspaceExportPage.tsx']}
 />
@@ -40,7 +40,7 @@ Call `exportAsJson()` on the editor ref to serialize the active workspace into a
 To import a previously exported workspace, call `importFromJson()` on the editor ref. This creates a new workspace with the imported data and automatically switches to it.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/advanced/import-export/workspace-import"
   repoFiles={['src/pages/advanced/import-export/ImportExportWorkspaceImportPage.tsx']}
 />

@@ -20,7 +20,7 @@ You can either use the dedicated [export dialog](../fundamentals/controls.md#exp
 Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor to export the current viewport and trigger a browser download.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/advanced/import-export/viewport-export"
   repoFiles={['src/app/pages/advanced/import-export/import-export-viewport-export.component.ts']}
 />
@@ -30,7 +30,7 @@ Call `exportViewportAsPng()` or `exportViewportAsSvg()` on the editor to export 
 Call `exportAsJson()` on the engine to serialize the active workspace into a JSON string. If you just need a file download instead of the raw string, call `downloadAsJson()`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/advanced/import-export/workspace-export"
   repoFiles={['src/app/pages/advanced/import-export/import-export-workspace-export.component.ts']}
 />
@@ -40,7 +40,7 @@ Call `exportAsJson()` on the engine to serialize the active workspace into a JSO
 To import a previously exported workspace, use `importFromJson()`. This will create a new workspace with the imported data and automaticallyswitch to it.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/advanced/import-export/workspace-import"
   repoFiles={['src/app/pages/advanced/import-export/import-export-workspace-import.component.ts']}
 />

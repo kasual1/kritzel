@@ -20,7 +20,7 @@ Workspaces can either be created programmatically or managed through the built-i
 Workspaces can be created by instantiating a `KritzelWorkspace` object and passing it to `editor.createWorkspace()`. You can specify custom properties such as the workspace `name`, initial canvas `viewport` settings, or a custom `id`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/fundamentals/workspaces/create"
   repoFiles={['src/app/pages/fundamentals/workspaces/workspaces-create.component.ts']}
 />
@@ -30,7 +30,7 @@ Workspaces can be created by instantiating a `KritzelWorkspace` object and passi
 Use `getWorkspaces()` to retrieve the complete workspace collection and `getActiveWorkspace()` when you only need the workspace currently shown in the editor. Both methods return workspace metadata such as the ID, name, visibility, and timestamps.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/fundamentals/workspaces/read"
   repoFiles={['src/app/pages/fundamentals/workspaces/workspaces-read.component.ts']}
 />
@@ -40,7 +40,7 @@ Use `getWorkspaces()` to retrieve the complete workspace collection and `getActi
 Pass a workspace to `updateWorkspace()` describing how you want it to look. Name, visibility and viewport are applied, and if you set `objects` it becomes the workspace's complete object set — objects are matched by ID, so new entries are added, existing ones are updated, and anything you leave out is removed. Leave `objects` `undefined` (the default) to change metadata only, or pass `[]` to clear the canvas.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/fundamentals/workspaces/update"
   repoFiles={['src/app/pages/fundamentals/workspaces/workspaces-update.component.ts']}
 />
@@ -50,7 +50,7 @@ Pass a workspace to `updateWorkspace()` describing how you want it to look. Name
 Call `deleteWorkspace()` with the workspace to remove. Keep at least one workspace available for the user and choose another active workspace before deleting the current one. The `(workspacesChange)` event lets custom navigation refresh whenever the collection changes.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/fundamentals/workspaces/delete"
   repoFiles={['src/app/pages/fundamentals/workspaces/workspaces-delete.component.ts']}
 />
@@ -60,7 +60,7 @@ Call `deleteWorkspace()` with the workspace to remove. Keep at least one workspa
 By default, Kritzel provides a built-in UI for managing multiple workspaces. However, if you hide this UI (`hideWorkspaceManager`), you can programmatically build your own workspace navigation. The `<kritzel-editor>` exposes an `[activeWorkspaceId]` input and an `(activeWorkspaceChange)` output binding that make switching between canvases seamless.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/angular"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
   demoPath="/fundamentals/workspaces/switch"
   repoFiles={['src/app/pages/fundamentals/workspaces/workspaces-switch.component.ts']}
 />

@@ -20,7 +20,7 @@ See the [Icons API reference](../api-reference/icons.md) for the full list of de
 Override built-in icon names with your own SVG markup and pass the resulting `KritzelSvgIconMap` to the `customSvgIcons` prop on `<KritzelEditor>`.
 
 <LiveDemo
-repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
 demoPath="/customization/icons/register"
 repoFiles={['src/pages/customization/icons/IconsRegisterPage.vue']}
 />
@@ -30,7 +30,7 @@ repoFiles={['src/pages/customization/icons/IconsRegisterPage.vue']}
 You can also register entirely new icons that are specific to your application and reference them in components with icon support, such as `KritzelToolbarItem` or `ContextMenuItem`.
 
 <LiveDemo
-repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
 demoPath="/customization/icons/register-new"
 repoFiles={['src/pages/customization/icons/IconsRegisterNewPage.vue']}
 />

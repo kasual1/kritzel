@@ -20,7 +20,7 @@ See the [Icons API reference](../api-reference/icons.md) for the complete list o
 Override built-in icons by mapping existing names to your own SVG markup and passing the map to the `customSvgIcons` prop on `<KritzelEditor>`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/customization/icons/register"
   repoFiles={['src/pages/customization/icons/IconsRegisterPage.tsx']}
 />
@@ -30,7 +30,7 @@ Override built-in icons by mapping existing names to your own SVG markup and pas
 You can also register new icon names and reference them wherever Kritzel accepts an `icon`, including `KritzelToolbarItem` and `ContextMenuItem` definitions. Keep `customSvgIcons`, toolbar items, and context-menu arrays at module scope so their references stay stable.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/customization/icons/register-new"
   repoFiles={['src/pages/customization/icons/IconsRegisterNewPage.tsx']}
 />

@@ -32,7 +32,7 @@ This example makes use of the following core concepts. Click on the links below 
 A curated slide deck with an interactive dashboard header. Clicking next or previous updates the current slide in React state and moves the viewport to that slide's world-space center.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/examples/slideshow-presentation"
   repoFiles={['src/pages/examples/SlideshowPresentationPage.tsx']}
 />

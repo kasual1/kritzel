@@ -51,7 +51,7 @@ import { KritzelEditor } from '@kritzel/vue-editor'
 This renders the editor with all the default UI elements such as the toolbar, the workspace manager, the more menu, and the zoom control panel.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/getting-started/quick-start"
   repoFiles={['src/pages/getting-started/QuickStartPage.vue']}
 />

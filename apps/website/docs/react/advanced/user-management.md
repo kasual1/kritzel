@@ -18,7 +18,7 @@ Kritzel comes with a whole set of user management features, such as configurable
 To enable Kritzel's user management features, provide a `loginConfig` with at least one authentication provider. This renders the login button at the top right of `<KritzelEditor>` and displays the login dialog with a button for each configured provider.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/advanced/user-management/providers"
   repoFiles={[
     'src/pages/advanced/user-management/UserManagementProvidersPage.tsx',
@@ -31,7 +31,7 @@ To enable Kritzel's user management features, provide a `loginConfig` with at le
 Clicking a provider button puts that button into a loading state and invokes the editor's `onLogin` callback with a `LoginEvent`. Your application performs the sign-in and then sets the controlled `user` prop accordingly.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/advanced/user-management/login"
   repoFiles={[
     'src/pages/advanced/user-management/UserManagementLoginPage.tsx',
@@ -44,7 +44,7 @@ Clicking a provider button puts that button into a loading state and invokes the
 When the user selects the logout action, `<KritzelEditor>` invokes `onLogout`. Your application should clear the controlled `user` prop and update its authentication state.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/advanced/user-management/logout"
   repoFiles={[
     'src/pages/advanced/user-management/UserManagementLogoutPage.tsx',
@@ -57,7 +57,7 @@ When the user selects the logout action, `<KritzelEditor>` invokes `onLogout`. Y
 Use the `user` prop for the logged-in user and `activeUsers` for workspace collaborators. The current user drives the account UI and awareness metadata, while active users appear as avatars in the editor header. Both props update at runtime, so clearing `user` signs out and replacing `activeUsers` refreshes the collaborator list.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   demoPath="/advanced/user-management/users"
   repoFiles={[
     'src/pages/advanced/user-management/UserManagementUsersPage.tsx',

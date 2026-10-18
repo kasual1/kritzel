@@ -30,7 +30,7 @@ Take a look at [Tools](tools.md) for more information on how to create and manip
 You can manually inject objects into the canvas programmatically, bypassing the need for a user to draw them.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/objects/add"
   repoFiles={['src/pages/fundamentals/objects/ObjectsAddPage.vue']}
 />
@@ -40,7 +40,7 @@ You can manually inject objects into the canvas programmatically, bypassing the 
 You can remove objects from the canvas programmatically when they are no longer needed.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/objects/remove"
   repoFiles={['src/pages/fundamentals/objects/ObjectsRemovePage.vue']}
 />
@@ -50,7 +50,7 @@ You can remove objects from the canvas programmatically when they are no longer 
 Object properties should never be mutated directly. Instead, changes go through `updateObject()`, which takes the object and a partial set of properties to apply. This ensures the change is properly persisted, synced, and reflected on the canvas.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/objects/update"
   repoFiles={['src/pages/fundamentals/objects/ObjectsUpdatePage.vue']}
 />
@@ -60,7 +60,7 @@ Object properties should never be mutated directly. Instead, changes go through 
 You can programmatically retrieve the currently selected objects, select specific objects, or clear the selection.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/objects/selection"
   repoFiles={['src/pages/fundamentals/objects/ObjectsSelectionPage.vue']}
 />
@@ -70,7 +70,7 @@ You can programmatically retrieve the currently selected objects, select specifi
 Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()` to return only the objects that match a predicate. `findObjects()` excludes Kritzel's internal selection-related objects.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/objects/filter"
   repoFiles={['src/pages/fundamentals/objects/ObjectsFilterPage.vue']}
 />
@@ -80,7 +80,7 @@ Use `getAllObjects()` to retrieve the current canvas objects, or `findObjects()`
 Objects can be grouped together so they can be moved and transformed as a single unit.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/objects/grouping"
   repoFiles={['src/pages/fundamentals/objects/ObjectsGroupingPage.vue']}
 />
@@ -90,7 +90,7 @@ Objects can be grouped together so they can be moved and transformed as a single
 Objects' z-index can be changed to control their visual stacking order, for example by bringing them to the front or sending them backward. A group counts as one layer: reordering it moves all of its children together, while a grouped object is reordered within its group.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/objects/ordering"
   repoFiles={['src/pages/fundamentals/objects/ObjectsOrderingPage.vue']}
 />

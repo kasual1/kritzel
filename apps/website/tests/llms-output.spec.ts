@@ -125,7 +125,7 @@ describe('Generated LLM documentation', () => {
     }
     const quickStart = readOutput(`docs/${framework}/getting-started/quick-start.md`);
     expect(quickStart).toContain(`@kritzel/${framework}-editor`);
-    expect(quickStart).toContain(`https://github.com/kasual1/kritzel/tree/main/demos/${framework}`);
+    expect(quickStart).toContain(`https://github.com/kritzeljs/kritzel/tree/main/apps/demos/${framework}`);
     for (const other of frameworks.filter((candidate) => candidate !== framework)) {
       expect(quickStart).not.toContain(`@kritzel/${other}-editor`);
     }

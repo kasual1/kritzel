@@ -18,7 +18,7 @@ Kritzel comes with a dedicated system for managing custom fonts, allowing you to
 Register fonts declaratively through the `customFonts` prop on `<KritzelEditor>` or programmatically using `registerFonts()`. Registered fonts immediately become available to the text tool and can be applied to the editor's UI.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/customization/fonts/register"
   repoFiles={['src/pages/customization/fonts/FontsRegisterPage.vue']}
 />
@@ -30,7 +30,7 @@ To use a custom font in the editor's controls, first register it and then set `g
 To override only specific UI elements, set the font family on the relevant component-specific theme property, such as `dialog.fontFamily` or `contextMenu.fontFamily`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/customization/fonts/ui-font-family"
   repoFiles={['src/pages/customization/fonts/FontsUiFontFamilyPage.vue']}
 />

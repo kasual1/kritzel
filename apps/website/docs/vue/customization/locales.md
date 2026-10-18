@@ -20,7 +20,7 @@ Take a look at the [Localization Terms](../api-reference/localization-terms.md) 
 Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()` method through the editor ref. The editor updates its UI without a page reload.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/customization/localization/switch"
   repoFiles={['src/pages/customization/localization/LocalizationSwitchPage.vue']}
 />
@@ -30,7 +30,7 @@ Set the `locale` prop on `<KritzelEditor>` or call the asynchronous `setLocale()
 Listen for the `localeChange` event to react when the active locale changes, for example to persist the selected language or update a custom settings panel. In Vue, the new locale is available through `event.detail`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/customization/localization/listen"
   repoFiles={['src/pages/customization/localization/LocalizationListenPage.vue']}
 />
@@ -40,7 +40,7 @@ Listen for the `localeChange` event to react when the active locale changes, for
 Add support for additional languages or override individual term keys by providing a `KritzelLocale` definition. Pass custom locales through the `locales` prop or register them dynamically using `registerLocales()`.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/vue"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
   demoPath="/customization/localization/custom"
   repoFiles={['src/pages/customization/localization/LocalizationCustomPage.vue']}
 />

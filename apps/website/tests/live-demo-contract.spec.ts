@@ -21,19 +21,19 @@ const docsRoot = path.join(websiteRoot, 'docs');
 const frameworkConfigs: Record<Framework, { docsDir: string; repoUrl: string; repoFilePrefix: string; repoFileExtension: string }> = {
   angular: {
     docsDir: path.join(docsRoot, 'angular'),
-    repoUrl: 'https://github.com/kasual1/kritzel/tree/main/demos/angular',
+    repoUrl: 'https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular',
     repoFilePrefix: 'src/app/',
     repoFileExtension: '.ts',
   },
   react: {
     docsDir: path.join(docsRoot, 'react'),
-    repoUrl: 'https://github.com/kasual1/kritzel/tree/main/demos/react',
+    repoUrl: 'https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react',
     repoFilePrefix: 'src/pages/',
     repoFileExtension: '.tsx',
   },
   vue: {
     docsDir: path.join(docsRoot, 'vue'),
-    repoUrl: 'https://github.com/kasual1/kritzel/tree/main/demos/vue',
+    repoUrl: 'https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue',
     repoFilePrefix: 'src/pages/',
     repoFileExtension: '.vue',
   },

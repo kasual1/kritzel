@@ -151,7 +151,7 @@ Other object, tool, and viewport methods follow the same asynchronous pattern.
 Below is a complete example combining props, events, and public methods. It uses the editor's custom toolbar to trigger methods, inserts programmatic text, zooms the viewport, and displays a dynamic object count from an event.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/demos/react"
+  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
   repoFiles={['src/pages/getting-started/BasicUsagePage.tsx']}
   demoPath="/getting-started/basic-usage"
 />
