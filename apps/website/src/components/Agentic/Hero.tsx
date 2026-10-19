@@ -486,8 +486,8 @@ function HeroScene({
               accentClassName={styles.heroTitleAccent}
             />
             <p className={styles.heroSubtitle} hidden={shoeFocused && !compactViewport}>
-              Kritzel is a framework-agnostic canvas library that lets AI agents draw, edit and collaborate
-              alongside your users in React, Vue and Angular.
+              Kritzel is framework-agnostic canvas library that helps you build agentic whiteboard
+              experiences with React, Vue and Angular.
             </p>
             <CallToActionBar docsPath={docsPath} />
           </div>
