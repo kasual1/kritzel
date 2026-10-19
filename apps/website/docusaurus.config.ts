@@ -83,6 +83,7 @@ const config: Config = {
   url: SITE_URL,
   baseUrl: SITE_BASE_URL,
   trailingSlash: true,
+  organizationName: "kasual1",
   projectName: "kritzel",
   onBrokenLinks: "warn",
   i18n: {
