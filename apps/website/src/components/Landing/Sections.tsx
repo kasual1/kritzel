@@ -574,7 +574,7 @@ const AGENTIC_FAQ_ITEMS = [
   {
     question: "Is Kritzel free to use?",
     answer:
-      "Kritzel is completely free for personal, open-source, and evaluation projects (which display a subtle watermark). For production SaaS apps and commercial deployments, you can purchase a Commercial License to remove the watermark.",
+      "Yes. Kritzel is open source under the MIT License, including its agentic features, so you can build agentic canvases for free in personal and commercial projects. The \"Powered by Kritzel\" badge can be hidden with the isWatermarkVisible prop.",
   },
 ];
 
@@ -623,11 +623,16 @@ export function Faq({ variant = "default" }: { variant?: "default" | "agentic" }
                   <path d="M12 5v14M5 12h14" />
                 </svg>
               </button>
-              {isOpen && (
-                <div id={`faq-answer-${index}`} role="region" aria-labelledby={`faq-question-${index}`} className={styles.faqAnswer}>
-                  {item.answer}
-                </div>
-              )}
+              {/* Always rendered so answers are part of the server-rendered HTML that search engines index. */}
+              <div
+                id={`faq-answer-${index}`}
+                role="region"
+                aria-labelledby={`faq-question-${index}`}
+                className={styles.faqAnswer}
+                hidden={!isOpen}
+              >
+                {item.answer}
+              </div>
             </div>
           );
         })}

@@ -69,8 +69,8 @@ const DOC_REDIRECTS = FRAMEWORKS.flatMap((framework) =>
 );
 
 const config: Config = {
-  title: "Kritzel - Infinite Canvas Library for React, Vue & Angular",
-  tagline: "Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Easily integrate it into React, Vue & Angular.",
+  title: "Kritzel",
+  tagline: "Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.",
   favicon: "img/favicon.svg",
   future: {
     v4: true,
@@ -307,6 +307,13 @@ const config: Config = {
           label: 'Documentation',
           to: '/docs/react/getting-started/quick-start',
           position: 'right',
+        },
+        {
+          type: 'custom-docsLink',
+          label: 'Get Started',
+          to: '/docs/react/getting-started/quick-start',
+          position: 'right',
+          className: 'navbar-get-started-link',
         },
         {
           type: 'dropdown',

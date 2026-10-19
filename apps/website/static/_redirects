@@ -15,8 +15,10 @@
 /features/infinite-canvas/          / 301
 /features/real-time-collaboration   / 301
 /features/real-time-collaboration/  / 301
-/pricing                            /get-license/ 301
-/pricing/                           /get-license/ 301
+/get-license                        /license/ 301
+/get-license/                       /license/ 301
+/pricing                            /license/ 301
+/pricing/                           /license/ 301
 
 # Removed blog posts and tags
 /blog/2026/05/15/coming-soon                 /blog/ 301

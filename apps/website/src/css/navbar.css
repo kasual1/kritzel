@@ -402,6 +402,22 @@ html.landing-page .navbar--fixed-top {
   pointer-events: auto !important;
 }
 
+a.navbar-get-started-link {
+  border-radius: 0.6rem;
+  border: 1px solid #000;
+  background: #000;
+  color: #fff !important;
+  font-weight: 620;
+  padding: 0.3rem 0.75rem;
+  line-height: 1.1;
+}
+
+a.navbar-get-started-link:hover {
+  background: #1f1f1f;
+  border-color: #1f1f1f;
+  color: #fff !important;
+}
+
 body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
   display: none;
 }
@@ -552,6 +568,10 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
     font-size: 0.93rem !important;
     padding-right: 1rem;
     border-radius: 0.6rem;
+  }
+
+  .navbar-sidebar a.navbar-get-started-link {
+    display: none;
   }
 
   .navbar-sidebar .menu__caret::before {
