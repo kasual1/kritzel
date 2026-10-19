@@ -23,7 +23,7 @@ The simplest way to use a dynamic object is to build a plain DOM subtree and pas
 If the native HTML owns runtime behavior, such as event listeners or local calculator state, use a registered renderer even when the content is plain DOM rather than a Vue component. Clipboard copy serializes the object while it is still mounted, so a renderer can return the latest serializable state from `onSerialize` and recreate fresh DOM listeners from `rendererData` after paste.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/advanced/dynamic-objects/html"
   repoFiles={[
     'src/pages/advanced/dynamic-objects/DynamicObjectsHtmlPage.vue',
@@ -42,7 +42,7 @@ The helper defines the `.ce.vue` component as a custom element so styles remain 
 Always call the unregister function returned by `registerVueDynamicObjectRenderer` when the hosting page unmounts.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/advanced/dynamic-objects/component"
   repoFiles={[
     'src/pages/advanced/dynamic-objects/DynamicObjectsComponentPage.vue',
@@ -59,7 +59,7 @@ For user-authored or LLM-authored content, `KritzelIframeObject` provides a sand
 This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with a loading view displayed during the change.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/advanced/dynamic-objects/iframe"
   repoFiles={[
     'src/pages/advanced/dynamic-objects/DynamicObjectsIframePage.vue',

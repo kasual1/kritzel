@@ -21,7 +21,7 @@ See the [Icons API reference](../api-reference/icons.md) for the full list of de
 The primary way to customize Kirtzel's built-in icons is to override the existing icon names with your own SVG markup and pass it to the `customSvgIcons` property when initializing the editor.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
   demoPath="/customization/icons/register"
   repoFiles={['src/app/pages/customization/icons/icons-register.component.ts']}
 />
@@ -31,7 +31,7 @@ The primary way to customize Kirtzel's built-in icons is to override the existin
 Of course, you can also register entirely new icons that are specific to your application and reference them in all components that have icon support, such as the `KritzelToolbarItem` or `ContextMenuItem`.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
   demoPath="/customization/icons/register-new"
   repoFiles={['src/app/pages/customization/icons/icons-register-new.component.ts']}
 />

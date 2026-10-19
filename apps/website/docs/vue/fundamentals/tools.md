@@ -32,7 +32,7 @@ If you rather want to programmatically interact with the canvas, take a look at 
 You can adjust the toolbar by passing a custom `toolbarItems` array to `<KritzelEditor>`. The editor will register and render only the tools you provide. In this example, the toolbar items are limited to `selection`, `brush`, and `text`. Use `isDefault` to specify the default active tool.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/tools/toolbar"
   repoFiles={['src/pages/fundamentals/tools/ToolsToolbarPage.vue']}
 />
@@ -49,7 +49,7 @@ Each toolbar item of type `tool` accepts an optional `config` property for its i
 Add a toolbar item of type `config` to let users adjust the active tool at runtime.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/tools/config"
   repoFiles={['src/pages/fundamentals/tools/ToolsConfigPage.vue']}
 />
@@ -59,7 +59,7 @@ Add a toolbar item of type `config` to let users adjust the active tool at runti
 To add a custom tool, include it as an item in the `toolbarItems` array. Kritzel registers the tool automatically and renders it in the toolbar. This example adds a highlighter built from `KritzelBrushTool` alongside `selection`, `pen`, and `text`.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/tools/register"
   repoFiles={['src/pages/fundamentals/tools/ToolsRegisterPage.vue']}
 />
@@ -69,7 +69,7 @@ To add a custom tool, include it as an item in the `toolbarItems` array. Kritzel
 You can programmatically change the currently active tool by calling the `setActiveTool` method with the name of the tool on the editor instance.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/tools/change"
   repoFiles={['src/pages/fundamentals/tools/ToolsChangePage.vue']}
 />
@@ -79,7 +79,7 @@ You can programmatically change the currently active tool by calling the `setAct
 In order to disable a specific tool, set `isDisabled` on the corresponding entry of the `toolbarItems` array. The tool is rendered in a disabled state and can no longer be selected, while every other tool remains fully interactive. `isDisabled` accepts a plain boolean or a function that either returns a boolean or a `Promise<boolean>`, so you can resolve it dynamically from your own state.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/tools/disable"
   repoFiles={['src/pages/fundamentals/tools/ToolsDisablePage.vue']}
 />

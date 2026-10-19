@@ -29,7 +29,7 @@ npm install @kritzel/react-editor
 Install the related Kritzel skill for coding assistance:
 
 ```bash
-npx skills add kritzeljs/kritzel
+npx skills add kasual1/kritzel
 ```
 
 </SkillInstallation>
@@ -49,7 +49,7 @@ export function Editor() {
 This renders the editor with all the default UI elements such as the toolbar, the workspace manager, the more menu, and the zoom control panel.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
   demoPath="/getting-started/quick-start"
   repoFiles={['src/pages/getting-started/QuickStartPage.tsx']}
 />

@@ -29,7 +29,7 @@
     "release": "npm publish"
   },
   "bugs": {
-    "url": "https://github.com/kritzeljs/kritzel/issues"
+    "url": "https://github.com/kasual1/kritzel/issues"
   },
   "publishConfig": {
     "access": "public"

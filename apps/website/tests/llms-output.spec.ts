@@ -76,7 +76,7 @@ describe('Generated LLM documentation', () => {
   test('publishes integration guidance and one section per framework, without a combined bundle', () => {
     const index = readOutput('llms.txt');
     expect(index).toMatch(/^# Kritzel\n\n> /);
-    for (const guidance of ['isReady', 'isEngineReady', 'syncConfig', 'editorId', 'TypeScript types', 'npx skills add kritzeljs/kritzel']) {
+    for (const guidance of ['isReady', 'isEngineReady', 'syncConfig', 'editorId', 'TypeScript types', 'npx skills add kasual1/kritzel']) {
       expect(index).toContain(guidance);
     }
     const headings = nodes(index).filter((node) => node.type === 'heading' && node.depth === 2);
@@ -125,7 +125,7 @@ describe('Generated LLM documentation', () => {
     }
     const quickStart = readOutput(`docs/${framework}/getting-started/quick-start.md`);
     expect(quickStart).toContain(`@kritzel/${framework}-editor`);
-    expect(quickStart).toContain(`https://github.com/kritzeljs/kritzel/tree/main/apps/demos/${framework}`);
+    expect(quickStart).toContain(`https://github.com/kasual1/kritzel/tree/main/apps/demos/${framework}`);
     for (const other of frameworks.filter((candidate) => candidate !== framework)) {
       expect(quickStart).not.toContain(`@kritzel/${other}-editor`);
     }

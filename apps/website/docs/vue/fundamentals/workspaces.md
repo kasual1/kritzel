@@ -20,7 +20,7 @@ Workspaces can either be created programmatically or managed through the built-i
 Workspaces can be created by instantiating a `KritzelWorkspace` object and passing it to `editor.value.createWorkspace()`. You can specify custom properties such as the workspace `name`, initial canvas `viewport` settings, or a custom `id`.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/workspaces/create"
   repoFiles={['src/pages/fundamentals/workspaces/WorkspacesCreatePage.vue']}
 />
@@ -30,7 +30,7 @@ Workspaces can be created by instantiating a `KritzelWorkspace` object and passi
 Use `getWorkspaces()` to retrieve the complete workspace collection and `getActiveWorkspace()` when you only need the workspace currently shown in the editor. Both methods return workspace metadata such as the ID, name, visibility, and timestamps.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/workspaces/read"
   repoFiles={['src/pages/fundamentals/workspaces/WorkspacesReadPage.vue']}
 />
@@ -40,7 +40,7 @@ Use `getWorkspaces()` to retrieve the complete workspace collection and `getActi
 Pass a workspace to `updateWorkspace()` describing how you want it to look. Name, visibility and viewport are applied, and if you set `objects` it becomes the workspace's complete object set — objects are matched by ID, so new entries are added, existing ones are updated, and anything you leave out is removed. Leave `objects` `undefined` (the default) to change metadata only, or pass `[]` to clear the canvas.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/workspaces/update"
   repoFiles={['src/pages/fundamentals/workspaces/WorkspacesUpdatePage.vue']}
 />
@@ -50,7 +50,7 @@ Pass a workspace to `updateWorkspace()` describing how you want it to look. Name
 Call `deleteWorkspace()` with the workspace to remove. Keep at least one workspace available for the user and choose another active workspace before deleting the current one. The `workspacesChange` event lets custom navigation refresh whenever the collection changes.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/workspaces/delete"
   repoFiles={['src/pages/fundamentals/workspaces/WorkspacesDeletePage.vue']}
 />
@@ -60,7 +60,7 @@ Call `deleteWorkspace()` with the workspace to remove. Keep at least one workspa
 By default, Kritzel provides a built-in UI for managing multiple workspaces. However, if you hide this UI (`:isWorkspaceManagerVisible="false"`), you can programmatically build your own workspace navigation. `<KritzelEditor>` exposes an `activeWorkspaceId` prop and an `activeWorkspaceChange` event that make switching between canvases seamless.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/workspaces/switch"
   repoFiles={['src/pages/fundamentals/workspaces/WorkspacesSwitchPage.vue']}
 />

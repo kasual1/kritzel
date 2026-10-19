@@ -104,4 +104,4 @@ Exit codes are `0` for success, `1` for validation/installation/generation failu
 
 ## Source and license
 
-The CLI source is available in [`libs/cli` in the public repository](https://github.com/kritzeljs/kritzel/tree/main/libs/cli). The package is licensed under the [MIT License](./LICENSE).
+The CLI source is available in [`libs/cli` in the public repository](https://github.com/kasual1/kritzel/tree/main/libs/cli). The package is licensed under the [MIT License](./LICENSE).

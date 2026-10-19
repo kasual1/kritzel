@@ -32,7 +32,7 @@ This example makes use of the following core concepts. Click on the links below 
 A curated slides deck with an interactive Angular dashboard header. Clicking next or previous triggers viewport pan transitions while clamping camera coordinates inside active slide margins.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
   demoPath="/examples/slideshow-presentation"
   repoFiles={['src/app/pages/examples/slideshow-presentation.component.ts']}
 />

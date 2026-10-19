@@ -32,7 +32,7 @@ This example makes use of the following core concepts. Click on the links below 
 Users pick a color from circular swatches in a custom bottom toolbar, then sketch directly over the image. A segmented mode control switches between brush drawing and text placement, while separate icon controls expose undo, redo, and zoom. The built-in editor controls are hidden so all interaction flows through the React UI.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
   demoPath="/examples/image-annotation-studio"
   repoFiles={['src/pages/examples/ImageAnnotationStudioPage.tsx']}
 />

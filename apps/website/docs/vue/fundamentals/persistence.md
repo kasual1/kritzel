@@ -29,7 +29,7 @@ Cross-tab synchronization and real-time network sync use the same concept of pro
 Make changes to the different workspaces in the demo below and see how the state is preserved when switching back and forth between them. Notice that reloading the page will reset all changes.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/persistence/memory"
   repoFiles={['src/pages/fundamentals/persistence/PersistenceMemoryPage.vue']}
 />
@@ -41,7 +41,7 @@ Register the `IndexedDBSyncProvider` to make object state durable in the browser
 Change anything on the canvas below and then reload the page. Your changes now should be automatically persisted.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/vue"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/persistence/local"
   repoFiles={['src/pages/fundamentals/persistence/PersistenceLocalPage.vue']}
 />

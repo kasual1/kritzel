@@ -18,7 +18,7 @@ Each agentic cursor has its own color, an optional name label, and an optional s
 Agentic cursors are rendered locally only. They are not synchronized to collaborators, so every client decides which cursors it shows.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
   demoPath="/advanced/agentic-cursors/basic"
   repoFiles={['src/app/pages/advanced/agentic-cursors/agentic-cursors-basic.component.ts']}
 />

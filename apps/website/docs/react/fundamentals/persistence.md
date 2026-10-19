@@ -29,7 +29,7 @@ Cross-tab synchronization and real-time network sync use the same concept of pro
 Make changes to the different workspaces in the demo below and see how the state is preserved when switching back and forth between them. Notice that reloading the page will reset all changes.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/persistence/memory"
   repoFiles={['src/pages/fundamentals/persistence/PersistenceMemoryPage.tsx']}
 />
@@ -41,7 +41,7 @@ Register `IndexedDBSyncProvider` in `syncConfig.providers` to make object state 
 Change anything on the canvas below and then reload the page. Your changes should now be automatically persisted. Because restored content is available when `onIsReady` fires, seed objects only when `await editor.getAllObjects()` returns an empty array.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
   demoPath="/fundamentals/persistence/local"
   repoFiles={['src/pages/fundamentals/persistence/PersistenceLocalPage.tsx']}
 />

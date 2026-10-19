@@ -39,7 +39,7 @@ Instead, to center the camera viewport on a static image background or a station
 :::
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/react"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
   demoPath="/examples/blueprint-defect-mapper"
   repoFiles={['src/pages/examples/BlueprintDefectMapperPage.tsx']}
 />

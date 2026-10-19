@@ -22,7 +22,7 @@ The full list of customizable properties can be found in the [API Reference](../
 In order to toggle between the default light and dark theme, pass the respective theme name to the `[theme]` binding.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
   demoPath="/customization/theming/apply"
   repoFiles={['src/app/pages/customization/theming/theming-apply.component.ts']}
 />
@@ -33,7 +33,7 @@ In order to toggle between the default light and dark theme, pass the respective
 Listen for the `themeChange` event to react whenever the active theme changes. The event provides the new theme name as its detail.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
   demoPath="/customization/theming/listen"
   repoFiles={['src/app/pages/customization/theming/theming-listen.component.ts']}
 />
@@ -44,7 +44,7 @@ Listen for the `themeChange` event to react whenever the active theme changes. T
 Create a custom theme by overriding the groups and properties of `KritzelTheme`, and providing it as part of the editor's `[themes]` array . Similar to toggling the default themes, activate it by setting its name through the `[theme]` binding.
 
 <LiveDemo
-  repoUrl="https://github.com/kritzeljs/kritzel/tree/main/apps/demos/angular"
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
   demoPath="/customization/theming/custom"
   repoFiles={['src/app/pages/customization/theming/theming-custom.component.ts']}
 />
