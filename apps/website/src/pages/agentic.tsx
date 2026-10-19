@@ -38,7 +38,7 @@ export default function Agentic(): ReactNode {
     <HtmlClassNameProvider className="landing-page agentic-page">
       <Layout description={DESCRIPTION}>
         <Head>
-          {/* Set directly so the site-wide title is not appended, which would duplicate the home page title. */}
+          {/* Set directly so the site-wide title is not appended to the page title. */}
           <title>{TITLE}</title>
           <meta property="og:title" content={TITLE} />
           <meta name="twitter:title" content={TITLE} />
