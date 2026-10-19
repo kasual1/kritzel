@@ -175,7 +175,7 @@ function RunningShoe({
   );
 }
 
-const INITIAL_COMMAND = "Lets focus on the image with the red running shoe";
+const INITIAL_COMMAND = "Let's focus on the image with the red running shoe";
 const CASUAL_COMMAND = "Create a more casual variant of the red running shoe.";
 const SUMMER_COMMAND = "Create a summer variant of the red running shoe";
 
@@ -486,8 +486,8 @@ function HeroScene({
               accentClassName={styles.heroTitleAccent}
             />
             <p className={styles.heroSubtitle} hidden={shoeFocused && !compactViewport}>
-              Kritzel is framework-agnostic canvas library that helps you build agentic whiteboard
-              experiences with React, Vue and Angular.
+              Kritzel is a framework-agnostic canvas library that lets AI agents draw, edit and collaborate
+              alongside your users in React, Vue and Angular.
             </p>
             <CallToActionBar docsPath={docsPath} />
           </div>
