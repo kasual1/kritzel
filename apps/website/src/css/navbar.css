@@ -571,11 +571,7 @@ body:has(.theme-doc-markdown) .navbar__inner a.navbar-main-github-link {
   }
 
   .navbar-sidebar a.navbar-get-started-link {
-    min-height: calc(
-      1.4em + var(--ifm-menu-link-padding-vertical) +
-        var(--ifm-menu-link-padding-vertical)
-    );
-    line-height: 1.4;
+    display: none;
   }
 
   .navbar-sidebar .menu__caret::before {
