@@ -27,3 +27,11 @@
 .watermark-link:hover {
   opacity: 1;
 }
+
+/* Hide on mobile viewports (portrait phones and landscape phones), where space is too narrow */
+@media (max-width: 576px),
+  (max-height: 576px) and (orientation: landscape) {
+  :host {
+    display: none;
+  }
+}
