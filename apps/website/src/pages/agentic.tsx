@@ -18,7 +18,7 @@ import {
 
 const TITLE = "Kritzel - Agentic Canvas Library for React, Vue & Angular";
 const DESCRIPTION =
-  "Kritzel helps you build agentic canvas experiences featuring dynamic component rendering to power generative UI. Easily integrate it into React, Vue & Angular.";
+  "Kritzel helps you build agentic canvas experiences featuring dynamic component rendering to power generative UI. Fully open-source and easy to integrate into React, Vue & Angular.";
 
 function usePreferredDocsPath() {
   const [docsPath, setDocsPath] = useState(frameworkPaths.react);
