@@ -66,7 +66,12 @@ const FEATURES: ReadonlyArray<Feature> = [
   {
     title: "100% Open Source",
     description: "Kritzel is fully open source and meant for everyone to use, modify, and build upon.",
-    icon: <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />,
+    icon: (
+      <>
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+      </>
+    ),
   },
   {
     title: "Realtime Collaboration",
@@ -127,7 +132,12 @@ const AGENTIC_FEATURES: ReadonlyArray<Feature> = [
   {
     title: "100% Open Source",
     description: "Kritzel is fully open source and meant for everyone to use, modify, and build upon.",
-    icon: <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />,
+    icon: (
+      <>
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+      </>
+    ),
   },
   {
     title: "Programmable cursors",
