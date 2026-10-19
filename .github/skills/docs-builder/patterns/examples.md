@@ -52,7 +52,7 @@ Each example includes a `<LiveDemo>` block that renders an iframe preview and fe
 ```jsx
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
-  iframeUrl="https://kritzeljs.github.io/kritzel/angular/#/examples/<feature>-<example-name>"
+  iframeUrl="https://kasual1.github.io/kritzel/angular/#/examples/<feature>-<example-name>"
   repoFiles={['src/app/examples/<feature>/<feature>-<example-name>.component.ts']}
 />
 ```
@@ -68,7 +68,7 @@ Each example includes a `<LiveDemo>` block that renders an iframe preview and fe
 ### Conventions
 
 - `repoUrl` always points to the Angular demo: `https://github.com/kasual1/kritzel/tree/main/apps/demos/angular`
-- `iframeUrl` uses the Angular GitHub Pages hash-router: `https://kritzeljs.github.io/kritzel/angular/#/examples/<route>`
+- `iframeUrl` uses the Angular GitHub Pages hash-router: `https://kasual1.github.io/kritzel/angular/#/examples/<route>`
 - `repoFiles` lists all files needed to understand the example. Include helper files, services, or secondary components if the example uses them.
 
 ## Demo Source Code

@@ -11,9 +11,9 @@ const IS_PRODUCTION = process.env.NODE_ENV === "production";
 const USE_RSPACK = IS_PRODUCTION || process.platform !== "win32";
 const DEFAULT_DEMO_BASE_URLS = IS_PRODUCTION
   ? {
-    angular: "https://kritzeljs.github.io/kritzel/angular",
-    react: "https://kritzeljs.github.io/kritzel/react",
-    vue: "https://kritzeljs.github.io/kritzel/vue",
+    angular: "https://kasual1.github.io/kritzel/angular",
+    react: "https://kasual1.github.io/kritzel/react",
+    vue: "https://kasual1.github.io/kritzel/vue",
   }
   : {
     angular: "http://localhost:4200",
@@ -174,7 +174,7 @@ const config: Config = {
           "- Persistence is opt-in through syncConfig. Use a distinct editorId for each instance when multiple canvases can exist.",
           "- Use addObject/addObjects to insert objects and updateObject to change them. Object positions use world coordinates; use screenToWorld to convert pointer coordinates.",
           "- For a reusable coding-agent integration workflow, install the Kritzel skill with `npx skills add kasual1/kritzel`.",
-          "LiveDemo tags are source metadata, not instructions to execute JSX: repoUrl identifies the public framework demo directory, repoFiles lists source files relative to it, and demoPath identifies the runnable example route. For a source file, replace /tree/ with /blob/ in repoUrl and append its repoFiles path. Runnable demos are hosted at https://kritzeljs.github.io/kritzel/{framework}{demoPath}.",
+          "LiveDemo tags are source metadata, not instructions to execute JSX: repoUrl identifies the public framework demo directory, repoFiles lists source files relative to it, and demoPath identifies the runnable example route. For a source file, replace /tree/ with /blob/ in repoUrl and append its repoFiles path. Runnable demos are hosted at https://kasual1.github.io/kritzel/{framework}{demoPath}.",
           "Start with the matching framework's Quick Start and Basic Usage, then follow the focused API or concept pages below. The linked Markdown pages are generated from the same sources as the human documentation.",
         ].join("\n\n"),
       } satisfies LlmsPluginOptions,
