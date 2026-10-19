@@ -309,6 +309,13 @@ const config: Config = {
           position: 'right',
         },
         {
+          type: 'custom-docsLink',
+          label: 'Get Started',
+          to: '/docs/react/getting-started/quick-start',
+          position: 'right',
+          className: 'navbar-get-started-link',
+        },
+        {
           type: 'dropdown',
           position: 'right',
           label: 'Angular',

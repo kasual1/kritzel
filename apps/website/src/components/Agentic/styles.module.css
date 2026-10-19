@@ -104,6 +104,23 @@
   padding: 0 14px;
 }
 
+.page .topNavCta {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 18px;
+  margin: 0 4px;
+  border-radius: 12px;
+  background: var(--landing-ink);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.page .topNavCta:hover {
+  color: #ffffff;
+  background: #2a2a2e;
+}
+
 .topNavIcon {
   display: flex;
   align-items: center;
@@ -1591,7 +1608,8 @@
     gap: 0;
   }
 
-  .topNavLink {
+  .topNavLink,
+  .page .topNavCta {
     display: none;
   }
 
