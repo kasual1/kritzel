@@ -64,10 +64,9 @@ type Feature = { title: string; description: string; icon: ReactNode };
 
 const FEATURES: ReadonlyArray<Feature> = [
   {
-    title: "Infinite",
-    description:
-      "Deploy an infinite canvas that expands with your users' creativity, allowing them to sketch, paint, or design without limits.",
-    icon: <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z" />,
+    title: "100% Open Source",
+    description: "Kritzel is fully open source and meant for everyone to use, modify, and build upon.",
+    icon: <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />,
   },
   {
     title: "Realtime Collaboration",
@@ -126,10 +125,9 @@ const FEATURES: ReadonlyArray<Feature> = [
 
 const AGENTIC_FEATURES: ReadonlyArray<Feature> = [
   {
-    title: "Ready made chatbox component",
-    description:
-      "Drop a chatbox onto the canvas that lets users talk to your agent right next to their work, with no extra UI to build.",
-    icon: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
+    title: "100% Open Source",
+    description: "Kritzel is fully open source and meant for everyone to use, modify, and build upon.",
+    icon: <path d="m16 18 6-6-6-6M8 6l-6 6 6 6" />,
   },
   {
     title: "Programmable cursors",
