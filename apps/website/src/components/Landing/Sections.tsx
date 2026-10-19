@@ -65,7 +65,7 @@ type Feature = { title: string; description: string; icon: ReactNode };
 const FEATURES: ReadonlyArray<Feature> = [
   {
     title: "Open Source",
-    description: "Kritzel is 100% open source and meant for everyone to use, modify, and build upon.",
+    description: "Kritzel is 100% open source and meant for everyone to use, modify, and build upon. Contributions, feedback, and new ideas are always welcome!",
     icon: (
       <>
         <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
@@ -131,7 +131,7 @@ const FEATURES: ReadonlyArray<Feature> = [
 const AGENTIC_FEATURES: ReadonlyArray<Feature> = [
   {
     title: "Open Source",
-    description: "Kritzel is 100% open source and meant for everyone to use, modify, and build upon.",
+    description: "Kritzel is 100% open source and meant for everyone to use, modify, and build upon. Contributions, feedback, and new ideas are always welcome!",
     icon: (
       <>
         <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
