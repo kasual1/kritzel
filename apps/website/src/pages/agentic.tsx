@@ -16,9 +16,9 @@ import {
   subscribeToPreferredFramework,
 } from "@site/src/utils/frameworkPreference";
 
-const TITLE = "Kritzel - Agentic Canvas SDK for AI Agents in React, Vue & Angular";
+const TITLE = "Kritzel - Agentic Canvas Library for React, Vue & Angular";
 const DESCRIPTION =
-  "Build agentic whiteboards where AI agents draw, edit and collaborate with your users: a ready made chatbox, programmable cursors, WebMCP tools and LLM generated objects.";
+  "Kritzel helps you build agentic canvas experiences featuring dynamic component rendering to power generative UI. Easily integrate it into React, Vue & Angular.";
 
 function usePreferredDocsPath() {
   const [docsPath, setDocsPath] = useState(frameworkPaths.react);
