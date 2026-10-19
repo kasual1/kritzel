@@ -69,7 +69,7 @@ const DOC_REDIRECTS = FRAMEWORKS.flatMap((framework) =>
 );
 
 const config: Config = {
-  title: "Kritzel - Infinite Canvas Library for React, Vue & Angular",
+  title: "Kritzel",
   tagline: "Kritzel helps you build infinite canvas experiences featuring real-time collaboration and high-performance drawing tools. Fully open-source and easy to integrate into React, Vue & Angular.",
   favicon: "img/favicon.svg",
   future: {
