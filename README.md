@@ -36,3 +36,7 @@ It gives you a framework-neutral whiteboard foundation for creating interactive,
 - [Angular](https://kritzel.io/docs/angular/getting-started/quick-start)
 - [React](https://kritzel.io/docs/react/getting-started/quick-start)
 - [Vue](https://kritzel.io/docs/vue/getting-started/quick-start)
+
+## Support us
+
+Kritzel is an MIT-licensed open source project. If you like the idea of a framework-agnostic infinite canvas library and want to support our work, please consider becoming a [sponsor](https://github.com/sponsors/kasual1).
