@@ -120,3 +120,53 @@
     margin-right: 0;
   }
 }
+
+/* Simplified footnote shown inside the docs content column instead of the site footer. */
+.docs-footnote {
+  margin-top: 3rem;
+  /* Cancels the docs container's padding-bottom--lg, since the footnote ends the page. */
+  margin-bottom: -2rem;
+  padding: 2rem 0 0.75rem;
+  border-top: 1px solid var(--ifm-toc-border-color);
+  color: #0a0a0a;
+}
+
+.docs-footnote__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.93rem;
+  font-weight: 600;
+}
+
+.docs-footnote__text {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+
+.docs-footnote__bottom {
+  margin-top: 40px;
+  padding-top: 15px;
+  border-top: 1px solid var(--ifm-toc-border-color);
+  text-align: center;
+}
+
+.docs-footnote__social {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.docs-footnote__social a {
+  display: inline-flex;
+  color: #0a0a0a;
+}
+
+.docs-footnote__social a:hover {
+  color: var(--ifm-link-color);
+}
+
+.docs-footnote__copyright {
+  margin: 0;
+  font-size: 0.72rem;
+}
