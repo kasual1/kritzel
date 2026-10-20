@@ -64,10 +64,14 @@ type Feature = { title: string; description: string; icon: ReactNode };
 
 const FEATURES: ReadonlyArray<Feature> = [
   {
-    title: "Infinite",
-    description:
-      "Deploy an infinite canvas that expands with your users' creativity, allowing them to sketch, paint, or design without limits.",
-    icon: <path d="M12 12c-2-2.67-4-4-6-4a4 4 0 1 0 0 8c2 0 4-1.33 6-4Zm0 0c2 2.67 4 4 6 4a4 4 0 0 0 0-8c-2 0-4 1.33-6 4Z" />,
+    title: "Open Source",
+    description: "Kritzel is 100% open source and meant for everyone to use, modify, and build upon. Contributions, feedback, and new ideas are always welcome!",
+    icon: (
+      <>
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+      </>
+    ),
   },
   {
     title: "Realtime Collaboration",
@@ -126,10 +130,14 @@ const FEATURES: ReadonlyArray<Feature> = [
 
 const AGENTIC_FEATURES: ReadonlyArray<Feature> = [
   {
-    title: "Ready made chatbox component",
-    description:
-      "Drop a chatbox onto the canvas that lets users talk to your agent right next to their work, with no extra UI to build.",
-    icon: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />,
+    title: "Open Source",
+    description: "Kritzel is 100% open source and meant for everyone to use, modify, and build upon. Contributions, feedback, and new ideas are always welcome!",
+    icon: (
+      <>
+        <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+        <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+      </>
+    ),
   },
   {
     title: "Programmable cursors",

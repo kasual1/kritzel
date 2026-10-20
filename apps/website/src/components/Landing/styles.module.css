@@ -776,7 +776,7 @@
 .page .featureText {
   margin: 0;
   max-width: 460px;
-  font-size: 16px;
+  font-size: 0.9rem;
   line-height: 1.65;
   color: var(--landing-muted);
 }
