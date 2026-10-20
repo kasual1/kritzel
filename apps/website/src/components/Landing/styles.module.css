@@ -196,7 +196,8 @@
   position: relative;
 }
 
-.heroTitleCharacter[data-hidden] {
+.heroTitleCharacter[data-hidden],
+.heroTitleAccentPending {
   visibility: hidden;
 }
 
@@ -222,7 +223,8 @@
   }
 
   /* No typing animation here: show the title from the first paint, before hydration. */
-  .heroTitleCharacter[data-hidden] {
+  .heroTitleCharacter[data-hidden],
+  .heroTitleAccentPending {
     visibility: visible;
   }
 
