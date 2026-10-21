@@ -29,7 +29,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 ## Infinite Board of Star Buttons
 
-The board starts with 1,000 buttons packed tightly around the center of the first screen, so the initial view is full of buttons at every count; larger counts only make the board bigger. Pan to explore it, or zoom out to see the whole crowd at once. Clicking a button selects it and opens GitHub in a new tab; a selected button can be dragged, resized or deleted like any other object. The control in the top-right corner rebuilds the board with 100, 1,000 or 5,000 buttons.
+The board starts with 1,000 buttons laid out on an evenly spaced grid around the center of the first screen, so the initial view is full of buttons at every count; larger counts only make the board bigger. Pan to explore it, or zoom out to see the whole crowd at once. Clicking a button selects it and opens GitHub in a new tab; a selected button can be dragged, resized or deleted like any other object. The control in the top-right corner rebuilds the board with 100, 1,000 or 5,000 buttons.
 
 :::info Clicks versus drags
 The button is a plain `div`, not a `<button>`, so the engine treats every press on it as a canvas interaction: selecting, moving and resizing keep working. The renderer opens the link itself, and only when the pointer moved less than a few pixels between `pointerdown` and `pointerup`, so dragging never opens GitHub.
@@ -71,7 +71,7 @@ KritzelDynamicObjectRendererRegistry.register(GITHUB_STAR_RENDERER_KEY, {
 
 ### Creating the objects
 
-The object factory fills a brick grid outward from the world origin, which is the center of the initial viewport, and uses a small seeded random generator for the uneven board edge and a few pixels of jitter, so every load shows the same layout. Each object carries only the renderer key and a label in `rendererData`.
+The object factory places the buttons on a grid with a 10px gap on every side, centered on the world origin, which is the center of the initial viewport. The layout is computed from the count alone, so every load shows the same board. Each object carries only the renderer key and a label in `rendererData`.
 
 ```typescript
 export function createGithubStarObject(x: number, y: number): KritzelDynamicObject {
