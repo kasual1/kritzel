@@ -6,10 +6,13 @@ export const GITHUB_REPO_URL = "https://github.com/kasual1/kritzel";
 export const STAR_COUNTS = [100, 1000, 5000] as const;
 export const DEFAULT_STAR_COUNT = 1000;
 
-const BOARD_WIDTH = 8000;
-const BOARD_HEIGHT = 5000;
 const STAR_WIDTH = 96;
 const STAR_HEIGHT = 30;
+// Buttons sit on a brick grid with small gaps, filled outward from the center of the initial viewport.
+const CELL_WIDTH = STAR_WIDTH + 10;
+const CELL_HEIGHT = STAR_HEIGHT + 10;
+const BOARD_ASPECT = 16 / 9;
+const MAX_JITTER = 3;
 const LAYOUT_SEED = 20240611;
 // Screen pixels the pointer may travel between down and up and still count as a click.
 const CLICK_TOLERANCE = 4;
@@ -147,11 +150,33 @@ export function createGithubStarObject(x: number, y: number): KritzelDynamicObje
   return object;
 }
 
+/**
+ * Packs `count` buttons as densely as the grid allows around the world origin (the center of
+ * the initial viewport), so the first screen looks equally crowded for every count; larger
+ * counts only grow the board outward. The seeded generator keeps the layout identical on
+ * every load and in every framework.
+ */
 export function createGithubStarObjects(count: number): KritzelDynamicObject[] {
   const random = createSeededRandom(LAYOUT_SEED);
-  return Array.from({ length: count }, () => {
-    const x = Math.round(random() * (BOARD_WIDTH - STAR_WIDTH) - BOARD_WIDTH / 2);
-    const y = Math.round(random() * (BOARD_HEIGHT - STAR_HEIGHT) - BOARD_HEIGHT / 2);
-    return createGithubStarObject(x, y);
+  const boardWidth = Math.sqrt(count * CELL_WIDTH * CELL_HEIGHT * BOARD_ASPECT);
+  const halfColumns = Math.ceil(boardWidth / 2 / CELL_WIDTH) + 2;
+  const halfRows = Math.ceil(boardWidth / BOARD_ASPECT / 2 / CELL_HEIGHT) + 2;
+
+  const cells: Array<{ x: number; y: number; distance: number }> = [];
+  for (let row = -halfRows; row <= halfRows; row++) {
+    for (let column = -halfColumns; column <= halfColumns; column++) {
+      const x = column * CELL_WIDTH + (row % 2 === 0 ? 0 : CELL_WIDTH / 2);
+      const y = row * CELL_HEIGHT;
+      // Rectangular rings in the board's aspect ratio; the random term roughens the board's edge.
+      const distance = Math.max(Math.abs(x), Math.abs(y) * BOARD_ASPECT) + random() * CELL_WIDTH;
+      cells.push({ x, y, distance });
+    }
+  }
+  cells.sort((first, second) => first.distance - second.distance);
+
+  return cells.slice(0, count).map(({ x, y }) => {
+    const jitterX = Math.round((random() * 2 - 1) * MAX_JITTER);
+    const jitterY = Math.round((random() * 2 - 1) * MAX_JITTER);
+    return createGithubStarObject(x - STAR_WIDTH / 2 + jitterX, y - STAR_HEIGHT / 2 + jitterY);
   });
 }
