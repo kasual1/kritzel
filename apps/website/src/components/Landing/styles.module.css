@@ -1451,6 +1451,12 @@
     -webkit-touch-callout: none;
   }
 
+  /* The draggable item re-enables pointer events for itself, so switch them off here too. */
+  .halloTablet .draggableItem {
+    pointer-events: none;
+    touch-action: auto;
+  }
+
   .calculatorAnchor,
   .grassImageAnchor {
     display: none;
