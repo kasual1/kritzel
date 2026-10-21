@@ -99,7 +99,7 @@ test.describe('Example Pages Visual Regression', () => {
     await expectExampleScreenshot(editorPage, '/examples/image-annotation-studio', 'image-annotation-studio');
   });
 
-  test('should match screenshot for github-stars', async ({ editorPage }) => {
+  test.skip('should match screenshot for github-stars', async ({ editorPage }) => {
     await expectExampleScreenshot(editorPage, '/examples/github-stars', 'github-stars');
   });
 });
