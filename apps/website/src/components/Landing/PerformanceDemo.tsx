@@ -1,12 +1,11 @@
-import { useEffect, useRef } from "react";
+import type { CSSProperties } from "react";
 import styles from "./styles.module.css";
 
 /**
- * The board is tilted and scaled up by BOARD_SCALE so its corners stay covered (see .perfBoard), with a little
- * extra so the parallax shift never uncovers them either. Sizes and gaps below are in % of the board, divided
- * by that scale so buttons still look 19% by 8.4% of the frame.
+ * The board is tilted and scaled up by BOARD_SCALE so its corners stay covered (see .perfBoard). Sizes and
+ * gaps below are in % of the board, divided by that scale so buttons still look 19% by 8.4% of the frame.
  */
-const BOARD_SCALE = 1.26;
+const BOARD_SCALE = 1.2;
 const OBJECT_WIDTH = 19 / BOARD_SCALE;
 const OBJECT_HEIGHT = 8.4 / BOARD_SCALE;
 
@@ -27,7 +26,8 @@ const ROW_STARTS = [GAP - COLUMN_PITCH / 2, GAP];
 
 const OBJECTS: { x: number; y: number }[] = [];
 for (let row = 0; FIRST_ROW_TOP + row * ROW_PITCH < 100; row++) {
-  for (let x = ROW_STARTS[row % 2]; x < 100; x += COLUMN_PITCH) {
+  // One extra column on the right, so the slow drift to the left (.perfTrack) never shows a gap.
+  for (let x = ROW_STARTS[row % 2]; x < 100 + COLUMN_PITCH; x += COLUMN_PITCH) {
     OBJECTS.push({ x, y: FIRST_ROW_TOP + row * ROW_PITCH });
   }
 }
@@ -51,47 +51,16 @@ function StarButton({ x, y }: { x: number; y: number }) {
   );
 }
 
-/** A mock canvas crowded with GitHub star buttons that drifts a little with the mouse. */
+/** A mock canvas crowded with GitHub star buttons that slowly drift by. */
 export default function PerformanceDemo() {
-  const frameRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const frame = frameRef.current;
-    if (!frame || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      return;
-    }
-
-    // The pointer's position in the frame, from -1 to 1 on each axis; .perfBoard turns it into a shift.
-    let animation = 0;
-    const setPointer = (x: number, y: number) => {
-      cancelAnimationFrame(animation);
-      animation = requestAnimationFrame(() => {
-        frame.style.setProperty("--perf-pointer-x", String(x));
-        frame.style.setProperty("--perf-pointer-y", String(y));
-      });
-    };
-    const onPointerMove = (event: PointerEvent) => {
-      if (event.pointerType !== "mouse") return;
-      const rect = frame.getBoundingClientRect();
-      setPointer(((event.clientX - rect.left) / rect.width) * 2 - 1, ((event.clientY - rect.top) / rect.height) * 2 - 1);
-    };
-    const onPointerLeave = () => setPointer(0, 0);
-
-    frame.addEventListener("pointermove", onPointerMove);
-    frame.addEventListener("pointerleave", onPointerLeave);
-    return () => {
-      frame.removeEventListener("pointermove", onPointerMove);
-      frame.removeEventListener("pointerleave", onPointerLeave);
-      cancelAnimationFrame(animation);
-    };
-  }, []);
-
   return (
-    <div ref={frameRef} aria-hidden="true" className={`${styles.showcaseMedia} ${styles.perfDemo}`}>
+    <div aria-hidden="true" className={`${styles.showcaseMedia} ${styles.perfDemo}`}>
       <div className={styles.perfBoard}>
-        {OBJECTS.map((object, index) => (
-          <StarButton key={index} x={object.x} y={object.y} />
-        ))}
+        <div className={styles.perfTrack} style={{ "--perf-pitch": `${COLUMN_PITCH}%` } as CSSProperties}>
+          {OBJECTS.map((object, index) => (
+            <StarButton key={index} x={object.x} y={object.y} />
+          ))}
+        </div>
       </div>
     </div>
   );

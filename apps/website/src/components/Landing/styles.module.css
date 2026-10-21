@@ -1043,13 +1043,30 @@
 /* Tilted to the left and scaled up just enough (BOARD_SCALE in PerformanceDemo) that no corner of the frame
    shows past the board. Everything on it is sized down by the same scale, so the buttons keep their size. */
 .perfBoard {
-  --perf-board-scale: 1.26;
+  --perf-board-scale: 1.2;
   position: absolute;
   inset: 0;
-  /* Parallax: the board drifts against the mouse by up to 2% of the frame either way (set from PerformanceDemo). */
-  transform: translate(calc(var(--perf-pointer-x, 0) * -2%), calc(var(--perf-pointer-y, 0) * -2%)) rotate(-8deg)
-    scale(var(--perf-board-scale));
-  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform: rotate(-8deg) scale(var(--perf-board-scale));
+}
+
+/* Slides the rows to the left by one button pitch (--perf-pitch), then starts over. The grid repeats every
+   pitch, so the loop is seamless and the buttons seem to drift endlessly. */
+.perfTrack {
+  position: absolute;
+  inset: 0;
+  animation: landing-perf-drift 6s linear infinite;
+}
+
+@keyframes landing-perf-drift {
+  to {
+    transform: translateX(calc(-1 * var(--perf-pitch)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perfTrack {
+    animation: none;
+  }
 }
 
 /* Width and height come from OBJECT_WIDTH and OBJECT_HEIGHT in PerformanceDemo. */
@@ -1119,6 +1136,25 @@
 
 .cliMedia .terminalAscii {
   font-size: 0.7em;
+}
+
+/* A smaller framework tile beside the narrower terminal; phones already get their own size below. */
+@media (min-width: 769px) {
+  .cliMedia .frameworkTileAnchor {
+    right: -22px;
+    bottom: -26px;
+    width: 92px;
+    height: 92px;
+  }
+
+  .cliMedia .frameworkTile {
+    border-radius: 18px;
+  }
+
+  .cliMedia .frameworkLogo {
+    width: 72px;
+    height: 72px;
+  }
 }
 
 .cliMedia .terminalCursor {
