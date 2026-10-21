@@ -8,12 +8,11 @@ export const DEFAULT_STAR_COUNT = 1000;
 
 const STAR_WIDTH = 96;
 const STAR_HEIGHT = 30;
-// Buttons sit on a brick grid with small gaps, filled outward from the center of the initial viewport.
-const CELL_WIDTH = STAR_WIDTH + 10;
-const CELL_HEIGHT = STAR_HEIGHT + 10;
+// Every button is separated from its neighbors by the same gap, horizontally and vertically.
+const STAR_GAP = 10;
+const CELL_WIDTH = STAR_WIDTH + STAR_GAP;
+const CELL_HEIGHT = STAR_HEIGHT + STAR_GAP;
 const BOARD_ASPECT = 16 / 9;
-const MAX_JITTER = 3;
-const LAYOUT_SEED = 20240611;
 // Screen pixels the pointer may travel between down and up and still count as a click.
 const CLICK_TOLERANCE = 4;
 
@@ -32,15 +31,6 @@ export type GithubStarButtonInstance = {
 export function normalizeGithubStarButtonData(data: unknown): GithubStarButtonData {
   const label = data && typeof data === 'object' ? (data as Partial<GithubStarButtonData>).label : undefined;
   return { label: typeof label === 'string' && label.length > 0 ? label : 'Star' };
-}
-
-// Small LCG so every load (and every framework) produces the same layout.
-export function createSeededRandom(seed: number): () => number {
-  let state = seed >>> 0;
-  return () => {
-    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-    return state / 4294967296;
-  };
 }
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
@@ -151,32 +141,19 @@ export function createGithubStarObject(x: number, y: number): KritzelDynamicObje
 }
 
 /**
- * Packs `count` buttons as densely as the grid allows around the world origin (the center of
- * the initial viewport), so the first screen looks equally crowded for every count; larger
- * counts only grow the board outward. The seeded generator keeps the layout identical on
- * every load and in every framework.
+ * Lays `count` buttons out on a regular grid centered on the world origin (the center of the
+ * initial viewport), so the first screen looks equally full for every count and larger counts
+ * only grow the board outward. The board keeps a 16:9 shape; a partial last row is centered.
  */
 export function createGithubStarObjects(count: number): KritzelDynamicObject[] {
-  const random = createSeededRandom(LAYOUT_SEED);
-  const boardWidth = Math.sqrt(count * CELL_WIDTH * CELL_HEIGHT * BOARD_ASPECT);
-  const halfColumns = Math.ceil(boardWidth / 2 / CELL_WIDTH) + 2;
-  const halfRows = Math.ceil(boardWidth / BOARD_ASPECT / 2 / CELL_HEIGHT) + 2;
+  const columns = Math.max(1, Math.round(Math.sqrt((count * BOARD_ASPECT * CELL_HEIGHT) / CELL_WIDTH)));
+  const rows = Math.ceil(count / columns);
+  const top = -(rows * CELL_HEIGHT - STAR_GAP) / 2;
 
-  const cells: Array<{ x: number; y: number; distance: number }> = [];
-  for (let row = -halfRows; row <= halfRows; row++) {
-    for (let column = -halfColumns; column <= halfColumns; column++) {
-      const x = column * CELL_WIDTH + (row % 2 === 0 ? 0 : CELL_WIDTH / 2);
-      const y = row * CELL_HEIGHT;
-      // Rectangular rings in the board's aspect ratio; the random term roughens the board's edge.
-      const distance = Math.max(Math.abs(x), Math.abs(y) * BOARD_ASPECT) + random() * CELL_WIDTH;
-      cells.push({ x, y, distance });
-    }
-  }
-  cells.sort((first, second) => first.distance - second.distance);
-
-  return cells.slice(0, count).map(({ x, y }) => {
-    const jitterX = Math.round((random() * 2 - 1) * MAX_JITTER);
-    const jitterY = Math.round((random() * 2 - 1) * MAX_JITTER);
-    return createGithubStarObject(x - STAR_WIDTH / 2 + jitterX, y - STAR_HEIGHT / 2 + jitterY);
+  return Array.from({ length: count }, (_, index) => {
+    const row = Math.floor(index / columns);
+    const columnsInRow = Math.min(columns, count - row * columns);
+    const left = -(columnsInRow * CELL_WIDTH - STAR_GAP) / 2;
+    return createGithubStarObject(left + (index % columns) * CELL_WIDTH, top + row * CELL_HEIGHT);
   });
 }
