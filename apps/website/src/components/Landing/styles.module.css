@@ -1239,17 +1239,22 @@
   font-size: 2.75cqw;
   font-weight: 600;
   line-height: 1;
+  touch-action: manipulation;
 }
 
-.page .perfStar:hover {
-  border-color: #afb8c1;
-  background: #eaeef2;
-  color: #24292f;
-}
+/* Only on devices that really hover: on touch screens iOS would spend the first tap on the hover look and
+   not follow the link until a second tap. */
+@media (hover: hover) {
+  .page .perfStar:hover {
+    border-color: #afb8c1;
+    background: #eaeef2;
+    color: #24292f;
+  }
 
-.perfStar:hover svg {
-  color: #f5b400;
-  fill: #ffd21f;
+  .perfStar:hover svg {
+    color: #f5b400;
+    fill: #ffd21f;
+  }
 }
 
 .perfStar svg {
