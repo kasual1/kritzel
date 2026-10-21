@@ -9,6 +9,7 @@ import {
   DomCanvasSection,
   Faq,
   Features,
+  PerformanceSection,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
 import styles from "@site/src/components/Landing/styles.module.css";
@@ -53,6 +54,7 @@ export default function Home(): ReactNode {
           </div>
           <DomCanvasSection />
           <CliSection layout="split" />
+          <PerformanceSection />
           <DevicesSection />
           <Faq />
           <Wordmark />

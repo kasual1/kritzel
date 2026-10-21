@@ -4,8 +4,15 @@ import useBaseUrl from "@docusaurus/useBaseUrl";
 import DeviceShowcase from "./DeviceShowcase";
 import DomCanvasDemo from "./DomCanvasDemo";
 import Icon, { ArrowIcon } from "./Icon";
+import PerformanceDemo from "./PerformanceDemo";
 import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
+import {
+  docsPath,
+  getPreferredFramework,
+  subscribeToPreferredFramework,
+  type Framework,
+} from "@site/src/utils/frameworkPreference";
 
 const INSTALL_COMMAND = "npm i @kritzel/cli";
 
@@ -220,10 +227,61 @@ export function Features({ variant = "default" }: { variant?: "default" | "agent
   );
 }
 
-type ShowcaseProps = { headingId: string; title: string; description: string; media: ReactNode; reversed?: boolean };
+/** The framework a visitor picked on an earlier visit; React until the client knows. */
+function usePreferredFramework(): Framework {
+  const [framework, setFramework] = useState<Framework>("react");
 
-/** Media next to a heading and description; `reversed` puts the media on the right. */
-function Showcase({ headingId, title, description, media, reversed = false }: ShowcaseProps) {
+  useEffect(() => {
+    setFramework(getPreferredFramework());
+    return subscribeToPreferredFramework(setFramework);
+  }, []);
+
+  return framework;
+}
+
+/** A docs page in the visitor's preferred framework, e.g. useDocsPath('advanced/dynamic-objects'). */
+function useDocsPath(page: string): string {
+  return docsPath(usePreferredFramework(), page);
+}
+
+type ShowcaseLinkProps = { label: string; to?: string; href?: string };
+
+/** A text link with a trailing arrow; `href` opens an external page in a new tab. */
+function ShowcaseLink({ label, to, href }: ShowcaseLinkProps) {
+  const external = href ? { href, target: "_blank", rel: "noopener noreferrer" } : { to };
+  return (
+    <Link {...external} className={styles.showcaseLink}>
+      {label}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M5 12h14" />
+        <path d="m12 5 7 7-7 7" />
+      </svg>
+    </Link>
+  );
+}
+
+type ShowcaseProps = {
+  headingId: string;
+  title: string;
+  description: string;
+  media: ReactNode;
+  link: ShowcaseLinkProps;
+  reversed?: boolean;
+};
+
+/** Media next to a heading, description and link; `reversed` puts the media on the right. */
+function Showcase({ headingId, title, description, media, link, reversed = false }: ShowcaseProps) {
   return (
     <section aria-labelledby={headingId} className={styles.showcase} data-reversed={reversed ? "true" : undefined}>
       <div className={styles.showcaseInner}>
@@ -233,6 +291,7 @@ function Showcase({ headingId, title, description, media, reversed = false }: Sh
             {title}
           </h2>
           <p className={styles.sectionText}>{description}</p>
+          <ShowcaseLink {...link} />
         </div>
       </div>
     </section>
@@ -240,12 +299,27 @@ function Showcase({ headingId, title, description, media, reversed = false }: Sh
 }
 
 export function DomCanvasSection() {
+  const dynamicObjectsPath = useDocsPath("advanced/dynamic-objects");
+
   return (
     <Showcase
       headingId="dom-canvas-heading"
       title="DOM based canvas"
       description="Unlike a classic HTML canvas, Kritzel renders real DOM nodes. Place full HTML elements like forms, videos or entire web apps on the board, and your users can interact with them just like anywhere else on the page."
       media={<DomCanvasDemo />}
+      link={{ label: "Dynamic Objects", to: dynamicObjectsPath }}
+    />
+  );
+}
+
+export function PerformanceSection() {
+  return (
+    <Showcase
+      headingId="performance-heading"
+      title="Optimized for performance"
+      description="Kritzel is designed from the ground up to handle hundreds of objects. It only renders what is currently in the viewport, so the board stays fast as your canvas grows."
+      media={<PerformanceDemo />}
+      link={{ label: "Full Demo", href: "https://app.kritzel.io" }}
     />
   );
 }
@@ -255,7 +329,7 @@ export function DevicesSection() {
     <section aria-labelledby="devices-heading" className={styles.devicesSection}>
       <div className={styles.sectionIntro}>
         <h2 id="devices-heading" className={styles.sectionTitle}>
-          Works on any device
+          Works on any screen size
         </h2>
         <p className={styles.sectionText}>
           Kritzel runs smoothly on desktop, tablet and mobile. Mouse, trackpad, touch and stylus input work out of the box, so
@@ -486,7 +560,8 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
   const state = useTerminalSession(terminalRef, session.command);
   const framework = CLI_FRAMEWORKS[state.round % CLI_FRAMEWORKS.length];
   const frameworkLogoUrl = useBaseUrl(framework.logo);
-  const title = isSkill ? "Agents love Kritzel" : "Set up Kritzel in seconds";
+  const quickStartPath = useDocsPath("getting-started/quick-start");
+  const title = isSkill ? "Agents love Kritzel" : "Easy to get started";
   const description = isSkill
     ? "Add the Kritzel skill to your coding agent, so it knows how to build and extend your canvas right away."
     : "The Kritzel CLI installs and configures the canvas in your React, Vue or Angular project, so you can start building right away.";
@@ -583,6 +658,7 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
         title={title}
         description={description}
         media={<div className={styles.cliMedia}>{terminal}</div>}
+        link={{ label: "Quick Start", to: quickStartPath }}
         reversed
       />
     );

@@ -9,6 +9,11 @@ export const frameworkPaths: Record<Framework, string> = {
   vue: '/docs/vue/getting-started/quick-start',
 };
 
+/** A docs page for a framework, e.g. docsPath('vue', 'advanced/dynamic-objects'). */
+export function docsPath(framework: Framework, page: string): string {
+  return `/docs/${framework}/${page}`;
+}
+
 export function getPreferredFramework(): Framework {
   if (typeof window === 'undefined') {
     return 'react'; // Default for SSR

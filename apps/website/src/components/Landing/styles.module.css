@@ -836,7 +836,7 @@
 .showcaseMedia {
   flex: 1 1 0;
   min-width: 0;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 11;
   box-sizing: border-box;
   border: var(--landing-border);
   border-radius: 18px;
@@ -849,7 +849,6 @@
      16:11 frame is atan(20 / 68.75). --dom-split (0 to 1) moves it from fully left of the frame to fully right. */
   --dom-tilt: 10cqw;
   --dom-angle: 16.22deg;
-  aspect-ratio: 16 / 11;
   --dom-x: calc(var(--dom-split) * (100% + 2 * var(--dom-tilt)) - var(--dom-tilt));
   position: relative;
   overflow: hidden;
@@ -1167,6 +1166,55 @@
   }
 }
 
+/* A mock canvas that fills up with star buttons (see PerformanceDemo); buttons past an edge are cut off. */
+.perfDemo {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #ffffff;
+}
+
+/* OBJECT_WIDTH and OBJECT_HEIGHT in PerformanceDemo. */
+.perfObject {
+  position: absolute;
+  display: flex;
+  width: 19%;
+  height: 8.4%;
+}
+
+.perfStar {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 1cqw;
+  box-sizing: border-box;
+  border: 1px solid #d0d7de;
+  border-radius: 1.1cqw;
+  background: #f6f8fa;
+  color: #24292f;
+  font-size: 2.75cqw;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.page .perfStar:hover {
+  z-index: 1;
+  border-color: #afb8c1;
+  background: #eaeef2;
+  color: #24292f;
+}
+
+.perfStar:hover svg {
+  color: #f5b400;
+  fill: #ffd21f;
+}
+
+.perfStar svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
 /* The terminal as a showcase's media: its text scales with the column so the ASCII logo fits, like on phones. */
 .cliMedia {
   flex: 1 1 0;
@@ -1174,9 +1222,17 @@
   container-type: inline-size;
 }
 
-/* Shorter than the stacked terminal: the session's tallest frame is about 200px of text plus padding. */
+/* At least as tall as the 16:11 media in the other showcase rows (the framework tile hangs outside it), with
+   the body filling whatever the bar leaves. The session's tallest frame needs about 200px of text plus padding. */
+.cliMedia .terminal {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100cqw * 11 / 16);
+}
+
 .cliMedia .terminalBody {
-  min-height: 280px;
+  flex: 1;
+  min-height: 0;
   padding: 20px 16px 24px;
   font-size: min(14px, calc((100cqw - 36px) / 30));
 }
@@ -1194,6 +1250,36 @@
 .devicesStage {
   width: 100%;
   max-width: 760px;
+}
+
+.showcaseLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.showcaseLink svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.showcaseLink:hover svg {
+  transform: translateX(3px);
+}
+
+.showcaseCopy .showcaseLink {
+  align-self: flex-start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcaseLink svg {
+    transition: none;
+  }
 }
 
 .showcaseCopy {
