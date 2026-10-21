@@ -5,9 +5,10 @@ import Head from "@docusaurus/Head";
 import Hero from "@site/src/components/Landing/Hero";
 import {
   CliSection,
+  DevicesSection,
+  DomCanvasSection,
   Faq,
   Features,
-  Showcases,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
 import styles from "@site/src/components/Landing/styles.module.css";
@@ -50,8 +51,9 @@ export default function Home(): ReactNode {
             <div aria-hidden="true" className={styles.heroSpacer} />
             <Features />
           </div>
-          <Showcases />
-          <CliSection />
+          <DomCanvasSection />
+          <CliSection layout="split" />
+          <DevicesSection />
           <Faq />
           <Wordmark />
         </main>

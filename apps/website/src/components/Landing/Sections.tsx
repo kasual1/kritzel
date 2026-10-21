@@ -220,46 +220,52 @@ export function Features({ variant = "default" }: { variant?: "default" | "agent
   );
 }
 
-type Showcase = { title: string; description: string; media?: ReactNode };
+type ShowcaseProps = { headingId: string; title: string; description: string; media: ReactNode; reversed?: boolean };
 
-const SHOWCASES: ReadonlyArray<Showcase> = [
-  {
-    title: "DOM based canvas",
-    media: <DomCanvasDemo />,
-    description:
-      "Unlike a classic HTML canvas, Kritzel renders real DOM nodes. Place full HTML elements like forms, videos or entire web apps on the board, and your users can interact with them just like anywhere else on the page.",
-  },
-  {
-    title: "Works on any device",
-    media: <DeviceShowcase />,
-    description:
-      "Kritzel runs smoothly on desktop, tablet and mobile. Mouse, trackpad, touch and stylus input work out of the box, so your canvas feels at home on every screen.",
-  },
-];
-
-/** Media (or a placeholder) next to a heading and description; every second row puts the media on the right. */
-export function Showcases() {
+/** Media next to a heading and description; `reversed` puts the media on the right. */
+function Showcase({ headingId, title, description, media, reversed = false }: ShowcaseProps) {
   return (
-    <>
-      {SHOWCASES.map((showcase, index) => (
-        <section
-          key={showcase.title}
-          aria-labelledby={`showcase-heading-${index}`}
-          className={styles.showcase}
-          data-reversed={index % 2 === 1 ? "true" : undefined}
-        >
-          <div className={styles.showcaseInner}>
-            {showcase.media ?? <div aria-hidden="true" className={styles.showcaseMedia} />}
-            <div className={styles.showcaseCopy}>
-              <h2 id={`showcase-heading-${index}`} className={styles.sectionTitle}>
-                {showcase.title}
-              </h2>
-              <p className={styles.sectionText}>{showcase.description}</p>
-            </div>
-          </div>
-        </section>
-      ))}
-    </>
+    <section aria-labelledby={headingId} className={styles.showcase} data-reversed={reversed ? "true" : undefined}>
+      <div className={styles.showcaseInner}>
+        {media}
+        <div className={styles.showcaseCopy}>
+          <h2 id={headingId} className={styles.sectionTitle}>
+            {title}
+          </h2>
+          <p className={styles.sectionText}>{description}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export function DomCanvasSection() {
+  return (
+    <Showcase
+      headingId="dom-canvas-heading"
+      title="DOM based canvas"
+      description="Unlike a classic HTML canvas, Kritzel renders real DOM nodes. Place full HTML elements like forms, videos or entire web apps on the board, and your users can interact with them just like anywhere else on the page."
+      media={<DomCanvasDemo />}
+    />
+  );
+}
+
+export function DevicesSection() {
+  return (
+    <section aria-labelledby="devices-heading" className={styles.devicesSection}>
+      <div className={styles.sectionIntro}>
+        <h2 id="devices-heading" className={styles.sectionTitle}>
+          Works on any device
+        </h2>
+        <p className={styles.sectionText}>
+          Kritzel runs smoothly on desktop, tablet and mobile. Mouse, trackpad, touch and stylus input work out of the box, so
+          your canvas feels at home on every screen.
+        </p>
+      </div>
+      <div className={styles.devicesStage}>
+        <DeviceShowcase />
+      </div>
+    </section>
   );
 }
 
@@ -469,108 +475,128 @@ function BotIcon() {
   );
 }
 
-export function CliSection({ variant = "frameworks" }: { variant?: CliVariant }) {
+/**
+ * The terminal replaying a CLI session, either centered below its heading (`stacked`) or as the media of a
+ * showcase row with the heading on the left (`split`).
+ */
+export function CliSection({ variant = "frameworks", layout = "stacked" }: { variant?: CliVariant; layout?: "stacked" | "split" }) {
   const session = CLI_SESSIONS[variant];
   const isSkill = variant === "skill";
   const terminalRef = useRef<HTMLDivElement | null>(null);
   const state = useTerminalSession(terminalRef, session.command);
   const framework = CLI_FRAMEWORKS[state.round % CLI_FRAMEWORKS.length];
   const frameworkLogoUrl = useBaseUrl(framework.logo);
+  const title = isSkill ? "Agents love Kritzel" : "Set up Kritzel in seconds";
+  const description = isSkill
+    ? "Add the Kritzel skill to your coding agent, so it knows how to build and extend your canvas right away."
+    : "The Kritzel CLI installs and configures the canvas in your React, Vue or Angular project, so you can start building right away.";
+
+  const terminal = (
+    <div className={styles.terminal}>
+      <div className={styles.terminalBar}>
+        <span className={styles.terminalDot} style={{ background: "#ff5f57" }} />
+        <span className={styles.terminalDot} style={{ background: "#febc2e" }} />
+        <span className={styles.terminalDot} style={{ background: "#28c840" }} />
+      </div>
+      <div ref={terminalRef} className={styles.terminalBody}>
+        <div className={styles.terminalLine}>
+          <span className={styles.terminalPath}>~/my-app</span> {state.typed}
+          {state.typing && <span className={styles.terminalCursor} />}
+        </div>
+        {state.banner && (
+          <div className={styles.terminalBanner}>
+            <div aria-label="Kritzel" className={styles.terminalAscii}>
+              {KRITZEL_ASCII}
+            </div>
+            <div className={styles.terminalWelcome}>
+              Welcome to <span className={styles.terminalStrong}>kritzel.io</span>
+            </div>
+          </div>
+        )}
+        {state.question && (
+          <div className={styles.terminalLine}>
+            <span className={styles.terminalBold}>?</span>{" "}
+            <span className={styles.terminalMedium}>{session.question}</span>
+            {state.answered && (
+              <>
+                {" "}
+                <span className={styles.terminalPath}>›</span>{" "}
+                <span className={styles.terminalAnswer}>{isSkill ? "Yes" : framework.name}</span>
+              </>
+            )}
+          </div>
+        )}
+        {state.added && (
+          <div className={styles.terminalSuccess}>
+            {isSkill ? (
+              <>
+                ✔ Added the <span className={styles.terminalStrong}>kritzel</span> skill to your agent
+              </>
+            ) : (
+              <>
+                ✔ Added kritzel to your <span className={styles.terminalStrong}>{framework.name}</span> project
+              </>
+            )}
+          </div>
+        )}
+        {state.prompt && (
+          <div className={styles.terminalLine}>
+            <span className={styles.terminalPath}>~/my-app</span>{" "}
+            <span className={`${styles.terminalCursor} ${styles.terminalCursorBlink}`} />
+          </div>
+        )}
+      </div>
+      {isSkill ? (
+        <div aria-hidden="true" className={styles.frameworkTileAnchor}>
+          <div className={styles.skillTileStatic}>
+            <div className={`${styles.frameworkTile} ${styles.skillTile}`}>
+              <BotIcon />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div aria-label={`Selected framework: ${framework.name}`} className={styles.frameworkTileAnchor}>
+          <div key={state.round} className={styles.frameworkTileMotion} data-leaving={state.leaving ? "true" : undefined}>
+            <div
+              className={styles.frameworkTile}
+              style={{ background: framework.color, boxShadow: `0 18px 20px -12px ${framework.color}40` }}
+            >
+              <img
+                className={styles.frameworkLogo}
+                data-framework={framework.name}
+                src={frameworkLogoUrl}
+                alt=""
+                width={88}
+                height={88}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  if (layout === "split") {
+    return (
+      <Showcase
+        headingId="cli-heading"
+        title={title}
+        description={description}
+        media={<div className={styles.cliMedia}>{terminal}</div>}
+        reversed
+      />
+    );
+  }
 
   return (
     <section aria-labelledby="cli-heading" className={styles.cli}>
       <div className={styles.sectionIntro}>
         <h2 id="cli-heading" className={styles.sectionTitle}>
-          {isSkill ? "Agents love Kritzel" : "Set up Kritzel in seconds"}
+          {title}
         </h2>
-        <p className={styles.sectionText}>
-          {isSkill
-            ? "Add the Kritzel skill to your coding agent, so it knows how to build and extend your canvas right away."
-            : "The Kritzel CLI installs and configures the canvas in your React, Vue or Angular project, so you can start building right away."}
-        </p>
+        <p className={styles.sectionText}>{description}</p>
       </div>
-      <div className={styles.terminal}>
-        <div className={styles.terminalBar}>
-          <span className={styles.terminalDot} style={{ background: "#ff5f57" }} />
-          <span className={styles.terminalDot} style={{ background: "#febc2e" }} />
-          <span className={styles.terminalDot} style={{ background: "#28c840" }} />
-        </div>
-        <div ref={terminalRef} className={styles.terminalBody}>
-          <div className={styles.terminalLine}>
-            <span className={styles.terminalPath}>~/my-app</span> {state.typed}
-            {state.typing && <span className={styles.terminalCursor} />}
-          </div>
-          {state.banner && (
-            <div className={styles.terminalBanner}>
-              <div aria-label="Kritzel" className={styles.terminalAscii}>
-                {KRITZEL_ASCII}
-              </div>
-              <div className={styles.terminalWelcome}>
-                Welcome to <span className={styles.terminalStrong}>kritzel.io</span>
-              </div>
-            </div>
-          )}
-          {state.question && (
-            <div className={styles.terminalLine}>
-              <span className={styles.terminalBold}>?</span>{" "}
-              <span className={styles.terminalMedium}>{session.question}</span>
-              {state.answered && (
-                <>
-                  {" "}
-                  <span className={styles.terminalPath}>›</span>{" "}
-                  <span className={styles.terminalAnswer}>{isSkill ? "Yes" : framework.name}</span>
-                </>
-              )}
-            </div>
-          )}
-          {state.added && (
-            <div className={styles.terminalSuccess}>
-              {isSkill ? (
-                <>
-                  ✔ Added the <span className={styles.terminalStrong}>kritzel</span> skill to your agent
-                </>
-              ) : (
-                <>
-                  ✔ Added kritzel to your <span className={styles.terminalStrong}>{framework.name}</span> project
-                </>
-              )}
-            </div>
-          )}
-          {state.prompt && (
-            <div className={styles.terminalLine}>
-              <span className={styles.terminalPath}>~/my-app</span>{" "}
-              <span className={`${styles.terminalCursor} ${styles.terminalCursorBlink}`} />
-            </div>
-          )}
-        </div>
-        {isSkill ? (
-          <div aria-hidden="true" className={styles.frameworkTileAnchor}>
-            <div className={styles.skillTileStatic}>
-              <div className={`${styles.frameworkTile} ${styles.skillTile}`}>
-                <BotIcon />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div aria-label={`Selected framework: ${framework.name}`} className={styles.frameworkTileAnchor}>
-            <div key={state.round} className={styles.frameworkTileMotion} data-leaving={state.leaving ? "true" : undefined}>
-              <div
-                className={styles.frameworkTile}
-                style={{ background: framework.color, boxShadow: `0 18px 20px -12px ${framework.color}40` }}
-              >
-                <img
-                  className={styles.frameworkLogo}
-                  data-framework={framework.name}
-                  src={frameworkLogoUrl}
-                  alt=""
-                  width={88}
-                  height={88}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      {terminal}
     </section>
   );
 }

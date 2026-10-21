@@ -846,9 +846,10 @@
 /* Calculator over a mock of its markup; the source layer is clipped to the right of the split bar. */
 .domDemo {
   /* The split line leans by --dom-tilt either way from its middle (TILT in DomCanvasDemo), which at the
-     4:3 frame is atan(20 / 75). --dom-split (0 to 1) moves it from fully left of the frame to fully right. */
+     16:11 frame is atan(20 / 68.75). --dom-split (0 to 1) moves it from fully left of the frame to fully right. */
   --dom-tilt: 10cqw;
-  --dom-angle: 14.93deg;
+  --dom-angle: 16.22deg;
+  aspect-ratio: 16 / 11;
   --dom-x: calc(var(--dom-split) * (100% + 2 * var(--dom-tilt)) - var(--dom-tilt));
   position: relative;
   overflow: hidden;
@@ -878,7 +879,7 @@
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 44cqw;
+  width: 40cqw;
   transform: translate(-50%, -50%);
   container-type: inline-size;
 }
@@ -888,8 +889,8 @@
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: clamp(9px, 2.7cqw, 12px);
-  line-height: 1.5;
+  font-size: clamp(8px, 2.5cqw, 11px);
+  line-height: 1.4;
   white-space: pre;
   font-variant-ligatures: none;
   color: #e4e4e7;
@@ -993,42 +994,50 @@
   outline-offset: 2px;
 }
 
-/* One device centered in the frame that morphs between desktop, tablet and phone (see DeviceShowcase).
-   Sizes are cqw of the frame, so the device and everything on its screen scale with the section. */
+/* One device centered on the stage that morphs between desktop, tablet and phone (see DeviceShowcase).
+   Sizes are cqw of the stage, so the device and everything on its screen scale with the section. */
 .devices {
   --device-morph: 700ms cubic-bezier(0.65, 0, 0.35, 1);
   position: relative;
-  overflow: hidden;
+  aspect-ratio: 100 / 76;
   container-type: inline-size;
 }
 
+/* The device's name, centered below it. */
+.devices .mediaBadge {
+  top: auto;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .device {
-  --screen-width: 60cqw;
-  --screen-height: 37.5cqw;
-  --frame-padding: 1.2cqw;
-  --frame-radius: 2cqw;
-  --drawing-width: 32cqw;
-  --device-tool: 2.6cqw;
+  --screen-width: 84cqw;
+  --screen-height: 52.5cqw;
+  --frame-padding: 1.7cqw;
+  --frame-radius: 2.8cqw;
+  --drawing-width: 50cqw;
+  --device-tool: 3.6cqw;
   position: absolute;
   left: 50%;
-  top: 46%;
+  top: 42%;
   transform: translate(-50%, -50%);
 }
 
 .device[data-device="tablet"] {
-  --screen-width: 33cqw;
-  --screen-height: 44cqw;
-  --frame-padding: 1.6cqw;
-  --frame-radius: 3cqw;
-  --drawing-width: 24cqw;
+  --screen-width: 43cqw;
+  --screen-height: 57.3cqw;
+  --frame-padding: 2.2cqw;
+  --frame-radius: 4.2cqw;
+  --drawing-width: 34cqw;
 }
 
 .device[data-device="phone"] {
-  --screen-width: 24cqw;
-  --screen-height: 50.7cqw;
-  --frame-padding: 1.1cqw;
-  --frame-radius: 3.4cqw;
-  --drawing-width: 17cqw;
+  --screen-width: 27cqw;
+  --screen-height: 57cqw;
+  --frame-padding: 1.5cqw;
+  --frame-radius: 4.8cqw;
+  --drawing-width: 22cqw;
 }
 
 .deviceFrame {
@@ -1058,17 +1067,17 @@
 
 .device::before {
   top: 100%;
-  width: 7cqw;
-  height: 4.5cqw;
+  width: 10cqw;
+  height: 6.3cqw;
   border-inline: var(--landing-border);
 }
 
 .device::after {
-  top: calc(100% + 4.5cqw);
-  width: 22cqw;
-  height: 1.8cqw;
+  top: calc(100% + 6.3cqw);
+  width: 31cqw;
+  height: 2.5cqw;
   border: var(--landing-border);
-  border-radius: 1cqw;
+  border-radius: 1.4cqw;
 }
 
 .device[data-device="desktop"]::before,
@@ -1094,7 +1103,7 @@
   left: 50%;
   top: 42%;
   width: var(--drawing-width);
-  transform: translate(-50%, -50%) rotate(-6deg);
+  transform: translate(-50%, -50%);
   transition: width var(--device-morph);
 }
 
@@ -1158,6 +1167,35 @@
   }
 }
 
+/* The terminal as a showcase's media: its text scales with the column so the ASCII logo fits, like on phones. */
+.cliMedia {
+  flex: 1 1 0;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+/* Shorter than the stacked terminal: the session's tallest frame is about 200px of text plus padding. */
+.cliMedia .terminalBody {
+  min-height: 280px;
+  padding: 20px 16px 24px;
+  font-size: min(14px, calc((100cqw - 36px) / 30));
+}
+
+.cliMedia .terminalAscii {
+  font-size: 0.7em;
+}
+
+.cliMedia .terminalCursor {
+  width: 0.64em;
+  height: 1.28em;
+  vertical-align: -0.21em;
+}
+
+.devicesStage {
+  width: 100%;
+  max-width: 760px;
+}
+
 .showcaseCopy {
   flex: 1 1 0;
   min-width: 0;
@@ -1168,7 +1206,9 @@
 
 /* ---------- CLI ---------- */
 
-.cli {
+/* Used by the CLI and by the devices section: a centered heading above a single piece of media. */
+.cli,
+.devicesSection {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -1865,6 +1905,7 @@
   }
 
   .cli,
+  .devicesSection,
   .faq {
     padding: 80px 16px 96px;
   }
@@ -1881,7 +1922,8 @@
     padding: 0;
   }
 
-  .showcaseMedia {
+  .showcaseMedia,
+  .cliMedia {
     flex: none;
     width: 100%;
   }

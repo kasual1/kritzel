@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { HELLO_DOT, HELLO_EXCLAMATION, HELLO_STROKES } from "./paths";
+import { WELCOME_PATH, WELCOME_VIEWBOX } from "./paths";
 import { TOOLS } from "./tools";
 import styles from "./styles.module.css";
 
@@ -29,7 +29,7 @@ export default function DeviceShowcase() {
     <div
       role="img"
       aria-label="The Kritzel editor on desktop, tablet and mobile"
-      className={`${styles.showcaseMedia} ${styles.devices}`}
+      className={styles.devices}
     >
       <span className={styles.mediaBadge}>{label}</span>
       <div className={styles.device} data-device={device}>
@@ -37,18 +37,14 @@ export default function DeviceShowcase() {
           <div className={styles.deviceScreen}>
             <svg
               className={styles.deviceDrawing}
-              viewBox="0 0 260 120"
+              viewBox={WELCOME_VIEWBOX}
               fill="none"
               stroke="#4a7dff"
-              strokeWidth="5"
+              strokeWidth="4"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              {HELLO_STROKES.map((stroke) => (
-                <path key={stroke.d} d={stroke.d} />
-              ))}
-              <path d={HELLO_EXCLAMATION} />
-              <path d={HELLO_DOT} />
+              <path d={WELCOME_PATH} />
             </svg>
             <div className={styles.deviceToolbar}>
               {TOOLS.map((tool, toolIndex) => (
