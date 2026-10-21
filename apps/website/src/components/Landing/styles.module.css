@@ -1015,6 +1015,7 @@
   --screen-height: 52.5cqw;
   --frame-padding: 1.7cqw;
   --frame-radius: 2.8cqw;
+  --screen-radius: 1.1cqw;
   --drawing-width: 50cqw;
   --device-tool: 3.6cqw;
   position: absolute;
@@ -1028,6 +1029,7 @@
   --screen-height: 57.3cqw;
   --frame-padding: 2.2cqw;
   --frame-radius: 4.2cqw;
+  --screen-radius: 2cqw;
   --drawing-width: 34cqw;
 }
 
@@ -1036,6 +1038,8 @@
   --screen-height: 57cqw;
   --frame-padding: 1.5cqw;
   --frame-radius: 4.8cqw;
+  /* The frame's radius minus its padding, so the display follows the phone's rounded corners. */
+  --screen-radius: 3.3cqw;
   --drawing-width: 22cqw;
 }
 
@@ -1092,9 +1096,9 @@
   height: var(--screen-height);
   box-sizing: border-box;
   border: 1px solid #e4e4e7;
-  border-radius: 0.6cqw;
+  border-radius: var(--screen-radius);
   background: #ffffff;
-  transition: width var(--device-morph), height var(--device-morph);
+  transition: width var(--device-morph), height var(--device-morph), border-radius var(--device-morph);
 }
 
 .deviceDrawing {
@@ -1199,7 +1203,6 @@
 }
 
 .page .perfStar:hover {
-  z-index: 1;
   border-color: #afb8c1;
   background: #eaeef2;
   color: #24292f;
