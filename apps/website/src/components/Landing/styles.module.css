@@ -865,7 +865,8 @@
 
 .domSourceLayer {
   z-index: 1;
-  background: var(--landing-ink);
+  /* VS Code's Dark+ theme, so the markup reads like HTML in a familiar editor. */
+  background: #1e1e1e;
   clip-path: polygon(
     calc(var(--dom-x) + var(--dom-tilt)) 0,
     100% 0,
@@ -892,7 +893,46 @@
   line-height: 1.4;
   white-space: pre;
   font-variant-ligatures: none;
-  color: #e4e4e7;
+  color: #d4d4d4;
+  counter-reset: dom-line;
+}
+
+/* Each line bleeds 1ch to the sides so the highlight has some room around the text. */
+.domLine {
+  margin: 0 -1ch;
+  padding: 0 1ch;
+  border-radius: 3px;
+}
+
+.domLine::before {
+  counter-increment: dom-line;
+  content: counter(dom-line);
+  display: inline-block;
+  width: 2ch;
+  margin-right: 2ch;
+  text-align: right;
+  color: #6e7681;
+}
+
+.domLine[data-highlight] {
+  background: rgba(255, 255, 255, 0.07);
+  animation: landing-dom-flash 900ms ease-out;
+}
+
+.domLine[data-highlight]::before {
+  color: #c6c6c6;
+}
+
+@keyframes landing-dom-flash {
+  from {
+    background: rgba(86, 156, 214, 0.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .domLine[data-highlight] {
+    animation: none;
+  }
 }
 
 .domCode,
@@ -902,20 +942,19 @@
 }
 
 .domPunct {
-  color: #71717a;
+  color: #808080;
 }
 
 .domTag {
-  color: #ffffff;
-  font-weight: 600;
+  color: #569cd6;
 }
 
 .domAttr {
-  color: #a1a1aa;
+  color: #9cdcfe;
 }
 
 .domString {
-  color: #7cb7ff;
+  color: #ce9178;
 }
 
 .mediaBadge {

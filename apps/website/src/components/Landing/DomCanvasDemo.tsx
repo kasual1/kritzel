@@ -30,12 +30,16 @@ function Attrs({ attrs }: { attrs: Attributes }) {
   ));
 }
 
+function TagName({ name }: { name: string }) {
+  return <span className={styles.domTag}>{name}</span>;
+}
+
 /** An opening tag; with `unclosed` the `>` is left off so its attributes can continue on the next lines. */
 function OpenTag({ name, attrs, unclosed }: { name: string; attrs?: Attributes; unclosed?: boolean }) {
   return (
     <>
       <span className={styles.domPunct}>&lt;</span>
-      <span className={styles.domTag}>{name}</span>
+      <TagName name={name} />
       {attrs && (
         <>
           {" "}
@@ -51,16 +55,17 @@ function CloseTag({ name }: { name: string }) {
   return (
     <>
       <span className={styles.domPunct}>&lt;/</span>
-      <span className={styles.domTag}>{name}</span>
+      <TagName name={name} />
       <span className={styles.domPunct}>&gt;</span>
     </>
   );
 }
 
-function Line({ indent = 0, children }: { indent?: number; children: ReactNode }) {
+/** A numbered line of markup; `highlight` marks the line that follows the calculator. */
+function Line({ indent = 0, highlight, children }: { indent?: number; highlight?: boolean; children: ReactNode }) {
   return (
-    <div className={styles.domLine} style={{ paddingLeft: `${indent * 2}ch` }}>
-      {children}
+    <div className={styles.domLine} data-highlight={highlight ? "true" : undefined}>
+      <span style={{ paddingLeft: `${indent * 2}ch` }}>{children}</span>
     </div>
   );
 }
@@ -146,7 +151,8 @@ export default function DomCanvasDemo() {
             <Attrs attrs={{ x: "120", y: "80" }} />
             <span className={styles.domPunct}>&gt;</span>
           </Line>
-          <Line indent={4}>
+          {/* Keyed by the value so the line flashes again whenever the calculator changes it. */}
+          <Line key={state.display} indent={4} highlight>
             <OpenTag name="app-calculator" attrs={{ value: state.display }} />
           </Line>
           <Line indent={4}>
