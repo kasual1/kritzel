@@ -1,5 +1,11 @@
-import { useReducer } from "react";
-import { calculatorReducer, INITIAL_CALCULATOR_STATE, type CalculatorOperator } from "./calculator-state";
+import { useReducer, type Dispatch } from "react";
+import {
+  calculatorReducer,
+  INITIAL_CALCULATOR_STATE,
+  type CalculatorAction,
+  type CalculatorOperator,
+  type CalculatorState,
+} from "./calculator-state";
 import styles from "./styles.module.css";
 
 const OPERATORS: ReadonlyArray<{ value: CalculatorOperator; label: string; name: string }> = [
@@ -9,8 +15,16 @@ const OPERATORS: ReadonlyArray<{ value: CalculatorOperator; label: string; name:
   { value: "+", label: "+", name: "Add" },
 ];
 
-export default function Calculator() {
-  const [state, dispatch] = useReducer(calculatorReducer, INITIAL_CALCULATOR_STATE);
+type CalculatorProps = {
+  /** Pass both to control the calculator from outside, e.g. to mirror its state elsewhere. */
+  state?: CalculatorState;
+  dispatch?: Dispatch<CalculatorAction>;
+};
+
+export default function Calculator(props: CalculatorProps) {
+  const [ownState, ownDispatch] = useReducer(calculatorReducer, INITIAL_CALCULATOR_STATE);
+  const state = props.state ?? ownState;
+  const dispatch = props.dispatch ?? ownDispatch;
   const digit = (value: string) => (
     <button key={value} type="button" onClick={() => dispatch({ type: "digit", digit: value })}>
       {value}

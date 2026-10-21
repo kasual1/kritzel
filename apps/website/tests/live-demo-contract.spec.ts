@@ -18,24 +18,24 @@ const websiteRoot = path.resolve(currentDir, '..');
 const repositoryRoot = path.resolve(websiteRoot, '..', '..');
 const docsRoot = path.join(websiteRoot, 'docs');
 
-const frameworkConfigs: Record<Framework, { docsDir: string; repoUrl: string; repoFilePrefix: string; repoFileExtension: string }> = {
+const frameworkConfigs: Record<Framework, { docsDir: string; repoUrl: string; repoFilePrefix: string; repoFileExtensions: string[] }> = {
   angular: {
     docsDir: path.join(docsRoot, 'angular'),
     repoUrl: 'https://github.com/kasual1/kritzel/tree/main/apps/demos/angular',
     repoFilePrefix: 'src/app/',
-    repoFileExtension: '.ts',
+    repoFileExtensions: ['.ts'],
   },
   react: {
     docsDir: path.join(docsRoot, 'react'),
     repoUrl: 'https://github.com/kasual1/kritzel/tree/main/apps/demos/react',
     repoFilePrefix: 'src/pages/',
-    repoFileExtension: '.tsx',
+    repoFileExtensions: ['.tsx', '.ts'],
   },
   vue: {
     docsDir: path.join(docsRoot, 'vue'),
     repoUrl: 'https://github.com/kasual1/kritzel/tree/main/apps/demos/vue',
     repoFilePrefix: 'src/pages/',
-    repoFileExtension: '.vue',
+    repoFileExtensions: ['.vue', '.ts'],
   },
 };
 
@@ -197,7 +197,7 @@ describe('LiveDemo contract checks', () => {
 
         for (const repoFile of block.repoFiles) {
           expect(repoFile.startsWith(config.repoFilePrefix)).toBe(true);
-          expect(repoFile.endsWith(config.repoFileExtension)).toBe(true);
+          expect(config.repoFileExtensions.some((extension) => repoFile.endsWith(extension))).toBe(true);
           expect(repoFile).not.toContain('..');
         }
       }

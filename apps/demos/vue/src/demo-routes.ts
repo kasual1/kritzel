@@ -483,4 +483,10 @@ export const demoRoutes = [
     category: 'examples',
     component: () => import('./pages/examples/ImageAnnotationStudioPage.vue'),
   },
+  {
+    path: '/examples/github-stars',
+    title: 'GitHub Stars',
+    category: 'examples',
+    component: () => import('./pages/examples/GithubStarsPage.vue'),
+  },
 ] satisfies readonly DemoRoute[]

@@ -810,6 +810,397 @@
   color: var(--landing-muted);
 }
 
+/* ---------- Showcase ---------- */
+
+.showcase {
+  position: relative;
+  border-top: var(--landing-border);
+  padding: 112px 16px;
+  background: #ffffff;
+}
+
+.showcaseInner {
+  max-width: 1180px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
+
+.showcase[data-reversed] .showcaseInner {
+  flex-direction: row-reverse;
+}
+
+.showcaseMedia {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 16 / 11;
+  box-sizing: border-box;
+  border: var(--landing-border);
+  border-radius: 18px;
+  background: #f4f4f5;
+}
+
+/* Calculator over a mock of its markup; the source layer is clipped to the right of the split bar. */
+.domDemo {
+  /* The split line leans by --dom-tilt either way from its middle (TILT in DomCanvasDemo), which at the
+     16:11 frame is atan(20 / 68.75). --dom-split (0 to 1) moves it from fully left of the frame to fully right. */
+  --dom-tilt: 10cqw;
+  --dom-angle: 16.22deg;
+  --dom-x: calc(var(--dom-split) * (100% + 2 * var(--dom-tilt)) - var(--dom-tilt));
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  container-type: inline-size;
+  background: #ffffff;
+}
+
+.domCanvasLayer,
+.domSourceLayer {
+  position: absolute;
+  inset: 0;
+}
+
+.domSourceLayer {
+  z-index: 1;
+  /* VS Code's Dark+ theme, so the markup reads like HTML in a familiar editor. */
+  background: #1e1e1e;
+  clip-path: polygon(
+    calc(var(--dom-x) + var(--dom-tilt)) 0,
+    100% 0,
+    100% 100%,
+    calc(var(--dom-x) - var(--dom-tilt)) 100%
+  );
+}
+
+.domCalculator {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40cqw;
+  transform: translate(-50%, -50%);
+  container-type: inline-size;
+}
+
+.domCode {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(8px, 2.5cqw, 11px);
+  line-height: 1.4;
+  white-space: pre;
+  font-variant-ligatures: none;
+  color: #d4d4d4;
+  counter-reset: dom-line;
+}
+
+/* Each line bleeds 1ch to the sides so the highlight has some room around the text. */
+.domLine {
+  margin: 0 -1ch;
+  padding: 0 1ch;
+  border-radius: 3px;
+}
+
+.domLine::before {
+  counter-increment: dom-line;
+  content: counter(dom-line);
+  display: inline-block;
+  width: 2ch;
+  margin-right: 2ch;
+  text-align: right;
+  color: #6e7681;
+}
+
+.domLine[data-highlight] {
+  background: rgba(255, 255, 255, 0.07);
+  animation: landing-dom-flash 900ms ease-out;
+}
+
+.domLine[data-highlight]::before {
+  color: #c6c6c6;
+}
+
+@keyframes landing-dom-flash {
+  from {
+    background: rgba(86, 156, 214, 0.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .domLine[data-highlight] {
+    animation: none;
+  }
+}
+
+.domCode,
+.domCode *,
+.mediaBadge {
+  font-family: var(--landing-mono) !important;
+}
+
+.domPunct {
+  color: #808080;
+}
+
+.domTag {
+  color: #569cd6;
+}
+
+.domAttr {
+  color: #9cdcfe;
+}
+
+.domString {
+  color: #ce9178;
+}
+
+.mediaBadge {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  left: 14px;
+  padding: 3px 9px;
+  border: 1px solid #e4e4e7;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--landing-ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.domBadgeEnd {
+  left: auto;
+  right: 14px;
+  border-color: #3f3f46;
+  background: #18181b;
+  color: #ffffff;
+}
+
+/* Rotated around its middle and stretched so the slanted line still reaches the top and bottom edges. */
+.domHandle {
+  position: absolute;
+  top: -5%;
+  bottom: -5%;
+  left: var(--dom-x);
+  transform: rotate(var(--dom-angle));
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  margin-left: -22px;
+  cursor: ew-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.domHandle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: #ffffff;
+  box-shadow: 0 0 0 1px var(--landing-ink);
+}
+
+.domHandleKnob {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border: var(--landing-border);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--landing-ink);
+  box-shadow: 0 6px 16px rgba(10, 10, 10, 0.18);
+  transform: rotate(calc(-1 * var(--dom-angle)));
+}
+
+.domHandle:focus-visible .domHandleKnob {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}
+
+/* A mock canvas that fills up with star buttons (see PerformanceDemo); buttons past an edge are cut off. */
+.perfDemo {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #ffffff;
+}
+
+/* Tilted to the left and scaled up just enough (BOARD_SCALE in PerformanceDemo) that no corner of the frame
+   shows past the board. Everything on it is sized down by the same scale, so the buttons keep their size. */
+.perfBoard {
+  --perf-board-scale: 1.2;
+  position: absolute;
+  inset: 0;
+  transform: rotate(-8deg) scale(var(--perf-board-scale));
+}
+
+/* Slides the rows to the left by one button pitch (--perf-pitch), then starts over. The grid repeats every
+   pitch, so the loop is seamless and the buttons seem to drift endlessly. */
+.perfTrack {
+  position: absolute;
+  inset: 0;
+  animation: landing-perf-drift 6s linear infinite;
+}
+
+@keyframes landing-perf-drift {
+  to {
+    transform: translateX(calc(-1 * var(--perf-pitch)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .perfTrack {
+    animation: none;
+  }
+}
+
+/* Width and height come from OBJECT_WIDTH and OBJECT_HEIGHT in PerformanceDemo. */
+.perfObject {
+  position: absolute;
+  display: flex;
+}
+
+.perfStar {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: calc(1cqw / var(--perf-board-scale));
+  box-sizing: border-box;
+  border: 1px solid #d0d7de;
+  border-radius: calc(1.1cqw / var(--perf-board-scale));
+  background: #f6f8fa;
+  color: #24292f;
+  font-size: calc(2.75cqw / var(--perf-board-scale));
+  font-weight: 600;
+  line-height: 1;
+  touch-action: manipulation;
+}
+
+/* Only on devices that really hover: on touch screens iOS would spend the first tap on the hover look and
+   not follow the link until a second tap. */
+@media (hover: hover) {
+  .page .perfStar:hover {
+    border-color: #afb8c1;
+    background: #eaeef2;
+    color: #24292f;
+  }
+
+  .perfStar:hover svg {
+    color: #f5b400;
+    fill: #ffd21f;
+  }
+}
+
+.perfStar svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+/* The terminal as a showcase's media: its text scales with the column so the ASCII logo fits, like on phones. */
+.cliMedia {
+  flex: 1 1 0;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+/* At least as tall as the 16:11 media in the other showcase rows (the framework tile hangs outside it), with
+   the body filling whatever the bar leaves. The session's tallest frame needs about 200px of text plus padding. */
+.cliMedia .terminal {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100cqw * 11 / 16);
+}
+
+.cliMedia .terminalBody {
+  flex: 1;
+  min-height: 0;
+  padding: 20px 16px 24px;
+  font-size: min(14px, calc((100cqw - 36px) / 30));
+}
+
+.cliMedia .terminalAscii {
+  font-size: 0.7em;
+}
+
+/* A smaller framework tile beside the narrower terminal; phones already get their own size below. */
+@media (min-width: 769px) {
+  .cliMedia .frameworkTileAnchor {
+    right: -22px;
+    bottom: -26px;
+    width: 92px;
+    height: 92px;
+  }
+
+  .cliMedia .frameworkTile {
+    border-radius: 18px;
+  }
+
+  .cliMedia .frameworkLogo {
+    width: 72px;
+    height: 72px;
+  }
+}
+
+.cliMedia .terminalCursor {
+  width: 0.64em;
+  height: 1.28em;
+  vertical-align: -0.21em;
+}
+
+.showcaseLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.showcaseLink svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.showcaseLink:hover svg {
+  transform: translateX(3px);
+}
+
+.showcaseCopy .showcaseLink {
+  align-self: flex-start;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcaseLink svg {
+    transition: none;
+  }
+}
+
+.showcaseCopy {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 /* ---------- CLI ---------- */
 
 .cli {
@@ -1511,6 +1902,24 @@
   .cli,
   .faq {
     padding: 80px 16px 96px;
+  }
+
+  .showcase {
+    padding: 72px 16px;
+  }
+
+  .showcaseInner,
+  .showcase[data-reversed] .showcaseInner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+    padding: 0;
+  }
+
+  .showcaseMedia,
+  .cliMedia {
+    flex: none;
+    width: 100%;
   }
 
   /* Shrink the terminal text with the viewport so its widest lines (the ASCII logo and the framework
