@@ -17,10 +17,12 @@ interface PathDrawingInfographicProps {
   name: string;
   /** Creates the drawing; its SVG must carry `aria-label={name}` so it can be found again. */
   createDrawing: () => KritzelDynamicObject;
+  /** Total drawing time in milliseconds. */
+  duration?: number;
 }
 
 /** An editor whose only object is an SVG drawing that is centered and animated on load. */
-export function PathDrawingInfographic({ id, name, createDrawing }: PathDrawingInfographicProps) {
+export function PathDrawingInfographic({ id, name, createDrawing, duration }: PathDrawingInfographicProps) {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [workspaces] = useState(() => {
     const drawing = createDrawing();
@@ -50,7 +52,7 @@ export function PathDrawingInfographic({ id, name, createDrawing }: PathDrawingI
     }
 
     await editor.centerObjectInViewport(drawing);
-    animatePathDrawing(drawing.element);
+    animatePathDrawing(drawing.element, duration);
   }
 
   return (
