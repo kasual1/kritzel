@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
-import DeviceShowcase from "./DeviceShowcase";
 import DomCanvasDemo from "./DomCanvasDemo";
 import Icon, { ArrowIcon } from "./Icon";
 import PerformanceDemo from "./PerformanceDemo";
@@ -321,25 +320,6 @@ export function PerformanceSection() {
       media={<PerformanceDemo />}
       link={{ label: "Full Demo", href: "https://app.kritzel.io" }}
     />
-  );
-}
-
-export function DevicesSection() {
-  return (
-    <section aria-labelledby="devices-heading" className={styles.devicesSection}>
-      <div className={styles.sectionIntro}>
-        <h2 id="devices-heading" className={styles.sectionTitle}>
-          Works on any screen size
-        </h2>
-        <p className={styles.sectionText}>
-          Kritzel runs smoothly on desktop, tablet and mobile. Mouse, trackpad, touch and stylus input work out of the box, so
-          your canvas feels at home on every screen.
-        </p>
-      </div>
-      <div className={styles.devicesStage}>
-        <DeviceShowcase />
-      </div>
-    </section>
   );
 }
 

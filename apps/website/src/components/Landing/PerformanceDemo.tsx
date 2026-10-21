@@ -1,31 +1,36 @@
+import { useEffect, useRef } from "react";
 import styles from "./styles.module.css";
 
-/** Buttons on the board. */
-const OBJECT_COUNT = 110;
-
-/** Object size in % of the frame, matching .perfObject. */
-const OBJECT_WIDTH = 19;
-const OBJECT_HEIGHT = 8.4;
+/**
+ * The board is tilted and scaled up by BOARD_SCALE so its corners stay covered (see .perfBoard), with a little
+ * extra so the parallax shift never uncovers them either. Sizes and gaps below are in % of the board, divided
+ * by that scale so buttons still look 19% by 8.4% of the frame.
+ */
+const BOARD_SCALE = 1.26;
+const OBJECT_WIDTH = 19 / BOARD_SCALE;
+const OBJECT_HEIGHT = 8.4 / BOARD_SCALE;
 
 const REPO_URL = "https://github.com/kasual1/kritzel";
 
-/** How far an object may stick out past an edge, as a share of its size, so some are cut off like on a real board. */
-const EDGE_OVERHANG = 0.6;
+/** The frame's height as a share of its width (the 16:11 .showcaseMedia), to turn widths into heights. */
+const FRAME_ASPECT = 11 / 16;
 
-/** Seeded so the server-rendered board and the hydrated one place every button in the same spot. */
-function seededRandom(seed: number) {
-  return () => {
-    seed = (seed * 1664525 + 1013904223) % 4294967296;
-    return seed / 4294967296;
-  };
+/**
+ * The buttons sit in tightly packed rows, every other row shifted by half a button like brickwork, and
+ * spill past every edge. GAP is the same space between buttons in both directions, in % of the width.
+ */
+const GAP = 2.1 / BOARD_SCALE;
+const COLUMN_PITCH = OBJECT_WIDTH + GAP;
+const ROW_PITCH = OBJECT_HEIGHT + GAP / FRAME_ASPECT;
+const FIRST_ROW_TOP = -3;
+const ROW_STARTS = [GAP - COLUMN_PITCH / 2, GAP];
+
+const OBJECTS: { x: number; y: number }[] = [];
+for (let row = 0; FIRST_ROW_TOP + row * ROW_PITCH < 100; row++) {
+  for (let x = ROW_STARTS[row % 2]; x < 100; x += COLUMN_PITCH) {
+    OBJECTS.push({ x, y: FIRST_ROW_TOP + row * ROW_PITCH });
+  }
 }
-
-const random = seededRandom(2026);
-
-const OBJECTS = Array.from({ length: OBJECT_COUNT }, () => ({
-  x: -OBJECT_WIDTH * EDGE_OVERHANG + random() * (100 - OBJECT_WIDTH * (1 - 2 * EDGE_OVERHANG)),
-  y: -OBJECT_HEIGHT * EDGE_OVERHANG + random() * (100 - OBJECT_HEIGHT * (1 - 2 * EDGE_OVERHANG)),
-}));
 
 /** Opens the repository on GitHub; mouse only, since a board full of them would flood the tab order. */
 function StarButton({ x, y }: { x: number; y: number }) {
@@ -36,7 +41,7 @@ function StarButton({ x, y }: { x: number; y: number }) {
       rel="noopener noreferrer"
       tabIndex={-1}
       className={`${styles.perfObject} ${styles.perfStar}`}
-      style={{ left: `${x}%`, top: `${y}%` }}
+      style={{ left: `${x}%`, top: `${y}%`, width: `${OBJECT_WIDTH}%`, height: `${OBJECT_HEIGHT}%` }}
     >
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z" />
@@ -46,13 +51,48 @@ function StarButton({ x, y }: { x: number; y: number }) {
   );
 }
 
-/** A mock canvas crowded with GitHub star buttons. */
+/** A mock canvas crowded with GitHub star buttons that drifts a little with the mouse. */
 export default function PerformanceDemo() {
+  const frameRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    // The pointer's position in the frame, from -1 to 1 on each axis; .perfBoard turns it into a shift.
+    let animation = 0;
+    const setPointer = (x: number, y: number) => {
+      cancelAnimationFrame(animation);
+      animation = requestAnimationFrame(() => {
+        frame.style.setProperty("--perf-pointer-x", String(x));
+        frame.style.setProperty("--perf-pointer-y", String(y));
+      });
+    };
+    const onPointerMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse") return;
+      const rect = frame.getBoundingClientRect();
+      setPointer(((event.clientX - rect.left) / rect.width) * 2 - 1, ((event.clientY - rect.top) / rect.height) * 2 - 1);
+    };
+    const onPointerLeave = () => setPointer(0, 0);
+
+    frame.addEventListener("pointermove", onPointerMove);
+    frame.addEventListener("pointerleave", onPointerLeave);
+    return () => {
+      frame.removeEventListener("pointermove", onPointerMove);
+      frame.removeEventListener("pointerleave", onPointerLeave);
+      cancelAnimationFrame(animation);
+    };
+  }, []);
+
   return (
-    <div aria-hidden="true" className={`${styles.showcaseMedia} ${styles.perfDemo}`}>
-      {OBJECTS.map((object, index) => (
-        <StarButton key={index} x={object.x} y={object.y} />
-      ))}
+    <div ref={frameRef} aria-hidden="true" className={`${styles.showcaseMedia} ${styles.perfDemo}`}>
+      <div className={styles.perfBoard}>
+        {OBJECTS.map((object, index) => (
+          <StarButton key={index} x={object.x} y={object.y} />
+        ))}
+      </div>
     </div>
   );
 }

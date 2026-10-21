@@ -5,7 +5,6 @@ import Head from "@docusaurus/Head";
 import Hero from "@site/src/components/Landing/Hero";
 import {
   CliSection,
-  DevicesSection,
   DomCanvasSection,
   Faq,
   Features,
@@ -55,7 +54,6 @@ export default function Home(): ReactNode {
           <DomCanvasSection />
           <CliSection layout="split" />
           <PerformanceSection />
-          <DevicesSection />
           <Faq />
           <Wordmark />
         </main>
