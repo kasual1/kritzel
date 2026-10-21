@@ -61,6 +61,7 @@ import { LocalizationSwitchComponent } from './pages/customization/localization/
 import { LocalizationCustomComponent } from './pages/customization/localization/localization-custom.component';
 import { LocalizationListenComponent } from './pages/customization/localization/localization-listen.component';
 import { ObjectExplorerComponent } from './pages/examples/object-explorer.component';
+import { GithubStarsComponent } from './pages/examples/github-stars.component';
 import { BlueprintDefectMapperComponent } from './pages/examples/blueprint-defect-mapper.component';
 import { SlideshowPresentationComponent } from './pages/examples/slideshow-presentation.component';
 import { ImageAnnotationStudioComponent } from './pages/examples/image-annotation-studio.component';
@@ -237,6 +238,7 @@ export const routes: Routes = [
       { path: 'blueprint-defect-mapper', component: BlueprintDefectMapperComponent },
       { path: 'slideshow-presentation', component: SlideshowPresentationComponent },
       { path: 'image-annotation-studio', component: ImageAnnotationStudioComponent },
+      { path: 'github-stars', component: GithubStarsComponent },
     ],
   },
   { path: '**', redirectTo: 'getting-started/quick-start' },
