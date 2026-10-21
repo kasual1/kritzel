@@ -66,7 +66,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Examples',
       collapsed: true,
-      items: ['examples/object-explorer', 'examples/blueprint-defect-mapper', 'examples/slideshow-presentation', 'examples/image-annotation-studio'],
+      items: ['examples/object-explorer', 'examples/blueprint-defect-mapper', 'examples/slideshow-presentation', 'examples/image-annotation-studio', 'examples/github-stars'],
     },
     {
       type: 'category',
