@@ -810,6 +810,362 @@
   color: var(--landing-muted);
 }
 
+/* ---------- Showcase ---------- */
+
+.showcase {
+  position: relative;
+  border-top: var(--landing-border);
+  padding: 112px 16px;
+  background: #ffffff;
+}
+
+.showcaseInner {
+  max-width: 1180px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
+
+.showcase[data-reversed] .showcaseInner {
+  flex-direction: row-reverse;
+}
+
+.showcaseMedia {
+  flex: 1 1 0;
+  min-width: 0;
+  aspect-ratio: 4 / 3;
+  box-sizing: border-box;
+  border: var(--landing-border);
+  border-radius: 18px;
+  background: #f4f4f5;
+}
+
+/* Calculator over a mock of its markup; the source layer is clipped to the right of the split bar. */
+.domDemo {
+  /* The split line leans by --dom-tilt either way from its middle (TILT in DomCanvasDemo), which at the
+     4:3 frame is atan(20 / 75). --dom-split (0 to 1) moves it from fully left of the frame to fully right. */
+  --dom-tilt: 10cqw;
+  --dom-angle: 14.93deg;
+  --dom-x: calc(var(--dom-split) * (100% + 2 * var(--dom-tilt)) - var(--dom-tilt));
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  container-type: inline-size;
+  background: #ffffff;
+}
+
+.domCanvasLayer,
+.domSourceLayer {
+  position: absolute;
+  inset: 0;
+}
+
+.domSourceLayer {
+  z-index: 1;
+  background: var(--landing-ink);
+  clip-path: polygon(
+    calc(var(--dom-x) + var(--dom-tilt)) 0,
+    100% 0,
+    100% 100%,
+    calc(var(--dom-x) - var(--dom-tilt)) 100%
+  );
+}
+
+.domCalculator {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44cqw;
+  transform: translate(-50%, -50%);
+  container-type: inline-size;
+}
+
+.domCode {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(9px, 2.7cqw, 12px);
+  line-height: 1.5;
+  white-space: pre;
+  font-variant-ligatures: none;
+  color: #e4e4e7;
+}
+
+.domCode,
+.domCode *,
+.mediaBadge {
+  font-family: var(--landing-mono) !important;
+}
+
+.domPunct {
+  color: #71717a;
+}
+
+.domTag {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.domAttr {
+  color: #a1a1aa;
+}
+
+.domString {
+  color: #7cb7ff;
+}
+
+.mediaBadge {
+  position: absolute;
+  z-index: 1;
+  top: 14px;
+  left: 14px;
+  padding: 3px 9px;
+  border: 1px solid #e4e4e7;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--landing-ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.domBadgeEnd {
+  left: auto;
+  right: 14px;
+  border-color: #3f3f46;
+  background: #18181b;
+  color: #ffffff;
+}
+
+/* Rotated around its middle and stretched so the slanted line still reaches the top and bottom edges. */
+.domHandle {
+  position: absolute;
+  top: -5%;
+  bottom: -5%;
+  left: var(--dom-x);
+  transform: rotate(var(--dom-angle));
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  margin-left: -22px;
+  cursor: ew-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.domHandle::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: #ffffff;
+  box-shadow: 0 0 0 1px var(--landing-ink);
+}
+
+.domHandleKnob {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  box-sizing: border-box;
+  border: var(--landing-border);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--landing-ink);
+  box-shadow: 0 6px 16px rgba(10, 10, 10, 0.18);
+  transform: rotate(calc(-1 * var(--dom-angle)));
+}
+
+.domHandle:focus-visible .domHandleKnob {
+  outline: 2px solid #007aff;
+  outline-offset: 2px;
+}
+
+/* One device centered in the frame that morphs between desktop, tablet and phone (see DeviceShowcase).
+   Sizes are cqw of the frame, so the device and everything on its screen scale with the section. */
+.devices {
+  --device-morph: 700ms cubic-bezier(0.65, 0, 0.35, 1);
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.device {
+  --screen-width: 60cqw;
+  --screen-height: 37.5cqw;
+  --frame-padding: 1.2cqw;
+  --frame-radius: 2cqw;
+  --drawing-width: 32cqw;
+  --device-tool: 2.6cqw;
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+}
+
+.device[data-device="tablet"] {
+  --screen-width: 33cqw;
+  --screen-height: 44cqw;
+  --frame-padding: 1.6cqw;
+  --frame-radius: 3cqw;
+  --drawing-width: 24cqw;
+}
+
+.device[data-device="phone"] {
+  --screen-width: 24cqw;
+  --screen-height: 50.7cqw;
+  --frame-padding: 1.1cqw;
+  --frame-radius: 3.4cqw;
+  --drawing-width: 17cqw;
+}
+
+.deviceFrame {
+  position: relative;
+  padding: var(--frame-padding);
+  box-sizing: border-box;
+  border: var(--landing-border);
+  border-radius: var(--frame-radius);
+  background: #ffffff;
+  box-shadow: 0 1.5cqw 3cqw -1.5cqw rgba(10, 10, 10, 0.3);
+  transition: padding var(--device-morph), border-radius var(--device-morph);
+}
+
+/* The monitor's neck and foot fold away when the device is not a desktop. */
+.device::before,
+.device::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  box-sizing: border-box;
+  transform: translateX(-50%) scaleY(0);
+  transform-origin: top;
+  opacity: 0;
+  background: #ffffff;
+  transition: transform var(--device-morph), opacity var(--device-morph);
+}
+
+.device::before {
+  top: 100%;
+  width: 7cqw;
+  height: 4.5cqw;
+  border-inline: var(--landing-border);
+}
+
+.device::after {
+  top: calc(100% + 4.5cqw);
+  width: 22cqw;
+  height: 1.8cqw;
+  border: var(--landing-border);
+  border-radius: 1cqw;
+}
+
+.device[data-device="desktop"]::before,
+.device[data-device="desktop"]::after {
+  transform: translateX(-50%) scaleY(1);
+  opacity: 1;
+}
+
+.deviceScreen {
+  position: relative;
+  overflow: hidden;
+  width: var(--screen-width);
+  height: var(--screen-height);
+  box-sizing: border-box;
+  border: 1px solid #e4e4e7;
+  border-radius: 0.6cqw;
+  background: #ffffff;
+  transition: width var(--device-morph), height var(--device-morph);
+}
+
+.deviceDrawing {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: var(--drawing-width);
+  transform: translate(-50%, -50%) rotate(-6deg);
+  transition: width var(--device-morph);
+}
+
+.deviceToolbar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--device-tool) * 0.6);
+  display: flex;
+  padding: calc(var(--device-tool) * 0.18);
+  transform: translateX(-50%);
+  border: 1px solid #e4e4e7;
+  border-radius: calc(var(--device-tool) * 0.42);
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(20, 18, 31, 0.06);
+}
+
+/* Spaced with margins rather than gap so tools that tuck away on the phone collapse smoothly. */
+.deviceTool {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  width: var(--device-tool);
+  height: var(--device-tool);
+  margin-left: calc(var(--device-tool) * 0.15);
+  border-radius: calc(var(--device-tool) * 0.28);
+  color: var(--landing-ink);
+  transition: width var(--device-morph), margin var(--device-morph), opacity var(--device-morph);
+}
+
+.deviceTool:first-child {
+  margin-left: 0;
+}
+
+.device[data-device="phone"] .deviceTool[data-overflow] {
+  width: 0;
+  margin-left: 0;
+  opacity: 0;
+}
+
+.deviceTool[data-selected] {
+  background: var(--landing-ink);
+  color: #ffffff;
+}
+
+.deviceTool svg {
+  flex: none;
+  width: calc(var(--device-tool) * 0.55);
+  height: calc(var(--device-tool) * 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deviceFrame,
+  .deviceScreen,
+  .deviceDrawing,
+  .deviceTool,
+  .device::before,
+  .device::after {
+    transition: none;
+  }
+}
+
+.showcaseCopy {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 /* ---------- CLI ---------- */
 
 .cli {
@@ -1511,6 +1867,23 @@
   .cli,
   .faq {
     padding: 80px 16px 96px;
+  }
+
+  .showcase {
+    padding: 72px 16px;
+  }
+
+  .showcaseInner,
+  .showcase[data-reversed] .showcaseInner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+    padding: 0;
+  }
+
+  .showcaseMedia {
+    flex: none;
+    width: 100%;
   }
 
   /* Shrink the terminal text with the viewport so its widest lines (the ASCII logo and the framework

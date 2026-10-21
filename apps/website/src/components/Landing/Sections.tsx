@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
+import DeviceShowcase from "./DeviceShowcase";
+import DomCanvasDemo from "./DomCanvasDemo";
 import Icon, { ArrowIcon } from "./Icon";
 import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
@@ -218,7 +220,50 @@ export function Features({ variant = "default" }: { variant?: "default" | "agent
   );
 }
 
-const KRITZEL_ASCII = `██╗  ██╗██████╗ ██╗████████╗███████╗███████╗██╗
+type Showcase = { title: string; description: string; media?: ReactNode };
+
+const SHOWCASES: ReadonlyArray<Showcase> = [
+  {
+    title: "DOM based canvas",
+    media: <DomCanvasDemo />,
+    description:
+      "Unlike a classic HTML canvas, Kritzel renders real DOM nodes. Place full HTML elements like forms, videos or entire web apps on the board, and your users can interact with them just like anywhere else on the page.",
+  },
+  {
+    title: "Works on any device",
+    media: <DeviceShowcase />,
+    description:
+      "Kritzel runs smoothly on desktop, tablet and mobile. Mouse, trackpad, touch and stylus input work out of the box, so your canvas feels at home on every screen.",
+  },
+];
+
+/** Media (or a placeholder) next to a heading and description; every second row puts the media on the right. */
+export function Showcases() {
+  return (
+    <>
+      {SHOWCASES.map((showcase, index) => (
+        <section
+          key={showcase.title}
+          aria-labelledby={`showcase-heading-${index}`}
+          className={styles.showcase}
+          data-reversed={index % 2 === 1 ? "true" : undefined}
+        >
+          <div className={styles.showcaseInner}>
+            {showcase.media ?? <div aria-hidden="true" className={styles.showcaseMedia} />}
+            <div className={styles.showcaseCopy}>
+              <h2 id={`showcase-heading-${index}`} className={styles.sectionTitle}>
+                {showcase.title}
+              </h2>
+              <p className={styles.sectionText}>{showcase.description}</p>
+            </div>
+          </div>
+        </section>
+      ))}
+    </>
+  );
+}
+
+const KRITZEL_ASCII =`██╗  ██╗██████╗ ██╗████████╗███████╗███████╗██╗
 ██║ ██╔╝██╔══██╗██║╚══██╔══╝╚══███╔╝██╔════╝██║
 █████╔╝ ██████╔╝██║   ██║     ███╔╝ █████╗  ██║
 ██╔═██╗ ██╔══██╗██║   ██║    ███╔╝  ██╔══╝  ██║

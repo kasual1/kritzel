@@ -7,7 +7,8 @@ import Calculator from "./Calculator";
 import HeroTitle from "./HeroTitle";
 import ImageCard from "./ImageCard";
 import MenuButton from "./MenuButton";
-import { KRITZEL_LOGO_PATH } from "./paths";
+import { HELLO_DOT, HELLO_EXCLAMATION, HELLO_STROKES, KRITZEL_LOGO_PATH } from "./paths";
+import { TOOLS } from "./tools";
 import styles from "./styles.module.css";
 
 function DraggableCanvasItem({
@@ -111,51 +112,6 @@ function DraggableCanvasItem({
   );
 }
 
-const TOOLS: ReadonlyArray<{ label: string; icon: ReactNode }> = [
-  { label: "Select", icon: <path d="M4.04 4.65a.5.5 0 0 1 .61-.61l15.5 5.94a.5.5 0 0 1-.05.95l-6.1 1.88a1 1 0 0 0-.66.66l-1.88 6.1a.5.5 0 0 1-.95.05z" /> },
-  { label: "Pen", icon: <path d="M21.17 6.81a1 1 0 0 0-3.99-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.62l4.35-1.32a2 2 0 0 0 .83-.5z" /> },
-  {
-    label: "Eraser",
-    icon: (
-      <>
-        <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21" />
-        <path d="M22 21H7" />
-        <path d="m5 11 9 9" />
-      </>
-    ),
-  },
-  {
-    label: "Arrow",
-    icon: (
-      <>
-        <path d="M5 19 19 5" />
-        <path d="M15 5h4v4" />
-      </>
-    ),
-  },
-  { label: "Rectangle", icon: <rect x="3" y="3" width="18" height="18" rx="2" /> },
-  {
-    label: "Text",
-    icon: (
-      <>
-        <path d="M12 4v16" />
-        <path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2" />
-        <path d="M9 20h6" />
-      </>
-    ),
-  },
-  {
-    label: "Image",
-    icon: (
-      <>
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <circle cx="9" cy="9" r="2" />
-        <path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21" />
-      </>
-    ),
-  },
-];
-
 function MockToolbar() {
   const [showNotification, setShowNotification] = useState(false);
   const notificationTimer = useRef<number | undefined>(undefined);
@@ -222,22 +178,6 @@ function MockToolbar() {
   );
 }
 
-// Drawn in order within --hallo-draw-duration (1140ms): the H's two stems and crossbar, then "ello".
-const HELLO_STROKES: ReadonlyArray<{ d: string; offset: string; duration: string }> = [
-  { d: "M24 18 C23 42 21 66 19 88", offset: "0ms", duration: "120ms" },
-  { d: "M58 16 C57 40 55 64 53 88", offset: "150ms", duration: "120ms" },
-  { d: "M23 55 C33 54 44 52 56 51", offset: "300ms", duration: "90ms" },
-  {
-    d: `M68 76 C77 73.5 88.9 69.3 88 60 C87.5 54.9 80.9 51.8 76 53 C68.2 55 64.6 64 65 72 C65.5 81.1 72.9 90.5 82 90 C92.9 89.4 98.1 79.1 104 70
-        C113.7 55 118.2 41.8 120 24 C120.4 20.1 119.3 12.7 116 14 C103.1 19.2 99.3 89.6 116 90 C123.2 90.2 133.7 78.2 140 68
-        C149 53.5 153.9 41 155 24 C155.3 20.1 154.3 12.7 151 14 C138.1 19.2 135.3 89.6 152 90 C159.7 90.2 171.4 77 177 65.5
-        C179.7 59.9 184.8 56 191 56 C200.1 56 207 65.9 207 75 C207 84.1 200.1 94 191 94 C181.9 94 175 84.1 175 75
-        C175 71.4 175.4 68.7 177 65.5 C179.7 59.9 184.8 56 191 56 C197.8 56 202.5 58.1 209 60 C214 61.4 218.1 59.6 223 58`,
-    offset: "420ms",
-    duration: "720ms",
-  },
-];
-
 function HalloDrawing({ className }: { className: string }) {
   const halloRef = useRef<SVGSVGElement>(null);
 
@@ -280,7 +220,7 @@ function HalloDrawing({ className }: { className: string }) {
             />
           ))}
           <path
-            d="M240 32 C239 45 237 59 236 72"
+            d={HELLO_EXCLAMATION}
             fill="none"
             className={styles.halloExclamation}
             pathLength={1}
@@ -289,7 +229,7 @@ function HalloDrawing({ className }: { className: string }) {
             strokeLinecap="round"
           />
           <path
-            d="M235 88 L235 90"
+            d={HELLO_DOT}
             fill="none"
             className={styles.halloDot}
             stroke="#4a7dff"

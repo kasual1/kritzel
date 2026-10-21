@@ -7,6 +7,7 @@ import {
   CliSection,
   Faq,
   Features,
+  Showcases,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
 import styles from "@site/src/components/Landing/styles.module.css";
@@ -49,6 +50,7 @@ export default function Home(): ReactNode {
             <div aria-hidden="true" className={styles.heroSpacer} />
             <Features />
           </div>
+          <Showcases />
           <CliSection />
           <Faq />
           <Wordmark />
