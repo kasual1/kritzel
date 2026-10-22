@@ -26,12 +26,12 @@ interface GithubStarRendererContext {
 }
 
 @Component({
-  selector: 'app-github-stars',
+  selector: 'app-performance-showcase',
   imports: [KritzelEditor],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <kritzel-editor
-      editorId="examples-github-stars"
+      editorId="examples-performance-showcase"
       [theme]="'light'"
       [themes]="themes"
       [syncConfig]="syncConfig"
@@ -66,7 +66,7 @@ interface GithubStarRendererContext {
     .count-switcher button.active { border-color: #dd0031; background: #dd0031; color: #ffffff; }
   `],
 })
-export class GithubStarsComponent implements OnDestroy {
+export class PerformanceShowcaseComponent implements OnDestroy {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
   private readonly mountedButtons = new Map<string, GithubStarButtonInstance>();
 

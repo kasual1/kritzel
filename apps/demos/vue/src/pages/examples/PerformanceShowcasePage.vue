@@ -79,10 +79,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="github-stars">
+  <div class="performance-showcase">
     <KritzelEditor
       ref="editor"
-      editorId="examples-github-stars"
+      editorId="examples-performance-showcase"
       theme="light"
       :themes="themes"
       :syncConfig="syncConfig"
@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.github-stars {
+.performance-showcase {
   position: relative;
   width: 100%;
   height: 100%;
