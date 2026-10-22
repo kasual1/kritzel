@@ -312,7 +312,7 @@ export function DomCanvasSection() {
 }
 
 export function PerformanceSection() {
-  const githubStarsPath = useDocsPath("examples/github-stars");
+  const performanceShowcasePath = useDocsPath("examples/performance-showcase");
 
   return (
     <Showcase
@@ -320,7 +320,7 @@ export function PerformanceSection() {
       title="Optimized for performance"
       description="Kritzel is designed from the ground up to handle hundreds of objects. It only renders what is currently in the viewport, so the board stays fast as your canvas grows."
       media={<PerformanceDemo />}
-      link={{ label: "Full Demo", to: githubStarsPath }}
+      link={{ label: "Full Demo", to: performanceShowcasePath }}
     />
   );
 }

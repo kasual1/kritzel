@@ -23,7 +23,7 @@ import { ThemingApplyPage } from "./pages/customization/theming/ThemingApplyPage
 import { ThemingCustomPage } from "./pages/customization/theming/ThemingCustomPage";
 import { ThemingListenPage } from "./pages/customization/theming/ThemingListenPage";
 import { BlueprintDefectMapperPage } from "./pages/examples/BlueprintDefectMapperPage";
-import { GithubStarsPage } from "./pages/examples/GithubStarsPage";
+import { PerformanceShowcasePage } from "./pages/examples/PerformanceShowcasePage";
 import { ImageAnnotationStudioPage } from "./pages/examples/ImageAnnotationStudioPage";
 import { ObjectExplorerPage } from "./pages/examples/ObjectExplorerPage";
 import { SlideshowPresentationPage } from "./pages/examples/SlideshowPresentationPage";
@@ -151,5 +151,5 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/examples/blueprint-defect-mapper", title: "Blueprint Defect Mapper", category: "Examples", component: BlueprintDefectMapperPage },
   { path: "/examples/slideshow-presentation", title: "Slideshow Presentation", category: "Examples", component: SlideshowPresentationPage },
   { path: "/examples/image-annotation-studio", title: "Image Annotation Studio", category: "Examples", component: ImageAnnotationStudioPage },
-  { path: "/examples/github-stars", title: "GitHub Stars", category: "Examples", component: GithubStarsPage },
+  { path: "/examples/performance-showcase", title: "Performance Showcase", category: "Examples", component: PerformanceShowcasePage },
 ];

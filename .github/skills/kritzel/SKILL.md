@@ -32,7 +32,7 @@ Use these demo areas as good examples for the corresponding task:
 | Themes, fonts, icons and localization | [Customization](../../../apps/demos/angular/src/app/pages/customization/) | [Customization](../../../apps/demos/react/src/pages/customization/) | [Customization](../../../apps/demos/vue/src/pages/customization/) |
 | Complete product-style integrations | [Examples](../../../apps/demos/angular/src/app/pages/examples/) | [Examples](../../../apps/demos/react/src/pages/examples/) | [Examples](../../../apps/demos/vue/src/pages/examples/) |
 
-In particular, start with `quick-start` or `basic-usage`, then compare the focused `objects`, `tools`, `viewport`, `persistence`, `theming`, and `localization` pages before implementing a new integration. The `examples` pages (`object-explorer`, `blueprint-defect-mapper`, `slideshow-presentation`, `image-annotation-studio`, and `github-stars`) show how the editor can be composed into larger workflows.
+In particular, start with `quick-start` or `basic-usage`, then compare the focused `objects`, `tools`, `viewport`, `persistence`, `theming`, and `localization` pages before implementing a new integration. The `examples` pages (`object-explorer`, `blueprint-defect-mapper`, `slideshow-presentation`, `image-annotation-studio`, and `performance-showcase`) show how the editor can be composed into larger workflows.
 
 ## Rules shared by all frameworks
 

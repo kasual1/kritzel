@@ -63,7 +63,7 @@ function countButtonStyle(active: boolean): CSSProperties {
   };
 }
 
-export function GithubStarsPage() {
+export function PerformanceShowcasePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const mountedButtons = useRef(new Map<string, GithubStarButtonInstance>());
   const [starCount, setStarCount] = useState(DEFAULT_STAR_COUNT);
@@ -118,7 +118,7 @@ export function GithubStarsPage() {
     <div style={hostStyle}>
       <KritzelEditor
         ref={editorRef}
-        editorId="examples-github-stars"
+        editorId="examples-performance-showcase"
         theme="light"
         themes={themes}
         syncConfig={syncConfig}

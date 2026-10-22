@@ -1,13 +1,13 @@
 ---
-sidebar_label: GitHub Stars
+sidebar_label: Performance Showcase
 displayed_sidebar: tutorialSidebar
-title: "GitHub Stars Example | Kritzel for React"
+title: "Performance Showcase Example | Kritzel for React"
 description: "Fill an infinite canvas with thousands of interactive GitHub Star buttons built as dynamic objects, and pan and zoom across them smoothly."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# GitHub Stars
+# Performance Showcase
 
 This example fills a board with thousands of GitHub "Star" buttons. Every button is a real DOM element mounted as a dynamic object, so it can be selected, moved and resized like any other object, and clicking it opens the Kritzel repository. Kritzel only mounts the objects inside the viewport, so panning and zooming stay smooth even with 5,000 buttons on the board.
 
@@ -37,8 +37,8 @@ The button is a plain `div`, not a `<button>`, so the engine treats every press 
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
-  demoPath="/examples/github-stars"
-  repoFiles={['src/pages/examples/GithubStarsPage.tsx', 'src/pages/examples/github-star-button.ts']}
+  demoPath="/examples/performance-showcase"
+  repoFiles={['src/pages/examples/PerformanceShowcasePage.tsx', 'src/pages/examples/github-star-button.ts']}
 />
 
 ### Registering the renderer
