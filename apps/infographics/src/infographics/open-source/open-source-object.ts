@@ -16,8 +16,8 @@ export function createOpenSourceObject(): KritzelDynamicObject {
 
   return new KritzelDynamicObject({
     element,
-    width: 320,
-    height: 320 * 182 / 186,
+    width: 180,
+    height: 180 * 182 / 186,
     translateX: 0,
     translateY: 0,
   });

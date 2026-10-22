@@ -1,5 +1,5 @@
 /** Draws every path of the element in document order, like a pen writing it. */
-export function animatePathDrawing(element: Element, totalDuration = 1350): void {
+export function animatePathDrawing(element: Element, totalDuration = 1350, startDelay = 100): void {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return;
   }
@@ -7,7 +7,7 @@ export function animatePathDrawing(element: Element, totalDuration = 1350): void
   const paths = Array.from(element.querySelectorAll('path'));
   const lengths = paths.map(path => path.getTotalLength());
   const totalLength = lengths.reduce((sum, length) => sum + length, 0);
-  let delay = 100;
+  let delay = startDelay;
 
   paths.forEach((path, index) => {
     const length = lengths[index];

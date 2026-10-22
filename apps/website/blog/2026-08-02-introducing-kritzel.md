@@ -42,4 +42,4 @@ Because of this, we are looking for early adopters who want to build right along
 
 <QuickStartLink />
 
-— *Lukas Mühlenbeck, Creator of kritzel.io*
+Lukas Mühlenbeck
