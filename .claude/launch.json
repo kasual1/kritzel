@@ -4,8 +4,32 @@
     {
       "name": "website",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "start", "--workspace", "apps/website", "--", "--port", "3001", "--no-open"],
+      "runtimeArgs": [
+        "run",
+        "start",
+        "--workspace",
+        "apps/website",
+        "--",
+        "--port",
+        "3001",
+        "--no-open"
+      ],
       "port": 3001,
+      "autoPort": false
+    },
+    {
+      "name": "infographics",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "start",
+        "--workspace",
+        "apps/infographics",
+        "--",
+        "--port",
+        "5180"
+      ],
+      "port": 5180,
       "autoPort": false
     }
   ]

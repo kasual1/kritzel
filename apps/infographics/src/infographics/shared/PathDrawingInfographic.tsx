@@ -19,10 +19,12 @@ interface PathDrawingInfographicProps {
   createDrawing: () => KritzelDynamicObject;
   /** Total drawing time in milliseconds. */
   duration?: number;
+  /** Wait before the drawing starts, in milliseconds. */
+  delay?: number;
 }
 
 /** An editor whose only object is an SVG drawing that is centered and animated on load. */
-export function PathDrawingInfographic({ id, name, createDrawing, duration }: PathDrawingInfographicProps) {
+export function PathDrawingInfographic({ id, name, createDrawing, duration, delay }: PathDrawingInfographicProps) {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [workspaces] = useState(() => {
     const drawing = createDrawing();
@@ -52,7 +54,7 @@ export function PathDrawingInfographic({ id, name, createDrawing, duration }: Pa
     }
 
     await editor.centerObjectInViewport(drawing);
-    animatePathDrawing(drawing.element, duration);
+    animatePathDrawing(drawing.element, duration, delay);
   }
 
   return (

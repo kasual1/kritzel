@@ -4,6 +4,7 @@ description: "Kritzel is now fully open source under the MIT license, free for e
 date: 2026-10-22
 thumbnailSeed: "c182b01d"
 image: /img/blog/kritzel-is-now-open-source.png
+thumbnail: /videos/2026_10_22_Kritzel_Open_Source.mp4
 ---
 
 Hey there,
@@ -23,6 +24,8 @@ Software development and building things has always been my greatest passion and
 Certainly this project holds everything I know about creating good software and especially code I wrote within the first year is a result of many sleepless nights and a lot of inner pressure that almost made me stop this project.
 
 I know for sure that there are still a couple of rough edges left and it will take time to get the API right. But from now on, let's do this together and enable everyone to build infinite canvas apps.
+
+Find the source code at [https://github.com/kasual1/kritzel](https://github.com/kasual1/kritzel)
 
 Cheers,
 
