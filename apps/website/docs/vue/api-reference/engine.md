@@ -746,7 +746,7 @@ getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectTitlebar | KritzelObjectTitlebarConfig | Titlebar rendered above every object that has `hasTitlebar` set. The same configuration applies to all objects. Leave unset to disable titlebars. See [Titlebars](../customization/titlebars.md). |
+| objectTitlebar | KritzelObjectTitlebarConfig | Titlebar rendered above every object for which `showFor` returns true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Titlebars](../customization/titlebars.md). |
 
 ### Events
 
@@ -756,4 +756,4 @@ getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 
 ### Methods
 
-No titlebar-specific methods. Use [updateObject](#updateobject) to change the `name` or `hasTitlebar` of an existing object.
+No titlebar-specific methods. Use [updateObject](#updateobject) to change the `name` of an existing object.

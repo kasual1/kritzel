@@ -36,8 +36,7 @@ Every object consists of properties, computed properties and methods.
 | resizing | boolean | Whether the object is currently being resized |
 | markedForRemoval | boolean | Whether the object is pending removal |
 | userId | string | ID of the user who created the object |
-| name | string | User-facing name, shown as the title of the object's titlebar. Persisted and synced |
-| hasTitlebar | boolean | Whether a titlebar is rendered above the object when `objectTitlebar` is configured. Persisted and synced |
+| name | string | User-facing name, shown as the title of its titlebar. Persisted and synced |
 | isVisible | boolean | Visibility flag |
 | isSelected | boolean | Whether the object is selected |
 | isHovered | boolean | Whether the object is hovered |
@@ -62,11 +61,10 @@ Every object config, such as `KritzelShapeConfig` or `KritzelTextConfig`, extend
 
 | Option | Type | Description |
 |--------|------|-------------|
-| name | string | User-facing name, shown as the title of the object's titlebar |
-| hasTitlebar | boolean | Renders a titlebar above the object when `objectTitlebar` is configured |
+| name | string | User-facing name, shown as the title of its titlebar |
 
 ```ts
-const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop', hasTitlebar: true });
+const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
 ```
 
 See [Titlebars](../customization/titlebars.md) for details.

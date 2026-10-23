@@ -14,6 +14,8 @@ import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, statusBarStyle } from '../../shared/demo-shared'
 
 const objectTitlebar: KritzelObjectTitlebarConfig = {
+  // Only named frames get a titlebar; the unnamed note does not.
+  showFor: object => !!object.name,
   left: [
     { type: 'button', id: 'preview', icon: 'play', variant: 'filled', tooltip: 'Preview' },
     { type: 'title', id: 'title' },
@@ -36,7 +38,6 @@ const frameConfig = {
   strokeColor: { light: '#d6defa', dark: '#3b4a6b' },
   strokeWidth: 5,
   scale: 5,
-  hasTitlebar: true,
 }
 
 const workspaces = [
@@ -45,7 +46,7 @@ const workspaces = [
       new KritzelShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
       new KritzelShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
       new KritzelShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
-      // No `hasTitlebar`, so this note renders without a titlebar.
+      // No `name`, so `showFor` skips this note and it renders without a titlebar.
       new KritzelShape({
         translateX: -268,
         translateY: 62,

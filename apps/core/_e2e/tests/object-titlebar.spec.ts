@@ -1,7 +1,7 @@
 import { test, expect } from '../fixtures/editor.fixture';
 import type { Locator, Page } from '@playwright/test';
 
-/** Configures a Framer-like titlebar and records button actions and events on window. */
+/** Configures a Framer-like titlebar for groups and named objects and records button actions and events on window. */
 async function configureTitlebar(page: Page) {
   await page.evaluate(() => {
     const w = window as any;
@@ -10,6 +10,7 @@ async function configureTitlebar(page: Page) {
     const editor = document.querySelector('kritzel-editor') as any;
     editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__titlebarEvents.push(event.detail.itemId));
     editor.objectTitlebar = {
+      showFor: (object: any) => object.__class__ === 'KritzelGroup' || !!object.name,
       left: [
         {
           type: 'button',
@@ -58,20 +59,37 @@ test.describe('Object titlebar', () => {
     await configureTitlebar(page);
   });
 
-  test('renders a titlebar only above objects that opt in', async ({ editorPage, page }) => {
-    const flagged = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop', hasTitlebar: true });
+  test('renders a titlebar only above objects accepted by showFor', async ({ editorPage, page }) => {
+    const named = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     await editorPage.addShape({ translateX: 600, translateY: 200, width: 200, height: 150 });
     await nextFrame(page);
 
     await expect(page.locator('kritzel-engine .object-titlebar')).toHaveCount(1);
-    const titlebar = titlebarFor(page, flagged.id);
+    const titlebar = titlebarFor(page, named.id);
     await expect(titlebar.locator('.object-titlebar-title')).toHaveText('Desktop');
     await expect(titlebar.locator('[data-item-id="size"]')).toHaveText('300');
     await expect(titlebar).toHaveAttribute('data-state', 'inactive');
   });
 
+  test('renders no titlebars when showFor is missing', async ({ editorPage, page }) => {
+    await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+    const titlebars = page.locator('kritzel-engine .object-titlebar');
+    await expect(titlebars).toHaveCount(1);
+
+    const messages: string[] = [];
+    page.on('console', message => messages.push(message.text()));
+    await page.evaluate(() => {
+      const editor = document.querySelector('kritzel-editor') as any;
+      editor.objectTitlebar = { left: [{ type: 'title', id: 'title' }] };
+    });
+    await nextFrame(page);
+
+    await expect(titlebars).toHaveCount(0);
+    await expect.poll(() => messages.some(text => text.includes('showFor'))).toBe(true);
+  });
+
   test('sits above its object at a constant screen size across zoom levels', async ({ editorPage, page }) => {
-    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, hasTitlebar: true });
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const titlebar = titlebarFor(page, shape.id);
 
     for (const scale of [0.5, 1, 2]) {
@@ -90,7 +108,7 @@ test.describe('Object titlebar', () => {
   });
 
   test('hides titlebars of objects that are too small on screen', async ({ editorPage, page }) => {
-    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, hasTitlebar: true });
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
 
     await editorPage.setViewportRaw(0, 0, 0.1);
     await nextFrame(page);
@@ -99,7 +117,7 @@ test.describe('Object titlebar', () => {
   });
 
   test('becomes active when its object is selected', async ({ editorPage, page }) => {
-    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, hasTitlebar: true });
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const titlebar = titlebarFor(page, shape.id);
     const point = await surfacePoint(titlebar);
 
@@ -114,7 +132,7 @@ test.describe('Object titlebar', () => {
   });
 
   test('dragging the titlebar moves its object like dragging the object, and undo restores it', async ({ editorPage, page }) => {
-    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, hasTitlebar: true });
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     await editorPage.waitForUndoCapture();
     const titlebar = titlebarFor(page, shape.id);
 
@@ -135,7 +153,7 @@ test.describe('Object titlebar', () => {
   });
 
   test('buttons run their action and emit an event without selecting or moving the object', async ({ editorPage, page }) => {
-    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, hasTitlebar: true });
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const titlebar = titlebarFor(page, shape.id);
 
     await titlebar.locator('[data-item-id="play"]').click();
@@ -149,7 +167,7 @@ test.describe('Object titlebar', () => {
   });
 
   test('clicking the titlebar of a text object does not start editing it', async ({ editorPage, page }) => {
-    const text = await editorPage.addText({ text: 'A titlebar for this note', translateX: 200, translateY: 200, fontSize: 24, hasTitlebar: true });
+    const text = await editorPage.addText({ text: 'A titlebar for this note', translateX: 200, translateY: 200, fontSize: 24, name: 'Note' });
     await nextFrame(page);
     const titlebar = titlebarFor(page, text.id);
 
@@ -164,14 +182,17 @@ test.describe('Object titlebar', () => {
   });
 
   test('a group shows one titlebar that moves the whole group', async ({ editorPage, page }) => {
-    const first = await editorPage.addShape({ translateX: 200, translateY: 200, width: 150, height: 150, hasTitlebar: true });
-    const second = await editorPage.addShape({ translateX: 400, translateY: 200, width: 150, height: 150 });
+    const first = await editorPage.addShape({ translateX: 200, translateY: 200, width: 150, height: 150, name: 'Mobile' });
+    const second = await editorPage.addShape({ translateX: 400, translateY: 200, width: 150, height: 150, name: 'Tablet' });
+    await nextFrame(page);
+    const titlebars = page.locator('kritzel-engine .object-titlebar');
+    await expect(titlebars).toHaveCount(2);
+
     await editorPage.selectObjects([first, second]);
     await editorPage.group();
     await editorPage.clearSelection();
     await nextFrame(page);
 
-    const titlebars = page.locator('kritzel-engine .object-titlebar');
     await expect(titlebars).toHaveCount(1);
     await expect(titlebars.first()).toHaveAttribute('data-object-type', 'KritzelGroup');
 
@@ -184,8 +205,34 @@ test.describe('Object titlebar', () => {
     expect(firstAfter!.translateY).toBeCloseTo(250, 0);
   });
 
+  test('showFor can select objects by class', async ({ editorPage, page }) => {
+    const first = await editorPage.addShape({ translateX: 200, translateY: 200, width: 150, height: 150, name: 'Mobile' });
+    const second = await editorPage.addShape({ translateX: 400, translateY: 200, width: 150, height: 150, name: 'Tablet' });
+    await nextFrame(page);
+    const titlebars = page.locator('kritzel-engine .object-titlebar');
+    await expect(titlebars).toHaveCount(2);
+
+    await page.evaluate(() => {
+      const editor = document.querySelector('kritzel-editor') as any;
+      editor.objectTitlebar = { ...editor.objectTitlebar, showFor: (object: any) => object.__class__ === 'KritzelGroup' };
+    });
+    await nextFrame(page);
+    await expect(titlebars).toHaveCount(0);
+
+    await editorPage.selectObjects([first, second]);
+    await editorPage.group();
+    await editorPage.clearSelection();
+    await nextFrame(page);
+
+    const allObjects = await editorPage.getAllObjects<{ id: string; __class__: string }>();
+    const group = allObjects.find(object => object.__class__ === 'KritzelGroup');
+    expect(group).toBeDefined();
+    await expect(titlebars).toHaveCount(1);
+    await expect(titlebarFor(page, group!.id)).toHaveCount(1);
+  });
+
   test('right-clicking the titlebar opens the object context menu', async ({ editorPage, page }) => {
-    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, hasTitlebar: true });
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const point = await surfacePoint(titlebarFor(page, shape.id));
 
     await page.mouse.click(point.x, point.y, { button: 'right' });
@@ -196,7 +243,7 @@ test.describe('Object titlebar', () => {
   });
 
   test('theme variables can make the titlebar transparent and move it onto the object edge', async ({ editorPage, page }) => {
-    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, hasTitlebar: true });
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     await page.evaluate(() => {
       const editor = document.querySelector('kritzel-editor') as HTMLElement;
       editor.style.setProperty('--kritzel-titlebar-background-color', 'transparent');
@@ -213,7 +260,7 @@ test.describe('Object titlebar', () => {
   });
 
   test('exposes parts for styling from page CSS', async ({ editorPage, page }) => {
-    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, hasTitlebar: true });
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     await page.addStyleTag({ content: 'kritzel-engine::part(titlebar-active) { outline: 3px solid rgb(255, 0, 0); }' });
     const titlebar = titlebarFor(page, shape.id);
 

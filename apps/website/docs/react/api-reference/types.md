@@ -357,10 +357,11 @@ Types used by the [`objectTitlebar` prop](./editor.md#object-titlebar). See [Tit
 
 ### `KritzelObjectTitlebarConfig`
 
-Passed to the `objectTitlebar` prop. The same configuration applies to every object that has `hasTitlebar` set.
+Passed to the `objectTitlebar` prop. The same configuration applies to every object for which `showFor` returns `true`. Without `showFor`, no titlebars are rendered.
 
 ```ts
 interface KritzelObjectTitlebarConfig {
+  showFor?: (object: KritzelBaseObject) => boolean;
   left?: KritzelTitlebarItem[];   // defaults to [{ id: 'title', type: 'title' }]
   center?: KritzelTitlebarItem[];
   right?: KritzelTitlebarItem[];
@@ -372,7 +373,9 @@ interface KritzelObjectTitlebarConfig {
 }
 ```
 
-`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title.
+`showFor` is called for every visible top-level object on every render, so it must be synchronous and cheap. Objects inside a group never get their own titlebar; the group is passed in instead. Returning anything but `true`, or throwing, means no titlebar. Compare `object.__class__` (for example `'KritzelGroup'`) rather than using `instanceof`, and prefer `childIds` over `children` to inspect a group's children. See [Choosing Which Objects Get a Titlebar](../customization/titlebars.md#choosing-which-objects-get-a-titlebar).
+
+`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title. It has no `showFor`, so spread it and add one, for example `{ ...KRITZEL_DEFAULT_OBJECT_TITLEBAR, showFor: (object) => object.__class__ === 'KritzelGroup' }`.
 
 ### `KritzelTitlebarItem`
 
@@ -473,6 +476,5 @@ Options accepted by the constructor of every object.
 ```ts
 interface KritzelObjectCommonConfig {
   name?: string;
-  hasTitlebar?: boolean;
 }
 ```

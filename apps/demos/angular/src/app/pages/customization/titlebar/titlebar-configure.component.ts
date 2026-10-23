@@ -23,7 +23,6 @@ const frameConfig = {
   strokeColor: { light: '#d6defa', dark: '#3b4a6b' },
   strokeWidth: 5,
   scale: 5,
-  hasTitlebar: true,
 };
 
 function createFrames() {
@@ -31,7 +30,7 @@ function createFrames() {
     new KritzelShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
     new KritzelShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
     new KritzelShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
-    // No `hasTitlebar`, so this note renders without a titlebar.
+    // No `name`, so `showFor` skips this note and it renders without a titlebar.
     new KritzelShape({
       translateX: -268,
       translateY: 62,
@@ -80,8 +79,10 @@ export class TitlebarConfigureComponent {
 
   workspaces = signal([new KritzelWorkspace({ objects: createFrames() })]);
 
-  // Declared once as a stable field and shared by every object that sets `hasTitlebar`.
+  // Declared once as a stable field and shared by every object accepted by `showFor`.
   readonly objectTitlebar: KritzelObjectTitlebarConfig = {
+    // Only named frames get a titlebar; the unnamed note does not.
+    showFor: object => !!object.name,
     left: [
       { id: 'preview', type: 'button', icon: 'play', tooltip: 'Preview', variant: 'filled' },
       { id: 'title', type: 'title' },

@@ -35,6 +35,7 @@ const transparentTitlebarDarkTheme: KritzelTheme = {
 const themes = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
 
 const objectTitlebar: KritzelObjectTitlebarConfig = {
+  showFor: (object) => object.__class__ === "KritzelShape",
   left: [{ id: "title", type: "title" }],
   right: [
     { id: "settings", type: "button", icon: "settings", tooltip: "Settings" },
@@ -48,7 +49,6 @@ const frameConfig = {
   fillColor: { light: "#faf9f5", dark: "#30302e" },
   strokeColor: { light: "#e8e6dc", dark: "#3e3e38" },
   strokeWidth: 2,
-  hasTitlebar: true,
 };
 
 function createFrames() {

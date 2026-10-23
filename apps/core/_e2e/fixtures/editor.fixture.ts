@@ -57,7 +57,6 @@ export type ShapeType = 'rectangle' | 'ellipse' | 'triangle';
 
 export interface KritzelShapeConfig {
   name?: string;
-  hasTitlebar?: boolean;
   shapeType?: ShapeType;
   translateX?: number;
   translateY?: number;
@@ -86,7 +85,6 @@ export interface KritzelPathConfig {
 
 export interface KritzelTextConfig {
   name?: string;
-  hasTitlebar?: boolean;
   text?: string;
   translateX?: number;
   translateY?: number;
