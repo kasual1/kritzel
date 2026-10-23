@@ -442,7 +442,7 @@ export namespace Components {
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
-          * Titlebar rendered above every object that has `hasTitlebar` set. The same configuration applies to all objects. Leave unset to disable titlebars.
+          * Titlebar rendered above every object for which `showFor` returns true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
         "objectTitlebar"?: KritzelObjectTitlebarConfig;
         /**
@@ -893,7 +893,7 @@ declare namespace LocalJSX {
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
-          * Titlebar rendered above every object that has `hasTitlebar` set. The same configuration applies to all objects. Leave unset to disable titlebars.
+          * Titlebar rendered above every object for which `showFor` returns true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
         "objectTitlebar"?: KritzelObjectTitlebarConfig;
         /**
