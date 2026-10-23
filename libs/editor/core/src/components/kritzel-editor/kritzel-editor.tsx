@@ -223,7 +223,7 @@ export class KritzelEditor {
   ];
 
   /**
-   * Titlebar rendered above every object that has `hasTitlebar` set. The same configuration
+   * Titlebar rendered above every object for which `showFor` returns true. The same configuration
    * applies to all objects. Leave unset to disable titlebars.
    */
   @Prop() objectTitlebar?: KritzelObjectTitlebarConfig;

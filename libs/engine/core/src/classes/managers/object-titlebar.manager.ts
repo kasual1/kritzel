@@ -95,6 +95,7 @@ export interface KritzelResolvedTitlebar {
 export class KritzelObjectTitlebarManager {
   private readonly _core: KritzelCore;
   private readonly _warnedItems = new Set<string>();
+  private readonly _reportedShowFor = new Set<'missing' | 'failed'>();
 
   constructor(core: KritzelCore) {
     this._core = core;
@@ -110,9 +111,10 @@ export class KritzelObjectTitlebarManager {
     return !!this.config;
   }
 
-  /** Clears the set of items already warned about, so a new configuration reports its own errors. */
+  /** Clears the warnings already reported, so a new configuration reports its own problems. */
   resetWarnings(): void {
     this._warnedItems.clear();
+    this._reportedShowFor.clear();
   }
 
   /** Reads the titlebar height and offset tokens, falling back to defaults for non-pixel values. */
@@ -133,10 +135,19 @@ export class KritzelObjectTitlebarManager {
 
   /**
    * Returns the objects that own a titlebar among the given candidates: top-level objects
-   * (not children of a candidate group) that have `hasTitlebar` set.
+   * (not children of a candidate group) accepted by the config's `showFor`.
    * A group's bounds contain its children, so a visible child's group is always a candidate.
    */
   getOwners(candidates: KritzelBaseObject<any>[]): KritzelBaseObject<any>[] {
+    const showFor = this.config?.showFor;
+    if (typeof showFor !== 'function') {
+      if (this.isEnabled && !this._reportedShowFor.has('missing')) {
+        this._reportedShowFor.add('missing');
+        console.info("[KritzelObjectTitlebar] No titlebars are rendered because `objectTitlebar.showFor` is not set, e.g. `showFor: object => object.__class__ === 'KritzelGroup'`.");
+      }
+      return [];
+    }
+
     const childIds = new Set<string>();
     for (const candidate of candidates) {
       if (KritzelClassHelper.isInstanceOf<KritzelGroup>(candidate, 'KritzelGroup')) {
@@ -148,12 +159,35 @@ export class KritzelObjectTitlebarManager {
 
     return candidates.filter(
       candidate =>
-        candidate.hasTitlebar === true &&
         !candidate.markedForRemoval &&
         !childIds.has(candidate.id) &&
         !KritzelClassHelper.isInstanceOf(candidate, 'KritzelSelectionGroup') &&
-        !KritzelClassHelper.isInstanceOf(candidate, 'KritzelSelectionBox'),
+        !KritzelClassHelper.isInstanceOf(candidate, 'KritzelSelectionBox') &&
+        this.isShownFor(showFor, candidate),
     );
+  }
+
+  /** Evaluates `showFor` for one object. Only a synchronous `true` counts; failures are reported once. */
+  private isShownFor(showFor: (object: KritzelBaseObject) => boolean, object: KritzelBaseObject<any>): boolean {
+    try {
+      const result: unknown = showFor(object);
+      if (result && typeof (result as PromiseLike<unknown>).then === 'function') {
+        this.reportShowForFailure('`showFor` must be synchronous; promises are not supported.');
+        return false;
+      }
+      return result === true;
+    } catch (error) {
+      this.reportShowForFailure(error);
+      return false;
+    }
+  }
+
+  private reportShowForFailure(error: unknown): void {
+    if (this._reportedShowFor.has('failed')) {
+      return;
+    }
+    this._reportedShowFor.add('failed');
+    console.warn('[KritzelObjectTitlebar] `showFor` failed; objects it fails for get no titlebar:', error);
   }
 
   /**

@@ -194,12 +194,9 @@ describe('KritzelShape', () => {
   });
 
   describe('constructor', () => {
-    it('should apply the common name and titlebar options', () => {
-      const named = new KritzelShape({ name: 'Desktop', hasTitlebar: true });
-
-      expect(named.name).toBe('Desktop');
-      expect(named.hasTitlebar).toBe(true);
-      expect(new KritzelShape().hasTitlebar).toBeUndefined();
+    it('should apply the common name option', () => {
+      expect(new KritzelShape({ name: 'Desktop' }).name).toBe('Desktop');
+      expect(new KritzelShape().name).toBeUndefined();
     });
 
     it('should create a shape with default values when no config provided', () => {

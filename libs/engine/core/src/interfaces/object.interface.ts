@@ -25,7 +25,6 @@ export interface KritzelObject<T = Element> {
   zIndex: number;
   userId?: string;
   name?: string;
-  hasTitlebar?: boolean;
 
   isVisible: boolean;
   isSelected: boolean;
@@ -63,6 +62,4 @@ export interface KritzelObject<T = Element> {
 export interface KritzelObjectCommonConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
-  /** Renders a titlebar above the object when the engine's `objectTitlebar` is configured. */
-  hasTitlebar?: boolean;
 }

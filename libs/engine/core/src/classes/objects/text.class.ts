@@ -288,7 +288,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
       this.height = newHeight * this.scaleFactor;
 
       // Titlebars are sized from the object, so they need a render once the text has been measured.
-      if (this.hasTitlebar && (this.totalWidth !== previousTotalWidth || this.totalHeight !== previousTotalHeight)) {
+      if (this._core?.objectTitlebarManager?.isEnabled && (this.totalWidth !== previousTotalWidth || this.totalHeight !== previousTotalHeight)) {
         this._core?.rerender();
       }
 

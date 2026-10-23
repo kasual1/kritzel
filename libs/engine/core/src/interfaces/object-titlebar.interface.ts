@@ -15,7 +15,7 @@ export type KritzelTitlebarSection = 'left' | 'center' | 'right';
 
 /** Information about the object a titlebar belongs to, passed to dynamic item values and actions. */
 export interface KritzelObjectTitlebarContext {
-  /** The owner of the titlebar: a top-level object or group with `hasTitlebar` set. */
+  /** The owner of the titlebar: a top-level object or group accepted by `showFor`. */
   object: KritzelBaseObject;
   /** The owner's class name, e.g. `'KritzelGroup'`. */
   objectType: string;
@@ -95,10 +95,25 @@ export type KritzelTitlebarItem =
   | KritzelTitlebarSpacerItem;
 
 /**
- * Configuration of the titlebar rendered above objects that have `hasTitlebar` set.
+ * Configuration of the titlebar rendered above the objects accepted by `showFor`.
  * The same configuration applies to every object.
  */
 export interface KritzelObjectTitlebarConfig {
+  /**
+   * Decides which objects get a titlebar. Without it, no titlebars are rendered.
+   *
+   * Called for every visible top-level object on every render, so it must be synchronous
+   * and cheap. Objects inside a group never get their own titlebar; the group itself is
+   * passed in instead. Returning anything but `true`, or throwing, means no titlebar.
+   *
+   * Compare `object.__class__` (e.g. `'KritzelGroup'`) rather than using `instanceof`,
+   * which fails when the app bundles more than one copy of the engine. To inspect a
+   * group's children, prefer `childIds` over `children`, which looks them up in the store.
+   *
+   * @example
+   * showFor: object => object.__class__ === 'KritzelGroup'
+   */
+  showFor?: (object: KritzelBaseObject) => boolean;
   /** Items in the left section. Defaults to a single title item. */
   left?: KritzelTitlebarItem[];
   center?: KritzelTitlebarItem[];

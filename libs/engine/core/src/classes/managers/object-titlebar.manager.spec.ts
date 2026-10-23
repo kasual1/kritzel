@@ -22,8 +22,11 @@ describe('KritzelObjectTitlebarManager', () => {
   let objects: Map<string, KritzelBaseObject<any>>;
   let manager: KritzelObjectTitlebarManager;
 
+  const showAll = () => true;
+
+  /** Sets the engine prop. Titlebars are shown for every object unless the config sets its own `showFor`. */
   const setConfig = (config: KritzelObjectTitlebarConfig | undefined) => {
-    mockCore.engine.objectTitlebar = config;
+    mockCore.engine.objectTitlebar = config && { showFor: showAll, ...config };
   };
 
   const createObject = (id: string, props: Partial<KritzelBaseObject<any>> & Record<string, unknown> = {}): KritzelBaseObject<any> => {
@@ -39,7 +42,6 @@ describe('KritzelObjectTitlebarManager', () => {
       scale: 1,
       rotation: 0,
       markedForRemoval: false,
-      hasTitlebar: true,
       ...props,
     }) as KritzelBaseObject<any>;
     objects.set(id, object);
@@ -80,7 +82,7 @@ describe('KritzelObjectTitlebarManager', () => {
     objects = new Map();
     mockCore = {
       engine: {
-        objectTitlebar: { left: [{ id: 'title', type: 'title' }] } as KritzelObjectTitlebarConfig,
+        objectTitlebar: { showFor: showAll, left: [{ id: 'title', type: 'title' }] } as KritzelObjectTitlebarConfig,
         emitObjectTitlebarAction: jest.fn(),
         host: { shadowRoot: { elementsFromPoint: jest.fn().mockReturnValue([]) } },
       },
@@ -100,6 +102,7 @@ describe('KritzelObjectTitlebarManager', () => {
     manager = new KritzelObjectTitlebarManager(mockCore);
     jest.spyOn(console, 'warn').mockImplementation(() => undefined);
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    jest.spyOn(console, 'info').mockImplementation(() => undefined);
   });
 
   afterEach(() => {
@@ -139,28 +142,98 @@ describe('KritzelObjectTitlebarManager', () => {
   });
 
   describe('getOwners', () => {
-    it('only includes objects that have a titlebar', () => {
-      const flagged = createObject('a');
-      createObject('b', { hasTitlebar: false });
-      createObject('c', { hasTitlebar: undefined });
+    const owners = () => manager.getOwners(Array.from(objects.values()));
 
-      expect(manager.getOwners(Array.from(objects.values()))).toEqual([flagged]);
+    it('includes the objects accepted by showFor', () => {
+      setConfig({ showFor: object => object.__class__ === 'KritzelGroup' });
+      createObject('shape');
+      const group = createGroup('group', []);
+
+      expect(owners()).toEqual([group]);
     });
 
-    it('ignores children of groups, including nested groups, and keeps the root group', () => {
-      createObject('child', { hasTitlebar: true });
-      createGroup('inner', ['child'], { hasTitlebar: true });
-      const root = createGroup('root', ['inner'], { hasTitlebar: true });
+    it('only accepts a strict true', () => {
+      setConfig({ showFor: object => (object.id === 'a' ? true : (1 as unknown as boolean)) });
+      const a = createObject('a');
+      createObject('b');
 
-      expect(manager.getOwners(Array.from(objects.values()))).toEqual([root]);
+      expect(owners()).toEqual([a]);
     });
 
-    it('excludes selection objects and objects marked for removal', () => {
+    it('shows no titlebars and logs a hint once when showFor is missing', () => {
+      setConfig({ showFor: undefined });
+      createObject('a');
+
+      expect(owners()).toEqual([]);
+      expect(manager.resolveTitlebars(Array.from(objects.values()))).toEqual([]);
+      expect(console.info).toHaveBeenCalledTimes(1);
+      expect((console.info as jest.Mock).mock.calls[0][0]).toContain('showFor');
+
+      manager.resetWarnings();
+      owners();
+      expect(console.info).toHaveBeenCalledTimes(2);
+    });
+
+    it('logs no hint while titlebars are disabled', () => {
+      setConfig(undefined);
+      createObject('a');
+
+      expect(owners()).toEqual([]);
+      expect(console.info).not.toHaveBeenCalled();
+    });
+
+    it('treats a throwing showFor as false and warns once', () => {
+      setConfig({
+        showFor: object => {
+          if (object.id === 'bad') throw new Error('boom');
+          return true;
+        },
+      });
+      const good = createObject('good');
+      createObject('bad');
+
+      expect(owners()).toEqual([good]);
+      expect(owners()).toEqual([good]);
+      expect(console.warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects a promise returned by showFor', () => {
+      setConfig({ showFor: () => Promise.resolve(true) as unknown as boolean });
+      createObject('a');
+
+      expect(owners()).toEqual([]);
+      expect(console.warn).toHaveBeenCalledTimes(1);
+    });
+
+    it('never gives grouped objects their own titlebar, even when showFor accepts them', () => {
+      createObject('child');
+      createGroup('inner', ['child']);
+      const root = createGroup('root', ['inner']);
+
+      expect(owners()).toEqual([root]);
+    });
+
+    it('lets showFor decide for groups like for any other object', () => {
+      setConfig({ showFor: object => object.__class__ !== 'KritzelGroup' });
+      createObject('child');
+      createGroup('group', ['child']);
+      const loose = createObject('loose');
+
+      expect(owners()).toEqual([loose]);
+    });
+
+    it('does not ask showFor about grouped objects, selection objects or objects marked for removal', () => {
+      const showFor = jest.fn(() => true);
+      setConfig({ showFor });
+      createObject('child');
+      const group = createGroup('group', ['child']);
       createObject('sg', { __class__: 'KritzelSelectionGroup' });
       createObject('sb', { __class__: 'KritzelSelectionBox' });
       createObject('erased', { markedForRemoval: true });
 
-      expect(manager.getOwners(Array.from(objects.values()))).toEqual([]);
+      expect(owners()).toEqual([group]);
+      expect(showFor).toHaveBeenCalledTimes(1);
+      expect(showFor).toHaveBeenCalledWith(group);
     });
   });
 

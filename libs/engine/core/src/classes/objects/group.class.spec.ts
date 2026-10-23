@@ -171,19 +171,6 @@ describe('KritzelGroup', () => {
       expect(group.width).toBeGreaterThan(0);
       expect(group.height).toBeGreaterThan(0);
     });
-
-    it('should take over the titlebar of its children', () => {
-      const flagged = createMockChildObject({ id: 'child-1', hasTitlebar: true });
-      const plain = createMockChildObject({ id: 'child-2' });
-
-      expect(KritzelGroup.createFromObjects(mockCore, [flagged, plain]).hasTitlebar).toBe(true);
-    });
-
-    it('should not show a titlebar when none of its children had one', () => {
-      const child = createMockChildObject({ id: 'child-1' });
-
-      expect(KritzelGroup.createFromObjects(mockCore, [child]).hasTitlebar).toBeFalsy();
-    });
   });
 
   describe('static findParentGroup', () => {
@@ -612,14 +599,12 @@ describe('KritzelGroup', () => {
   });
 
   describe('copy', () => {
-    it('should copy the name and titlebar flag', () => {
+    it('should copy the name', () => {
       groupObject.name = 'Hero';
-      groupObject.hasTitlebar = true;
 
       const copied = groupObject.copy();
 
       expect(copied.name).toBe('Hero');
-      expect(copied.hasTitlebar).toBe(true);
     });
 
     it('should create a new group', () => {

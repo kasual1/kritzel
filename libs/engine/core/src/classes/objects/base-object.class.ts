@@ -41,8 +41,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   userId?: string;
   /** User-facing name, shown as the title of the object's titlebar. Persisted and synced. */
   name?: string;
-  /** Whether a titlebar is rendered above this object when the engine's `objectTitlebar` is configured. Persisted and synced. */
-  hasTitlebar?: boolean;
 
   isVisible: boolean = true;
   isSelected: boolean = false;

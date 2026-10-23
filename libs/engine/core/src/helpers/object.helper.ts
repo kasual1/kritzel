@@ -29,9 +29,6 @@ export class ObjectHelper {
     if (config?.name !== undefined) {
       object.name = config.name;
     }
-    if (config?.hasTitlebar !== undefined) {
-      object.hasTitlebar = config.hasTitlebar;
-    }
   }
 
   static isClass<T>(object: unknown, className: string): object is T {

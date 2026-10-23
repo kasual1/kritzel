@@ -121,11 +121,6 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
             group.childIds.push(obj.id);
         });
 
-        // Children don't show their own titlebar while grouped, so the group takes it over
-        if (objects.some(obj => obj.hasTitlebar)) {
-            group.hasTitlebar = true;
-        }
-
         // Calculate bounding box from children
         group.refreshBoundingBox();
         group.captureChildSnapshots();
@@ -650,7 +645,6 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         copiedGroup.width = this.width;
         copiedGroup.height = this.height;
         copiedGroup.name = this.name;
-        copiedGroup.hasTitlebar = this.hasTitlebar;
 
         return copiedGroup;
     }
