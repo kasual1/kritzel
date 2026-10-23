@@ -53,6 +53,8 @@ import { AgenticCursorsBasicComponent } from './pages/advanced/agentic-cursors/a
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
 import { ThemingListenComponent } from './pages/customization/theming/theming-listen.component';
+import { TitlebarConfigureComponent } from './pages/customization/titlebar/titlebar-configure.component';
+import { TitlebarStylingComponent } from './pages/customization/titlebar/titlebar-styling.component';
 import { FontsRegisterComponent } from './pages/customization/fonts/fonts-register.component';
 import { FontsUiFontFamilyComponent } from './pages/customization/fonts/fonts-ui-font-family.component';
 import { IconsRegisterComponent } from './pages/customization/icons/icons-register.component';
@@ -205,6 +207,13 @@ export const routes: Routes = [
           { path: 'apply', component: ThemingApplyComponent },
           { path: 'custom', component: ThemingCustomComponent },
           { path: 'listen', component: ThemingListenComponent },
+        ],
+      },
+      {
+        path: 'titlebar',
+        children: [
+          { path: 'configure', component: TitlebarConfigureComponent },
+          { path: 'styling', component: TitlebarStylingComponent },
         ],
       },
       {
