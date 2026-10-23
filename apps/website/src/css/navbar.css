@@ -241,8 +241,8 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
   z-index: 0;
   border-radius: inherit;
   background: var(--kritzel-nav-bg);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   content: "";
   pointer-events: none;
 }
