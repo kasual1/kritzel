@@ -18,6 +18,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'tools',
   'globalContextMenuItems',
   'objectContextMenuItems',
+  'objectTitlebar',
   'scaleMax',
   'scaleMin',
   'cursorTarget',
@@ -52,7 +53,8 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'notificationsChange',
   'contextMenuStateChange',
   'isLoadingChange',
-  'agenticCursorDetached'
+  'agenticCursorDetached',
+  'objectTitlebarAction'
 ], [
   'isEngineReady',
   'activeToolChange',
@@ -71,6 +73,7 @@ export const KritzelEngine: StencilVueComponent<JSX.KritzelEngine> = /*@__PURE__
   'notificationsChange',
   'contextMenuStateChange',
   'isLoadingChange',
-  'agenticCursorDetached'
+  'agenticCursorDetached',
+  'objectTitlebarAction'
 ]);
 

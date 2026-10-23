@@ -850,4 +850,27 @@ describe('KritzelStore', () => {
       expect(listener).toHaveBeenCalledWith(100, 50, 'translateX');
     });
   });
+  describe('getObjectsInViewport', () => {
+    it('queries the viewport in world units without padding by default', () => {
+      mockState.scale = 2;
+      mockState.translateX = -100;
+      mockState.translateY = 50;
+      const query = jest.spyOn(mockState.objects, 'query').mockReturnValue([]);
+
+      void store.objectsInViewport;
+
+      expect(query).toHaveBeenCalledWith({ x: 50, y: -25, z: 2, width: 500, height: 400, depth: 100 });
+    });
+
+    it('widens the query by the padding on every side', () => {
+      mockState.scale = 2;
+      mockState.translateX = -100;
+      mockState.translateY = 50;
+      const query = jest.spyOn(mockState.objects, 'query').mockReturnValue([]);
+
+      store.getObjectsInViewport(17);
+
+      expect(query).toHaveBeenCalledWith({ x: 33, y: -42, z: 2, width: 534, height: 434, depth: 100 });
+    });
+  });
 });

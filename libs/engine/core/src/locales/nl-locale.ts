@@ -136,5 +136,16 @@ export const NL_LOCALE: KritzelLocale = {
 
     // Watermark
     'watermark.poweredBy': 'Mogelijk gemaakt door Kritzel',
+
+    // Object type labels
+    'objectType.shape': 'Vorm',
+    'objectType.text': 'Tekst',
+    'objectType.image': 'Afbeelding',
+    'objectType.path': 'Tekening',
+    'objectType.line': 'Lijn',
+    'objectType.group': 'Groep',
+    'objectType.iframe': 'Insluiting',
+    'objectType.dynamic': 'Component',
+    'objectType.object': 'Object',
   },
 };

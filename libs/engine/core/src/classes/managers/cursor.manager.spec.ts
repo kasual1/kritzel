@@ -199,6 +199,24 @@ describe('KritzelCursorManager', () => {
       manager.updateHoverState(ev);
     });
 
+    it('should show the grab cursor over a titlebar drag surface', () => {
+      const title = { ...createMockElementWithClasses(), closest: (selector: string) => (selector === '[data-kritzel-titlebar-surface]' ? {} : null) };
+      manager.setShadowRoot(createMockShadowRoot([title]));
+
+      manager.updateHoverState(createMockPointerEvent());
+
+      expect(mockState.cursor).toEqual({ icon: 'hand', iconActive: 'handGrab' });
+    });
+
+    it('should leave the cursor to titlebar controls', () => {
+      const button = { ...createMockElementWithClasses(), closest: () => ({}) };
+      manager.setShadowRoot(createMockShadowRoot([button]));
+
+      manager.updateHoverState(createMockPointerEvent());
+
+      expect(mockState.cursor).toEqual({ icon: 'default', iconActive: 'default' });
+    });
+
     it('should reset a stale cursor when no elements are found at point', () => {
       mockState.cursor = { icon: 'moveVertical', rotation: -45 };
       const shadowRoot = createMockShadowRoot([]);

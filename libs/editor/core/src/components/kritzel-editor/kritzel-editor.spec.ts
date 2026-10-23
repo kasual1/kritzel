@@ -120,6 +120,21 @@ describe('KritzelEditor', () => {
     });
   });
 
+  describe('Object Titlebar', () => {
+    it('re-emits titlebar actions once, stopping the engine event', () => {
+      const emit = jest.fn();
+      (component as any).objectTitlebarAction = { emit };
+      const detail = { itemId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleObjectTitlebarAction(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith(detail);
+    });
+  });
+
   describe('Custom Icons', () => {
     afterEach(() => {
       jest.restoreAllMocks();

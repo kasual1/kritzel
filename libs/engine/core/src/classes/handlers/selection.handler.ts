@@ -22,6 +22,12 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
   touchStartTimeout: any = null;
 
   /**
+   * Pointer whose release must not enter edit mode, e.g. a click on an object's titlebar.
+   * Set by the selection tool on pointerdown and consumed on the matching pointerup.
+   */
+  skipEditForPointerId: number | null = null;
+
+  /**
    * Tracks previously selected objects for efficient deselection.
    * Uses a Set for O(1) lookup when determining which objects need to be deselected.
    */
@@ -124,13 +130,18 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
    * @param event - The pointer event containing input type, coordinates, and modifier keys
    */
   handlePointerUp(event: PointerEvent) {
+    const isEditSuppressed = this.skipEditForPointerId !== null && this.skipEditForPointerId === event.pointerId;
+    if (isEditSuppressed) {
+      this.skipEditForPointerId = null;
+    }
+
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         const hasObjectsMoved = this._core.store.state.hasObjectsChanged;
         const selectionGroup = this._core.store.selectionGroup;
         const isAdditive = event.shiftKey || event.ctrlKey;
 
-        if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false && !isAdditive) {
+        if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false && !isAdditive && !isEditSuppressed) {
           selectionGroup.objects[0].edit(event);
         }
 
@@ -160,7 +171,7 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       const selectionGroup = this._core.store.selectionGroup;
       const isAdditive = event.shiftKey || event.ctrlKey;
 
-      if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false && !isAdditive) {
+      if (selectionGroup?.objects.length === 1 && hasObjectsMoved === false && !isAdditive && !isEditSuppressed) {
         selectionGroup.objects[0].edit(event);
       }
 
@@ -467,6 +478,29 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       }
     }
     this._previouslySelectedObjects.clear();
+  }
+
+  /**
+   * Toggles a top-level object in the local selection, creating the selection when none exists.
+   * Ancestor groups and their descendants never coexist in the result. Emits `objectsSelectionChange`.
+   * @param object - The top-level object or group to toggle
+   */
+  toggleObjectInSelection(object: KritzelBaseObject): void {
+    const existingGroup = this._core.store.selectionGroup;
+    if (!existingGroup) {
+      this._core.selectObjects([object]);
+      return;
+    }
+
+    existingGroup.addOrRemove(object);
+    this.removeDescendantsOfSelectedGroups(existingGroup);
+    if (existingGroup.objects.length === 0) {
+      this._core.removeSelectionGroup();
+      return;
+    }
+
+    void this._core.engine.triggerSelectionChange();
+    this._core.rerender();
   }
 
   /**

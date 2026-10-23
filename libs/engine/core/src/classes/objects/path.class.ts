@@ -1,4 +1,5 @@
 import { getStroke } from 'perfect-freehand';
+import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
@@ -11,7 +12,7 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
 /**
  * Configuration options for creating a KritzelPath instance.
  */
-export interface KritzelPathConfig {
+export interface KritzelPathConfig extends KritzelObjectCommonConfig {
   points?: number[][];
   translateX?: number;
   translateY?: number;
@@ -75,6 +76,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    */
   constructor(config?: KritzelPathConfig) {
     super();
+    this.applyCommonConfig(config);
     this.options = config;
     this.points = config?.points ?? [];
     this.translateX = config?.translateX ?? 0;

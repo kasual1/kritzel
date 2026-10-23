@@ -91,6 +91,12 @@ describe('KritzelTextTool', () => {
     (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockCore = {
+      objectTitlebarManager: {
+        config: undefined,
+        getOwnerFromEvent: jest.fn().mockReturnValue(null),
+        isControlEvent: jest.fn().mockReturnValue(false),
+        resetWarnings: jest.fn(),
+      },
       store: {
         get state() { return mockState; },
         get objects() { return mockState.objects; },
@@ -586,6 +592,41 @@ describe('KritzelTextTool', () => {
 
       expect(tool.fontFamily).toBe('Courier');
       expect(tool.fontSize).toBe(24);
+    });
+  });
+  // ============================================
+  // Object titlebar
+  // ============================================
+
+  describe('object titlebar', () => {
+    const startEditing = () => {
+      const activeText = Object.create(KritzelText.prototype);
+      activeText.save = jest.fn();
+      mockCore.store.activeText = activeText;
+      // setState is mocked, so install the selection tool the way the real store would
+      const selectionTool = { handlePointerDown: jest.fn() };
+      mockState.activeTool = selectionTool;
+      return selectionTool;
+    };
+
+    it('continues a titlebar press as select-and-drag after ending the edit', () => {
+      const selectionTool = startEditing();
+      mockCore.objectTitlebarManager.getOwnerFromEvent.mockReturnValue({ id: 'owner-1' });
+      const event = createMouseEvent();
+
+      tool.handlePointerDown(event);
+
+      expect(mockCore.resetActiveText).toHaveBeenCalled();
+      expect(selectionTool.handlePointerDown).toHaveBeenCalledWith(event);
+    });
+
+    it('only ends the edit for presses outside titlebars', () => {
+      const selectionTool = startEditing();
+
+      tool.handlePointerDown(createMouseEvent());
+
+      expect(mockCore.resetActiveText).toHaveBeenCalled();
+      expect(selectionTool.handlePointerDown).not.toHaveBeenCalled();
     });
   });
 });

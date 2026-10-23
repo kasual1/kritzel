@@ -12,6 +12,13 @@ export interface KritzelTheme {
 
   /** Global variables */
   global?: {
+    agenticCursorFontFamily?: string;
+    agenticCursorLabelFontSize?: string;
+    agenticCursorLabelTextColor?: string;
+    agenticCursorStatusBackgroundColor?: string;
+    agenticCursorStatusFontSize?: string;
+    agenticCursorStatusMaxWidth?: string;
+    agenticCursorStatusTextColor?: string;
     cursorTrailColor?: string;
     cursorTrailOpacity?: string;
     dividerColor?: string;
@@ -552,6 +559,43 @@ export interface KritzelTheme {
     suffixBackground?: string;
     suffixColor?: string;
     textColor?: string;
+  };
+
+  /** Titlebar variables */
+  titlebar?: {
+    activeBackgroundColor?: string;
+    activeBorder?: string;
+    activeBoxShadow?: string;
+    activeButtonFilledBackgroundColor?: string;
+    activeIconColor?: string;
+    activeMutedTextColor?: string;
+    activeTextColor?: string;
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    buttonBorderRadius?: string;
+    buttonFilledBackgroundColor?: string;
+    buttonFilledColor?: string;
+    buttonHoverBackgroundColor?: string;
+    buttonOutlineColor?: string;
+    buttonPressedBackgroundColor?: string;
+    buttonSize?: string;
+    focusRing?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    gap?: string;
+    height?: string;
+    hoverBackgroundColor?: string;
+    iconColor?: string;
+    iconSize?: string;
+    mutedTextColor?: string;
+    offset?: string;
+    paddingX?: string;
+    textColor?: string;
+    titleFontWeight?: string;
+    transition?: string;
   };
 
   /** Toolbar variables */

@@ -24,6 +24,8 @@ export interface KritzelObject<T = Element> {
   markedForRemoval: boolean;
   zIndex: number;
   userId?: string;
+  name?: string;
+  hasTitlebar?: boolean;
 
   isVisible: boolean;
   isSelected: boolean;
@@ -55,4 +57,12 @@ export interface KritzelObject<T = Element> {
   hitTest(x: number, y: number): boolean;
   hitTestPolygon(polygon: KritzelPolygon): boolean;
   updatePosition(x: number, y: number): void;
+}
+
+/** Options shared by all object configs. */
+export interface KritzelObjectCommonConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
+  /** Renders a titlebar above the object when the engine's `objectTitlebar` is configured. */
+  hasTitlebar?: boolean;
 }

@@ -111,9 +111,12 @@ export class KritzelContextMenuHandler extends KritzelBaseHandler {
       this._core.store.state.isSelecting = false;
     }
 
-    const hitObject = this._core.getObjectFromPointerEvent(event, '.object');
+    // A titlebar stands for its owner. Pressing the titlebar of an already selected object keeps a multi-selection.
+    const titlebarOwner = this._core.objectTitlebarManager.getOwnerFromEvent(event);
+    const isTitlebarOwnerSelected = !!titlebarOwner && !!this._core.store.selectionGroup?.objectIds.includes(titlebarOwner.id);
+    const hitObject = titlebarOwner ?? this._core.getObjectFromPointerEvent(event, '.object');
 
-    if (hitObject && !(hitObject instanceof KritzelSelectionGroup) && !(hitObject instanceof KritzelSelectionBox)) {
+    if (hitObject && !isTitlebarOwnerSelected && !(hitObject instanceof KritzelSelectionGroup) && !(hitObject instanceof KritzelSelectionBox)) {
       const selectedObject = this.resolveSelectableObject(hitObject);
       const selectionGroup = KritzelSelectionGroup.create(this._core);
       selectionGroup.addOrRemove(selectedObject);

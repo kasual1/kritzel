@@ -116,6 +116,12 @@ describe('KritzelContextMenuHandler', () => {
     };
 
     mockCore = {
+      objectTitlebarManager: {
+        config: undefined,
+        getOwnerFromEvent: jest.fn().mockReturnValue(null),
+        isControlEvent: jest.fn().mockReturnValue(false),
+        resetWarnings: jest.fn(),
+      },
       store: {
         get state() {
           return mockState;
@@ -654,6 +660,32 @@ describe('KritzelContextMenuHandler', () => {
       expect(selectionGroup.rotation).toBe(0.2);
       expect(object.isSelected).toBe(true);
       expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(selectionGroup);
+    });
+  });
+  describe('object titlebar', () => {
+    it('opens the object menu for the owner of a right-clicked titlebar', () => {
+      const owner = { id: 'owner-1', rotation: 0 };
+      const createdGroup = { addOrRemove: jest.fn(), isSelected: false, rotation: 0, objects: [] };
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
+      (mockCore.objectTitlebarManager.getOwnerFromEvent as jest.Mock).mockReturnValue(owner);
+
+      contextMenuHandler.handleContextMenu(createPointerEvent());
+
+      expect(mockCore.getObjectFromPointerEvent).not.toHaveBeenCalled();
+      expect(createdGroup.addOrRemove).toHaveBeenCalledWith(owner);
+      expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(createdGroup);
+    });
+
+    it('keeps a multi-selection that already contains the owner', () => {
+      const owner = { id: 'owner-1', rotation: 0 };
+      mockSelectionGroup = { objectIds: ['owner-1', 'other'], objects: [owner, { id: 'other' }] } as any;
+      (mockCore.objectTitlebarManager.getOwnerFromEvent as jest.Mock).mockReturnValue(owner);
+
+      contextMenuHandler.handleContextMenu(createPointerEvent());
+
+      expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
+      expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
+      expect(mockCore.addSelectionGroup).not.toHaveBeenCalled();
     });
   });
 });

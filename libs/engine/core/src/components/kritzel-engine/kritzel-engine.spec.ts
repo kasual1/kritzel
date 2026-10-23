@@ -93,6 +93,12 @@ describe('KritzelEngine', () => {
 
   /** Builds a fresh mock core for the engine to delegate to. */
   const createMockCore = () => ({
+    objectTitlebarManager: {
+      config: undefined,
+      getOwnerFromEvent: jest.fn().mockReturnValue(null),
+      isControlEvent: jest.fn().mockReturnValue(false),
+      resetWarnings: jest.fn(),
+    },
     setEditorId: jest.fn(),
     setUser: jest.fn(),
     setSyncConfig: jest.fn(),
@@ -616,6 +622,93 @@ describe('KritzelEngine', () => {
       engine.onObjectContextMenuItemsChange(objectItems);
 
       expect((engine as any).contextMenuHandler.objectContextMenuItems).toBe(objectItems);
+    });
+  });
+
+  describe('object titlebar', () => {
+    it('re-renders and resets warnings when objectTitlebar changes', () => {
+      engine.onObjectTitlebarChange();
+
+      expect(core.objectTitlebarManager.resetWarnings).toHaveBeenCalled();
+      expect(core.rerender).toHaveBeenCalled();
+    });
+
+    it('does not track pointers that start on titlebar controls', () => {
+      (core.objectTitlebarManager.isControlEvent as jest.Mock).mockReturnValue(true);
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+      const event = { pointerId: 3, composedPath: jest.fn().mockReturnValue([]) } as unknown as PointerEvent;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).not.toHaveBeenCalled();
+      expect(core.store.state.pointers.has(3)).toBe(false);
+      expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('does not run tool logic for cancelled pointers that were never tracked', () => {
+      const activeTool = { handlePointerUp: jest.fn() };
+      (engine.host as any).hasPointerCapture = jest.fn().mockReturnValue(false);
+      (engine.host as any).releasePointerCapture = jest.fn();
+      core.cursorManager.resetToDefault = jest.fn();
+      core.store.state.activeTool = activeTool;
+
+      engine.handlePointerCancel({ pointerId: 4 } as PointerEvent);
+
+      expect(activeTool.handlePointerUp).not.toHaveBeenCalled();
+      expect((engine.viewport as any).handlePointerUp).not.toHaveBeenCalled();
+    });
+
+    it('still finishes tracked pointers on cancel', () => {
+      const activeTool = { handlePointerUp: jest.fn() };
+      (engine.host as any).hasPointerCapture = jest.fn().mockReturnValue(false);
+      (engine.host as any).releasePointerCapture = jest.fn();
+      core.cursorManager.resetToDefault = jest.fn();
+      core.store.state.activeTool = activeTool;
+      core.store.state.pointers.set(4, {} as PointerEvent);
+      const event = { pointerId: 4 } as PointerEvent;
+
+      engine.handlePointerCancel(event);
+
+      expect(activeTool.handlePointerUp).toHaveBeenCalledWith(event);
+    });
+
+    it('leaves activation keys on titlebar controls to the focused control', () => {
+      (core.objectTitlebarManager.isControlEvent as jest.Mock).mockReturnValue(true);
+      const event = { key: 'Enter', composedPath: () => [engine.host] } as unknown as KeyboardEvent;
+
+      expect((engine as any).shouldHandleGlobalShortcutEvent(event)).toBe(false);
+    });
+
+    it('keeps other shortcuts working while a titlebar control has focus', () => {
+      (core.objectTitlebarManager.isControlEvent as jest.Mock).mockReturnValue(true);
+      const event = { key: 'Delete', composedPath: () => [engine.host] } as unknown as KeyboardEvent;
+
+      expect((engine as any).shouldHandleGlobalShortcutEvent(event)).toBe(true);
+    });
+
+    it('excludes titlebars from screenshots', async () => {
+      const { toPng } = jest.requireMock('html-to-image');
+      (toPng as jest.Mock).mockClear();
+
+      await engine.getScreenshot('png');
+
+      const { filter } = (toPng as jest.Mock).mock.calls[0][1];
+      const titlebarLayer = document.createElement('div');
+      titlebarLayer.classList.add('object-titlebar-layer');
+      expect(filter(titlebarLayer)).toBe(false);
+      expect(filter(document.createElement('div'))).toBe(true);
+    });
+
+    it('emits titlebar actions', () => {
+      (engine as any).objectTitlebarAction = { emit: jest.fn() };
+      const detail = { itemId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} } as any;
+
+      engine.emitObjectTitlebarAction(detail);
+
+      expect((engine as any).objectTitlebarAction.emit).toHaveBeenCalledWith(detail);
     });
   });
 

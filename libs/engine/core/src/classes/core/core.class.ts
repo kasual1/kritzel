@@ -22,6 +22,7 @@ import { KritzelLocalizationManager } from '../managers/localization.manager';
 import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
+import { KritzelObjectTitlebarManager } from '../managers/object-titlebar.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelZOrderHelper, KritzelZOrderItem, KritzelZOrderOperation } from '../../helpers/z-order.helper';
@@ -76,6 +77,8 @@ export class KritzelCore {
   private readonly _clipboardManager: KritzelClipboardManager;
   /** Manager for programmatically controlled (agentic) cursors */
   private readonly _agenticCursorManager: KritzelAgenticCursorManager;
+  /** Manager for titlebars rendered above objects */
+  private readonly _objectTitlebarManager: KritzelObjectTitlebarManager;
   /** Per-core registry of drawing tools (one instance per editor). */
   private readonly _toolRegistry: KritzelToolRegistry;
   /** Optional unique identifier for namespacing storage keys across multiple editor instances */
@@ -137,6 +140,14 @@ export class KritzelCore {
    */
   get localizationManager(): KritzelLocalizationManager {
     return this._localizationManager;
+  }
+
+  /**
+   * Gets the object titlebar manager.
+   * @returns The KritzelObjectTitlebarManager resolving titlebars rendered above objects
+   */
+  get objectTitlebarManager(): KritzelObjectTitlebarManager {
+    return this._objectTitlebarManager;
   }
 
   /**
@@ -224,6 +235,7 @@ export class KritzelCore {
     this._permissionManager = new KritzelBrowserPermissionManager(this);
     this._clipboardManager = new KritzelClipboardManager(this);
     this._agenticCursorManager = new KritzelAgenticCursorManager(this);
+    this._objectTitlebarManager = new KritzelObjectTitlebarManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();
     this._assetResolver.setShowInfo(this._store.state.debugInfo?.showAssetResolverInfo ?? false);

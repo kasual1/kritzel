@@ -13,6 +13,7 @@ import { KritzelLineTool } from '@kritzel/engine';
 import { KritzelTextTool } from '@kritzel/engine';
 import { KritzelShapeTool } from '@kritzel/engine';
 import { ContextMenuItem } from '@kritzel/engine';
+import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from '@kritzel/engine';
 import { DEFAULT_BRUSH_CONFIG } from '@kritzel/engine';
 import { DEFAULT_LINE_TOOL_CONFIG } from '@kritzel/engine';
 import { DEFAULT_TEXT_CONFIG } from '@kritzel/engine';
@@ -221,6 +222,12 @@ export class KritzelEditor {
     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },
   ];
 
+  /**
+   * Titlebar rendered above every object that has `hasTitlebar` set. The same configuration
+   * applies to all objects. Leave unset to disable titlebars.
+   */
+  @Prop() objectTitlebar?: KritzelObjectTitlebarConfig;
+
   @Prop() moreMenuItems?: IKritzelMenuItem[] = [
     {
       id: 'share',
@@ -323,6 +330,8 @@ export class KritzelEditor {
   @Event() chatStop!: EventEmitter<void>;
   /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
   @Event() agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
+  /** Emitted when a button in an object titlebar is clicked. */
+  @Event() objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
   @State() isEngineReady: boolean = false;
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
@@ -1344,6 +1353,11 @@ export class KritzelEditor {
     this.agenticCursorDetached.emit(event.detail);
   }
 
+  handleObjectTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+    event.stopPropagation();
+    this.objectTitlebarAction.emit(event.detail);
+  }
+
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
     event.stopPropagation();
     this.clearNotificationDismissAnimationTimer();
@@ -1806,6 +1820,7 @@ export class KritzelEditor {
             debugInfo={this.debugInfo}
             globalContextMenuItems={this.globalContextMenuItems}
             objectContextMenuItems={this.objectContextMenuItems}
+            objectTitlebar={this.objectTitlebar}
             tools={tools}
             onIsEngineReady={event => this.onEngineReady(event)}
             onWorkspacesChange={event => this.handleWorkspacesChange(event)}
@@ -1823,6 +1838,7 @@ export class KritzelEditor {
             onContextMenuStateChange={event => this.handleContextMenuStateChange(event)}
             onIsLoadingChange={event => this.handleIsLoadingChange(event)}
             onAgenticCursorDetached={event => this.handleAgenticCursorDetached(event)}
+            onObjectTitlebarAction={event => this.handleObjectTitlebarAction(event)}
           ></kritzel-engine>
 
           {this.isChatBoxVisible && (

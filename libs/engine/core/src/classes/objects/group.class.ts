@@ -1,4 +1,5 @@
 import { KritzelCore } from '../core/core.class';
+import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelClassHelper } from '../../helpers/class.helper';
@@ -7,7 +8,7 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 /**
  * Configuration options for creating a KritzelGroup instance.
  */
-export interface KritzelGroupConfig {
+export interface KritzelGroupConfig extends KritzelObjectCommonConfig {
   rotation?: number;
 }
 
@@ -28,6 +29,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     constructor(config?: KritzelGroupConfig) {
         super();
+        this.applyCommonConfig(config);
         this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     }
 
@@ -117,6 +119,11 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         objects.forEach(obj => {
             group.childIds.push(obj.id);
         });
+
+        // Children don't show their own titlebar while grouped, so the group takes it over
+        if (objects.some(obj => obj.hasTitlebar)) {
+            group.hasTitlebar = true;
+        }
 
         // Calculate bounding box from children
         group.refreshBoundingBox();
@@ -641,6 +648,8 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         copiedGroup.translateY = this.translateY;
         copiedGroup.width = this.width;
         copiedGroup.height = this.height;
+        copiedGroup.name = this.name;
+        copiedGroup.hasTitlebar = this.hasTitlebar;
 
         return copiedGroup;
     }

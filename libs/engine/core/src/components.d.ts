@@ -12,6 +12,7 @@ import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.int
 import { IKritzelUser } from "./interfaces/user.interface";
 import { KritzelToolDefinition } from "./interfaces/tool.interface";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
+import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from "./interfaces/object-titlebar.interface";
 import { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -42,6 +43,7 @@ export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.int
 export { IKritzelUser } from "./interfaces/user.interface";
 export { KritzelToolDefinition } from "./interfaces/tool.interface";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
+export { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from "./interfaces/object-titlebar.interface";
 export { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -440,6 +442,10 @@ export namespace Components {
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
+          * Titlebar rendered above every object that has `hasTitlebar` set. The same configuration applies to all objects. Leave unset to disable titlebars.
+         */
+        "objectTitlebar"?: KritzelObjectTitlebarConfig;
+        /**
           * Programmatically opens the context menu at a specified world-coordinate position. If `objectId` is provided and found, the object context menu is shown for that object. If no `objectId` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown.
           * @param options.x - The X position in world (canvas) coordinates.
           * @param options.y - The Y position in world (canvas) coordinates.
@@ -748,6 +754,7 @@ declare global {
         "contextMenuStateChange": KritzelContextMenuState;
         "isLoadingChange": boolean;
         "agenticCursorDetached": KritzelAgenticCursorDetachedEvent;
+        "objectTitlebarAction": KritzelObjectTitlebarActionEvent;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -886,6 +893,10 @@ declare namespace LocalJSX {
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
+          * Titlebar rendered above every object that has `hasTitlebar` set. The same configuration applies to all objects. Leave unset to disable titlebars.
+         */
+        "objectTitlebar"?: KritzelObjectTitlebarConfig;
+        /**
           * Emitted when the active drawing tool changes.
          */
         "onActiveToolChange"?: (event: KritzelEngineCustomEvent<KritzelBaseTool>) => void;
@@ -921,6 +932,10 @@ declare namespace LocalJSX {
           * Emitted when notifications change.
          */
         "onNotificationsChange"?: (event: KritzelEngineCustomEvent<KritzelNotification>) => void;
+        /**
+          * Emitted when a button in an object titlebar is clicked.
+         */
+        "onObjectTitlebarAction"?: (event: KritzelEngineCustomEvent<KritzelObjectTitlebarActionEvent>) => void;
         /**
           * Emitted when one or more objects are added to the canvas.
          */
