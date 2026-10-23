@@ -28,6 +28,7 @@ Handlers are typed as receiving `KritzelEditorCustomEvent<T>` (a `CustomEvent` s
 | `onIsPublicChange` | `IKritzelIsPublicChangeEvent` | Share-state of active workspace toggles |
 | `onAwarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `onLogin` / `onLogout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
+| `onObjectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`itemId`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked (also on the engine) — in addition to the item's own `action` |
 
 ## `<KritzelEngine>` event props
 
@@ -90,9 +91,26 @@ Use the granular triplet instead of `onObjectsChange` when maintaining your own 
 />
 ```
 
+## Titlebar button clicks
+
+With an `objectTitlebar` configured (see theming-and-context-menus.md), every button click emits `onObjectTitlebarAction`. Identify the button by `itemId` and the object by `objectId`; `anchorRect` is the button's client rect for anchoring a popover:
+
+```tsx
+async function onTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
+  const object = await editorRef.current?.getObjectById(detail.objectId);
+  setLastAction(`${detail.itemId} · ${object?.name ?? detail.objectType}`);
+}
+
+<KritzelEditor
+  ref={editorRef}
+  objectTitlebar={objectTitlebar}
+  onObjectTitlebarAction={event => void onTitlebarAction(event.detail)}
+/>
+```
+
 ## Import sources for event payload types
 
-All common payload types are re-exported by `@kritzel/react-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/react-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/react-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/react-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

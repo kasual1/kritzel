@@ -32,6 +32,7 @@ function onReady(event: Event) {
 | `@themeChange` | `ThemeName` | Theme switched (settings UI) |
 | `@viewportChange` | `KritzelViewportState` | Pan/zoom/resize |
 | `@activeWorkspaceChange` | `ActiveWorkspaceChangeEvent` | Active workspace switched — pair with the `:activeWorkspaceId` prop for controlled switching |
+| `@objectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`itemId`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked (also on the engine) — in addition to the item's own `action` |
 
 Collaboration/sharing extras (`@isPublicChange`, `@awarenessChange`, `@login`, `@logout`) also exist on the editor — see [workspaces-and-persistence.md](workspaces-and-persistence.md).
 
@@ -126,9 +127,33 @@ Use the granular triplet instead of `@objectsChange` when maintaining your own m
 
 (Or bind named handlers from `<script setup>` and cast inside, which keeps the template clean.)
 
+## Titlebar button clicks
+
+With an `:objectTitlebar` configured (see theming-and-context-menus.md), every button click emits `@objectTitlebarAction`. Identify the button by `itemId` and the object by `objectId`; `anchorRect` is the button's client rect for anchoring a popover:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { KritzelEditor, getEditorRef, type KritzelObjectTitlebarActionEvent } from '@kritzel/vue-editor'
+
+const editor = getEditorRef('editor')
+const lastAction = ref('')
+
+async function onTitlebarAction(event: Event) {
+  const { itemId, objectId, objectType } = (event as CustomEvent<KritzelObjectTitlebarActionEvent>).detail
+  const object = await editor.value?.getObjectById(objectId)
+  lastAction.value = `${itemId} · ${object?.name ?? objectType}`
+}
+</script>
+
+<template>
+  <KritzelEditor ref="editor" :objectTitlebar="objectTitlebar" @objectTitlebarAction="onTitlebarAction" />
+</template>
+```
+
 ## Import sources for event payload types
 
-All common payload types are re-exported by `@kritzel/vue-editor`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/vue-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/vue-editor`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/vue-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

@@ -350,3 +350,129 @@ interface KritzelAgenticCursorDetachedEvent {
   reason: 'object-removed' | 'manual';
 }
 ```
+
+## Object Titlebar Types
+
+Types used by the [`objectTitlebar` prop](./editor.md#object-titlebar). See [Titlebars](../customization/titlebars.md) for usage.
+
+### `KritzelObjectTitlebarConfig`
+
+Passed to the `objectTitlebar` prop. The same configuration applies to every object that has `hasTitlebar` set.
+
+```ts
+interface KritzelObjectTitlebarConfig {
+  left?: KritzelTitlebarItem[];   // defaults to [{ id: 'title', type: 'title' }]
+  center?: KritzelTitlebarItem[];
+  right?: KritzelTitlebarItem[];
+  visibility?: 'always' | 'active';
+  rotation?: 'follow' | 'upright';
+  title?: (object: KritzelBaseObject) => string | undefined;
+  draggable?: boolean;            // defaults to true
+  hideBelowWidth?: number;        // screen pixels, defaults to 40
+}
+```
+
+`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title.
+
+### `KritzelTitlebarItem`
+
+```ts
+type KritzelTitlebarItem =
+  | KritzelTitlebarTitleItem
+  | KritzelTitlebarTextItem
+  | KritzelTitlebarIconItem
+  | KritzelTitlebarButtonItem
+  | KritzelTitlebarSpacerItem;
+
+// Options shared by every item (internal, not exported)
+interface KritzelTitlebarItemBase {
+  id: string;
+  isVisible?: KritzelTitlebarValue<boolean>;
+  showWhen?: 'always' | 'active' | 'inactive';
+  minBarWidth?: number;
+  part?: string;
+}
+
+interface KritzelTitlebarTitleItem extends KritzelTitlebarItemBase {
+  type: 'title';
+  text?: KritzelTitlebarValue<string>;
+}
+
+interface KritzelTitlebarTextItem extends KritzelTitlebarItemBase {
+  type: 'text';
+  text: KritzelTitlebarValue<string>;
+  tone?: 'default' | 'muted' | 'strong';
+}
+
+interface KritzelTitlebarIconItem extends KritzelTitlebarItemBase {
+  type: 'icon';
+  icon: KritzelTitlebarValue<KritzelIconName>;
+}
+
+interface KritzelTitlebarButtonItem extends KritzelTitlebarItemBase {
+  type: 'button';
+  icon?: KritzelTitlebarValue<KritzelIconName>;
+  label?: KritzelTermKey | string;
+  tooltip?: KritzelTermKey | string;
+  variant?: 'ghost' | 'filled' | 'outlined';
+  isDisabled?: KritzelTitlebarValue<boolean>;
+  isPressed?: KritzelTitlebarValue<boolean>;
+  action?: (context: KritzelObjectTitlebarContext, event: MouseEvent) => void;
+}
+
+interface KritzelTitlebarSpacerItem extends KritzelTitlebarItemBase {
+  type: 'spacer' | 'separator';
+}
+```
+
+### `KritzelTitlebarValue`
+
+A static value or a function that resolves it from the titlebar context. Functions are evaluated synchronously on every render; promises are not supported.
+
+```ts
+type KritzelTitlebarValue<T> = T | ((context: KritzelObjectTitlebarContext) => T);
+```
+
+### `KritzelObjectTitlebarContext`
+
+Passed to dynamic item values and button `action` callbacks.
+
+```ts
+interface KritzelObjectTitlebarContext {
+  object: KritzelBaseObject;
+  objectType: string;
+  children: KritzelBaseObject[];
+  isActive: boolean;
+  title: string;
+  size: { width: number; height: number };        // world units, including padding
+  contentSize: { width: number; height: number }; // the object's own width and height
+  barWidth: number;                                // screen pixels
+  t: (key: KritzelTermKey | string, vars?: KritzelTermVars) => string;
+}
+```
+
+### `KritzelObjectTitlebarActionEvent`
+
+Emitted by the `objectTitlebarAction` event.
+
+```ts
+interface KritzelObjectTitlebarActionEvent {
+  itemId: string;
+  section: 'left' | 'center' | 'right';
+  objectId: string;
+  objectType: string;
+  workspaceId: string;
+  anchorRect: DOMRect;
+}
+```
+
+### `KritzelObjectCommonConfig`
+
+Options accepted by the constructor of every object.
+
+```ts
+interface KritzelObjectCommonConfig {
+  name?: string;
+  hasTitlebar?: boolean;
+}
+```

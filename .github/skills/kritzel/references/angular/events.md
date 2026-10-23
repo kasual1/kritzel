@@ -32,6 +32,7 @@ onObjectsChange(e: CustomEvent<KritzelBaseObject[]>) {
 | `isPublicChange` | `IKritzelIsPublicChangeEvent` | Share-state of active workspace toggles |
 | `awarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `login` / `logout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
+| `objectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`itemId`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked (also on the engine) — in addition to the item's own `action` |
 
 ## `<kritzel-engine>` events
 
@@ -101,9 +102,27 @@ onRemoved(e: CustomEvent<ObjectsRemovedEvent>) { this.tree.remove(e.detail.objec
 onUpdated(e: CustomEvent<ObjectsUpdatedEvent>) { this.tree.update(e.detail.objects); }
 ```
 
+## Titlebar button clicks
+
+With an `[objectTitlebar]` configured (see theming-and-context-menus.md), every button click emits `(objectTitlebarAction)`. Identify the button by `itemId` and the object by `objectId`; `anchorRect` is the button's client rect for anchoring a popover:
+
+```html
+<kritzel-editor [objectTitlebar]="objectTitlebar" (objectTitlebarAction)="onTitlebarAction($event)"></kritzel-editor>
+```
+
+```ts
+async onTitlebarAction(e: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+  const { itemId, objectId, objectType } = e.detail;
+  const object = await this.editor.getObjectById(objectId);
+  this.lastAction.set(`${itemId} · ${object?.name ?? objectType}`);
+}
+```
+
+The output runs inside the Angular zone. A button's `action` callback on the config does not (the proxies set inputs outside `NgZone`), so update state from the output, or wrap work in `action` with `this.ngZone.run(() => …)`.
+
 ## Import sources for event payload types
 
-All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

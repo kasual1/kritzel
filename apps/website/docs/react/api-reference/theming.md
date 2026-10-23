@@ -417,6 +417,46 @@ export function BrandedEditor() {
 | suffixColor | #666666 | #aaaaaa |
 | textColor | #333333 | #e0e0e0 |
 
+## Titlebar
+
+Applies to [object titlebars](../customization/titlebars.md). `height` and `offset` must be pixel values.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| activeBackgroundColor | rgba(0, 122, 255, 0.12) | rgba(10, 132, 255, 0.22) |
+| activeBorder | none | none |
+| activeBoxShadow | none | none |
+| activeButtonFilledBackgroundColor | #007aff | #0a84ff |
+| activeIconColor | #007aff | #4da3ff |
+| activeMutedTextColor | rgba(0, 122, 255, 0.6) | rgba(77, 163, 255, 0.6) |
+| activeTextColor | #007aff | #4da3ff |
+| backgroundColor | rgba(0, 0, 0, 0.05) | rgba(255, 255, 255, 0.06) |
+| border | none | none |
+| borderRadius | 8px | 8px |
+| boxShadow | none | none |
+| buttonBorderRadius | 6px | 6px |
+| buttonFilledBackgroundColor | #8e8e93 | #636366 |
+| buttonFilledColor | #ffffff | #ffffff |
+| buttonHoverBackgroundColor | rgba(0, 0, 0, 0.06) | rgba(255, 255, 255, 0.08) |
+| buttonOutlineColor | currentColor | currentColor |
+| buttonPressedBackgroundColor | rgba(0, 0, 0, 0.1) | rgba(255, 255, 255, 0.14) |
+| buttonSize | 22px | 22px |
+| focusRing | 2px solid #007aff | 2px solid #4da3ff |
+| fontFamily | var(--kritzel-global-font-family, sans-serif) | var(--kritzel-global-font-family, sans-serif) |
+| fontSize | 12px | 12px |
+| fontWeight | 400 | 400 |
+| gap | 4px | 4px |
+| height | 28px | 28px |
+| hoverBackgroundColor | rgba(0, 0, 0, 0.07) | rgba(255, 255, 255, 0.09) |
+| iconColor | #6b6b6b | #a0a0a0 |
+| iconSize | 16px | 16px |
+| mutedTextColor | #9a9a9a | #7a7a7a |
+| offset | 6px | 6px |
+| paddingX | 6px | 6px |
+| textColor | #5f5f5f | #b0b0b0 |
+| titleFontWeight | 600 | 600 |
+| transition | background-color 120ms ease, color 120ms ease | background-color 120ms ease, color 120ms ease |
+
 ## Toolbar
 
 | Property | Light default | Dark default |

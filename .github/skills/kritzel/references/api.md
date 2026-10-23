@@ -1,6 +1,6 @@
 # Kritzel component API
 
-Source version: @kritzel/engine and @kritzel/editor 0.5.8.
+Source version: @kritzel/engine and @kritzel/editor 0.5.10.
 
 Generated from Stencil docs JSON. For framework bindings, use the matching setup and events references.
 
@@ -24,6 +24,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | locales | KritzelLocale[] |  | An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty. |
 | lockDrawingScale | boolean |  | When true, objects are drawn at a fixed visual size regardless of zoom level |
 | objectContextMenuItems | ContextMenuItem[] |  | Context menu items shown when right-clicking a selected object. |
+| objectTitlebar | KritzelObjectTitlebarConfig |  | Titlebar rendered above every object that has \`hasTitlebar\` set. The same configuration applies to all objects. Leave unset to disable titlebars. |
 | scaleMax | number |  | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine. |
 | scaleMin | number |  | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine. |
 | syncConfig | KritzelSyncConfig |  | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket). |
@@ -41,6 +42,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 
 | Name | Signature | Description |
 | --- | --- | --- |
+| addAgenticCursor | addAgenticCursor(options?: KritzelAgenticCursorOptions) => Promise<KritzelAgenticCursor> | Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only. |
 | addObject | addObject<T extends KritzelBaseObject>(object: T) => Promise<T \| null> | Adds a new object to the canvas. The object will be assigned an ID, core reference, and z-index automatically. |
 | addObjects | addObjects<T extends KritzelBaseObject>(objects: T[]) => Promise<T[]> | Adds multiple objects to the canvas in a single batch operation. All objects are inserted within one Yjs transaction (single undo step), triggering only one rerender cycle. Intended for programmatic streaming scenarios where per-object overhead would cause stutter. |
 | alignObjects | alignObjects(alignment: KritzelAlignment) => Promise<void> | Aligns the currently selected objects according to the specified alignment. |
@@ -53,6 +55,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | centerAllObjects | centerAllObjects(animate?: boolean) => Promise<boolean> | Pans and zooms the viewport to fit ALL objects on the canvas, including those not currently rendered. Calculates the combined bounding box of all objects and centers the viewport to show them. |
 | centerObjectInViewport | centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement \| SVGElement>> | Pans and zooms the viewport to center on the given object. |
 | centerObjects | centerObjects(objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean> | Pans and zooms the viewport to fit the provided objects. Calculates the combined bounding box of the given objects and centers the viewport to show them. |
+| clearAgenticCursors | clearAgenticCursors() => Promise<void> | Removes all agentic cursors. |
 | clearSelection | clearSelection() => Promise<void> | Deselects all currently selected objects. |
 | configureLocales | configureLocales(locales?: KritzelLocale[]) => Promise<void> | Declaratively configures the full locale catalog, replacing the available locale set. Pass \`undefined\` to restore the built-in locales (en/de/fr). |
 | copy | copy() => Promise<void> | Copies the currently selected objects to the internal clipboard. |
@@ -60,6 +63,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | cut | cut() => Promise<void> | Cuts the currently selected objects to the internal clipboard (deletes them from the canvas). |
 | delete | delete() => Promise<void> | Deletes the currently selected objects from the canvas. |
 | deleteWorkspace | deleteWorkspace(workspace: KritzelWorkspace) => Promise<void> | Deletes a workspace and emits a \`workspacesChange\` event. |
+| detachAgenticCursor | detachAgenticCursor(id: string) => Promise<void> | Detaches an agentic cursor from its object. The cursor stays at its current position. |
 | disable | disable() => Promise<void> | Disables all user interaction with the engine (pointer, keyboard, etc.). |
 | downloadAsJson | downloadAsJson(filename?: string) => Promise<void> | Exports the current workspace as a JSON file and triggers a browser download. |
 | enable | enable() => Promise<void> | Re-enables user interaction after a call to \`disable()\`. |
@@ -70,6 +74,8 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | exportViewportAsSvg | exportViewportAsSvg() => Promise<void> | Exports the current viewport as an SVG file and triggers a browser download. |
 | findObjects | findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]> | Returns all objects that match the given predicate function. Excludes internal selection-related objects (selection groups and selection boxes). |
 | getActiveWorkspace | getActiveWorkspace() => Promise<KritzelWorkspace> | Returns the currently active workspace. |
+| getAgenticCursor | getAgenticCursor(id: string) => Promise<KritzelAgenticCursor \| null> | Returns a snapshot of an agentic cursor. |
+| getAgenticCursors | getAgenticCursors() => Promise<KritzelAgenticCursor[]> | Returns snapshots of all agentic cursors. |
 | getAllObjects | getAllObjects<T extends KritzelBaseObject>() => Promise<T[]> | Returns all objects on the canvas across all layers. |
 | getAvailableLocaleOptions | getAvailableLocaleOptions() => Promise<{ code: LocaleCode; label: string; }[]> | Gets the list of available locales as \`{ code, label }\` options for a selector. |
 | getAvailableLocales | getAvailableLocales() => Promise<LocaleCode[]> | Gets the list of available locale codes (built-in and registered). |
@@ -93,6 +99,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | loadObjectsFromJson | loadObjectsFromJson(json: string) => Promise<number> | Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready. |
 | loadSettings | loadSettings() => Promise<Partial<KritzelSettingsConfig> \| null> | Loads the persisted settings object from localStorage. |
 | loadSharedWorkspace | loadSharedWorkspace(token: string) => Promise<void> | Loads a shared workspace by token. If the workspace exists locally, it switches to it. If it doesn't exist, it adds it to the local workspaces list and then switches to it. |
+| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult> | Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards. |
 | openContextMenu | openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void> | Programmatically opens the context menu at a specified world-coordinate position. If \`objectId\` is provided and found, the object context menu is shown for that object. If no \`objectId\` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown. |
 | panTo | panTo(x: number, y: number) => Promise<void> | Pans the viewport to center on the given world coordinates without changing the scale. |
 | panToObject | panToObject(object: KritzelBaseObject) => Promise<void> | Pans the viewport to center on the given object without changing the zoom level. Unlike \`centerObjectInViewport\`, this moves the camera — not the object. |
@@ -101,6 +108,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | registerLocales | registerLocales(locales: KritzelLocale[]) => Promise<void> | Registers additional locale definitions (with optional partial term overrides). |
 | registerTool | registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig \| KritzelBrushToolConfig \| KritzelLineToolConfig \| KritzelShapeToolConfig) => Promise<KritzelBaseTool \| null> | Registers a new drawing tool with the engine. |
 | reinitSync | reinitSync() => Promise<void> | Reinitializes sync by performing a full teardown and re-initialization. Destroys the current Yjs documents and providers, then rebuilds everything from the current syncConfig. Data reloads from IndexedDB nearly instantly. Call this after updating the syncConfig prop (e.g. after authentication state changes). |
+| removeAgenticCursor | removeAgenticCursor(id: string) => Promise<boolean> | Removes an agentic cursor. A running move resolves with \`completed: false\`. |
 | removeObject | removeObject<T extends KritzelBaseObject>(object: T) => Promise<T \| null> | Removes an object from the canvas. |
 | removeObjects | removeObjects<T extends KritzelBaseObject>(objects: T[]) => Promise<T[]> | Removes multiple objects from the canvas in a single batch operation. All removals happen within one Yjs transaction (single undo step), triggering only one rerender cycle. Intended for programmatic streaming scenarios where per-object overhead would cause stutter. |
 | saveSettings | saveSettings(settings: KritzelSettingsConfig) => Promise<void> | Persists the given settings object to localStorage using the namespaced storage key. |
@@ -117,6 +125,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | triggerSelectionChange | triggerSelectionChange() => Promise<void> | Manually triggers the \`objectsSelectionChange\` event. |
 | undo | undo() => Promise<void> | Undoes the last action. |
 | ungroup | ungroup() => Promise<void> | Ungroups the selected groups. Their children become individual objects again and keep their stacking order. |
+| updateAgenticCursor | updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor> | Updates the name, color, status or visibility of an agentic cursor. |
 | updateObject | updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T \| null> | Updates properties of an existing canvas object. |
 | updateWorkspace | updateWorkspace(workspace: KritzelWorkspace) => Promise<void> | Applies a workspace as declared and emits a \`workspacesChange\` event. Metadata and viewport are always applied. When \`workspace.objects\` is set it is treated as the complete desired object set (\`undefined\` leaves objects untouched, \`[]\` removes them all); updating objects of a non-active workspace requires a configured sync provider. |
 | worldToScreen | worldToScreen(x: number, y: number) => Promise<{ x: number; y: number; }> | Converts world coordinates to screen-relative pixel coordinates. |
@@ -130,6 +139,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | --- | --- | --- |
 | activeToolChange | KritzelBaseTool | Emitted when the active drawing tool changes. |
 | activeWorkspaceChange | KritzelWorkspace | Emitted when the active workspace changes (e.g., after import). |
+| agenticCursorDetached | KritzelAgenticCursorDetachedEvent | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. |
 | awarenessChange | Map<number, Record<string, any>> | Emitted when the awareness state changes (remote user cursors, presence). |
 | contextMenuStateChange | KritzelContextMenuState | Emitted when context-menu visibility, items, or position changes. |
 | isEngineReady | KritzelEngineState | Emitted when the engine has fully initialized and is ready for interaction. |
@@ -142,6 +152,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. |
 | objectsSelectionChange | KritzelBaseObject<HTMLElement \| SVGElement>[] | Emitted when the set of selected objects changes. |
 | objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. |
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked. |
 | undoStateChange | KritzelUndoState | Emitted when the undo/redo state changes, providing current undo availability. |
 | viewportChange | KritzelViewportState | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). |
 | workspacesChange | KritzelWorkspace[] | Emitted when workspaces are created, updated, or deleted. |
@@ -155,13 +166,15 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | activeUsers | IKritzelUser[] |  |  |
 | activeWorkspaceId | string |  | Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. |
 | assetStorageConfig | KritzelAssetStorageConfig |  |  |
+| chatBoxMode | "collapsed" \| "expanded" |  | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
 | cursorTarget | HTMLElement |  | The element to use as the target for the cursor. Defaults to the editor container if not set. |
 | customFonts | { [x: string]: KritzelFontRegistration; } |  | Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts. |
-| customSvgIcons | Partial<Record<"info" \| "type" \| "image" \| "download" \| "command" \| "cursor" \| "x" \| "copy" \| "eraser" \| "pen" \| "arrow" \| "arrowUpFromDot" \| "arrowDownFromDot" \| "highlighter" \| "shapes" \| "shapeRectangle" \| "shapeEllipse" \| "shapeTriangle" \| "imageOff" \| "chevronDown" \| "chevronUp" \| "chevronLeft" \| "chevronRight" \| "chevronsLeft" \| "paste" \| "cut" \| "delete" \| "bringToFront" \| "sendToBack" \| "selectAll" \| "upload" \| "undo" \| "redo" \| "plus" \| "minus" \| "ellipsisVertical" \| "check" \| "group" \| "ungroup" \| "moveVertical" \| "hand" \| "handGrab" \| "mousePointer" \| "pointer" \| "settings" \| "share" \| "palette" \| "ordering" \| "layoutTemplate" \| "align" \| "alignStartHorizontal" \| "alignCenterHorizontal" \| "alignEndHorizontal" \| "alignStartVertical" \| "alignCenterVertical" \| "alignEndVertical" \| "viewport" \| "logOut" \| "usersRound" \| "google" \| "facebook" \| "github" \| "braces" \| "heart", string>> & Record<string, string> |  |  |
+| customSvgIcons | Partial<Record<"info" \| "type" \| "image" \| "download" \| "command" \| "cursor" \| "square" \| "x" \| "copy" \| "eraser" \| "arrowUp" \| "pen" \| "arrow" \| "arrowUpFromDot" \| "arrowDownFromDot" \| "highlighter" \| "shapes" \| "shapeRectangle" \| "shapeEllipse" \| "shapeTriangle" \| "imageOff" \| "chevronDown" \| "chevronUp" \| "chevronLeft" \| "chevronRight" \| "chevronsLeft" \| "paste" \| "cut" \| "delete" \| "bringToFront" \| "sendToBack" \| "selectAll" \| "upload" \| "undo" \| "redo" \| "plus" \| "play" \| "minus" \| "ellipsisVertical" \| "check" \| "group" \| "ungroup" \| "moveVertical" \| "hand" \| "handGrab" \| "mousePointer" \| "pointer" \| "settings" \| "share" \| "palette" \| "ordering" \| "layoutTemplate" \| "align" \| "alignStartHorizontal" \| "alignCenterHorizontal" \| "alignEndHorizontal" \| "alignStartVertical" \| "alignCenterVertical" \| "alignEndVertical" \| "viewport" \| "logOut" \| "usersRound" \| "google" \| "facebook" \| "github" \| "braces" \| "heart", string>> & Record<string, string> |  |  |
 | debugInfo | KritzelDebugInfo |  |  |
 | editorId | string |  | Optional unique identifier for namespacing storage keys across multiple editor instances. |
 | fallbackLocale | "de" \| "en" \| "fr" \| string & {} |  | The locale used to resolve terms missing from the active locale. |
 | globalContextMenuItems | ContextMenuItem[] |  |  |
+| isChatBoxVisible | boolean |  |  |
 | isMoreMenuVisible | boolean |  |  |
 | isPanningEnabled | boolean |  |  |
 | isToolbarVisible | boolean |  |  |
@@ -176,6 +189,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | loginConfig | KritzelLoginConfig |  | Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. |
 | moreMenuItems | IKritzelMenuItem<any>[] |  |  |
 | objectContextMenuItems | ContextMenuItem[] |  |  |
+| objectTitlebar | KritzelObjectTitlebarConfig |  | Titlebar rendered above every object that has \`hasTitlebar\` set. The same configuration applies to all objects. Leave unset to disable titlebars. |
 | scaleMax | number |  |  |
 | scaleMin | number |  |  |
 | syncConfig | KritzelSyncConfig |  |  |
@@ -193,6 +207,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 
 | Name | Signature | Description |
 | --- | --- | --- |
+| addAgenticCursor | addAgenticCursor(options?: KritzelAgenticCursorOptions) => Promise<KritzelAgenticCursor> | Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only. |
 | addObject | addObject<T extends KritzelBaseObject>(object: T) => Promise<T \| null> |  |
 | addObjects | addObjects<T extends KritzelBaseObject>(objects: T[]) => Promise<T[]> |  |
 | alignObjects | alignObjects(alignment: KritzelAlignment) => Promise<void> |  |
@@ -204,6 +219,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | centerAllObjects | centerAllObjects(animate?: boolean) => Promise<boolean> |  |
 | centerObjectInViewport | centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement \| SVGElement>> |  |
 | centerObjects | centerObjects(objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean> |  |
+| clearAgenticCursors | clearAgenticCursors() => Promise<void> | Removes all agentic cursors. |
 | clearSelection | clearSelection() => Promise<void> |  |
 | closeExportDialog | closeExportDialog() => Promise<void> |  |
 | closeImportDialog | closeImportDialog() => Promise<void> |  |
@@ -218,6 +234,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | cut | cut() => Promise<void> |  |
 | delete | delete() => Promise<void> |  |
 | deleteWorkspace | deleteWorkspace(workspace: KritzelWorkspace) => Promise<void> |  |
+| detachAgenticCursor | detachAgenticCursor(id: string) => Promise<void> | Detaches an agentic cursor from its object. The cursor stays at its current position. |
 | disable | disable() => Promise<void> |  |
 | downloadAsJson | downloadAsJson(filename?: string) => Promise<void> |  |
 | enable | enable() => Promise<void> |  |
@@ -228,6 +245,8 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | exportViewportAsSvg | exportViewportAsSvg() => Promise<void> |  |
 | findObjects | findObjects<T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]> |  |
 | getActiveWorkspace | getActiveWorkspace() => Promise<KritzelWorkspace> |  |
+| getAgenticCursor | getAgenticCursor(id: string) => Promise<KritzelAgenticCursor \| null> | Returns a snapshot of an agentic cursor. |
+| getAgenticCursors | getAgenticCursors() => Promise<KritzelAgenticCursor[]> | Returns snapshots of all agentic cursors. |
 | getAllObjects | getAllObjects<T extends KritzelBaseObject>() => Promise<T[]> |  |
 | getAvailableLocales | getAvailableLocales() => Promise<LocaleCode[]> | Gets the list of available locale codes (built-in and registered). |
 | getDisplayableShortcuts | getDisplayableShortcuts() => Promise<Omit<KritzelShortcut, "action" \| "condition">[]> |  |
@@ -246,6 +265,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | importFromJson | importFromJson(json: string) => Promise<void> |  |
 | loadObjectsFromJson | loadObjectsFromJson(json: string) => Promise<number> |  |
 | loadSharedWorkspace | loadSharedWorkspace(token: string) => Promise<void> |  |
+| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult> | Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards. |
 | openContextMenu | openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void> |  |
 | openExportDialog | openExportDialog() => Promise<void> |  |
 | openImportDialog | openImportDialog() => Promise<void> |  |
@@ -263,6 +283,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | registerLocales | registerLocales(locales: KritzelLocale[]) => Promise<void> | Registers additional locale definitions (with optional partial term overrides). |
 | registerTool | registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig \| KritzelBrushToolConfig \| KritzelLineToolConfig \| KritzelShapeToolConfig) => Promise<KritzelBaseTool \| null> |  |
 | reinitSync | reinitSync() => Promise<void> |  |
+| removeAgenticCursor | removeAgenticCursor(id: string) => Promise<boolean> | Removes an agentic cursor. A running move resolves with \`completed: false\`. |
 | removeObject | removeObject<T extends KritzelBaseObject>(object: T) => Promise<T \| null> |  |
 | removeObjects | removeObjects<T extends KritzelBaseObject>(objects: T[]) => Promise<T[]> |  |
 | screenToWorld | screenToWorld(x: number, y: number) => Promise<{ x: number; y: number; }> |  |
@@ -280,6 +301,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | triggerSelectionChange | triggerSelectionChange() => Promise<void> |  |
 | undo | undo() => Promise<void> |  |
 | ungroup | ungroup() => Promise<void> |  |
+| updateAgenticCursor | updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor> | Updates the name, color, status or visibility of an agentic cursor. |
 | updateObject | updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T \| null> |  |
 | updateWorkspace | updateWorkspace(workspace: KritzelWorkspace) => Promise<void> |  |
 | worldToScreen | worldToScreen(x: number, y: number) => Promise<{ x: number; y: number; }> |  |
@@ -292,7 +314,10 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | Name | Detail | Description |
 | --- | --- | --- |
 | activeWorkspaceChange | ActiveWorkspaceChangeEvent |  |
+| agenticCursorDetached | KritzelAgenticCursorDetachedEvent | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. |
 | awarenessChange | Map<number, Record<string, any>> |  |
+| chatStop | void | Emitted when the user stops the current chat response. |
+| chatSubmit | string | Emitted with the chat box text when the user submits it. |
 | isPublicChange | IKritzelIsPublicChangeEvent |  |
 | isReady | EditorIsReadyEvent |  |
 | localeChange | "de" \| "en" \| "fr" \| string & {} |  |
@@ -303,6 +328,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | objectsRemoved | ObjectsRemovedEvent |  |
 | objectsSelectionChange | KritzelBaseObject<HTMLElement \| SVGElement>[] |  |
 | objectsUpdated | ObjectsUpdatedEvent |  |
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked. |
 | themeChange | "dark" \| "light" \| string & {} |  |
 | undoStateChange | KritzelUndoState |  |
 | viewportChange | KritzelViewportState |  |

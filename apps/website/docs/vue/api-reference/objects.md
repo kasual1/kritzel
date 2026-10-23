@@ -35,6 +35,8 @@ Abstract base class for every object that can be placed on the canvas. All other
 | resizing | boolean | false | Whether the object is currently being resized |
 | markedForRemoval | boolean | false | Whether the object is pending removal |
 | userId | string | — | ID of the user who created the object |
+| name | string | — | User-facing name, shown as the title of the object's titlebar. Persisted and synced |
+| hasTitlebar | boolean | — | Whether a titlebar is rendered above the object when `objectTitlebar` is configured. Persisted and synced |
 | isVisible | boolean | true | Visibility flag |
 | isSelected | boolean | false | Whether the object is selected |
 | isHovered | boolean | false | Whether the object is hovered |
@@ -57,6 +59,21 @@ Abstract base class for every object that can be placed on the canvas. All other
 | rotatedPolygon | KritzelPolygon | Four corners of the rotated rectangle |
 | transformationMatrix | DOMMatrix | Full transformation matrix |
 | rotationDegrees | number | Rotation converted to degrees |
+
+### Common Constructor Options
+
+Every object config, such as `KritzelShapeConfig` or `KritzelTextConfig`, extends `KritzelObjectCommonConfig`. Its options can be passed to the constructor of any object.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| name | string | User-facing name, shown as the title of the object's titlebar |
+| hasTitlebar | boolean | Renders a titlebar above the object when `objectTitlebar` is configured |
+
+```ts
+const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop', hasTitlebar: true });
+```
+
+See [Titlebars](../customization/titlebars.md) for details.
 
 ### Methods
 

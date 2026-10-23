@@ -193,6 +193,12 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 |----------|---------------|--------------|
 | selectionBackground | #4A7DFF | #5B8CFF |
 
+## Titlebar
+
+Applies to [object titlebars](../customization/titlebars.md). `height` and `offset` must be pixel values.
+
+`activeBackgroundColor`, `activeBorder`, `activeBoxShadow`, `activeButtonFilledBackgroundColor`, `activeIconColor`, `activeMutedTextColor`, `activeTextColor`, `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `buttonBorderRadius`, `buttonFilledBackgroundColor`, `buttonFilledColor`, `buttonHoverBackgroundColor`, `buttonOutlineColor`, `buttonPressedBackgroundColor`, `buttonSize`, `focusRing`, `fontFamily`, `fontSize`, `fontWeight`, `gap`, `height`, `hoverBackgroundColor`, `iconColor`, `iconSize`, `mutedTextColor`, `offset`, `paddingX`, `textColor`, `titleFontWeight`, `transition`.
+
 ## Toolbar
 
 `backgroundColor`, `border`, `boxShadow`, `controlActiveBackgroundColor`, `controlColor`, `controlHoverBackgroundColor`, `controlSelectedBackgroundColor`, `controlSelectedColor`, `separatorColor`.

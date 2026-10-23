@@ -1,8 +1,8 @@
 ---
 name: kritzel
-description: 'Integrate the Kritzel infinite canvas (kritzel-editor or kritzel-engine) in Angular, React, or Vue. Use when installing @kritzel/angular-editor, @kritzel/react-editor, or @kritzel/vue-editor; adding a whiteboard or drawing canvas; creating objects; controlling the viewport; registering tools; configuring themes, workspaces, persistence, or collaboration.'
+description: 'Integrate the Kritzel infinite canvas (kritzel-editor or kritzel-engine) in Angular, React, or Vue. Use when installing @kritzel/angular-editor, @kritzel/react-editor, or @kritzel/vue-editor; adding a whiteboard or drawing canvas; creating objects; controlling the viewport; registering tools; configuring themes, object titlebars, workspaces, persistence, or collaboration.'
 metadata:
-  kritzel-version: '0.5.8'
+  kritzel-version: '0.5.10'
 ---
 
 # Kritzel
@@ -29,10 +29,10 @@ Use these demo areas as good examples for the corresponding task:
 | Start an editor and seed objects | [Getting started](../../../apps/demos/angular/src/app/pages/getting-started/) | [Getting started](../../../apps/demos/react/src/pages/getting-started/) | [Getting started](../../../apps/demos/vue/src/pages/getting-started/) |
 | Controls, objects, tools, viewport, workspaces and persistence | [Fundamentals](../../../apps/demos/angular/src/app/pages/fundamentals/) | [Fundamentals](../../../apps/demos/react/src/pages/fundamentals/) | [Fundamentals](../../../apps/demos/vue/src/pages/fundamentals/) |
 | Collaboration, dynamic objects, import/export and user management | [Advanced](../../../apps/demos/angular/src/app/pages/advanced/) | [Advanced](../../../apps/demos/react/src/pages/advanced/) | [Advanced](../../../apps/demos/vue/src/pages/advanced/) |
-| Themes, fonts, icons and localization | [Customization](../../../apps/demos/angular/src/app/pages/customization/) | [Customization](../../../apps/demos/react/src/pages/customization/) | [Customization](../../../apps/demos/vue/src/pages/customization/) |
+| Themes, fonts, icons, localization and object titlebars | [Customization](../../../apps/demos/angular/src/app/pages/customization/) | [Customization](../../../apps/demos/react/src/pages/customization/) | [Customization](../../../apps/demos/vue/src/pages/customization/) |
 | Complete product-style integrations | [Examples](../../../apps/demos/angular/src/app/pages/examples/) | [Examples](../../../apps/demos/react/src/pages/examples/) | [Examples](../../../apps/demos/vue/src/pages/examples/) |
 
-In particular, start with `quick-start` or `basic-usage`, then compare the focused `objects`, `tools`, `viewport`, `persistence`, `theming`, and `localization` pages before implementing a new integration. The `examples` pages (`object-explorer`, `blueprint-defect-mapper`, `slideshow-presentation`, `image-annotation-studio`, and `performance-showcase`) show how the editor can be composed into larger workflows.
+In particular, start with `quick-start` or `basic-usage`, then compare the focused `objects`, `tools`, `viewport`, `persistence`, `theming`, `localization`, and `titlebar` pages before implementing a new integration. The `examples` pages (`object-explorer`, `blueprint-defect-mapper`, `slideshow-presentation`, `image-annotation-studio`, and `performance-showcase`) show how the editor can be composed into larger workflows.
 
 ## Rules shared by all frameworks
 
@@ -54,9 +54,9 @@ After choosing a framework, open the corresponding file under `./references/<fra
 | Add, update, select, group or query objects | `objects.md` |
 | Pan, zoom, coordinates or boundaries | `viewport.md` |
 | Tools and toolbar | `tools-and-toolbar.md` |
-| Ready and change events | `events.md` |
+| Ready, change and titlebar action events | `events.md` |
 | Workspaces, persistence and collaboration | `workspaces-and-persistence.md` |
-| Themes and context menus | `theming-and-context-menus.md` |
+| Themes, context menus and object titlebars | `theming-and-context-menus.md` |
 | End-to-end examples | `recipes.md` |
 
 For current component props, methods, and events, consult [the generated API reference](./references/api.md); for object and provider APIs, use package types and the framework references. After implementation, run the application's typecheck or build and verify that the canvas has a visible size and reaches its ready event.

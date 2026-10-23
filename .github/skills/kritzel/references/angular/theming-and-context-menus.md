@@ -106,3 +106,93 @@ await editor.hideContextMenu();
 ```
 
 On touch devices, the engine's `(longpress)` event (payload: `PointerEvent`) is the hook for opening menus manually.
+
+## Object titlebars
+
+An optional bar above objects (Framer / Claude-design style). Its content is declared **once** with the `[objectTitlebar]` input (on `kritzel-editor` and `kritzel-engine`) and is the same for every object; each object opts in with `hasTitlebar: true` and is titled by its `name` (see objects.md). Leaving the input unset turns the feature off.
+
+Define the config as a stable component field (not an inline template literal) and handle buttons through the `(objectTitlebarAction)` output (see events.md):
+
+```ts
+import { signal } from '@angular/core';
+import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from '@kritzel/angular-editor';
+
+readonly objectTitlebar: KritzelObjectTitlebarConfig = {
+  left: [
+    { id: 'preview', type: 'button', icon: 'play', variant: 'filled', tooltip: 'Preview' },
+    { id: 'title', type: 'title' },
+    { id: 'width', type: 'text', tone: 'muted', minBarWidth: 120, text: ({ contentSize }) => `${Math.round(contentSize.width)}` },
+  ],
+  right: [{ id: 'add-breakpoint', type: 'button', icon: 'plus', tooltip: 'Add breakpoint' }],
+};
+
+readonly lastAction = signal('');
+
+onTitlebarAction(e: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+  this.lastAction.set(e.detail.itemId);
+}
+```
+
+```html
+<kritzel-editor [objectTitlebar]="objectTitlebar" (objectTitlebarAction)="onTitlebarAction($event)"></kritzel-editor>
+```
+
+The proxies set inputs outside `NgZone`, so a button's `action` callback runs **outside the Angular zone**. Prefer the `(objectTitlebarAction)` output (runs in the zone) for state changes, or wrap the work in `this.ngZone.run(() => …)` inside `action`.
+
+`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset (type icon + title).
+
+Items — every item needs a stable `id` (used in events) and accepts `isVisible`, `showWhen` (`'always'` | `'active'` | `'inactive'`), `minBarWidth` (screen px) and `part`:
+
+| `type` | Fields | Notes |
+|---|---|---|
+| `title` | `text?` | Resolved title: item `text` > `config.title(object)` > `object.name` > localized type label |
+| `text` | `text`, `tone?` (`'default'` \| `'muted'` \| `'strong'`) | Arbitrary text, e.g. a size |
+| `icon` | `icon` | Registry icon name (`[customSvgIcons]` extend it) |
+| `button` | `icon?`, `label?`, `tooltip?`, `variant?` (`'ghost'` \| `'filled'` \| `'outlined'`), `isDisabled?`, `isPressed?`, `action?(context, event)` | Never selects or drags; always emits `objectTitlebarAction`. `label` / `tooltip` take term keys or plain strings |
+| `spacer` / `separator` | — | Flexible space / thin divider |
+
+Any value may be a function `(context) => value`. It runs **synchronously on every render**: keep it pure and cheap; promises are not supported (they resolve to the fallback and warn once). The context has `object`, `objectType`, `children`, `isActive`, `title`, `size` (world units), `contentSize` (`object.width` / `height`, e.g. a frame's `1200`), `barWidth` (screen px) and `t(key, vars)`.
+
+Config options: `left` (default: one title item), `center`, `right`, `visibility` (`'always'` default, or `'active'` = only while selected), `rotation` (`'follow'` default = along the rotated top edge, or `'upright'`), `title(object)` resolver, `draggable` (default `true`), `hideBelowWidth` (default `40` screen px).
+
+Behavior: the bar is active (highlighted) while its object, or something inside its group, is selected. Pressing the bar selects the object and dragging moves it exactly like dragging the object (same undo and sync); Shift/Ctrl-press toggles it in the selection. Right-click / long-press opens the object context menu. Clicking a text object's bar does not start editing. While a drawing tool is active, the bar lets input pass through but buttons stay clickable. Bars keep a constant screen size at any zoom, hide below `hideBelowWidth`, and are excluded from screenshots and exports.
+
+### Titlebar theme tokens
+
+The `titlebar` theme section maps to `--kritzel-titlebar-<key-kebab>` variables: `height` and `offset` (px values only), `paddingX`, `gap`, `borderRadius`, `fontFamily`, `fontSize`, `fontWeight`, `titleFontWeight`, `backgroundColor`, `hoverBackgroundColor`, `activeBackgroundColor`, `border`, `activeBorder`, `boxShadow`, `activeBoxShadow`, `textColor`, `activeTextColor`, `mutedTextColor`, `activeMutedTextColor`, `iconSize`, `iconColor`, `activeIconColor`, `buttonSize`, `buttonBorderRadius`, `buttonHoverBackgroundColor`, `buttonPressedBackgroundColor`, `buttonFilledBackgroundColor`, `activeButtonFilledBackgroundColor`, `buttonFilledColor`, `buttonOutlineColor`, `focusRing`, `transition`.
+
+`[themes]` **replaces** the theme registry (no deep merge), so spread both the base theme and its `titlebar` section, keep the names, and register the light and dark variants. A transparent "Claude design" bar sitting close to the object:
+
+```ts
+import { darkTheme, lightTheme, KritzelTheme } from '@kritzel/angular-editor';
+
+const transparentTitlebar = {
+  backgroundColor: 'transparent',
+  hoverBackgroundColor: 'transparent',
+  activeBackgroundColor: 'transparent',
+  offset: '2px',
+  paddingX: '0',
+};
+
+export const transparentTitlebarLight: KritzelTheme = { ...lightTheme, titlebar: { ...lightTheme.titlebar, ...transparentTitlebar } };
+export const transparentTitlebarDark: KritzelTheme = { ...darkTheme, titlebar: { ...darkTheme.titlebar, ...transparentTitlebar } };
+```
+
+```ts
+readonly themes = [transparentTitlebarLight, transparentTitlebarDark];
+```
+
+```html
+<kritzel-editor [themes]="themes" theme="light" [objectTitlebar]="objectTitlebar"></kritzel-editor>
+```
+
+### Styling with `::part()`
+
+For anything tokens do not cover, target parts on the engine: `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-text`, `titlebar-icon`, `titlebar-button`, `titlebar-button-pressed`, `titlebar-separator`, plus any item's own `part`. The engine is rendered by the editor (in its light DOM), not by your template, so emulated component styles never match it — put these rules in the global `styles.css`:
+
+```css
+kritzel-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #dd0031; }
+kritzel-engine::part(titlebar-button) { border-radius: 999px; }
+```
+
+Runnable demos: `/customization/titlebar/configure` and `/customization/titlebar/styling`.

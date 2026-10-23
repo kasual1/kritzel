@@ -21,6 +21,8 @@ In the snippets below, `editor` is the ref element (`const editor = editorRef.cu
 | `boundingBox`, `rotatedBoundingBox`, `rotatedPolygon` | Computed bounds |
 | `__class__` | Type discriminator string, e.g. `'KritzelShape'` |
 | `workspaceId` | Set automatically when added |
+| `name` | Optional user-facing name; the default title of the object's titlebar. Persisted and synced |
+| `hasTitlebar` | Opt-in flag: render a titlebar above the object when the editor's `objectTitlebar` is configured. Persisted and synced |
 
 Colors everywhere are **theme-aware**: `{ light: '#hex', dark: '#hex', label?: string }`.
 
@@ -171,6 +173,29 @@ await editor.alignObjects(KritzelAlignment.CenterHorizontal); // needs ≥ 2 sel
 `KritzelAlignment` values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `StartVertical`, `CenterVertical`, `EndVertical`.
 
 Groups expose their children via `childIds: string[]`; resolve children with `getObjectById`.
+
+## Names and titlebars
+
+Every object constructor accepts `name` and `hasTitlebar` (shared `KritzelObjectCommonConfig`). `hasTitlebar` opts the object into the titlebar declared once through the editor's `objectTitlebar` prop (see theming-and-context-menus.md); without that prop nothing is rendered.
+
+```tsx
+const frame = new KritzelShape({
+  translateX: 0,
+  translateY: 0,
+  width: 400,
+  height: 240,
+  name: 'Desktop',       // title shown in the titlebar
+  hasTitlebar: true,     // opt in per object
+});
+await editor.addObject(frame);
+
+// Rename or toggle later — like any update, this clears the selection
+await editor.updateObject(frame, { name: 'Desktop (wide)', hasTitlebar: false });
+```
+
+- Groups get one bar: grouping objects where any child had `hasTitlebar` gives the group a bar, and children never show their own while grouped.
+- Titlebars are not part of an object's bounds; `boundingBox`, the selection box, alignment and exports are unchanged.
+- Without a `name`, the title falls back to a localized type label (`Shape`, `Text`, `Group`, …).
 
 ## Clipboard & delete (system clipboard, world coordinates)
 

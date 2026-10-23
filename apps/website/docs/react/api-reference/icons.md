@@ -58,6 +58,7 @@ const customSvgIcons: KritzelSvgIconMap = {
 | undo | Undo action |
 | redo | Redo action |
 | plus | Add or increase action |
+| play | Play or preview action |
 | minus | Remove or decrease action |
 | ellipsisVertical | More menu |
 | x | Close or clear action |

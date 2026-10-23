@@ -977,3 +977,23 @@ Returns snapshots of all agentic cursors.
 ```ts
 getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 ```
+
+---
+
+## Object Titlebar
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| objectTitlebar | KritzelObjectTitlebarConfig | Titlebar rendered above every object that has `hasTitlebar` set. The same configuration applies to all objects. Leave unset to disable titlebars. See [Titlebars](../customization/titlebars.md). |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked, in addition to calling the button's optional `action` callback. |
+
+### Methods
+
+No titlebar-specific methods. Use [updateObject](#updateobject) to change the `name` or `hasTitlebar` of an existing object.
