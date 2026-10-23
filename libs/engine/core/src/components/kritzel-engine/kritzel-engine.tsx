@@ -3265,15 +3265,14 @@ export class KritzelEngine {
 
     const selectedIds = selectionGroup.objectIds;
     const band = metrics.height + metrics.offset;
-    if (selectedIds.length === 1) {
-      return titlebars.some(titlebar => titlebar.owner.id === selectedIds[0]) ? band : 0;
+    if (selectedIds.length === 1 && titlebars.some(titlebar => titlebar.owner.id === selectedIds[0])) {
+      return band;
     }
 
+    // Active bars include groups whose nested child is the selected unit.
     const groupTop = selectionGroup.rotatedBoundingBox.y;
     const tolerance = 1 / (this.core.store.state.scale || 1);
-    const overlapsHandle = titlebars.some(
-      titlebar => selectedIds.includes(titlebar.owner.id) && Math.abs(titlebar.owner.rotatedBoundingBox.y - groupTop) <= tolerance,
-    );
+    const overlapsHandle = titlebars.some(titlebar => titlebar.isActive && Math.abs(titlebar.owner.rotatedBoundingBox.y - groupTop) <= tolerance);
     return overlapsHandle ? band : 0;
   }
 

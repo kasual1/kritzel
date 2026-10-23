@@ -11,7 +11,7 @@ Primary touchpoints:
 - `libs/engine/core/src/components/kritzel-engine/object-titlebar-layer.tsx` + `.css` — functional render layer and styles
 - `libs/engine/core/src/components/kritzel-engine/kritzel-engine.tsx` — prop, event, render query, pointer guards, rotation handle offset, screenshot filter
 - `classes/tools/selection-tool.class.ts`, `classes/handlers/selection.handler.ts`, `classes/handlers/context-menu.handler.ts`, `classes/tools/base-tool.class.ts` (+ text/shape tools), `classes/managers/cursor.manager.ts`
-- `classes/objects/base-object.class.ts` (`name`, `hasTitlebar`, `applyCommonConfig`), `classes/objects/group.class.ts`, `interfaces/object.interface.ts` (`KritzelObjectCommonConfig`)
+- `classes/objects/base-object.class.ts` (`name`, `hasTitlebar`), `helpers/object.helper.ts` (`ObjectHelper.applyCommonConfig`), `classes/objects/group.class.ts`, `interfaces/object.interface.ts` (`KritzelObjectCommonConfig`)
 - `libs/editor/core/src/components/kritzel-editor/kritzel-editor.tsx` — passes `objectTitlebar` through and re-emits `objectTitlebarAction`
 
 ## Maintainer Mental Model
@@ -89,7 +89,8 @@ Two DOM markers drive everything (constants exported from the manager):
 - Never write wildcard custom-property names such as `--kritzel-titlebar-*` in `libs/**/src` files, including comments: the theme generator scans every `.ts`, `.tsx` and `.css` file and would emit a bogus token
 - Keep dynamic values synchronous; do not add promise support to `evaluate()`
 - Keep the manager framework-agnostic and free of DOM writes; the layer is a functional component fed by resolved data
-- New object fields shared by all types go into `KritzelObjectCommonConfig` + `applyCommonConfig`; `serialize()` / `deserialize()` pick them up automatically
+- New object fields shared by all types go into `KritzelObjectCommonConfig` + `ObjectHelper.applyCommonConfig`; `serialize()` / `deserialize()` pick them up automatically
+- Never add `protected` or `private` members to `KritzelBaseObject` (or other public object classes): Vue's `ref()` unwrapping drops non-public members, so objects kept in a `ref` would no longer type-check as `KritzelBaseObject`. Put shared construction logic in a static helper instead
 - New public symbols must be exported from the engine barrel and all three wrapper `index.ts` / `public-api.ts` files
 
 ## Testing Matrix

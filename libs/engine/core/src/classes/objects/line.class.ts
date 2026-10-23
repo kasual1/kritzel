@@ -1,4 +1,5 @@
 import { KritzelBaseObject } from './base-object.class';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
@@ -93,7 +94,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
    */
   constructor(config?: KritzelLineConfig) {
     super();
-    this.applyCommonConfig(config);
+    ObjectHelper.applyCommonConfig(this, config);
     this.options = config;
     this.startX = config?.startX ?? 0;
     this.startY = config?.startY ?? 0;

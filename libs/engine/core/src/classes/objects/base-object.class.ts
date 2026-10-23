@@ -1,5 +1,5 @@
 import { KritzelBoundingBox } from '../../interfaces/bounding-box.interface';
-import { KritzelObject, KritzelObjectCommonConfig } from '../../interfaces/object.interface';
+import { KritzelObject } from '../../interfaces/object.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelSerializable } from '../../interfaces/serializable.interface';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -52,19 +52,6 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   isInteractive: boolean = false;
   isResizable: boolean = true;
   isRotatable: boolean = true;
-
-  /**
-   * Applies the options shared by all object configs.
-   * @param config - The object config passed to the constructor
-   */
-  protected applyCommonConfig(config?: KritzelObjectCommonConfig): void {
-    if (config?.name !== undefined) {
-      this.name = config.name;
-    }
-    if (config?.hasTitlebar !== undefined) {
-      this.hasTitlebar = config.hasTitlebar;
-    }
-  }
 
   /**
    * Gets the total width of the object including padding.

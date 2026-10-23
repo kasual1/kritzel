@@ -1,4 +1,5 @@
 import { getStroke } from 'perfect-freehand';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelBaseObject } from './base-object.class';
@@ -76,7 +77,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    */
   constructor(config?: KritzelPathConfig) {
     super();
-    this.applyCommonConfig(config);
+    ObjectHelper.applyCommonConfig(this, config);
     this.options = config;
     this.points = config?.points ?? [];
     this.translateX = config?.translateX ?? 0;

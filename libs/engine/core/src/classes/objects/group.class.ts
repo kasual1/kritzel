@@ -1,4 +1,5 @@
 import { KritzelCore } from '../core/core.class';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
@@ -29,7 +30,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     constructor(config?: KritzelGroupConfig) {
         super();
-        this.applyCommonConfig(config);
+        ObjectHelper.applyCommonConfig(this, config);
         this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     }
 

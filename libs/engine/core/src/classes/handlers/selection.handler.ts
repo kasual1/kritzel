@@ -5,6 +5,7 @@ import { KritzelGroup } from '../objects/group.class';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelCore } from '../core/core.class';
+import { ObjectHelper } from '../../helpers/object.helper';
 
 /**
  * Handles object selection interactions on the canvas.
@@ -492,8 +493,13 @@ export class KritzelSelectionHandler extends KritzelBaseHandler {
       return;
     }
 
+    const wasSelected = existingGroup.objectIds.includes(object.id);
     existingGroup.addOrRemove(object);
     this.removeDescendantsOfSelectedGroups(existingGroup);
+    // Selecting made embedded content interactive; a deselected embed must hand pointer input back to the canvas.
+    if (wasSelected && ObjectHelper.isKritzelEmbeddedObject(object)) {
+      object.setIsInteractive(false);
+    }
     if (existingGroup.objects.length === 0) {
       this._core.removeSelectionGroup();
       return;

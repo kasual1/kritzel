@@ -1,4 +1,5 @@
 import { KritzelCore } from '../core/core.class';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelMathHelper } from '../../helpers/math.helper';
@@ -57,7 +58,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
    */
   constructor(config?: KritzelDynamicObjectConfig) {
     super();
-    this.applyCommonConfig(config);
+    ObjectHelper.applyCommonConfig(this, config);
 
     if (config) {
       this.translateX = config.translateX || 0;

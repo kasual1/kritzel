@@ -1101,6 +1101,26 @@ describe('KritzelSelectionHandler', () => {
         expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
       });
 
+      it('hands pointer input back to the canvas when an embedded object is toggled off', () => {
+        const embedded = {
+          id: 'embed-1',
+          isInteractive: true,
+          isSelected: true,
+          mount: jest.fn(),
+          unmount: jest.fn(),
+          setIsInteractive: jest.fn(),
+          hasFocusedInputElement: jest.fn(),
+          getEmbeddedContentRoots: jest.fn(() => []),
+        } as unknown as KritzelBaseObject & { setIsInteractive: jest.Mock };
+        mockSelectionGroup = { ...createMockSelectionGroup(), objectIds: ['embed-1'], objects: [] };
+        (mockCore.engine as any).triggerSelectionChange = jest.fn();
+
+        selectionHandler.toggleObjectInSelection(embedded);
+
+        expect(embedded.setIsInteractive).toHaveBeenCalledWith(false);
+        expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
+      });
+
       it('removes the selection when its last object is toggled off', () => {
         const object = { id: 'obj-1' } as unknown as KritzelBaseObject;
         mockSelectionGroup = { ...createMockSelectionGroup(), objects: [] };

@@ -1,4 +1,5 @@
 import { KritzelEmbeddedObject } from '../interfaces/embedded-object.interface';
+import type { KritzelObjectCommonConfig } from '../interfaces/object.interface';
 
 export class ObjectHelper {
   static generateUUID(length: number = 16): string {
@@ -15,6 +16,22 @@ export class ObjectHelper {
       return true;
     }
     return Object?.keys(obj).length === 0 && obj?.constructor === Object;
+  }
+
+  /**
+   * Applies the options shared by all object configs to a newly constructed object.
+   * Kept off the object classes on purpose: a non-public class member would break the
+   * structural typing of objects unwrapped by Vue's `ref()`.
+   * @param object - The object being constructed
+   * @param config - The object config passed to its constructor
+   */
+  static applyCommonConfig(object: KritzelObjectCommonConfig, config?: KritzelObjectCommonConfig): void {
+    if (config?.name !== undefined) {
+      object.name = config.name;
+    }
+    if (config?.hasTitlebar !== undefined) {
+      object.hasTitlebar = config.hasTitlebar;
+    }
   }
 
   static isClass<T>(object: unknown, className: string): object is T {

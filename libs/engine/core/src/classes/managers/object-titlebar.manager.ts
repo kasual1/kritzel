@@ -280,18 +280,22 @@ export class KritzelObjectTitlebarManager {
   }
 
   /**
-   * Finds the object whose titlebar surface was pressed. Presses on titlebar controls return `null`.
+   * Finds the object whose titlebar surface was pressed. Presses on titlebar controls return `null`
+   * unless `includeControls` is set, e.g. for the context menu of a right-clicked button.
    * Uses the event path and falls back to hit testing: long-press callbacks receive the original
    * event after dispatch, when `composedPath()` is empty, and pointer capture retargets later
    * events such as `contextmenu` to the engine host.
    */
-  getOwnerFromEvent(event: Pick<PointerEvent, 'clientX' | 'clientY'> & { composedPath?: () => EventTarget[] }): KritzelBaseObject<any> | null {
+  getOwnerFromEvent(
+    event: Pick<PointerEvent, 'clientX' | 'clientY'> & { composedPath?: () => EventTarget[] },
+    options: { includeControls?: boolean } = {},
+  ): KritzelBaseObject<any> | null {
     if (!this.isEnabled) {
       return null;
     }
 
     for (const target of event.composedPath?.() ?? []) {
-      if (this.hasAttribute(target, KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE)) {
+      if (!options.includeControls && this.hasAttribute(target, KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE)) {
         return null;
       }
       if (this.hasAttribute(target, KRITZEL_TITLEBAR_OWNER_ATTRIBUTE)) {
@@ -304,7 +308,7 @@ export class KritzelObjectTitlebarManager {
     if (!topmost) {
       return null;
     }
-    if (topmost.closest(`[${KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE}]`)) {
+    if (!options.includeControls && topmost.closest(`[${KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE}]`)) {
       return null;
     }
     const surface = topmost.closest(`[${KRITZEL_TITLEBAR_OWNER_ATTRIBUTE}]`);

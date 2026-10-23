@@ -1,4 +1,5 @@
 import { KritzelMathHelper } from '../../helpers/math.helper';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
 import { KritzelCore } from '../core/core.class';
@@ -115,7 +116,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
   constructor(config?: KritzelIframeObjectConfig) {
     super();
-    this.applyCommonConfig(config);
+    ObjectHelper.applyCommonConfig(this, config);
     this.content = {
       html: config?.content?.html ?? config?.html ?? '',
       css: config?.content?.css ?? config?.css ?? '',

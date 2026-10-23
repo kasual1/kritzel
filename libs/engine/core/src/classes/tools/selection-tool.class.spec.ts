@@ -1314,6 +1314,33 @@ describe('KritzelSelectionTool', () => {
       expect(embedded.isInteractive).toBe(true);
     });
 
+    it('restores deferred interactivity when the press is cancelled, e.g. by a long-press menu', () => {
+      const embedded: any = {
+        id: 'embed-1',
+        isInteractive: false,
+        isSelected: false,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => []),
+      };
+      embedded.setIsInteractive = jest.fn((value: boolean) => {
+        embedded.isInteractive = value;
+      });
+      mockCore.objectTitlebarManager.getOwnerFromEvent.mockReturnValue(embedded);
+      mockCore.selectObjects = jest.fn((objects: any[]) => {
+        objects.forEach(object => object.setIsInteractive(true));
+        mockCore.store.selectionGroup = { id: 'sg-new', objects, objectIds: objects.map(object => object.id) };
+      });
+
+      mockState.pointers.set(1, {});
+      tool.handlePointerDown(createTouchEvent({ pointerId: 1 } as Partial<PointerEvent>));
+      expect(embedded.isInteractive).toBe(false);
+
+      tool.cancelTitlebarGesture();
+      expect(embedded.isInteractive).toBe(true);
+    });
+
     it('clears a titlebar press whose release never arrived on the next press', () => {
       tool.handlePointerDown(createMouseEvent({ pointerId: 1 } as Partial<PointerEvent>));
       mockCore.objectTitlebarManager.getOwnerFromEvent.mockReturnValue(null);

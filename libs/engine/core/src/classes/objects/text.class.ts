@@ -1,4 +1,5 @@
 import { KritzelBaseObject } from './base-object.class';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
@@ -111,7 +112,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    */
   constructor(config?: KritzelTextConfig) {
     super();
-    this.applyCommonConfig(config);
+    ObjectHelper.applyCommonConfig(this, config);
 
     this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
 

@@ -702,6 +702,14 @@ describe('KritzelEngine', () => {
       expect(filter(document.createElement('div'))).toBe(true);
     });
 
+    it('lifts the rotation handle above the titlebar of a group whose nested child is selected', () => {
+      core.store.selectionGroup = { objectIds: ['inner'], rotatedBoundingBox: { y: 100 } };
+      const titlebars = [{ owner: { id: 'root', rotatedBoundingBox: { y: 100 } }, isActive: true }];
+
+      expect((engine as any).getRotationHandleTitlebarOffset(titlebars, { height: 28, offset: 6 })).toBe(34);
+      expect((engine as any).getRotationHandleTitlebarOffset([{ ...titlebars[0], isActive: false }], { height: 28, offset: 6 })).toBe(0);
+    });
+
     it('emits titlebar actions', () => {
       (engine as any).objectTitlebarAction = { emit: jest.fn() };
       const detail = { itemId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} } as any;

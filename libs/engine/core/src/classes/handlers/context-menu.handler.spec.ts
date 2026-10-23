@@ -88,6 +88,7 @@ describe('KritzelContextMenuHandler', () => {
       moveHandler: {
         cancelPendingDrag: jest.fn(),
       },
+      cancelTitlebarGesture: jest.fn(),
     } as unknown as jest.Mocked<KritzelSelectionTool>;
 
     // Make mockSelectionTool an instance of KritzelSelectionTool
@@ -672,8 +673,19 @@ describe('KritzelContextMenuHandler', () => {
       contextMenuHandler.handleContextMenu(createPointerEvent());
 
       expect(mockCore.getObjectFromPointerEvent).not.toHaveBeenCalled();
+      // Right-clicking a titlebar button also stands for the titlebar's owner
+      expect(mockCore.objectTitlebarManager.getOwnerFromEvent).toHaveBeenCalledWith(expect.anything(), { includeControls: true });
       expect(createdGroup.addOrRemove).toHaveBeenCalledWith(owner);
       expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(createdGroup);
+    });
+
+    it('abandons a pending titlebar press when the menu opens', () => {
+      const cancelTitlebarGesture = jest.fn();
+      (mockSelectionTool as any).cancelTitlebarGesture = cancelTitlebarGesture;
+
+      contextMenuHandler.handleContextMenu(createPointerEvent());
+
+      expect(cancelTitlebarGesture).toHaveBeenCalled();
     });
 
     it('keeps a multi-selection that already contains the owner', () => {

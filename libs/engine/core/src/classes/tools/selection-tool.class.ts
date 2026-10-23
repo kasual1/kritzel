@@ -660,10 +660,23 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
   }
 
+  /**
+   * Abandons a titlebar press that will not see its pointerup, e.g. when a long-press opens the
+   * context menu. Deferred interactivity is still applied if the object stayed selected.
+   */
+  cancelTitlebarGesture(): void {
+    this.resetTitlebarGesture();
+  }
+
   private resetTitlebarGesture(): void {
+    const deferred = this._titlebarDeferredInteractiveObject;
     this._titlebarPointerId = null;
     this._titlebarDeferredInteractiveObject = null;
     this.selectionHandler.skipEditForPointerId = null;
+
+    if (deferred && ObjectHelper.isKritzelEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
+      deferred.setIsInteractive(true);
+    }
   }
 
   /**

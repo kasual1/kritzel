@@ -346,6 +346,14 @@ describe('KritzelObjectTitlebarManager', () => {
       expect(manager.isControlEvent({ composedPath: () => [control, surface] })).toBe(true);
     });
 
+    it('resolves the owner of a control when controls are included', () => {
+      const owner = createObject('a');
+      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const control = createElement({ [KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE]: '' }, surface);
+
+      expect(manager.getOwnerFromEvent({ clientX: 0, clientY: 0, composedPath: () => [control, surface] }, { includeControls: true })).toBe(owner);
+    });
+
     it('falls back to hit testing when the event was already dispatched', () => {
       const owner = createObject('a');
       const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
