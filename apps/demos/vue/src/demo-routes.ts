@@ -460,6 +460,20 @@ export const demoRoutes = [
     component: () => import('./pages/customization/localization/LocalizationListenPage.vue'),
   },
   {
+    path: '/customization/titlebar/configure',
+    title: 'Configure',
+    category: 'customization',
+    context: 'Titlebar',
+    component: () => import('./pages/customization/titlebar/TitlebarConfigurePage.vue'),
+  },
+  {
+    path: '/customization/titlebar/styling',
+    title: 'Styling',
+    category: 'customization',
+    context: 'Titlebar',
+    component: () => import('./pages/customization/titlebar/TitlebarStylingPage.vue'),
+  },
+  {
     path: '/examples/object-explorer',
     title: 'Object Explorer',
     category: 'examples',
