@@ -36,6 +36,8 @@ import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { KritzelIconName } from "./classes/registries/icon-registry.class";
+import { KritzelResolvedTitlebar } from "./classes/managers/object-titlebar.manager";
+import { KritzelTitlebarItemClickHandler } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export { KritzelCore } from "./classes/core/core.class";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
@@ -67,6 +69,8 @@ export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { KritzelIconName } from "./classes/registries/icon-registry.class";
+export { KritzelResolvedTitlebar } from "./classes/managers/object-titlebar.manager";
+export { KritzelTitlebarItemClickHandler } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export namespace Components {
     /**
      * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
@@ -690,6 +694,29 @@ export namespace Components {
         "size": number;
     }
     /**
+     * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
+     * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+     * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * Must never use the `object` class: pointer handling treats `.object` elements as objects.
+     */
+    interface KritzelObjectTitlebarLayer {
+        /**
+          * Called when a titlebar button is clicked.
+         */
+        "itemClick"?: KritzelTitlebarItemClickHandler;
+        /**
+          * Pointer events of the drag surfaces. Controls always receive pointer input.
+          * @default 'none'
+         */
+        "surfacePointerEvents": 'auto' | 'none';
+        /**
+          * The titlebars to render, resolved by the engine for the current frame.
+          * @default []
+         */
+        "titlebars": KritzelResolvedTitlebar[];
+    }
+    /**
      * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
@@ -777,6 +804,19 @@ declare global {
         new (): HTMLKritzelIconElement;
     };
     /**
+     * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
+     * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+     * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * Must never use the `object` class: pointer handling treats `.object` elements as objects.
+     */
+    interface HTMLKritzelObjectTitlebarLayerElement extends Components.KritzelObjectTitlebarLayer, HTMLStencilElement {
+    }
+    var HTMLKritzelObjectTitlebarLayerElement: {
+        prototype: HTMLKritzelObjectTitlebarLayerElement;
+        new (): HTMLKritzelObjectTitlebarLayerElement;
+    };
+    /**
      * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
@@ -794,6 +834,7 @@ declare global {
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-engine": HTMLKritzelEngineElement;
         "kritzel-icon": HTMLKritzelIconElement;
+        "kritzel-object-titlebar-layer": HTMLKritzelObjectTitlebarLayerElement;
         "kritzel-watermark": HTMLKritzelWatermarkElement;
     }
 }
@@ -1038,6 +1079,29 @@ declare namespace LocalJSX {
         "size"?: number;
     }
     /**
+     * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
+     * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+     * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * Must never use the `object` class: pointer handling treats `.object` elements as objects.
+     */
+    interface KritzelObjectTitlebarLayer {
+        /**
+          * Called when a titlebar button is clicked.
+         */
+        "itemClick"?: KritzelTitlebarItemClickHandler;
+        /**
+          * Pointer events of the drag surfaces. Controls always receive pointer input.
+          * @default 'none'
+         */
+        "surfacePointerEvents"?: 'auto' | 'none';
+        /**
+          * The titlebars to render, resolved by the engine for the current frame.
+          * @default []
+         */
+        "titlebars"?: KritzelResolvedTitlebar[];
+    }
+    /**
      * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
@@ -1084,6 +1148,9 @@ declare namespace LocalJSX {
         "label": string;
         "size": number;
     }
+    interface KritzelObjectTitlebarLayerAttributes {
+        "surfacePointerEvents": 'auto' | 'none';
+    }
     interface KritzelWatermarkAttributes {
         "label": string;
     }
@@ -1094,6 +1161,7 @@ declare namespace LocalJSX {
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-engine": Omit<KritzelEngine, keyof KritzelEngineAttributes> & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes]?: KritzelEngine[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `attr:${K}`]?: KritzelEngineAttributes[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `prop:${K}`]?: KritzelEngine[K] };
         "kritzel-icon": Omit<KritzelIcon, keyof KritzelIconAttributes> & { [K in keyof KritzelIcon & keyof KritzelIconAttributes]?: KritzelIcon[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `attr:${K}`]?: KritzelIconAttributes[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `prop:${K}`]?: KritzelIcon[K] };
+        "kritzel-object-titlebar-layer": Omit<KritzelObjectTitlebarLayer, keyof KritzelObjectTitlebarLayerAttributes> & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes]?: KritzelObjectTitlebarLayer[K] } & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes as `attr:${K}`]?: KritzelObjectTitlebarLayerAttributes[K] } & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes as `prop:${K}`]?: KritzelObjectTitlebarLayer[K] };
         "kritzel-watermark": Omit<KritzelWatermark, keyof KritzelWatermarkAttributes> & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes]?: KritzelWatermark[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `attr:${K}`]?: KritzelWatermarkAttributes[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `prop:${K}`]?: KritzelWatermark[K] };
     }
 }
@@ -1112,6 +1180,14 @@ declare module "@stencil/core" {
             "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-engine": LocalJSX.IntrinsicElements["kritzel-engine"] & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
             "kritzel-icon": LocalJSX.IntrinsicElements["kritzel-icon"] & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            /**
+             * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
+             * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+             * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+             * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+             * Must never use the `object` class: pointer handling treats `.object` elements as objects.
+             */
+            "kritzel-object-titlebar-layer": LocalJSX.IntrinsicElements["kritzel-object-titlebar-layer"] & JSXBase.HTMLAttributes<HTMLKritzelObjectTitlebarLayerElement>;
             /**
              * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
              * Rendered inside the engine's Shadow DOM unless the engine's

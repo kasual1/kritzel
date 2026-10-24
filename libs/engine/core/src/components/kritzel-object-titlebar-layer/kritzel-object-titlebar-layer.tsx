@@ -1,4 +1,4 @@
-import { FunctionalComponent, h } from '@stencil/core';
+import { Component, Host, Prop, h } from '@stencil/core';
 import {
   KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE,
   KRITZEL_TITLEBAR_OWNER_ATTRIBUTE,
@@ -7,59 +7,72 @@ import {
 } from '../../classes/managers/object-titlebar.manager';
 import { KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
 
-export interface ObjectTitlebarLayerProps {
-  titlebars: KritzelResolvedTitlebar[];
-  /** Pointer events of the drag surfaces. Controls always receive pointer input. */
-  surfacePointerEvents: 'auto' | 'none';
-  onItemClick: (ownerId: string, section: KritzelTitlebarSection, itemId: string, event: MouseEvent, anchorRect: DOMRect) => void;
-}
+/** Handles a click on a titlebar button. */
+export type KritzelTitlebarItemClickHandler = (ownerId: string, section: KritzelTitlebarSection, itemId: string, event: MouseEvent, anchorRect: DOMRect) => void;
 
 const parts = (...names: (string | undefined | false)[]): string => names.filter(Boolean).join(' ');
 
 /**
  * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
  * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+ *
+ * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+ * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
  * Must never use the `object` class: pointer handling treats `.object` elements as objects.
  */
-export const ObjectTitlebarLayer: FunctionalComponent<ObjectTitlebarLayerProps> = ({ titlebars, surfacePointerEvents, onItemClick }) => {
-  if (titlebars.length === 0) {
-    return null;
-  }
+@Component({
+  tag: 'kritzel-object-titlebar-layer',
+  styleUrl: 'kritzel-object-titlebar-layer.css',
+  shadow: false,
+})
+export class KritzelObjectTitlebarLayer {
+  /** The titlebars to render, resolved by the engine for the current frame. */
+  @Prop() titlebars: KritzelResolvedTitlebar[] = [];
 
-  return (
-    <div class="object-titlebar-layer">
-      {titlebars.map(titlebar => (
-        <div key={titlebar.owner.id} class="object-titlebar-anchor" style={{ transform: titlebar.transform, width: `${titlebar.width}px` }}>
-          <div
-            class={{
-              'object-titlebar': true,
-              'is-active': titlebar.isActive,
-              'has-center': titlebar.sections.center.length > 0,
-            }}
-            part={parts('titlebar', titlebar.isActive ? 'titlebar-active' : 'titlebar-inactive')}
-            role="toolbar"
-            aria-label={titlebar.context.title}
-            data-state={titlebar.isActive ? 'active' : 'inactive'}
-            data-object-type={titlebar.owner.__class__}
-            data-kritzel-titlebar-surface=""
-            {...{ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: titlebar.owner.id }}
-            style={{ pointerEvents: surfacePointerEvents }}
-          >
-            {(['left', 'center', 'right'] as KritzelTitlebarSection[]).map(section =>
-              section === 'center' && titlebar.sections.center.length === 0 ? null : (
-                <div key={section} class={`object-titlebar-section object-titlebar-${section}`} part={`titlebar-${section}`}>
-                  {titlebar.sections[section].map(resolved => renderItem(titlebar, resolved, onItemClick))}
-                </div>
-              ),
-            )}
+  /** Pointer events of the drag surfaces. Controls always receive pointer input. */
+  @Prop() surfacePointerEvents: 'auto' | 'none' = 'none';
+
+  /** Called when a titlebar button is clicked. */
+  @Prop() itemClick?: KritzelTitlebarItemClickHandler;
+
+  private readonly handleItemClick: KritzelTitlebarItemClickHandler = (...args) => this.itemClick?.(...args);
+
+  render() {
+    return (
+      <Host class="object-titlebar-layer">
+        {this.titlebars.map(titlebar => (
+          <div key={titlebar.owner.id} class="object-titlebar-anchor" style={{ transform: titlebar.transform, width: `${titlebar.width}px` }}>
+            <div
+              class={{
+                'object-titlebar': true,
+                'is-active': titlebar.isActive,
+                'has-center': titlebar.sections.center.length > 0,
+              }}
+              part={parts('titlebar', titlebar.isActive ? 'titlebar-active' : 'titlebar-inactive')}
+              role="toolbar"
+              aria-label={titlebar.context.title}
+              data-state={titlebar.isActive ? 'active' : 'inactive'}
+              data-object-type={titlebar.owner.__class__}
+              data-kritzel-titlebar-surface=""
+              {...{ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: titlebar.owner.id }}
+              style={{ pointerEvents: this.surfacePointerEvents }}
+            >
+              {(['left', 'center', 'right'] as KritzelTitlebarSection[]).map(section =>
+                section === 'center' && titlebar.sections.center.length === 0 ? null : (
+                  <div key={section} class={`object-titlebar-section object-titlebar-${section}`} part={`titlebar-${section}`}>
+                    {titlebar.sections[section].map(resolved => renderItem(titlebar, resolved, this.handleItemClick))}
+                  </div>
+                ),
+              )}
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
-  );
-};
+        ))}
+      </Host>
+    );
+  }
+}
 
-function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarItem, onItemClick: ObjectTitlebarLayerProps['onItemClick']) {
+function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarItem, onItemClick: KritzelTitlebarItemClickHandler) {
   const { item } = resolved;
 
   switch (item.type) {

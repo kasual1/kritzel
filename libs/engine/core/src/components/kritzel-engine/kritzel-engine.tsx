@@ -68,7 +68,6 @@ import { KritzelSvgExportHelper } from '../../helpers/svg-export.helper';
 import { KritzelToolDefinition } from '../../interfaces/tool.interface';
 import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
 import { KritzelResolvedTitlebar, KritzelTitlebarMetrics } from '../../classes/managers/object-titlebar.manager';
-import { ObjectTitlebarLayer } from '../kritzel-object-titlebar-layer/kritzel-object-titlebar-layer';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
 
@@ -84,7 +83,7 @@ const TITLEBAR_CONTROL_KEYS = new Set(['Enter', ' ', 'Spacebar', 'Tab', 'ArrowLe
 
 @Component({
   tag: 'kritzel-engine',
-  styleUrls: ['kritzel-engine.css', '../kritzel-object-titlebar-layer/kritzel-object-titlebar-layer.css'],
+  styleUrl: 'kritzel-engine.css',
   shadow: true,
 })
 export class KritzelEngine {
@@ -4290,7 +4289,9 @@ export class KritzelEngine {
             );
           })}
 
-          <ObjectTitlebarLayer titlebars={titlebars} surfacePointerEvents={this.getTitlebarSurfacePointerEvents()} onItemClick={this.handleTitlebarItemClick} />
+          {this.core.objectTitlebarManager.isEnabled && (
+            <kritzel-object-titlebar-layer titlebars={titlebars} surfacePointerEvents={this.getTitlebarSurfacePointerEvents()} itemClick={this.handleTitlebarItemClick} />
+          )}
 
           {/* Snap indicator for line anchoring */}
           {(() => {

@@ -1338,6 +1338,7 @@ Type: `Promise<void>`
 ### Depends on
 
 - [kritzel-icon](../kritzel-icon)
+- [kritzel-object-titlebar-layer](../kritzel-object-titlebar-layer)
 - [kritzel-awareness-cursors](../kritzel-awareness-cursors)
 - [kritzel-agentic-cursors](../kritzel-agentic-cursors)
 - [kritzel-cursor-trail](../kritzel-cursor-trail)
@@ -1347,10 +1348,12 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   kritzel-engine --> kritzel-icon
+  kritzel-engine --> kritzel-object-titlebar-layer
   kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-agentic-cursors
   kritzel-engine --> kritzel-cursor-trail
   kritzel-engine --> kritzel-watermark
+  kritzel-object-titlebar-layer --> kritzel-icon
   style kritzel-engine fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

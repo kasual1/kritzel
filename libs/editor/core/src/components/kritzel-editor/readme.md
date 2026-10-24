@@ -1466,10 +1466,12 @@ graph TD;
   kritzel-notification-card --> kritzel-icon
   kritzel-context-menu --> kritzel-icon
   kritzel-engine --> kritzel-icon
+  kritzel-engine --> kritzel-object-titlebar-layer
   kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-agentic-cursors
   kritzel-engine --> kritzel-cursor-trail
   kritzel-engine --> kritzel-watermark
+  kritzel-object-titlebar-layer --> kritzel-icon
   kritzel-chat-box --> kritzel-icon
   kritzel-toolbar --> kritzel-utility-panel
   kritzel-toolbar --> kritzel-icon

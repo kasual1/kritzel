@@ -16,6 +16,7 @@ const INTERNAL_COMPONENTS = [
   'kritzel-current-user-dialog',
   'kritzel-awareness-cursors',
   'kritzel-agentic-cursors',
+  'kritzel-object-titlebar-layer',
   'kritzel-dialog',
   'kritzel-dropdown',
   'kritzel-cursor-trail',

@@ -19,11 +19,13 @@
 ### Used by
 
  - [kritzel-engine](../kritzel-engine)
+ - [kritzel-object-titlebar-layer](../kritzel-object-titlebar-layer)
 
 ### Graph
 ```mermaid
 graph TD;
   kritzel-engine --> kritzel-icon
+  kritzel-object-titlebar-layer --> kritzel-icon
   style kritzel-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
