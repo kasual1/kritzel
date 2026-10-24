@@ -57,9 +57,3 @@ export interface KritzelObject<T = Element> {
   hitTestPolygon(polygon: KritzelPolygon): boolean;
   updatePosition(x: number, y: number): void;
 }
-
-/** Options shared by all object configs. */
-export interface KritzelObjectCommonConfig {
-  /** User-facing name, shown as the title of the object's titlebar. */
-  name?: string;
-}

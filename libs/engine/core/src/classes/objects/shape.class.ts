@@ -1,6 +1,4 @@
 import { KritzelBaseObject } from './base-object.class';
-import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../helpers/devices.helper';
@@ -22,7 +20,9 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
 /**
  * Configuration options for creating a KritzelShape instance.
  */
-export interface KritzelShapeConfig extends KritzelObjectCommonConfig {
+export interface KritzelShapeConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   x?: number;
   y?: number;
   translateX?: number;
@@ -109,7 +109,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    */
   constructor(config?: KritzelShapeConfig) {
     super();
-    ObjectHelper.applyCommonConfig(this, config);
+    this.name = config?.name;
 
     // Always create the editor so setContent() works immediately
     this.editor = this.createEditor();

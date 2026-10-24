@@ -1,6 +1,4 @@
 import { KritzelMathHelper } from '../../helpers/math.helper';
-import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
@@ -30,7 +28,9 @@ export interface KritzelIframeContent {
   script: string;
 }
 
-export interface KritzelIframeObjectConfig extends Partial<KritzelIframeContent>, KritzelObjectCommonConfig {
+export interface KritzelIframeObjectConfig extends Partial<KritzelIframeContent> {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   content?: Partial<KritzelIframeContent>;
   loadingContent?: Partial<KritzelIframeContent>;
   isLoading?: boolean;
@@ -116,7 +116,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
   constructor(config?: KritzelIframeObjectConfig) {
     super();
-    ObjectHelper.applyCommonConfig(this, config);
+    this.name = config?.name;
     this.content = {
       html: config?.content?.html ?? config?.html ?? '',
       css: config?.content?.css ?? config?.css ?? '',

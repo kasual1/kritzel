@@ -1,6 +1,4 @@
 import { KritzelCore } from '../core/core.class';
-import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 import { KritzelClassHelper } from '../../helpers/class.helper';
@@ -9,7 +7,9 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 /**
  * Configuration options for creating a KritzelGroup instance.
  */
-export interface KritzelGroupConfig extends KritzelObjectCommonConfig {
+export interface KritzelGroupConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   rotation?: number;
 }
 
@@ -30,7 +30,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     constructor(config?: KritzelGroupConfig) {
         super();
-        ObjectHelper.applyCommonConfig(this, config);
+        this.name = config?.name;
         this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     }
 

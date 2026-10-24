@@ -118,7 +118,6 @@ export type {
     KritzelTitlebarSpacerItem,
     KritzelTitlebarValue,
     KritzelTitlebarSection,
-    KritzelObjectCommonConfig,
     KritzelObjectExportFormat,
     KritzelObjectExportContext,
     KritzelExportable,

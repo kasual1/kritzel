@@ -1,6 +1,4 @@
 import { KritzelCore } from '../core/core.class';
-import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelDynamicObjectRendererRegistry } from '../registries/dynamic-object-renderer.registry';
@@ -10,7 +8,9 @@ import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interfac
 /**
  * Configuration options for creating a KritzelDynamicObject instance.
  */
-export interface KritzelDynamicObjectConfig extends KritzelObjectCommonConfig {
+export interface KritzelDynamicObjectConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   element?: HTMLElement;
   rendererKey?: string;
   rendererData?: unknown;
@@ -58,7 +58,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
    */
   constructor(config?: KritzelDynamicObjectConfig) {
     super();
-    ObjectHelper.applyCommonConfig(this, config);
+    this.name = config?.name;
 
     if (config) {
       this.translateX = config.translateX || 0;

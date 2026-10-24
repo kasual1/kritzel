@@ -101,7 +101,6 @@ export * from './interfaces/master-detail.interface';
 export * from './interfaces/tool-config.interface';
 export * from './interfaces/arrow-head.interface';
 export * from './interfaces/object-titlebar.interface';
-export type { KritzelObjectCommonConfig } from './interfaces/object.interface';
 export * from './events/active-workspace-change.event';
 export * from './events/editor-is-ready.event';
 export * from './events/login.event';

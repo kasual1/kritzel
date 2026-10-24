@@ -28,7 +28,7 @@ The following demo renders labeled frames for different screen sizes. Each frame
 
 ## Enabling Titlebars
 
-Pass a `KritzelObjectTitlebarConfig` with a `showFor` function to the `objectTitlebar` prop. `showFor` receives an object and returns `true` if the object should get a titlebar. To set the title, pass `name` to the object. This option is accepted by every object constructor through the shared `KritzelObjectCommonConfig` and is persisted and synced like any other object property.
+Pass a `KritzelObjectTitlebarConfig` with a `showFor` function to the `objectTitlebar` prop. `showFor` receives an object and returns `true` if the object should get a titlebar. To set the title, pass `name` to the object. Every object constructor accepts this option, and it is persisted and synced like any other object property.
 
 ```tsx
 import { useState } from 'react';

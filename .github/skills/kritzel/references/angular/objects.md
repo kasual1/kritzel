@@ -173,7 +173,7 @@ Groups expose their children via `childIds: string[]`; resolve children with `ge
 
 ## Names and titlebars
 
-Every object constructor accepts `name` (shared `KritzelObjectCommonConfig`), the default title of its titlebar. Which objects get a bar is decided by the `showFor` function of the editor's `[objectTitlebar]` input (see the titlebar section of theming-and-context-menus.md); without that input, or without `showFor`, nothing is rendered.
+Every object constructor accepts `name`, the default title of its titlebar. Which objects get a bar is decided by the `showFor` function of the editor's `[objectTitlebar]` input (see the titlebar section of theming-and-context-menus.md); without that input, or without `showFor`, nothing is rendered.
 
 ```ts
 const frame = new KritzelShape({

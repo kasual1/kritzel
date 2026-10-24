@@ -1,6 +1,4 @@
 import { KritzelCore } from '../core/core.class';
-import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelAssetLoadState } from '../../interfaces/asset.interface';
 import { AssetNotFoundError } from '../providers/assets/asset-resolver.class';
 import { KritzelBaseObject } from './base-object.class';
@@ -10,7 +8,9 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
 /**
  * Configuration options for creating a KritzelImage instance.
  */
-export interface KritzelImageConfig extends KritzelObjectCommonConfig {
+export interface KritzelImageConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   assetId?: string;
   mimeType?: string;
   src?: string;
@@ -135,7 +135,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    */
   constructor(config?: KritzelImageConfig) {
     super();
-    ObjectHelper.applyCommonConfig(this, config);
+    this.name = config?.name;
     this.assetId = config?.assetId || '';
     this.mimeType = config?.mimeType || '';
     this.src = config?.src || '';

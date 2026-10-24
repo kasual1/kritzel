@@ -468,13 +468,3 @@ interface KritzelObjectTitlebarActionEvent {
   anchorRect: DOMRect;
 }
 ```
-
-### `KritzelObjectCommonConfig`
-
-Options accepted by the constructor of every object.
-
-```ts
-interface KritzelObjectCommonConfig {
-  name?: string;
-}
-```

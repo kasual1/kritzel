@@ -1,6 +1,4 @@
 import { KritzelBaseObject } from './base-object.class';
-import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelObjectCommonConfig } from '../../interfaces/object.interface';
 import { KritzelCore } from '../core/core.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../helpers/devices.helper';
@@ -19,7 +17,9 @@ import { KritzelFontRegistry } from '../registries/font-registry.class';
 /**
  * Configuration options for creating a KritzelText instance.
  */
-export interface KritzelTextConfig extends KritzelObjectCommonConfig {
+export interface KritzelTextConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   text?: string;
   translateX?: number;
   translateY?: number;
@@ -112,7 +112,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    */
   constructor(config?: KritzelTextConfig) {
     super();
-    ObjectHelper.applyCommonConfig(this, config);
+    this.name = config?.name;
 
     this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
 

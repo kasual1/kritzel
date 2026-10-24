@@ -61,7 +61,7 @@ Abstract base class for every object that can be placed on the canvas. All other
 
 ### Common Constructor Options
 
-Every object config, such as `KritzelShapeConfig` or `KritzelTextConfig`, extends `KritzelObjectCommonConfig`. Its options can be passed to the constructor of any object.
+The constructor of every object accepts the following options in addition to its own, for example in `KritzelShapeConfig` or `KritzelTextConfig`.
 
 | Option | Type | Description |
 |--------|------|-------------|
