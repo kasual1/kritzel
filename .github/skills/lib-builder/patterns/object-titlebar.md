@@ -8,7 +8,7 @@ Primary touchpoints:
 - `libs/engine/core/src/interfaces/object-titlebar.interface.ts` — public config, item, context and event types
 - `libs/engine/core/src/classes/managers/object-titlebar.manager.ts` — owner/active resolution (including `showFor`), item evaluation, button invocation, `KRITZEL_DEFAULT_OBJECT_TITLEBAR`
 - `libs/engine/core/src/helpers/object-titlebar.helper.ts` — pure geometry (anchor, transform, culling padding, pixel parsing)
-- `libs/engine/core/src/components/kritzel-engine/object-titlebar-layer.tsx` + `.css` — functional render layer and styles
+- `libs/engine/core/src/components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer.tsx` + `.css` — functional render layer and styles
 - `libs/engine/core/src/components/kritzel-engine/kritzel-engine.tsx` — prop, event, render query, pointer guards, rotation handle offset, screenshot filter
 - `classes/tools/selection-tool.class.ts`, `classes/handlers/selection.handler.ts`, `classes/handlers/context-menu.handler.ts`, `classes/tools/base-tool.class.ts` (+ text/shape tools), `classes/managers/cursor.manager.ts`
 - `classes/objects/base-object.class.ts` (`name`), `classes/objects/group.class.ts` (`copy()` carries `name`), `classes/objects/text.class.ts` (`adjustSizeOnInput` rerender), every object class (`name?` in its config interface, set in its constructor)
