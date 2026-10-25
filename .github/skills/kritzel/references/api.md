@@ -23,8 +23,9 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | locale | "de" \| "en" \| "fr" \| string & {} |  | The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'. |
 | locales | KritzelLocale[] |  | An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty. |
 | lockDrawingScale | boolean |  | When true, objects are drawn at a fixed visual size regardless of zoom level |
+| objectConfig | KritzelObjectConfig |  | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. |
 | objectContextMenuItems | ContextMenuItem[] |  | Context menu items shown when right-clicking a selected object. |
-| objectTitlebar | KritzelObjectTitlebarConfig |  | Titlebar rendered above every object for which \`showFor\` returns true. The same configuration applies to all objects. Leave unset to disable titlebars. |
+| objectTitlebar | KritzelObjectTitlebarConfig |  | Content of the titlebar rendered above every object for which \`objectConfig.hasTitlebar\` is true. The same configuration applies to all objects. Leave unset to disable titlebars. |
 | scaleMax | number |  | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine. |
 | scaleMin | number |  | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine. |
 | syncConfig | KritzelSyncConfig |  | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket). |
@@ -188,8 +189,9 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | lockDrawingScale | boolean |  |  |
 | loginConfig | KritzelLoginConfig |  | Optional login configuration. When provided, a "Sign in" button is shown that opens a login dialog with the configured providers. |
 | moreMenuItems | IKritzelMenuItem<any>[] |  |  |
+| objectConfig | KritzelObjectConfig |  | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. |
 | objectContextMenuItems | ContextMenuItem[] |  |  |
-| objectTitlebar | KritzelObjectTitlebarConfig |  | Titlebar rendered above every object for which \`showFor\` returns true. The same configuration applies to all objects. Leave unset to disable titlebars. |
+| objectTitlebar | KritzelObjectTitlebarConfig |  | Content of the titlebar rendered above every object for which \`objectConfig.hasTitlebar\` is true. The same configuration applies to all objects. Leave unset to disable titlebars. |
 | scaleMax | number |  |  |
 | scaleMin | number |  |  |
 | syncConfig | KritzelSyncConfig |  |  |

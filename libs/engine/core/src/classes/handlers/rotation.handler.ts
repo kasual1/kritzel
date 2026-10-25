@@ -52,7 +52,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         const selectionGroup = this._core.store.selectionGroup;
-        if (selectionGroup && this._core.store.state.isRotationHandleSelected) {
+        if (selectionGroup && this._core.store.state.isRotationHandleSelected && this._core.objectConfigManager.isRotatable(selectionGroup)) {
           selectionGroup.beginTransform();
 
           const clientX = event.clientX - this._core.store.offsetX;
@@ -88,7 +88,7 @@ export class KritzelRotationHandler extends KritzelBaseHandler {
 
       if (activePointers.length === 1) {
         const selectionGroup = this._core.store.selectionGroup;
-        if (selectionGroup && this._core.store.state.isRotationHandleSelected) {
+        if (selectionGroup && this._core.store.state.isRotationHandleSelected && this._core.objectConfigManager.isRotatable(selectionGroup)) {
           selectionGroup.beginTransform();
 
           const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);

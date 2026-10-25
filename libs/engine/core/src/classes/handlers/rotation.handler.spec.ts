@@ -66,6 +66,7 @@ describe('KritzelRotationHandler', () => {
     };
 
     mockCore = {
+      objectConfigManager: { isRotatable: jest.fn().mockReturnValue(true) },
       store: {
         get state() {
           return mockState;
@@ -170,6 +171,29 @@ describe('KritzelRotationHandler', () => {
 
         rotationHandler.handlePointerDown(event);
 
+        expect(mockState.isRotating).toBe(false);
+        expect(mockSelectionGroup.beginTransform).not.toHaveBeenCalled();
+      });
+
+      it('should not start rotation when the selection is not rotatable', () => {
+        mockSelectionGroup = {
+          width: 100,
+          height: 100,
+          translateX: 50,
+          translateY: 50,
+          rotation: 0,
+          scale: 1,
+          rotate: jest.fn(),
+          update: jest.fn(),
+          beginTransform: jest.fn(),
+        };
+        mockState.isRotationHandleSelected = true;
+        (mockCore as any).objectConfigManager.isRotatable.mockReturnValue(false);
+        const event = createPointerEvent('pointerdown', { pointerType: 'mouse', button: 0 });
+
+        rotationHandler.handlePointerDown(event);
+
+        expect((mockCore as any).objectConfigManager.isRotatable).toHaveBeenCalledWith(mockSelectionGroup);
         expect(mockState.isRotating).toBe(false);
         expect(mockSelectionGroup.beginTransform).not.toHaveBeenCalled();
       });

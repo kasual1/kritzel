@@ -67,6 +67,7 @@ import { KritzelExportable, KritzelObjectExportContext, KritzelObjectExportForma
 import { KritzelSvgExportHelper } from '../../helpers/svg-export.helper';
 import { KritzelToolDefinition } from '../../interfaces/tool.interface';
 import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
+import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
 import { KritzelResolvedTitlebar, KritzelTitlebarMetrics } from '../../classes/managers/object-titlebar.manager';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
@@ -213,13 +214,26 @@ export class KritzelEngine {
   }
 
   /**
-   * Titlebar rendered above every object for which `showFor` returns true. The same configuration
-   * applies to all objects. Leave unset to disable titlebars.
+   * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar`
+   * is true. The same configuration applies to all objects. Leave unset to disable titlebars.
    */
   @Prop() objectTitlebar?: KritzelObjectTitlebarConfig;
   @Watch('objectTitlebar')
   onObjectTitlebarChange() {
     // The titlebar manager reads this prop live, so only the render needs refreshing.
+    this.core.objectTitlebarManager.resetWarnings();
+    this.core.rerender();
+  }
+
+  /**
+   * Configures how objects behave, in one place for all objects: which objects get a titlebar,
+   * and which can be rotated or resized. Each option is a boolean or a function of the object.
+   */
+  @Prop() objectConfig?: KritzelObjectConfig;
+  @Watch('objectConfig')
+  onObjectConfigChange() {
+    // The object config manager reads this prop live, so only the render needs refreshing.
+    this.core.objectConfigManager.resetWarnings();
     this.core.objectTitlebarManager.resetWarnings();
     this.core.rerender();
   }
@@ -3276,11 +3290,9 @@ export class KritzelEngine {
   }
 
   private getSelectionHandleCapabilities(object: KritzelBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
-    const selectedObjects = KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') ? object.objects : [object];
-
     return {
-      canRenderResizeHandles: selectedObjects.every(selectedObject => selectedObject.isResizable !== false),
-      canRenderRotationHandle: selectedObjects.every(selectedObject => selectedObject.isRotatable !== false),
+      canRenderResizeHandles: this.core.objectConfigManager.isResizable(object),
+      canRenderRotationHandle: this.core.objectConfigManager.isRotatable(object),
     };
   }
 

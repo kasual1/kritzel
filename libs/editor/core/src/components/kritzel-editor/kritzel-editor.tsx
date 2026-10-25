@@ -13,7 +13,7 @@ import { KritzelLineTool } from '@kritzel/engine';
 import { KritzelTextTool } from '@kritzel/engine';
 import { KritzelShapeTool } from '@kritzel/engine';
 import { ContextMenuItem } from '@kritzel/engine';
-import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from '@kritzel/engine';
+import { KritzelObjectConfig, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from '@kritzel/engine';
 import { DEFAULT_BRUSH_CONFIG } from '@kritzel/engine';
 import { DEFAULT_LINE_TOOL_CONFIG } from '@kritzel/engine';
 import { DEFAULT_TEXT_CONFIG } from '@kritzel/engine';
@@ -223,10 +223,16 @@ export class KritzelEditor {
   ];
 
   /**
-   * Titlebar rendered above every object for which `showFor` returns true. The same configuration
-   * applies to all objects. Leave unset to disable titlebars.
+   * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar`
+   * is true. The same configuration applies to all objects. Leave unset to disable titlebars.
    */
   @Prop() objectTitlebar?: KritzelObjectTitlebarConfig;
+
+  /**
+   * Configures how objects behave, in one place for all objects: which objects get a titlebar,
+   * and which can be rotated or resized. Each option is a boolean or a function of the object.
+   */
+  @Prop() objectConfig?: KritzelObjectConfig;
 
   @Prop() moreMenuItems?: IKritzelMenuItem[] = [
     {
@@ -1821,6 +1827,7 @@ export class KritzelEditor {
             globalContextMenuItems={this.globalContextMenuItems}
             objectContextMenuItems={this.objectContextMenuItems}
             objectTitlebar={this.objectTitlebar}
+            objectConfig={this.objectConfig}
             tools={tools}
             onIsEngineReady={event => this.onEngineReady(event)}
             onWorkspacesChange={event => this.handleWorkspacesChange(event)}

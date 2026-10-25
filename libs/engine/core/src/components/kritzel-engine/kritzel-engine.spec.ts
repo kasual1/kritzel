@@ -93,6 +93,11 @@ describe('KritzelEngine', () => {
 
   /** Builds a fresh mock core for the engine to delegate to. */
   const createMockCore = () => ({
+    objectConfigManager: {
+      isResizable: jest.fn().mockReturnValue(true),
+      isRotatable: jest.fn().mockReturnValue(true),
+      resetWarnings: jest.fn(),
+    },
     objectTitlebarManager: {
       config: undefined,
       getOwnerFromEvent: jest.fn().mockReturnValue(null),
@@ -1136,37 +1141,35 @@ describe('KritzelEngine', () => {
   });
 
   describe('selection handle capabilities', () => {
-    it('allows both handles for a single object when both capabilities are enabled', () => {
-      const object = { isResizable: true, isRotatable: true } as unknown as KritzelBaseObject<any>;
+    it('allows both handles when the object config manager allows both', () => {
+      const object = {} as KritzelBaseObject<any>;
 
       const result = (engine as any).getSelectionHandleCapabilities(object);
 
       expect(result).toEqual({ canRenderResizeHandles: true, canRenderRotationHandle: true });
+      expect(core.objectConfigManager.isResizable).toHaveBeenCalledWith(object);
+      expect(core.objectConfigManager.isRotatable).toHaveBeenCalledWith(object);
     });
 
-    it('hides individual handles for a single object when capability is disabled', () => {
-      const object = { isResizable: false, isRotatable: true } as unknown as KritzelBaseObject<any>;
+    it('hides the handles the object config manager forbids', () => {
+      core.objectConfigManager.isResizable.mockReturnValue(false);
 
-      const result = (engine as any).getSelectionHandleCapabilities(object);
+      const result = (engine as any).getSelectionHandleCapabilities({} as KritzelBaseObject<any>);
 
       expect(result).toEqual({ canRenderResizeHandles: false, canRenderRotationHandle: true });
     });
+  });
 
-    it('uses restrictive policy for selection groups and hides a handle when any child disables it', () => {
-      const selectionGroup = {
-        objects: [
-          { isResizable: true, isRotatable: true },
-          { isResizable: false, isRotatable: true },
-        ],
-      } as unknown as KritzelBaseObject<any>;
+  describe('objectConfig', () => {
+    it('resets warnings and rerenders when the config changes', () => {
+      const engineCore = (engine as any).core;
+      engineCore.rerender = jest.fn();
 
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === selectionGroup && className === 'KritzelSelectionGroup';
-      });
+      engine.onObjectConfigChange();
 
-      const result = (engine as any).getSelectionHandleCapabilities(selectionGroup);
-
-      expect(result).toEqual({ canRenderResizeHandles: false, canRenderRotationHandle: true });
+      expect(engineCore.objectConfigManager.resetWarnings).toHaveBeenCalled();
+      expect(engineCore.objectTitlebarManager.resetWarnings).toHaveBeenCalled();
+      expect(engineCore.rerender).toHaveBeenCalled();
     });
   });
 

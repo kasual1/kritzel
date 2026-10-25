@@ -106,6 +106,8 @@ export type {
     KritzelAgenticCursorTarget,
     KritzelEasing,
     ContextMenuItem,
+    KritzelObjectConfig,
+    KritzelObjectConfigValue,
     KritzelObjectTitlebarConfig,
     KritzelObjectTitlebarContext,
     KritzelObjectTitlebarActionEvent,

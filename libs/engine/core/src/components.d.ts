@@ -13,6 +13,7 @@ import { IKritzelUser } from "./interfaces/user.interface";
 import { KritzelToolDefinition } from "./interfaces/tool.interface";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from "./interfaces/object-titlebar.interface";
+import { KritzelObjectConfig } from "./interfaces/object-config.interface";
 import { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -46,6 +47,7 @@ export { IKritzelUser } from "./interfaces/user.interface";
 export { KritzelToolDefinition } from "./interfaces/tool.interface";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
 export { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from "./interfaces/object-titlebar.interface";
+export { KritzelObjectConfig } from "./interfaces/object-config.interface";
 export { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -442,11 +444,15 @@ export namespace Components {
          */
         "moveAgenticCursor": (id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>;
         /**
+          * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
+         */
+        "objectConfig"?: KritzelObjectConfig;
+        /**
           * Context menu items shown when right-clicking a selected object.
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
-          * Titlebar rendered above every object for which `showFor` returns true. The same configuration applies to all objects. Leave unset to disable titlebars.
+          * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
         "objectTitlebar"?: KritzelObjectTitlebarConfig;
         /**
@@ -930,11 +936,15 @@ declare namespace LocalJSX {
          */
         "lockDrawingScale"?: boolean;
         /**
+          * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
+         */
+        "objectConfig"?: KritzelObjectConfig;
+        /**
           * Context menu items shown when right-clicking a selected object.
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
-          * Titlebar rendered above every object for which `showFor` returns true. The same configuration applies to all objects. Leave unset to disable titlebars.
+          * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
          */
         "objectTitlebar"?: KritzelObjectTitlebarConfig;
         /**

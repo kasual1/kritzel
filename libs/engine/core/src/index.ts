@@ -60,6 +60,7 @@ export * from './classes/managers/anchor.manager';
 export * from './classes/managers/theme.manager';
 export * from './classes/managers/localization.manager';
 export * from './classes/managers/object-titlebar.manager';
+export * from './classes/managers/object-config.manager';
 
 export * from './classes/registries/dynamic-object-renderer.registry';
 export * from './classes/registries/font-registry.class';
@@ -101,6 +102,7 @@ export * from './interfaces/master-detail.interface';
 export * from './interfaces/tool-config.interface';
 export * from './interfaces/arrow-head.interface';
 export * from './interfaces/object-titlebar.interface';
+export * from './interfaces/object-config.interface';
 export * from './events/active-workspace-change.event';
 export * from './events/editor-is-ready.event';
 export * from './events/login.event';

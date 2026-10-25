@@ -66,6 +66,7 @@ describe('KritzelResizeHandler', () => {
     };
 
     mockCore = {
+      objectConfigManager: { isResizable: jest.fn().mockReturnValue(true) },
       store: {
         get state() {
           return mockState;
@@ -177,6 +178,30 @@ describe('KritzelResizeHandler', () => {
         resizeHandler.handlePointerDown(event);
 
         expect(mockState.isResizing).toBe(false);
+      });
+
+      it('should not start resize when the selection is not resizable', () => {
+        mockSelectionGroup = {
+          width: 100,
+          height: 50,
+          translateX: 10,
+          translateY: 20,
+          rotation: 0,
+          scale: 1,
+          hasExternalAnchoredLineConnections: jest.fn().mockReturnValue(false),
+          resize: jest.fn(),
+          update: jest.fn(),
+          beginTransform: jest.fn(),
+        };
+        mockState.isResizeHandleSelected = true;
+        (mockCore as any).objectConfigManager.isResizable.mockReturnValue(false);
+        const event = createPointerEvent('pointerdown', { pointerType: 'mouse', button: 0 });
+
+        resizeHandler.handlePointerDown(event);
+
+        expect((mockCore as any).objectConfigManager.isResizable).toHaveBeenCalledWith(mockSelectionGroup);
+        expect(mockState.isResizing).toBe(false);
+        expect(mockSelectionGroup.beginTransform).not.toHaveBeenCalled();
       });
 
       it('should apply offset when calculating initial mouse position', () => {
