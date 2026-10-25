@@ -22,6 +22,7 @@ In the snippets below, `editor` is the ref element (`const editor = editorRef.cu
 | `__class__` | Type discriminator string, e.g. `'KritzelShape'` |
 | `workspaceId` | Set automatically when added |
 | `name` | Optional user-facing name; the default title of the object's titlebar. Persisted and synced |
+| `isRotatable`, `isResizable` | Per-object flags (default `true`), persisted and synced. Combine with the editor's `objectConfig` (see below): either can forbid |
 
 Colors everywhere are **theme-aware**: `{ light: '#hex', dark: '#hex', label?: string }`.
 
@@ -173,9 +174,39 @@ await editor.alignObjects(KritzelAlignment.CenterHorizontal); // needs ≥ 2 sel
 
 Groups expose their children via `childIds: string[]`; resolve children with `getObjectById`.
 
+## Object configuration (`objectConfig`)
+
+The `objectConfig` prop (on the editor and the engine) configures how objects behave, in one place for all objects. Each option is a boolean for every object, or a function `(object) => boolean` deciding per object:
+
+```tsx
+import { KritzelEditor, type KritzelObjectConfig } from '@kritzel/react-editor';
+
+// Module scope (or useMemo): a new object on every render re-evaluates every option.
+const objectConfig: KritzelObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'KritzelGroup',
+  isRotatable: object => object.__class__ !== 'KritzelText',
+  isResizable: true,
+};
+
+<KritzelEditor objectConfig={objectConfig} />
+```
+
+| Option | Default | Meaning |
+|---|---|---|
+| `hasTitlebar` | `false` | Whether a top-level object or group gets a titlebar. The bar's content comes from `objectTitlebar` (see the titlebar section of theming-and-context-menus.md); grouped children are never asked |
+| `isRotatable` | `true` | Whether the selection shows the rotation handle and can be rotated by dragging it |
+| `isResizable` | `true` | Whether the selection shows the resize handles and can be resized by dragging them |
+
+- `isRotatable` / `isResizable` **combine** with the object's own `isRotatable` / `isResizable` flags: a gesture is allowed only when both allow it, so either one can forbid. Use the persisted flag for a rule that belongs to one object and must sync (`await editor.updateObject(obj, { isRotatable: false })`); use `objectConfig` for app-wide rules.
+- Groups and multi-selections can be rotated / resized only when every selected object and everything nested inside groups allows it; the function is called for each of them. `hasTitlebar` is only asked about the top-level object or group itself.
+- A forbidden handle is hidden and dragging it does nothing. Line endpoint handles are not covered by `isResizable`. Programmatic API calls (`updateObject`, alignment, …) are not restricted.
+- Functions run **synchronously while rendering and handling input**: keep them pure and cheap. A non-boolean result, a throw or a returned promise resolves to the option's default; a throw or promise warns once per option (re-armed when a new config object is passed).
+- Check types with `object.__class__` (e.g. `'KritzelGroup'`), not `instanceof`, which fails when the app bundles more than one copy of the engine. To inspect a group's children, read `childIds` rather than the `children` getter.
+- The config is read live, belongs to this editor instance and is neither persisted nor synced. Functions are re-evaluated on every render; when they depend on app state, pass a **new** config object after that state changes (derive it with `useMemo`) so the canvas rerenders.
+
 ## Names and titlebars
 
-Every object constructor accepts `name`, the default title of its titlebar. Which objects get a bar is decided by the `showFor` function of the editor's `objectTitlebar` prop (see the titlebar section of theming-and-context-menus.md); without that prop, or without `showFor`, nothing is rendered.
+Every object constructor accepts `name`, the default title of its titlebar. Which objects get a bar is decided by `objectConfig.hasTitlebar` (see above); the bar's content comes from the `objectTitlebar` prop (see the titlebar section of theming-and-context-menus.md). Without both, nothing is rendered.
 
 ```tsx
 const frame = new KritzelShape({
@@ -191,8 +222,8 @@ await editor.addObject(frame);
 await editor.updateObject(frame, { name: 'Desktop (wide)' });
 ```
 
-- Groups get a bar only when `showFor` accepts the group; grouped children never get their own bar.
-- To show or hide bars per object at runtime, keep your own state (e.g. a `Set` of ids), read it inside `showFor` and pass a new config object (see theming-and-context-menus.md).
+- Groups get a bar only when `hasTitlebar` returns `true` for the group; grouped children never get their own bar.
+- To show or hide bars per object at runtime, keep your own state (e.g. a `Set` of ids), read it inside `hasTitlebar` and pass a new `objectConfig` object (see theming-and-context-menus.md).
 - Titlebars are not part of an object's bounds; `boundingBox`, the selection box, alignment and exports are unchanged.
 - Without a `name`, the title falls back to a localized type label (`Shape`, `Text`, `Group`, …).
 

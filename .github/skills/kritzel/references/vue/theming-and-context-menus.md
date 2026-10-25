@@ -118,21 +118,25 @@ On touch devices, the engine's `@longpress` event (payload: `PointerEvent` in `(
 
 ## Object titlebars
 
-An optional bar above objects (Framer / Claude-design style). Its content is declared **once** with the `:objectTitlebar` prop (on `KritzelEditor` and `KritzelEngine`) and is the same for every object; its `showFor` function decides which objects get a bar, and each bar is titled by the object's `name` (see objects.md). Leaving the prop unset turns the feature off.
+An optional bar above objects (Framer / Claude-design style). Its content and appearance are declared **once** with the `:objectTitlebar` prop (on `KritzelEditor` and `KritzelEngine`) and are the same for every object. Which objects get a bar is decided by `hasTitlebar` in the `:objectConfig` prop (see the object configuration section of objects.md), and each bar is titled by the object's `name`. Leaving `:objectTitlebar` unset turns the feature off; without `objectConfig.hasTitlebar` no bar renders. Pass both props.
 
-Define the config as a const in `<script setup>` (never inline in the template) and handle buttons through `@objectTitlebarAction` (see events.md):
+Define both configs as consts in `<script setup>` (never inline in the template) and handle buttons through `@objectTitlebarAction` (see events.md):
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
 import {
   KritzelEditor,
+  type KritzelObjectConfig,
   type KritzelObjectTitlebarActionEvent,
   type KritzelObjectTitlebarConfig,
 } from '@kritzel/vue-editor'
 
+const objectConfig: KritzelObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'KritzelShape',   // without it no bar renders
+}
+
 const objectTitlebar: KritzelObjectTitlebarConfig = {
-  showFor: object => object.__class__ === 'KritzelShape',   // required: without it no bar renders
   left: [
     { id: 'preview', type: 'button', icon: 'play', variant: 'filled', tooltip: 'Preview' },
     { id: 'title', type: 'title' },
@@ -149,32 +153,36 @@ function onTitlebarAction(event: Event) {
 </script>
 
 <template>
-  <KritzelEditor :objectTitlebar="objectTitlebar" @objectTitlebarAction="onTitlebarAction" />
+  <KritzelEditor
+    :objectConfig="objectConfig"
+    :objectTitlebar="objectTitlebar"
+    @objectTitlebarAction="onTitlebarAction"
+  />
 </template>
 ```
 
-`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset (type icon + title) without `showFor`; spread it: `{ ...KRITZEL_DEFAULT_OBJECT_TITLEBAR, showFor: object => object.__class__ === 'KritzelGroup' }`.
+`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset (type icon + title); pass it as the titlebar config (or spread it to change options) and pick the objects with `objectConfig`, e.g. `{ hasTitlebar: object => object.__class__ === 'KritzelGroup' }`.
 
-`showFor(object) => boolean` is a plain function that receives just the object:
+`objectConfig.hasTitlebar` is `true` / `false` for every object, or a plain function `(object) => boolean` that receives just the object:
 
-- **Default: no bars.** Without `showFor` nothing renders, and the engine logs a one-time `console.info` hint while `:objectTitlebar` is set.
-- Called **synchronously for every visible top-level object on every render**: keep it pure and cheap. Only a strict `true` shows a bar; any other value, a throw or a returned promise counts as `false` (a failure warns once).
-- Grouped children are never passed in and never get their own bar; the group is passed instead and gets a bar only if `showFor` returns `true` for it (no special group rules).
+- **Default: no bars.** Without `objectConfig.hasTitlebar` nothing renders, and the engine logs a one-time `console.info` hint while `:objectTitlebar` is set. `hasTitlebar: true` gives every top-level object a bar.
+- Called **synchronously for every visible top-level object on every render**: keep it pure and cheap. Only `true` shows a bar; a non-boolean result, a throw or a returned promise counts as `false` (a throw or promise warns once).
+- Grouped children are never passed in and never get their own bar; the group is passed instead and gets a bar only if `hasTitlebar` returns `true` for it (no special group rules; its children are not asked).
 - Check types with `object.__class__` (`'KritzelGroup'`, `'KritzelShape'`, `'KritzelText'`, `'KritzelImage'`, `'KritzelPath'`, `'KritzelLine'`, `'KritzelIframeObject'`, `'KritzelDynamicObject'`), not `instanceof`, which fails when the app bundles more than one copy of the engine.
-- To inspect a group's children, read `childIds` (cheap) rather than the `children` getter (looks them up in the store). `showFor` receives a `KritzelBaseObject`, so cast after the `__class__` check, e.g. `(object as KritzelGroup).childIds`.
+- To inspect a group's children, read `childIds` (cheap) rather than the `children` getter (looks them up in the store). The function receives a `KritzelBaseObject`, so cast after the `__class__` check, e.g. `(object as KritzelGroup).childIds`.
 
-`showFor` is only re-evaluated on renders, and a **new** config object triggers one. To toggle bars per object at runtime, keep the ids in a `ref`, read them inside `showFor` and derive the config with `computed()` (replace the `Set`, never mutate it). The ids live in the app, so they are neither persisted nor synced:
+`hasTitlebar` is only re-evaluated on renders, and a **new** `objectConfig` object triggers one. To toggle bars per object at runtime, keep the ids in a `ref`, read them inside `hasTitlebar` and derive `objectConfig` with `computed()` (replace the `Set`, never mutate it); the titlebar config itself stays constant. The ids live in the app, so they are neither persisted nor synced:
 
 ```vue
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { KRITZEL_DEFAULT_OBJECT_TITLEBAR, KritzelEditor, type KritzelObjectTitlebarConfig } from '@kritzel/vue-editor'
+import { KRITZEL_DEFAULT_OBJECT_TITLEBAR, KritzelEditor, type KritzelObjectConfig } from '@kritzel/vue-editor'
 
 const titlebarIds = ref(new Set<string>())
 
-const objectTitlebar = computed<KritzelObjectTitlebarConfig>(() => {
+const objectConfig = computed<KritzelObjectConfig>(() => {
   const ids = titlebarIds.value
-  return { ...KRITZEL_DEFAULT_OBJECT_TITLEBAR, showFor: object => ids.has(object.id) }
+  return { hasTitlebar: object => ids.has(object.id) }
 })
 
 function toggleTitlebar(id: string) {
@@ -185,7 +193,7 @@ function toggleTitlebar(id: string) {
 </script>
 
 <template>
-  <KritzelEditor :objectTitlebar="objectTitlebar" />
+  <KritzelEditor :objectConfig="objectConfig" :objectTitlebar="KRITZEL_DEFAULT_OBJECT_TITLEBAR" />
 </template>
 ```
 
@@ -201,7 +209,7 @@ Items — every item needs a stable `id` (used in events) and accepts `isVisible
 
 Any value may be a function `(context) => value`. It runs **synchronously on every render**: keep it pure and cheap; promises are not supported (they resolve to the fallback and warn once). The context has `object`, `objectType`, `children`, `isActive`, `title`, `size` (world units), `contentSize` (`object.width` / `height`, e.g. a frame's `1200`), `barWidth` (screen px) and `t(key, vars)`.
 
-Config options: `showFor(object)` (no bars without it), `left` (default: one title item), `center`, `right`, `visibility` (`'always'` default, or `'active'` = only while selected), `rotation` (`'follow'` default = along the rotated top edge, or `'upright'`), `title(object)` resolver, `draggable` (default `true`), `hideBelowWidth` (default `40` screen px).
+Config options: `left` (default: one title item), `center`, `right`, `visibility` (`'always'` default, or `'active'` = only while selected), `rotation` (`'follow'` default = along the rotated top edge, or `'upright'`), `title(object)` resolver, `draggable` (default `true`), `hideBelowWidth` (default `40` screen px). Which objects get a bar is not a titlebar option: it is `objectConfig.hasTitlebar`.
 
 Behavior: the bar is active (highlighted) while its object, or something inside its group, is selected. Pressing the bar selects the object and dragging moves it exactly like dragging the object (same undo and sync); Shift/Ctrl-press toggles it in the selection. Right-click / long-press opens the object context menu. Clicking a text object's bar does not start editing. While a drawing tool is active, the bar lets input pass through but buttons stay clickable. Bars keep a constant screen size at any zoom, hide below `hideBelowWidth`, and are excluded from screenshots and exports.
 

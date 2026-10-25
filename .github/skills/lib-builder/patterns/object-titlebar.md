@@ -2,21 +2,22 @@
 
 ## Scope
 
-Use this pattern when maintaining the optional titlebar rendered above objects (`objectTitlebar` prop and its `showFor` function, `name` object field, `objectTitlebarAction` event).
+Use this pattern when maintaining the optional titlebar rendered above objects (`objectTitlebar` prop for content and appearance, `objectConfig.hasTitlebar` for which objects get a bar, `name` object field, `objectTitlebarAction` event). The `objectConfig` prop itself and its resolution are covered by [object-config.md](object-config.md).
 
 Primary touchpoints:
 - `libs/engine/core/src/interfaces/object-titlebar.interface.ts` — public config, item, context and event types
-- `libs/engine/core/src/classes/managers/object-titlebar.manager.ts` — owner/active resolution (including `showFor`), item evaluation, button invocation, `KRITZEL_DEFAULT_OBJECT_TITLEBAR`
+- `libs/engine/core/src/classes/managers/object-titlebar.manager.ts` — owner/active resolution (owners via `core.objectConfigManager.hasTitlebar`), item evaluation, button invocation, `KRITZEL_DEFAULT_OBJECT_TITLEBAR`
+- `libs/engine/core/src/classes/managers/object-config.manager.ts` — resolves `objectConfig.hasTitlebar` per object (see object-config.md)
 - `libs/engine/core/src/helpers/object-titlebar.helper.ts` — pure geometry (anchor, transform, culling padding, pixel parsing)
 - `libs/engine/core/src/components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer.tsx` + `.css` — internal `<kritzel-object-titlebar-layer>` component (`shadow: false`, so parts and `elementsFromPoint` reach the bars; listed in `INTERNAL_COMPONENTS` of the engine and editor Stencil configs); the engine passes it the resolved titlebars every render
 - `libs/engine/core/src/components/kritzel-engine/kritzel-engine.tsx` — prop, event, render query, pointer guards, rotation handle offset, screenshot filter
 - `classes/tools/selection-tool.class.ts`, `classes/handlers/selection.handler.ts`, `classes/handlers/context-menu.handler.ts`, `classes/tools/base-tool.class.ts` (+ text/shape tools), `classes/managers/cursor.manager.ts`
 - `classes/objects/base-object.class.ts` (`name`), `classes/objects/group.class.ts` (`copy()` carries `name`), `classes/objects/text.class.ts` (`adjustSizeOnInput` rerender), every object class (`name?` in its config interface, set in its constructor)
-- `libs/editor/core/src/components/kritzel-editor/kritzel-editor.tsx` — passes `objectTitlebar` through and re-emits `objectTitlebarAction`
+- `libs/editor/core/src/components/kritzel-editor/kritzel-editor.tsx` — passes `objectTitlebar` and `objectConfig` through and re-emits `objectTitlebarAction`
 
 ## Maintainer Mental Model
 
-The configuration is declared once (left / center / right item arrays) and applies to every object. Its `showFor(object)` function decides which objects get a bar; there is no per-object flag, so apps that toggle bars per object keep their own state, read it inside `showFor` and pass a new config object. The persisted, synced `name` is the default title.
+The titlebar configuration is declared once (left / center / right item arrays) and applies to every object; it only describes content and appearance. Which objects get a bar is `objectConfig.hasTitlebar` (a boolean or `(object) => boolean`, default `false`), resolved by `KritzelObjectConfigManager.hasTitlebar`. There is no per-object persisted flag, so apps that toggle bars per object keep their own state, read it inside `hasTitlebar` and pass a new `objectConfig` object. The persisted, synced `name` is the default title.
 
 Flow on every engine render:
 1. `getMetrics(computedStyle)` reads `--kritzel-titlebar-height` and `--kritzel-titlebar-offset` (px only)
@@ -28,14 +29,17 @@ Flow on every engine render:
 
 - `KritzelObjectTitlebarManager.config` returns `this._core.engine?.objectTitlebar` on every access — never copy the config into the manager (lib-builder rules 8–9)
 - `@Watch('objectTitlebar')` only calls `resetWarnings()` and `core.rerender()`
-- `showFor` is re-evaluated on every render and never cached; apps get a re-evaluation after changing their own state by passing a new config reference, which the watcher turns into a rerender
-- `kritzel-editor` forwards the prop unchanged; keep the prop name identical on both components and in all wrapper proxies
+- `@Watch('objectConfig')` calls `objectConfigManager.resetWarnings()`, `objectTitlebarManager.resetWarnings()` (re-arms the missing-`hasTitlebar` hint) and `core.rerender()`
+- `hasTitlebar` is re-evaluated on every render and never cached; apps get a re-evaluation after changing their own state by passing a new `objectConfig` reference, which the watcher turns into a rerender
+- `kritzel-editor` forwards both props unchanged; keep the prop names identical on both components and in all wrapper proxies
 
 ## Owner and Active Resolution
 
-- Owners are candidates that are not `markedForRemoval`, not a `KritzelSelectionGroup` / `KritzelSelectionBox`, not listed in any candidate group's `childIds` (top-level only), and for which `config.showFor(candidate) === true`. `showFor` is evaluated last, so it is never called for removed objects, grouped children or selection objects
-- `isShownFor` wraps `showFor` in try/catch; a throw or a returned thenable counts as `false` and warns once through the separate `_reportedShowFor` set (not `warnOnce`). A missing `showFor` makes `getOwners` return `[]` and logs a one-time `console.info` hint while titlebars are enabled. `resetWarnings()` re-arms both `_warnedItems` and `_reportedShowFor`
-- A group's bounds contain its children, so a visible child's group is always a candidate; children never render their own bar, and the group gets one only if `showFor` accepts it (no special group rules)
+- Owners are candidates that are not `markedForRemoval`, not a `KritzelSelectionGroup` / `KritzelSelectionBox`, not listed in any candidate group's `childIds` (top-level only), and for which `core.objectConfigManager.hasTitlebar(candidate)` is `true`. That check is the last condition of the filter, so the app's function is never called for removed objects, grouped children or selection objects
+- Failure handling lives in the object config manager: a throw, a thenable or a non-boolean result resolves to `false` (the `hasTitlebar` default), and throws/thenables warn once per option with a `[KritzelObjectConfig]` prefix. The titlebar manager has no try/catch of its own for this
+- When `objectConfigManager.isConfigured('hasTitlebar')` is `false`, `getOwners` returns `[]` before scanning candidates and, only while `objectTitlebar` is set (`isEnabled`), logs a one-time `console.info` hint guarded by `_hasReportedMissingHasTitlebar`. `resetWarnings()` re-arms both `_warnedItems` and `_hasReportedMissingHasTitlebar`
+- `hasTitlebar` is asked about the candidate only, never about a group's children (unlike `isRotatable` / `isResizable`, which require all descendants)
+- A group's bounds contain its children, so a visible child's group is always a candidate; children never render their own bar, and the group gets one only if `hasTitlebar` returns `true` for it (no special group rules)
 - Active = the owner itself, or anything nested inside it, is in `store.selectionGroup.objectIds` (walk child → parent through `childIds`, guarded against cycles)
 - Title resolution order: item `text` > `config.title(object)` > `object.name` > localized `objectType.*` term (`objectType.object` fallback). Add a term in every locale file when a new object class needs its own label
 
@@ -88,8 +92,8 @@ Two DOM markers drive everything (constants exported from the manager):
 
 - Never put `class="object"` (or anything matched by `getObjectFromPointerEvent(event, '.object')`) on titlebar elements
 - Never write wildcard custom-property names such as `--kritzel-titlebar-*` in `libs/**/src` files, including comments: the theme generator scans every `.ts`, `.tsx` and `.css` file and would emit a bogus token
-- Keep dynamic values synchronous; do not add promise support to `evaluate()` or `isShownFor()`
-- `showFor` is the only per-object switch: keep it a function that receives just the object, with no bars by default. Do not add a persisted opt-in flag, array shorthands or helper functions for it
+- Keep dynamic values synchronous; do not add promise support to `evaluate()` here or in the object config manager
+- `objectConfig.hasTitlebar` is the only per-object switch: a boolean or a function that receives just the object, with no bars by default. Do not add a persisted opt-in flag, array shorthands, helper functions or a second switch on `objectTitlebar` for it
 - Keep the manager framework-agnostic and free of DOM writes; the layer is a functional component fed by resolved data
 - New object fields shared by all types go on `KritzelBaseObject` and, if settable at construction, into each object config interface and constructor (as `name` is); `serialize()` / `deserialize()` pick them up automatically
 - Never add `protected` or `private` members to `KritzelBaseObject` (or other public object classes): Vue's `ref()` unwrapping drops non-public members, so objects kept in a `ref` would no longer type-check as `KritzelBaseObject`. Put shared construction logic in a static helper instead
@@ -97,16 +101,17 @@ Two DOM markers drive everything (constants exported from the manager):
 
 ## Testing Matrix
 
-- Unit: `object-titlebar.helper.spec.ts` (anchors, transform, padding, pixel parsing) and `object-titlebar.manager.spec.ts` (live config read, owners and `showFor` (strict `true`, missing hint, failures warn once), active state, title order, evaluation and warnings, owner lookup fallbacks, invocation)
+- Unit: `object-titlebar.helper.spec.ts` (anchors, transform, padding, pixel parsing) and `object-titlebar.manager.spec.ts` (live config read, owners via `objectConfig.hasTitlebar` (missing hint once and only while enabled, grouped children excluded, not asked for removed/grouped/selection objects), active state, title order, evaluation and warnings, owner lookup fallbacks, invocation)
 - Unit: `selection-tool.class.spec.ts`, `selection.handler.spec.ts`, `context-menu.handler.spec.ts`, `text-tool` / `shape-tool` specs for pointer behavior
-- Unit: `kritzel-engine.spec.ts` (prop watcher, control pointer guard, shortcut keys, screenshot filter, event) and `kritzel-editor.spec.ts` (event re-emission)
+- Unit: `object-config.manager.spec.ts` (`hasTitlebar` default, values, failures and warnings; see object-config.md)
+- Unit: `kritzel-engine.spec.ts` (prop watchers, control pointer guard, shortcut keys, screenshot filter, event) and `kritzel-editor.spec.ts` (event re-emission)
 - Unit: `store.class.spec.ts` (padded query), `group.class.spec.ts` (`copy()` keeps the name), `theme.helper.spec.ts` (variable count)
-- E2E: `apps/core/_e2e/tests/object-titlebar.spec.ts` — `showFor` selection, constant size across zoom, hide below width, active state, drag + undo, buttons, text edit suppression, groups, context menu, theme variables, `::part()`
+- E2E: `apps/core/_e2e/tests/object-titlebar.spec.ts` — `objectConfig.hasTitlebar` selection, constant size across zoom, hide below width, active state, drag + undo, buttons, text edit suppression, groups, context menu, theme variables, `::part()`
 
 ## Review Checklist
 
 - Config still read live; watcher only resets warnings and rerenders
-- `showFor` evaluated last, only for top-level candidates, strict `true` only, failures and a missing `showFor` reported once
+- `objectConfigManager.hasTitlebar` evaluated last, only for top-level candidates; failures reported once by the object config manager, a missing `hasTitlebar` reported once by the titlebar manager
 - Render query padding is `0` when `objectTitlebar` is unset
 - No titlebar element carries the `object` class; controls carry the control attribute, surfaces the owner attribute
 - Titlebar presses go through `selectObjects` / toggle + `moveHandler` only

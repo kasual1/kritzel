@@ -77,6 +77,7 @@ Select the relevant pattern based on what you're working on:
 | [provider.md](patterns/provider.md) | Adding or editing a sync/asset provider |
 | [manager.md](patterns/manager.md) | Adding or editing a cross-cutting manager |
 | [dynamic-objects.md](patterns/dynamic-objects.md) | Maintaining dynamic object rendering, renderer lifecycle, wheel behavior, and wrapper integration |
+| [object-config.md](patterns/object-config.md) | Maintaining the `objectConfig` prop (`hasTitlebar`, `isRotatable`, `isResizable`): resolution rules, enforcement in handles and handlers, adding new options |
 | [object-titlebar.md](patterns/object-titlebar.md) | Maintaining object titlebars: config, owner resolution, world-space render layer, pointer integration, and `titlebar` theme tokens |
 | [unit-tests.md](patterns/unit-tests.md) | Adding/updating Jest specs, fixing flaky tests, or adapting tests after refactors |
 | [reactivity-and-wrappers.md](patterns/reactivity-and-wrappers.md) | Debugging or preventing prop timing bugs between Stencil core and Angular/React/Vue wrappers |

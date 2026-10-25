@@ -1,6 +1,6 @@
 ---
 name: kritzel
-description: 'Integrate the Kritzel infinite canvas (kritzel-editor or kritzel-engine) in Angular, React, or Vue. Use when installing @kritzel/angular-editor, @kritzel/react-editor, or @kritzel/vue-editor; adding a whiteboard or drawing canvas; creating objects; controlling the viewport; registering tools; configuring themes, object titlebars, workspaces, persistence, or collaboration.'
+description: 'Integrate the Kritzel infinite canvas (kritzel-editor or kritzel-engine) in Angular, React, or Vue. Use when installing @kritzel/angular-editor, @kritzel/react-editor, or @kritzel/vue-editor; adding a whiteboard or drawing canvas; creating objects; configuring object behavior with objectConfig (titlebars, rotation, resizing); controlling the viewport; registering tools; configuring themes, object titlebars, workspaces, persistence, or collaboration.'
 metadata:
   kritzel-version: '0.5.10'
 ---
@@ -51,12 +51,12 @@ After choosing a framework, open the corresponding file under `./references/<fra
 | Task | Reference |
 | --- | --- |
 | Install, editor vs. engine, sizing, refs | `setup.md` |
-| Add, update, select, group or query objects | `objects.md` |
+| Add, update, select, group or query objects; configure object behavior (`objectConfig`: titlebars, rotating, resizing) | `objects.md` |
 | Pan, zoom, coordinates or boundaries | `viewport.md` |
 | Tools and toolbar | `tools-and-toolbar.md` |
 | Ready, change and titlebar action events | `events.md` |
 | Workspaces, persistence and collaboration | `workspaces-and-persistence.md` |
-| Themes, context menus and object titlebars | `theming-and-context-menus.md` |
+| Themes, context menus and object titlebar content (`objectTitlebar`) | `theming-and-context-menus.md` |
 | End-to-end examples | `recipes.md` |
 
 For current component props, methods, and events, consult [the generated API reference](./references/api.md); for object and provider APIs, use package types and the framework references. After implementation, run the application's typecheck or build and verify that the canvas has a visible size and reaches its ready event.
