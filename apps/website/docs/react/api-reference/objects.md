@@ -43,8 +43,8 @@ Abstract base class for every object that can be placed on the canvas. All other
 | isMounted | boolean | false | Whether the object is mounted to the DOM |
 | isEditable | boolean | false | Whether the object is in edit mode |
 | isInteractive | boolean | false | Whether the object responds to interaction |
-| isResizable | boolean | true | Whether the object can be resized |
-| isRotatable | boolean | true | Whether the object can be rotated |
+| isResizable | boolean | true | Whether the object can be resized. Persisted and synced. Combines with `isResizable` of the [`objectConfig` prop](../customization/object-config.md#combining-with-object-flags): either one can forbid it |
+| isRotatable | boolean | true | Whether the object can be rotated. Persisted and synced. Combines with `isRotatable` of the [`objectConfig` prop](../customization/object-config.md#combining-with-object-flags): either one can forbid it |
 
 ### Computed Properties
 

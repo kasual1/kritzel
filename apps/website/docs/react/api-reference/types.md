@@ -351,17 +351,46 @@ interface KritzelAgenticCursorDetachedEvent {
 }
 ```
 
+## Object Config Types
+
+Types used by the [`objectConfig` prop](./editor.md#object-titlebar). See [Object Configuration](../customization/object-config.md) for usage.
+
+### `KritzelObjectConfig`
+
+Passed to the `objectConfig` prop. Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized.
+
+```ts
+interface KritzelObjectConfig {
+  hasTitlebar?: KritzelObjectConfigValue; // defaults to false
+  isRotatable?: KritzelObjectConfigValue; // defaults to true
+  isResizable?: KritzelObjectConfigValue; // defaults to true
+}
+```
+
+`hasTitlebar` also requires the `objectTitlebar` prop. It is called for every visible top-level object on every render. Objects inside a group never get their own titlebar; the group is passed in instead.
+
+`isRotatable` and `isResizable` combine with the persisted `isRotatable` and `isResizable` flags of each object: either one can forbid the gesture. A group, and a selection of several objects, can only be rotated or resized when it and every object inside it allow it. When an object cannot be rotated or resized, its handles are hidden and the gesture does not start. Programmatic API calls are not affected.
+
+The configuration is local to your app and neither persisted nor synced. Pass a new object to update it.
+
+### `KritzelObjectConfigValue`
+
+```ts
+type KritzelObjectConfigValue = boolean | ((object: KritzelBaseObject) => boolean);
+```
+
+A fixed value for every object, or a function deciding per object. Functions are called synchronously while the engine renders or handles input, so they must be cheap and must not return a promise. A function that throws or returns a promise resolves to the option's default and logs a warning once. Any return value other than a boolean also resolves to the default. Compare `object.__class__` (for example `'KritzelGroup'`) rather than using `instanceof`, which fails when the app bundles more than one copy of the engine, and prefer `childIds` over `children` to inspect a group's children, for example `(object) => object.__class__ === 'KritzelGroup' && (object as KritzelGroup).childIds.length > 1`.
+
 ## Object Titlebar Types
 
 Types used by the [`objectTitlebar` prop](./editor.md#object-titlebar). See [Titlebars](../customization/titlebars.md) for usage.
 
 ### `KritzelObjectTitlebarConfig`
 
-Passed to the `objectTitlebar` prop. The same configuration applies to every object for which `showFor` returns `true`. Without `showFor`, no titlebars are rendered.
+Passed to the `objectTitlebar` prop. The same configuration applies to every object for which the `hasTitlebar` option of the `objectConfig` prop is `true`. Without `hasTitlebar`, no titlebars are rendered.
 
 ```ts
 interface KritzelObjectTitlebarConfig {
-  showFor?: (object: KritzelBaseObject) => boolean;
   left?: KritzelTitlebarItem[];   // defaults to [{ id: 'title', type: 'title' }]
   center?: KritzelTitlebarItem[];
   right?: KritzelTitlebarItem[];
@@ -373,9 +402,9 @@ interface KritzelObjectTitlebarConfig {
 }
 ```
 
-`showFor` is called for every visible top-level object on every render, so it must be synchronous and cheap. Objects inside a group never get their own titlebar; the group is passed in instead. Returning anything but `true`, or throwing, means no titlebar. Compare `object.__class__` (for example `'KritzelGroup'`) rather than using `instanceof`, and prefer `childIds` over `children` to inspect a group's children. See [Choosing Which Objects Get a Titlebar](../customization/titlebars.md#choosing-which-objects-get-a-titlebar).
+Which objects get a titlebar is decided by [`KritzelObjectConfig`](#kritzelobjectconfig) on the `objectConfig` prop, not by this configuration. See [Choosing Which Objects Get a Titlebar](../customization/titlebars.md#choosing-which-objects-get-a-titlebar).
 
-`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title. It has no `showFor`, so spread it and add one, for example `{ ...KRITZEL_DEFAULT_OBJECT_TITLEBAR, showFor: (object) => object.__class__ === 'KritzelGroup' }`.
+`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title. Pass it as is, or spread it and override individual options, for example `{ ...KRITZEL_DEFAULT_OBJECT_TITLEBAR, visibility: 'active' }`.
 
 ### `KritzelTitlebarItem`
 

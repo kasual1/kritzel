@@ -13,12 +13,13 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 A titlebar is an optional bar rendered above an object, similar to the frame labels in design tools. It shows the object's title and can hold additional text, icons, and buttons. Pressing the bar selects its object, and dragging the bar moves the object.
 
-Titlebars are set up in two places:
+Titlebars are set up in three places:
 
-- The `[objectTitlebar]` binding on `<kritzel-editor>` declares the content of the titlebar, and its `showFor` function decides which objects get one. The same configuration applies to every object. Leave it unset to turn titlebars off.
+- The `[objectTitlebar]` binding on `<kritzel-editor>` declares the content of the titlebar. The same configuration applies to every object. Leave it unset to turn titlebars off.
+- The `hasTitlebar` option of `[objectConfig]` decides which objects get a titlebar. See [Object Configuration](./object-config.md) for everything else the `objectConfig` prop configures.
 - Each object can have a `name`, which is shown as the title.
 
-The following demo renders labeled frames for different screen sizes. Each frame shows a filled preview button, its name, and its width, plus a button to add a breakpoint. The demo's `showFor` only accepts objects with a `name`, so the note in the bottom left has no titlebar. The status line shows the last clicked button.
+The following demo renders labeled frames for different screen sizes. Each frame shows a filled preview button, its name, and its width, plus a button to add a breakpoint. The demo's `hasTitlebar` function only accepts objects with a `name`, so the note in the bottom left has no titlebar. The status line shows the last clicked button.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
@@ -28,13 +29,14 @@ The following demo renders labeled frames for different screen sizes. Each frame
 
 ## Enabling Titlebars
 
-Bind a `KritzelObjectTitlebarConfig` with a `showFor` function to `[objectTitlebar]`. `showFor` receives an object and returns `true` if the object should get a titlebar. To set the title, pass `name` to the object. Every object constructor accepts this option, and it is persisted and synced like any other object property.
+Bind a `KritzelObjectTitlebarConfig` to `[objectTitlebar]`, and choose which objects get a titlebar with the `hasTitlebar` option of `[objectConfig]`. `hasTitlebar` receives an object and returns `true` if the object should get a titlebar. To set the title, pass `name` to the object. Every object constructor accepts this option, and it is persisted and synced like any other object property.
 
 ```ts
 import { Component, signal } from '@angular/core';
 import {
   KRITZEL_DEFAULT_OBJECT_TITLEBAR,
   KritzelEditor,
+  KritzelObjectConfig,
   KritzelObjectTitlebarConfig,
   KritzelShape,
   KritzelWorkspace,
@@ -44,13 +46,18 @@ import {
   selector: 'app-frames',
   imports: [KritzelEditor],
   template: `
-    <kritzel-editor [workspaces]="workspaces()" [objectTitlebar]="objectTitlebar"></kritzel-editor>
+    <kritzel-editor
+      [workspaces]="workspaces()"
+      [objectTitlebar]="objectTitlebar"
+      [objectConfig]="objectConfig"
+    ></kritzel-editor>
   `,
 })
 export class FramesComponent {
-  readonly objectTitlebar: KritzelObjectTitlebarConfig = {
-    ...KRITZEL_DEFAULT_OBJECT_TITLEBAR,
-    showFor: object => object.__class__ === 'KritzelShape',
+  readonly objectTitlebar: KritzelObjectTitlebarConfig = KRITZEL_DEFAULT_OBJECT_TITLEBAR;
+
+  readonly objectConfig: KritzelObjectConfig = {
+    hasTitlebar: object => object.__class__ === 'KritzelShape',
   };
 
   workspaces = signal([
@@ -63,7 +70,7 @@ export class FramesComponent {
 }
 ```
 
-`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset that shows an icon for the object type followed by the title. It has no `showFor`, so spread it and add your own as shown above. A configuration that only sets `showFor` shows the title only.
+`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset that shows an icon for the object type followed by the title. Pass it as is, as shown above, or spread it and override individual options. An empty configuration (`{}`) shows the title only.
 
 To rename an object later, use `updateObject()`. Like every call to `updateObject()`, this clears the current selection:
 
@@ -85,59 +92,63 @@ The title is resolved in the following order:
 
 ## Choosing Which Objects Get a Titlebar
 
-The `showFor` function of the configuration decides which objects get a titlebar. It receives an object and returns `true` if the object should get one. Without `showFor`, no titlebars are rendered, and the editor logs a hint to the console once.
+The `hasTitlebar` option of `[objectConfig]` decides which objects get a titlebar. Set it to `true` to give every object a titlebar, or pass a function that receives an object and returns `true` if the object should get one. Without `hasTitlebar`, no titlebars are rendered, and the editor logs a hint to the console once. The general rules for the options of the `objectConfig` prop are described in [Object Configuration](./object-config.md).
 
 Compare `object.__class__` to select objects by type, or check any other property of the object:
 
 ```ts
+// Every object
+hasTitlebar: true
+
 // Groups only
-showFor: object => object.__class__ === 'KritzelGroup'
+hasTitlebar: object => object.__class__ === 'KritzelGroup'
 
 // Shapes and groups
-showFor: object => object.__class__ === 'KritzelShape' || object.__class__ === 'KritzelGroup'
+hasTitlebar: object => object.__class__ === 'KritzelShape' || object.__class__ === 'KritzelGroup'
 
 // Named objects only
-showFor: object => !!object.name
+hasTitlebar: object => !!object.name
 ```
 
-Keep the following in mind when writing `showFor`:
+Keep the following in mind when writing a `hasTitlebar` function:
 
-- **Evaluation:** `showFor` is called for every visible top-level object on every render, so it must be synchronous and cheap. Only `true` shows a titlebar. Any other return value means no titlebar. A `showFor` that throws or returns a promise counts as `false` and logs a warning once.
-- **Groups:** Objects inside a group never get their own titlebar. `showFor` receives the group instead, and the group gets a titlebar only if `showFor` returns `true` for it.
+- **Evaluation:** The function is called for every visible top-level object on every render, so it must be synchronous and cheap. Only `true` shows a titlebar. Any other return value means no titlebar. A function that throws or returns a promise counts as `false` and logs a warning once.
+- **Groups:** Objects inside a group never get their own titlebar. The function receives the group instead, and the group gets a titlebar only if it returns `true` for it.
 - **Type checks:** Compare `object.__class__`, for example `'KritzelGroup'`, `'KritzelShape'`, `'KritzelText'`, `'KritzelImage'`, `'KritzelPath'`, `'KritzelLine'`, `'KritzelIframeObject'`, or `'KritzelDynamicObject'`, instead of using `instanceof`, which fails when the app bundles more than one copy of the engine.
 - **Group children:** To inspect the children of a group, prefer `childIds` over the `children` getter, which looks them up in the store.
 
 ### Toggling Titlebars per Object
 
-`showFor` is only evaluated when the editor renders, and the editor rerenders when `[objectTitlebar]` receives a new configuration object. To show or hide the titlebar of individual objects at runtime, keep their IDs in a signal, read them in `showFor`, and derive the configuration with `computed()` so that every change produces a new configuration object. Replace the set instead of mutating it, so that the computed configuration updates. The IDs live in your app, so they are neither persisted nor synced.
+`hasTitlebar` is only evaluated when the editor renders, and the editor rerenders when `[objectConfig]` receives a new configuration object. To show or hide the titlebar of individual objects at runtime, keep their IDs in a signal, read them in `hasTitlebar`, and derive `objectConfig` with `computed()` so that every change produces a new configuration object. Replace the set instead of mutating it, so that the computed configuration updates. The IDs live in your app, so they are neither persisted nor synced.
 
 ```ts
 import { Component, computed, signal, viewChild } from '@angular/core';
 import {
   KRITZEL_DEFAULT_OBJECT_TITLEBAR,
   KritzelEditor,
-  KritzelObjectTitlebarConfig,
+  KritzelObjectConfig,
 } from '@kritzel/angular-editor';
 
 @Component({
   selector: 'app-toggleable-titlebars',
   imports: [KritzelEditor],
   template: `
-    <kritzel-editor [objectTitlebar]="objectTitlebar()"></kritzel-editor>
+    <kritzel-editor [objectTitlebar]="objectTitlebar" [objectConfig]="objectConfig()"></kritzel-editor>
     <button (click)="toggleTitlebar()">Toggle titlebar</button>
   `,
 })
 export class ToggleableTitlebarsComponent {
   editor = viewChild(KritzelEditor);
 
+  readonly objectTitlebar = KRITZEL_DEFAULT_OBJECT_TITLEBAR;
+
   readonly titlebarObjectIds = signal(new Set<string>());
 
-  readonly objectTitlebar = computed<KritzelObjectTitlebarConfig>(() => {
+  readonly objectConfig = computed<KritzelObjectConfig>(() => {
     const ids = this.titlebarObjectIds();
 
     return {
-      ...KRITZEL_DEFAULT_OBJECT_TITLEBAR,
-      showFor: object => ids.has(object.id),
+      hasTitlebar: object => ids.has(object.id),
     };
   });
 
@@ -167,7 +178,6 @@ A titlebar has three sections: `left`, `center`, and `right`. Each section is an
 
 ```ts
 readonly objectTitlebar: KritzelObjectTitlebarConfig = {
-  showFor: object => object.__class__ === 'KritzelShape',
   left: [
     { id: 'preview', type: 'button', icon: 'play', tooltip: 'Preview', variant: 'filled' },
     { id: 'title', type: 'title' },
@@ -242,7 +252,6 @@ The context contains the following fields:
 
 | Option | Type | Description |
 |--------|------|-------------|
-| showFor | (object) => boolean | Decides which objects get a titlebar. Without it, no titlebars are rendered. See [Choosing Which Objects Get a Titlebar](#choosing-which-objects-get-a-titlebar). |
 | left | KritzelTitlebarItem[] | Items of the left section. Defaults to a single `title` item. |
 | center | KritzelTitlebarItem[] | Items of the center section. |
 | right | KritzelTitlebarItem[] | Items of the right section. |
@@ -259,6 +268,7 @@ Every button click emits the `objectTitlebarAction` event, in addition to callin
 ```html
 <kritzel-editor
   [objectTitlebar]="objectTitlebar"
+  [objectConfig]="objectConfig"
   (objectTitlebarAction)="onTitlebarAction($event)"
 ></kritzel-editor>
 ```
@@ -290,7 +300,6 @@ The Angular wrapper passes inputs to the editor outside of the Angular zone, so 
 private readonly ngZone = inject(NgZone);
 
 readonly objectTitlebar: KritzelObjectTitlebarConfig = {
-  showFor: object => object.__class__ === 'KritzelShape',
   right: [
     {
       id: 'open',
@@ -311,7 +320,7 @@ readonly objectTitlebar: KritzelObjectTitlebarConfig = {
 - **Context menu:** Right-clicking or long-pressing a titlebar opens the object context menu.
 - **Text objects:** Clicking the titlebar of a text object selects it without entering edit mode.
 - **Drawing tools:** While a drawing tool is active, input passes through the titlebar surface to the canvas, while its buttons stay clickable.
-- **Groups:** Children of a group never show their own titlebar. `showFor` receives the group instead, and the group gets a titlebar only if `showFor` returns `true` for it, so there is at most one titlebar per top-level object or group.
+- **Groups:** Children of a group never show their own titlebar. `hasTitlebar` receives the group instead, and the group gets a titlebar only if `hasTitlebar` is `true` for it, so there is at most one titlebar per top-level object or group.
 - **Rotation:** By default, titlebars follow the rotated top edge of their object. Set `rotation: 'upright'` to keep them horizontal above the rotated bounding box.
 - **Zoom:** Titlebars keep a constant screen size at every zoom level and are hidden while their object is narrower than `hideBelowWidth` screen pixels.
 - **Bounds and exports:** Titlebars are never part of an object's bounds, so the selection box stays around the object. They are also excluded from viewport screenshots and exports.
@@ -347,7 +356,12 @@ themes: KritzelTheme[] = [transparentLightTheme, transparentDarkTheme];
 ```
 
 ```html
-<kritzel-editor [themes]="themes" [theme]="'light'" [objectTitlebar]="objectTitlebar"></kritzel-editor>
+<kritzel-editor
+  [themes]="themes"
+  [theme]="'light'"
+  [objectTitlebar]="objectTitlebar"
+  [objectConfig]="objectConfig"
+></kritzel-editor>
 ```
 
 The themes keep the names `light` and `dark` of the themes they spread, so the built-in theme switch keeps working.
@@ -437,5 +451,6 @@ For the full list of related APIs, see the following reference sections.
 - [Editor](../api-reference/editor.md#object-titlebar)
 - [Engine](../api-reference/engine.md#object-titlebar)
 - [Objects](../api-reference/objects.md#base-object)
+- [Object Configuration](./object-config.md)
 - [Theming](../api-reference/theming.md#titlebar)
 - [Localization Terms](../api-reference/localization-terms.md#object-type-labels)
