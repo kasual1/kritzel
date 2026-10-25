@@ -6,6 +6,7 @@ import {
   ShapeType,
   darkTheme,
   lightTheme,
+  type KritzelObjectConfig,
   type KritzelObjectTitlebarConfig,
   type KritzelTheme,
 } from "@kritzel/react-editor";
@@ -34,8 +35,11 @@ const transparentTitlebarDarkTheme: KritzelTheme = {
 
 const themes = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
 
+const objectConfig: KritzelObjectConfig = {
+  hasTitlebar: (object) => object.__class__ === "KritzelShape",
+};
+
 const objectTitlebar: KritzelObjectTitlebarConfig = {
-  showFor: (object) => object.__class__ === "KritzelShape",
   left: [{ id: "title", type: "title" }],
   right: [
     { id: "settings", type: "button", icon: "settings", tooltip: "Settings" },
@@ -70,6 +74,7 @@ export function TitlebarStylingPage() {
         theme="light"
         themes={themes}
         workspaces={workspaces}
+        objectConfig={objectConfig}
         objectTitlebar={objectTitlebar}
         syncConfig={undefined}
         loginConfig={undefined}

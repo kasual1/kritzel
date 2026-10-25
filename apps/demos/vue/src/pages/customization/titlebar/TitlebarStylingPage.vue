@@ -6,6 +6,7 @@ import {
   KritzelWorkspace,
   lightTheme,
   ShapeType,
+  type KritzelObjectConfig,
   type KritzelObjectTitlebarConfig,
   type KritzelTheme,
 } from '@kritzel/vue-editor'
@@ -34,8 +35,11 @@ const transparentTitlebarDarkTheme: KritzelTheme = {
 
 const themes = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme]
 
+const objectConfig: KritzelObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'KritzelShape',
+}
+
 const objectTitlebar: KritzelObjectTitlebarConfig = {
-  showFor: object => object.__class__ === 'KritzelShape',
   left: [{ type: 'title', id: 'title' }],
   right: [
     { type: 'button', id: 'settings', icon: 'settings', tooltip: 'Settings' },
@@ -68,6 +72,7 @@ const workspaces = [
       theme="light"
       :themes="themes"
       :workspaces="workspaces"
+      :objectConfig="objectConfig"
       :objectTitlebar="objectTitlebar"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"

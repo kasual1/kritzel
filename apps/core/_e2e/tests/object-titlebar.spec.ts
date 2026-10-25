@@ -9,8 +9,8 @@ async function configureTitlebar(page: Page) {
     w.__titlebarEvents = [];
     const editor = document.querySelector('kritzel-editor') as any;
     editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__titlebarEvents.push(event.detail.itemId));
+    editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'KritzelGroup' || !!object.name };
     editor.objectTitlebar = {
-      showFor: (object: any) => object.__class__ === 'KritzelGroup' || !!object.name,
       left: [
         {
           type: 'button',
@@ -59,7 +59,7 @@ test.describe('Object titlebar', () => {
     await configureTitlebar(page);
   });
 
-  test('renders a titlebar only above objects accepted by showFor', async ({ editorPage, page }) => {
+  test('renders a titlebar only above objects accepted by objectConfig.hasTitlebar', async ({ editorPage, page }) => {
     const named = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     await editorPage.addShape({ translateX: 600, translateY: 200, width: 200, height: 150 });
     await nextFrame(page);
@@ -71,7 +71,7 @@ test.describe('Object titlebar', () => {
     await expect(titlebar).toHaveAttribute('data-state', 'inactive');
   });
 
-  test('renders no titlebars when showFor is missing', async ({ editorPage, page }) => {
+  test('renders no titlebars when objectConfig.hasTitlebar is missing', async ({ editorPage, page }) => {
     await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const titlebars = page.locator('kritzel-engine .object-titlebar');
     await expect(titlebars).toHaveCount(1);
@@ -80,12 +80,12 @@ test.describe('Object titlebar', () => {
     page.on('console', message => messages.push(message.text()));
     await page.evaluate(() => {
       const editor = document.querySelector('kritzel-editor') as any;
-      editor.objectTitlebar = { left: [{ type: 'title', id: 'title' }] };
+      editor.objectConfig = {};
     });
     await nextFrame(page);
 
     await expect(titlebars).toHaveCount(0);
-    await expect.poll(() => messages.some(text => text.includes('showFor'))).toBe(true);
+    await expect.poll(() => messages.some(text => text.includes('objectConfig.hasTitlebar'))).toBe(true);
   });
 
   test('sits above its object at a constant screen size across zoom levels', async ({ editorPage, page }) => {
@@ -205,7 +205,7 @@ test.describe('Object titlebar', () => {
     expect(firstAfter!.translateY).toBeCloseTo(250, 0);
   });
 
-  test('showFor can select objects by class', async ({ editorPage, page }) => {
+  test('objectConfig.hasTitlebar can select objects by class', async ({ editorPage, page }) => {
     const first = await editorPage.addShape({ translateX: 200, translateY: 200, width: 150, height: 150, name: 'Mobile' });
     const second = await editorPage.addShape({ translateX: 400, translateY: 200, width: 150, height: 150, name: 'Tablet' });
     await nextFrame(page);
@@ -214,7 +214,7 @@ test.describe('Object titlebar', () => {
 
     await page.evaluate(() => {
       const editor = document.querySelector('kritzel-editor') as any;
-      editor.objectTitlebar = { ...editor.objectTitlebar, showFor: (object: any) => object.__class__ === 'KritzelGroup' };
+      editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'KritzelGroup' };
     });
     await nextFrame(page);
     await expect(titlebars).toHaveCount(0);

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal, ViewChild } from '@angular/core';
 import {
   KritzelEditor,
+  KritzelObjectConfig,
   KritzelObjectTitlebarActionEvent,
   KritzelObjectTitlebarConfig,
   KritzelShape,
@@ -30,7 +31,7 @@ function createFrames() {
     new KritzelShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
     new KritzelShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
     new KritzelShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
-    // No `name`, so `showFor` skips this note and it renders without a titlebar.
+    // No `name`, so `hasTitlebar` skips this note and it renders without a titlebar.
     new KritzelShape({
       translateX: -268,
       translateY: 62,
@@ -59,6 +60,7 @@ function createFrames() {
       [theme]="'light'"
       [themes]="themes"
       [workspaces]="workspaces()"
+      [objectConfig]="objectConfig"
       [objectTitlebar]="objectTitlebar"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
@@ -79,10 +81,13 @@ export class TitlebarConfigureComponent {
 
   workspaces = signal([new KritzelWorkspace({ objects: createFrames() })]);
 
-  // Declared once as a stable field and shared by every object accepted by `showFor`.
-  readonly objectTitlebar: KritzelObjectTitlebarConfig = {
+  readonly objectConfig: KritzelObjectConfig = {
     // Only named frames get a titlebar; the unnamed note does not.
-    showFor: object => !!object.name,
+    hasTitlebar: object => !!object.name,
+  };
+
+  // Declared once as a stable field and shared by every object accepted by `objectConfig.hasTitlebar`.
+  readonly objectTitlebar: KritzelObjectTitlebarConfig = {
     left: [
       { id: 'preview', type: 'button', icon: 'play', tooltip: 'Preview', variant: 'filled' },
       { id: 'title', type: 'title' },

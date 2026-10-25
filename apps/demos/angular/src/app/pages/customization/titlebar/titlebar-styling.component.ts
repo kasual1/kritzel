@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import {
   KritzelEditor,
+  KritzelObjectConfig,
   KritzelObjectTitlebarConfig,
   KritzelShape,
   KritzelTheme,
@@ -55,6 +56,7 @@ function createFrames() {
       theme="light"
       [themes]="themes"
       [workspaces]="workspaces()"
+      [objectConfig]="objectConfig"
       [objectTitlebar]="objectTitlebar"
       [isPanningEnabled]="false"
       [isZoomingEnabled]="false"
@@ -72,8 +74,11 @@ export class TitlebarStylingComponent {
 
   workspaces = signal([new KritzelWorkspace({ objects: createFrames() })]);
 
+  readonly objectConfig: KritzelObjectConfig = {
+    hasTitlebar: object => object.__class__ === 'KritzelShape',
+  };
+
   readonly objectTitlebar: KritzelObjectTitlebarConfig = {
-    showFor: object => object.__class__ === 'KritzelShape',
     left: [{ id: 'title', type: 'title' }],
     right: [
       { id: 'settings', type: 'button', icon: 'settings', tooltip: 'Settings' },

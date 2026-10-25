@@ -6,6 +6,7 @@ import {
   KritzelShape,
   KritzelWorkspace,
   ShapeType,
+  type KritzelObjectConfig,
   type KritzelObjectTitlebarActionEvent,
   type KritzelObjectTitlebarConfig,
 } from '@kritzel/vue-editor'
@@ -13,9 +14,12 @@ import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, statusBarStyle } from '../../shared/demo-shared'
 
-const objectTitlebar: KritzelObjectTitlebarConfig = {
+const objectConfig: KritzelObjectConfig = {
   // Only named frames get a titlebar; the unnamed note does not.
-  showFor: object => !!object.name,
+  hasTitlebar: object => !!object.name,
+}
+
+const objectTitlebar: KritzelObjectTitlebarConfig = {
   left: [
     { type: 'button', id: 'preview', icon: 'play', variant: 'filled', tooltip: 'Preview' },
     { type: 'title', id: 'title' },
@@ -46,7 +50,7 @@ const workspaces = [
       new KritzelShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
       new KritzelShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
       new KritzelShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
-      // No `name`, so `showFor` skips this note and it renders without a titlebar.
+      // No `name`, so `hasTitlebar` skips this note and it renders without a titlebar.
       new KritzelShape({
         translateX: -268,
         translateY: 62,
@@ -79,6 +83,7 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
       theme="light"
       :themes="themes"
       :workspaces="workspaces"
+      :objectConfig="objectConfig"
       :objectTitlebar="objectTitlebar"
       :isPanningEnabled="false"
       :isZoomingEnabled="false"
