@@ -422,6 +422,7 @@ interface KritzelTitlebarItemBase {
 interface KritzelTitlebarTitleItem extends KritzelTitlebarItemBase {
   type: 'title';
   text?: KritzelTitlebarValue<string>;
+  isEditable?: KritzelTitlebarValue<boolean>; // lets users rename the object, defaults to false
 }
 
 interface KritzelTitlebarTextItem extends KritzelTitlebarItemBase {

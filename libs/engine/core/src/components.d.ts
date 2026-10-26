@@ -38,7 +38,7 @@ import { KritzelObjectExportFormat } from "./interfaces/object-export.interface"
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { KritzelIconName } from "./classes/registries/icon-registry.class";
 import { KritzelResolvedTitlebar } from "./classes/managers/object-titlebar.manager";
-import { KritzelTitlebarItemClickHandler } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
+import { KritzelTitlebarItemClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export { KritzelCore } from "./classes/core/core.class";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
@@ -72,7 +72,7 @@ export { KritzelObjectExportFormat } from "./interfaces/object-export.interface"
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { KritzelIconName } from "./classes/registries/icon-registry.class";
 export { KritzelResolvedTitlebar } from "./classes/managers/object-titlebar.manager";
-export { KritzelTitlebarItemClickHandler } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
+export { KritzelTitlebarItemClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export namespace Components {
     /**
      * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
@@ -717,6 +717,10 @@ export namespace Components {
          */
         "surfacePointerEvents": 'auto' | 'none';
         /**
+          * Called while a title is edited to rename its object.
+         */
+        "titleEdit"?: KritzelTitlebarTitleEditHandlers;
+        /**
           * The titlebars to render, resolved by the engine for the current frame.
           * @default []
          */
@@ -1105,6 +1109,10 @@ declare namespace LocalJSX {
           * @default 'none'
          */
         "surfacePointerEvents"?: 'auto' | 'none';
+        /**
+          * Called while a title is edited to rename its object.
+         */
+        "titleEdit"?: KritzelTitlebarTitleEditHandlers;
         /**
           * The titlebars to render, resolved by the engine for the current frame.
           * @default []

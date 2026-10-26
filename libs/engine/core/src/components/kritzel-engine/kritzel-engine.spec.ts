@@ -102,6 +102,7 @@ describe('KritzelEngine', () => {
       config: undefined,
       getOwnerFromEvent: jest.fn().mockReturnValue(null),
       isControlEvent: jest.fn().mockReturnValue(false),
+      isTitleInputEvent: jest.fn().mockReturnValue(false),
       resetWarnings: jest.fn(),
     },
     setEditorId: jest.fn(),
@@ -1157,6 +1158,16 @@ describe('KritzelEngine', () => {
       const result = (engine as any).getSelectionHandleCapabilities({} as KritzelBaseObject<any>);
 
       expect(result).toEqual({ canRenderResizeHandles: false, canRenderRotationHandle: true });
+    });
+  });
+
+  describe('titlebar title input', () => {
+    it('keeps keyboard input in the rename input away from canvas shortcuts', () => {
+      const engineCore = (engine as any).core;
+      engineCore.objectTitlebarManager.isTitleInputEvent.mockReturnValue(true);
+      const event = { key: 'Delete', composedPath: () => [engine.host] } as unknown as KeyboardEvent;
+
+      expect((engine as any).shouldHandleGlobalShortcutEvent(event)).toBe(false);
     });
   });
 

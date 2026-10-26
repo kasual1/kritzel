@@ -1,7 +1,9 @@
 import { Component, Host, Prop, h } from '@stencil/core';
 import {
   KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE,
+  KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE,
   KRITZEL_TITLEBAR_OWNER_ATTRIBUTE,
+  KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
   KritzelResolvedTitlebar,
   KritzelResolvedTitlebarItem,
 } from '../../classes/managers/object-titlebar.manager';
@@ -9,6 +11,13 @@ import { KritzelTitlebarSection } from '../../interfaces/object-titlebar.interfa
 
 /** Handles a click on a titlebar button. */
 export type KritzelTitlebarItemClickHandler = (ownerId: string, section: KritzelTitlebarSection, itemId: string, event: MouseEvent, anchorRect: DOMRect) => void;
+
+/** Callbacks of the input used to rename an object. */
+export interface KritzelTitlebarTitleEditHandlers {
+  input: (value: string) => void;
+  commit: (value: string) => void;
+  cancel: () => void;
+}
 
 const parts = (...names: (string | undefined | false)[]): string => names.filter(Boolean).join(' ');
 
@@ -35,7 +44,16 @@ export class KritzelObjectTitlebarLayer {
   /** Called when a titlebar button is clicked. */
   @Prop() itemClick?: KritzelTitlebarItemClickHandler;
 
+  /** Called while a title is edited to rename its object. */
+  @Prop() titleEdit?: KritzelTitlebarTitleEditHandlers;
+
   private readonly handleItemClick: KritzelTitlebarItemClickHandler = (...args) => this.itemClick?.(...args);
+
+  private readonly titleEditHandlers: KritzelTitlebarTitleEditHandlers = {
+    input: value => this.titleEdit?.input(value),
+    commit: value => this.titleEdit?.commit(value),
+    cancel: () => this.titleEdit?.cancel(),
+  };
 
   render() {
     return (
@@ -60,7 +78,7 @@ export class KritzelObjectTitlebarLayer {
               {(['left', 'center', 'right'] as KritzelTitlebarSection[]).map(section =>
                 section === 'center' && titlebar.sections.center.length === 0 ? null : (
                   <div key={section} class={`object-titlebar-section object-titlebar-${section}`} part={`titlebar-${section}`}>
-                    {titlebar.sections[section].map(resolved => renderItem(titlebar, resolved, this.handleItemClick))}
+                    {titlebar.sections[section].map(resolved => renderItem(titlebar, resolved, this.handleItemClick, this.titleEditHandlers))}
                   </div>
                 ),
               )}
@@ -72,13 +90,28 @@ export class KritzelObjectTitlebarLayer {
   }
 }
 
-function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarItem, onItemClick: KritzelTitlebarItemClickHandler) {
+function renderItem(
+  titlebar: KritzelResolvedTitlebar,
+  resolved: KritzelResolvedTitlebarItem,
+  onItemClick: KritzelTitlebarItemClickHandler,
+  titleEdit: KritzelTitlebarTitleEditHandlers,
+) {
   const { item } = resolved;
 
   switch (item.type) {
     case 'title':
+      if (titlebar.editingItemId === item.id) {
+        return renderTitleInput(titlebar, resolved, titleEdit);
+      }
       return (
-        <span key={item.id} class="object-titlebar-title" part={parts('titlebar-title', item.part)} data-item-id={item.id} dir="auto">
+        <span
+          key={item.id}
+          class={{ 'object-titlebar-title': true, 'is-editable': !!resolved.isEditable }}
+          part={parts('titlebar-title', item.part)}
+          data-item-id={item.id}
+          {...(resolved.isEditable ? { [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: item.id } : {})}
+          dir="auto"
+        >
           {resolved.text}
         </span>
       );
@@ -132,4 +165,48 @@ function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolved
     default:
       return null;
   }
+}
+
+/**
+ * Renders the input used to rename an object. Its value is only set when the input is created, so
+ * the per-frame renders of the layer never overwrite what the user is typing.
+ */
+function renderTitleInput(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarItem, titleEdit: KritzelTitlebarTitleEditHandlers) {
+  const { item } = resolved;
+  const name = titlebar.owner.name ?? '';
+
+  return (
+    <input
+      key={`${item.id}:input`}
+      type="text"
+      class="object-titlebar-title-input"
+      part={parts('titlebar-title-input', item.part)}
+      data-item-id={item.id}
+      {...{ [KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE]: '', [KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }}
+      placeholder={name ? undefined : resolved.text}
+      aria-label={titlebar.context.title}
+      dir="auto"
+      spellcheck={false}
+      autocomplete="off"
+      ref={(input?: HTMLInputElement) => {
+        if (input && !input.dataset.initialized) {
+          input.dataset.initialized = 'true';
+          input.value = name;
+          input.focus({ preventScroll: true });
+          input.select();
+        }
+      }}
+      onInput={(event: Event) => titleEdit.input((event.target as HTMLInputElement).value)}
+      onKeyDown={(event: KeyboardEvent) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          titleEdit.commit((event.target as HTMLInputElement).value);
+        } else if (event.key === 'Escape') {
+          event.preventDefault();
+          titleEdit.cancel();
+        }
+      }}
+      onBlur={(event: FocusEvent) => titleEdit.commit((event.target as HTMLInputElement).value)}
+    />
+  );
 }

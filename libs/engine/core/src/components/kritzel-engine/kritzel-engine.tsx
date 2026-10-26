@@ -784,6 +784,11 @@ export class KritzelEngine {
   private shouldHandleGlobalShortcutEvent(ev: KeyboardEvent | ClipboardEvent): boolean {
     const path = ev.composedPath();
 
+    // Typing a new object name must not trigger canvas shortcuts such as Delete, Escape or undo.
+    if (this.core.objectTitlebarManager.isTitleInputEvent(ev)) {
+      return false;
+    }
+
     // Keys that activate or move between titlebar buttons belong to the focused button.
     // Other shortcuts (Delete, undo, clipboard) keep working while a button has focus.
     if ('key' in ev && TITLEBAR_CONTROL_KEYS.has(ev.key) && this.core.objectTitlebarManager.isControlEvent(ev)) {
@@ -3256,6 +3261,12 @@ export class KritzelEngine {
     this.core.rerender();
   };
 
+  private readonly titlebarTitleEditHandlers = {
+    input: (value: string) => this.core.objectTitlebarManager.setTitleDraft(value),
+    commit: (value: string) => this.core.objectTitlebarManager.commitTitleEditing(value),
+    cancel: () => this.core.objectTitlebarManager.cancelTitleEditing(),
+  };
+
   /** Titlebar surfaces start drags only where the selection tool would handle them. */
   private getTitlebarSurfacePointerEvents(): 'auto' | 'none' {
     const state = this.core.store.state;
@@ -4302,7 +4313,12 @@ export class KritzelEngine {
           })}
 
           {this.core.objectTitlebarManager.isEnabled && (
-            <kritzel-object-titlebar-layer titlebars={titlebars} surfacePointerEvents={this.getTitlebarSurfacePointerEvents()} itemClick={this.handleTitlebarItemClick} />
+            <kritzel-object-titlebar-layer
+              titlebars={titlebars}
+              surfacePointerEvents={this.getTitlebarSurfacePointerEvents()}
+              itemClick={this.handleTitlebarItemClick}
+              titleEdit={this.titlebarTitleEditHandlers}
+            />
           )}
 
           {/* Snap indicator for line anchoring */}

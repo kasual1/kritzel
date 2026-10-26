@@ -253,6 +253,116 @@ test.describe('Object titlebar', () => {
     await expect(button).toHaveCSS('cursor', /^url\(/);
   });
 
+  test.describe('renaming', () => {
+    /** Makes the title editable and returns the title element of the given object's titlebar. */
+    async function enableRenaming(page: Page, id: string) {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          ...editor.objectTitlebar,
+          left: editor.objectTitlebar.left.map((item: any) => (item.type === 'title' ? { ...item, isEditable: true } : item)),
+        };
+      });
+      await nextFrame(page);
+      return titlebarFor(page, id).locator('.object-titlebar-title');
+    }
+
+    function renameInput(page: Page, id: string): Locator {
+      return titlebarFor(page, id).locator('input.object-titlebar-title-input');
+    }
+
+    /** Clicks the title of the selected object again and waits until the rename input has focus. */
+    async function startRenaming(page: Page, title: Locator, id: string) {
+      await title.click();
+      await expect(renameInput(page, id)).toBeFocused();
+    }
+
+    test('clicking the title of the selected object again renames it', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      const title = await enableRenaming(page, shape.id);
+
+      await title.click();
+      await expect(renameInput(page, shape.id)).toHaveCount(0);
+      await title.click();
+
+      const input = renameInput(page, shape.id);
+      await expect(input).toBeFocused();
+      await expect(input).toHaveValue('Desktop');
+      await page.keyboard.type('Hero section');
+      await page.keyboard.press('Enter');
+
+      await expect(input).toHaveCount(0);
+      await expect(title).toHaveText('Hero section');
+      expect((await editorPage.getObjectById<{ name?: string }>(shape.id))?.name).toBe('Hero section');
+      const selected = await editorPage.getSelectedObjects<{ id: string }>();
+      expect(selected.map(object => object.id)).toEqual([shape.id]);
+    });
+
+    test('Escape cancels and clicking elsewhere commits', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      const title = await enableRenaming(page, shape.id);
+
+      await title.click();
+      await startRenaming(page, title, shape.id);
+      await page.keyboard.type('Discarded');
+      await page.keyboard.press('Escape');
+      await expect(renameInput(page, shape.id)).toHaveCount(0);
+      await expect(title).toHaveText('Desktop');
+
+      await startRenaming(page, title, shape.id);
+      await page.keyboard.type('Kept');
+      await editorPage.clickAtWorld(900, 650);
+      await expect(renameInput(page, shape.id)).toHaveCount(0);
+      expect((await editorPage.getObjectById<{ name?: string }>(shape.id))?.name).toBe('Kept');
+    });
+
+    test('an empty name falls back to the default title', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      // The default test config only gives named objects a titlebar.
+      await page.evaluate(() => {
+        (document.querySelector('kritzel-editor') as any).objectConfig = { hasTitlebar: true };
+      });
+      const title = await enableRenaming(page, shape.id);
+
+      await title.click();
+      await startRenaming(page, title, shape.id);
+      await page.keyboard.press('Backspace');
+      await page.keyboard.press('Enter');
+
+      await expect(title).toHaveText('Shape');
+      expect((await editorPage.getObjectById<{ name?: string }>(shape.id))?.name).toBeUndefined();
+    });
+
+    test('typing in the input does not trigger canvas shortcuts, and undo restores the name', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await editorPage.waitForUndoCapture();
+      const title = await enableRenaming(page, shape.id);
+
+      await title.click();
+      await startRenaming(page, title, shape.id);
+      await page.keyboard.press('Delete');
+      await page.keyboard.type('Renamed');
+      await page.keyboard.press('Enter');
+
+      expect(await editorPage.getObjectById(shape.id)).not.toBeNull();
+      await expect(title).toHaveText('Renamed');
+
+      await editorPage.waitForUndoCapture();
+      await editorPage.undo();
+      await expect(title).toHaveText('Desktop');
+    });
+
+    test('titles are not editable unless the title item opts in', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      const title = titlebarFor(page, shape.id).locator('.object-titlebar-title');
+
+      await title.click();
+      await title.click();
+
+      await expect(renameInput(page, shape.id)).toHaveCount(0);
+    });
+  });
+
   test('right-clicking the titlebar opens the object context menu', async ({ editorPage, page }) => {
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const point = await surfacePoint(titlebarFor(page, shape.id));

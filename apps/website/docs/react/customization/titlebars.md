@@ -190,7 +190,7 @@ Define the configuration once at module level, or memoize it with `useMemo`, so 
 
 | Type | Options | Description |
 |------|---------|-------------|
-| title | text | Shows the resolved title. `text` overrides it for this item. |
+| title | text, isEditable | Shows the resolved title. `text` overrides it for this item. With `isEditable`, users can rename the object, see [Renaming Objects](#renaming-objects). |
 | text | text, tone | Shows arbitrary text. `tone` is `'default'`, `'muted'`, or `'strong'`. |
 | icon | icon | Shows a non-interactive icon from the icon registry. |
 | button | icon, label, tooltip, variant, isDisabled, isPressed, action | Shows an interactive button. |
@@ -223,7 +223,7 @@ Any titlebar or button icon can be a [default icon](../api-reference/icons.md) s
 
 ### Dynamic Values
 
-`text`, `icon`, `isVisible`, `isDisabled`, and `isPressed` accept either a value or a function that receives the titlebar context and returns the value. Functions are evaluated synchronously on every render, so they must be cheap and must not return a promise. A function that throws or returns a promise falls back to the default value and logs a warning once.
+`text`, `icon`, `isVisible`, `isEditable`, `isDisabled`, and `isPressed` accept either a value or a function that receives the titlebar context and returns the value. Functions are evaluated synchronously on every render, so they must be cheap and must not return a promise. A function that throws or returns a promise falls back to the default value and logs a warning once.
 
 ```ts
 { id: 'size', type: 'text', tone: 'muted', text: ({ size }) => `${Math.round(size.width)} × ${Math.round(size.height)}` }
@@ -255,6 +255,24 @@ The context contains the following fields:
 | title | (object) => string \| undefined | Resolves the title of an object. Falls back to the object's `name`, then to a localized type label. |
 | draggable | boolean | Whether dragging a titlebar moves its object. Defaults to `true`. |
 | hideBelowWidth | number | Hides titlebars whose object is narrower than this many screen pixels. Defaults to `40`. |
+
+## Renaming Objects
+
+Set `isEditable` on a title item to let users rename objects from their titlebar:
+
+```ts
+{ id: 'title', type: 'title', isEditable: true }
+```
+
+Renaming works like editing a selected text object: the first click on a titlebar selects its object, and clicking the title of the active titlebar again replaces the title with an input. A click only starts renaming when the object is the only selected object and the pointer did not move, so dragging the titlebar still moves the object.
+
+- **Committing:** Press Enter or click elsewhere to save the new name. Press Escape to keep the old name.
+- **Storage:** The trimmed input is stored in the object's `name`, which is persisted and synced. Renaming is a single undo step and emits `objectsUpdated` with `changedProperties: ['name']`.
+- **Empty names:** An empty input clears the name, so the title falls back to the default title, such as `Shape` or `Group`.
+- **Shortcuts:** While the input has focus, keys such as Delete, Escape, or Ctrl+Z only affect the input, not the canvas.
+- **Per object:** `isEditable` also accepts a function of the titlebar context, for example `isEditable: ({ objectType }) => objectType === 'KritzelGroup'`. It defaults to `false`.
+
+A title item with a `text` override cannot be edited. A `title` resolver in the configuration takes precedence over the object's `name`, so a name set by renaming only shows when the resolver returns no title for that object.
 
 ## Handling Button Clicks
 
@@ -411,6 +429,7 @@ For styles that theme properties do not cover, titlebars expose parts on `<kritz
 | titlebar-center | Center section |
 | titlebar-right | Right section |
 | titlebar-title | Title items |
+| titlebar-title-input | Input shown while renaming an object |
 | titlebar-text | Text items |
 | titlebar-icon | Icon items |
 | titlebar-button | Buttons |

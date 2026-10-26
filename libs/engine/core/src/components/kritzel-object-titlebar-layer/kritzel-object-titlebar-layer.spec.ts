@@ -108,4 +108,70 @@ describe('KritzelObjectTitlebarLayer', () => {
     expect(currentTarget.blur).not.toHaveBeenCalled();
     expect(button.$attrs$.tabindex).toBe(-1);
   });
+
+  describe('title editing', () => {
+    const titleEdit = () => ({ input: jest.fn(), commit: jest.fn(), cancel: jest.fn() });
+    const editableTitlebar = (editing: boolean) => {
+      const titlebar: any = createTitlebar('a', true);
+      titlebar.owner.name = 'Desktop';
+      titlebar.sections.left[0].isEditable = true;
+      titlebar.editingItemId = editing ? 'title' : undefined;
+      return titlebar as KritzelResolvedTitlebar;
+    };
+
+    it('marks editable titles so a second click can rename the object', () => {
+      component.titlebars = [editableTitlebar(false)];
+
+      const [title] = findAll(component.render(), byClass('object-titlebar-title'));
+
+      expect(title.$attrs$['data-kritzel-titlebar-editable-title']).toBe('title');
+      expect(byClass('is-editable')(title)).toBe(true);
+    });
+
+    it('renders an input in place of the title being edited', () => {
+      component.titlebars = [editableTitlebar(true)];
+
+      const host = component.render();
+      const [input] = findAll(host, node => node.$tag$ === 'input');
+
+      expect(findAll(host, byClass('object-titlebar-title'))).toHaveLength(0);
+      expect(input.$attrs$['data-kritzel-titlebar-title-input']).toBe('');
+      expect(input.$attrs$['data-kritzel-titlebar-control']).toBe('');
+      expect(input.$attrs$.part).toBe('titlebar-title-input');
+    });
+
+    it('initializes the input once with the object name and selects it', () => {
+      component.titlebars = [editableTitlebar(true)];
+      const [input] = findAll(component.render(), node => node.$tag$ === 'input');
+      const element: any = { dataset: {}, value: '', focus: jest.fn(), select: jest.fn() };
+
+      input.$attrs$.ref(element);
+      element.value = 'Typing';
+      input.$attrs$.ref(element);
+
+      expect(element.value).toBe('Typing');
+      expect(element.focus).toHaveBeenCalledTimes(1);
+      expect(element.select).toHaveBeenCalledTimes(1);
+    });
+
+    it('commits on Enter and blur, cancels on Escape and reports input', () => {
+      const handlers = titleEdit();
+      component.titlebars = [editableTitlebar(true)];
+      component.titleEdit = handlers;
+      const [input] = findAll(component.render(), node => node.$tag$ === 'input');
+      const target = { value: 'New name' };
+      const key = (name: string) => ({ key: name, target, preventDefault: jest.fn() });
+
+      input.$attrs$.onInput({ target });
+      input.$attrs$.onKeyDown(key('Enter'));
+      input.$attrs$.onKeyDown(key('Escape'));
+      input.$attrs$.onKeyDown(key('a'));
+      input.$attrs$.onBlur({ target });
+
+      expect(handlers.input).toHaveBeenCalledWith('New name');
+      expect(handlers.commit).toHaveBeenNthCalledWith(1, 'New name');
+      expect(handlers.commit).toHaveBeenCalledTimes(2);
+      expect(handlers.cancel).toHaveBeenCalledTimes(1);
+    });
+  });
 });

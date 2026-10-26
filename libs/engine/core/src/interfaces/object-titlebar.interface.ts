@@ -50,8 +50,14 @@ interface KritzelTitlebarItemBase {
 /** Displays the resolved title of the owner. */
 export interface KritzelTitlebarTitleItem extends KritzelTitlebarItemBase {
   type: 'title';
-  /** Overrides the resolved title for this item. */
+  /** Overrides the resolved title for this item. A title with `text` cannot be edited. */
   text?: KritzelTitlebarValue<string>;
+  /**
+   * Lets users rename the object by clicking the title of its active titlebar again.
+   * The new name is stored in the object's `name`; an empty name falls back to the default title.
+   * Defaults to `false`.
+   */
+  isEditable?: KritzelTitlebarValue<boolean>;
 }
 
 /** Displays arbitrary text, e.g. the object's width. */

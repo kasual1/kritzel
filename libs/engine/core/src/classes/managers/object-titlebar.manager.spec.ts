@@ -2,7 +2,9 @@ import {
   KRITZEL_DEFAULT_OBJECT_TITLEBAR,
   KRITZEL_OBJECT_TYPE_ICONS,
   KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE,
+  KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE,
   KRITZEL_TITLEBAR_OWNER_ATTRIBUTE,
+  KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
   KritzelObjectTitlebarManager,
 } from './object-titlebar.manager';
 import { KritzelBaseObject } from '../objects/base-object.class';
@@ -503,6 +505,157 @@ describe('KritzelObjectTitlebarManager', () => {
 
       expect(console.error).toHaveBeenCalled();
       expect(mockCore.engine.emitObjectTitlebarAction).toHaveBeenCalled();
+    });
+  });
+
+  describe('title editing', () => {
+    const editableTitle = { left: [{ id: 'title', type: 'title' as const, isEditable: true }] };
+    const resolve = () => manager.resolveTitlebars(Array.from(objects.values()));
+
+    beforeEach(() => {
+      mockCore.rerender = jest.fn();
+      mockCore.store.objects.update = jest.fn();
+      mockCore.engine.emitObjectsChange = jest.fn();
+      mockCore.engine.emitObjectsUpdated = jest.fn();
+    });
+
+    it('marks title items editable only when they opt in and have no text override', () => {
+      setConfig({
+        left: [
+          { id: 'plain', type: 'title' },
+          { id: 'editable', type: 'title', isEditable: true },
+          { id: 'dynamic', type: 'title', isEditable: ({ object }) => object.id === 'a' },
+          { id: 'override', type: 'title', text: 'Fixed', isEditable: true },
+        ],
+      });
+      createObject('a');
+
+      const [titlebar] = resolve();
+
+      expect(titlebar.sections.left.map(item => item.isEditable)).toEqual([false, true, true, false]);
+    });
+
+    it('renders the edited title while its object is selected', () => {
+      setConfig(editableTitle);
+      createObject('a');
+      select('a');
+
+      manager.startTitleEditing('a', 'title');
+
+      expect(manager.editingTitle).toEqual({ ownerId: 'a', itemId: 'title' });
+      expect(resolve()[0].editingItemId).toBe('title');
+      expect(mockCore.rerender).toHaveBeenCalled();
+    });
+
+    it('keeps the edited titlebar visible when it would otherwise be hidden', () => {
+      setConfig({ ...editableTitle, hideBelowWidth: 500 });
+      createObject('a');
+      select('a');
+      manager.startTitleEditing('a', 'title');
+
+      expect(resolve().map(titlebar => titlebar.owner.id)).toEqual(['a']);
+    });
+
+    it('stores the trimmed value as the name and reports the change', () => {
+      setConfig(editableTitle);
+      const object = createObject('a', { name: 'Old' });
+      object.onAfterUpdate = jest.fn();
+      select('a');
+      manager.startTitleEditing('a', 'title');
+
+      manager.commitTitleEditing('  New name  ');
+
+      expect(object.name).toBe('New name');
+      expect(object.onAfterUpdate).toHaveBeenCalledWith(['name']);
+      expect(mockCore.store.objects.update).toHaveBeenCalledWith(object);
+      expect(mockCore.engine.emitObjectsUpdated).toHaveBeenCalledWith([{ object, changedProperties: ['name'] }]);
+      expect(manager.editingTitle).toBeNull();
+    });
+
+    it('clears the name for an empty value so the title falls back to the default', () => {
+      setConfig(editableTitle);
+      const object = createObject('a', { name: 'Old' });
+      select('a');
+      manager.startTitleEditing('a', 'title');
+
+      manager.commitTitleEditing('   ');
+
+      expect(object.name).toBeUndefined();
+      expect(resolve()[0].sections.left[0].text).toBe('Shape');
+    });
+
+    it('does not update the object when the name is unchanged or the edit is cancelled', () => {
+      setConfig(editableTitle);
+      const object = createObject('a', { name: 'Same' });
+      select('a');
+
+      manager.startTitleEditing('a', 'title');
+      manager.commitTitleEditing('Same');
+      manager.startTitleEditing('a', 'title');
+      manager.cancelTitleEditing();
+      manager.commitTitleEditing('Ignored after cancel');
+
+      expect(object.name).toBe('Same');
+      expect(mockCore.store.objects.update).not.toHaveBeenCalled();
+    });
+
+    it('commits the typed draft when the object is deselected without a blur', () => {
+      setConfig(editableTitle);
+      const object = createObject('a');
+      select('a');
+      manager.startTitleEditing('a', 'title');
+      manager.setTitleDraft('Draft');
+
+      mockCore.store.selectionGroup = null;
+      const titlebars = resolve();
+
+      expect(object.name).toBe('Draft');
+      expect(manager.editingTitle).toBeNull();
+      expect(titlebars[0].editingItemId).toBeUndefined();
+    });
+
+    it('ends an edit without a draft when its title is no longer editable', () => {
+      setConfig(editableTitle);
+      const object = createObject('a', { name: 'Kept' });
+      select('a');
+      manager.startTitleEditing('a', 'title');
+
+      setConfig({ left: [{ id: 'title', type: 'title' }] });
+      resolve();
+
+      expect(manager.editingTitle).toBeNull();
+      expect(object.name).toBe('Kept');
+    });
+
+    it('does not start editing while the engine is disabled', () => {
+      setConfig(editableTitle);
+      createObject('a');
+      mockCore.store.isDisabled = true;
+
+      manager.startTitleEditing('a', 'title');
+
+      expect(manager.editingTitle).toBeNull();
+    });
+
+    it('finds the pressed editable title and recognizes events from the rename input', () => {
+      createObject('a');
+      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const title = createElement({ [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
+      const input = createElement({ [KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }, surface);
+
+      expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [title, surface] })).toEqual({ ownerId: 'a', itemId: 'title' });
+      expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [surface] })).toBeNull();
+      expect(manager.isTitleInputEvent({ composedPath: () => [input, surface] })).toBe(true);
+      expect(manager.isTitleInputEvent({ composedPath: () => [title, surface] })).toBe(false);
+    });
+
+    it('finds the editable title by hit testing when the event path is empty', () => {
+      createObject('a');
+      const surface = createElement({ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: 'a' });
+      const title = createElement({ [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
+      mockCore.engine.host.shadowRoot.elementsFromPoint.mockReturnValue([title]);
+
+      expect(manager.getEditableTitleFromEvent({ clientX: 1, clientY: 2, composedPath: () => [] })).toEqual({ ownerId: 'a', itemId: 'title' });
     });
   });
 
