@@ -99,9 +99,9 @@
   font-weight: var(--kritzel-titlebar-title-font-weight, 600);
 }
 
-/* Clicking the title of an active titlebar again renames the object. */
+/* Clicking the title of an active titlebar again renames the object; the title itself is not a text field. */
 .object-titlebar.is-active .object-titlebar-title.is-editable {
-  cursor: text;
+  cursor: var(--kritzel-global-default-cursor, default);
 }
 
 /* Rename input: looks like the title it replaces, so editing does not shift the bar's layout. */
@@ -112,13 +112,12 @@
   padding: 0 2px;
   border: none;
   border-radius: 3px;
-  background: transparent;
+  background-color: var(--kritzel-titlebar-input-background-color, rgba(255, 255, 255, 0.9));
   color: inherit;
   font: inherit;
   font-weight: var(--kritzel-titlebar-title-font-weight, 600);
   cursor: text;
-  outline: var(--kritzel-titlebar-focus-ring, 2px solid #007aff);
-  outline-offset: 0;
+  outline: none;
 }
 
 .object-titlebar-title-input::placeholder {

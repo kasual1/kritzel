@@ -283,11 +283,15 @@ test.describe('Object titlebar', () => {
 
       await title.click();
       await expect(renameInput(page, shape.id)).toHaveCount(0);
+      // The title is not a text field until it is edited, so it keeps the custom default cursor.
+      await expect(title).toHaveCSS('cursor', /^url\(/);
       await title.click();
 
       const input = renameInput(page, shape.id);
       await expect(input).toBeFocused();
       await expect(input).toHaveValue('Desktop');
+      await expect(input).toHaveCSS('outline-style', 'none');
+      await expect(input).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.9)');
       await page.keyboard.type('Hero section');
       await page.keyboard.press('Enter');
 
