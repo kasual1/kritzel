@@ -455,10 +455,13 @@ Applies to [object titlebars](../customization/titlebars.md). `height` and `offs
 | hoverBackgroundColor | rgba(0, 0, 0, 0.07) | rgba(255, 255, 255, 0.09) |
 | iconColor | #6b6b6b | #a0a0a0 |
 | inputBackgroundColor | rgba(255, 255, 255, 0.9) | rgba(255, 255, 255, 0.12) |
+| inputPadding | 3px 6px | 3px 6px |
 | iconSize | 16px | 16px |
 | mutedTextColor | #9a9a9a | #7a7a7a |
 | offset | 6px | 6px |
 | paddingX | 6px | 6px |
+| selectionBackgroundColor | #007aff | #007aff |
+| selectionColor | #ffffff | #ffffff |
 | textColor | #5f5f5f | #b0b0b0 |
 | titleFontWeight | 600 | 600 |
 | transition | background-color 120ms ease, color 120ms ease | background-color 120ms ease, color 120ms ease |

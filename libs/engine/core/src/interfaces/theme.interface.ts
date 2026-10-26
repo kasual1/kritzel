@@ -591,9 +591,12 @@ export interface KritzelTheme {
     iconColor?: string;
     iconSize?: string;
     inputBackgroundColor?: string;
+    inputPadding?: string;
     mutedTextColor?: string;
     offset?: string;
     paddingX?: string;
+    selectionBackgroundColor?: string;
+    selectionColor?: string;
     textColor?: string;
     titleFontWeight?: string;
     transition?: string;
