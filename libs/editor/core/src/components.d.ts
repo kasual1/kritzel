@@ -297,7 +297,7 @@ export namespace Components {
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
           * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
-          * @default 'collapsed'
+          * @default "collapsed"
          */
         "chatBoxMode": KritzelChatBoxMode1;
         /**
@@ -354,7 +354,7 @@ export namespace Components {
         "exportViewportAsSvg": () => Promise<void>;
         /**
           * The locale used to resolve terms missing from the active locale.
-          * @default 'en'
+          * @default "en"
          */
         "fallbackLocale": LocaleCode;
         "findObjects": <T extends KritzelBaseObject>(predicate: (obj: KritzelBaseObject<Element>) => boolean) => Promise<T[]>;
@@ -388,7 +388,7 @@ export namespace Components {
         "getViewport": () => Promise<KritzelViewportState>;
         "getWorkspaces": () => Promise<KritzelWorkspace[]>;
         /**
-          * @default [     {       label: 'menu.paste',       icon: 'paste',       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.selectAll',       icon: 'selectAll',       action: () => this.selectAllObjectsInViewport(),     },   ]
+          * @default [     {       label: "menu.paste",       icon: "paste",       action: (menu) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.selectAll",       icon: "selectAll",       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems": ContextMenuItem[];
         "group": () => Promise<void>;
@@ -436,7 +436,7 @@ export namespace Components {
         "loadSharedWorkspace": (token: string) => Promise<void>;
         /**
           * The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'.
-          * @default 'en'
+          * @default "en"
          */
         "locale": LocaleCode;
         /**
@@ -452,7 +452,7 @@ export namespace Components {
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
-          * @default [     {       id: 'share',       label: 'menu.share',       icon: 'share',       isVisible: async () => hasRemoteSyncProvider(this.syncConfig),       action: () => {         if (!this.isLoggedIn && this.loginConfig) {           this.openLoginDialog();           return;         }         this.shareDialogRef.open();       },     },     {       id: 'export',       label: 'menu.export',       icon: 'upload',       action: async () => {         const preview = await this.engineRef.getScreenshot('png');         this.exportRef.open(preview ?? undefined);       },     },     {       id: 'import',       label: 'menu.import',       icon: 'download',       action: () => this.engineRef.importFromFile(),     },     {       id: 'settings',       label: 'menu.settings',       icon: 'settings',       action: () => this.settingsRef.open(),     },   ]
+          * @default [     {       id: "share",       label: "menu.share",       icon: "share",       isVisible: async () => hasRemoteSyncProvider(this.syncConfig),       action: () => {         if (!this.isLoggedIn && this.loginConfig) {           this.openLoginDialog();           return;         }         this.shareDialogRef.open();       },     },     {       id: "export",       label: "menu.export",       icon: "upload",       action: async () => {         const preview = await this.engineRef.getScreenshot("png");         this.exportRef.open(preview ?? undefined);       },     },     {       id: "import",       label: "menu.import",       icon: "download",       action: () => this.engineRef.importFromFile(),     },     {       id: "settings",       label: "menu.settings",       icon: "settings",       action: () => this.settingsRef.open(),     },   ]
          */
         "moreMenuItems"?: IKritzelMenuItem[];
         /**
@@ -465,14 +465,16 @@ export namespace Components {
         "moveAgenticCursor": (id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>;
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
+          * @default {     hasTitlebar: (object) => object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",     isRotatable: (object) => object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",   }
          */
         "objectConfig"?: KritzelObjectConfig;
         /**
-          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.export',       icon: 'upload',       group: 'clipboard',       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bringToFront', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'sendToBack', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrowUpFromDot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrowDownFromDot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'alignStartVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'alignCenterHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'alignEndVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'alignStartHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'alignCenterVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'alignEndHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: () => this.engineRef.group(),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
          */
         "objectContextMenuItems": ContextMenuItem[];
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
+          * @default {     left: [       { id: "title", type: "title", isEditable: true },       {         id: "size",         type: "text",         tone: "muted",         minBarWidth: 120, // hide the dimensions when the bar gets narrow         text: ({ size }) =>           `${Math.round(size.width)} × ${Math.round(size.height)}`,       },     ],     right: [{ id: "play", type: "button", icon: "play", tooltip: "Play" }],   }
          */
         "objectTitlebar"?: KritzelObjectTitlebarConfig;
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
@@ -542,12 +544,12 @@ export namespace Components {
          */
         "t": (key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string>;
         /**
-          * @default 'light'
+          * @default "light"
          */
         "theme": ThemeName;
         "themes"?: KritzelTheme[];
         /**
-          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shapeRectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shapeRectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shapeEllipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shapeTriangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
+          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: KritzelSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: KritzelBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: KritzelEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: KritzelLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: KritzelShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: KritzelTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: KritzelImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
          */
         "toolbarItems": KritzelToolbarItem[];
         /**
@@ -2320,7 +2322,7 @@ declare namespace LocalJSX {
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         /**
           * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
-          * @default 'collapsed'
+          * @default "collapsed"
          */
         "chatBoxMode"?: KritzelChatBoxMode1;
         /**
@@ -2346,11 +2348,11 @@ declare namespace LocalJSX {
         "editorId"?: string;
         /**
           * The locale used to resolve terms missing from the active locale.
-          * @default 'en'
+          * @default "en"
          */
         "fallbackLocale"?: LocaleCode;
         /**
-          * @default [     {       label: 'menu.paste',       icon: 'paste',       action: menu => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.selectAll',       icon: 'selectAll',       action: () => this.selectAllObjectsInViewport(),     },   ]
+          * @default [     {       label: "menu.paste",       icon: "paste",       action: (menu) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.selectAll",       icon: "selectAll",       action: () => this.selectAllObjectsInViewport(),     },   ]
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
@@ -2392,7 +2394,7 @@ declare namespace LocalJSX {
         "isZoomingEnabled"?: boolean;
         /**
           * The current locale (language) code applied to the editor, e.g. 'en', 'de', 'fr'.
-          * @default 'en'
+          * @default "en"
          */
         "locale"?: LocaleCode;
         /**
@@ -2408,19 +2410,21 @@ declare namespace LocalJSX {
          */
         "loginConfig"?: KritzelLoginConfig;
         /**
-          * @default [     {       id: 'share',       label: 'menu.share',       icon: 'share',       isVisible: async () => hasRemoteSyncProvider(this.syncConfig),       action: () => {         if (!this.isLoggedIn && this.loginConfig) {           this.openLoginDialog();           return;         }         this.shareDialogRef.open();       },     },     {       id: 'export',       label: 'menu.export',       icon: 'upload',       action: async () => {         const preview = await this.engineRef.getScreenshot('png');         this.exportRef.open(preview ?? undefined);       },     },     {       id: 'import',       label: 'menu.import',       icon: 'download',       action: () => this.engineRef.importFromFile(),     },     {       id: 'settings',       label: 'menu.settings',       icon: 'settings',       action: () => this.settingsRef.open(),     },   ]
+          * @default [     {       id: "share",       label: "menu.share",       icon: "share",       isVisible: async () => hasRemoteSyncProvider(this.syncConfig),       action: () => {         if (!this.isLoggedIn && this.loginConfig) {           this.openLoginDialog();           return;         }         this.shareDialogRef.open();       },     },     {       id: "export",       label: "menu.export",       icon: "upload",       action: async () => {         const preview = await this.engineRef.getScreenshot("png");         this.exportRef.open(preview ?? undefined);       },     },     {       id: "import",       label: "menu.import",       icon: "download",       action: () => this.engineRef.importFromFile(),     },     {       id: "settings",       label: "menu.settings",       icon: "settings",       action: () => this.settingsRef.open(),     },   ]
          */
         "moreMenuItems"?: IKritzelMenuItem[];
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
+          * @default {     hasTitlebar: (object) => object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",     isRotatable: (object) => object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",   }
          */
         "objectConfig"?: KritzelObjectConfig;
         /**
-          * @default [     { label: 'menu.copy', icon: 'copy', group: 'clipboard', action: () => this.engineRef.copy() },     { label: 'menu.cut', icon: 'cut', group: 'clipboard', action: () => this.engineRef.cut() },     {       label: 'menu.paste',       icon: 'paste',       group: 'clipboard',       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: 'menu.export',       icon: 'upload',       group: 'clipboard',       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: 'menu.order',       icon: 'ordering',       group: 'other',       children: [         { label: 'menu.bringToFront', icon: 'bringToFront', action: () => this.engineRef.bringToFront() },         { label: 'menu.sendToBack', icon: 'sendToBack', action: () => this.engineRef.sendToBack() },         { label: 'menu.moveUp', icon: 'arrowUpFromDot', action: () => this.engineRef.bringForward() },         { label: 'menu.moveDown', icon: 'arrowDownFromDot', action: () => this.engineRef.sendBackward() },       ],     },     {       label: 'menu.align',       icon: 'align',       group: 'other',       children: [         { label: 'menu.alignLeft', icon: 'alignStartVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.StartHorizontal) },         { label: 'menu.alignCenterHorizontal', icon: 'alignCenterHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal) },         { label: 'menu.alignRight', icon: 'alignEndVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.EndHorizontal) },         { label: 'menu.alignTop', icon: 'alignStartHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.StartVertical) },         { label: 'menu.alignCenterVertical', icon: 'alignCenterVertical', action: () => this.engineRef.alignObjects(KritzelAlignment.CenterVertical) },         { label: 'menu.alignBottom', icon: 'alignEndHorizontal', action: () => this.engineRef.alignObjects(KritzelAlignment.EndVertical) },       ],     },     {       label: 'menu.group',       icon: 'group',       group: 'other',       children: [         {           label: 'menu.group',           icon: 'group',           action: () => this.engineRef.group(),         },         {           label: 'menu.ungroup',           icon: 'ungroup',           action: () => this.engineRef.ungroup(),         },       ],     },     { label: 'menu.delete', icon: 'delete', group: 'edit', action: () => this.engineRef.delete() },   ]
+          * @default [     {       label: "menu.copy",       icon: "copy",       group: "clipboard",       action: () => this.engineRef.copy(),     },     {       label: "menu.cut",       icon: "cut",       group: "clipboard",       action: () => this.engineRef.cut(),     },     {       label: "menu.paste",       icon: "paste",       group: "clipboard",       action: (menu, _) => this.engineRef.paste(menu.x, menu.y),     },     {       label: "menu.export",       icon: "upload",       group: "clipboard",       isVisible: (_, objects) => this.canExportObjects(objects),       action: (_, objects) => {         const format = this.getPreferredExportFormat(objects);         if (!format) {           return;         }          void this.engineRef.exportSelectedObject(format);       },     },     {       label: "menu.order",       icon: "ordering",       group: "other",       children: [         {           label: "menu.bringToFront",           icon: "bringToFront",           action: () => this.engineRef.bringToFront(),         },         {           label: "menu.sendToBack",           icon: "sendToBack",           action: () => this.engineRef.sendToBack(),         },         {           label: "menu.moveUp",           icon: "arrowUpFromDot",           action: () => this.engineRef.bringForward(),         },         {           label: "menu.moveDown",           icon: "arrowDownFromDot",           action: () => this.engineRef.sendBackward(),         },       ],     },     {       label: "menu.align",       icon: "align",       group: "other",       children: [         {           label: "menu.alignLeft",           icon: "alignStartVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.StartHorizontal),         },         {           label: "menu.alignCenterHorizontal",           icon: "alignCenterHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.CenterHorizontal),         },         {           label: "menu.alignRight",           icon: "alignEndVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.EndHorizontal),         },         {           label: "menu.alignTop",           icon: "alignStartHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.StartVertical),         },         {           label: "menu.alignCenterVertical",           icon: "alignCenterVertical",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.CenterVertical),         },         {           label: "menu.alignBottom",           icon: "alignEndHorizontal",           action: () =>             this.engineRef.alignObjects(KritzelAlignment.EndVertical),         },       ],     },     {       label: "menu.group",       icon: "group",       group: "other",       children: [         {           label: "menu.group",           icon: "group",           action: () => this.engineRef.group(),         },         {           label: "menu.ungroup",           icon: "ungroup",           action: () => this.engineRef.ungroup(),         },       ],     },     {       label: "menu.delete",       icon: "delete",       group: "edit",       action: () => this.engineRef.delete(),     },   ]
          */
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
+          * @default {     left: [       { id: "title", type: "title", isEditable: true },       {         id: "size",         type: "text",         tone: "muted",         minBarWidth: 120, // hide the dimensions when the bar gets narrow         text: ({ size }) =>           `${Math.round(size.width)} × ${Math.round(size.height)}`,       },     ],     right: [{ id: "play", type: "button", icon: "play", tooltip: "Play" }],   }
          */
         "objectTitlebar"?: KritzelObjectTitlebarConfig;
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
@@ -2467,12 +2471,12 @@ declare namespace LocalJSX {
          */
         "syncConfig"?: KritzelSyncConfig;
         /**
-          * @default 'light'
+          * @default "light"
          */
         "theme"?: ThemeName;
         "themes"?: KritzelTheme[];
         /**
-          * @default [     {       name: 'selection',       type: 'tool',       isDefault: true,       tool: KritzelSelectionTool,       icon: 'cursor',     },     {       name: 'brush',       type: 'tool',       tool: KritzelBrushTool,       icon: 'pen',       config: DEFAULT_BRUSH_CONFIG,     },     {       name: 'eraser',       type: 'tool',       tool: KritzelEraserTool,       icon: 'eraser',     },     {       name: 'line',       type: 'tool',       tool: KritzelLineTool,       icon: 'arrow',       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: 'shape',       type: 'tool',       tool: KritzelShapeTool,       icon: 'shapeRectangle',       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         { id: 'rectangle', icon: 'shapeRectangle', label: 'Rectangle', value: ShapeType.Rectangle, toolProperty: 'shapeType' },         { id: 'ellipse', icon: 'shapeEllipse', label: 'Ellipse', value: ShapeType.Ellipse, toolProperty: 'shapeType' },         { id: 'triangle', icon: 'shapeTriangle', label: 'Triangle', value: ShapeType.Triangle, toolProperty: 'shapeType' },       ],     },     {       name: 'text',       type: 'tool',       tool: KritzelTextTool,       icon: 'type',       config: DEFAULT_TEXT_CONFIG,     },     {       name: 'image',       type: 'tool',       tool: KritzelImageTool,       icon: 'image',     },     {       name: 'config',       type: 'config',     },   ]
+          * @default [     {       name: "selection",       type: "tool",       isDefault: true,       tool: KritzelSelectionTool,       icon: "cursor",     },     {       name: "brush",       type: "tool",       tool: KritzelBrushTool,       icon: "pen",       config: DEFAULT_BRUSH_CONFIG,     },     {       name: "eraser",       type: "tool",       tool: KritzelEraserTool,       icon: "eraser",     },     {       name: "line",       type: "tool",       tool: KritzelLineTool,       icon: "arrow",       config: DEFAULT_LINE_TOOL_CONFIG,     },     {       name: "shape",       type: "tool",       tool: KritzelShapeTool,       icon: "shapeRectangle",       config: DEFAULT_SHAPE_CONFIG,       subOptions: [         {           id: "rectangle",           icon: "shapeRectangle",           label: "Rectangle",           value: ShapeType.Rectangle,           toolProperty: "shapeType",         },         {           id: "ellipse",           icon: "shapeEllipse",           label: "Ellipse",           value: ShapeType.Ellipse,           toolProperty: "shapeType",         },         {           id: "triangle",           icon: "shapeTriangle",           label: "Triangle",           value: ShapeType.Triangle,           toolProperty: "shapeType",         },       ],     },     {       name: "text",       type: "tool",       tool: KritzelTextTool,       icon: "type",       config: DEFAULT_TEXT_CONFIG,     },     {       name: "image",       type: "tool",       tool: KritzelImageTool,       icon: "image",     },     {       name: "config",       type: "config",     },   ]
          */
         "toolbarItems"?: KritzelToolbarItem[];
         "user"?: IKritzelUser;
