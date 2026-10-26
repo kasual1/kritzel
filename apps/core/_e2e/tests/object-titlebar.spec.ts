@@ -231,6 +231,28 @@ test.describe('Object titlebar', () => {
     await expect(titlebarFor(page, group!.id)).toHaveCount(1);
   });
 
+  test('buttons use the custom pointer cursor and disabled buttons the custom default cursor', async ({ editorPage, page }) => {
+    const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+    const button = titlebarFor(page, shape.id).locator('[data-item-id="play"]');
+    const pointerCursor = await page.evaluate(() => getComputedStyle(document.body).getPropertyValue('--kritzel-global-pointer-cursor').trim());
+    expect(pointerCursor).toMatch(/^url\(/);
+
+    await expect(button).toHaveCSS('cursor', /^url\(/);
+    expect(await button.evaluate(element => getComputedStyle(element).cursor)).not.toBe('pointer');
+
+    await page.evaluate(() => {
+      const editor = document.querySelector('kritzel-editor') as any;
+      editor.objectTitlebar = {
+        ...editor.objectTitlebar,
+        left: editor.objectTitlebar.left.map((item: any) => (item.id === 'play' ? { ...item, isDisabled: true } : item)),
+      };
+    });
+    await nextFrame(page);
+
+    await expect(button).toHaveAttribute('aria-disabled', 'true');
+    await expect(button).toHaveCSS('cursor', /^url\(/);
+  });
+
   test('right-clicking the titlebar opens the object context menu', async ({ editorPage, page }) => {
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const point = await surfacePoint(titlebarFor(page, shape.id));
