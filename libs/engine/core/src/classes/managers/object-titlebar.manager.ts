@@ -22,6 +22,10 @@ import { KritzelIconName } from '../registries/icon-registry.class';
 export const KRITZEL_TITLEBAR_OWNER_ATTRIBUTE = 'data-titlebar-owner-id';
 /** Marks interactive titlebar elements; pointer input on them never reaches the active tool. */
 export const KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE = 'data-kritzel-titlebar-control';
+/** Marks an editable title; its value is the id of the title item. */
+export const KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE = 'data-kritzel-titlebar-editable-title';
+/** Marks the input used to rename an object; keyboard input in it never reaches canvas shortcuts. */
+export const KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE = 'data-kritzel-titlebar-title-input';
 
 const DEFAULT_LEFT_ITEMS: KritzelTitlebarItem[] = [{ id: 'title', type: 'title' }];
 const SECTIONS: KritzelTitlebarSection[] = ['left', 'center', 'right'];
@@ -73,6 +77,8 @@ export interface KritzelResolvedTitlebarItem {
   tooltip?: string;
   isDisabled?: boolean;
   isPressed?: boolean;
+  /** Whether a title item can be edited to rename its object. */
+  isEditable?: boolean;
 }
 
 /** Everything needed to render one titlebar. */
@@ -84,6 +90,8 @@ export interface KritzelResolvedTitlebar {
   transform: string;
   /** Titlebar width in screen pixels. */
   width: number;
+  /** Id of the title item currently being edited, if any. */
+  editingItemId?: string;
   sections: Record<KritzelTitlebarSection, KritzelResolvedTitlebarItem[]>;
 }
 
@@ -96,6 +104,9 @@ export class KritzelObjectTitlebarManager {
   private readonly _core: KritzelCore;
   private readonly _warnedItems = new Set<string>();
   private _hasReportedMissingHasTitlebar = false;
+  private _editingTitle: { ownerId: string; itemId: string } | null = null;
+  /** Latest input value of the title being edited, committed if the edit ends without a blur. */
+  private _titleDraft: string | null = null;
 
   constructor(core: KritzelCore) {
     this._core = core;
@@ -217,31 +228,51 @@ export class KritzelObjectTitlebarManager {
 
     const activeOwnerIds = this.getActiveOwnerIds(candidates);
     const titlebars: KritzelResolvedTitlebar[] = [];
+    const editing = this._editingTitle;
 
     for (const owner of owners) {
       const isActive = activeOwnerIds.has(owner.id);
-      if (config.visibility === 'active' && !isActive) {
+      // A titlebar being edited stays visible until the edit ends.
+      const isEditing = editing?.ownerId === owner.id;
+      if (config.visibility === 'active' && !isActive && !isEditing) {
         continue;
       }
 
       const anchor = KritzelObjectTitlebarHelper.getAnchor(owner, viewport, config.rotation ?? 'follow');
-      if (!(anchor.width >= hideBelowWidth)) {
+      if (!(anchor.width >= hideBelowWidth) && !isEditing) {
         continue;
       }
 
       const context = this.createContext(owner, isActive, anchor.width);
+      const sections = {
+        left: this.resolveItems(config.left ?? DEFAULT_LEFT_ITEMS, 'left', context),
+        center: this.resolveItems(config.center ?? [], 'center', context),
+        right: this.resolveItems(config.right ?? [], 'right', context),
+      };
+      const isEditedItemShown = isEditing && SECTIONS.some(section => sections[section].some(resolved => resolved.item.id === editing.itemId && resolved.isEditable));
       titlebars.push({
         owner,
         context,
         isActive,
         transform: KritzelObjectTitlebarHelper.getTransform(anchor, viewport.scale),
         width: anchor.width,
-        sections: {
-          left: this.resolveItems(config.left ?? DEFAULT_LEFT_ITEMS, 'left', context),
-          center: this.resolveItems(config.center ?? [], 'center', context),
-          right: this.resolveItems(config.right ?? [], 'right', context),
-        },
+        editingItemId: isEditedItemShown ? editing.itemId : undefined,
+        sections,
       });
+    }
+
+    // An edit whose title is no longer rendered or whose object is no longer selected ends, keeping
+    // what was typed. Usually the input's blur has already committed it.
+    if (editing && !this.isTitleEditStillValid(editing, titlebars)) {
+      const draft = this._titleDraft;
+      if (draft === null) {
+        this._editingTitle = null;
+      } else {
+        this.commitTitleEditing(draft);
+      }
+      for (const titlebar of titlebars) {
+        titlebar.editingItemId = undefined;
+      }
     }
 
     return titlebars;
@@ -394,7 +425,12 @@ export class KritzelObjectTitlebarManager {
 
       switch (item.type) {
         case 'title':
-          resolved.push({ item, section, text: item.text === undefined ? context.title : this.evaluate(item.text, context, context.title, item.id) });
+          resolved.push({
+            item,
+            section,
+            text: item.text === undefined ? context.title : this.evaluate(item.text, context, context.title, item.id),
+            isEditable: item.text === undefined && this.evaluate(item.isEditable, context, false, item.id),
+          });
           break;
         case 'text':
           resolved.push({ item, section, text: this.evaluate(item.text, context, '', item.id) });
@@ -462,6 +498,95 @@ export class KritzelObjectTitlebarManager {
       return config.left ?? DEFAULT_LEFT_ITEMS;
     }
     return config[section] ?? [];
+  }
+
+  /** The title being edited, if any. */
+  get editingTitle(): { ownerId: string; itemId: string } | null {
+    return this._editingTitle;
+  }
+
+  /**
+   * Finds the editable title that was pressed, using the event path and falling back to hit testing.
+   * @returns The owner and title item id, or `null` when the press was not on an editable title
+   */
+  getEditableTitleFromEvent(event: Pick<PointerEvent, 'clientX' | 'clientY'> & { composedPath?: () => EventTarget[] }): { ownerId: string; itemId: string } | null {
+    if (!this.isEnabled) {
+      return null;
+    }
+
+    let title = (event.composedPath?.() ?? []).find(target => this.hasAttribute(target, KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE)) as Element | undefined;
+    if (!title) {
+      const topmost = this._core.engine?.host?.shadowRoot?.elementsFromPoint?.(event.clientX, event.clientY)?.[0];
+      title = topmost?.closest(`[${KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE}]`) ?? undefined;
+    }
+
+    const ownerId = title?.closest(`[${KRITZEL_TITLEBAR_OWNER_ATTRIBUTE}]`)?.getAttribute(KRITZEL_TITLEBAR_OWNER_ATTRIBUTE);
+    const itemId = title?.getAttribute(KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE);
+    return ownerId && itemId ? { ownerId, itemId } : null;
+  }
+
+  /** Whether the event originated in the input used to rename an object. */
+  isTitleInputEvent(event: { composedPath?: () => EventTarget[] }): boolean {
+    const path = event.composedPath?.() ?? [];
+    return path.some(target => this.hasAttribute(target, KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE));
+  }
+
+  /** Starts renaming an object through the given title item of its titlebar. */
+  startTitleEditing(ownerId: string, itemId: string): void {
+    if (this._core.store.isDisabled || !this.findOwnerById(ownerId)) {
+      return;
+    }
+    this._editingTitle = { ownerId, itemId };
+    this._titleDraft = null;
+    this._core.rerender();
+  }
+
+  /** Records the current input value of the title being edited. */
+  setTitleDraft(value: string): void {
+    if (this._editingTitle) {
+      this._titleDraft = value;
+    }
+  }
+
+  /**
+   * Ends renaming and stores the trimmed value as the object's name. An empty value clears the
+   * name, so the title falls back to the default. Does nothing when no edit is in progress.
+   */
+  commitTitleEditing(value: string): void {
+    const editing = this._editingTitle;
+    if (!editing) {
+      return;
+    }
+    this._editingTitle = null;
+    this._titleDraft = null;
+
+    const owner = this.findOwnerById(editing.ownerId);
+    const name = value.trim() || undefined;
+    if (owner && owner.name !== name) {
+      // Assigned directly: core.updateObject skips undefined values, which clear the name.
+      owner.name = name;
+      owner.onAfterUpdate(['name']);
+      this._core.store.objects.update(owner);
+      this._core.engine?.emitObjectsChange();
+      this._core.engine?.emitObjectsUpdated([{ object: owner, changedProperties: ['name'] }]);
+    }
+    this._core.rerender();
+  }
+
+  /** Ends renaming without changing the object's name. */
+  cancelTitleEditing(): void {
+    if (!this._editingTitle) {
+      return;
+    }
+    this._editingTitle = null;
+    this._titleDraft = null;
+    this._core.rerender();
+  }
+
+  private isTitleEditStillValid(editing: { ownerId: string; itemId: string }, titlebars: KritzelResolvedTitlebar[]): boolean {
+    const owner = this.findOwnerById(editing.ownerId);
+    const isSelected = !!this._core.store.selectionGroup?.objectIds.includes(editing.ownerId);
+    return !!owner && !owner.markedForRemoval && isSelected && titlebars.some(titlebar => titlebar.editingItemId === editing.itemId && titlebar.owner.id === editing.ownerId);
   }
 
   private findOwnerById(id: string | null | undefined): KritzelBaseObject<any> | null {

@@ -29,6 +29,11 @@ import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
  * property editing, and various transformation handles. Delegates specific interactions
  * to specialized handlers (selection, move, resize, rotation, hover, line handle).
  */
+/** Pointer movement in screen pixels up to which a press on a title still counts as a click. */
+const TITLE_EDIT_CLICK_TOLERANCE = 5;
+
+type SelectionToolTitleEditCandidate = { ownerId: string; itemId: string; clientX: number; clientY: number };
+
 export class KritzelSelectionTool extends KritzelBaseTool {
   override toolType = 'selection' as const;
 
@@ -64,6 +69,8 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   private _titlebarPointerId: number | null = null;
   /** Embedded object whose interactivity is deferred until the titlebar press ends. */
   private _titlebarDeferredInteractiveObject: KritzelBaseObject<any> | null = null;
+  /** Editable title pressed while its object was already the only selected object. */
+  private _titlebarTitleEditCandidate: SelectionToolTitleEditCandidate | null = null;
 
   /**
    * Checks if there are any objects currently selected.
@@ -609,6 +616,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     this._titlebarPointerId = event.pointerId;
     this.selectionHandler.skipEditForPointerId = event.pointerId;
+    this._titlebarTitleEditCandidate = this.getTitleEditCandidate(event, owner);
 
     if (event.shiftKey || event.ctrlKey) {
       this.selectionHandler.toggleObjectInSelection(owner);
@@ -636,6 +644,25 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   }
 
   /**
+   * Clicking the editable title of an object that is already the only selected one renames it,
+   * like clicking a selected text object again edits it.
+   */
+  private getTitleEditCandidate(event: PointerEvent, owner: KritzelBaseObject<any>): SelectionToolTitleEditCandidate | null {
+    if (event.shiftKey || event.ctrlKey) {
+      return null;
+    }
+    const selectedIds = this._core.store.selectionGroup?.objectIds ?? [];
+    if (selectedIds.length !== 1 || selectedIds[0] !== owner.id) {
+      return null;
+    }
+    const title = this._core.objectTitlebarManager.getEditableTitleFromEvent(event);
+    if (!title || title.ownerId !== owner.id) {
+      return null;
+    }
+    return { ...title, clientX: event.clientX, clientY: event.clientY };
+  }
+
+  /**
    * Selecting an embedded object makes its content interactive. During a titlebar press that
    * would let an iframe capture the pointer mid-drag, so interactivity is applied on release.
    */
@@ -652,11 +679,19 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     }
 
     const deferred = this._titlebarDeferredInteractiveObject;
+    const titleEdit = this._titlebarTitleEditCandidate;
     this._titlebarPointerId = null;
     this._titlebarDeferredInteractiveObject = null;
+    this._titlebarTitleEditCandidate = null;
 
     if (deferred && ObjectHelper.isKritzelEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
       deferred.setIsInteractive(true);
+    }
+
+    // A click without a drag on the title of the selected object starts renaming it.
+    const distance = titleEdit ? Math.hypot(event.clientX - titleEdit.clientX, event.clientY - titleEdit.clientY) : Infinity;
+    if (titleEdit && distance <= TITLE_EDIT_CLICK_TOLERANCE && this._core.store.selectionGroup?.objectIds.includes(titleEdit.ownerId)) {
+      this._core.objectTitlebarManager.startTitleEditing(titleEdit.ownerId, titleEdit.itemId);
     }
   }
 
@@ -672,6 +707,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const deferred = this._titlebarDeferredInteractiveObject;
     this._titlebarPointerId = null;
     this._titlebarDeferredInteractiveObject = null;
+    this._titlebarTitleEditCandidate = null;
     this.selectionHandler.skipEditForPointerId = null;
 
     if (deferred && ObjectHelper.isKritzelEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {

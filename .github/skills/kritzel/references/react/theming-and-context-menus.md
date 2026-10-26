@@ -175,7 +175,7 @@ Items — every item needs a stable `id` (used in events) and accepts `isVisible
 
 | `type` | Fields | Notes |
 |---|---|---|
-| `title` | `text?` | Resolved title: item `text` > `config.title(object)` > `object.name` > localized type label |
+| `title` | `text?`, `isEditable?` | Resolved title: item `text` > `config.title(object)` > `object.name` > localized type label. `isEditable: true` (or a function of the context) lets users rename the object: clicking the title of the active bar of the only selected object again opens an input; Enter/blur stores the trimmed value in `name` (one undo step, emits `objectsUpdated` with `['name']`), Escape cancels, empty clears the name (default title). Not editable with a `text` override |
 | `text` | `text`, `tone?` (`'default'` \| `'muted'` \| `'strong'`) | Arbitrary text, e.g. a size |
 | `icon` | `icon` | Registry icon name (`customSvgIcons` extend it) |
 | `button` | `icon?`, `label?`, `tooltip?`, `variant?` (`'ghost'` \| `'filled'` \| `'outlined'`), `isDisabled?`, `isPressed?`, `action?(context, event)` | Never selects or drags; always emits `objectTitlebarAction`. `label` / `tooltip` take term keys or plain strings |
@@ -214,7 +214,7 @@ const themes: KritzelTheme[] = [
 
 ### Styling with `::part()`
 
-For anything tokens do not cover, target parts on the engine from a global stylesheet (works under `KritzelEditor`, which renders the engine in light DOM): `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-text`, `titlebar-icon`, `titlebar-button`, `titlebar-button-pressed`, `titlebar-separator`, plus any item's own `part`.
+For anything tokens do not cover, target parts on the engine from a global stylesheet (works under `KritzelEditor`, which renders the engine in light DOM): `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-title-input`, `titlebar-text`, `titlebar-icon`, `titlebar-button`, `titlebar-button-pressed`, `titlebar-separator`, plus any item's own `part`.
 
 ```css
 kritzel-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #087ea4; }

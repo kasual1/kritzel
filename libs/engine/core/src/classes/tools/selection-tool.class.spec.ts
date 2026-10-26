@@ -168,6 +168,8 @@ describe('KritzelSelectionTool', () => {
       objectTitlebarManager: {
         config: undefined,
         getOwnerFromEvent: jest.fn().mockReturnValue(null),
+        getEditableTitleFromEvent: jest.fn().mockReturnValue(null),
+        startTitleEditing: jest.fn(),
         isControlEvent: jest.fn().mockReturnValue(false),
         resetWarnings: jest.fn(),
       },
@@ -1349,6 +1351,49 @@ describe('KritzelSelectionTool', () => {
 
       expect(tool.selectionHandler.skipEditForPointerId).toBeNull();
       expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
+    });
+
+    describe('title editing', () => {
+      beforeEach(() => {
+        mockCore.store.selectionGroup = { id: 'sg-1', objects: [owner], objectIds: ['owner-1'] };
+        mockCore.objectTitlebarManager.getEditableTitleFromEvent.mockReturnValue({ ownerId: 'owner-1', itemId: 'title' });
+      });
+
+      it('starts renaming when the editable title of the selected object is clicked again', () => {
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 12, clientY: 11 } as Partial<PointerEvent>));
+
+        expect(mockCore.objectTitlebarManager.startTitleEditing).toHaveBeenCalledWith('owner-1', 'title');
+      });
+
+      it('does not rename when the click selected the object', () => {
+        mockCore.store.selectionGroup = null;
+
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+
+        expect(mockCore.objectTitlebarManager.startTitleEditing).not.toHaveBeenCalled();
+      });
+
+      it('does not rename after a drag or within a multi-selection', () => {
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 40, clientY: 10 } as Partial<PointerEvent>));
+
+        mockCore.store.selectionGroup = { id: 'sg-2', objects: [owner, { id: 'other' }], objectIds: ['owner-1', 'other'] };
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+
+        expect(mockCore.objectTitlebarManager.startTitleEditing).not.toHaveBeenCalled();
+      });
+
+      it('does not rename when the press was not on an editable title', () => {
+        mockCore.objectTitlebarManager.getEditableTitleFromEvent.mockReturnValue(null);
+
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+
+        expect(mockCore.objectTitlebarManager.startTitleEditing).not.toHaveBeenCalled();
+      });
     });
 
     it('clears the titlebar press when the tool is deactivated', () => {

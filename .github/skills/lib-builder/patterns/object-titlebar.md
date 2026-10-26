@@ -82,6 +82,16 @@ Two DOM markers drive everything (constants exported from the manager):
 - Keyboard: buttons are tabbable only on active bars; `Enter`, `Space`, `Tab` and arrow keys on a focused control are not global shortcuts. Pointer clicks blur the button so canvas shortcuts keep working
 - The cursor manager shows the hand cursor over the surface, not over controls
 
+## Renaming Through the Title
+
+- Opt-in per title item: `isEditable?: KritzelTitlebarValue<boolean>` (default `false`), resolved in `resolveItems` as `resolved.isEditable`; always `false` when the item has a `text` override. Editable titles carry `data-kritzel-titlebar-editable-title="<itemId>"`
+- Trigger (click-again, like editing a selected text): `SelectionTool.handleTitlebarPointerDown` records a candidate only when the owner already is the only selected object and `getEditableTitleFromEvent` (event path, then `elementsFromPoint`) finds its editable title, without Shift/Ctrl. `finishTitlebarGesture` calls `objectTitlebarManager.startTitleEditing(ownerId, itemId)` if the pointer moved at most `TITLE_EDIT_CLICK_TOLERANCE` (5px). The press still drags as usual
+- State lives in the manager: `_editingTitle` and `_titleDraft`. `resolveTitlebars` keeps the edited bar visible (exempt from `visibility: 'active'` and `hideBelowWidth`) and sets `editingItemId`. If the title is no longer rendered or editable, or the owner is no longer selected or exists, the edit ends: the draft is committed if one was typed, otherwise it is dropped
+- The layer renders an `<input>` (`part="titlebar-title-input"`, control + `data-kritzel-titlebar-title-input` attributes). Its value is set once in `ref` (guarded by `dataset.initialized`) so per-frame renders never overwrite typing; `onInput` → `setTitleDraft`, Enter/blur → `commitTitleEditing`, Escape → `cancelTitleEditing`
+- `commitTitleEditing` trims, maps `''` to `undefined`, and when the name changed assigns `owner.name` directly (not `core.updateObject`, which skips `undefined`), calls `onAfterUpdate(['name'])`, `store.objects.update(owner)` (one undo step, synced), `emitObjectsChange()` and `emitObjectsUpdated([{ object, changedProperties: ['name'] }])`. It never deselects
+- `shouldHandleGlobalShortcutEvent` returns `false` first for `isTitleInputEvent(ev)`, so Delete, Escape, undo and clipboard shortcuts stay in the input
+- Tests: manager `title editing` block, layer `title editing` block, selection tool `object titlebar › title editing`, engine `titlebar title input`, e2e `Object titlebar › renaming`
+
 ## Theming and Parts
 
 - Tokens live in the `titlebar` theme section (`titlebar` is in `KNOWN_CATEGORIES` of `scripts/generate-theme-interface.js`); keep `light-theme.ts` and `dark-theme.ts` in sync and update the variable count in `helpers/theme.helper.spec.ts`
