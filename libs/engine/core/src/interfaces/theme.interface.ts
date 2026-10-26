@@ -545,6 +545,12 @@ export interface KritzelTheme {
     gap?: string;
   };
 
+  /** Text object variables */
+  text?: {
+    selectionBackgroundColor?: string;
+    selectionColor?: string;
+  };
+
   /** Text input variables */
   textInput?: {
     background?: string;

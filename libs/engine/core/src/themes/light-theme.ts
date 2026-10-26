@@ -29,6 +29,11 @@ export const lightTheme: KritzelTheme = {
     tabTextColorSelected: '#000000',
   },
 
+  text: {
+    selectionBackgroundColor: '#007AFF',
+    selectionColor: '#ffffff',
+  },
+
   textInput: {
     background: '#ffffff',
     borderColor: '#dbdbdb',

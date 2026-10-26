@@ -18,6 +18,12 @@
   outline: none;
 }
 
+.ProseMirror::selection,
+.ProseMirror ::selection {
+  background-color: var(--kritzel-text-selection-background-color, #007AFF);
+  color: var(--kritzel-text-selection-color, #ffffff);
+}
+
 p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   margin: 0;
   padding: 0;
