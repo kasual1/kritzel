@@ -136,7 +136,7 @@
   background-color: transparent;
   color: inherit;
   font: inherit;
-  cursor: pointer;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
   transition: var(--kritzel-titlebar-transition, background-color 120ms ease, color 120ms ease);
 }
 
@@ -171,7 +171,7 @@
 
 .object-titlebar-button[aria-disabled='true'] {
   opacity: 0.4;
-  cursor: default;
+  cursor: var(--kritzel-global-default-cursor, default);
 }
 
 .object-titlebar-button:focus-visible {
