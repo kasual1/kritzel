@@ -3,6 +3,9 @@ import { isDevMode } from '@angular/core';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { registerServiceWorkerWithRetry } from './service-worker-registration';
+import { preventSwipeNavigation } from './swipe-navigation';
+
+preventSwipeNavigation();
 
 if (!isDevMode()) {
   registerServiceWorkerWithRetry();
