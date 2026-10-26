@@ -57,11 +57,11 @@ Define the configuration once in `<script setup>` instead of an inline object in
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| hasTitlebar | KritzelObjectConfigValue | `false` | Whether an object gets a titlebar. Requires the `objectTitlebar` prop. Objects inside a group never get their own titlebar. See [Choosing Which Objects Get a Titlebar](./titlebars.md#choosing-which-objects-get-a-titlebar). |
-| isRotatable | KritzelObjectConfigValue | `true` | Whether an object can be rotated. Combines with the object's own `isRotatable` flag. |
-| isResizable | KritzelObjectConfigValue | `true` | Whether an object can be resized. Combines with the object's own `isResizable` flag. |
+| hasTitlebar | boolean \| (object) => boolean | `false` | Whether an object gets a titlebar. Requires the `objectTitlebar` prop. Objects inside a group never get their own titlebar. See [Choosing Which Objects Get a Titlebar](./titlebars.md#choosing-which-objects-get-a-titlebar). |
+| isRotatable | boolean \| (object) => boolean | `true` | Whether an object can be rotated. Combines with the object's own `isRotatable` flag. |
+| isResizable | boolean \| (object) => boolean | `true` | Whether an object can be resized. Combines with the object's own `isResizable` flag. |
 
-`KritzelObjectConfigValue` is `boolean | ((object: KritzelBaseObject) => boolean)`. An option that is not set uses its default. If the `objectTitlebar` prop is set but `hasTitlebar` is not, no titlebars are rendered, and the editor logs a hint to the console once.
+An option that is not set uses its default. If the `objectTitlebar` prop is set but `hasTitlebar` is not, no titlebars are rendered, and the editor logs a hint to the console once.
 
 When an object cannot be rotated or resized, the editor hides its rotation or resize handles, and the gesture does not start.
 
