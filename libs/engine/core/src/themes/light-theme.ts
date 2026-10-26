@@ -427,6 +427,7 @@ export const lightTheme: KritzelTheme = {
     height: '28px',
     hoverBackgroundColor: 'rgba(0, 0, 0, 0.07)',
     iconColor: '#6b6b6b',
+    inputBackgroundColor: 'rgba(255, 255, 255, 0.9)',
     iconSize: '16px',
     mutedTextColor: '#9a9a9a',
     offset: '6px',

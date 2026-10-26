@@ -422,6 +422,7 @@ The themes keep the names `light` and `dark` of the themes they spread, so the b
 | height | 28px | 28px | Height of the titlebar |
 | hoverBackgroundColor | rgba(0, 0, 0, 0.07) | rgba(255, 255, 255, 0.09) | Background of a hovered titlebar |
 | iconColor | #6b6b6b | #a0a0a0 | Icon color |
+| inputBackgroundColor | rgba(255, 255, 255, 0.9) | rgba(255, 255, 255, 0.12) | Background of the input shown while renaming an object |
 | iconSize | 16px | 16px | Icon size |
 | mutedTextColor | #9a9a9a | #7a7a7a | Color of muted text items |
 | offset | 6px | 6px | Space between the titlebar and its object |

@@ -590,6 +590,7 @@ export interface KritzelTheme {
     hoverBackgroundColor?: string;
     iconColor?: string;
     iconSize?: string;
+    inputBackgroundColor?: string;
     mutedTextColor?: string;
     offset?: string;
     paddingX?: string;

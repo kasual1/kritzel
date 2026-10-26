@@ -454,6 +454,7 @@ Applies to [object titlebars](../customization/titlebars.md). `height` and `offs
 | height | 28px | 28px |
 | hoverBackgroundColor | rgba(0, 0, 0, 0.07) | rgba(255, 255, 255, 0.09) |
 | iconColor | #6b6b6b | #a0a0a0 |
+| inputBackgroundColor | rgba(255, 255, 255, 0.9) | rgba(255, 255, 255, 0.12) |
 | iconSize | 16px | 16px |
 | mutedTextColor | #9a9a9a | #7a7a7a |
 | offset | 6px | 6px |
