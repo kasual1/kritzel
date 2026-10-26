@@ -5,13 +5,13 @@
 Use this pattern when maintaining the `objectConfig` prop (`KritzelObjectConfig`) that configures object behavior in one place for all objects (`hasTitlebar`, `isRotatable`, `isResizable`), or when adding a new option to it.
 
 Primary touchpoints:
-- `libs/engine/core/src/interfaces/object-config.interface.ts` — `KritzelObjectConfigValue` (`boolean | ((object: KritzelBaseObject) => boolean)`) and `KritzelObjectConfig`; the TSDoc here is the public documentation of every option
+- `libs/engine/core/src/interfaces/object-config.interface.ts` — `KritzelObjectConfig`, each option typed inline as `boolean | ((object: KritzelBaseObject) => boolean)` (no alias, so hovers and generated docs show the signature); the TSDoc here is the public documentation of every option
 - `libs/engine/core/src/classes/managers/object-config.manager.ts` — `KritzelObjectConfigManager`: live config read, per-option resolution, group/selection rules, warn-once
 - `libs/engine/core/src/classes/core/core.class.ts` — creates the manager and exposes it as `core.objectConfigManager`
 - `libs/engine/core/src/components/kritzel-engine/kritzel-engine.tsx` — `@Prop() objectConfig`, `@Watch('objectConfig')`, `getSelectionHandleCapabilities` (handle rendering)
 - `libs/editor/core/src/components/kritzel-editor/kritzel-editor.tsx` — `@Prop() objectConfig`, forwarded unchanged to `<kritzel-engine>`
 - Enforcement points: `classes/handlers/rotation.handler.ts`, `classes/handlers/resize.handler.ts`, `classes/managers/object-titlebar.manager.ts` (`getOwners`, see [object-titlebar.md](object-titlebar.md))
-- Public exports: `KritzelObjectConfig`, `KritzelObjectConfigValue` and the manager are exported from `libs/engine/core/src/index.ts` and re-exported by the engine and editor wrappers (`react/lib/index.ts`, `vue/lib/index.ts`, `angular/.../public-api.ts`); `objectConfig` is in the Angular proxy `inputs` and the Vue `components.ts` prop lists of both packages
+- Public exports: `KritzelObjectConfig` and the manager are exported from `libs/engine/core/src/index.ts` and re-exported by the engine and editor wrappers (`react/lib/index.ts`, `vue/lib/index.ts`, `angular/.../public-api.ts`); `objectConfig` is in the Angular proxy `inputs` and the Vue `components.ts` prop lists of both packages
 
 ## Maintainer Mental Model
 
@@ -66,7 +66,7 @@ Every option answers one yes/no question per object. Callers never read `engine.
 
 Planned follow-ups: `isMovable`, `isDeletable`, `isCopyable`, `isSelectable`, `isEditable`.
 
-1. **Interface** — add the optional key to `KritzelObjectConfig` with TSDoc stating the default, whether it combines with a persisted object flag, and the group rule. Keep the value type `KritzelObjectConfigValue`; do not add arrays, id lists or async variants
+1. **Interface** — add the optional key to `KritzelObjectConfig` with TSDoc stating the default, whether it combines with a persisted object flag, and the group rule. Type the value inline as `boolean | ((object: KritzelBaseObject) => boolean)`, like the existing options; do not add arrays, id lists or async variants
 2. **Manager** — add a public method named like the option. Pick the default (`true` for permissions, `false` for opt-in features). If the object already has a persisted flag of the same meaning (e.g. `isEditable`), combine it inside `check` (`unit.flag !== false && this.evaluate(...)`). Use `allowsAll` when the gesture transforms everything inside a group or selection (move, delete, copy); evaluate the object only when it is about the object itself (as `hasTitlebar`)
 3. **Enforcement points** — find every user-gesture entry point and guard it with the manager method, both the UI affordance (handle, menu item, toolbar/shortcut enablement) and the handler/tool that would start the action. Candidates: `move.handler.ts` and titlebar drag (`isMovable`); `key.handler.ts` delete/copy/cut/paste shortcuts, context-menu items and the editor's delete/copy buttons (`isDeletable`, `isCopyable`); `selection.handler.ts`, the selection tool, selection box hit-testing and `selectObjects` from pointer input (`isSelectable`); text/shape edit entry in `selection.handler.ts` and the text/shape tools (`isEditable`). Leave programmatic API methods unrestricted unless a decision says otherwise
 4. **Engine/editor** — no new prop or watcher is needed; the existing `objectConfig` watcher covers new keys. Keep `getSelectionHandleCapabilities`-style helpers delegating to the manager instead of re-implementing rules in the component

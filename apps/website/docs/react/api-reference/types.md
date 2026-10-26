@@ -353,7 +353,7 @@ interface KritzelAgenticCursorDetachedEvent {
 
 ## Object Config Types
 
-Types used by the [`objectConfig` prop](./editor.md#object-titlebar). See [Object Configuration](../customization/object-config.md) for usage.
+Types used by the [`objectConfig` prop](./editor.md#object). See [Object Configuration](../customization/object-config.md) for usage.
 
 ### `KritzelObjectConfig`
 
@@ -361,9 +361,9 @@ Passed to the `objectConfig` prop. Configures how objects behave, in one place f
 
 ```ts
 interface KritzelObjectConfig {
-  hasTitlebar?: KritzelObjectConfigValue; // defaults to false
-  isRotatable?: KritzelObjectConfigValue; // defaults to true
-  isResizable?: KritzelObjectConfigValue; // defaults to true
+  hasTitlebar?: boolean | ((object: KritzelBaseObject) => boolean); // defaults to false
+  isRotatable?: boolean | ((object: KritzelBaseObject) => boolean); // defaults to true
+  isResizable?: boolean | ((object: KritzelBaseObject) => boolean); // defaults to true
 }
 ```
 
@@ -373,13 +373,7 @@ interface KritzelObjectConfig {
 
 The configuration is local to your app and neither persisted nor synced. Pass a new object to update it.
 
-### `KritzelObjectConfigValue`
-
-```ts
-type KritzelObjectConfigValue = boolean | ((object: KritzelBaseObject) => boolean);
-```
-
-A fixed value for every object, or a function deciding per object. Functions are called synchronously while the engine renders or handles input, so they must be cheap and must not return a promise. A function that throws or returns a promise resolves to the option's default and logs a warning once. Any return value other than a boolean also resolves to the default. Compare `object.__class__` (for example `'KritzelGroup'`) rather than using `instanceof`, which fails when the app bundles more than one copy of the engine, and prefer `childIds` over `children` to inspect a group's children, for example `(object) => object.__class__ === 'KritzelGroup' && (object as KritzelGroup).childIds.length > 1`.
+Each option is a fixed value for every object, or a function deciding per object. Functions are called synchronously while the engine renders or handles input, so they must be cheap and must not return a promise. A function that throws or returns a promise resolves to the option's default and logs a warning once. Any return value other than a boolean also resolves to the default. Compare `object.__class__` (for example `'KritzelGroup'`) rather than using `instanceof`, which fails when the app bundles more than one copy of the engine, and prefer `childIds` over `children` to inspect a group's children, for example `(object) => object.__class__ === 'KritzelGroup' && (object as KritzelGroup).childIds.length > 1`.
 
 ## Object Titlebar Types
 

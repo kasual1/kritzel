@@ -108,7 +108,6 @@ export type {
     KritzelEasing,
     ContextMenuItem,
     KritzelObjectConfig,
-    KritzelObjectConfigValue,
     KritzelObjectTitlebarConfig,
     KritzelObjectTitlebarContext,
     KritzelObjectTitlebarActionEvent,
