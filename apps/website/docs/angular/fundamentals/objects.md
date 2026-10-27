@@ -3,6 +3,8 @@ sidebar_label: Objects
 displayed_sidebar: tutorialSidebar
 title: "Objects Concept | Kritzel for Angular"
 description: "Understand the core concept of Objects in Kritzel."
+heading_badges:
+  configuring-objects: Preview
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -93,6 +95,30 @@ Objects' z-index can be changed to control their visual stacking order, for exam
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
   demoPath="/fundamentals/objects/ordering"
   repoFiles={['src/app/pages/fundamentals/objects/objects-ordering.component.ts']}
+/>
+
+## Configuring Objects
+
+Bind a `KritzelObjectConfig` to `[objectConfig]` to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#object-titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Compare `object.__class__` to decide by type, because `instanceof` fails when the app bundles more than one copy of the engine.
+
+```ts
+import type { KritzelObjectConfig } from '@kritzel/angular-editor';
+
+const objectConfig: KritzelObjectConfig = {
+  hasTitlebar: (object) => !!object.name,
+  isRotatable: (object) => object.__class__ !== 'KritzelText',
+  isResizable: (object) => object.__class__ !== 'KritzelImage',
+};
+```
+
+`isRotatable` and `isResizable` default to `true` and combine with the object's own flags of the same name, so either one can forbid the gesture. Groups and multi-selections can only be rotated or resized when every object inside them allows it. Functions must be synchronous and cheap, and a function that throws resolves to the option's default. Define it as a stable component field, or derive it with `computed()`, and pass a new object to change it at runtime, because the editor only rerenders when it receives a new configuration object.
+
+The configuration is local to your app and neither persisted nor synced. Set the flags on an object instead to apply a restriction on every client.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
+  demoPath="/fundamentals/objects/configuration"
+  repoFiles={['src/app/pages/fundamentals/objects/objects-configuration.component.ts']}
 />
 
 ## API Details

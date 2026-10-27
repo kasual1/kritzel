@@ -159,6 +159,13 @@ export const demoRoutes = [
     component: () => import('./pages/fundamentals/objects/ObjectsOrderingPage.vue'),
   },
   {
+    path: '/fundamentals/objects/configuration',
+    title: 'Configuration',
+    category: 'fundamentals',
+    context: 'Objects',
+    component: () => import('./pages/fundamentals/objects/ObjectsConfigurationPage.vue'),
+  },
+  {
     path: '/fundamentals/tools/disable',
     title: 'Disable',
     category: 'fundamentals',

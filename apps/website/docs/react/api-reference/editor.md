@@ -113,7 +113,7 @@ triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectConfig | KritzelObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Object Configuration](../customization/object-config.md). |
+| objectConfig | KritzelObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Configuring Objects](../fundamentals/objects.md#configuring-objects). |
 
 ### Events
 
@@ -988,7 +988,7 @@ getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectTitlebar | KritzelObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Titlebars](../customization/titlebars.md). |
+| objectTitlebar | KritzelObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Object Titlebar](../fundamentals/controls.md#object-titlebar). |
 
 ### Events
 

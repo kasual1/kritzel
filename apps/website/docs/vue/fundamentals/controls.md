@@ -3,6 +3,8 @@ sidebar_label: Controls
 displayed_sidebar: tutorialSidebar
 title: "Controls Concept | Kritzel for Vue"
 description: "Configure Kritzel Editor's built-in controls and context menus."
+heading_badges:
+  object-titlebar: Preview
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -21,6 +23,26 @@ The toolbar provides the configured drawing and selection tools, while the utili
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
   demoPath="/fundamentals/controls/toolbar-utility-panel"
   repoFiles={['src/pages/fundamentals/controls/ToolbarUtilityPanelPage.vue']}
+/>
+
+## Object Titlebar
+
+A titlebar is an optional bar rendered above an object, similar to the frame labels in design tools. Pass a `KritzelObjectTitlebarConfig` such as the ready-made `KRITZEL_DEFAULT_OBJECT_TITLEBAR` to `:objectTitlebar`, and choose which objects get a titlebar with the `hasTitlebar` option of `:objectConfig`, either `true` or a function that receives an object. Both are required. The titlebar shows the object's `name`, or a localized type label such as `Shape` if it has none. Pressing a titlebar selects its object, and dragging it moves the object.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
+  demoPath="/customization/titlebar/configure"
+  repoFiles={['src/pages/customization/titlebar/TitlebarConfigurePage.vue']}
+/>
+
+The configuration has `left`, `center`, and `right` sections, each holding an array of `title`, `text`, `icon`, `button`, `menu`, `spacer`, or `separator` elements. Most element options accept a function of the titlebar context, for example to show the size of an object. Button clicks and menu item selections emit `objectTitlebarAction`, which you can handle with `@objectTitlebarAction`. Set `isEditable` on a `title` element to let users rename objects from their titlebar.
+
+Titlebars are styled through the `titlebar` and `titlebarMenu` sections of `KritzelTheme`, and expose parts such as `titlebar`, `titlebar-title`, and `titlebar-button` on `<kritzel-engine>` for `::part()` rules.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
+  demoPath="/customization/titlebar/styling"
+  repoFiles={['src/pages/customization/titlebar/TitlebarStylingPage.vue']}
 />
 
 ## Workspace Manager
@@ -122,3 +144,7 @@ Call `triggerNotification()` to display a transient message in the editor. Notif
 For the full list of related APIs, see the following reference sections.
 
 - [Editor UI Elements](../api-reference/editor.md#ui-elements)
+- [Editor Object Titlebar](../api-reference/editor.md#object-titlebar)
+- [Configuring Objects](./objects.md#configuring-objects)
+- [Titlebar Theming](../api-reference/theming.md#titlebar)
+- [Object Titlebar Types](../api-reference/types.md#object-titlebar-types)

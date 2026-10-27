@@ -23,6 +23,7 @@ import { ObjectsFilterComponent } from './pages/fundamentals/objects/objects-fil
 import { ObjectsSelectionComponent } from './pages/fundamentals/objects/objects-selection.component';
 import { ObjectsGroupingComponent } from './pages/fundamentals/objects/objects-grouping.component';
 import { ObjectsOrderingComponent } from './pages/fundamentals/objects/objects-ordering.component';
+import { ObjectsConfigurationComponent } from './pages/fundamentals/objects/objects-configuration.component';
 import { ToolsChangeComponent } from './pages/fundamentals/tools/tools-change.component';
 import { ToolsToolbarComponent } from './pages/fundamentals/tools/tools-toolbar.component';
 import { ToolsDisableComponent } from './pages/fundamentals/tools/tools-disable.component';
@@ -110,6 +111,7 @@ export const routes: Routes = [
           { path: 'selection', component: ObjectsSelectionComponent },
           { path: 'grouping', component: ObjectsGroupingComponent },
           { path: 'ordering', component: ObjectsOrderingComponent },
+          { path: 'configuration', component: ObjectsConfigurationComponent },
         ],
       },
       {

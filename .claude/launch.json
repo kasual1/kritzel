@@ -18,6 +18,13 @@
       "autoPort": false
     },
     {
+      "name": "demos-react",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "--workspace", "apps/demos/react", "--", "--port", "5190", "--strictPort"],
+      "port": 5190,
+      "autoPort": false
+    },
+    {
       "name": "infographics",
       "runtimeExecutable": "npm",
       "runtimeArgs": [

@@ -1,0 +1,16 @@
+/* Matches the sidebar badge in src/theme/DocSidebarItem/Link/styles.module.css, sized for headings. */
+.badge {
+  background: #f3f5f7;
+  border: 1px solid #dce1e6;
+  border-radius: 999px;
+  color: #5f6975;
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  margin-left: 0.6rem;
+  padding: 0.25rem 0.5rem;
+  text-transform: uppercase;
+  vertical-align: middle;
+}

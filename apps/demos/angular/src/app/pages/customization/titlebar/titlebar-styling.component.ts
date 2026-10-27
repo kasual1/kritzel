@@ -76,6 +76,8 @@ export class TitlebarStylingComponent {
 
   readonly objectConfig: KritzelObjectConfig = {
     hasTitlebar: object => object.__class__ === 'KritzelShape',
+    isRotatable: false,
+    isResizable: false,
   };
 
   readonly objectTitlebar: KritzelObjectTitlebarConfig = {

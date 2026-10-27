@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/editor.fixture';
+import { test, expect, type EditorPage } from '../fixtures/editor.fixture';
 import type { Locator, Page } from '@playwright/test';
 
 /** Configures a Framer-like titlebar for groups and named objects and records button actions and events on window. */
@@ -542,6 +542,373 @@ test.describe('Object titlebar', () => {
     });
   });
 
+  test.describe('configurations', () => {
+    /** Ids of the rendered elements of a titlebar section, in order. */
+    function sectionIds(titlebar: Locator, section: 'left' | 'center' | 'right') {
+      return titlebar.locator(`.object-titlebar-${section} > [data-element-id]`).evaluateAll(elements => elements.map(element => element.getAttribute('data-element-id')));
+    }
+
+    function events(page: Page) {
+      return page.evaluate(() => (window as any).__configEvents.map(({ elementId, menuItemId, section, objectId }: any) => ({ elementId, menuItemId, section, objectId })));
+    }
+
+    test('title with dimensions follows resizing and undo', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          left: [{ type: 'title', id: 'title' }],
+          right: [
+            {
+              type: 'text',
+              id: 'dimensions',
+              tone: 'muted',
+              text: (context: any) => `${Math.round(context.contentSize.width)} × ${Math.round(context.contentSize.height)}`,
+            },
+          ],
+        };
+      });
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await editorPage.waitForUndoCapture();
+      await nextFrame(page);
+      const titlebar = titlebarFor(page, shape.id);
+      const dimensions = titlebar.locator('[data-element-id="dimensions"]');
+
+      expect(await sectionIds(titlebar, 'left')).toEqual(['title']);
+      expect(await sectionIds(titlebar, 'right')).toEqual(['dimensions']);
+      await expect(titlebar.locator('.object-titlebar-title')).toHaveText('Desktop');
+      await expect(dimensions).toHaveText('300 × 150');
+      await expect(dimensions).toHaveClass(/tone-muted/);
+
+      await editorPage.selectObjects([shape]);
+      await nextFrame(page);
+      await editorPage.dragFromTo({ x: 500, y: 350 }, { x: 580, y: 410 });
+      await nextFrame(page);
+
+      const resized = await editorPage.getObjectById<{ width: number; height: number }>(shape.id);
+      expect(resized!.width).toBeGreaterThan(300);
+      await expect(dimensions).toHaveText(`${Math.round(resized!.width)} × ${Math.round(resized!.height)}`);
+      const [barBox, topLeft, topRight] = await Promise.all([
+        titlebar.boundingBox(),
+        editorPage.worldToPage(200, 200),
+        editorPage.worldToPage(200 + resized!.width, 200),
+      ]);
+      expect(Math.abs(barBox!.width - (topRight.pageX - topLeft.pageX))).toBeLessThanOrEqual(1.5);
+
+      await editorPage.waitForUndoCapture();
+      await editorPage.undo();
+      await expect(dimensions).toHaveText('300 × 150');
+
+      await editorPage.updateObject(shape, { width: 420, height: 240 });
+      await expect(dimensions).toHaveText('420 × 240');
+    });
+
+    test('elements render in their sections and buttons report their section', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const w = window as any;
+        w.__configEvents = [];
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__configEvents.push(event.detail));
+        editor.objectTitlebar = {
+          left: [
+            { type: 'icon', id: 'kind', icon: 'viewport' },
+            { type: 'title', id: 'title' },
+            { type: 'separator', id: 'divider' },
+            { type: 'text', id: 'dimensions', text: (context: any) => `${Math.round(context.contentSize.width)} × ${Math.round(context.contentSize.height)}` },
+          ],
+          center: [{ type: 'button', id: 'preview', label: 'Preview', variant: 'outlined' }],
+          right: [
+            { type: 'button', id: 'add', icon: 'plus', tooltip: 'Add' },
+            { type: 'button', id: 'settings', icon: 'settings', tooltip: 'Settings', showWhen: 'active' },
+            { type: 'button', id: 'pin', icon: 'copy', tooltip: 'Pin', isPressed: (context: any) => context.object.name === 'Pinned' },
+          ],
+        };
+      });
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 400, height: 150, name: 'Desktop' });
+      await nextFrame(page);
+      const titlebar = titlebarFor(page, shape.id);
+
+      expect(await sectionIds(titlebar, 'left')).toEqual(['kind', 'title', 'divider', 'dimensions']);
+      expect(await sectionIds(titlebar, 'center')).toEqual(['preview']);
+      expect(await sectionIds(titlebar, 'right')).toEqual(['add', 'pin']);
+      await expect(titlebar.locator('[data-element-id="dimensions"]')).toHaveText('400 × 150');
+      await expect(titlebar.locator('[data-element-id="preview"]')).toHaveText('Preview');
+      await expect(titlebar.locator('[data-element-id="add"]')).toHaveAttribute('aria-label', 'Add');
+      await expect(titlebar.locator('[data-element-id="pin"]')).toHaveAttribute('aria-pressed', 'false');
+
+      // While selected, the rotation handle's connector line crosses the bar center, so click the center button first.
+      await titlebar.locator('[data-element-id="preview"]').click();
+
+      // Elements shown only while active appear once the object is selected.
+      const point = await surfacePoint(titlebar);
+      await page.mouse.click(point.x, point.y);
+      await expect(titlebar).toHaveAttribute('data-state', 'active');
+      expect(await sectionIds(titlebar, 'right')).toEqual(['add', 'settings', 'pin']);
+
+      await titlebar.locator('[data-element-id="settings"]').click();
+      expect(await events(page)).toEqual([
+        { elementId: 'preview', menuItemId: undefined, section: 'center', objectId: shape.id },
+        { elementId: 'settings', menuItemId: undefined, section: 'right', objectId: shape.id },
+      ]);
+
+      await editorPage.updateObject(shape, { name: 'Pinned' });
+      await expect(titlebar.locator('[data-element-id="pin"]')).toHaveAttribute('aria-pressed', 'true');
+      await expect(titlebar.locator('[data-element-id="pin"]')).toHaveClass(/is-pressed/);
+
+      await editorPage.clickAtWorld(900, 650);
+      await expect(titlebar).toHaveAttribute('data-state', 'inactive');
+      expect(await sectionIds(titlebar, 'right')).toEqual(['add', 'pin']);
+    });
+
+    test('elements with minBarWidth hide on narrow titlebars', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          left: [{ type: 'title', id: 'title' }],
+          right: [{ type: 'text', id: 'dimensions', minBarWidth: 200, text: (context: any) => String(Math.round(context.contentSize.width)) }],
+        };
+      });
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await nextFrame(page);
+      const titlebar = titlebarFor(page, shape.id);
+      await expect(titlebar.locator('[data-element-id="dimensions"]')).toHaveText('300');
+
+      await editorPage.setViewportRaw(0, 0, 0.5);
+      await nextFrame(page);
+
+      await expect(titlebar.locator('.object-titlebar-title')).toHaveText('Desktop');
+      await expect(titlebar.locator('[data-element-id="dimensions"]')).toHaveCount(0);
+    });
+
+    test.describe('buttons with a menu', () => {
+      /** Title, dimensions, a button and a menu whose menu items depend on the object. */
+      async function configure(page: Page) {
+        await page.evaluate(() => {
+          const w = window as any;
+          w.__configEvents = [];
+          w.__addClicks = [];
+          const editor = document.querySelector('kritzel-editor') as any;
+          editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__configEvents.push(event.detail));
+          editor.objectTitlebar = {
+            left: [
+              { type: 'title', id: 'title', isEditable: true },
+              { type: 'text', id: 'dimensions', tone: 'muted', text: (context: any) => `${Math.round(context.contentSize.width)} × ${Math.round(context.contentSize.height)}` },
+            ],
+            right: [
+              { type: 'button', id: 'add', icon: 'plus', tooltip: 'Add', action: (context: any) => w.__addClicks.push(context.title) },
+              {
+                type: 'menu',
+                id: 'more',
+                icon: 'ellipsisVertical',
+                tooltip: 'More',
+                items: (context: any) => [
+                  { id: 'size', label: `Size ${Math.round(context.contentSize.width)} × ${Math.round(context.contentSize.height)}`, isDisabled: true },
+                  { id: 'widen', label: 'Widen', action: (menuContext: any) => editor.updateObject(menuContext.object, { width: menuContext.object.width + 100 }) },
+                  { id: 'delete', label: 'Delete', icon: 'delete', action: (menuContext: any) => editor.removeObject(menuContext.object) },
+                ],
+              },
+            ],
+          };
+        });
+        await nextFrame(page);
+      }
+
+      const menu = (page: Page) => page.locator('kritzel-menu[data-testid="object-titlebar-menu"]');
+      const menuItem = (page: Page, id: string) => menu(page).locator(`[data-testid="menu-item-${id}"]`);
+
+      test('the button runs its action without opening the menu, and the menu lists items for its object', async ({ editorPage, page }) => {
+        const desktop = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+        const mobile = await editorPage.addShape({ translateX: 200, translateY: 500, width: 120, height: 200, name: 'Mobile' });
+        await configure(page);
+
+        await titlebarFor(page, desktop.id).locator('[data-element-id="add"]').click();
+        await expect(menu(page)).toBeHidden();
+        expect(await page.evaluate(() => (window as any).__addClicks)).toEqual(['Desktop']);
+
+        await titlebarFor(page, desktop.id).locator('[data-element-id="more"]').click();
+        await expect(menuItem(page, 'size')).toContainText('Size 300 × 150');
+        await page.keyboard.press('Escape');
+        await expect(menu(page)).toBeHidden();
+
+        await titlebarFor(page, mobile.id).locator('[data-element-id="more"]').click();
+        await expect(menuItem(page, 'size')).toContainText('Size 120 × 200');
+
+        expect(await events(page)).toEqual([{ elementId: 'add', menuItemId: undefined, section: 'right', objectId: desktop.id }]);
+      });
+
+      test('menu items can change the object, which updates the dimensions', async ({ editorPage, page }) => {
+        const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+        await configure(page);
+        const titlebar = titlebarFor(page, shape.id);
+
+        await titlebar.locator('[data-element-id="more"]').click();
+        await menuItem(page, 'widen').click();
+
+        await expect(menu(page)).toBeHidden();
+        await expect(titlebar.locator('[data-element-id="dimensions"]')).toHaveText('400 × 150');
+        expect((await editorPage.getObjectById<{ width: number }>(shape.id))!.width).toBeCloseTo(400, 0);
+        expect(await events(page)).toEqual([{ elementId: 'more', menuItemId: 'widen', section: 'right', objectId: shape.id }]);
+
+        await titlebar.locator('[data-element-id="more"]').click();
+        await expect(menuItem(page, 'size')).toContainText('Size 400 × 150');
+      });
+
+      test('a menu item can remove the object together with its titlebar', async ({ editorPage, page }) => {
+        const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+        await configure(page);
+
+        await titlebarFor(page, shape.id).locator('[data-element-id="more"]').click();
+        await menuItem(page, 'delete').click();
+
+        await expect(titlebarFor(page, shape.id)).toHaveCount(0);
+        expect(await editorPage.getObjectById(shape.id)).toBeNull();
+        await expect(page.locator('body > [id^="portal-"]')).toHaveCount(0);
+      });
+
+      test('clicking the title renames the object while buttons and menu are hidden', async ({ editorPage, page }) => {
+        const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+        await configure(page);
+        const titlebar = titlebarFor(page, shape.id);
+        const title = titlebar.locator('.object-titlebar-title');
+
+        // The first click selects the object, the second one starts renaming.
+        await title.click();
+        await expect(titlebar).toHaveAttribute('data-state', 'active');
+        await title.click();
+
+        const input = titlebar.locator('input.object-titlebar-title-input');
+        await expect(input).toBeFocused();
+        await expect(input).toHaveValue('Desktop');
+        await expect(titlebar.locator('[data-element-id="dimensions"]')).toHaveCount(0);
+        await expect(titlebar.locator('button')).toHaveCount(0);
+
+        await page.keyboard.type('Landing page');
+        await page.keyboard.press('Enter');
+
+        await expect(input).toHaveCount(0);
+        await expect(title).toHaveText('Landing page');
+        await expect(titlebar.locator('[data-element-id="dimensions"]')).toHaveText('300 × 150');
+        await expect(titlebar.locator('button')).toHaveCount(2);
+
+        // Buttons and menus see the new title in their context.
+        await titlebar.locator('[data-element-id="add"]').click();
+        expect(await page.evaluate(() => (window as any).__addClicks)).toEqual(['Landing page']);
+        await titlebar.locator('[data-element-id="more"]').click();
+        await expect(menu(page)).toBeVisible();
+        expect((await editorPage.getObjectById<{ name?: string }>(shape.id))?.name).toBe('Landing page');
+      });
+
+      test('clicking the title while the menu is open only closes the menu', async ({ editorPage, page }) => {
+        const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+        await configure(page);
+        const titlebar = titlebarFor(page, shape.id);
+        const title = titlebar.locator('.object-titlebar-title');
+        const input = titlebar.locator('input.object-titlebar-title-input');
+
+        await title.click();
+        await titlebar.locator('[data-element-id="more"]').click();
+        await expect(menu(page)).toBeVisible();
+
+        await title.click();
+        await expect(menu(page)).toBeHidden();
+        await expect(input).toHaveCount(0);
+
+        await title.click();
+        await expect(input).toBeFocused();
+      });
+    });
+
+    test('isEditable can enable renaming per object', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          left: [{ type: 'title', id: 'title', isEditable: (context: any) => context.object.name !== 'Locked' }],
+        };
+      });
+      const editable = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      const locked = await editorPage.addShape({ translateX: 200, translateY: 500, width: 300, height: 150, name: 'Locked' });
+      await nextFrame(page);
+
+      const lockedTitle = titlebarFor(page, locked.id).locator('.object-titlebar-title');
+      await lockedTitle.click();
+      await lockedTitle.click();
+      await expect(titlebarFor(page, locked.id).locator('input')).toHaveCount(0);
+
+      const editableTitle = titlebarFor(page, editable.id).locator('.object-titlebar-title');
+      await editableTitle.click();
+      await editableTitle.click();
+      await expect(titlebarFor(page, editable.id).locator('input')).toBeFocused();
+    });
+
+    test('a group titlebar with dimensions can be renamed', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'KritzelGroup' };
+        editor.objectTitlebar = {
+          left: [
+            { type: 'title', id: 'title', isEditable: true },
+            { type: 'text', id: 'count', tone: 'muted', text: (context: any) => `${context.children.length} items` },
+          ],
+        };
+      });
+      const first = await editorPage.addShape({ translateX: 200, translateY: 200, width: 150, height: 150 });
+      const second = await editorPage.addShape({ translateX: 400, translateY: 200, width: 150, height: 150 });
+      await editorPage.selectObjects([first, second]);
+      await editorPage.group();
+      await editorPage.clearSelection();
+      await nextFrame(page);
+
+      const titlebar = page.locator('kritzel-engine .object-titlebar[data-object-type="KritzelGroup"]');
+      await expect(titlebar.locator('[data-element-id="count"]')).toHaveText('2 items');
+      const title = titlebar.locator('.object-titlebar-title');
+      await expect(title).toHaveText('Group');
+
+      await title.click();
+      await title.click();
+      await expect(titlebar.locator('input')).toBeFocused();
+      await page.keyboard.type('Screens');
+      await page.keyboard.press('Enter');
+
+      await expect(title).toHaveText('Screens');
+      const group = (await editorPage.getAllObjects<{ __class__: string; name?: string }>()).find(object => object.__class__ === 'KritzelGroup');
+      expect(group?.name).toBe('Screens');
+    });
+
+    test('visibility "active" shows the titlebar only for selected objects', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = { ...editor.objectTitlebar, visibility: 'active' };
+      });
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await nextFrame(page);
+      await expect(titlebarFor(page, shape.id)).toHaveCount(0);
+
+      await editorPage.selectObjects([shape]);
+      await nextFrame(page);
+      await expect(titlebarFor(page, shape.id)).toHaveAttribute('data-state', 'active');
+
+      await editorPage.clearSelection();
+      await nextFrame(page);
+      await expect(titlebarFor(page, shape.id)).toHaveCount(0);
+    });
+
+    test('draggable: false selects the object without moving it', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = { ...editor.objectTitlebar, draggable: false };
+      });
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await nextFrame(page);
+      const titlebar = titlebarFor(page, shape.id);
+
+      await dragBy(page, await surfacePoint(titlebar), 120, 80);
+
+      await expect(titlebar).toHaveAttribute('data-state', 'active');
+      const after = await editorPage.getObjectById<{ translateX: number; translateY: number }>(shape.id);
+      expect(after!.translateX).toBeCloseTo(200, 0);
+      expect(after!.translateY).toBeCloseTo(200, 0);
+    });
+  });
+
   test('right-clicking the titlebar opens the object context menu', async ({ editorPage, page }) => {
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const point = await surfacePoint(titlebarFor(page, shape.id));
@@ -568,6 +935,127 @@ test.describe('Object titlebar', () => {
     const box = await titlebar.boundingBox();
     const topLeft = await editorPage.worldToPage(200, 200);
     expect(Math.abs(box!.y + box!.height - topLeft.pageY)).toBeLessThanOrEqual(1.5);
+  });
+
+  test.describe('visual regression', () => {
+    /** Moves the pointer off the titlebars so no hover styles end up in the screenshot, then waits for a render. */
+    async function settle(editorPage: EditorPage, page: Page) {
+      const empty = await editorPage.worldToPage(1000, 600);
+      await page.mouse.move(empty.pageX, empty.pageY);
+      await nextFrame(page);
+    }
+
+    test('visual: inactive and active titlebars', async ({ editorPage, page }) => {
+      await editorPage.addShape({ translateX: 100, translateY: 150, width: 300, height: 150, name: 'Desktop' });
+      const active = await editorPage.addShape({ translateX: 500, translateY: 150, width: 300, height: 150, name: 'Tablet' });
+      await editorPage.selectObjects([active]);
+      await settle(editorPage, page);
+
+      await expect(editorPage.engine).toHaveScreenshot({ animations: 'disabled' });
+    });
+
+    test('visual: titlebar with every element type', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          left: [
+            { type: 'icon', id: 'kind', icon: 'viewport' },
+            { type: 'title', id: 'title' },
+            { type: 'separator', id: 'divider' },
+            { type: 'text', id: 'dimensions', tone: 'muted', text: (context: any) => `${Math.round(context.contentSize.width)} × ${Math.round(context.contentSize.height)}` },
+            { type: 'text', id: 'status', tone: 'strong', text: 'Draft' },
+          ],
+          center: [{ type: 'button', id: 'preview', label: 'Preview', variant: 'outlined' }],
+          right: [
+            { type: 'button', id: 'play', icon: 'play', variant: 'filled', tooltip: 'Play' },
+            { type: 'button', id: 'pin', icon: 'copy', tooltip: 'Pin', isPressed: true },
+            { type: 'button', id: 'locked', icon: 'settings', tooltip: 'Locked', isDisabled: true },
+            { type: 'menu', id: 'more', icon: 'ellipsisVertical', tooltip: 'More', items: [{ id: 'duplicate', label: 'Duplicate' }] },
+          ],
+        };
+      });
+      await editorPage.addShape({ translateX: 100, translateY: 150, width: 700, height: 200, name: 'Landing page' });
+      await settle(editorPage, page);
+
+      await expect(editorPage.engine).toHaveScreenshot({ animations: 'disabled' });
+    });
+
+    test('visual: open titlebar menu', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 100, translateY: 150, width: 400, height: 200, name: 'Desktop' });
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          ...editor.objectTitlebar,
+          right: [
+            {
+              type: 'menu',
+              id: 'more',
+              icon: 'ellipsisVertical',
+              tooltip: 'More',
+              items: [
+                { id: 'duplicate', label: 'Duplicate', icon: 'copy' },
+                { id: 'settings', label: 'Settings', icon: 'settings' },
+                { id: 'delete', label: 'Delete', icon: 'delete', isDisabled: true },
+              ],
+            },
+          ],
+        };
+      });
+      await nextFrame(page);
+      await titlebarFor(page, shape.id).locator('[data-element-id="more"]').click();
+      await expect(page.locator('kritzel-menu[data-testid="object-titlebar-menu"]')).toBeVisible();
+      await settle(editorPage, page);
+
+      // The menu lives in a portal on the body, so capture the whole page.
+      await expect(page).toHaveScreenshot({ animations: 'disabled' });
+    });
+
+    test('visual: title rename input', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 100, translateY: 150, width: 400, height: 200, name: 'Desktop' });
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          ...editor.objectTitlebar,
+          left: editor.objectTitlebar.left.map((item: any) => (item.type === 'title' ? { ...item, isEditable: true } : item)),
+        };
+      });
+      await nextFrame(page);
+      const title = titlebarFor(page, shape.id).locator('.object-titlebar-title');
+      await title.click();
+      await title.click();
+      const input = titlebarFor(page, shape.id).locator('input.object-titlebar-title-input');
+      await expect(input).toBeFocused();
+      // Collapse the initial select-all so the screenshot shows the plain input.
+      await page.keyboard.press('End');
+      await settle(editorPage, page);
+
+      await expect(editorPage.engine).toHaveScreenshot({ animations: 'disabled' });
+    });
+
+    test('visual: titlebars of rotated objects follow or stay upright', async ({ editorPage, page }) => {
+      await editorPage.addShape({ translateX: 150, translateY: 200, width: 300, height: 150, rotation: 20, name: 'Follows' });
+      await settle(editorPage, page);
+      await expect(editorPage.engine).toHaveScreenshot('rotation-follow.png', { animations: 'disabled' });
+
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = { ...editor.objectTitlebar, rotation: 'upright' };
+      });
+      await settle(editorPage, page);
+      await expect(editorPage.engine).toHaveScreenshot('rotation-upright.png', { animations: 'disabled' });
+    });
+
+    test('visual: titlebars in the dark theme', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        (document.querySelector('kritzel-editor') as any).theme = 'dark';
+      });
+      await editorPage.addShape({ translateX: 100, translateY: 150, width: 300, height: 150, name: 'Desktop' });
+      const active = await editorPage.addShape({ translateX: 500, translateY: 150, width: 300, height: 150, name: 'Tablet' });
+      await editorPage.selectObjects([active]);
+      await settle(editorPage, page);
+
+      await expect(editorPage.engine).toHaveScreenshot({ animations: 'disabled' });
+    });
   });
 
   test('exposes parts for styling from page CSS', async ({ editorPage, page }) => {
