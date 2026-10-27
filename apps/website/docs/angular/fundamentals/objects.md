@@ -113,6 +113,12 @@ const objectConfig: KritzelObjectConfig = {
 
 The configuration is local to your app and neither persisted nor synced. Set the flags on an object instead to apply a restriction on every client.
 
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
+  demoPath="/fundamentals/objects/configuration"
+  repoFiles={['src/app/pages/fundamentals/objects/objects-configuration.component.ts']}
+/>
+
 ## API Details
 
 For the full list of related APIs, see the following reference sections.
