@@ -428,14 +428,14 @@ Applies to [object titlebars](../customization/titlebars.md). `height` and `offs
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
-| activeBackgroundColor | rgba(0, 122, 255, 0.12) | rgba(10, 132, 255, 0.22) |
+| activeBackgroundColor | #e0efff | #16314c |
 | activeBorder | none | none |
 | activeBoxShadow | none | none |
 | activeButtonFilledBackgroundColor | #007aff | #0a84ff |
 | activeIconColor | #007aff | #4da3ff |
 | activeMutedTextColor | rgba(0, 122, 255, 0.6) | rgba(77, 163, 255, 0.6) |
 | activeTextColor | #007aff | #4da3ff |
-| backgroundColor | rgba(0, 0, 0, 0.05) | rgba(255, 255, 255, 0.06) |
+| backgroundColor | #f2f2f2 | #282828 |
 | border | none | none |
 | borderRadius | 8px | 8px |
 | boxShadow | none | none |
@@ -452,7 +452,7 @@ Applies to [object titlebars](../customization/titlebars.md). `height` and `offs
 | fontWeight | 400 | 400 |
 | gap | 4px | 4px |
 | height | 28px | 28px |
-| hoverBackgroundColor | rgba(0, 0, 0, 0.07) | rgba(255, 255, 255, 0.09) |
+| hoverBackgroundColor | #ededed | #2f2f2f |
 | iconColor | #6b6b6b | #a0a0a0 |
 | inputBackgroundColor | rgba(255, 255, 255, 0.9) | rgba(255, 255, 255, 0.12) |
 | inputPadding | 3px 6px | 3px 6px |

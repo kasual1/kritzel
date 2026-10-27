@@ -58,51 +58,53 @@ export class KritzelObjectTitlebarLayer {
   render() {
     return (
       <Host class="object-titlebar-layer">
-        {this.titlebars.map(titlebar => (
-          <div key={titlebar.owner.id} class="object-titlebar-anchor" style={{ transform: titlebar.transform, width: `${titlebar.width}px` }}>
-            <div
-              class={{
-                'object-titlebar': true,
-                'is-active': titlebar.isActive,
-                'has-center': titlebar.sections.center.length > 0,
-              }}
-              part={parts('titlebar', titlebar.isActive ? 'titlebar-active' : 'titlebar-inactive')}
-              role="toolbar"
-              aria-label={titlebar.context.title}
-              data-state={titlebar.isActive ? 'active' : 'inactive'}
-              data-object-type={titlebar.owner.__class__}
-              data-kritzel-titlebar-surface=""
-              {...{ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: titlebar.owner.id }}
-              style={{ pointerEvents: this.surfacePointerEvents }}
-            >
-              {(['left', 'center', 'right'] as KritzelTitlebarSection[]).map(section =>
-                section === 'center' && titlebar.sections.center.length === 0 ? null : (
-                  <div key={section} class={`object-titlebar-section object-titlebar-${section}`} part={`titlebar-${section}`}>
-                    {titlebar.sections[section].map(resolved => renderItem(titlebar, resolved, this.handleItemClick, this.titleEditHandlers))}
-                  </div>
-                ),
-              )}
+        {this.titlebars.map(titlebar => {
+          // While a title is renamed, its input replaces all items and spans the whole bar.
+          const editedTitle = titlebar.editingItemId
+            ? [...titlebar.sections.left, ...titlebar.sections.center, ...titlebar.sections.right].find(resolved => resolved.item.id === titlebar.editingItemId)
+            : undefined;
+
+          return (
+            <div key={titlebar.owner.id} class="object-titlebar-anchor" style={{ transform: titlebar.transform, width: `${titlebar.width}px` }}>
+              <div
+                class={{
+                  'object-titlebar': true,
+                  'is-active': titlebar.isActive,
+                  'is-editing': !!editedTitle,
+                  'has-center': !editedTitle && titlebar.sections.center.length > 0,
+                }}
+                part={parts('titlebar', titlebar.isActive ? 'titlebar-active' : 'titlebar-inactive')}
+                role="toolbar"
+                aria-label={titlebar.context.title}
+                data-state={titlebar.isActive ? 'active' : 'inactive'}
+                data-object-type={titlebar.owner.__class__}
+                data-kritzel-titlebar-surface=""
+                {...{ [KRITZEL_TITLEBAR_OWNER_ATTRIBUTE]: titlebar.owner.id }}
+                style={{ pointerEvents: this.surfacePointerEvents }}
+              >
+                {editedTitle
+                  ? renderTitleInput(titlebar, editedTitle, this.titleEditHandlers)
+                  : (['left', 'center', 'right'] as KritzelTitlebarSection[]).map(section =>
+                      section === 'center' && titlebar.sections.center.length === 0 ? null : (
+                        <div key={section} class={`object-titlebar-section object-titlebar-${section}`} part={`titlebar-${section}`}>
+                          {titlebar.sections[section].map(resolved => renderItem(titlebar, resolved, this.handleItemClick))}
+                        </div>
+                      ),
+                    )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </Host>
     );
   }
 }
 
-function renderItem(
-  titlebar: KritzelResolvedTitlebar,
-  resolved: KritzelResolvedTitlebarItem,
-  onItemClick: KritzelTitlebarItemClickHandler,
-  titleEdit: KritzelTitlebarTitleEditHandlers,
-) {
+function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarItem, onItemClick: KritzelTitlebarItemClickHandler) {
   const { item } = resolved;
 
   switch (item.type) {
     case 'title':
-      if (titlebar.editingItemId === item.id) {
-        return renderTitleInput(titlebar, resolved, titleEdit);
-      }
       return (
         <span
           key={item.id}
@@ -122,7 +124,9 @@ function renderItem(
         </span>
       );
     case 'icon':
-      return resolved.icon ? <kritzel-icon key={item.id} class="object-titlebar-icon" part={parts('titlebar-icon', item.part)} data-item-id={item.id} name={resolved.icon} size={16}></kritzel-icon> : null;
+      return resolved.icon ? (
+        <kritzel-icon key={item.id} class="object-titlebar-icon" part={parts('titlebar-icon', item.part)} data-item-id={item.id} name={resolved.icon} size={16}></kritzel-icon>
+      ) : null;
     case 'button': {
       const accessibleLabel = resolved.tooltip ?? resolved.label ?? item.id;
       return (

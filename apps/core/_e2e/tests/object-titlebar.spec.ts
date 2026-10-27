@@ -292,6 +292,12 @@ test.describe('Object titlebar', () => {
       await expect(input).toHaveValue('Desktop');
       await expect(input).toHaveCSS('outline-style', 'none');
       await expect(input).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.9)');
+      // While renaming, the input is the only item and spans the whole titlebar.
+      const titlebar = titlebarFor(page, shape.id);
+      await expect(titlebar.locator(':scope > *')).toHaveCount(1);
+      await expect(titlebar.locator('button')).toHaveCount(0);
+      const [barBox, inputBox] = await Promise.all([titlebar.boundingBox(), input.boundingBox()]);
+      expect(inputBox!.width).toBeGreaterThan(barBox!.width - 20);
       await page.keyboard.type('Hero section');
       await page.keyboard.press('Enter');
 

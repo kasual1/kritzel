@@ -140,6 +140,18 @@ describe('KritzelObjectTitlebarLayer', () => {
       expect(input.$attrs$.part).toBe('titlebar-title-input');
     });
 
+    it('shows only the input across the whole titlebar while editing', () => {
+      component.titlebars = [editableTitlebar(true)];
+
+      const host = component.render();
+      const [bar] = findAll(host, byClass('object-titlebar'));
+
+      expect(byClass('is-editing')(bar)).toBe(true);
+      expect(bar.$children$.map((child: any) => child.$tag$)).toEqual(['input']);
+      expect(findAll(host, byClass('object-titlebar-section'))).toHaveLength(0);
+      expect(findAll(host, node => node.$tag$ === 'button')).toHaveLength(0);
+    });
+
     it('initializes the input once with the object name and selects it', () => {
       component.titlebars = [editableTitlebar(true)];
       const [input] = findAll(component.render(), node => node.$tag$ === 'input');

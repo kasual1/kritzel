@@ -382,14 +382,14 @@ The themes keep the names `light` and `dark` of the themes they spread, so the b
 
 | Property | Light default | Dark default | Description |
 |----------|---------------|--------------|-------------|
-| activeBackgroundColor | rgba(0, 122, 255, 0.12) | rgba(10, 132, 255, 0.22) | Background of an active titlebar |
+| activeBackgroundColor | #e0efff | #16314c | Background of an active titlebar |
 | activeBorder | none | none | Border of an active titlebar |
 | activeBoxShadow | none | none | Box shadow of an active titlebar |
 | activeButtonFilledBackgroundColor | #007aff | #0a84ff | Background of filled buttons in an active titlebar |
 | activeIconColor | #007aff | #4da3ff | Icon color in an active titlebar |
 | activeMutedTextColor | rgba(0, 122, 255, 0.6) | rgba(77, 163, 255, 0.6) | Muted text color in an active titlebar |
 | activeTextColor | #007aff | #4da3ff | Text color of an active titlebar |
-| backgroundColor | rgba(0, 0, 0, 0.05) | rgba(255, 255, 255, 0.06) | Background |
+| backgroundColor | #f2f2f2 | #282828 | Background |
 | border | none | none | Border |
 | borderRadius | 8px | 8px | Corner radius |
 | boxShadow | none | none | Box shadow |
@@ -406,7 +406,7 @@ The themes keep the names `light` and `dark` of the themes they spread, so the b
 | fontWeight | 400 | 400 | Font weight of text items |
 | gap | 4px | 4px | Space between items |
 | height | 28px | 28px | Height of the titlebar |
-| hoverBackgroundColor | rgba(0, 0, 0, 0.07) | rgba(255, 255, 255, 0.09) | Background of a hovered titlebar |
+| hoverBackgroundColor | #ededed | #2f2f2f | Background of a hovered titlebar |
 | iconColor | #6b6b6b | #a0a0a0 | Icon color |
 | inputBackgroundColor | rgba(255, 255, 255, 0.9) | rgba(255, 255, 255, 0.12) | Background of the input shown while renaming an object |
 | inputPadding | 3px 6px | 3px 6px | Padding of the input shown while renaming an object |
