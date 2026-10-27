@@ -282,28 +282,22 @@ select:disabled,
 [aria-disabled="true"] {
   cursor: not-allowed !important;
 }
-/* Badges next to table of contents headings, declared via the `toc_badges` front matter.
-   Matches the sidebar badge in src/theme/DocSidebarItem/Link/styles.module.css. */
-.table-of-contents__link:has(.toc-badge) {
-  align-items: center;
-  display: flex;
-  gap: 0.4rem;
-}
 
-.toc-badge-label {
-  min-width: 0;
-}
-
+/* Markers next to table of contents headings, declared via the `toc_badges` front matter.
+   The badge label is shown as a tooltip. Positioned absolutely without offsets, the marker stays right
+   after the last word but takes up no width, so it never wraps the heading onto another line. */
 .toc-badge {
-  background: #f3f5f7;
-  border: 1px solid #dce1e6;
-  border-radius: 999px;
-  color: #5f6975;
-  flex: 0 0 auto;
-  font-size: 0.58rem;
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1;
-  padding: 0.18rem 0.38rem;
-  text-transform: uppercase;
+  background: #5f6975;
+  border-radius: 50%;
+  height: 0.4rem;
+  margin: calc((1lh - 0.4rem) / 2) 0 0 0.3rem;
+  position: absolute;
+  width: 0.4rem;
+}
+
+/* The marker can stick out past the end of a full line. Extend the scroll container into the column
+   padding so it is not clipped, without changing the width available to the headings. */
+.theme-doc-toc-desktop {
+  margin-right: -0.5rem;
+  padding-right: 0.5rem;
 }

@@ -27,7 +27,8 @@ export function getTocBadges(frontMatter: Record<string, unknown>): TocBadges | 
   return badges as TocBadges;
 }
 
-// TOC item values are rendered as HTML, so the badge is appended as markup.
+// TOC item values are rendered as HTML, so the badge is appended as markup. The TOC column is too narrow
+// for a text badge next to longer headings, so the badge is a small marker with the label as tooltip.
 export function withTocBadges(toc: readonly TOCItem[], badges: TocBadges | undefined): readonly TOCItem[] {
   if (!badges) {
     return toc;
@@ -39,7 +40,7 @@ export function withTocBadges(toc: readonly TOCItem[], badges: TocBadges | undef
     }
     return {
       ...item,
-      value: `<span class="toc-badge-label">${item.value}</span><span class="toc-badge">${escapeHtml(badge)}</span>`,
+      value: `${item.value}<span class="toc-badge" role="img" title="${escapeHtml(badge)}" aria-label="${escapeHtml(badge)}"></span>`,
     };
   });
 }
