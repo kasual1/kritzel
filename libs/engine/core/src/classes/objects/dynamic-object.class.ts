@@ -9,6 +9,8 @@ import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interfac
  * Configuration options for creating a KritzelDynamicObject instance.
  */
 export interface KritzelDynamicObjectConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   element?: HTMLElement;
   rendererKey?: string;
   rendererData?: unknown;
@@ -56,6 +58,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
    */
   constructor(config?: KritzelDynamicObjectConfig) {
     super();
+    this.name = config?.name;
 
     if (config) {
       this.translateX = config.translateX || 0;

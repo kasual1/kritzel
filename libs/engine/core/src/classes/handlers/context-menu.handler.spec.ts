@@ -88,6 +88,7 @@ describe('KritzelContextMenuHandler', () => {
       moveHandler: {
         cancelPendingDrag: jest.fn(),
       },
+      cancelTitlebarGesture: jest.fn(),
     } as unknown as jest.Mocked<KritzelSelectionTool>;
 
     // Make mockSelectionTool an instance of KritzelSelectionTool
@@ -116,6 +117,12 @@ describe('KritzelContextMenuHandler', () => {
     };
 
     mockCore = {
+      objectTitlebarManager: {
+        config: undefined,
+        getOwnerFromEvent: jest.fn().mockReturnValue(null),
+        isControlEvent: jest.fn().mockReturnValue(false),
+        resetWarnings: jest.fn(),
+      },
       store: {
         get state() {
           return mockState;
@@ -654,6 +661,43 @@ describe('KritzelContextMenuHandler', () => {
       expect(selectionGroup.rotation).toBe(0.2);
       expect(object.isSelected).toBe(true);
       expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(selectionGroup);
+    });
+  });
+  describe('object titlebar', () => {
+    it('opens the object menu for the owner of a right-clicked titlebar', () => {
+      const owner = { id: 'owner-1', rotation: 0 };
+      const createdGroup = { addOrRemove: jest.fn(), isSelected: false, rotation: 0, objects: [] };
+      (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(createdGroup);
+      (mockCore.objectTitlebarManager.getOwnerFromEvent as jest.Mock).mockReturnValue(owner);
+
+      contextMenuHandler.handleContextMenu(createPointerEvent());
+
+      expect(mockCore.getObjectFromPointerEvent).not.toHaveBeenCalled();
+      // Right-clicking a titlebar button also stands for the titlebar's owner
+      expect(mockCore.objectTitlebarManager.getOwnerFromEvent).toHaveBeenCalledWith(expect.anything(), { includeControls: true });
+      expect(createdGroup.addOrRemove).toHaveBeenCalledWith(owner);
+      expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(createdGroup);
+    });
+
+    it('abandons a pending titlebar press when the menu opens', () => {
+      const cancelTitlebarGesture = jest.fn();
+      (mockSelectionTool as any).cancelTitlebarGesture = cancelTitlebarGesture;
+
+      contextMenuHandler.handleContextMenu(createPointerEvent());
+
+      expect(cancelTitlebarGesture).toHaveBeenCalled();
+    });
+
+    it('keeps a multi-selection that already contains the owner', () => {
+      const owner = { id: 'owner-1', rotation: 0 };
+      mockSelectionGroup = { objectIds: ['owner-1', 'other'], objects: [owner, { id: 'other' }] } as any;
+      (mockCore.objectTitlebarManager.getOwnerFromEvent as jest.Mock).mockReturnValue(owner);
+
+      contextMenuHandler.handleContextMenu(createPointerEvent());
+
+      expect(KritzelSelectionGroup.create).not.toHaveBeenCalled();
+      expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
+      expect(mockCore.addSelectionGroup).not.toHaveBeenCalled();
     });
   });
 });

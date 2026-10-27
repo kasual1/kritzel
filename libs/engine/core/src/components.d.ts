@@ -12,6 +12,8 @@ import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.int
 import { IKritzelUser } from "./interfaces/user.interface";
 import { KritzelToolDefinition } from "./interfaces/tool.interface";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
+import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState } from "./interfaces/object-titlebar.interface";
+import { KritzelObjectConfig } from "./interfaces/object-config.interface";
 import { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 import { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -26,15 +28,17 @@ import { KritzelContextMenuState } from "./interfaces/context-menu-state.interfa
 import { KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget } from "./interfaces/agentic-cursor.interface";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from "./interfaces/toolbar-item.interface";
 import { KritzelAlignment } from "./enums/alignment.enum";
+import { KritzelGroup } from "./classes/objects/group.class";
 import { Element, Event } from "@stencil/core";
 import { KritzelImage } from "./classes/objects/image.class";
 import { KritzelText } from "./classes/objects/text.class";
-import { KritzelGroup } from "./classes/objects/group.class";
 import { KritzelLine } from "./classes/objects/line.class";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { KritzelIconName } from "./classes/registries/icon-registry.class";
+import { KritzelResolvedTitlebar } from "./classes/managers/object-titlebar.manager";
+import { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export { KritzelCore } from "./classes/core/core.class";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
@@ -42,6 +46,8 @@ export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.int
 export { IKritzelUser } from "./interfaces/user.interface";
 export { KritzelToolDefinition } from "./interfaces/tool.interface";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
+export { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState } from "./interfaces/object-titlebar.interface";
+export { KritzelObjectConfig } from "./interfaces/object-config.interface";
 export { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
 export { KritzelDebugInfo } from "./interfaces/debug-info.interface";
@@ -56,15 +62,17 @@ export { KritzelContextMenuState } from "./interfaces/context-menu-state.interfa
 export { KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget } from "./interfaces/agentic-cursor.interface";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from "./interfaces/toolbar-item.interface";
 export { KritzelAlignment } from "./enums/alignment.enum";
+export { KritzelGroup } from "./classes/objects/group.class";
 export { Element, Event } from "@stencil/core";
 export { KritzelImage } from "./classes/objects/image.class";
 export { KritzelText } from "./classes/objects/text.class";
-export { KritzelGroup } from "./classes/objects/group.class";
 export { KritzelLine } from "./classes/objects/line.class";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { KritzelIconName } from "./classes/registries/icon-registry.class";
+export { KritzelResolvedTitlebar } from "./classes/managers/object-titlebar.manager";
+export { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export namespace Components {
     /**
      * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
@@ -183,6 +191,10 @@ export namespace Components {
           * Deselects all currently selected objects.
          */
         "clearSelection": () => Promise<void>;
+        /**
+          * Closes the open object titlebar menu, if any.
+         */
+        "closeObjectTitlebarMenu": () => Promise<void>;
         /**
           * Declaratively configures the full locale catalog, replacing the available locale set. Pass `undefined` to restore the built-in locales (en/de/fr).
           * @param locales - The full locale catalog, or `undefined` for built-ins.
@@ -363,9 +375,11 @@ export namespace Components {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * Creates a group (`KritzelGroup`) from the currently selected objects. Requires at least two selected objects. The grouped objects become one layer at the position of the topmost selected object.
+          * Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. The grouped objects become one layer at the position of the topmost object, as a single undoable step.  Objects are resolved by id, so stale references work. Objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. An object passed together with one of its ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced by the group in the selection.  To group the current selection, pass `await getSelectedObjects()`.
+          * @param objects - The objects to group.
+          * @returns The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
          */
-        "group": () => Promise<void>;
+        "group": (objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup | null>;
         /**
           * Hides the context menu and resets any associated selection state.
          */
@@ -436,9 +450,17 @@ export namespace Components {
          */
         "moveAgenticCursor": (id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>;
         /**
+          * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
+         */
+        "objectConfig"?: KritzelObjectConfig;
+        /**
           * Context menu items shown when right-clicking a selected object.
          */
         "objectContextMenuItems"?: ContextMenuItem[];
+        /**
+          * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
+         */
+        "objectTitlebar"?: KritzelObjectTitlebarConfig;
         /**
           * Programmatically opens the context menu at a specified world-coordinate position. If `objectId` is provided and found, the object context menu is shown for that object. If no `objectId` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown.
           * @param options.x - The X position in world (canvas) coordinates.
@@ -529,6 +551,11 @@ export namespace Components {
          */
         "selectAllObjectsInViewport": () => Promise<void>;
         /**
+          * Selects an item of the open object titlebar menu: closes the menu, runs the item's `action` and emits `objectTitlebarAction` with the item's id as `menuItemId`.
+          * @param menuItemId - The id of a menu item in the open menu's `objectTitlebarMenuStateChange` state.
+         */
+        "selectObjectTitlebarMenuItem": (menuItemId: string) => Promise<void>;
+        /**
           * Programmatically selects the given objects. Switches to the selection tool automatically.
           * @param objects - The objects to select.
          */
@@ -598,9 +625,11 @@ export namespace Components {
          */
         "undo": () => Promise<void>;
         /**
-          * Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+          * Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.  Groups are resolved by id, so stale references work. Entries that are not a `KritzelGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children.  To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
+          * @param groups - The groups to ungroup.
+          * @returns The extracted children.
          */
-        "ungroup": () => Promise<void>;
+        "ungroup": (groups: KritzelGroup[]) => Promise<KritzelBaseObject<any>[]>;
         /**
           * Updates the name, color, status or visibility of an agentic cursor.
           * @param id - The cursor ID.
@@ -684,6 +713,33 @@ export namespace Components {
         "size": number;
     }
     /**
+     * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
+     * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+     * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * Must never use the `object` class: pointer handling treats `.object` elements as objects.
+     */
+    interface KritzelObjectTitlebarLayer {
+        /**
+          * Called when a titlebar button or menu button is clicked.
+         */
+        "elementClick"?: KritzelTitlebarElementClickHandler;
+        /**
+          * Pointer events of the drag surfaces. Controls always receive pointer input.
+          * @default 'none'
+         */
+        "surfacePointerEvents": 'auto' | 'none';
+        /**
+          * Called while a title is edited to rename its object.
+         */
+        "titleEdit"?: KritzelTitlebarTitleEditHandlers;
+        /**
+          * The titlebars to render, resolved by the engine for the current frame.
+          * @default []
+         */
+        "titlebars": KritzelResolvedTitlebar[];
+    }
+    /**
      * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
@@ -748,6 +804,8 @@ declare global {
         "contextMenuStateChange": KritzelContextMenuState;
         "isLoadingChange": boolean;
         "agenticCursorDetached": KritzelAgenticCursorDetachedEvent;
+        "objectTitlebarAction": KritzelObjectTitlebarActionEvent;
+        "objectTitlebarMenuStateChange": KritzelObjectTitlebarMenuState;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -770,6 +828,19 @@ declare global {
         new (): HTMLKritzelIconElement;
     };
     /**
+     * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
+     * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+     * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * Must never use the `object` class: pointer handling treats `.object` elements as objects.
+     */
+    interface HTMLKritzelObjectTitlebarLayerElement extends Components.KritzelObjectTitlebarLayer, HTMLStencilElement {
+    }
+    var HTMLKritzelObjectTitlebarLayerElement: {
+        prototype: HTMLKritzelObjectTitlebarLayerElement;
+        new (): HTMLKritzelObjectTitlebarLayerElement;
+    };
+    /**
      * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
@@ -787,6 +858,7 @@ declare global {
         "kritzel-cursor-trail": HTMLKritzelCursorTrailElement;
         "kritzel-engine": HTMLKritzelEngineElement;
         "kritzel-icon": HTMLKritzelIconElement;
+        "kritzel-object-titlebar-layer": HTMLKritzelObjectTitlebarLayerElement;
         "kritzel-watermark": HTMLKritzelWatermarkElement;
     }
 }
@@ -882,9 +954,17 @@ declare namespace LocalJSX {
          */
         "lockDrawingScale"?: boolean;
         /**
+          * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
+         */
+        "objectConfig"?: KritzelObjectConfig;
+        /**
           * Context menu items shown when right-clicking a selected object.
          */
         "objectContextMenuItems"?: ContextMenuItem[];
+        /**
+          * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
+         */
+        "objectTitlebar"?: KritzelObjectTitlebarConfig;
         /**
           * Emitted when the active drawing tool changes.
          */
@@ -921,6 +1001,14 @@ declare namespace LocalJSX {
           * Emitted when notifications change.
          */
         "onNotificationsChange"?: (event: KritzelEngineCustomEvent<KritzelNotification>) => void;
+        /**
+          * Emitted when a button or a menu item in an object titlebar is clicked.
+         */
+        "onObjectTitlebarAction"?: (event: KritzelEngineCustomEvent<KritzelObjectTitlebarActionEvent>) => void;
+        /**
+          * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
+         */
+        "onObjectTitlebarMenuStateChange"?: (event: KritzelEngineCustomEvent<KritzelObjectTitlebarMenuState>) => void;
         /**
           * Emitted when one or more objects are added to the canvas.
          */
@@ -1023,6 +1111,33 @@ declare namespace LocalJSX {
         "size"?: number;
     }
     /**
+     * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
+     * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+     * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+     * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+     * Must never use the `object` class: pointer handling treats `.object` elements as objects.
+     */
+    interface KritzelObjectTitlebarLayer {
+        /**
+          * Called when a titlebar button or menu button is clicked.
+         */
+        "elementClick"?: KritzelTitlebarElementClickHandler;
+        /**
+          * Pointer events of the drag surfaces. Controls always receive pointer input.
+          * @default 'none'
+         */
+        "surfacePointerEvents"?: 'auto' | 'none';
+        /**
+          * Called while a title is edited to rename its object.
+         */
+        "titleEdit"?: KritzelTitlebarTitleEditHandlers;
+        /**
+          * The titlebars to render, resolved by the engine for the current frame.
+          * @default []
+         */
+        "titlebars"?: KritzelResolvedTitlebar[];
+    }
+    /**
      * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
      * Rendered inside the engine's Shadow DOM unless the engine's
      * `isWatermarkVisible` prop is set to false. The badge links to the Kritzel
@@ -1069,6 +1184,9 @@ declare namespace LocalJSX {
         "label": string;
         "size": number;
     }
+    interface KritzelObjectTitlebarLayerAttributes {
+        "surfacePointerEvents": 'auto' | 'none';
+    }
     interface KritzelWatermarkAttributes {
         "label": string;
     }
@@ -1079,6 +1197,7 @@ declare namespace LocalJSX {
         "kritzel-cursor-trail": KritzelCursorTrail;
         "kritzel-engine": Omit<KritzelEngine, keyof KritzelEngineAttributes> & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes]?: KritzelEngine[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `attr:${K}`]?: KritzelEngineAttributes[K] } & { [K in keyof KritzelEngine & keyof KritzelEngineAttributes as `prop:${K}`]?: KritzelEngine[K] };
         "kritzel-icon": Omit<KritzelIcon, keyof KritzelIconAttributes> & { [K in keyof KritzelIcon & keyof KritzelIconAttributes]?: KritzelIcon[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `attr:${K}`]?: KritzelIconAttributes[K] } & { [K in keyof KritzelIcon & keyof KritzelIconAttributes as `prop:${K}`]?: KritzelIcon[K] };
+        "kritzel-object-titlebar-layer": Omit<KritzelObjectTitlebarLayer, keyof KritzelObjectTitlebarLayerAttributes> & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes]?: KritzelObjectTitlebarLayer[K] } & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes as `attr:${K}`]?: KritzelObjectTitlebarLayerAttributes[K] } & { [K in keyof KritzelObjectTitlebarLayer & keyof KritzelObjectTitlebarLayerAttributes as `prop:${K}`]?: KritzelObjectTitlebarLayer[K] };
         "kritzel-watermark": Omit<KritzelWatermark, keyof KritzelWatermarkAttributes> & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes]?: KritzelWatermark[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `attr:${K}`]?: KritzelWatermarkAttributes[K] } & { [K in keyof KritzelWatermark & keyof KritzelWatermarkAttributes as `prop:${K}`]?: KritzelWatermark[K] };
     }
 }
@@ -1097,6 +1216,14 @@ declare module "@stencil/core" {
             "kritzel-cursor-trail": LocalJSX.IntrinsicElements["kritzel-cursor-trail"] & JSXBase.HTMLAttributes<HTMLKritzelCursorTrailElement>;
             "kritzel-engine": LocalJSX.IntrinsicElements["kritzel-engine"] & JSXBase.HTMLAttributes<HTMLKritzelEngineElement>;
             "kritzel-icon": LocalJSX.IntrinsicElements["kritzel-icon"] & JSXBase.HTMLAttributes<HTMLKritzelIconElement>;
+            /**
+             * Renders object titlebars inside the engine's world-space origin. Each anchor is placed on
+             * its owner's top edge and counter-scaled, so titlebar content keeps a constant screen size.
+             * Rendered without a shadow root on purpose: the bars must stay in the engine's shadow tree so
+             * `kritzel-engine::part(...)` styling and the engine's `elementsFromPoint` hit-testing reach them.
+             * Must never use the `object` class: pointer handling treats `.object` elements as objects.
+             */
+            "kritzel-object-titlebar-layer": LocalJSX.IntrinsicElements["kritzel-object-titlebar-layer"] & JSXBase.HTMLAttributes<HTMLKritzelObjectTitlebarLayerElement>;
             /**
              * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.
              * Rendered inside the engine's Shadow DOM unless the engine's

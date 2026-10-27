@@ -18,6 +18,8 @@ import { KritzelFontRegistry } from '../registries/font-registry.class';
  * Configuration options for creating a KritzelText instance.
  */
 export interface KritzelTextConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   text?: string;
   translateX?: number;
   translateY?: number;
@@ -110,6 +112,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    */
   constructor(config?: KritzelTextConfig) {
     super();
+    this.name = config?.name;
 
     this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
 
@@ -283,6 +286,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
 
       this.width = newWidth * this.scaleFactor;
       this.height = newHeight * this.scaleFactor;
+
+      // Titlebars are sized from the object, so they need a render once the text has been measured.
+      if (this._core?.objectTitlebarManager?.isEnabled && (this.totalWidth !== previousTotalWidth || this.totalHeight !== previousTotalHeight)) {
+        this._core?.rerender();
+      }
 
       if (this.rotation !== 0) {
         const newTotalWidth = this.totalWidth;

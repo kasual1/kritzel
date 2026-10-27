@@ -115,3 +115,145 @@ await editor.value?.hideContextMenu()
 ```
 
 On touch devices, the engine's `@longpress` event (payload: `PointerEvent` in `(event as CustomEvent<PointerEvent>).detail`) is the hook for opening menus manually.
+
+## Object titlebars
+
+An optional bar above objects (Framer / Claude-design style). Its content and appearance are declared **once** with the `:objectTitlebar` prop (on `KritzelEditor` and `KritzelEngine`) and are the same for every object. Which objects get a bar is decided by `hasTitlebar` in the `:objectConfig` prop (see the object configuration section of objects.md), and each bar is titled by the object's `name`. Leaving `:objectTitlebar` unset turns the feature off; without `objectConfig.hasTitlebar` no bar renders. Pass both props.
+
+Define both configs as consts in `<script setup>` (never inline in the template) and handle buttons through `@objectTitlebarAction` (see events.md):
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  KritzelEditor,
+  type KritzelObjectConfig,
+  type KritzelObjectTitlebarActionEvent,
+  type KritzelObjectTitlebarConfig,
+} from '@kritzel/vue-editor'
+
+const objectConfig: KritzelObjectConfig = {
+  hasTitlebar: object => object.__class__ === 'KritzelShape',   // without it no bar renders
+}
+
+const objectTitlebar: KritzelObjectTitlebarConfig = {
+  left: [
+    { id: 'preview', type: 'button', icon: 'play', variant: 'filled', tooltip: 'Preview' },
+    { id: 'title', type: 'title' },
+    { id: 'width', type: 'text', tone: 'muted', minBarWidth: 120, text: ({ contentSize }) => `${Math.round(contentSize.width)}` },
+  ],
+  right: [{ id: 'add-breakpoint', type: 'button', icon: 'plus', tooltip: 'Add breakpoint' }],
+}
+
+const lastAction = ref('')
+
+function onTitlebarAction(event: Event) {
+  lastAction.value = (event as CustomEvent<KritzelObjectTitlebarActionEvent>).detail.elementId
+}
+</script>
+
+<template>
+  <KritzelEditor
+    :objectConfig="objectConfig"
+    :objectTitlebar="objectTitlebar"
+    @objectTitlebarAction="onTitlebarAction"
+  />
+</template>
+```
+
+`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made preset (type icon + title); pass it as the titlebar config (or spread it to change options) and pick the objects with `objectConfig`, e.g. `{ hasTitlebar: object => object.__class__ === 'KritzelGroup' }`.
+
+`objectConfig.hasTitlebar` is `true` / `false` for every object, or a plain function `(object) => boolean` that receives just the object:
+
+- **Default: no bars.** Without `objectConfig.hasTitlebar` nothing renders, and the engine logs a one-time `console.info` hint while `:objectTitlebar` is set. `hasTitlebar: true` gives every top-level object a bar.
+- Called **synchronously for every visible top-level object on every render**: keep it pure and cheap. Only `true` shows a bar; a non-boolean result, a throw or a returned promise counts as `false` (a throw or promise warns once).
+- Grouped children are never passed in and never get their own bar; the group is passed instead and gets a bar only if `hasTitlebar` returns `true` for it (no special group rules; its children are not asked).
+- Check types with `object.__class__` (`'KritzelGroup'`, `'KritzelShape'`, `'KritzelText'`, `'KritzelImage'`, `'KritzelPath'`, `'KritzelLine'`, `'KritzelIframeObject'`, `'KritzelDynamicObject'`), not `instanceof`, which fails when the app bundles more than one copy of the engine.
+- To inspect a group's children, read `childIds` (cheap) rather than the `children` getter (looks them up in the store). The function receives a `KritzelBaseObject`, so cast after the `__class__` check, e.g. `(object as KritzelGroup).childIds`.
+
+`hasTitlebar` is only re-evaluated on renders, and a **new** `objectConfig` object triggers one. To toggle bars per object at runtime, keep the ids in a `ref`, read them inside `hasTitlebar` and derive `objectConfig` with `computed()` (replace the `Set`, never mutate it); the titlebar config itself stays constant. The ids live in the app, so they are neither persisted nor synced:
+
+```vue
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { KRITZEL_DEFAULT_OBJECT_TITLEBAR, KritzelEditor, type KritzelObjectConfig } from '@kritzel/vue-editor'
+
+const titlebarIds = ref(new Set<string>())
+
+const objectConfig = computed<KritzelObjectConfig>(() => {
+  const ids = titlebarIds.value
+  return { hasTitlebar: object => ids.has(object.id) }
+})
+
+function toggleTitlebar(id: string) {
+  const next = new Set(titlebarIds.value)
+  if (!next.delete(id)) next.add(id)
+  titlebarIds.value = next
+}
+</script>
+
+<template>
+  <KritzelEditor :objectConfig="objectConfig" :objectTitlebar="KRITZEL_DEFAULT_OBJECT_TITLEBAR" />
+</template>
+```
+
+Elements — every element needs a stable `id` (used in events and as `data-element-id`) and accepts `isVisible`, `showWhen` (`'always'` | `'active'` | `'inactive'`), `minBarWidth` (screen px) and `part`:
+
+| `type` | Fields | Notes |
+|---|---|---|
+| `title` | `text?`, `isEditable?` | Resolved title: element `text` > `config.title(object)` > `object.name` > localized type label. `isEditable: true` (or a function of the context) lets users rename the object: clicking the title of the active bar of the only selected object again opens an input; Enter/blur stores the trimmed value in `name` (one undo step, emits `objectsUpdated` with `['name']`), Escape cancels, empty clears the name (default title). Not editable with a `text` override |
+| `text` | `text`, `tone?` (`'default'` \| `'muted'` \| `'strong'`) | Arbitrary text, e.g. a size |
+| `icon` | `icon` | Registry icon name (`:customSvgIcons` extend it) |
+| `button` | `icon?`, `label?`, `tooltip?`, `variant?` (`'ghost'` \| `'filled'` \| `'outlined'`), `isDisabled?`, `isPressed?`, `action?(context, event)` | Never selects or drags; always emits `objectTitlebarAction`. `label` / `tooltip` take term keys or plain strings |
+| `menu` | `icon?`, `label?`, `tooltip?`, `variant?`, `isDisabled?`, `items` (`KritzelTitlebarMenuItem[]` or a function of the context) | Button that opens a menu (rendered by the editor). Menu items: `id`, `label` (term key or string), `icon?`, `isVisible?`, `isDisabled?`, `action?(context, menuItem)`. Selecting one closes the menu and emits `objectTitlebarAction` with `elementId` = menu id and `menuItemId`. Closes on camera move, when the object is selected or deselected, when its titlebar is hidden, on renaming, or when the context menu opens |
+| `spacer` / `separator` | — | Flexible space / thin divider |
+
+Any value may be a function `(context) => value`. It runs **synchronously on every render**: keep it pure and cheap; promises are not supported (they resolve to the fallback and warn once). The context has `object`, `objectType`, `children`, `isActive`, `title`, `size` (world units), `contentSize` (`object.width` / `height`, e.g. a frame's `1200`), `barWidth` (screen px) and `t(key, vars)`.
+
+Config options: `left` (default: one title element), `center`, `right`, `visibility` (`'always'` default, or `'active'` = only while selected), `rotation` (`'follow'` default = along the rotated top edge, or `'upright'`), `title(object)` resolver, `draggable` (default `true`), `hideBelowWidth` (default `40` screen px). Which objects get a bar is not a titlebar option: it is `objectConfig.hasTitlebar`.
+
+Behavior: the bar is active (highlighted) while its object, or something inside its group, is selected. Pressing the bar selects the object and dragging moves it exactly like dragging the object (same undo and sync); Shift/Ctrl-press toggles it in the selection. Right-click / long-press opens the object context menu. Clicking a text object's bar does not start editing. While a drawing tool is active, the bar lets input pass through but buttons stay clickable. Bars keep a constant screen size at any zoom, hide below `hideBelowWidth`, and are excluded from screenshots and exports.
+
+### Titlebar theme tokens
+
+The `titlebar` theme section maps to `--kritzel-titlebar-<key-kebab>` variables: `height` and `offset` (px values only), `paddingX`, `gap`, `borderRadius`, `fontFamily`, `fontSize`, `fontWeight`, `titleFontWeight`, `backgroundColor`, `hoverBackgroundColor`, `activeBackgroundColor`, `border`, `activeBorder`, `boxShadow`, `activeBoxShadow`, `textColor`, `activeTextColor`, `mutedTextColor`, `activeMutedTextColor`, `inputBackgroundColor`, `inputPadding`, `selectionBackgroundColor`, `selectionColor`, `iconSize`, `iconColor`, `activeIconColor`, `buttonSize`, `buttonBorderRadius`, `buttonHoverBackgroundColor`, `buttonPressedBackgroundColor`, `buttonFilledBackgroundColor`, `activeButtonFilledBackgroundColor`, `buttonFilledColor`, `buttonOutlineColor`, `focusRing`, `transition`.
+
+`:themes` **replaces** the theme registry (no deep merge), so spread both the base theme and its `titlebar` section, keep the names, and register the light and dark variants. A transparent "Claude design" bar sitting close to the object:
+
+```vue
+<script setup lang="ts">
+import { KritzelEditor, darkTheme, lightTheme, type KritzelTheme } from '@kritzel/vue-editor'
+
+const transparentTitlebar = {
+  backgroundColor: 'transparent',
+  hoverBackgroundColor: 'transparent',
+  activeBackgroundColor: 'transparent',
+  offset: '2px',
+  paddingX: '0',
+}
+
+const themes: KritzelTheme[] = [
+  { ...lightTheme, titlebar: { ...lightTheme.titlebar, ...transparentTitlebar } },
+  { ...darkTheme, titlebar: { ...darkTheme.titlebar, ...transparentTitlebar } },
+]
+</script>
+
+<template>
+  <KritzelEditor :themes="themes" theme="light" :objectTitlebar="objectTitlebar" />
+</template>
+```
+
+### Styling with `::part()`
+
+The menu a titlebar `menu` element opens is themed by the `titlebarMenu` section (`--kritzel-titlebar-menu-*`): `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `fontFamily`, `gap`, `itemBorderRadius`, `itemColor`, `itemFontSize`, `itemHeight`, `itemHoverBackgroundColor`, `itemPadding`, `maxWidth`, `minWidth`, `padding`. Its defaults match the context menu (4px padding, 2px gap, 32px items).
+
+For anything tokens do not cover, target parts on the engine: `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-title-input`, `titlebar-text`, `titlebar-icon`, `titlebar-button` (buttons and menu buttons), `titlebar-button-pressed` (also menu buttons of open menus), `titlebar-menu-button`, `titlebar-separator`, plus any element's own `part`. The engine is rendered by the editor (in its light DOM), not by your template, so use a non-scoped `<style>` block or a global stylesheet — `scoped` selectors never match it:
+
+```vue
+<style>
+kritzel-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #42b883; }
+kritzel-engine::part(titlebar-button) { border-radius: 999px; }
+</style>
+```
+
+Runnable demos: `/customization/titlebar/configure` and `/customization/titlebar/styling`.

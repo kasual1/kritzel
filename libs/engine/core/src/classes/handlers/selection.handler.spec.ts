@@ -1021,4 +1021,116 @@ describe('KritzelSelectionHandler', () => {
       expect(mockState.hasObjectsChanged).toBe(false);
     });
   });
+  describe('titlebar support', () => {
+    const createEditableObject = (id = 'obj-1') => ({ id, edit: jest.fn() }) as unknown as KritzelBaseObject & { edit: jest.Mock };
+
+    it('does not enter edit mode when releasing the suppressed pointer', () => {
+      const object = createEditableObject();
+      mockSelectionGroup = { ...createMockSelectionGroup(), objects: [object] };
+      selectionHandler.skipEditForPointerId = 1;
+
+      selectionHandler.handlePointerUp(createPointerEvent('pointerup', { pointerType: 'mouse', pointerId: 1 }));
+
+      expect(object.edit).not.toHaveBeenCalled();
+      expect(selectionHandler.skipEditForPointerId).toBeNull();
+    });
+
+    it('still resets hasObjectsChanged after a titlebar drag', () => {
+      mockSelectionGroup = { ...createMockSelectionGroup(), objects: [createEditableObject()] };
+      mockState.hasObjectsChanged = true;
+      selectionHandler.skipEditForPointerId = 1;
+
+      selectionHandler.handlePointerUp(createPointerEvent('pointerup', { pointerType: 'mouse', pointerId: 1 }));
+
+      expect(mockState.hasObjectsChanged).toBe(false);
+    });
+
+    it('enters edit mode again on the next click', () => {
+      const object = createEditableObject();
+      mockSelectionGroup = { ...createMockSelectionGroup(), objects: [object] };
+      selectionHandler.skipEditForPointerId = 1;
+
+      selectionHandler.handlePointerUp(createPointerEvent('pointerup', { pointerType: 'mouse', pointerId: 1 }));
+      selectionHandler.handlePointerUp(createPointerEvent('pointerup', { pointerType: 'mouse', pointerId: 1 }));
+
+      expect(object.edit).toHaveBeenCalledTimes(1);
+    });
+
+    it('suppresses edit mode for touch pointers', () => {
+      const object = createEditableObject();
+      mockSelectionGroup = { ...createMockSelectionGroup(), objects: [object] };
+      selectionHandler.skipEditForPointerId = 5;
+
+      selectionHandler.handlePointerUp(createPointerEvent('pointerup', { pointerType: 'touch', pointerId: 5 }));
+
+      expect(object.edit).not.toHaveBeenCalled();
+    });
+
+    it('only suppresses edit mode for the matching pointer', () => {
+      const object = createEditableObject();
+      mockSelectionGroup = { ...createMockSelectionGroup(), objects: [object] };
+      selectionHandler.skipEditForPointerId = 7;
+
+      selectionHandler.handlePointerUp(createPointerEvent('pointerup', { pointerType: 'mouse', pointerId: 1 }));
+
+      expect(object.edit).toHaveBeenCalled();
+      expect(selectionHandler.skipEditForPointerId).toBe(7);
+    });
+
+    describe('toggleObjectInSelection', () => {
+      it('selects the object when nothing is selected', () => {
+        const object = { id: 'obj-1' } as unknown as KritzelBaseObject;
+        (mockCore as any).selectObjects = jest.fn();
+
+        selectionHandler.toggleObjectInSelection(object);
+
+        expect((mockCore as any).selectObjects).toHaveBeenCalledWith([object]);
+      });
+
+      it('toggles the object in the existing selection and emits a selection change', () => {
+        const first = { id: 'obj-1' } as unknown as KritzelBaseObject;
+        const second = { id: 'obj-2' } as unknown as KritzelBaseObject;
+        mockSelectionGroup = { ...createMockSelectionGroup(), objects: [first, second] };
+        (mockCore.engine as any).triggerSelectionChange = jest.fn().mockResolvedValue(undefined);
+
+        selectionHandler.toggleObjectInSelection(second);
+
+        expect(mockSelectionGroup.addOrRemove).toHaveBeenCalledWith(second);
+        expect((mockCore.engine as any).triggerSelectionChange).toHaveBeenCalled();
+        expect(mockCore.rerender).toHaveBeenCalled();
+        expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
+      });
+
+      it('hands pointer input back to the canvas when an embedded object is toggled off', () => {
+        const embedded = {
+          id: 'embed-1',
+          isInteractive: true,
+          isSelected: true,
+          mount: jest.fn(),
+          unmount: jest.fn(),
+          setIsInteractive: jest.fn(),
+          hasFocusedInputElement: jest.fn(),
+          getEmbeddedContentRoots: jest.fn(() => []),
+        } as unknown as KritzelBaseObject & { setIsInteractive: jest.Mock };
+        mockSelectionGroup = { ...createMockSelectionGroup(), objectIds: ['embed-1'], objects: [] };
+        (mockCore.engine as any).triggerSelectionChange = jest.fn();
+
+        selectionHandler.toggleObjectInSelection(embedded);
+
+        expect(embedded.setIsInteractive).toHaveBeenCalledWith(false);
+        expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
+      });
+
+      it('removes the selection when its last object is toggled off', () => {
+        const object = { id: 'obj-1' } as unknown as KritzelBaseObject;
+        mockSelectionGroup = { ...createMockSelectionGroup(), objects: [] };
+        (mockCore.engine as any).triggerSelectionChange = jest.fn();
+
+        selectionHandler.toggleObjectInSelection(object);
+
+        expect(mockCore.removeSelectionGroup).toHaveBeenCalled();
+        expect((mockCore.engine as any).triggerSelectionChange).not.toHaveBeenCalled();
+      });
+    });
+  });
 });

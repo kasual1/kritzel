@@ -13,6 +13,8 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
  * Configuration options for creating a KritzelLine instance.
  */
 export interface KritzelLineConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   startX: number;
   startY: number;
   endX: number;
@@ -92,6 +94,7 @@ export class KritzelLine extends KritzelBaseObject<SVGElement> {
    */
   constructor(config?: KritzelLineConfig) {
     super();
+    this.name = config?.name;
     this.options = config;
     this.startX = config?.startX ?? 0;
     this.startY = config?.startY ?? 0;

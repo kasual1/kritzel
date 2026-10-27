@@ -143,6 +143,17 @@ export interface KritzelTerms {
 
   // Watermark
   'watermark.poweredBy': string;
+
+  // Object type labels (default titlebar titles)
+  'objectType.shape': string;
+  'objectType.text': string;
+  'objectType.image': string;
+  'objectType.path': string;
+  'objectType.line': string;
+  'objectType.group': string;
+  'objectType.iframe': string;
+  'objectType.dynamic': string;
+  'objectType.object': string;
 }
 
 /**

@@ -12,6 +12,8 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
  * Configuration options for creating a KritzelPath instance.
  */
 export interface KritzelPathConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   points?: number[][];
   translateX?: number;
   translateY?: number;
@@ -75,6 +77,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
    */
   constructor(config?: KritzelPathConfig) {
     super();
+    this.name = config?.name;
     this.options = config;
     this.points = config?.points ?? [];
     this.translateX = config?.translateX ?? 0;

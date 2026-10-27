@@ -126,7 +126,9 @@ triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick
 
 ### Props
 
-No object-specific props.
+| Property | Type | Description |
+|----------|------|-------------|
+| objectConfig | KritzelObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Object Configuration](../customization/object-config.md). |
 
 ### Events
 
@@ -662,18 +664,18 @@ No grouping-specific events.
 
 #### group
 
-Creates a group (`KritzelGroup`) from the currently selected objects (at least two). They become one layer at the position of the topmost selected object.
+Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. They become one layer at the position of the topmost object, in a single undoable step. Resolves to the created group, or `null` when fewer than two objects could be grouped. To group the current selection, pass `await getSelectedObjects()`. See the engine's `group` for details.
 
 ```ts
-group(): Promise<void>
+group(objects: KritzelBaseObject[]): Promise<KritzelGroup | null>
 ```
 
 #### ungroup
 
-Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+Ungroups the given groups. Their children become individual objects again and keep their stacking order, in a single undoable step. Resolves to the extracted children. To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`. See the engine's `ungroup` for details.
 
 ```ts
-ungroup(): Promise<void>
+ungroup(groups: KritzelGroup[]): Promise<KritzelBaseObject[]>
 ```
 
 ---
@@ -1024,3 +1026,23 @@ Returns snapshots of all agentic cursors.
 ```ts
 getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 ```
+
+---
+
+## Object Titlebar
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| objectTitlebar | KritzelObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Titlebars](../customization/titlebars.md). |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
+
+### Methods
+
+No titlebar-specific methods. Titlebar menus are rendered by the editor itself. Use [updateObject](#updateobject) to change the `name` of an existing object.

@@ -350,3 +350,190 @@ interface KritzelAgenticCursorDetachedEvent {
   reason: 'object-removed' | 'manual';
 }
 ```
+
+## Object Config Types
+
+Types used by the [`objectConfig` prop](./editor.md#object). See [Object Configuration](../customization/object-config.md) for usage.
+
+### `KritzelObjectConfig`
+
+Passed to the `objectConfig` prop. Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized.
+
+```ts
+interface KritzelObjectConfig {
+  hasTitlebar?: boolean | ((object: KritzelBaseObject) => boolean); // defaults to false
+  isRotatable?: boolean | ((object: KritzelBaseObject) => boolean); // defaults to true
+  isResizable?: boolean | ((object: KritzelBaseObject) => boolean); // defaults to true
+}
+```
+
+`hasTitlebar` also requires the `objectTitlebar` prop. It is called for every visible top-level object on every render. Objects inside a group never get their own titlebar; the group is passed in instead.
+
+`isRotatable` and `isResizable` combine with the persisted `isRotatable` and `isResizable` flags of each object: either one can forbid the gesture. A group, and a selection of several objects, can only be rotated or resized when it and every object inside it allow it. When an object cannot be rotated or resized, its handles are hidden and the gesture does not start. Programmatic API calls are not affected.
+
+The configuration is local to your app and neither persisted nor synced. Pass a new object to update it.
+
+Each option is a fixed value for every object, or a function deciding per object. Functions are called synchronously while the engine renders or handles input, so they must be cheap and must not return a promise. A function that throws or returns a promise resolves to the option's default and logs a warning once. Any return value other than a boolean also resolves to the default. Compare `object.__class__` (for example `'KritzelGroup'`) rather than using `instanceof`, which fails when the app bundles more than one copy of the engine, and prefer `childIds` over `children` to inspect a group's children, for example `object => object.__class__ === 'KritzelGroup' && (object as KritzelGroup).childIds.length > 1`.
+
+## Object Titlebar Types
+
+Types used by the [`objectTitlebar` prop](./editor.md#object-titlebar). See [Titlebars](../customization/titlebars.md) for usage.
+
+### `KritzelObjectTitlebarConfig`
+
+Passed to the `objectTitlebar` prop. The same configuration applies to every object for which the `hasTitlebar` option of the `objectConfig` prop is `true`. Without `hasTitlebar`, no titlebars are rendered.
+
+```ts
+interface KritzelObjectTitlebarConfig {
+  left?: KritzelTitlebarElement[];   // defaults to [{ id: 'title', type: 'title' }]
+  center?: KritzelTitlebarElement[];
+  right?: KritzelTitlebarElement[];
+  visibility?: 'always' | 'active';
+  rotation?: 'follow' | 'upright';
+  title?: (object: KritzelBaseObject) => string | undefined;
+  draggable?: boolean;            // defaults to true
+  hideBelowWidth?: number;        // screen pixels, defaults to 40
+}
+```
+
+Which objects get a titlebar is decided by [`KritzelObjectConfig`](#kritzelobjectconfig) on the `objectConfig` prop, not by this configuration. See [Choosing Which Objects Get a Titlebar](../customization/titlebars.md#choosing-which-objects-get-a-titlebar).
+
+`KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title. Pass it as is, or spread it and override individual options, for example `{ ...KRITZEL_DEFAULT_OBJECT_TITLEBAR, visibility: 'active' }`.
+
+### `KritzelTitlebarElement`
+
+```ts
+type KritzelTitlebarElement =
+  | KritzelTitlebarTitle
+  | KritzelTitlebarText
+  | KritzelTitlebarIcon
+  | KritzelTitlebarButton
+  | KritzelTitlebarMenu
+  | KritzelTitlebarSpacer;
+
+// Options shared by every element (internal, not exported)
+interface KritzelTitlebarElementBase {
+  id: string;
+  isVisible?: KritzelTitlebarValue<boolean>;
+  showWhen?: 'always' | 'active' | 'inactive';
+  minBarWidth?: number;
+  part?: string;
+}
+
+interface KritzelTitlebarTitle extends KritzelTitlebarElementBase {
+  type: 'title';
+  text?: KritzelTitlebarValue<string>;
+  isEditable?: KritzelTitlebarValue<boolean>; // lets users rename the object, defaults to false
+}
+
+interface KritzelTitlebarText extends KritzelTitlebarElementBase {
+  type: 'text';
+  text: KritzelTitlebarValue<string>;
+  tone?: 'default' | 'muted' | 'strong';
+}
+
+interface KritzelTitlebarIcon extends KritzelTitlebarElementBase {
+  type: 'icon';
+  icon: KritzelTitlebarValue<KritzelIconName>;
+}
+
+interface KritzelTitlebarButton extends KritzelTitlebarElementBase {
+  type: 'button';
+  icon?: KritzelTitlebarValue<KritzelIconName>;
+  label?: KritzelTermKey | string;
+  tooltip?: KritzelTermKey | string;
+  variant?: 'ghost' | 'filled' | 'outlined';
+  isDisabled?: KritzelTitlebarValue<boolean>;
+  isPressed?: KritzelTitlebarValue<boolean>;
+  action?: (context: KritzelObjectTitlebarContext, event: MouseEvent) => void;
+}
+
+interface KritzelTitlebarMenu extends KritzelTitlebarElementBase {
+  type: 'menu';
+  icon?: KritzelTitlebarValue<KritzelIconName>;
+  label?: KritzelTermKey | string;
+  tooltip?: KritzelTermKey | string;
+  variant?: 'ghost' | 'filled' | 'outlined';
+  isDisabled?: KritzelTitlebarValue<boolean>;
+  items: KritzelTitlebarValue<KritzelTitlebarMenuItem[]>; // resolved when the menu opens
+}
+
+interface KritzelTitlebarSpacer extends KritzelTitlebarElementBase {
+  type: 'spacer' | 'separator';
+}
+```
+
+### `KritzelTitlebarMenuItem`
+
+An entry of a [`KritzelTitlebarMenu`](#kritzeltitlebarelement). `isVisible` and `isDisabled` are evaluated when the menu opens and again when the menu item is selected.
+
+```ts
+interface KritzelTitlebarMenuItem {
+  id: string;                      // reported as menuItemId in objectTitlebarAction
+  label: KritzelTermKey | string;  // term keys are translated through the active locale
+  icon?: KritzelIconName;
+  isVisible?: KritzelTitlebarValue<boolean>;
+  isDisabled?: KritzelTitlebarValue<boolean>;
+  action?: (context: KritzelObjectTitlebarContext, menuItem: KritzelTitlebarMenuItem) => void;
+}
+```
+
+### `KritzelTitlebarValue`
+
+A static value or a function that resolves it from the titlebar context. Functions are evaluated synchronously on every render; promises are not supported.
+
+```ts
+type KritzelTitlebarValue<T> = T | ((context: KritzelObjectTitlebarContext) => T);
+```
+
+### `KritzelObjectTitlebarContext`
+
+Passed to dynamic element values and the `action` callbacks of buttons and menu items.
+
+```ts
+interface KritzelObjectTitlebarContext {
+  object: KritzelBaseObject;
+  objectType: string;
+  children: KritzelBaseObject[];
+  isActive: boolean;
+  title: string;
+  size: { width: number; height: number };        // world units, including padding
+  contentSize: { width: number; height: number }; // the object's own width and height
+  barWidth: number;                                // screen pixels
+  t: (key: KritzelTermKey | string, vars?: KritzelTermVars) => string;
+}
+```
+
+### `KritzelObjectTitlebarActionEvent`
+
+Emitted by the `objectTitlebarAction` event.
+
+```ts
+interface KritzelObjectTitlebarActionEvent {
+  elementId: string;   // id of the clicked button, or of the menu that contains the selected menu item
+  menuItemId?: string; // id of the selected menu item, unset for button clicks
+  section: 'left' | 'center' | 'right';
+  objectId: string;
+  objectType: string;
+  workspaceId: string;
+  anchorRect: DOMRect; // client rect of the clicked button or menu button
+}
+```
+
+### `KritzelObjectTitlebarMenuState`
+
+Emitted by the `objectTitlebarMenuStateChange` event of `<KritzelEngine>` when a titlebar menu opens or closes. Only needed when rendering titlebar menus without `<KritzelEditor>`.
+
+```ts
+interface KritzelObjectTitlebarMenuState {
+  isVisible: boolean;
+  objectId?: string;                  // owner of the titlebar whose menu is open
+  elementId?: string;                 // id of the open menu element
+  section?: 'left' | 'center' | 'right';
+  items: KritzelTitlebarMenuItem[];   // visible menu items, labels translated and isDisabled evaluated
+  anchor?: HTMLElement;               // the menu button, inside the engine's shadow root
+  anchorRect?: DOMRect;               // client rect of the menu button when the menu opened
+}
+```
+
+Select a menu item with `selectObjectTitlebarMenuItem(menuItemId)` and close the menu with `closeObjectTitlebarMenu()` on the engine.

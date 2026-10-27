@@ -4,6 +4,7 @@ import {
   KritzelEditor,
   KritzelWorkspace,
   type KritzelBaseObject,
+  type KritzelGroup,
 } from '@kritzel/vue-editor'
 import { ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
@@ -38,12 +39,17 @@ async function selectAll() {
 }
 
 async function groupSelected() {
-  await editor.value?.group()
+  if (!editor.value) return
+  const selected = await editor.value.getSelectedObjects()
+  await editor.value.group(selected)
   await refreshObjects()
 }
 
 async function ungroupSelected() {
-  await editor.value?.ungroup()
+  if (!editor.value) return
+  const selected = await editor.value.getSelectedObjects()
+  const groups = selected.filter((object): object is KritzelGroup => object.__class__ === 'KritzelGroup')
+  await editor.value.ungroup(groups)
   await refreshObjects()
 }
 

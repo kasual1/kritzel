@@ -136,5 +136,16 @@ export const IT_LOCALE: KritzelLocale = {
 
     // Watermark
     'watermark.poweredBy': 'Offerto da Kritzel',
+
+    // Object type labels
+    'objectType.shape': 'Forma',
+    'objectType.text': 'Testo',
+    'objectType.image': 'Immagine',
+    'objectType.path': 'Disegno',
+    'objectType.line': 'Linea',
+    'objectType.group': 'Gruppo',
+    'objectType.iframe': 'Incorporato',
+    'objectType.dynamic': 'Componente',
+    'objectType.object': 'Oggetto',
   },
 };

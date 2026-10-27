@@ -9,6 +9,7 @@ const INTERNAL_COMPONENTS = [
   'kritzel-watermark',
   'kritzel-awareness-cursors',
   'kritzel-agentic-cursors',
+  'kritzel-object-titlebar-layer',
 ];
 
 const isDev = process.argv.includes('--dev') || process.argv.includes('--serve');

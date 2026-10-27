@@ -12,6 +12,7 @@ import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interfac
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
+import type { KritzelGroup } from '../objects/group.class';
 
 /**
  * Central state management store for the Kritzel engine.
@@ -138,12 +139,22 @@ export class KritzelStore {
    * @returns Array of objects within the current viewport, sorted by z-index ascending
    */
   get objectsInViewport(): KritzelBaseObject<Element>[] {
+    return this.getObjectsInViewport();
+  }
+
+  /**
+   * Gets all objects within the viewport expanded by `padding` world units on every side.
+   * Used for rendering UI that extends beyond an object's bounds, such as titlebars.
+   * @param padding - Extra margin around the viewport in world units
+   * @returns Array of matching objects, sorted by z-index ascending
+   */
+  getObjectsInViewport(padding: number = 0): KritzelBaseObject<Element>[] {
     const viewportBounds = {
-      x: -this._state.translateX / this._state.scale,
-      y: -this._state.translateY / this._state.scale,
+      x: -this._state.translateX / this._state.scale - padding,
+      y: -this._state.translateY / this._state.scale - padding,
       z: this._state.scale,
-      width: this._state.viewportWidth / this._state.scale,
-      height: this._state.viewportHeight / this._state.scale,
+      width: this._state.viewportWidth / this._state.scale + padding * 2,
+      height: this._state.viewportHeight / this._state.scale + padding * 2,
       depth: 100,
     };
 
@@ -199,6 +210,14 @@ export class KritzelStore {
     }
     this._selectionGroupCacheValid = true;
     return this._cachedSelectionGroup;
+  }
+
+  /**
+   * Gets the groups in the local user's selection.
+   * @returns The selected `KritzelGroup` objects; empty when nothing is selected
+   */
+  get selectedGroups(): KritzelGroup[] {
+    return (this.selectionGroup?.objects ?? []).filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'));
   }
 
   /**

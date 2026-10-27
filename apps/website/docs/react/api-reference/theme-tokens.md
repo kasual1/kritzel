@@ -89,6 +89,8 @@ The `KritzelTheme` interface defines CSS variables for every component section. 
 import { lightTheme, darkTheme } from '@kritzel/engine';
 ```
 
-Theme sections include: `global`, `engine`, `toolbar`, `selection`, `dialog`, `contextMenu`, `utilityPanel`, `tooltip`, `menu`, `dropdown`, `portal`, `settings`, `splitButton`, `moreMenu`, and more.
+Theme sections include: `global`, `engine`, `toolbar`, `selection`, `dialog`, `contextMenu`, `utilityPanel`, `tooltip`, `menu`, `dropdown`, `portal`, `settings`, `splitButton`, `moreMenu`, `titlebar`, and more.
+
+The `titlebar` section styles [object titlebars](../customization/titlebars.md). See [Theming](./theming.md#titlebar) for its properties and default values.
 
 Each section contains granular color tokens (background, text, border, hover states, etc.) that map to CSS custom properties on the component host elements.

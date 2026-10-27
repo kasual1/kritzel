@@ -4,6 +4,7 @@ import {
   HTMLKritzelEditorElement,
   KritzelWorkspace,
   type KritzelBaseObject,
+  type KritzelGroup,
 } from "@kritzel/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
@@ -39,12 +40,19 @@ export function ObjectsGroupingPage() {
   }
 
   async function groupSelected() {
-    await editorRef.current?.group();
+    const editor = editorRef.current;
+    if (!editor) return;
+    const selected = await editor.getSelectedObjects();
+    await editor.group(selected);
     await refreshObjects();
   }
 
   async function ungroupSelected() {
-    await editorRef.current?.ungroup();
+    const editor = editorRef.current;
+    if (!editor) return;
+    const selected = await editor.getSelectedObjects();
+    const groups = selected.filter((object): object is KritzelGroup => object.__class__ === "KritzelGroup");
+    await editor.ungroup(groups);
     await refreshObjects();
   }
 

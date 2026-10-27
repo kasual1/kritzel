@@ -36,14 +36,15 @@ Every object consists of properties, computed properties and methods.
 | resizing | boolean | Whether the object is currently being resized |
 | markedForRemoval | boolean | Whether the object is pending removal |
 | userId | string | ID of the user who created the object |
+| name | string | User-facing name, shown as the title of its titlebar. Persisted and synced |
 | isVisible | boolean | Visibility flag |
 | isSelected | boolean | Whether the object is selected |
 | isHovered | boolean | Whether the object is hovered |
 | isMounted | boolean | Whether the object is mounted to the DOM |
 | isEditable | boolean | Whether the object is in edit mode |
 | isInteractive | boolean | Whether the object responds to interaction |
-| isResizable | boolean | Whether the object can be resized |
-| isRotatable | boolean | Whether the object can be rotated |
+| isResizable | boolean | Whether the object can be resized. Persisted and synced. Combines with `isResizable` of the [`objectConfig` prop](../customization/object-config.md#combining-with-object-flags): either one can forbid it |
+| isRotatable | boolean | Whether the object can be rotated. Persisted and synced. Combines with `isRotatable` of the [`objectConfig` prop](../customization/object-config.md#combining-with-object-flags): either one can forbid it |
 | centerX | number | Center X coordinate |
 | centerY | number | Center Y coordinate |
 | totalWidth | number | Width including padding and borders |
@@ -53,6 +54,20 @@ Every object consists of properties, computed properties and methods.
 | rotatedPolygon | KritzelPolygon | Four corners of the rotated rectangle |
 | transformationMatrix | DOMMatrix | Full transformation matrix |
 | rotationDegrees | number | Rotation converted to degrees |
+
+### Common Constructor Options
+
+The constructor of every object accepts the following options in addition to its own, for example in `KritzelShapeConfig` or `KritzelTextConfig`.
+
+| Option | Type | Description |
+|--------|------|-------------|
+| name | string | User-facing name, shown as the title of its titlebar |
+
+```ts
+const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
+```
+
+See [Titlebars](../customization/titlebars.md) for details.
 
 ### Methods
 

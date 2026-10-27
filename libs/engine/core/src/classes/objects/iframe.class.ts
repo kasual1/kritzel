@@ -29,6 +29,8 @@ export interface KritzelIframeContent {
 }
 
 export interface KritzelIframeObjectConfig extends Partial<KritzelIframeContent> {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   content?: Partial<KritzelIframeContent>;
   loadingContent?: Partial<KritzelIframeContent>;
   isLoading?: boolean;
@@ -114,6 +116,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
   constructor(config?: KritzelIframeObjectConfig) {
     super();
+    this.name = config?.name;
     this.content = {
       html: config?.content?.html ?? config?.html ?? '',
       css: config?.content?.css ?? config?.css ?? '',

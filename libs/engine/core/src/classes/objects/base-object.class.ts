@@ -39,6 +39,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   markedForRemoval: boolean = false;
   zIndex: number = 0;
   userId?: string;
+  /** User-facing name, shown as the title of the object's titlebar. Persisted and synced. */
+  name?: string;
 
   isVisible: boolean = true;
   isSelected: boolean = false;

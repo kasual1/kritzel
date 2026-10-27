@@ -93,6 +93,19 @@ describe('KritzelEngine', () => {
 
   /** Builds a fresh mock core for the engine to delegate to. */
   const createMockCore = () => ({
+    objectConfigManager: {
+      isResizable: jest.fn().mockReturnValue(true),
+      isRotatable: jest.fn().mockReturnValue(true),
+      resetWarnings: jest.fn(),
+    },
+    objectTitlebarManager: {
+      config: undefined,
+      getOwnerFromEvent: jest.fn().mockReturnValue(null),
+      isControlEvent: jest.fn().mockReturnValue(false),
+      isTitleInputEvent: jest.fn().mockReturnValue(false),
+      resetWarnings: jest.fn(),
+      closeMenu: jest.fn(),
+    },
     setEditorId: jest.fn(),
     setUser: jest.fn(),
     setSyncConfig: jest.fn(),
@@ -619,6 +632,101 @@ describe('KritzelEngine', () => {
     });
   });
 
+  describe('object titlebar', () => {
+    it('re-renders and resets warnings when objectTitlebar changes', () => {
+      engine.onObjectTitlebarChange();
+
+      expect(core.objectTitlebarManager.resetWarnings).toHaveBeenCalled();
+      expect(core.rerender).toHaveBeenCalled();
+    });
+
+    it('does not track pointers that start on titlebar controls', () => {
+      (core.objectTitlebarManager.isControlEvent as jest.Mock).mockReturnValue(true);
+      const activeTool = { handlePointerDown: jest.fn() };
+      core.store.state.activeTool = activeTool;
+      const setPointerCapture = jest.fn();
+      (engine.host as any).setPointerCapture = setPointerCapture;
+      const event = { pointerId: 3, composedPath: jest.fn().mockReturnValue([]) } as unknown as PointerEvent;
+
+      engine.handlePointerDown(event);
+
+      expect(setPointerCapture).not.toHaveBeenCalled();
+      expect(core.store.state.pointers.has(3)).toBe(false);
+      expect(activeTool.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('does not run tool logic for cancelled pointers that were never tracked', () => {
+      const activeTool = { handlePointerUp: jest.fn() };
+      (engine.host as any).hasPointerCapture = jest.fn().mockReturnValue(false);
+      (engine.host as any).releasePointerCapture = jest.fn();
+      core.cursorManager.resetToDefault = jest.fn();
+      core.store.state.activeTool = activeTool;
+
+      engine.handlePointerCancel({ pointerId: 4 } as PointerEvent);
+
+      expect(activeTool.handlePointerUp).not.toHaveBeenCalled();
+      expect((engine.viewport as any).handlePointerUp).not.toHaveBeenCalled();
+    });
+
+    it('still finishes tracked pointers on cancel', () => {
+      const activeTool = { handlePointerUp: jest.fn() };
+      (engine.host as any).hasPointerCapture = jest.fn().mockReturnValue(false);
+      (engine.host as any).releasePointerCapture = jest.fn();
+      core.cursorManager.resetToDefault = jest.fn();
+      core.store.state.activeTool = activeTool;
+      core.store.state.pointers.set(4, {} as PointerEvent);
+      const event = { pointerId: 4 } as PointerEvent;
+
+      engine.handlePointerCancel(event);
+
+      expect(activeTool.handlePointerUp).toHaveBeenCalledWith(event);
+    });
+
+    it('leaves activation keys on titlebar controls to the focused control', () => {
+      (core.objectTitlebarManager.isControlEvent as jest.Mock).mockReturnValue(true);
+      const event = { key: 'Enter', composedPath: () => [engine.host] } as unknown as KeyboardEvent;
+
+      expect((engine as any).shouldHandleGlobalShortcutEvent(event)).toBe(false);
+    });
+
+    it('keeps other shortcuts working while a titlebar control has focus', () => {
+      (core.objectTitlebarManager.isControlEvent as jest.Mock).mockReturnValue(true);
+      const event = { key: 'Delete', composedPath: () => [engine.host] } as unknown as KeyboardEvent;
+
+      expect((engine as any).shouldHandleGlobalShortcutEvent(event)).toBe(true);
+    });
+
+    it('excludes titlebars from screenshots', async () => {
+      const { toPng } = jest.requireMock('html-to-image');
+      (toPng as jest.Mock).mockClear();
+
+      await engine.getScreenshot('png');
+
+      const { filter } = (toPng as jest.Mock).mock.calls[0][1];
+      const titlebarLayer = document.createElement('div');
+      titlebarLayer.classList.add('object-titlebar-layer');
+      expect(filter(titlebarLayer)).toBe(false);
+      expect(filter(document.createElement('div'))).toBe(true);
+    });
+
+    it('lifts the rotation handle above the titlebar of a group whose nested child is selected', () => {
+      core.store.selectionGroup = { objectIds: ['inner'], rotatedBoundingBox: { y: 100 } };
+      const titlebars = [{ owner: { id: 'root', rotatedBoundingBox: { y: 100 } }, isActive: true }];
+
+      expect((engine as any).getRotationHandleTitlebarOffset(titlebars, { height: 28, offset: 6 })).toBe(34);
+      expect((engine as any).getRotationHandleTitlebarOffset([{ ...titlebars[0], isActive: false }], { height: 28, offset: 6 })).toBe(0);
+    });
+
+    it('emits titlebar actions', () => {
+      (engine as any).objectTitlebarAction = { emit: jest.fn() };
+      const detail = { itemId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} } as any;
+
+      engine.emitObjectTitlebarAction(detail);
+
+      expect((engine as any).objectTitlebarAction.emit).toHaveBeenCalledWith(detail);
+    });
+  });
+
   describe('selection delegation', () => {
     it('triggerSelectionChange emits the current selection and synchronizes transition tracking', async () => {
       const selectedObjects = [{ id: 'selected-object' }];
@@ -1035,37 +1143,45 @@ describe('KritzelEngine', () => {
   });
 
   describe('selection handle capabilities', () => {
-    it('allows both handles for a single object when both capabilities are enabled', () => {
-      const object = { isResizable: true, isRotatable: true } as unknown as KritzelBaseObject<any>;
+    it('allows both handles when the object config manager allows both', () => {
+      const object = {} as KritzelBaseObject<any>;
 
       const result = (engine as any).getSelectionHandleCapabilities(object);
 
       expect(result).toEqual({ canRenderResizeHandles: true, canRenderRotationHandle: true });
+      expect(core.objectConfigManager.isResizable).toHaveBeenCalledWith(object);
+      expect(core.objectConfigManager.isRotatable).toHaveBeenCalledWith(object);
     });
 
-    it('hides individual handles for a single object when capability is disabled', () => {
-      const object = { isResizable: false, isRotatable: true } as unknown as KritzelBaseObject<any>;
+    it('hides the handles the object config manager forbids', () => {
+      core.objectConfigManager.isResizable.mockReturnValue(false);
 
-      const result = (engine as any).getSelectionHandleCapabilities(object);
+      const result = (engine as any).getSelectionHandleCapabilities({} as KritzelBaseObject<any>);
 
       expect(result).toEqual({ canRenderResizeHandles: false, canRenderRotationHandle: true });
     });
+  });
 
-    it('uses restrictive policy for selection groups and hides a handle when any child disables it', () => {
-      const selectionGroup = {
-        objects: [
-          { isResizable: true, isRotatable: true },
-          { isResizable: false, isRotatable: true },
-        ],
-      } as unknown as KritzelBaseObject<any>;
+  describe('titlebar title input', () => {
+    it('keeps keyboard input in the rename input away from canvas shortcuts', () => {
+      const engineCore = (engine as any).core;
+      engineCore.objectTitlebarManager.isTitleInputEvent.mockReturnValue(true);
+      const event = { key: 'Delete', composedPath: () => [engine.host] } as unknown as KeyboardEvent;
 
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === selectionGroup && className === 'KritzelSelectionGroup';
-      });
+      expect((engine as any).shouldHandleGlobalShortcutEvent(event)).toBe(false);
+    });
+  });
 
-      const result = (engine as any).getSelectionHandleCapabilities(selectionGroup);
+  describe('objectConfig', () => {
+    it('resets warnings and rerenders when the config changes', () => {
+      const engineCore = (engine as any).core;
+      engineCore.rerender = jest.fn();
 
-      expect(result).toEqual({ canRenderResizeHandles: false, canRenderRotationHandle: true });
+      engine.onObjectConfigChange();
+
+      expect(engineCore.objectConfigManager.resetWarnings).toHaveBeenCalled();
+      expect(engineCore.objectTitlebarManager.resetWarnings).toHaveBeenCalled();
+      expect(engineCore.rerender).toHaveBeenCalled();
     });
   });
 
@@ -1170,14 +1286,22 @@ describe('KritzelEngine', () => {
       expect(core.alignObjects).toHaveBeenCalledWith(KritzelAlignment.CenterHorizontal);
     });
 
-    it('group delegates to core.group', async () => {
-      await engine.group();
-      expect(core.group).toHaveBeenCalledTimes(1);
+    it('group passes explicit objects to core.group and returns the created group', async () => {
+      const objects = [{ id: 'a' }, { id: 'b' }] as any[];
+      const created = { id: 'group' };
+      core.group.mockReturnValue(created);
+
+      await expect(engine.group(objects)).resolves.toBe(created);
+      expect(core.group).toHaveBeenCalledWith(objects);
     });
 
-    it('ungroup delegates to core.ungroup', async () => {
-      await engine.ungroup();
-      expect(core.ungroup).toHaveBeenCalledTimes(1);
+    it('ungroup passes explicit groups to core.ungroup and returns the extracted children', async () => {
+      const groups = [{ id: 'g1' }] as any[];
+      const children = [{ id: 'a' }, { id: 'b' }];
+      core.ungroup.mockReturnValue(children);
+
+      await expect(engine.ungroup(groups)).resolves.toBe(children);
+      expect(core.ungroup).toHaveBeenCalledWith(groups);
     });
   });
 
@@ -1745,6 +1869,8 @@ describe('KritzelEngine', () => {
       await engine.openContextMenu({ x: 120, y: 240 });
 
       expect(open).toHaveBeenCalledWith({ x: 120, y: 240 });
+      // Only one menu is open at a time: the context menu closes an open titlebar menu.
+      expect(core.objectTitlebarManager.closeMenu).toHaveBeenCalled();
       expect((engine as any).contextMenuStateChange.emit).toHaveBeenCalledWith(
         expect.objectContaining({
           isVisible: true,

@@ -58,7 +58,8 @@ const KNOWN_CATEGORIES = [
   'watermark',
   'zoom-panel',
   'chat-box',
-  'sync-indicator'
+  'sync-indicator',
+  'titlebar'
 ];
 
 /**

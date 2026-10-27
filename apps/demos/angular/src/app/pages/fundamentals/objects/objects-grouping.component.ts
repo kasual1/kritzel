@@ -7,6 +7,7 @@ import {
 import {
   KritzelEditor,
   KritzelBaseObject,
+  KritzelGroup,
   KritzelWorkspace,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
@@ -120,12 +121,15 @@ export class ObjectsGroupingComponent {
   }
 
   async groupSelected() {
-    await this.editor.group();
+    const selected = await this.editor.getSelectedObjects();
+    await this.editor.group(selected);
     await this.refreshObjects();
   }
 
   async ungroupSelected() {
-    await this.editor.ungroup();
+    const selected = await this.editor.getSelectedObjects();
+    const groups = selected.filter((object): object is KritzelGroup => object.__class__ === 'KritzelGroup');
+    await this.editor.ungroup(groups);
     await this.refreshObjects();
   }
 

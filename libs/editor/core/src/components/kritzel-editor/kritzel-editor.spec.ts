@@ -120,6 +120,36 @@ describe('KritzelEditor', () => {
     });
   });
 
+  describe('Object Titlebar', () => {
+    it('re-emits titlebar actions once, stopping the engine event', () => {
+      const emit = jest.fn();
+      (component as any).objectTitlebarAction = { emit };
+      const detail = { elementId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleObjectTitlebarAction(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith(detail);
+    });
+
+    it('tracks the open titlebar menu', () => {
+      const open = { isVisible: true, objectId: 'a', elementId: 'more', section: 'right', anchor: {} as HTMLElement, items: [{ id: 'copy', label: 'Copy' }] };
+      const event = (detail: any) => ({ detail, stopPropagation: jest.fn() }) as any;
+
+      const openEvent = event(open);
+      component.handleObjectTitlebarMenuStateChange(openEvent);
+
+      expect(openEvent.stopPropagation).toHaveBeenCalled();
+      expect(component.objectTitlebarMenuState).toBe(open);
+
+      component.handleObjectTitlebarMenuStateChange(event({ isVisible: false, items: [] }));
+
+      expect(component.objectTitlebarMenuState).toBeUndefined();
+    });
+  });
+
   describe('Custom Icons', () => {
     afterEach(() => {
       jest.restoreAllMocks();

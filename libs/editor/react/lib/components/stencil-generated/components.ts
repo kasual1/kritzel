@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelIsPublicChangeEvent, type IKritzelMenuItem, type IKritzelMenuItemSelectEvent, type IKritzelMenuItemToggleChildMenuEvent, type KritzelAgenticCursorDetachedEvent, type KritzelBaseObject, type KritzelChatBoxCustomEvent, type KritzelChatBoxMode, type KritzelEditorCustomEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelShareDialogCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelStrokeSizeCustomEvent, type KritzelUndoState, type KritzelViewportState, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ShapeFillType, type ThemeName } from "@kritzel/editor";
+import { type ActiveWorkspaceChangeEvent, type EditorIsReadyEvent, type IKritzelIsPublicChangeEvent, type IKritzelMenuItem, type IKritzelMenuItemSelectEvent, type IKritzelMenuItemToggleChildMenuEvent, type KritzelAgenticCursorDetachedEvent, type KritzelBaseObject, type KritzelChatBoxCustomEvent, type KritzelChatBoxMode, type KritzelEditorCustomEvent, type KritzelObjectTitlebarActionEvent, type KritzelSettingsConfig, type KritzelSettingsCustomEvent, type KritzelShapeFillCustomEvent, type KritzelShareDialogCustomEvent, type KritzelSplitButtonCustomEvent, type KritzelStrokeSizeCustomEvent, type KritzelUndoState, type KritzelViewportState, type LocaleCode, type LoginEvent, type ObjectsAddedEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent, type ShapeFillType, type ThemeName } from "@kritzel/editor";
 import type { Components } from "@kritzel/editor/dist/components";
 import { KritzelChatBox as KritzelChatBoxElement, defineCustomElement as defineKritzelChatBox } from "@kritzel/editor/dist/components/kritzel-chat-box.js";
 import { KritzelEditor as KritzelEditorElement, defineCustomElement as defineKritzelEditor } from "@kritzel/editor/dist/components/kritzel-editor.js";
@@ -58,7 +58,8 @@ export type KritzelEditorEvents = {
     onAwarenessChange: EventName<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>,
     onChatSubmit: EventName<KritzelEditorCustomEvent<string>>,
     onChatStop: EventName<KritzelEditorCustomEvent<void>>,
-    onAgenticCursorDetached: EventName<KritzelEditorCustomEvent<KritzelAgenticCursorDetachedEvent>>
+    onAgenticCursorDetached: EventName<KritzelEditorCustomEvent<KritzelAgenticCursorDetachedEvent>>,
+    onObjectTitlebarAction: EventName<KritzelEditorCustomEvent<KritzelObjectTitlebarActionEvent>>
 };
 
 export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor> = /*@__PURE__*/ createComponent<KritzelEditorElement, KritzelEditorEvents, Components.KritzelEditor>({
@@ -84,7 +85,8 @@ export const KritzelEditor: StencilReactComponent<KritzelEditorElement, KritzelE
         onAwarenessChange: 'awarenessChange',
         onChatSubmit: 'chatSubmit',
         onChatStop: 'chatStop',
-        onAgenticCursorDetached: 'agenticCursorDetached'
+        onAgenticCursorDetached: 'agenticCursorDetached',
+        onObjectTitlebarAction: 'objectTitlebarAction'
     } as KritzelEditorEvents,
     defineCustomElement: defineKritzelEditor
 });

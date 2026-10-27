@@ -58,7 +58,7 @@ export declare interface KritzelChatBox extends Components.KritzelChatBox {
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   methods: ['getObjectById', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'setActiveWorkspace', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'loadSharedWorkspace', 'reinitSync', 'registerTool', 'setActiveTool', 'disable', 'enable', 'copy', 'cut', 'paste', 'delete', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectSupportedExportFormats', 'canExportSelectedObjectAs', 'exportSelectedObject', 'exportAsJson', 'importFromJson', 'downloadAsJson', 'importFromFile', 'loadObjectsFromJson', 'getObjectsTotalCount', 'getAllObjects', 'findObjects', 'getObjectsInViewport', 'addAgenticCursor', 'updateAgenticCursor', 'moveAgenticCursor', 'detachAgenticCursor', 'removeAgenticCursor', 'clearAgenticCursors', 'getAgenticCursor', 'getAgenticCursors', 'hideContextMenu', 'openContextMenu', 'openWorkspaceManagerMenu', 'closeWorkspaceManagerMenu', 'openMoreMenu', 'closeMoreMenu', 'openUserDialog', 'closeUserDialog', 'openExportDialog', 'closeExportDialog', 'openImportDialog', 'closeImportDialog', 'openSettingsDialog', 'closeSettingsDialog', 'openShareDialog', 'closeShareDialog', 'triggerSelectionChange', 'beginSceneBootstrap', 'endSceneBootstrap', 'getDisplayableShortcuts', 'openLoginDialog', 'closeLoginDialog', 'setLoginLoading', 'setLocale', 'getLocale', 'getAvailableLocales', 'registerLocales', 'registerFonts', 't', 'triggerNotification']
 })
 @Component({
@@ -66,8 +66,8 @@ export declare interface KritzelChatBox extends Components.KritzelChatBox {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectContextMenuItems', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit', 'chatStop', 'agenticCursorDetached'],
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit', 'chatStop', 'agenticCursorDetached', 'objectTitlebarAction'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
@@ -89,6 +89,7 @@ export class KritzelEditor {
   @Output() chatSubmit = new EventEmitter<KritzelEditorCustomEvent<string>>();
   @Output() chatStop = new EventEmitter<KritzelEditorCustomEvent<void>>();
   @Output() agenticCursorDetached = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelAgenticCursorDetachedEvent>>();
+  @Output() objectTitlebarAction = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectTitlebarActionEvent>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -110,6 +111,7 @@ import type { KritzelViewportState as IKritzelEditorKritzelViewportState } from 
 import type { LoginEvent as IKritzelEditorLoginEvent } from '@kritzel/editor/dist/components';
 import type { IKritzelIsPublicChangeEvent as IKritzelEditorIKritzelIsPublicChangeEvent } from '@kritzel/editor/dist/components';
 import type { KritzelAgenticCursorDetachedEvent as IKritzelEditorKritzelAgenticCursorDetachedEvent } from '@kritzel/editor/dist/components';
+import type { KritzelObjectTitlebarActionEvent as IKritzelEditorKritzelObjectTitlebarActionEvent } from '@kritzel/editor/dist/components';
 
 export declare interface KritzelEditor extends Components.KritzelEditor {
 
@@ -154,6 +156,10 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
    * Emitted when an agentic cursor is detached from an object, either manually or because the object was removed.
    */
   agenticCursorDetached: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelAgenticCursorDetachedEvent>>;
+  /**
+   * Emitted when a button or a menu item in an object titlebar is clicked.
+   */
+  objectTitlebarAction: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectTitlebarActionEvent>>;
 }
 
 

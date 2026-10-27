@@ -127,6 +127,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       if (activeText !== null && object instanceof KritzelText === false) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
+        this.continueTitlebarPress(event);
         return;
       }
 
@@ -177,6 +178,7 @@ export class KritzelTextTool extends KritzelBaseTool {
       if (activeText !== null && object instanceof KritzelText === false) {
         this._core.resetActiveText();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
+        this.continueTitlebarPress(event);
         return;
       }
 

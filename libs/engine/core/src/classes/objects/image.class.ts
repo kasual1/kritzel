@@ -9,6 +9,8 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
  * Configuration options for creating a KritzelImage instance.
  */
 export interface KritzelImageConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   assetId?: string;
   mimeType?: string;
   src?: string;
@@ -133,6 +135,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
    */
   constructor(config?: KritzelImageConfig) {
     super();
+    this.name = config?.name;
     this.assetId = config?.assetId || '';
     this.mimeType = config?.mimeType || '';
     this.src = config?.src || '';

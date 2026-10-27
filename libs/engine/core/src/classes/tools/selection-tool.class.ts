@@ -9,6 +9,7 @@ import { KritzelRotationHandler } from '../handlers/rotation.handler';
 import { KritzelSelectionHandler } from '../handlers/selection.handler';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
+import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelBaseTool } from './base-tool.class';
 import { KritzelHoverHandler } from '../handlers/hover.handler';
 import { KritzelCore } from '../core/core.class';
@@ -28,6 +29,11 @@ import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
  * property editing, and various transformation handles. Delegates specific interactions
  * to specialized handlers (selection, move, resize, rotation, hover, line handle).
  */
+/** Pointer movement in screen pixels up to which a press on a title still counts as a click. */
+const TITLE_EDIT_CLICK_TOLERANCE = 5;
+
+type SelectionToolTitleEditCandidate = { ownerId: string; elementId: string; clientX: number; clientY: number };
+
 export class KritzelSelectionTool extends KritzelBaseTool {
   override toolType = 'selection' as const;
 
@@ -58,6 +64,13 @@ export class KritzelSelectionTool extends KritzelBaseTool {
    * arrives. Cleared when the touch interaction ends.
    */
   private _savedSelectionGroupForPinch: KritzelSelectionGroup | null = null;
+
+  /** Pointer currently pressing an object titlebar, if any. */
+  private _titlebarPointerId: number | null = null;
+  /** Embedded object whose interactivity is deferred until the titlebar press ends. */
+  private _titlebarDeferredInteractiveObject: KritzelBaseObject<any> | null = null;
+  /** Editable title pressed while its object was already the only selected object. */
+  private _titlebarTitleEditCandidate: SelectionToolTitleEditCandidate | null = null;
 
   /**
    * Checks if there are any objects currently selected.
@@ -362,6 +375,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       event.preventDefault();
     }
 
+    // A new press always starts fresh; a titlebar press that never saw its pointerup must not linger.
+    const hadTitlebarGesture = this._titlebarPointerId !== null;
+    this.resetTitlebarGesture();
+
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         this._core.store.state.isResizeHandleSelected = this.isHandleSelected(event);
@@ -369,6 +386,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         this._core.store.state.isLineHandleSelected = this.isLineHandleSelected(event);
         this._core.store.state.resizeHandleType = this.getHandleType(event);
         this._core.store.state.lineHandleType = this.getLineHandleType(event);
+
+        if (this.handleTitlebarPointerDown(event)) {
+          return;
+        }
 
         const selectedObject = this.getSelectedObject(event);
         const selectionGroup = this._core.store.selectionGroup;
@@ -423,7 +444,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         // A second finger has arrived to start a pinch-zoom gesture. If we
         // cleared a selection group on the first finger-down, restore it now
         // so the user's selection is preserved while zooming.
-        if (this._savedSelectionGroupForPinch && !this._core.store.selectionGroup) {
+        if (this._savedSelectionGroupForPinch && (!this._core.store.selectionGroup || hadTitlebarGesture)) {
+          if (hadTitlebarGesture) {
+            this.moveHandler.cancelPendingDrag();
+          }
           this._core.addSelectionGroup(this._savedSelectionGroupForPinch);
           this._savedSelectionGroupForPinch = null;
           this._core.rerender();
@@ -442,6 +466,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
         this._core.store.state.isLineHandleSelected = this.isLineHandleSelected(event);
         this._core.store.state.resizeHandleType = this.getHandleType(event);
         this._core.store.state.lineHandleType = this.getLineHandleType(event);
+
+        if (this.handleTitlebarPointerDown(event)) {
+          return;
+        }
 
         const selectedObject = this.getSelectedObject(event);
         const selectionGroup = this._core.store.selectionGroup;
@@ -535,12 +563,14 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this.resizeHandler.handlePointerUp(event);
       this.rotationHandler.handlePointerUp(event);
       this.selectionHandler.handlePointerUp(event);
+      this.finishTitlebarGesture(event);
 
       this._core.rerender();
     }
 
     if (event.pointerType === 'touch' || event.pointerType === 'pen') {
       if (this._core.store.state.isScaling === true) {
+        this.resetTitlebarGesture();
         return;
       }
 
@@ -553,8 +583,135 @@ export class KritzelSelectionTool extends KritzelBaseTool {
       this.resizeHandler.handlePointerUp(event);
       this.moveHandler.handlePointerUp(event);
       this.selectionHandler.handlePointerUp(event);
+      this.finishTitlebarGesture(event);
 
       this._core.rerender();
+    }
+  }
+
+  override onDeactivate(): void {
+    super.onDeactivate();
+    this.resetTitlebarGesture();
+  }
+
+  /**
+   * Handles a press on an object's titlebar: selects its owner, or toggles it with Shift/Ctrl,
+   * and starts dragging it in the same gesture through the regular move handler, so undo,
+   * sync, snapping and anchors behave exactly as when dragging the object itself.
+   * Must run after the handle flags are set and before the regular object hit test.
+   * @param event - The pointer down event
+   * @returns `true` when the press was on a titlebar and has been handled
+   */
+  private handleTitlebarPointerDown(event: PointerEvent): boolean {
+    const state = this._core.store.state;
+    // Selection handles drawn over a titlebar take precedence.
+    if (state.isResizeHandleSelected || state.isRotationHandleSelected || state.isLineHandleSelected) {
+      return false;
+    }
+
+    const owner = this._core.objectTitlebarManager.getOwnerFromEvent(event);
+    if (!owner) {
+      return false;
+    }
+
+    this._titlebarPointerId = event.pointerId;
+    this.selectionHandler.skipEditForPointerId = event.pointerId;
+    this._titlebarTitleEditCandidate = this.getTitleEditCandidate(event, owner);
+
+    if (event.shiftKey || event.ctrlKey) {
+      this.selectionHandler.toggleObjectInSelection(owner);
+      this._core.rerender();
+      return true;
+    }
+
+    const selectionGroup = this._core.store.selectionGroup;
+    // Pressing the titlebar of an already selected object keeps a multi-selection, like pressing the object.
+    if (!selectionGroup?.objectIds.includes(owner.id)) {
+      if (event.pointerType !== 'mouse' && selectionGroup) {
+        // Restored if a second finger turns this press into a pinch-zoom.
+        this._savedSelectionGroupForPinch = selectionGroup;
+      }
+      this._core.selectObjects([owner]);
+      this.deferEmbeddedInteractivity(owner);
+    }
+
+    if (this._core.objectTitlebarManager.config?.draggable !== false) {
+      this.moveHandler.handlePointerDown(event);
+    }
+
+    this._core.rerender();
+    return true;
+  }
+
+  /**
+   * Clicking the editable title of an object that is already the only selected one renames it,
+   * like clicking a selected text object again edits it.
+   */
+  private getTitleEditCandidate(event: PointerEvent, owner: KritzelBaseObject<any>): SelectionToolTitleEditCandidate | null {
+    if (event.shiftKey || event.ctrlKey) {
+      return null;
+    }
+    const selectedIds = this._core.store.selectionGroup?.objectIds ?? [];
+    if (selectedIds.length !== 1 || selectedIds[0] !== owner.id) {
+      return null;
+    }
+    const title = this._core.objectTitlebarManager.getEditableTitleFromEvent(event);
+    if (!title || title.ownerId !== owner.id) {
+      return null;
+    }
+    return { ...title, clientX: event.clientX, clientY: event.clientY };
+  }
+
+  /**
+   * Selecting an embedded object makes its content interactive. During a titlebar press that
+   * would let an iframe capture the pointer mid-drag, so interactivity is applied on release.
+   */
+  private deferEmbeddedInteractivity(object: KritzelBaseObject<any>): void {
+    if (ObjectHelper.isKritzelEmbeddedObject(object) && object.isInteractive) {
+      object.setIsInteractive(false);
+      this._titlebarDeferredInteractiveObject = object;
+    }
+  }
+
+  private finishTitlebarGesture(event: PointerEvent): void {
+    if (this._titlebarPointerId === null || this._titlebarPointerId !== event.pointerId) {
+      return;
+    }
+
+    const deferred = this._titlebarDeferredInteractiveObject;
+    const titleEdit = this._titlebarTitleEditCandidate;
+    this._titlebarPointerId = null;
+    this._titlebarDeferredInteractiveObject = null;
+    this._titlebarTitleEditCandidate = null;
+
+    if (deferred && ObjectHelper.isKritzelEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
+      deferred.setIsInteractive(true);
+    }
+
+    // A click without a drag on the title of the selected object starts renaming it.
+    const distance = titleEdit ? Math.hypot(event.clientX - titleEdit.clientX, event.clientY - titleEdit.clientY) : Infinity;
+    if (titleEdit && distance <= TITLE_EDIT_CLICK_TOLERANCE && this._core.store.selectionGroup?.objectIds.includes(titleEdit.ownerId)) {
+      this._core.objectTitlebarManager.startTitleEditing(titleEdit.ownerId, titleEdit.elementId);
+    }
+  }
+
+  /**
+   * Abandons a titlebar press that will not see its pointerup, e.g. when a long-press opens the
+   * context menu. Deferred interactivity is still applied if the object stayed selected.
+   */
+  cancelTitlebarGesture(): void {
+    this.resetTitlebarGesture();
+  }
+
+  private resetTitlebarGesture(): void {
+    const deferred = this._titlebarDeferredInteractiveObject;
+    this._titlebarPointerId = null;
+    this._titlebarDeferredInteractiveObject = null;
+    this._titlebarTitleEditCandidate = null;
+    this.selectionHandler.skipEditForPointerId = null;
+
+    if (deferred && ObjectHelper.isKritzelEmbeddedObject(deferred) && this._core.store.selectionGroup?.objectIds.includes(deferred.id)) {
+      deferred.setIsInteractive(true);
     }
   }
 

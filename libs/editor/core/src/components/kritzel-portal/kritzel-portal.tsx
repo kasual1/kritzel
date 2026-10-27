@@ -14,6 +14,10 @@ export class KritzelPortal {
   @Watch('anchor')
   anchorChanged(newValue: HTMLElement) {
     if (newValue) {
+      // Moving an open portal to another anchor reopens it, so no stale wrapper stays in the body.
+      if (document.getElementById(this.id)) {
+        this.closePortal();
+      }
       this.openPortal();
       // Use requestAnimationFrame to wait for the browser to paint the portal content
       // so that getBoundingClientRect returns accurate dimensions

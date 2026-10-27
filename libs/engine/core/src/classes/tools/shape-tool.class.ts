@@ -97,6 +97,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
       if (activeShape !== null && object instanceof KritzelShape === false) {
         this._core.resetActiveShape();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
+        this.continueTitlebarPress(event);
         return;
       }
 
@@ -130,6 +131,7 @@ export class KritzelShapeTool extends KritzelBaseTool {
       if (activeShape !== null && object instanceof KritzelShape === false) {
         this._core.resetActiveShape();
         this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
+        this.continueTitlebarPress(event);
         return;
       }
 

@@ -8,6 +8,8 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
  * Configuration options for creating a KritzelGroup instance.
  */
 export interface KritzelGroupConfig {
+  /** User-facing name, shown as the title of the object's titlebar. */
+  name?: string;
   rotation?: number;
 }
 
@@ -28,6 +30,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
 
     constructor(config?: KritzelGroupConfig) {
         super();
+        this.name = config?.name;
         this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     }
 
@@ -641,6 +644,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         copiedGroup.translateY = this.translateY;
         copiedGroup.width = this.width;
         copiedGroup.height = this.height;
+        copiedGroup.name = this.name;
 
         return copiedGroup;
     }

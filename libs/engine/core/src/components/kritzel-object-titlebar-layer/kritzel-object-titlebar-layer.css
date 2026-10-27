@@ -1,0 +1,243 @@
+/* Object titlebars: a world-space layer inside the origin, above objects and below selection UI. */
+.object-titlebar-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: 9997;
+  pointer-events: none;
+}
+
+.object-titlebar-anchor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+
+.object-titlebar {
+  position: absolute;
+  left: 0;
+  bottom: var(--kritzel-titlebar-offset, 6px);
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--kritzel-titlebar-height, 28px);
+  display: flex;
+  align-items: center;
+  gap: var(--kritzel-titlebar-gap, 4px);
+  padding: 0 var(--kritzel-titlebar-padding-x, 6px);
+  overflow: hidden;
+  direction: ltr;
+  white-space: nowrap;
+  user-select: none;
+  font-family: var(--kritzel-titlebar-font-family, var(--kritzel-global-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif));
+  font-size: var(--kritzel-titlebar-font-size, 12px);
+  font-weight: var(--kritzel-titlebar-font-weight, 400);
+  line-height: 1.2;
+  color: var(--kritzel-titlebar-text-color, #5f5f5f);
+  background-color: var(--kritzel-titlebar-background-color, #f2f2f2);
+  border: var(--kritzel-titlebar-border, none);
+  border-radius: var(--kritzel-titlebar-border-radius, 8px);
+  box-shadow: var(--kritzel-titlebar-box-shadow, none);
+  transition: var(--kritzel-titlebar-transition, background-color 120ms ease, color 120ms ease);
+}
+
+.object-titlebar:hover {
+  background-color: var(--kritzel-titlebar-hover-background-color, #ededed);
+}
+
+.object-titlebar.is-active {
+  color: var(--kritzel-titlebar-active-text-color, #007aff);
+  background-color: var(--kritzel-titlebar-active-background-color, #e0efff);
+  border: var(--kritzel-titlebar-active-border, none);
+  box-shadow: var(--kritzel-titlebar-active-box-shadow, none);
+}
+
+/* With center content, a three-column grid keeps the center truly centered. */
+.object-titlebar.has-center {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.object-titlebar-section {
+  display: flex;
+  align-items: center;
+  gap: var(--kritzel-titlebar-gap, 4px);
+  min-width: 0;
+}
+
+.object-titlebar-left {
+  flex: 1 1 auto;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.object-titlebar-center {
+  justify-content: center;
+}
+
+.object-titlebar-right {
+  flex: 0 0 auto;
+  justify-content: flex-end;
+}
+
+.object-titlebar.has-center .object-titlebar-right {
+  justify-self: end;
+}
+
+.object-titlebar-title,
+.object-titlebar-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.object-titlebar-title,
+.object-titlebar-text.tone-strong {
+  font-weight: var(--kritzel-titlebar-title-font-weight, 600);
+}
+
+/* Clicking the title of an active titlebar again renames the object; the title itself is not a text field. */
+.object-titlebar.is-active .object-titlebar-title.is-editable {
+  cursor: var(--kritzel-global-default-cursor, default);
+}
+
+/* Rename input: looks like the title it replaces, so editing does not shift the bar's layout. */
+.object-titlebar-title-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: var(--kritzel-titlebar-input-padding, 3px 6px);
+  border: none;
+  border-radius: 4px;
+  background-color: var(--kritzel-titlebar-input-background-color, rgba(255, 255, 255, 0.9));
+  color: inherit;
+  font: inherit;
+  font-weight: var(--kritzel-titlebar-title-font-weight, 600);
+  cursor: text;
+  outline: none;
+}
+
+.object-titlebar-title-input::placeholder {
+  color: inherit;
+  opacity: 0.5;
+}
+
+/* Selected text in the titlebar, e.g. the name selected when renaming starts. */
+.object-titlebar ::selection,
+.object-titlebar-title-input::selection {
+  background-color: var(--kritzel-titlebar-selection-background-color, #007aff);
+  color: var(--kritzel-titlebar-selection-color, #ffffff);
+}
+
+.object-titlebar-text.tone-muted {
+  color: var(--kritzel-titlebar-muted-text-color, #9a9a9a);
+}
+
+.object-titlebar.is-active .object-titlebar-text.tone-muted {
+  color: var(--kritzel-titlebar-active-muted-text-color, rgba(0, 122, 255, 0.6));
+}
+
+/* kritzel-icon sizes itself inline, so the theme size needs !important to apply. */
+.object-titlebar kritzel-icon {
+  flex: none;
+  width: var(--kritzel-titlebar-icon-size, 16px) !important;
+  height: var(--kritzel-titlebar-icon-size, 16px) !important;
+  color: var(--kritzel-titlebar-icon-color, #6b6b6b);
+}
+
+.object-titlebar.is-active kritzel-icon {
+  color: var(--kritzel-titlebar-active-icon-color, #007aff);
+}
+
+.object-titlebar-button {
+  pointer-events: auto;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-sizing: border-box;
+  min-width: var(--kritzel-titlebar-button-size, 22px);
+  height: var(--kritzel-titlebar-button-size, 22px);
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: var(--kritzel-titlebar-button-border-radius, 6px);
+  background-color: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  transition: var(--kritzel-titlebar-transition, background-color 120ms ease, color 120ms ease);
+}
+
+.object-titlebar-button.has-label {
+  padding: 0 8px;
+}
+
+.object-titlebar-button:hover {
+  background-color: var(--kritzel-titlebar-button-hover-background-color, rgba(0, 0, 0, 0.06));
+}
+
+.object-titlebar-button.is-pressed {
+  background-color: var(--kritzel-titlebar-button-pressed-background-color, rgba(0, 0, 0, 0.1));
+}
+
+.object-titlebar-button.variant-filled {
+  color: var(--kritzel-titlebar-button-filled-color, #ffffff);
+  background-color: var(--kritzel-titlebar-button-filled-background-color, #8e8e93);
+}
+
+.object-titlebar.is-active .object-titlebar-button.variant-filled {
+  background-color: var(--kritzel-titlebar-active-button-filled-background-color, #007aff);
+}
+
+.object-titlebar-button.variant-filled kritzel-icon {
+  color: inherit;
+}
+
+.object-titlebar-button.variant-outlined {
+  border: 1px solid var(--kritzel-titlebar-button-outline-color, currentColor);
+}
+
+.object-titlebar-button[aria-disabled='true'] {
+  opacity: 0.4;
+  cursor: var(--kritzel-global-default-cursor, default);
+}
+
+.object-titlebar-button:focus-visible {
+  outline: var(--kritzel-titlebar-focus-ring, 2px solid #007aff);
+  outline-offset: 1px;
+}
+
+.object-titlebar-spacer {
+  flex: 1 1 auto;
+}
+
+.object-titlebar-separator {
+  flex: none;
+  align-self: stretch;
+  width: 1px;
+  margin: 6px 2px;
+  background-color: currentColor;
+  opacity: 0.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .object-titlebar,
+  .object-titlebar-button {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .object-titlebar {
+    border: 1px solid CanvasText;
+  }
+
+  .object-titlebar-button {
+    border: 1px solid ButtonText;
+  }
+}

@@ -101,6 +101,12 @@ describe('KritzelShapeTool', () => {
     (KritzelEventHelper.isLeftClick as jest.Mock).mockReturnValue(true);
 
     mockCore = {
+      objectTitlebarManager: {
+        config: undefined,
+        getOwnerFromEvent: jest.fn().mockReturnValue(null),
+        isControlEvent: jest.fn().mockReturnValue(false),
+        resetWarnings: jest.fn(),
+      },
       store: {
         get state() { return mockState; },
         get objects() { return mockState.objects; },
@@ -839,6 +845,41 @@ describe('KritzelShapeTool', () => {
       expect(mockObjectsMap.remove).toHaveBeenCalled();
       expect(mockCore.selectObjects).not.toHaveBeenCalled();
       expect(mockCore.rerender).toHaveBeenCalled();
+    });
+  });
+  // ============================================
+  // Object titlebar
+  // ============================================
+
+  describe('object titlebar', () => {
+    const startEditing = () => {
+      const activeShape = Object.create(KritzelShape.prototype);
+      activeShape.save = jest.fn();
+      mockCore.store.activeShape = activeShape;
+      // setState is mocked, so install the selection tool the way the real store would
+      const selectionTool = { handlePointerDown: jest.fn() };
+      mockState.activeTool = selectionTool;
+      return selectionTool;
+    };
+
+    it('continues a titlebar press as select-and-drag after ending the edit', () => {
+      const selectionTool = startEditing();
+      mockCore.objectTitlebarManager.getOwnerFromEvent.mockReturnValue({ id: 'owner-1' });
+      const event = createMouseEvent();
+
+      tool.handlePointerDown(event);
+
+      expect(mockCore.resetActiveShape).toHaveBeenCalled();
+      expect(selectionTool.handlePointerDown).toHaveBeenCalledWith(event);
+    });
+
+    it('only ends the edit for presses outside titlebars', () => {
+      const selectionTool = startEditing();
+
+      tool.handlePointerDown(createMouseEvent());
+
+      expect(mockCore.resetActiveShape).toHaveBeenCalled();
+      expect(selectionTool.handlePointerDown).not.toHaveBeenCalled();
     });
   });
 });

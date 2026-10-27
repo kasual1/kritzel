@@ -24,6 +24,7 @@ export interface KritzelObject<T = Element> {
   markedForRemoval: boolean;
   zIndex: number;
   userId?: string;
+  name?: string;
 
   isVisible: boolean;
   isSelected: boolean;

@@ -15,7 +15,9 @@ The `<kritzel-engine>` is the low-level headless canvas primitive. It handles re
 
 ### Props
 
-No object-specific props.
+| Property | Type | Description |
+|----------|------|-------------|
+| objectConfig | KritzelObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Object Configuration](../customization/object-config.md). |
 
 ### Events
 
@@ -576,18 +578,18 @@ No grouping-specific events.
 
 #### group
 
-Creates a group (`KritzelGroup`) from the currently selected objects (at least two). They become one layer at the position of the topmost selected object.
+Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. They become one layer at the position of the topmost object, in a single undoable step. Objects are resolved by id, so stale references work; objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. Selected objects that end up in the group are replaced by the group in the selection. Resolves to the created group, or `null` (with a console warning) when fewer than two objects could be grouped. To group the current selection, pass `await getSelectedObjects()`.
 
 ```ts
-group(): Promise<void>
+group(objects: KritzelBaseObject[]): Promise<KritzelGroup | null>
 ```
 
 #### ungroup
 
-Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step. Groups are resolved by id, so stale references work; entries that are not a `KritzelGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children. Resolves to the extracted children. To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
 
 ```ts
-ungroup(): Promise<void>
+ungroup(groups: KritzelGroup[]): Promise<KritzelBaseObject[]>
 ```
 
 ---
@@ -961,3 +963,40 @@ Returns snapshots of all agentic cursors.
 ```ts
 getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 ```
+
+---
+
+## Object Titlebar
+
+### Props
+
+| Property | Type | Description |
+|----------|------|-------------|
+| objectTitlebar | KritzelObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Titlebars](../customization/titlebars.md). |
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
+| objectTitlebarMenuStateChange | KritzelObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. Contains the resolved menu items and the menu button as `anchor`, so that a host can render the menu. `<kritzel-editor>` renders titlebar menus itself and does not re-emit this event. |
+
+### Methods
+
+#### closeObjectTitlebarMenu
+
+Closes the open titlebar menu, if any.
+
+```ts
+closeObjectTitlebarMenu(): Promise<void>
+```
+
+#### selectObjectTitlebarMenuItem
+
+Selects a menu item of the open titlebar menu. Closes the menu, calls the menu item's `action`, and emits `objectTitlebarAction` with the `id` of the menu as `elementId` and `menuItemId`. Does nothing if no menu is open or the menu item is hidden or disabled.
+
+```ts
+selectObjectTitlebarMenuItem(menuItemId: string): Promise<void>
+```
+
+Use [updateObject](#updateobject) to change the `name` of an existing object.

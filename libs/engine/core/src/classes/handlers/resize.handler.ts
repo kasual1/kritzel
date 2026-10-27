@@ -80,7 +80,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
     if (event.pointerType === 'mouse') {
       if (KritzelEventHelper.isLeftClick(event)) {
         const selectionGroup = this._core.store.selectionGroup;
-        if (selectionGroup && this._core.store.state.isResizeHandleSelected) {
+        if (selectionGroup && this._core.store.state.isResizeHandleSelected && this._core.objectConfigManager.isResizable(selectionGroup)) {
           selectionGroup.beginTransform();
 
           const clientX = event.clientX - this._core.store.offsetX;
@@ -107,7 +107,7 @@ export class KritzelResizeHandler extends KritzelBaseHandler {
 
       if (activePointers.length === 1) {
         const selectionGroup = this._core.store.selectionGroup;
-        if (selectionGroup && this._core.store.state.isResizeHandleSelected) {
+        if (selectionGroup && this._core.store.state.isResizeHandleSelected && this._core.objectConfigManager.isResizable(selectionGroup)) {
           selectionGroup.beginTransform();
 
           const clientX = Math.round(firstTouch.clientX - this._core.store.offsetX);

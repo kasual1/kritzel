@@ -197,3 +197,19 @@ const customLocales: KritzelLocale[] = [customEnglish]
 |------|--------------|
 | editor.loading | Loading... |
 | watermark.poweredBy | Powered by Kritzel |
+
+### Object type labels
+
+Used as the default title of [object titlebars](../customization/titlebars.md) when an object has no `name`.
+
+| Key | Default text |
+|------|--------------|
+| objectType.shape | Shape |
+| objectType.text | Text |
+| objectType.image | Image |
+| objectType.path | Drawing |
+| objectType.line | Line |
+| objectType.group | Group |
+| objectType.iframe | Embed |
+| objectType.dynamic | Component |
+| objectType.object | Object |

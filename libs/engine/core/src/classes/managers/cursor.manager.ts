@@ -118,6 +118,13 @@ export class KritzelCursorManager {
       return;
     }
 
+    // Titlebar drag surfaces move their object; their controls keep the pointer cursor from CSS
+    const topmost = elementsAtPoint[0];
+    if (topmost.closest?.('[data-kritzel-titlebar-surface]') && !topmost.closest?.('[data-kritzel-titlebar-control]')) {
+      this._core.store.state.cursor = { icon: 'hand', iconActive: 'handGrab' };
+      return;
+    }
+
     // Reset cursor if not hovering any handle
     this._core.store.state.cursor = { icon: 'default', iconActive: 'default' };
   }

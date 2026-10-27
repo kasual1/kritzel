@@ -66,6 +66,9 @@ import { KritzelContextMenuState } from '../../interfaces/context-menu-state.int
 import { KritzelExportable, KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
 import { KritzelSvgExportHelper } from '../../helpers/svg-export.helper';
 import { KritzelToolDefinition } from '../../interfaces/tool.interface';
+import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
+import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
+import { KritzelResolvedTitlebar, KritzelTitlebarMetrics } from '../../classes/managers/object-titlebar.manager';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
 
@@ -76,6 +79,8 @@ interface WorkspaceJsonExportPayload extends Record<string, unknown> {
   exportMode?: WorkspaceExportMode;
   assets?: Record<string, string>;
 }
+
+const TITLEBAR_CONTROL_KEYS = new Set(['Enter', ' ', 'Spacebar', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
 
 @Component({
   tag: 'kritzel-engine',
@@ -206,6 +211,31 @@ export class KritzelEngine {
     if (this.contextMenuHandler) {
       this.contextMenuHandler.objectContextMenuItems = newValue ?? [];
     }
+  }
+
+  /**
+   * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar`
+   * is true. The same configuration applies to all objects. Leave unset to disable titlebars.
+   */
+  @Prop() objectTitlebar?: KritzelObjectTitlebarConfig;
+  @Watch('objectTitlebar')
+  onObjectTitlebarChange() {
+    // The titlebar manager reads this prop live, so only the render needs refreshing.
+    this.core.objectTitlebarManager.resetWarnings();
+    this.core.rerender();
+  }
+
+  /**
+   * Configures how objects behave, in one place for all objects: which objects get a titlebar,
+   * and which can be rotated or resized. Each option is a boolean or a function of the object.
+   */
+  @Prop() objectConfig?: KritzelObjectConfig;
+  @Watch('objectConfig')
+  onObjectConfigChange() {
+    // The object config manager reads this prop live, so only the render needs refreshing.
+    this.core.objectConfigManager.resetWarnings();
+    this.core.objectTitlebarManager.resetWarnings();
+    this.core.rerender();
   }
   /** Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine. */
   @Prop({ mutable: true }) scaleMax: number = ABSOLUTE_SCALE_MAX;
@@ -386,6 +416,15 @@ export class KritzelEngine {
   /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
   @Event() agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
 
+  /** Emitted when a button or a menu item in an object titlebar is clicked. */
+  @Event() objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
+
+  /**
+   * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render
+   * `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
+   */
+  @Event() objectTitlebarMenuStateChange!: EventEmitter<KritzelObjectTitlebarMenuState>;
+
   @State() forceUpdate: number = 0;
 
   /** Manually triggers the `objectsSelectionChange` event. */
@@ -473,6 +512,11 @@ export class KritzelEngine {
       return;
     }
 
+    // Titlebar controls handle their own clicks and must not start drags or selections.
+    if (this.core.objectTitlebarManager.isControlEvent(ev)) {
+      return;
+    }
+
     if (KritzelDevicesHelper.isTouchDevice()) {
       KritzelEventHelper.onLongPress(ev, (event: PointerEvent) => this.longpress.emit(event));
     }
@@ -550,6 +594,8 @@ export class KritzelEngine {
       return;
     }
 
+    const wasTracked = this.core.store.state.pointers.has(ev.pointerId);
+
     if (this.host.hasPointerCapture(ev.pointerId)) {
       this.host.releasePointerCapture(ev.pointerId);
     }
@@ -558,6 +604,12 @@ export class KritzelEngine {
     // Reset cursor to default when all pointers are released
     if (this.core.store.state.pointers.size === 0) {
       this.core.cursorManager.resetToDefault();
+    }
+
+    // Mirror pointerup: a pointer whose pointerdown was never processed (e.g. on a titlebar
+    // control) must not run tool logic.
+    if (!wasTracked) {
+      return;
     }
 
     this.viewport.handlePointerUp(ev);
@@ -737,6 +789,17 @@ export class KritzelEngine {
    */
   private shouldHandleGlobalShortcutEvent(ev: KeyboardEvent | ClipboardEvent): boolean {
     const path = ev.composedPath();
+
+    // Typing a new object name must not trigger canvas shortcuts such as Delete, Escape or undo.
+    if (this.core.objectTitlebarManager.isTitleInputEvent(ev)) {
+      return false;
+    }
+
+    // Keys that activate or move between titlebar buttons belong to the focused button.
+    // Other shortcuts (Delete, undo, clipboard) keep working while a button has focus.
+    if ('key' in ev && TITLEBAR_CONTROL_KEYS.has(ev.key) && this.core.objectTitlebarManager.isControlEvent(ev)) {
+      return false;
+    }
 
     // Check if event path includes our host - works reliably with Shadow DOM
     if (path.includes(this.host)) {
@@ -939,20 +1002,39 @@ export class KritzelEngine {
   }
 
   /**
-   * Creates a group (`KritzelGroup`) from the currently selected objects. Requires at least two selected objects.
-   * The grouped objects become one layer at the position of the topmost selected object.
+   * Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. The grouped objects
+   * become one layer at the position of the topmost object, as a single undoable step.
+   *
+   * Objects are resolved by id, so stale references work. Objects that are not in the active workspace are
+   * skipped with a console warning. Objects inside a common group are grouped within it; objects from different
+   * groups are grouped at the level that contains all of them. An object passed together with one of its
+   * ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced
+   * by the group in the selection.
+   *
+   * To group the current selection, pass `await getSelectedObjects()`.
+   * @param objects - The objects to group.
+   * @returns The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
    */
   @Method()
-  async group() {
-    this.core.group();
+  async group(objects: KritzelBaseObject<any>[]): Promise<KritzelGroup | null> {
+    return this.core.group(objects);
   }
 
   /**
-   * Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+   * Ungroups the given groups. Their children become individual objects again and keep their stacking order;
+   * the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.
+   *
+   * Groups are resolved by id, so stale references work. Entries that are not a `KritzelGroup` or not in the
+   * active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their
+   * children.
+   *
+   * To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
+   * @param groups - The groups to ungroup.
+   * @returns The extracted children.
    */
   @Method()
-  async ungroup() {
-    this.core.ungroup();
+  async ungroup(groups: KritzelGroup[]): Promise<KritzelBaseObject<any>[]> {
+    return this.core.ungroup(groups);
   }
 
   /** Undoes the last action. */
@@ -979,6 +1061,22 @@ export class KritzelEngine {
     this.core.store.state.isEnabled = true;
     this.emitContextMenuStateChange();
     this.core.rerender();
+  }
+
+  /** Closes the open object titlebar menu, if any. */
+  @Method()
+  async closeObjectTitlebarMenu() {
+    this.core.objectTitlebarManager.closeMenu();
+  }
+
+  /**
+   * Selects an item of the open object titlebar menu: closes the menu, runs the item's `action`
+   * and emits `objectTitlebarAction` with the item's id as `menuItemId`.
+   * @param menuItemId - The id of a menu item in the open menu's `objectTitlebarMenuStateChange` state.
+   */
+  @Method()
+  async selectObjectTitlebarMenuItem(menuItemId: string) {
+    this.core.objectTitlebarManager.selectMenuItem(menuItemId);
   }
 
   /**
@@ -1630,6 +1728,10 @@ export class KritzelEngine {
           return false;
         }
         if (node.classList && node.classList.contains('debug-panel')) {
+          return false;
+        }
+        // Titlebars are editing chrome, not content
+        if (node.classList && node.classList.contains('object-titlebar-layer')) {
           return false;
         }
         return true;
@@ -2582,6 +2684,9 @@ export class KritzelEngine {
   }
 
   private emitContextMenuStateChange(): void {
+    if (this.core.store.state.isContextMenuVisible) {
+      this.core.objectTitlebarManager.closeMenu();
+    }
     this.contextMenuStateChange.emit({
       isVisible: this.core.store.state.isContextMenuVisible,
       isObjectMenu: !!this.core.store.selectionGroup,
@@ -3146,6 +3251,14 @@ export class KritzelEngine {
     this.awarenessChange.emit(states);
   }
 
+  emitObjectTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
+    this.objectTitlebarAction.emit(detail);
+  }
+
+  emitObjectTitlebarMenuStateChange(detail: KritzelObjectTitlebarMenuState) {
+    this.objectTitlebarMenuStateChange.emit(detail);
+  }
+
   emitObjectsInViewportChange() {
     const visibleObjects = this.core.store.objectsInViewport;
     this.objectsInViewportChange.emit(visibleObjects);
@@ -3191,12 +3304,54 @@ export class KritzelEngine {
     return { multiplied, overridden };
   }
 
-  private getSelectionHandleCapabilities(object: KritzelBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
-    const selectedObjects = KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') ? object.objects : [object];
+  private readonly handleTitlebarElementClick = (ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => {
+    this.core.objectTitlebarManager.invokeElement(ownerId, section, elementId, event, anchor);
+    this.core.rerender();
+  };
 
+  private readonly titlebarTitleEditHandlers = {
+    input: (value: string) => this.core.objectTitlebarManager.setTitleDraft(value),
+    commit: (value: string) => this.core.objectTitlebarManager.commitTitleEditing(value),
+    cancel: () => this.core.objectTitlebarManager.cancelTitleEditing(),
+  };
+
+  /** Titlebar surfaces start drags only where the selection tool would handle them. */
+  private getTitlebarSurfacePointerEvents(): 'auto' | 'none' {
+    const state = this.core.store.state;
+    if (state.isScaling) {
+      return 'none';
+    }
+    const isEditing = !!this.core.store.activeText || !!this.core.store.activeShape;
+    return state.activeTool?.toolType === 'selection' || isEditing ? 'auto' : 'none';
+  }
+
+  /**
+   * Extra screen pixels to move the rotation handle up by, so it is not hidden behind the
+   * titlebar of a selected object whose top edge it sits on.
+   */
+  private getRotationHandleTitlebarOffset(titlebars: KritzelResolvedTitlebar[], metrics: KritzelTitlebarMetrics): number {
+    const selectionGroup = this.core.store.selectionGroup;
+    if (!selectionGroup || titlebars.length === 0) {
+      return 0;
+    }
+
+    const selectedIds = selectionGroup.objectIds;
+    const band = metrics.height + metrics.offset;
+    if (selectedIds.length === 1 && titlebars.some(titlebar => titlebar.owner.id === selectedIds[0])) {
+      return band;
+    }
+
+    // Active bars include groups whose nested child is the selected unit.
+    const groupTop = selectionGroup.rotatedBoundingBox.y;
+    const tolerance = 1 / (this.core.store.state.scale || 1);
+    const overlapsHandle = titlebars.some(titlebar => titlebar.isActive && Math.abs(titlebar.owner.rotatedBoundingBox.y - groupTop) <= tolerance);
+    return overlapsHandle ? band : 0;
+  }
+
+  private getSelectionHandleCapabilities(object: KritzelBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
     return {
-      canRenderResizeHandles: selectedObjects.every(selectedObject => selectedObject.isResizable !== false),
-      canRenderRotationHandle: selectedObjects.every(selectedObject => selectedObject.isRotatable !== false),
+      canRenderResizeHandles: this.core.objectConfigManager.isResizable(object),
+      canRenderRotationHandle: this.core.objectConfigManager.isRotatable(object),
     };
   }
 
@@ -3242,7 +3397,12 @@ export class KritzelEngine {
     const baseHandleTouchSize = baseHandleSize * 2 < 14 ? 14 : baseHandleSize;
     const viewportCenterX = this.core.store.state.viewportWidth / 2 + this.core.store.state.translateX;
     const viewportCenterY = this.core.store.state.viewportHeight / 2 + this.core.store.state.translateY;
-    const visibleObjects = this.core.store.objectsInViewport;
+    const titlebarManager = this.core.objectTitlebarManager;
+    const titlebarMetrics = titlebarManager.getMetrics(computedStyle);
+    // Titlebars hang above their objects, so the render query is widened while titlebars are configured.
+    const visibleObjects = this.core.store.getObjectsInViewport(titlebarManager.getCullingPadding(titlebarMetrics));
+    const titlebars = titlebarManager.resolveTitlebars(visibleObjects);
+    const rotationHandleTitlebarOffset = this.getRotationHandleTitlebarOffset(titlebars, titlebarMetrics);
 
     const getObjectWrapperPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
       if (this.core.store.state.isScaling) {
@@ -4050,7 +4210,7 @@ export class KritzelEngine {
                                       x1={object.totalWidth / 2}
                                       y1="0"
                                       x2={object.totalWidth / 2}
-                                      y2={-((15 * handleScale) / this.core.store.state?.scale)}
+                                      y2={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
                                       style={{
                                         stroke: selectionBorderColor,
                                         strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${handleScale} / ${this.core.store.state?.scale})`,
@@ -4059,7 +4219,7 @@ export class KritzelEngine {
                                     <circle
                                       class="rotation-handle"
                                       cx={object.totalWidth / 2}
-                                      cy={-((15 * handleScale) / this.core.store.state?.scale)}
+                                      cy={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
                                       r={`${((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
                                       style={{
                                         fill: 'var(--kritzel-selection-handle-color, #ffffff)',
@@ -4071,7 +4231,7 @@ export class KritzelEngine {
                                     <circle
                                       class="rotation-handle-overlay"
                                       cx={object.totalWidth / 2}
-                                      cy={-((15 * handleScale) / this.core.store.state?.scale)}
+                                      cy={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
                                       r={`${(baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
                                       style={{
                                         fill: 'transparent',
@@ -4199,6 +4359,15 @@ export class KritzelEngine {
               </div>
             );
           })}
+
+          {this.core.objectTitlebarManager.isEnabled && (
+            <kritzel-object-titlebar-layer
+              titlebars={titlebars}
+              surfacePointerEvents={this.getTitlebarSurfacePointerEvents()}
+              elementClick={this.handleTitlebarElementClick}
+              titleEdit={this.titlebarTitleEditHandlers}
+            />
+          )}
 
           {/* Snap indicator for line anchoring */}
           {(() => {

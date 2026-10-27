@@ -22,7 +22,9 @@
 | `locale`                 | `locale`                   | The current locale (language) code to apply to the editor, e.g. 'en', 'de', 'fr'.                                                                                                                                                                                                                                                                                                                     | `"de" \| "en" \| "fr" \| string & {}` | `'en'`      |
 | `locales`                | --                         | An array of available locale definitions (with optional partial term overrides). Replaces the built-in locale set (en/de/fr) when provided, even if empty.                                                                                                                                                                                                                                            | `KritzelLocale[]`                     | `undefined` |
 | `lockDrawingScale`       | `lock-drawing-scale`       | When true, objects are drawn at a fixed visual size regardless of zoom level                                                                                                                                                                                                                                                                                                                          | `boolean`                             | `true`      |
+| `objectConfig`           | --                         | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.                                                                                                                                                                                                                 | `KritzelObjectConfig`                 | `undefined` |
 | `objectContextMenuItems` | --                         | Context menu items shown when right-clicking a selected object.                                                                                                                                                                                                                                                                                                                                       | `ContextMenuItem[]`                   | `undefined` |
+| `objectTitlebar`         | --                         | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.                                                                                                                                                                                                                    | `KritzelObjectTitlebarConfig`         | `undefined` |
 | `scaleMax`               | `scale-max`                | Maximum zoom scale allowed. Clamped to the absolute maximum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                              | `1000`      |
 | `scaleMin`               | `scale-min`                | Minimum zoom scale allowed. Clamped to the absolute minimum defined by the engine.                                                                                                                                                                                                                                                                                                                    | `number`                              | `0.0001`    |
 | `syncConfig`             | --                         | Configuration for real-time synchronization providers (e.g., IndexedDB, WebSocket).                                                                                                                                                                                                                                                                                                                   | `KritzelSyncConfig`                   | `undefined` |
@@ -39,26 +41,28 @@
 
 ## Events
 
-| Event                     | Description                                                                                                   | Type                                                          |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `activeToolChange`        | Emitted when the active drawing tool changes.                                                                 | `CustomEvent<KritzelBaseTool>`                                |
-| `activeWorkspaceChange`   | Emitted when the active workspace changes (e.g., after import).                                               | `CustomEvent<KritzelWorkspace>`                               |
-| `agenticCursorDetached`   | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. | `CustomEvent<KritzelAgenticCursorDetachedEvent>`              |
-| `awarenessChange`         | Emitted when the awareness state changes (remote user cursors, presence).                                     | `CustomEvent<Map<number, Record<string, any>>>`               |
-| `contextMenuStateChange`  | Emitted when context-menu visibility, items, or position changes.                                             | `CustomEvent<KritzelContextMenuState>`                        |
-| `isEngineReady`           | Emitted when the engine has fully initialized and is ready for interaction.                                   | `CustomEvent<KritzelEngineState>`                             |
-| `isLoadingChange`         | Emitted while the selected workspace's objects are being initialized and synchronized.                        | `CustomEvent<boolean>`                                        |
-| `longpress`               | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                         | `CustomEvent<PointerEvent>`                                   |
-| `notificationsChange`     | Emitted when notifications change.                                                                            | `CustomEvent<KritzelNotification>`                            |
-| `objectsAdded`            | Emitted when one or more objects are added to the canvas.                                                     | `CustomEvent<ObjectsAddedEvent>`                              |
-| `objectsChange`           | Emitted when objects on the canvas are added, removed, or modified.                                           | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsInViewportChange` | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).            | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
-| `objectsRemoved`          | Emitted when one or more objects are removed from the canvas.                                                 | `CustomEvent<ObjectsRemovedEvent>`                            |
-| `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsUpdated`          | Emitted when one or more objects are updated on the canvas.                                                   | `CustomEvent<ObjectsUpdatedEvent>`                            |
-| `undoStateChange`         | Emitted when the undo/redo state changes, providing current undo availability.                                | `CustomEvent<KritzelUndoState>`                               |
-| `viewportChange`          | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).           | `CustomEvent<KritzelViewportState>`                           |
-| `workspacesChange`        | Emitted when workspaces are created, updated, or deleted.                                                     | `CustomEvent<KritzelWorkspace[]>`                             |
+| Event                           | Description                                                                                                                                                                              | Type                                                          |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `activeToolChange`              | Emitted when the active drawing tool changes.                                                                                                                                            | `CustomEvent<KritzelBaseTool>`                                |
+| `activeWorkspaceChange`         | Emitted when the active workspace changes (e.g., after import).                                                                                                                          | `CustomEvent<KritzelWorkspace>`                               |
+| `agenticCursorDetached`         | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed.                                                                            | `CustomEvent<KritzelAgenticCursorDetachedEvent>`              |
+| `awarenessChange`               | Emitted when the awareness state changes (remote user cursors, presence).                                                                                                                | `CustomEvent<Map<number, Record<string, any>>>`               |
+| `contextMenuStateChange`        | Emitted when context-menu visibility, items, or position changes.                                                                                                                        | `CustomEvent<KritzelContextMenuState>`                        |
+| `isEngineReady`                 | Emitted when the engine has fully initialized and is ready for interaction.                                                                                                              | `CustomEvent<KritzelEngineState>`                             |
+| `isLoadingChange`               | Emitted while the selected workspace's objects are being initialized and synchronized.                                                                                                   | `CustomEvent<boolean>`                                        |
+| `longpress`                     | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                                                                                                    | `CustomEvent<PointerEvent>`                                   |
+| `notificationsChange`           | Emitted when notifications change.                                                                                                                                                       | `CustomEvent<KritzelNotification>`                            |
+| `objectsAdded`                  | Emitted when one or more objects are added to the canvas.                                                                                                                                | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsChange`                 | Emitted when objects on the canvas are added, removed, or modified.                                                                                                                      | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsInViewportChange`       | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).                                                                                       | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
+| `objectsRemoved`                | Emitted when one or more objects are removed from the canvas.                                                                                                                            | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsSelectionChange`        | Emitted when the set of selected objects changes.                                                                                                                                        | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsUpdated`                | Emitted when one or more objects are updated on the canvas.                                                                                                                              | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `objectTitlebarAction`          | Emitted when a button or a menu item in an object titlebar is clicked.                                                                                                                   | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
+| `objectTitlebarMenuStateChange` | Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`. | `CustomEvent<KritzelObjectTitlebarMenuState>`                 |
+| `undoStateChange`               | Emitted when the undo/redo state changes, providing current undo availability.                                                                                                           | `CustomEvent<KritzelUndoState>`                               |
+| `viewportChange`                | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).                                                                                      | `CustomEvent<KritzelViewportState>`                           |
+| `workspacesChange`              | Emitted when workspaces are created, updated, or deleted.                                                                                                                                | `CustomEvent<KritzelWorkspace[]>`                             |
 
 
 ## Methods
@@ -277,6 +281,16 @@ Type: `Promise<void>`
 ### `clearSelection() => Promise<void>`
 
 Deselects all currently selected objects.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `closeObjectTitlebarMenu() => Promise<void>`
+
+Closes the open object titlebar menu, if any.
 
 #### Returns
 
@@ -707,16 +721,30 @@ Type: `Promise<KritzelWorkspace[]>`
 
 
 
-### `group() => Promise<void>`
+### `group(objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup | null>`
 
-Creates a group (`KritzelGroup`) from the currently selected objects. Requires at least two selected objects.
-The grouped objects become one layer at the position of the topmost selected object.
+Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. The grouped objects
+become one layer at the position of the topmost object, as a single undoable step.
+
+Objects are resolved by id, so stale references work. Objects that are not in the active workspace are
+skipped with a console warning. Objects inside a common group are grouped within it; objects from different
+groups are grouped at the level that contains all of them. An object passed together with one of its
+ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced
+by the group in the selection.
+
+To group the current selection, pass `await getSelectedObjects()`.
+
+#### Parameters
+
+| Name      | Type                       | Description             |
+| --------- | -------------------------- | ----------------------- |
+| `objects` | `KritzelBaseObject<any>[]` | - The objects to group. |
 
 #### Returns
 
-Type: `Promise<void>`
+Type: `Promise<KritzelGroup>`
 
-
+The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
 
 ### `hideContextMenu() => Promise<void>`
 
@@ -1043,6 +1071,23 @@ Type: `Promise<void>`
 
 
 
+### `selectObjectTitlebarMenuItem(menuItemId: string) => Promise<void>`
+
+Selects an item of the open object titlebar menu: closes the menu, runs the item's `action`
+and emits `objectTitlebarAction` with the item's id as `menuItemId`.
+
+#### Parameters
+
+| Name         | Type     | Description                                                                       |
+| ------------ | -------- | --------------------------------------------------------------------------------- |
+| `menuItemId` | `string` | - The id of a menu item in the open menu's `objectTitlebarMenuStateChange` state. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `selectObjects(objects: KritzelBaseObject[]) => Promise<void>`
 
 Programmatically selects the given objects. Switches to the selection tool automatically.
@@ -1197,15 +1242,28 @@ Type: `Promise<void>`
 
 
 
-### `ungroup() => Promise<void>`
+### `ungroup(groups: KritzelGroup[]) => Promise<KritzelBaseObject<any>[]>`
 
-Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+Ungroups the given groups. Their children become individual objects again and keep their stacking order;
+the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.
+
+Groups are resolved by id, so stale references work. Entries that are not a `KritzelGroup` or not in the
+active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their
+children.
+
+To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
+
+#### Parameters
+
+| Name     | Type             | Description              |
+| -------- | ---------------- | ------------------------ |
+| `groups` | `KritzelGroup[]` | - The groups to ungroup. |
 
 #### Returns
 
-Type: `Promise<void>`
+Type: `Promise<KritzelBaseObject<any>[]>`
 
-
+The extracted children.
 
 ### `updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor>`
 
@@ -1336,6 +1394,7 @@ Type: `Promise<void>`
 ### Depends on
 
 - [kritzel-icon](../kritzel-icon)
+- [kritzel-object-titlebar-layer](../kritzel-object-titlebar-layer)
 - [kritzel-awareness-cursors](../kritzel-awareness-cursors)
 - [kritzel-agentic-cursors](../kritzel-agentic-cursors)
 - [kritzel-cursor-trail](../kritzel-cursor-trail)
@@ -1345,10 +1404,12 @@ Type: `Promise<void>`
 ```mermaid
 graph TD;
   kritzel-engine --> kritzel-icon
+  kritzel-engine --> kritzel-object-titlebar-layer
   kritzel-engine --> kritzel-awareness-cursors
   kritzel-engine --> kritzel-agentic-cursors
   kritzel-engine --> kritzel-cursor-trail
   kritzel-engine --> kritzel-watermark
+  kritzel-object-titlebar-layer --> kritzel-icon
   style kritzel-engine fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

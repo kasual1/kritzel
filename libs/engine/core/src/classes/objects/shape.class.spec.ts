@@ -194,6 +194,11 @@ describe('KritzelShape', () => {
   });
 
   describe('constructor', () => {
+    it('should apply the common name option', () => {
+      expect(new KritzelShape({ name: 'Desktop' }).name).toBe('Desktop');
+      expect(new KritzelShape().name).toBeUndefined();
+    });
+
     it('should create a shape with default values when no config provided', () => {
       const defaultShape = new KritzelShape();
 

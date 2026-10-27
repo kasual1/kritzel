@@ -165,6 +165,14 @@ describe('KritzelSelectionTool', () => {
     };
 
     mockCore = {
+      objectTitlebarManager: {
+        config: undefined,
+        getOwnerFromEvent: jest.fn().mockReturnValue(null),
+        getEditableTitleFromEvent: jest.fn().mockReturnValue(null),
+        startTitleEditing: jest.fn(),
+        isControlEvent: jest.fn().mockReturnValue(false),
+        resetWarnings: jest.fn(),
+      },
       store: {
         get state() { return mockState; },
         selectionGroup: null as any,
@@ -1183,6 +1191,217 @@ describe('KritzelSelectionTool', () => {
 
       // Text objects with isInteractive=true should still early-return (edit mode)
       // This behavior should remain unchanged
+    });
+  });
+  // ============================================
+  // Object titlebar
+  // ============================================
+
+  describe('object titlebar', () => {
+    const owner = { id: 'owner-1', isInteractive: false } as any;
+
+    beforeEach(() => {
+      mockCore.objectTitlebarManager.getOwnerFromEvent.mockReturnValue(owner);
+      mockCore.selectObjects = jest.fn((objects: any[]) => {
+        mockCore.store.selectionGroup = { id: 'sg-new', objects, objectIds: objects.map(object => object.id) };
+      });
+    });
+
+    it('selects the owner and starts dragging it in one mouse gesture', () => {
+      const event = createMouseEvent({ pointerId: 1 } as Partial<PointerEvent>);
+
+      tool.handlePointerDown(event);
+
+      expect(mockCore.selectObjects).toHaveBeenCalledWith([owner]);
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalledWith(event);
+      expect(tool.selectionHandler.handlePointerDown).not.toHaveBeenCalled();
+      expect(tool.resizeHandler.handlePointerDown).not.toHaveBeenCalled();
+      expect(tool.rotationHandler.handlePointerDown).not.toHaveBeenCalled();
+      expect(mockCore.removeSelectionGroup).not.toHaveBeenCalled();
+      expect(tool.selectionHandler.skipEditForPointerId).toBe(1);
+      expect(mockCore.rerender).toHaveBeenCalled();
+    });
+
+    it('keeps a multi-selection that contains the owner', () => {
+      mockCore.store.selectionGroup = { id: 'sg-1', objects: [owner, { id: 'other' }], objectIds: ['owner-1', 'other'] };
+
+      tool.handlePointerDown(createMouseEvent());
+
+      expect(mockCore.selectObjects).not.toHaveBeenCalled();
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalled();
+    });
+
+    it('promotes a selection inside the owner to the owner', () => {
+      mockCore.store.selectionGroup = { id: 'sg-1', objects: [{ id: 'inner' }], objectIds: ['inner'] };
+
+      tool.handlePointerDown(createMouseEvent());
+
+      expect(mockCore.selectObjects).toHaveBeenCalledWith([owner]);
+    });
+
+    it('toggles the owner with Shift without dragging or starting a marquee', () => {
+      tool.handlePointerDown(createMouseEvent({ shiftKey: true } as Partial<PointerEvent>));
+
+      expect(tool.selectionHandler.toggleObjectInSelection).toHaveBeenCalledWith(owner);
+      expect(tool.moveHandler.handlePointerDown).not.toHaveBeenCalled();
+      expect(tool.selectionHandler.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('lets selection handles drawn over a titlebar take precedence', () => {
+      jest.spyOn(tool as any, 'isHandleSelected').mockReturnValue(true);
+
+      tool.handlePointerDown(createMouseEvent());
+
+      expect(mockCore.objectTitlebarManager.getOwnerFromEvent).not.toHaveBeenCalled();
+      expect(tool.resizeHandler.handlePointerDown).toHaveBeenCalled();
+    });
+
+    it('selects without dragging when titlebars are not draggable', () => {
+      mockCore.objectTitlebarManager.config = { draggable: false };
+
+      tool.handlePointerDown(createMouseEvent());
+
+      expect(mockCore.selectObjects).toHaveBeenCalledWith([owner]);
+      expect(tool.moveHandler.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('handles single touch presses on titlebars', () => {
+      mockState.pointers.set(1, {});
+      const event = createTouchEvent({ pointerId: 1 } as Partial<PointerEvent>);
+
+      tool.handlePointerDown(event);
+
+      expect(mockCore.selectObjects).toHaveBeenCalledWith([owner]);
+      expect(tool.moveHandler.handlePointerDown).toHaveBeenCalledWith(event);
+      expect(tool.selectionHandler.handlePointerDown).not.toHaveBeenCalled();
+    });
+
+    it('restores the previous selection when a titlebar touch turns into a pinch', () => {
+      const previous = { id: 'sg-previous', objects: [{ id: 'other' }], objectIds: ['other'] };
+      mockCore.store.selectionGroup = previous;
+      mockState.pointers.set(1, {});
+      tool.handlePointerDown(createTouchEvent({ pointerId: 1 } as Partial<PointerEvent>));
+
+      mockState.pointers.set(2, {});
+      mockState.isScaling = true;
+      tool.handlePointerDown(createTouchEvent({ pointerId: 2 } as Partial<PointerEvent>));
+
+      expect(tool.moveHandler.cancelPendingDrag).toHaveBeenCalled();
+      expect(mockCore.addSelectionGroup).toHaveBeenCalledWith(previous);
+    });
+
+    it('defers interactivity of embedded owners until the press ends', () => {
+      const embedded: any = {
+        id: 'embed-1',
+        isInteractive: false,
+        isSelected: false,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => []),
+      };
+      embedded.setIsInteractive = jest.fn((value: boolean) => {
+        embedded.isInteractive = value;
+      });
+      mockCore.objectTitlebarManager.getOwnerFromEvent.mockReturnValue(embedded);
+      mockCore.selectObjects = jest.fn((objects: any[]) => {
+        objects.forEach(object => object.setIsInteractive(true));
+        mockCore.store.selectionGroup = { id: 'sg-new', objects, objectIds: objects.map(object => object.id) };
+      });
+
+      tool.handlePointerDown(createMouseEvent({ pointerId: 1 } as Partial<PointerEvent>));
+      expect(embedded.isInteractive).toBe(false);
+
+      tool.handlePointerUp(createMouseEvent({ pointerId: 1 } as Partial<PointerEvent>));
+      expect(embedded.isInteractive).toBe(true);
+    });
+
+    it('restores deferred interactivity when the press is cancelled, e.g. by a long-press menu', () => {
+      const embedded: any = {
+        id: 'embed-1',
+        isInteractive: false,
+        isSelected: false,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(() => []),
+      };
+      embedded.setIsInteractive = jest.fn((value: boolean) => {
+        embedded.isInteractive = value;
+      });
+      mockCore.objectTitlebarManager.getOwnerFromEvent.mockReturnValue(embedded);
+      mockCore.selectObjects = jest.fn((objects: any[]) => {
+        objects.forEach(object => object.setIsInteractive(true));
+        mockCore.store.selectionGroup = { id: 'sg-new', objects, objectIds: objects.map(object => object.id) };
+      });
+
+      mockState.pointers.set(1, {});
+      tool.handlePointerDown(createTouchEvent({ pointerId: 1 } as Partial<PointerEvent>));
+      expect(embedded.isInteractive).toBe(false);
+
+      tool.cancelTitlebarGesture();
+      expect(embedded.isInteractive).toBe(true);
+    });
+
+    it('clears a titlebar press whose release never arrived on the next press', () => {
+      tool.handlePointerDown(createMouseEvent({ pointerId: 1 } as Partial<PointerEvent>));
+      mockCore.objectTitlebarManager.getOwnerFromEvent.mockReturnValue(null);
+
+      tool.handlePointerDown(createMouseEvent({ pointerId: 1 } as Partial<PointerEvent>));
+
+      expect(tool.selectionHandler.skipEditForPointerId).toBeNull();
+      expect(tool.selectionHandler.handlePointerDown).toHaveBeenCalled();
+    });
+
+    describe('title editing', () => {
+      beforeEach(() => {
+        mockCore.store.selectionGroup = { id: 'sg-1', objects: [owner], objectIds: ['owner-1'] };
+        mockCore.objectTitlebarManager.getEditableTitleFromEvent.mockReturnValue({ ownerId: 'owner-1', elementId: 'title' });
+      });
+
+      it('starts renaming when the editable title of the selected object is clicked again', () => {
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 12, clientY: 11 } as Partial<PointerEvent>));
+
+        expect(mockCore.objectTitlebarManager.startTitleEditing).toHaveBeenCalledWith('owner-1', 'title');
+      });
+
+      it('does not rename when the click selected the object', () => {
+        mockCore.store.selectionGroup = null;
+
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+
+        expect(mockCore.objectTitlebarManager.startTitleEditing).not.toHaveBeenCalled();
+      });
+
+      it('does not rename after a drag or within a multi-selection', () => {
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 40, clientY: 10 } as Partial<PointerEvent>));
+
+        mockCore.store.selectionGroup = { id: 'sg-2', objects: [owner, { id: 'other' }], objectIds: ['owner-1', 'other'] };
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+
+        expect(mockCore.objectTitlebarManager.startTitleEditing).not.toHaveBeenCalled();
+      });
+
+      it('does not rename when the press was not on an editable title', () => {
+        mockCore.objectTitlebarManager.getEditableTitleFromEvent.mockReturnValue(null);
+
+        tool.handlePointerDown(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+        tool.handlePointerUp(createMouseEvent({ pointerId: 1, clientX: 10, clientY: 10 } as Partial<PointerEvent>));
+
+        expect(mockCore.objectTitlebarManager.startTitleEditing).not.toHaveBeenCalled();
+      });
+    });
+
+    it('clears the titlebar press when the tool is deactivated', () => {
+      tool.handlePointerDown(createMouseEvent({ pointerId: 1 } as Partial<PointerEvent>));
+
+      tool.onDeactivate();
+
+      expect(tool.selectionHandler.skipEditForPointerId).toBeNull();
     });
   });
 });

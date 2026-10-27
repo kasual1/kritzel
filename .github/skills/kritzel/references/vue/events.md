@@ -32,6 +32,7 @@ function onReady(event: Event) {
 | `@themeChange` | `ThemeName` | Theme switched (settings UI) |
 | `@viewportChange` | `KritzelViewportState` | Pan/zoom/resize |
 | `@activeWorkspaceChange` | `ActiveWorkspaceChangeEvent` | Active workspace switched — pair with the `:activeWorkspaceId` prop for controlled switching |
+| `@objectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`elementId`, `menuItemId?`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked or a titlebar menu item is selected (also on the engine) — in addition to the button's or menu item's own `action` |
 
 Collaboration/sharing extras (`@isPublicChange`, `@awarenessChange`, `@login`, `@logout`) also exist on the editor — see [workspaces-and-persistence.md](workspaces-and-persistence.md).
 
@@ -47,6 +48,7 @@ Engine emits the same object/viewport/undo events plus:
 | `@workspacesChange` | `KritzelWorkspace[]` | Workspace list created/updated/deleted |
 | `@objectsInViewportChange` | `KritzelBaseObject[]` | Set of visible objects changes (after pan/zoom) |
 | `@longpress` | `PointerEvent` | Touch/pen long-press — custom mobile context menus |
+| `@objectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState` (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
 
 ## Canonical pattern: events → state
 
@@ -126,9 +128,33 @@ Use the granular triplet instead of `@objectsChange` when maintaining your own m
 
 (Or bind named handlers from `<script setup>` and cast inside, which keeps the template clean.)
 
+## Titlebar button and menu clicks
+
+With an `:objectTitlebar` configured (see theming-and-context-menus.md), every button click emits `@objectTitlebarAction`. Identify the button by `elementId` and the object by `objectId`; `anchorRect` is the button's client rect for anchoring a popover. Selecting an item of a titlebar `menu` emits the same event with the menu's id as `elementId` and the menu item's id as `menuItemId`:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { KritzelEditor, getEditorRef, type KritzelObjectTitlebarActionEvent } from '@kritzel/vue-editor'
+
+const editor = getEditorRef('editor')
+const lastAction = ref('')
+
+async function onTitlebarAction(event: Event) {
+  const { elementId, menuItemId, objectId, objectType } = (event as CustomEvent<KritzelObjectTitlebarActionEvent>).detail
+  const object = await editor.value?.getObjectById(objectId)
+  lastAction.value = `${menuItemId ?? elementId} · ${object?.name ?? objectType}`
+}
+</script>
+
+<template>
+  <KritzelEditor ref="editor" :objectTitlebar="objectTitlebar" @objectTitlebarAction="onTitlebarAction" />
+</template>
+```
+
 ## Import sources for event payload types
 
-All common payload types are re-exported by `@kritzel/vue-editor`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/vue-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/vue-editor`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/vue-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

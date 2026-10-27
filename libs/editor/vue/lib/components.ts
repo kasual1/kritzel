@@ -45,6 +45,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'toolbarItems',
   'globalContextMenuItems',
   'objectContextMenuItems',
+  'objectConfig',
+  'objectTitlebar',
   'moreMenuItems',
   'themes',
   'theme',
@@ -87,7 +89,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'awarenessChange',
   'chatSubmit',
   'chatStop',
-  'agenticCursorDetached'
+  'agenticCursorDetached',
+  'objectTitlebarAction'
 ], [
   'isReady',
   'activeWorkspaceChange',
@@ -106,7 +109,8 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'awarenessChange',
   'chatSubmit',
   'chatStop',
-  'agenticCursorDetached'
+  'agenticCursorDetached',
+  'objectTitlebarAction'
 ]);
 
 

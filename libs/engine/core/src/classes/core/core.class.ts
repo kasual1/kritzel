@@ -22,6 +22,8 @@ import { KritzelLocalizationManager } from '../managers/localization.manager';
 import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
+import { KritzelObjectTitlebarManager } from '../managers/object-titlebar.manager';
+import { KritzelObjectConfigManager } from '../managers/object-config.manager';
 import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelZOrderHelper, KritzelZOrderItem, KritzelZOrderOperation } from '../../helpers/z-order.helper';
@@ -76,6 +78,9 @@ export class KritzelCore {
   private readonly _clipboardManager: KritzelClipboardManager;
   /** Manager for programmatically controlled (agentic) cursors */
   private readonly _agenticCursorManager: KritzelAgenticCursorManager;
+  /** Manager for titlebars rendered above objects */
+  private readonly _objectTitlebarManager: KritzelObjectTitlebarManager;
+  private readonly _objectConfigManager: KritzelObjectConfigManager;
   /** Per-core registry of drawing tools (one instance per editor). */
   private readonly _toolRegistry: KritzelToolRegistry;
   /** Optional unique identifier for namespacing storage keys across multiple editor instances */
@@ -137,6 +142,22 @@ export class KritzelCore {
    */
   get localizationManager(): KritzelLocalizationManager {
     return this._localizationManager;
+  }
+
+  /**
+   * Gets the object titlebar manager.
+   * @returns The KritzelObjectTitlebarManager resolving titlebars rendered above objects
+   */
+  get objectTitlebarManager(): KritzelObjectTitlebarManager {
+    return this._objectTitlebarManager;
+  }
+
+  /**
+   * Gets the object config manager.
+   * @returns The KritzelObjectConfigManager resolving the engine's `objectConfig` per object
+   */
+  get objectConfigManager(): KritzelObjectConfigManager {
+    return this._objectConfigManager;
   }
 
   /**
@@ -224,6 +245,8 @@ export class KritzelCore {
     this._permissionManager = new KritzelBrowserPermissionManager(this);
     this._clipboardManager = new KritzelClipboardManager(this);
     this._agenticCursorManager = new KritzelAgenticCursorManager(this);
+    this._objectTitlebarManager = new KritzelObjectTitlebarManager(this);
+    this._objectConfigManager = new KritzelObjectConfigManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
     this._assetResolver = new KritzelAssetResolver();
     this._assetResolver.setShowInfo(this._store.state.debugInfo?.showAssetResolverInfo ?? false);
@@ -1258,88 +1281,85 @@ export class KritzelCore {
   }
 
   /**
-   * Groups the currently selected objects into a KritzelGroup.
-   * Requires at least 2 objects to be selected. The grouped objects become one contiguous layer at the
-   * position of the topmost selected object; objects stacked in between end up below the group.
+   * Groups objects into a KritzelGroup as a single undo step.
+   * Requires at least 2 objects. The grouped objects become one contiguous layer at the position of the
+   * topmost object; objects stacked in between end up below the group.
    * Objects inside a common group are grouped within it; objects from different groups are grouped at the
    * level that contains all of them, so every object keeps a single parent.
+   * Selected objects that end up in the group are replaced by the group in the selection.
+   * @param objects - The objects to group, resolved by id. Objects that are not in the workspace are skipped
+   *   with a warning.
+   * @returns The created group, or null when nothing was grouped
    */
-  group(): void {
-    const selectionGroup = this._store.selectionGroup;
-    if (!selectionGroup || selectionGroup.objects.length < 2) {
-      return;
-    }
-
-    const { objects, items } = this.getZOrderItems();
-    const plan = KritzelZOrderHelper.planGroup(items, selectionGroup.objects.map(obj => obj.id));
+  group(objects: KritzelBaseObject<any>[]): KritzelGroup | null {
+    const { objects: storeObjects, items } = this.getZOrderItems();
+    const rootIds = this.resolveObjects(objects ?? [], storeObjects, 'group').map(obj => obj.id);
+    const plan = KritzelZOrderHelper.planGroup(items, rootIds);
     if (!plan) {
-      return;
+      console.warn('[KritzelCore] Cannot group: at least two objects that are not nested in each other are required.');
+      return null;
     }
 
-    // Create a group from the selected objects, ordered bottom to top
-    const group = KritzelGroup.createFromObjects(this, plan.childIds.map(id => objects.get(id)));
+    // Create a group from the objects, ordered bottom to top
+    const group = KritzelGroup.createFromObjects(this, plan.childIds.map(id => storeObjects.get(id)));
     if (plan.groupZIndex !== null) {
       group.zIndex = plan.groupZIndex;
     }
 
     // A nested group takes its parent's frame, so the parent's bounds and transforms stay unchanged
-    const parent = plan.parentId ? (objects.get(plan.parentId) as KritzelGroup) : null;
+    const parent = plan.parentId ? (storeObjects.get(plan.parentId) as KritzelGroup) : null;
     if (parent) {
       group.rotation = parent.rotation;
       group.finalize();
     }
 
     // Add the group to the object store together with the restacked members
-    this.applyZIndexUpdates(plan.updates, objects, () => {
+    this.applyZIndexUpdates(plan.updates, storeObjects, () => {
       this.addObject(group);
       if (parent) {
         this.replaceChildIds(parent, plan.childIds, [group.id]);
       }
     });
 
-    // Remove the selection group and create a new one with just the group
-    this.removeSelectionGroup();
-
-    const newSelectionGroup = KritzelSelectionGroup.create(this);
-    newSelectionGroup.addOrRemove(group);
-    newSelectionGroup.isSelected = true;
-    newSelectionGroup.rotation = group.rotation;
-    this.addSelectionGroup(newSelectionGroup);
+    // Selected members (and their descendants) are now part of the group, which takes their place
+    const groupedIds = this.collectSubtreeIds(plan.childIds, storeObjects);
+    this.replaceInSelection(object => (groupedIds.has(object.id) ? [group] : null));
 
     this.engine.emitObjectsChange();
     this.rerender();
+    return group;
   }
 
   /**
-   * Ungroups any KritzelGroup objects in the current selection.
-   * Children are extracted and become top-level objects, keeping their stacking order.
+   * Ungroups KritzelGroup objects as a single undo step.
+   * Children are extracted and take the group's place, keeping their stacking order. A nested group's
+   * children stay in its parent group. Dissolved groups in the selection are replaced by their children.
+   * @param groups - The groups to ungroup, resolved by id. Entries that are not groups or not in the workspace
+   *   are skipped with a warning.
+   * @returns The extracted children
    */
-  ungroup(): void {
-    const selectionGroup = this._store.selectionGroup;
-    if (!selectionGroup) {
-      return;
-    }
-
+  ungroup(groups: KritzelGroup[]): KritzelBaseObject<any>[] {
     const { objects, items } = this.getZOrderItems();
-    const groups = selectionGroup.objects
-      .filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'))
-      .map(obj => (objects.get(obj.id) ?? obj) as KritzelGroup);
-    if (groups.length === 0) {
-      return;
+    const toDissolve = this.resolveObjects(groups ?? [], objects, 'ungroup').filter(obj => {
+      const isGroup = KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup');
+      if (!isGroup) {
+        console.warn(`[KritzelCore] Cannot ungroup object '${obj.id}': it is not a KritzelGroup.`);
+      }
+      return isGroup;
+    }) as KritzelGroup[];
+    if (toDissolve.length === 0) {
+      return [];
     }
-
-    // Collect all children from all groups
-    const allChildren = new Map<string, KritzelBaseObject<any>>();
-    const nonGroupObjects = selectionGroup.objects.filter(obj => !KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'));
 
     // Tied children get unique values so they keep their stacking order
-    const updates = KritzelZOrderHelper.planUngroup(items, groups.map(group => group.id));
+    const updates = KritzelZOrderHelper.planUngroup(items, toDissolve.map(group => group.id));
 
+    const childrenByGroup = new Map<string, KritzelBaseObject<any>[]>();
     this.applyZIndexUpdates(updates, objects, () => {
-      groups.forEach(group => {
+      toDissolve.forEach(group => {
         // Get children before removing the group
         const children = group.ungroup();
-        children.forEach(child => allChildren.set(child.id, child));
+        childrenByGroup.set(group.id, children);
 
         // A nested group's children stay in its parent group
         const parent = KritzelGroup.findParentGroup(this, group.id);
@@ -1352,23 +1372,90 @@ export class KritzelCore {
       });
     });
 
-    // Create a new selection group with all the ungrouped children and non-group objects
-    this.removeSelectionGroup();
-
-    // Each object once (addOrRemove toggles), without the dissolved groups
-    const dissolvedIds = new Set(groups.map(group => group.id));
-    const selection = new Map<string, KritzelBaseObject<any>>();
-    [...allChildren.values(), ...nonGroupObjects].forEach(object => !dissolvedIds.has(object.id) && selection.set(object.id, object));
-
-    const newSelectionGroup = KritzelSelectionGroup.create(this);
-    selection.forEach(object => {
-      newSelectionGroup.addOrRemove(object);
-    });
-    newSelectionGroup.isSelected = true;
-    this.addSelectionGroup(newSelectionGroup);
+    // Each dissolved group in the selection is replaced by its children
+    this.replaceInSelection(object => childrenByGroup.get(object.id) ?? null, new Set(childrenByGroup.keys()));
 
     this.engine.emitObjectsChange();
     this.rerender();
+
+    const children = new Map<string, KritzelBaseObject<any>>();
+    childrenByGroup.forEach(groupChildren => groupChildren.forEach(child => !childrenByGroup.has(child.id) && children.set(child.id, child)));
+    return [...children.values()];
+  }
+
+  /**
+   * Resolves objects passed to the public API by id to their current store instances, so stale references work.
+   * Objects that are not in the workspace (or are selection helpers) are skipped with a warning.
+   * @param candidates - Objects to resolve
+   * @param objects - Store instances by id
+   * @param action - Name of the calling action, used in the warning
+   */
+  private resolveObjects(candidates: KritzelBaseObject<any>[], objects: Map<string, KritzelBaseObject<any>>, action: string): KritzelBaseObject<any>[] {
+    const resolved = new Map<string, KritzelBaseObject<any>>();
+    for (const candidate of candidates) {
+      const object = candidate ? objects.get(candidate.id) : undefined;
+      if (!object) {
+        console.warn(`[KritzelCore] Cannot ${action} object '${candidate?.id}': it is not in the active workspace.`);
+        continue;
+      }
+      resolved.set(object.id, object);
+    }
+    return [...resolved.values()];
+  }
+
+  /**
+   * Collects the given ids together with the ids of all of their descendants.
+   * @param rootIds - Ids to start from
+   * @param objects - Store instances by id
+   */
+  private collectSubtreeIds(rootIds: string[], objects: Map<string, KritzelBaseObject<any>>): Set<string> {
+    const ids = new Set<string>();
+    const visit = (id: string) => {
+      if (ids.has(id)) {
+        return;
+      }
+      ids.add(id);
+      const object = objects.get(id);
+      if (object && KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+        object.childIds.forEach(visit);
+      }
+    };
+    rootIds.forEach(visit);
+    return ids;
+  }
+
+  /**
+   * Replaces objects of the current selection and selects the result. Leaves the selection alone when no
+   * selected object is replaced.
+   * @param replace - Returns the objects that take a selected object's place, or null to keep it
+   * @param excludedIds - Ids that must not be selected afterwards (e.g. removed objects)
+   */
+  private replaceInSelection(replace: (object: KritzelBaseObject<any>) => KritzelBaseObject<any>[] | null, excludedIds: Set<string> = new Set()): void {
+    const selected = this._store.selectionGroup?.objects ?? [];
+    let changed = false;
+    const selection = new Map<string, KritzelBaseObject<any>>();
+    for (const object of selected) {
+      const replacement = replace(object);
+      changed ||= replacement !== null;
+      // Each object once (addOrRemove toggles)
+      (replacement ?? [object]).forEach(obj => !excludedIds.has(obj.id) && selection.set(obj.id, obj));
+    }
+    if (!changed) {
+      return;
+    }
+
+    this.removeSelectionGroup();
+    if (selection.size === 0) {
+      return;
+    }
+
+    const newSelectionGroup = KritzelSelectionGroup.create(this);
+    selection.forEach(object => newSelectionGroup.addOrRemove(object));
+    newSelectionGroup.isSelected = true;
+    if (selection.size === 1) {
+      newSelectionGroup.rotation = [...selection.values()][0].rotation;
+    }
+    this.addSelectionGroup(newSelectionGroup);
   }
 
   /**

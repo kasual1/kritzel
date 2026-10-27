@@ -12,6 +12,13 @@ export interface KritzelTheme {
 
   /** Global variables */
   global?: {
+    agenticCursorFontFamily?: string;
+    agenticCursorLabelFontSize?: string;
+    agenticCursorLabelTextColor?: string;
+    agenticCursorStatusBackgroundColor?: string;
+    agenticCursorStatusFontSize?: string;
+    agenticCursorStatusMaxWidth?: string;
+    agenticCursorStatusTextColor?: string;
     cursorTrailColor?: string;
     cursorTrailOpacity?: string;
     dividerColor?: string;
@@ -538,6 +545,12 @@ export interface KritzelTheme {
     gap?: string;
   };
 
+  /** Text object variables */
+  text?: {
+    selectionBackgroundColor?: string;
+    selectionColor?: string;
+  };
+
   /** Text input variables */
   textInput?: {
     background?: string;
@@ -552,6 +565,66 @@ export interface KritzelTheme {
     suffixBackground?: string;
     suffixColor?: string;
     textColor?: string;
+  };
+
+  /** Titlebar variables */
+  titlebar?: {
+    activeBackgroundColor?: string;
+    activeBorder?: string;
+    activeBoxShadow?: string;
+    activeButtonFilledBackgroundColor?: string;
+    activeIconColor?: string;
+    activeMutedTextColor?: string;
+    activeTextColor?: string;
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    buttonBorderRadius?: string;
+    buttonFilledBackgroundColor?: string;
+    buttonFilledColor?: string;
+    buttonHoverBackgroundColor?: string;
+    buttonOutlineColor?: string;
+    buttonPressedBackgroundColor?: string;
+    buttonSize?: string;
+    focusRing?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    fontWeight?: string;
+    gap?: string;
+    height?: string;
+    hoverBackgroundColor?: string;
+    iconColor?: string;
+    iconSize?: string;
+    inputBackgroundColor?: string;
+    inputPadding?: string;
+    mutedTextColor?: string;
+    offset?: string;
+    paddingX?: string;
+    selectionBackgroundColor?: string;
+    selectionColor?: string;
+    textColor?: string;
+    titleFontWeight?: string;
+    transition?: string;
+  };
+
+  /** Titlebar menu variables, for the menu `kritzel-editor` opens from a titlebar `menu` element */
+  titlebarMenu?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    fontFamily?: string;
+    gap?: string;
+    itemBorderRadius?: string;
+    itemColor?: string;
+    itemFontSize?: string;
+    itemHeight?: string;
+    itemHoverBackgroundColor?: string;
+    itemPadding?: string;
+    maxWidth?: string;
+    minWidth?: string;
+    padding?: string;
   };
 
   /** Toolbar variables */

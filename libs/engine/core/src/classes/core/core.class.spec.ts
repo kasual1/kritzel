@@ -1146,6 +1146,9 @@ describe('KritzelCore', () => {
     mockStore.selectionGroup = { objects: objs } as any;
   };
 
+  /** The selected objects, passed explicitly like the editor does. */
+  const selection = (): any[] => mockStore.selectionGroup?.objects ?? [];
+
   const emittedUpdates = () => mockEngine.emitObjectsUpdated.mock.calls.flatMap(([updates]: any[]) => updates);
 
   /**
@@ -1482,25 +1485,12 @@ describe('KritzelCore', () => {
       createFromObjectsSpy.mockRestore();
     });
 
-    it('does nothing without a selection or with fewer than two selected objects', () => {
-      const a = createShape('a', 1);
-      setStoreObjects(a);
-
-      core.group();
-      select(a);
-      core.group();
-
-      expect(createFromObjectsSpy).not.toHaveBeenCalled();
-      expect(mockObjectsMap.insert).not.toHaveBeenCalled();
-      expect(mockObjectsMap.update).not.toHaveBeenCalled();
-    });
-
     it('groups adjacent objects without changing their zIndex and selects the group', () => {
       const [w, a, b, x, y] = ['w', 'a', 'b', 'x', 'y'].map((id, index) => createShape(id, index));
       setStoreObjects(w, a, b, x, y);
       select(a, b);
 
-      core.group();
+      core.group(selection());
 
       const group = createdGroup();
       expect(group.childIds).toEqual(['a', 'b']);
@@ -1521,7 +1511,7 @@ describe('KritzelCore', () => {
       setStoreObjects(a, x, b, y);
       select(b, a);
 
-      core.group();
+      core.group(selection());
 
       const group = createdGroup();
       expect(zIndices(a, x, b, y)).toEqual([2, 1, 3, 4]);
@@ -1538,7 +1528,7 @@ describe('KritzelCore', () => {
       const store = trackStoreWrites([a, x, b, y]);
       select(a, b);
 
-      core.group();
+      core.group(selection());
 
       const group = createdGroup();
       expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
@@ -1565,7 +1555,7 @@ describe('KritzelCore', () => {
       const store = trackStoreWrites(objs);
       select(a, b);
 
-      core.group();
+      core.group(selection());
 
       const group = createdGroup();
       expect(group.childIds).toEqual(['a', 'b']);
@@ -1582,7 +1572,7 @@ describe('KritzelCore', () => {
       setStoreObjects(a, b, c, parent);
       select(a, b);
 
-      core.group();
+      core.group(selection());
 
       expect(createdGroup().rotation).toBe(Math.PI / 4);
       expect(newSelectionGroup.rotation).toBe(Math.PI / 4);
@@ -1600,7 +1590,7 @@ describe('KritzelCore', () => {
       setStoreObjects(x, c, d, inner, y, outer, top);
       select(inner, top);
 
-      core.group();
+      core.group(selection());
 
       expect(createdGroup().childIds).toEqual(['outer', 'top']);
       expect(outer.childIds).toEqual(['x', 'inner', 'y']);
@@ -1613,13 +1603,121 @@ describe('KritzelCore', () => {
       const group = createGroup('group', 2, ['a', 'b']);
       setStoreObjects(a, b, group);
       select(group, a, b);
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 
-      core.group();
+      expect(core.group(selection())).toBeNull();
 
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('at least two'));
+      warnSpy.mockRestore();
       expect(createFromObjectsSpy).not.toHaveBeenCalled();
       expect(mockObjectsMap.insert).not.toHaveBeenCalled();
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
       expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
+    });
+
+    it('returns the created group', () => {
+      const a = createShape('a', 1);
+      const b = createShape('b', 2);
+      setStoreObjects(a, b);
+      select(a, b);
+
+      expect(core.group(selection())).toBe(createdGroup());
+    });
+
+    describe('input handling', () => {
+      let warnSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      });
+
+      afterEach(() => {
+        warnSpy.mockRestore();
+      });
+
+      it('groups the given objects in one undo step and ignores the selection', () => {
+        const a = createShape('a', 1);
+        const x = createShape('x', 2);
+        const b = createShape('b', 3);
+        const objs = [a, x, b];
+        setStoreObjects(...objs);
+        const store = trackStoreWrites(objs);
+        select(x);
+
+        const group = core.group([b, a]);
+
+        expect(group).toBe(createdGroup());
+        expect(group.childIds).toEqual(['a', 'b']);
+        expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
+        expect(store.inside).toContain(`insert:${group.id}`);
+        expect(createSelectionGroupSpy).not.toHaveBeenCalled();
+        expect(mockStore.setSelectionGroup).not.toHaveBeenCalled();
+        expect(mockEngine.emitObjectsChange).toHaveBeenCalled();
+        expect(warnSpy).not.toHaveBeenCalled();
+      });
+
+      it('resolves stale references by id to the store instances', () => {
+        const a = createShape('a', 1);
+        const b = createShape('b', 2);
+        setStoreObjects(a, b);
+
+        core.group([{ ...a }, { ...b }]);
+
+        expect(createFromObjectsSpy.mock.calls[0][1]).toEqual([a, b]);
+        expect(createFromObjectsSpy.mock.calls[0][1][0]).toBe(a);
+      });
+
+      it('skips objects that are not in the workspace with a warning', () => {
+        const a = createShape('a', 1);
+        const b = createShape('b', 2);
+        const c = createShape('c', 3);
+        setStoreObjects(a, b, c);
+
+        const group = core.group([a, createShape('missing', 9), c]);
+
+        expect(group.childIds).toEqual(['a', 'c']);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'missing'"));
+      });
+
+      it('does nothing and warns with fewer than two objects', () => {
+        const a = createShape('a', 1);
+        setStoreObjects(a);
+        select(a, createShape('b', 2));
+
+        expect(core.group([])).toBeNull();
+        expect(core.group([a])).toBeNull();
+        expect(core.group([a, createShape('missing', 2)])).toBeNull();
+
+        expect(createFromObjectsSpy).not.toHaveBeenCalled();
+        expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('at least two'));
+      });
+
+      it('groups objects that are already in a group within that group', () => {
+        const a = createShape('a', 1);
+        const b = createShape('b', 2);
+        const c = createShape('c', 3);
+        const parent = { ...createGroup('parent', 3, ['a', 'b', 'c']), finalize: jest.fn() };
+        setStoreObjects(a, b, c, parent);
+
+        const group = core.group([a, b]);
+
+        expect(group.childIds).toEqual(['a', 'b']);
+        expect(parent.childIds).toEqual([group.id, 'c']);
+      });
+
+      it('replaces selected members by the group and keeps other selected objects', () => {
+        const a = createShape('a', 1);
+        const b = createShape('b', 2);
+        const other = createShape('other', 3);
+        setStoreObjects(a, b, other);
+        select(a, other);
+
+        const group = core.group([a, b]);
+
+        expect(newSelectionGroup.objects).toEqual([group, other]);
+        expect(mockStore.setSelectionGroup).toHaveBeenLastCalledWith(newSelectionGroup);
+      });
     });
   });
 
@@ -1650,7 +1748,7 @@ describe('KritzelCore', () => {
       const store = trackStoreWrites(objs);
       select(group);
 
-      core.ungroup();
+      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
 
       expect(group.isMounted).toBe(false);
       expect([c1.isMounted, c2.isMounted]).toEqual([true, true]);
@@ -1670,7 +1768,7 @@ describe('KritzelCore', () => {
       setStoreObjects(c1, c2, group, p, q);
       select(group);
 
-      core.ungroup();
+      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
 
       expect(zIndices(c1, c2, p, q)).toEqual([1, 2, 4, 4]);
       expect(mockObjectsMap.update).not.toHaveBeenCalled();
@@ -1699,7 +1797,7 @@ describe('KritzelCore', () => {
       const live = setMutableStoreObjects(x, c, d, inner, y, parent);
       select(inner);
 
-      core.ungroup();
+      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
 
       expect(parent.childIds).toEqual(['x', 'c', 'd', 'y']);
       expect(parent.finalize).toHaveBeenCalled();
@@ -1718,7 +1816,7 @@ describe('KritzelCore', () => {
       setMutableStoreObjects(a, b, c, inner, outer);
       select(outer, inner, a, b, c);
 
-      core.ungroup();
+      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
 
       expect(newSelectionGroup.objects.map((obj: any) => obj.id).sort()).toEqual(['a', 'b', 'c']);
     });
@@ -1734,7 +1832,7 @@ describe('KritzelCore', () => {
       setMutableStoreObjects(a, b, g1, c, d, g2);
       select(g1, g2);
 
-      core.ungroup();
+      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
 
       const values = zIndices(a, b, c, d);
       expect(new Set(values).size).toBe(4);
@@ -1755,7 +1853,7 @@ describe('KritzelCore', () => {
       const store = trackStoreWrites(objs);
       select(group);
 
-      core.ungroup();
+      core.ungroup(selection().filter(obj => obj instanceof KritzelGroup));
 
       expect(c1.zIndex).toBeLessThan(c2.zIndex);
       expect(c2.zIndex).toBeLessThan(c3.zIndex);
@@ -1765,6 +1863,106 @@ describe('KritzelCore', () => {
       expect(store.inside).toContain('remove:group');
       expect(store.inside.some(label => label.startsWith('update:'))).toBe(true);
       expect(store.outside.filter(label => label.startsWith('update:'))).toEqual([]);
+    });
+
+    describe('input handling', () => {
+      let warnSpy: jest.SpyInstance;
+
+      beforeEach(() => {
+        warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      });
+
+      afterEach(() => {
+        warnSpy.mockRestore();
+      });
+
+      it('ungroups several groups in one undo step, returns the children and leaves the selection alone', () => {
+        const a = createChild('a', 1);
+        const b = createChild('b', 2);
+        const g1 = createKritzelGroup('g1', 2, ['a', 'b']);
+        const c = createChild('c', 3);
+        const d = createChild('d', 4);
+        const g2 = createKritzelGroup('g2', 4, ['c', 'd']);
+        const other = createChild('other', 5);
+        const objs = [a, b, g1, c, d, g2, other];
+        setMutableStoreObjects(...objs);
+        const store = trackStoreWrites(objs);
+        select(other);
+
+        const children = core.ungroup([g1, g2]);
+
+        expect(children).toEqual([a, b, c, d]);
+        expect([g1.isMounted, g2.isMounted]).toEqual([false, false]);
+        expect(store.events).toEqual(['stopUndoCapturing', 'transaction', 'stopUndoCapturing']);
+        expect(store.inside.filter(label => label.startsWith('remove:')).sort()).toEqual(['remove:g1', 'remove:g2']);
+        expect(createSelectionGroupSpy).not.toHaveBeenCalled();
+        expect(mockStore.setSelectionGroup).not.toHaveBeenCalled();
+        expect(mockEngine.emitObjectsChange).toHaveBeenCalled();
+      });
+
+      it('resolves stale references by id', () => {
+        const a = createChild('a', 1);
+        const b = createChild('b', 2);
+        const group = createKritzelGroup('group', 2, ['a', 'b']);
+        setMutableStoreObjects(a, b, group);
+        const stale = Object.assign(new KritzelGroup(), { id: 'group', childIds: [] });
+
+        expect(core.ungroup([stale])).toEqual([a, b]);
+        expect(group.isMounted).toBe(false);
+      });
+
+      it('skips non-group entries and unknown groups with a warning', () => {
+        const a = createChild('a', 1);
+        const b = createChild('b', 2);
+        const group = createKritzelGroup('group', 2, ['a', 'b']);
+        const loose = createChild('loose', 3);
+        setMutableStoreObjects(a, b, group, loose);
+
+        const children = core.ungroup([loose, group, createKritzelGroup('missing', 9, [])] as any);
+
+        expect(children).toEqual([a, b]);
+        expect(loose.isMounted).toBe(true);
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'loose': it is not a KritzelGroup"));
+        expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("'missing': it is not in the active workspace"));
+      });
+
+      it('does nothing for an empty array even when groups are selected', () => {
+        const a = createChild('a', 1);
+        const b = createChild('b', 2);
+        const group = createKritzelGroup('group', 2, ['a', 'b']);
+        setMutableStoreObjects(a, b, group);
+        select(group);
+
+        expect(core.ungroup([])).toEqual([]);
+        expect(group.isMounted).toBe(true);
+        expect(mockObjectsMap.transaction).not.toHaveBeenCalled();
+      });
+
+      it('replaces a selected dissolved group by its children and keeps other selected objects', () => {
+        const a = createChild('a', 1);
+        const b = createChild('b', 2);
+        const group = createKritzelGroup('group', 2, ['a', 'b']);
+        const other = createChild('other', 3);
+        setMutableStoreObjects(a, b, group, other);
+        select(other, group);
+
+        core.ungroup([group]);
+
+        expect(newSelectionGroup.objects).toEqual([other, a, b]);
+      });
+
+      it('keeps the children of a nested group inside its parent group', () => {
+        const x = createChild('x', 1);
+        const c = createChild('c', 2);
+        const d = createChild('d', 3);
+        const inner = createKritzelGroup('inner', 3, ['c', 'd']);
+        const parent = { ...createGroup('parent', 3, ['x', 'inner']), finalize: jest.fn() };
+        setMutableStoreObjects(x, c, d, inner, parent);
+
+        core.ungroup([inner]);
+
+        expect(parent.childIds).toEqual(['x', 'c', 'd']);
+      });
     });
   });
 

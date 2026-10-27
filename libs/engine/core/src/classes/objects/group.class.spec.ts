@@ -599,6 +599,14 @@ describe('KritzelGroup', () => {
   });
 
   describe('copy', () => {
+    it('should copy the name', () => {
+      groupObject.name = 'Hero';
+
+      const copied = groupObject.copy();
+
+      expect(copied.name).toBe('Hero');
+    });
+
     it('should create a new group', () => {
       const copied = groupObject.copy();
 

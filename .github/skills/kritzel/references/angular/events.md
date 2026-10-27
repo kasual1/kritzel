@@ -32,6 +32,7 @@ onObjectsChange(e: CustomEvent<KritzelBaseObject[]>) {
 | `isPublicChange` | `IKritzelIsPublicChangeEvent` | Share-state of active workspace toggles |
 | `awarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `login` / `logout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
+| `objectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`elementId`, `menuItemId?`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked or a titlebar menu item is selected (also on the engine) — in addition to the button's or menu item's own `action` |
 
 ## `<kritzel-engine>` events
 
@@ -46,6 +47,7 @@ Engine emits the same object/viewport/undo/awareness events plus:
 | `activeWorkspaceChange` | `KritzelWorkspace` | Active workspace switches (full object, unlike editor) |
 | `objectsInViewportChange` | `ObjectsInViewportChangeEvent` | Set of visible objects changes |
 | `longpress` | `PointerEvent` | Touch/pen long-press — custom mobile context menus |
+| `objectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState` (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
 
 ## Canonical pattern: events → signals (OnPush)
 
@@ -101,9 +103,27 @@ onRemoved(e: CustomEvent<ObjectsRemovedEvent>) { this.tree.remove(e.detail.objec
 onUpdated(e: CustomEvent<ObjectsUpdatedEvent>) { this.tree.update(e.detail.objects); }
 ```
 
+## Titlebar button and menu clicks
+
+With an `[objectTitlebar]` configured (see theming-and-context-menus.md), every button click emits `(objectTitlebarAction)`. Identify the button by `elementId` and the object by `objectId`; `anchorRect` is the button's client rect for anchoring a popover. Selecting an item of a titlebar `menu` emits the same event with the menu's id as `elementId` and the menu item's id as `menuItemId`:
+
+```html
+<kritzel-editor [objectTitlebar]="objectTitlebar" (objectTitlebarAction)="onTitlebarAction($event)"></kritzel-editor>
+```
+
+```ts
+async onTitlebarAction(e: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+  const { elementId, menuItemId, objectId, objectType } = e.detail;
+  const object = await this.editor.getObjectById(objectId);
+  this.lastAction.set(`${menuItemId ?? elementId} · ${object?.name ?? objectType}`);
+}
+```
+
+The output runs inside the Angular zone. A button's `action` callback on the config does not (the proxies set inputs outside `NgZone`), so update state from the output, or wrap work in `action` with `this.ngZone.run(() => …)`.
+
 ## Import sources for event payload types
 
-All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

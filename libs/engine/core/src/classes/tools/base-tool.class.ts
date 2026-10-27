@@ -47,6 +47,21 @@ export class KritzelBaseTool implements KritzelTool, KritzelSerializable {
   }
 
   /**
+   * After a press has ended an edit and switched to the selection tool, lets a press on an
+   * object titlebar continue as a select-and-drag instead of being dropped.
+   * @param event - The pointer down event that ended the edit
+   */
+  protected continueTitlebarPress(event: PointerEvent): void {
+    if (!this._core.objectTitlebarManager.getOwnerFromEvent(event)) {
+      return;
+    }
+    const activeTool = this._core.store.state.activeTool;
+    if (activeTool && activeTool !== this) {
+      activeTool.handlePointerDown(event);
+    }
+  }
+
+  /**
    * Handles pointer down events (mouse click, touch start, pen down).
    * Override in subclasses to implement tool-specific behavior when the user starts an interaction.
    * @param _event - The PointerEvent containing information about the pointer (position, type, buttons, etc.)

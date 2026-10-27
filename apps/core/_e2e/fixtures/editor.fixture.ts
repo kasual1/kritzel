@@ -56,6 +56,7 @@ export interface ThemeAwareColor {
 export type ShapeType = 'rectangle' | 'ellipse' | 'triangle';
 
 export interface KritzelShapeConfig {
+  name?: string;
   shapeType?: ShapeType;
   translateX?: number;
   translateY?: number;
@@ -83,6 +84,7 @@ export interface KritzelPathConfig {
 }
 
 export interface KritzelTextConfig {
+  name?: string;
   text?: string;
   translateX?: number;
   translateY?: number;
@@ -990,14 +992,25 @@ export class EditorPage {
     return this.callMethod('alignObjects', alignment);
   }
 
-  /** Group selected objects. */
+  /** Group the selected objects. */
   async group() {
-    return this.callMethod('group');
+    return this.page.evaluate(async () => {
+      const el = document.querySelector('kritzel-editor') as any;
+      if (!el) throw new Error('kritzel-editor not found');
+      const selected = await el.getSelectedObjects();
+      await el.group(selected);
+    });
   }
 
-  /** Ungroup selected group. */
+  /** Ungroup the selected groups. */
   async ungroup() {
-    return this.callMethod('ungroup');
+    return this.page.evaluate(async () => {
+      const el = document.querySelector('kritzel-editor') as any;
+      if (!el) throw new Error('kritzel-editor not found');
+      const selected: any[] = await el.getSelectedObjects();
+      const groups = selected.filter(object => object.__class__ === 'KritzelGroup');
+      await el.ungroup(groups);
+    });
   }
 
   // --- Selection ---
