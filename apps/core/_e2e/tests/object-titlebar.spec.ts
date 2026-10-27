@@ -347,6 +347,26 @@ test.describe('Object titlebar', () => {
       await expect(button).toHaveAttribute('aria-expanded', 'false');
     });
 
+    test('the context menu still opens after the menu was closed by clicking elsewhere', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await addMenu(page);
+      const errors: string[] = [];
+      page.on('pageerror', error => errors.push(error.message));
+      page.on('console', message => message.type() === 'error' && errors.push(message.text()));
+
+      await titlebarFor(page, shape.id).locator('[data-element-id="more"]').click();
+      await expect(menu(page)).toBeVisible();
+      const empty = await editorPage.worldToPage(800, 600);
+      await page.mouse.click(empty.pageX, empty.pageY);
+      await expect(menu(page)).toBeHidden();
+
+      // The closed portal removes itself from the editor, which must not break the editor's later renders.
+      await page.mouse.click(empty.pageX, empty.pageY, { button: 'right' });
+
+      await page.locator('kritzel-editor kritzel-context-menu >>> .menu-container').first().waitFor({ state: 'visible' });
+      expect(errors).toEqual([]);
+    });
+
     test('closes when the camera moves', async ({ editorPage, page }) => {
       const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
       await addMenu(page);

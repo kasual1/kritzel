@@ -346,8 +346,10 @@ export class KritzelEditor {
    * and which can be rotated or resized. Each option is a boolean or a function of the object.
    */
   @Prop() objectConfig?: KritzelObjectConfig = {
-    hasTitlebar: (object) => object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",
-    isRotatable: (object) => object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",
+    hasTitlebar: (object) =>
+      object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",
+    isRotatable: (object) =>
+      object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",
   };
 
   /**
@@ -366,7 +368,28 @@ export class KritzelEditor {
           `${Math.round(size.width)} × ${Math.round(size.height)}`,
       },
     ],
-    right: [{ id: "play", type: "button", icon: "play", tooltip: "Play" }],
+    right: [
+      {
+        id: "more",
+        type: "menu",
+        icon: "ellipsisVertical",
+        tooltip: "More",
+        items: [
+          { id: "duplicate", label: "Duplicate", icon: "copy" },
+          {
+            id: "export",
+            label: "Export",
+            action: ({ object }) => console.log("Export object", object.id)
+          },
+          {
+            id: "ungroup",
+            label: "Ungroup",
+            isDisabled: ({ objectType }) => objectType !== "KritzelGroup",
+          },
+        ],
+      },
+      { id: "play", type: "button", icon: "play", tooltip: "Play" },
+    ],
   };
 
   @Prop() moreMenuItems?: IKritzelMenuItem[] = [
@@ -2119,22 +2142,26 @@ export class KritzelEditor {
             ></kritzel-context-menu>
           )}
 
-          {/* Titlebar menus are tracked by the engine and rendered here, anchored to their menu button. */}
-          <kritzel-portal
-            anchor={this.objectTitlebarMenuState?.anchor ?? null}
-            offsetY={4}
-            onClose={() => void this.engineRef?.closeObjectTitlebarMenu()}
-          >
-            <kritzel-menu
-              data-testid="object-titlebar-menu"
-              items={this.objectTitlebarMenuItems}
-              onItemSelect={(event) =>
-                void this.engineRef?.selectObjectTitlebarMenuItem(
-                  event.detail.item.id,
-                )
-              }
-            ></kritzel-menu>
-          </kritzel-portal>
+          {/* Titlebar menus are tracked by the engine and rendered here, anchored to their menu button.
+              The portal moves itself to the body and removes itself when it closes, so it gets a
+              wrapper of its own: siblings rendered later must never be inserted relative to it. */}
+          <div class="object-titlebar-menu-host">
+            <kritzel-portal
+              anchor={this.objectTitlebarMenuState?.anchor ?? null}
+              offsetY={4}
+              onClose={() => void this.engineRef?.closeObjectTitlebarMenu()}
+            >
+              <kritzel-menu
+                data-testid="object-titlebar-menu"
+                items={this.objectTitlebarMenuItems}
+                onItemSelect={(event) =>
+                  void this.engineRef?.selectObjectTitlebarMenuItem(
+                    event.detail.item.id,
+                  )
+                }
+              ></kritzel-menu>
+            </kritzel-portal>
+          </div>
 
           <kritzel-loading-overlay
             visible={this.isLoadingOverlayVisible}

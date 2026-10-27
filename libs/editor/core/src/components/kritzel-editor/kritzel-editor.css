@@ -176,3 +176,8 @@ kritzel-chat-box {
 .top-right-button:active {
   background-color: #ebebeb;
 }
+
+/* Holds only the titlebar menu portal, which lives in the body while open. */
+.object-titlebar-menu-host {
+  display: contents;
+}

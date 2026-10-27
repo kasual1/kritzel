@@ -465,7 +465,7 @@ export namespace Components {
         "moveAgenticCursor": (id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>;
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
-          * @default {     hasTitlebar: (object) => object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",     isRotatable: (object) => object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",   }
+          * @default {     hasTitlebar: (object) =>       object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",     isRotatable: (object) =>       object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",   }
          */
         "objectConfig"?: KritzelObjectConfig;
         /**
@@ -474,7 +474,7 @@ export namespace Components {
         "objectContextMenuItems": ContextMenuItem[];
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
-          * @default {     left: [       { id: "title", type: "title", isEditable: true },       {         id: "size",         type: "text",         tone: "muted",         minBarWidth: 120, // hide the dimensions when the bar gets narrow         text: ({ size }) =>           `${Math.round(size.width)} × ${Math.round(size.height)}`,       },     ],     right: [{ id: "play", type: "button", icon: "play", tooltip: "Play" }],   }
+          * @default {     left: [       { id: "title", type: "title", isEditable: true },       {         id: "size",         type: "text",         tone: "muted",         minBarWidth: 120, // hide the dimensions when the bar gets narrow         text: ({ size }) =>           `${Math.round(size.width)} × ${Math.round(size.height)}`,       },     ],     right: [       {         id: "more",         type: "menu",         icon: "ellipsisVertical",         tooltip: "More",         items: [           { id: "duplicate", label: "Duplicate", icon: "copy" },           {             id: "export",             label: "Export",             action: ({ object }) => console.log("Export object", object.id)           },           {             id: "ungroup",             label: "Ungroup",             isDisabled: ({ objectType }) => objectType !== "KritzelGroup",           },         ],       },       { id: "play", type: "button", icon: "play", tooltip: "Play" },     ],   }
          */
         "objectTitlebar"?: KritzelObjectTitlebarConfig;
         "openContextMenu": (options: { x: number; y: number; objectId?: string; }) => Promise<void>;
@@ -2415,7 +2415,7 @@ declare namespace LocalJSX {
         "moreMenuItems"?: IKritzelMenuItem[];
         /**
           * Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object.
-          * @default {     hasTitlebar: (object) => object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",     isRotatable: (object) => object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",   }
+          * @default {     hasTitlebar: (object) =>       object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",     isRotatable: (object) =>       object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",   }
          */
         "objectConfig"?: KritzelObjectConfig;
         /**
@@ -2424,7 +2424,7 @@ declare namespace LocalJSX {
         "objectContextMenuItems"?: ContextMenuItem[];
         /**
           * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars.
-          * @default {     left: [       { id: "title", type: "title", isEditable: true },       {         id: "size",         type: "text",         tone: "muted",         minBarWidth: 120, // hide the dimensions when the bar gets narrow         text: ({ size }) =>           `${Math.round(size.width)} × ${Math.round(size.height)}`,       },     ],     right: [{ id: "play", type: "button", icon: "play", tooltip: "Play" }],   }
+          * @default {     left: [       { id: "title", type: "title", isEditable: true },       {         id: "size",         type: "text",         tone: "muted",         minBarWidth: 120, // hide the dimensions when the bar gets narrow         text: ({ size }) =>           `${Math.round(size.width)} × ${Math.round(size.height)}`,       },     ],     right: [       {         id: "more",         type: "menu",         icon: "ellipsisVertical",         tooltip: "More",         items: [           { id: "duplicate", label: "Duplicate", icon: "copy" },           {             id: "export",             label: "Export",             action: ({ object }) => console.log("Export object", object.id)           },           {             id: "ungroup",             label: "Ungroup",             isDisabled: ({ objectType }) => objectType !== "KritzelGroup",           },         ],       },       { id: "play", type: "button", icon: "play", tooltip: "Play" },     ],   }
          */
         "objectTitlebar"?: KritzelObjectTitlebarConfig;
         "onActiveWorkspaceChange"?: (event: KritzelEditorCustomEvent<ActiveWorkspaceChangeEvent>) => void;
