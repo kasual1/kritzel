@@ -1,4 +1,4 @@
-import { test, expect } from '../fixtures/editor.fixture';
+import { test, expect, type EditorPage } from '../fixtures/editor.fixture';
 import type { Locator, Page } from '@playwright/test';
 
 /** Configures a Framer-like titlebar for groups and named objects and records button actions and events on window. */
@@ -935,6 +935,127 @@ test.describe('Object titlebar', () => {
     const box = await titlebar.boundingBox();
     const topLeft = await editorPage.worldToPage(200, 200);
     expect(Math.abs(box!.y + box!.height - topLeft.pageY)).toBeLessThanOrEqual(1.5);
+  });
+
+  test.describe('visual regression', () => {
+    /** Moves the pointer off the titlebars so no hover styles end up in the screenshot, then waits for a render. */
+    async function settle(editorPage: EditorPage, page: Page) {
+      const empty = await editorPage.worldToPage(1000, 600);
+      await page.mouse.move(empty.pageX, empty.pageY);
+      await nextFrame(page);
+    }
+
+    test('visual: inactive and active titlebars', async ({ editorPage, page }) => {
+      await editorPage.addShape({ translateX: 100, translateY: 150, width: 300, height: 150, name: 'Desktop' });
+      const active = await editorPage.addShape({ translateX: 500, translateY: 150, width: 300, height: 150, name: 'Tablet' });
+      await editorPage.selectObjects([active]);
+      await settle(editorPage, page);
+
+      await expect(editorPage.engine).toHaveScreenshot({ animations: 'disabled' });
+    });
+
+    test('visual: titlebar with every element type', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          left: [
+            { type: 'icon', id: 'kind', icon: 'viewport' },
+            { type: 'title', id: 'title' },
+            { type: 'separator', id: 'divider' },
+            { type: 'text', id: 'dimensions', tone: 'muted', text: (context: any) => `${Math.round(context.contentSize.width)} × ${Math.round(context.contentSize.height)}` },
+            { type: 'text', id: 'status', tone: 'strong', text: 'Draft' },
+          ],
+          center: [{ type: 'button', id: 'preview', label: 'Preview', variant: 'outlined' }],
+          right: [
+            { type: 'button', id: 'play', icon: 'play', variant: 'filled', tooltip: 'Play' },
+            { type: 'button', id: 'pin', icon: 'copy', tooltip: 'Pin', isPressed: true },
+            { type: 'button', id: 'locked', icon: 'settings', tooltip: 'Locked', isDisabled: true },
+            { type: 'menu', id: 'more', icon: 'ellipsisVertical', tooltip: 'More', items: [{ id: 'duplicate', label: 'Duplicate' }] },
+          ],
+        };
+      });
+      await editorPage.addShape({ translateX: 100, translateY: 150, width: 700, height: 200, name: 'Landing page' });
+      await settle(editorPage, page);
+
+      await expect(editorPage.engine).toHaveScreenshot({ animations: 'disabled' });
+    });
+
+    test('visual: open titlebar menu', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 100, translateY: 150, width: 400, height: 200, name: 'Desktop' });
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          ...editor.objectTitlebar,
+          right: [
+            {
+              type: 'menu',
+              id: 'more',
+              icon: 'ellipsisVertical',
+              tooltip: 'More',
+              items: [
+                { id: 'duplicate', label: 'Duplicate', icon: 'copy' },
+                { id: 'settings', label: 'Settings', icon: 'settings' },
+                { id: 'delete', label: 'Delete', icon: 'delete', isDisabled: true },
+              ],
+            },
+          ],
+        };
+      });
+      await nextFrame(page);
+      await titlebarFor(page, shape.id).locator('[data-element-id="more"]').click();
+      await expect(page.locator('kritzel-menu[data-testid="object-titlebar-menu"]')).toBeVisible();
+      await settle(editorPage, page);
+
+      // The menu lives in a portal on the body, so capture the whole page.
+      await expect(page).toHaveScreenshot({ animations: 'disabled' });
+    });
+
+    test('visual: title rename input', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 100, translateY: 150, width: 400, height: 200, name: 'Desktop' });
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = {
+          ...editor.objectTitlebar,
+          left: editor.objectTitlebar.left.map((item: any) => (item.type === 'title' ? { ...item, isEditable: true } : item)),
+        };
+      });
+      await nextFrame(page);
+      const title = titlebarFor(page, shape.id).locator('.object-titlebar-title');
+      await title.click();
+      await title.click();
+      const input = titlebarFor(page, shape.id).locator('input.object-titlebar-title-input');
+      await expect(input).toBeFocused();
+      // Collapse the initial select-all so the screenshot shows the plain input.
+      await page.keyboard.press('End');
+      await settle(editorPage, page);
+
+      await expect(editorPage.engine).toHaveScreenshot({ animations: 'disabled' });
+    });
+
+    test('visual: titlebars of rotated objects follow or stay upright', async ({ editorPage, page }) => {
+      await editorPage.addShape({ translateX: 150, translateY: 200, width: 300, height: 150, rotation: 20, name: 'Follows' });
+      await settle(editorPage, page);
+      await expect(editorPage.engine).toHaveScreenshot('rotation-follow.png', { animations: 'disabled' });
+
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.objectTitlebar = { ...editor.objectTitlebar, rotation: 'upright' };
+      });
+      await settle(editorPage, page);
+      await expect(editorPage.engine).toHaveScreenshot('rotation-upright.png', { animations: 'disabled' });
+    });
+
+    test('visual: titlebars in the dark theme', async ({ editorPage, page }) => {
+      await page.evaluate(() => {
+        (document.querySelector('kritzel-editor') as any).theme = 'dark';
+      });
+      await editorPage.addShape({ translateX: 100, translateY: 150, width: 300, height: 150, name: 'Desktop' });
+      const active = await editorPage.addShape({ translateX: 500, translateY: 150, width: 300, height: 150, name: 'Tablet' });
+      await editorPage.selectObjects([active]);
+      await settle(editorPage, page);
+
+      await expect(editorPage.engine).toHaveScreenshot({ animations: 'disabled' });
+    });
   });
 
   test('exposes parts for styling from page CSS', async ({ editorPage, page }) => {
