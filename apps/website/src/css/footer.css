@@ -143,6 +143,31 @@
   line-height: 1.55;
 }
 
+.docs-footnote__actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+
+.docs-footnote__star {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--ifm-toc-border-color);
+  border-radius: 10px;
+  color: #0a0a0a;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.docs-footnote__star:hover {
+  border-color: #0a0a0a;
+  color: #0a0a0a;
+  text-decoration: none;
+}
+
 .docs-footnote__bottom {
   margin-top: 60px;
   padding-top: 15px;
