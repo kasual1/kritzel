@@ -198,7 +198,7 @@ customLocales: KritzelLocale[] = [customEnglish];
 
 ### Object type labels
 
-Used as the default title of [object titlebars](../fundamentals/controls.md#titlebar) when an object has no `name`.
+Used as the default title of [object titlebars](../fundamentals/controls.md#object-titlebar) when an object has no `name`.
 
 | Key | Default text |
 |------|--------------|

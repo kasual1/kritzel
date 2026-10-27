@@ -91,6 +91,6 @@ import { lightTheme, darkTheme } from '@kritzel/engine';
 
 Theme sections include: `global`, `engine`, `toolbar`, `selection`, `dialog`, `contextMenu`, `utilityPanel`, `tooltip`, `menu`, `dropdown`, `portal`, `settings`, `splitButton`, `moreMenu`, `titlebar`, and more.
 
-The `titlebar` section styles [object titlebars](../fundamentals/controls.md#titlebar). See [Theming](./theming.md#titlebar) for its properties and default values.
+The `titlebar` section styles [object titlebars](../fundamentals/controls.md#object-titlebar). See [Theming](./theming.md#titlebar) for its properties and default values.
 
 Each section contains granular color tokens (background, text, border, hover states, etc.) that map to CSS custom properties on the component host elements.

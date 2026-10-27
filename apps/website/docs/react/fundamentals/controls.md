@@ -23,7 +23,7 @@ The toolbar provides the configured drawing and selection tools, while the utili
   repoFiles={['src/pages/fundamentals/controls/ToolbarUtilityPanelPage.tsx']}
 />
 
-## Titlebar
+## Object Titlebar
 
 A titlebar is an optional bar rendered above an object, similar to the frame labels in design tools. Pass a `KritzelObjectTitlebarConfig` such as the ready-made `KRITZEL_DEFAULT_OBJECT_TITLEBAR` to the `objectTitlebar` prop, and choose which objects get a titlebar with the `hasTitlebar` option of the `objectConfig` prop, either `true` or a function that receives an object. Both are required. The titlebar shows the object's `name`, or a localized type label such as `Shape` if it has none. Pressing a titlebar selects its object, and dragging it moves the object.
 

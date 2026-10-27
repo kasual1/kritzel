@@ -97,7 +97,7 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 ## Configuring Objects
 
-Bind a `KritzelObjectConfig` to `[objectConfig]` to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Compare `object.__class__` to decide by type, because `instanceof` fails when the app bundles more than one copy of the engine.
+Bind a `KritzelObjectConfig` to `[objectConfig]` to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#object-titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Compare `object.__class__` to decide by type, because `instanceof` fails when the app bundles more than one copy of the engine.
 
 ```ts
 import type { KritzelObjectConfig } from '@kritzel/angular-editor';

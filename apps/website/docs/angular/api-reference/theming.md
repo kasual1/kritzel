@@ -424,7 +424,7 @@ const customTheme: KritzelTheme = {
 
 ## Titlebar
 
-Applies to [object titlebars](../fundamentals/controls.md#titlebar). `height` and `offset` must be pixel values.
+Applies to [object titlebars](../fundamentals/controls.md#object-titlebar). `height` and `offset` must be pixel values.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
@@ -468,7 +468,7 @@ Applies to [object titlebars](../fundamentals/controls.md#titlebar). `height` an
 
 ## Titlebar Menu
 
-Applies to the menu that the editor opens from a titlebar `menu` element, see [Titlebar](../fundamentals/controls.md#titlebar). The defaults match the context menu.
+Applies to the menu that the editor opens from a titlebar `menu` element, see [Object Titlebar](../fundamentals/controls.md#object-titlebar). The defaults match the context menu.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
