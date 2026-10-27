@@ -377,7 +377,7 @@ Each option is a fixed value for every object, or a function deciding per object
 
 ## Object Titlebar Types
 
-Types used by the [`objectTitlebar` prop](./editor.md#object-titlebar). See [Titlebars](../customization/titlebars.md) for usage.
+Types used by the [`objectTitlebar` prop](./editor.md#object-titlebar). See [Titlebar](../fundamentals/controls.md#titlebar) for usage.
 
 ### `KritzelObjectTitlebarConfig`
 
@@ -396,7 +396,7 @@ interface KritzelObjectTitlebarConfig {
 }
 ```
 
-Which objects get a titlebar is decided by [`KritzelObjectConfig`](#kritzelobjectconfig) on the `objectConfig` prop, not by this configuration. See [Choosing Which Objects Get a Titlebar](../customization/titlebars.md#choosing-which-objects-get-a-titlebar).
+Which objects get a titlebar is decided by [`KritzelObjectConfig`](#kritzelobjectconfig) on the `objectConfig` prop, not by this configuration. See [Titlebar](../fundamentals/controls.md#titlebar).
 
 `KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title. Pass it as is, or spread it and override individual options, for example `{ ...KRITZEL_DEFAULT_OBJECT_TITLEBAR, visibility: 'active' }`.
 

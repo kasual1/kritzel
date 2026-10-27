@@ -52,13 +52,13 @@ export function Board() {
 }
 ```
 
-Define the configuration once at module level, or memoize it with `useMemo`, so that it keeps the same reference across renders. `hasTitlebar` only decides which objects get a titlebar. The content of the titlebars is declared by the `objectTitlebar` prop, so titlebars require both props. See [Titlebars](./titlebars.md).
+Define the configuration once at module level, or memoize it with `useMemo`, so that it keeps the same reference across renders. `hasTitlebar` only decides which objects get a titlebar. The content of the titlebars is declared by the `objectTitlebar` prop, so titlebars require both props. See [Titlebar](../fundamentals/controls.md#titlebar).
 
 ### Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| hasTitlebar | boolean \| (object) => boolean | `false` | Whether an object gets a titlebar. Requires the `objectTitlebar` prop. Objects inside a group never get their own titlebar. See [Choosing Which Objects Get a Titlebar](./titlebars.md#choosing-which-objects-get-a-titlebar). |
+| hasTitlebar | boolean \| (object) => boolean | `false` | Whether an object gets a titlebar. Requires the `objectTitlebar` prop. Objects inside a group never get their own titlebar. See [Titlebar](../fundamentals/controls.md#titlebar). |
 | isRotatable | boolean \| (object) => boolean | `true` | Whether an object can be rotated. Combines with the object's own `isRotatable` flag. |
 | isResizable | boolean \| (object) => boolean | `true` | Whether an object can be resized. Combines with the object's own `isResizable` flag. |
 
@@ -165,7 +165,7 @@ export function LockableBoard() {
 }
 ```
 
-The same pattern lets you toggle titlebars per object, see [Toggling Titlebars per Object](./titlebars.md#toggling-titlebars-per-object).
+The same pattern lets you toggle titlebars per object: keep a set of object IDs in your app and check it in `hasTitlebar`.
 
 ## Limitations
 
@@ -181,4 +181,4 @@ For the full list of related APIs, see the following reference sections.
 - [Engine](../api-reference/engine.md#object)
 - [Objects](../api-reference/objects.md#base-object)
 - [Object Config Types](../api-reference/types.md#object-config-types)
-- [Titlebars](./titlebars.md)
+- [Titlebar](../fundamentals/controls.md#titlebar)

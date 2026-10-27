@@ -72,7 +72,7 @@ The constructor of every object accepts the following options in addition to its
 const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
 ```
 
-See [Titlebars](../customization/titlebars.md) for details.
+See [Titlebar](../fundamentals/controls.md#titlebar) for details.
 
 ### Methods
 

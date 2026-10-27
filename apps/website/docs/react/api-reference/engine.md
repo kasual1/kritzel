@@ -948,7 +948,7 @@ getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectTitlebar | KritzelObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Titlebars](../customization/titlebars.md). |
+| objectTitlebar | KritzelObjectTitlebarConfig | Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar` is true. The same configuration applies to all objects. Leave unset to disable titlebars. See [Titlebar](../fundamentals/controls.md#titlebar). |
 
 ### Events
 

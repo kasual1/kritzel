@@ -195,13 +195,13 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 
 ## Titlebar
 
-Applies to [object titlebars](../customization/titlebars.md). `height` and `offset` must be pixel values.
+Applies to [object titlebars](../fundamentals/controls.md#titlebar). `height` and `offset` must be pixel values.
 
 `activeBackgroundColor`, `activeBorder`, `activeBoxShadow`, `activeButtonFilledBackgroundColor`, `activeIconColor`, `activeMutedTextColor`, `activeTextColor`, `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `buttonBorderRadius`, `buttonFilledBackgroundColor`, `buttonFilledColor`, `buttonHoverBackgroundColor`, `buttonOutlineColor`, `buttonPressedBackgroundColor`, `buttonSize`, `focusRing`, `fontFamily`, `fontSize`, `fontWeight`, `gap`, `height`, `hoverBackgroundColor`, `iconColor`, `iconSize`, `inputBackgroundColor`, `inputPadding`, `mutedTextColor`, `offset`, `paddingX`, `selectionBackgroundColor`, `selectionColor`, `textColor`, `titleFontWeight`, `transition`.
 
 ## Titlebar Menu
 
-Applies to the menu that the editor opens from a titlebar `menu` element, see [Titlebars](../customization/titlebars.md#adding-menus). The defaults match the context menu.
+Applies to the menu that the editor opens from a titlebar `menu` element, see [Titlebar](../fundamentals/controls.md#titlebar). The defaults match the context menu.
 
 `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `fontFamily`, `gap`, `itemBorderRadius`, `itemColor`, `itemFontSize`, `itemHeight`, `itemHoverBackgroundColor`, `itemPadding`, `maxWidth`, `minWidth`, `padding`.
 
