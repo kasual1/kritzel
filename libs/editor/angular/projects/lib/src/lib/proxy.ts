@@ -157,7 +157,7 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
    */
   agenticCursorDetached: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelAgenticCursorDetachedEvent>>;
   /**
-   * Emitted when a button in an object titlebar is clicked.
+   * Emitted when a button or a menu item in an object titlebar is clicked.
    */
   objectTitlebarAction: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectTitlebarActionEvent>>;
 }

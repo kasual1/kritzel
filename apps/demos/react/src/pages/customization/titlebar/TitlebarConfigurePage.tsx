@@ -75,7 +75,7 @@ export function TitlebarConfigurePage() {
 
   async function onTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
     const object = await editorRef.current?.getObjectById(detail.objectId);
-    const label = actionLabels[detail.itemId] ?? detail.itemId;
+    const label = actionLabels[detail.elementId] ?? detail.elementId;
     setLastAction(`${label} · ${object?.name ?? detail.objectType}`);
   }
 

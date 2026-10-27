@@ -11,7 +11,10 @@ import {
 import {
   KritzelObjectTitlebarConfig,
   KritzelObjectTitlebarContext,
-  KritzelTitlebarItem,
+  KritzelObjectTitlebarMenuState,
+  KritzelTitlebarElement,
+  KritzelTitlebarMenu,
+  KritzelTitlebarMenuItem,
   KritzelTitlebarSection,
   KritzelTitlebarValue,
 } from '../../interfaces/object-titlebar.interface';
@@ -22,12 +25,12 @@ import { KritzelIconName } from '../registries/icon-registry.class';
 export const KRITZEL_TITLEBAR_OWNER_ATTRIBUTE = 'data-titlebar-owner-id';
 /** Marks interactive titlebar elements; pointer input on them never reaches the active tool. */
 export const KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE = 'data-kritzel-titlebar-control';
-/** Marks an editable title; its value is the id of the title item. */
+/** Marks an editable title; its value is the id of the title element. */
 export const KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE = 'data-kritzel-titlebar-editable-title';
 /** Marks the input used to rename an object; keyboard input in it never reaches canvas shortcuts. */
 export const KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE = 'data-kritzel-titlebar-title-input';
 
-const DEFAULT_LEFT_ITEMS: KritzelTitlebarItem[] = [{ id: 'title', type: 'title' }];
+const DEFAULT_LEFT_ELEMENTS: KritzelTitlebarElement[] = [{ id: 'title', type: 'title' }];
 const SECTIONS: KritzelTitlebarSection[] = ['left', 'center', 'right'];
 
 const OBJECT_TYPE_TERMS: Record<string, KritzelTermKey> = {
@@ -61,15 +64,29 @@ export const KRITZEL_DEFAULT_OBJECT_TITLEBAR: KritzelObjectTitlebarConfig = {
   ],
 };
 
+/** The open titlebar menu. */
+interface KritzelOpenTitlebarMenu {
+  ownerId: string;
+  elementId: string;
+  section: KritzelTitlebarSection;
+  items: KritzelTitlebarMenuItem[];
+  anchor: HTMLElement;
+  anchorRect: DOMRect;
+  /** Camera when the menu opened; the menu closes once it moves. */
+  viewport: { scale: number; translateX: number; translateY: number };
+  /** Whether the owner was active when the menu opened; the menu closes once that changes. */
+  isActive: boolean;
+}
+
 /** Size of the titlebar band, read from the theme on every render. */
 export interface KritzelTitlebarMetrics {
   height: number;
   offset: number;
 }
 
-/** An item with all of its dynamic values evaluated for one titlebar. */
-export interface KritzelResolvedTitlebarItem {
-  item: KritzelTitlebarItem;
+/** An element with all of its dynamic values evaluated for one titlebar. */
+export interface KritzelResolvedTitlebarElement {
+  element: KritzelTitlebarElement;
   section: KritzelTitlebarSection;
   text?: string;
   icon?: KritzelIconName;
@@ -77,8 +94,10 @@ export interface KritzelResolvedTitlebarItem {
   tooltip?: string;
   isDisabled?: boolean;
   isPressed?: boolean;
-  /** Whether a title item can be edited to rename its object. */
+  /** Whether a title element can be edited to rename its object. */
   isEditable?: boolean;
+  /** Whether the menu of a menu element is open. */
+  isMenuOpen?: boolean;
 }
 
 /** Everything needed to render one titlebar. */
@@ -90,21 +109,22 @@ export interface KritzelResolvedTitlebar {
   transform: string;
   /** Titlebar width in screen pixels. */
   width: number;
-  /** Id of the title item currently being edited, if any. */
-  editingItemId?: string;
-  sections: Record<KritzelTitlebarSection, KritzelResolvedTitlebarItem[]>;
+  /** Id of the title element currently being edited, if any. */
+  editingElementId?: string;
+  sections: Record<KritzelTitlebarSection, KritzelResolvedTitlebarElement[]>;
 }
 
 /**
  * Resolves which objects show a titlebar, what their titlebars contain, and handles
- * titlebar button clicks. The configuration is read live from the engine's
+ * titlebar button clicks and menus. The configuration is read live from the engine's
  * `objectTitlebar` prop, so late prop updates from framework wrappers always apply.
  */
 export class KritzelObjectTitlebarManager {
   private readonly _core: KritzelCore;
-  private readonly _warnedItems = new Set<string>();
+  private readonly _warnedElements = new Set<string>();
   private _hasReportedMissingHasTitlebar = false;
-  private _editingTitle: { ownerId: string; itemId: string } | null = null;
+  private _editingTitle: { ownerId: string; elementId: string } | null = null;
+  private _openMenu: KritzelOpenTitlebarMenu | null = null;
   /** Latest input value of the title being edited, committed if the edit ends without a blur. */
   private _titleDraft: string | null = null;
 
@@ -124,7 +144,7 @@ export class KritzelObjectTitlebarManager {
 
   /** Clears the warnings already reported, so a new configuration reports its own problems. */
   resetWarnings(): void {
-    this._warnedItems.clear();
+    this._warnedElements.clear();
     this._hasReportedMissingHasTitlebar = false;
   }
 
@@ -215,16 +235,15 @@ export class KritzelObjectTitlebarManager {
   resolveTitlebars(candidates: KritzelBaseObject<any>[]): KritzelResolvedTitlebar[] {
     const config = this.config;
     if (!config) {
+      this.closeMenu();
       return [];
     }
 
     const state = this._core.store.state;
     const viewport = { scale: state.scale, translateX: state.translateX, translateY: state.translateY };
     const hideBelowWidth = config.hideBelowWidth ?? KRITZEL_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH;
+    // Without owners the loop renders nothing, but an open edit or menu must still end below.
     const owners = this.getOwners(candidates);
-    if (owners.length === 0) {
-      return [];
-    }
 
     const activeOwnerIds = this.getActiveOwnerIds(candidates);
     const titlebars: KritzelResolvedTitlebar[] = [];
@@ -245,18 +264,18 @@ export class KritzelObjectTitlebarManager {
 
       const context = this.createContext(owner, isActive, anchor.width);
       const sections = {
-        left: this.resolveItems(config.left ?? DEFAULT_LEFT_ITEMS, 'left', context),
-        center: this.resolveItems(config.center ?? [], 'center', context),
-        right: this.resolveItems(config.right ?? [], 'right', context),
+        left: this.resolveElements(config.left ?? DEFAULT_LEFT_ELEMENTS, 'left', context),
+        center: this.resolveElements(config.center ?? [], 'center', context),
+        right: this.resolveElements(config.right ?? [], 'right', context),
       };
-      const isEditedItemShown = isEditing && SECTIONS.some(section => sections[section].some(resolved => resolved.item.id === editing.itemId && resolved.isEditable));
+      const isEditedElementShown = isEditing && SECTIONS.some(section => sections[section].some(resolved => resolved.element.id === editing.elementId && resolved.isEditable));
       titlebars.push({
         owner,
         context,
         isActive,
         transform: KritzelObjectTitlebarHelper.getTransform(anchor, viewport.scale),
         width: anchor.width,
-        editingItemId: isEditedItemShown ? editing.itemId : undefined,
+        editingElementId: isEditedElementShown ? editing.elementId : undefined,
         sections,
       });
     }
@@ -271,14 +290,24 @@ export class KritzelObjectTitlebarManager {
         this.commitTitleEditing(draft);
       }
       for (const titlebar of titlebars) {
-        titlebar.editingItemId = undefined;
+        titlebar.editingElementId = undefined;
+      }
+    }
+
+    const menu = this._openMenu;
+    if (menu && !this.isMenuStillValid(menu, titlebars)) {
+      this.closeMenu();
+      for (const titlebar of titlebars) {
+        for (const resolved of titlebar.sections[menu.section]) {
+          resolved.isMenuOpen = false;
+        }
       }
     }
 
     return titlebars;
   }
 
-  /** Builds the context passed to dynamic item values and actions. */
+  /** Builds the context passed to dynamic element values and actions. */
   createContext(owner: KritzelBaseObject<any>, isActive: boolean, barWidth: number): KritzelObjectTitlebarContext {
     const bounds = owner.boundingBox;
     const translate = this.translate;
@@ -364,38 +393,165 @@ export class KritzelObjectTitlebarManager {
   }
 
   /**
-   * Runs a titlebar button: evaluates `isDisabled`, calls its `action`, and emits the
-   * `objectTitlebarAction` event. Does nothing while the engine is disabled.
+   * Runs a titlebar button or toggles a titlebar menu. Disabled elements are ignored. A button calls its
+   * `action` and emits `objectTitlebarAction`; a menu opens or closes and emits `objectTitlebarMenuStateChange`.
+   * Does nothing while the engine is disabled.
    */
-  invokeItem(ownerId: string, section: KritzelTitlebarSection, itemId: string, event: MouseEvent, anchorRect: DOMRect): void {
+  invokeElement(ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement): void {
     if (this._core.store.isDisabled) {
       return;
     }
 
     const config = this.config;
     const owner = this.findOwnerById(ownerId);
-    const item = this.getSectionItems(config, section).find(candidate => candidate.id === itemId);
-    if (!config || !owner || !item || item.type !== 'button') {
+    const element = this.getSectionElements(config, section).find(candidate => candidate.id === elementId);
+    if (!config || !owner || !element || (element.type !== 'button' && element.type !== 'menu')) {
       return;
     }
 
-    const state = this._core.store.state;
-    const anchor = KritzelObjectTitlebarHelper.getAnchor(owner, { scale: state.scale, translateX: state.translateX, translateY: state.translateY }, config.rotation ?? 'follow');
-    const isActive = this.getActiveOwnerIds(this._core.store.allObjects).has(owner.id);
-    const context = this.createContext(owner, isActive, anchor.width);
+    const context = this.createLiveContext(owner);
+    if (this.evaluate(element.isDisabled, context, false, element.id)) {
+      return;
+    }
 
-    if (this.evaluate(item.isDisabled, context, false, item.id)) {
+    if (element.type === 'menu') {
+      this.toggleMenu(owner, section, element, context, anchor);
       return;
     }
 
     try {
-      item.action?.(context, event);
+      element.action?.(context, event);
     } catch (error) {
-      console.error(`[KritzelObjectTitlebar] Action of item "${item.id}" failed:`, error);
+      console.error(`[KritzelObjectTitlebar] Action of element "${element.id}" failed:`, error);
     }
 
+    this.emitAction(owner, section, element.id, anchor.getBoundingClientRect());
+  }
+
+  /** The state of the titlebar menu, as emitted with `objectTitlebarMenuStateChange`. */
+  get menuState(): KritzelObjectTitlebarMenuState {
+    const menu = this._openMenu;
+    if (!menu) {
+      return { isVisible: false, items: [] };
+    }
+    return {
+      isVisible: true,
+      objectId: menu.ownerId,
+      elementId: menu.elementId,
+      section: menu.section,
+      items: menu.items,
+      anchor: menu.anchor,
+      anchorRect: menu.anchorRect,
+    };
+  }
+
+  /** Closes the open titlebar menu, if any. */
+  closeMenu(): void {
+    if (!this._openMenu) {
+      return;
+    }
+    this._openMenu = null;
+    this._core.engine?.emitObjectTitlebarMenuStateChange(this.menuState);
+    this._core.rerender();
+  }
+
+  /**
+   * Selects an item of the open titlebar menu: closes the menu, calls the item's `action` and emits
+   * `objectTitlebarAction` with its id as `menuItemId`. Hidden, disabled and unknown items are ignored.
+   */
+  selectMenuItem(menuItemId: string): void {
+    const menu = this._openMenu;
+    if (!menu || this._core.store.isDisabled) {
+      return;
+    }
+
+    const owner = this.findOwnerById(menu.ownerId);
+    const element = this.getSectionElements(this.config, menu.section).find(candidate => candidate.id === menu.elementId);
+    if (!owner || element?.type !== 'menu') {
+      this.closeMenu();
+      return;
+    }
+
+    // Values are evaluated again, so an item disabled since the menu opened cannot be selected.
+    const context = this.createLiveContext(owner);
+    const menuItem = this.resolveMenuItems(element, context).find(candidate => candidate.id === menuItemId);
+    if (!menuItem || menuItem.isDisabled) {
+      return;
+    }
+
+    this.closeMenu();
+    try {
+      menuItem.action?.(context, menuItem);
+    } catch (error) {
+      console.error(`[KritzelObjectTitlebar] Action of menu item "${menuItemId}" in "${element.id}" failed:`, error);
+    }
+
+    this.emitAction(owner, menu.section, element.id, menu.anchorRect, menuItemId);
+  }
+
+  private toggleMenu(owner: KritzelBaseObject<any>, section: KritzelTitlebarSection, element: KritzelTitlebarMenu, context: KritzelObjectTitlebarContext, anchor: HTMLElement): void {
+    const isOpen = this._openMenu?.ownerId === owner.id && this._openMenu.elementId === element.id;
+    if (isOpen) {
+      this.closeMenu();
+      return;
+    }
+
+    const { scale, translateX, translateY } = this._core.store.state;
+    this._openMenu = {
+      ownerId: owner.id,
+      elementId: element.id,
+      section,
+      items: this.resolveMenuItems(element, context),
+      anchor,
+      anchorRect: anchor.getBoundingClientRect(),
+      viewport: { scale, translateX, translateY },
+      isActive: context.isActive,
+    };
+    this._core.engine?.emitObjectTitlebarMenuStateChange(this.menuState);
+    this._core.rerender();
+  }
+
+  /** Resolves the visible items of a menu, with labels translated and `isDisabled` evaluated. */
+  private resolveMenuItems(element: KritzelTitlebarMenu, context: KritzelObjectTitlebarContext): KritzelTitlebarMenuItem[] {
+    const items = this.evaluate(element.items, context, [], element.id);
+    if (!Array.isArray(items)) {
+      return [];
+    }
+    return items
+      .filter(menuItem => this.evaluate(menuItem.isVisible, context, true, element.id))
+      .map(menuItem => ({
+        ...menuItem,
+        label: this.translate(menuItem.label),
+        isVisible: true,
+        isDisabled: this.evaluate(menuItem.isDisabled, context, false, element.id),
+      }));
+  }
+
+  /**
+   * Whether the open menu can stay open: its object still shows the menu element and was neither selected
+   * nor deselected, and the camera has not moved, since the menu is anchored to where the button was.
+   * Menus also open on inactive titlebars, because clicking a titlebar button never changes the selection.
+   */
+  private isMenuStillValid(menu: KritzelOpenTitlebarMenu, titlebars: KritzelResolvedTitlebar[]): boolean {
+    const { scale, translateX, translateY } = this._core.store.state;
+    const hasViewportChanged = scale !== menu.viewport.scale || translateX !== menu.viewport.translateX || translateY !== menu.viewport.translateY;
+    const titlebar = titlebars.find(candidate => candidate.owner.id === menu.ownerId);
+    const isShown = !!titlebar && !titlebar.editingElementId && titlebar.sections[menu.section].some(resolved => resolved.element.id === menu.elementId);
+    return !hasViewportChanged && isShown && titlebar.isActive === menu.isActive;
+  }
+
+  /** Builds the context of an owner outside of a render, e.g. for a click. */
+  private createLiveContext(owner: KritzelBaseObject<any>): KritzelObjectTitlebarContext {
+    const state = this._core.store.state;
+    const anchor = KritzelObjectTitlebarHelper.getAnchor(owner, { scale: state.scale, translateX: state.translateX, translateY: state.translateY }, this.config?.rotation ?? 'follow');
+    const isActive = this.getActiveOwnerIds(this._core.store.allObjects).has(owner.id);
+    return this.createContext(owner, isActive, anchor.width);
+  }
+
+  private emitAction(owner: KritzelBaseObject<any>, section: KritzelTitlebarSection, elementId: string, anchorRect: DOMRect, menuItemId?: string): void {
     this._core.engine?.emitObjectTitlebarAction({
-      itemId: item.id,
+      elementId,
+      ...(menuItemId === undefined ? {} : { menuItemId }),
       section,
       objectId: owner.id,
       objectType: owner.__class__,
@@ -408,49 +564,60 @@ export class KritzelObjectTitlebarManager {
     return this._core.localizationManager.translate(key as KritzelTermKey, vars);
   };
 
-  private resolveItems(items: KritzelTitlebarItem[], section: KritzelTitlebarSection, context: KritzelObjectTitlebarContext): KritzelResolvedTitlebarItem[] {
-    const resolved: KritzelResolvedTitlebarItem[] = [];
+  private resolveElements(elements: KritzelTitlebarElement[], section: KritzelTitlebarSection, context: KritzelObjectTitlebarContext): KritzelResolvedTitlebarElement[] {
+    const resolved: KritzelResolvedTitlebarElement[] = [];
 
-    for (const item of items) {
-      const showWhen = item.showWhen ?? 'always';
+    for (const element of elements) {
+      const showWhen = element.showWhen ?? 'always';
       if ((showWhen === 'active' && !context.isActive) || (showWhen === 'inactive' && context.isActive)) {
         continue;
       }
-      if (item.minBarWidth !== undefined && context.barWidth < item.minBarWidth) {
+      if (element.minBarWidth !== undefined && context.barWidth < element.minBarWidth) {
         continue;
       }
-      if (!this.evaluate(item.isVisible, context, true, item.id)) {
+      if (!this.evaluate(element.isVisible, context, true, element.id)) {
         continue;
       }
 
-      switch (item.type) {
+      switch (element.type) {
         case 'title':
           resolved.push({
-            item,
+            element,
             section,
-            text: item.text === undefined ? context.title : this.evaluate(item.text, context, context.title, item.id),
-            isEditable: item.text === undefined && this.evaluate(item.isEditable, context, false, item.id),
+            text: element.text === undefined ? context.title : this.evaluate(element.text, context, context.title, element.id),
+            isEditable: element.text === undefined && this.evaluate(element.isEditable, context, false, element.id),
           });
           break;
         case 'text':
-          resolved.push({ item, section, text: this.evaluate(item.text, context, '', item.id) });
+          resolved.push({ element, section, text: this.evaluate(element.text, context, '', element.id) });
           break;
         case 'icon':
-          resolved.push({ item, section, icon: this.evaluate(item.icon, context, undefined, item.id) });
+          resolved.push({ element, section, icon: this.evaluate(element.icon, context, undefined, element.id) });
           break;
         case 'button':
           resolved.push({
-            item,
+            element,
             section,
-            icon: this.evaluate(item.icon, context, undefined, item.id),
-            label: item.label === undefined ? undefined : this.translate(item.label),
-            tooltip: item.tooltip === undefined ? undefined : this.translate(item.tooltip),
-            isDisabled: this.evaluate(item.isDisabled, context, false, item.id),
-            isPressed: this.evaluate(item.isPressed, context, false, item.id),
+            icon: this.evaluate(element.icon, context, undefined, element.id),
+            label: element.label === undefined ? undefined : this.translate(element.label),
+            tooltip: element.tooltip === undefined ? undefined : this.translate(element.tooltip),
+            isDisabled: this.evaluate(element.isDisabled, context, false, element.id),
+            isPressed: this.evaluate(element.isPressed, context, false, element.id),
+          });
+          break;
+        case 'menu':
+          resolved.push({
+            element,
+            section,
+            icon: this.evaluate(element.icon, context, undefined, element.id),
+            label: element.label === undefined ? undefined : this.translate(element.label),
+            tooltip: element.tooltip === undefined ? undefined : this.translate(element.tooltip),
+            isDisabled: this.evaluate(element.isDisabled, context, false, element.id),
+            isMenuOpen: this._openMenu?.ownerId === context.object.id && this._openMenu.elementId === element.id,
           });
           break;
         default:
-          resolved.push({ item, section });
+          resolved.push({ element, section });
       }
     }
 
@@ -461,7 +628,7 @@ export class KritzelObjectTitlebarManager {
    * Evaluates a static or dynamic value. Failing callbacks and promises (which are not
    * supported because values are evaluated during render) resolve to the fallback.
    */
-  private evaluate<T>(value: KritzelTitlebarValue<T> | undefined, context: KritzelObjectTitlebarContext, fallback: T, itemId: string): T {
+  private evaluate<T>(value: KritzelTitlebarValue<T> | undefined, context: KritzelObjectTitlebarContext, fallback: T, elementId: string): T {
     if (value === undefined) {
       return fallback;
     }
@@ -472,44 +639,44 @@ export class KritzelObjectTitlebarManager {
     try {
       const result = (value as (context: KritzelObjectTitlebarContext) => T)(context);
       if (result && typeof (result as unknown as PromiseLike<T>).then === 'function') {
-        this.warnOnce(itemId, 'Titlebar values must be synchronous; promises are not supported.');
+        this.warnOnce(elementId, 'Titlebar values must be synchronous; promises are not supported.');
         return (typeof fallback === 'boolean' ? false : fallback) as T;
       }
       return result ?? fallback;
     } catch (error) {
-      this.warnOnce(itemId, error);
+      this.warnOnce(elementId, error);
       return (typeof fallback === 'boolean' ? false : fallback) as T;
     }
   }
 
-  private warnOnce(itemId: string, error: unknown): void {
-    if (this._warnedItems.has(itemId)) {
+  private warnOnce(elementId: string, error: unknown): void {
+    if (this._warnedElements.has(elementId)) {
       return;
     }
-    this._warnedItems.add(itemId);
-    console.warn(`[KritzelObjectTitlebar] Item "${itemId}" could not be resolved:`, error);
+    this._warnedElements.add(elementId);
+    console.warn(`[KritzelObjectTitlebar] Element "${elementId}" could not be resolved:`, error);
   }
 
-  private getSectionItems(config: KritzelObjectTitlebarConfig | undefined, section: KritzelTitlebarSection): KritzelTitlebarItem[] {
+  private getSectionElements(config: KritzelObjectTitlebarConfig | undefined, section: KritzelTitlebarSection): KritzelTitlebarElement[] {
     if (!config || !SECTIONS.includes(section)) {
       return [];
     }
     if (section === 'left') {
-      return config.left ?? DEFAULT_LEFT_ITEMS;
+      return config.left ?? DEFAULT_LEFT_ELEMENTS;
     }
     return config[section] ?? [];
   }
 
   /** The title being edited, if any. */
-  get editingTitle(): { ownerId: string; itemId: string } | null {
+  get editingTitle(): { ownerId: string; elementId: string } | null {
     return this._editingTitle;
   }
 
   /**
    * Finds the editable title that was pressed, using the event path and falling back to hit testing.
-   * @returns The owner and title item id, or `null` when the press was not on an editable title
+   * @returns The owner and title element id, or `null` when the press was not on an editable title
    */
-  getEditableTitleFromEvent(event: Pick<PointerEvent, 'clientX' | 'clientY'> & { composedPath?: () => EventTarget[] }): { ownerId: string; itemId: string } | null {
+  getEditableTitleFromEvent(event: Pick<PointerEvent, 'clientX' | 'clientY'> & { composedPath?: () => EventTarget[] }): { ownerId: string; elementId: string } | null {
     if (!this.isEnabled) {
       return null;
     }
@@ -521,8 +688,8 @@ export class KritzelObjectTitlebarManager {
     }
 
     const ownerId = title?.closest(`[${KRITZEL_TITLEBAR_OWNER_ATTRIBUTE}]`)?.getAttribute(KRITZEL_TITLEBAR_OWNER_ATTRIBUTE);
-    const itemId = title?.getAttribute(KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE);
-    return ownerId && itemId ? { ownerId, itemId } : null;
+    const elementId = title?.getAttribute(KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE);
+    return ownerId && elementId ? { ownerId, elementId } : null;
   }
 
   /** Whether the event originated in the input used to rename an object. */
@@ -531,12 +698,13 @@ export class KritzelObjectTitlebarManager {
     return path.some(target => this.hasAttribute(target, KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE));
   }
 
-  /** Starts renaming an object through the given title item of its titlebar. */
-  startTitleEditing(ownerId: string, itemId: string): void {
+  /** Starts renaming an object through the given title element of its titlebar. */
+  startTitleEditing(ownerId: string, elementId: string): void {
     if (this._core.store.isDisabled || !this.findOwnerById(ownerId)) {
       return;
     }
-    this._editingTitle = { ownerId, itemId };
+    this.closeMenu();
+    this._editingTitle = { ownerId, elementId };
     this._titleDraft = null;
     this._core.rerender();
   }
@@ -583,10 +751,10 @@ export class KritzelObjectTitlebarManager {
     this._core.rerender();
   }
 
-  private isTitleEditStillValid(editing: { ownerId: string; itemId: string }, titlebars: KritzelResolvedTitlebar[]): boolean {
+  private isTitleEditStillValid(editing: { ownerId: string; elementId: string }, titlebars: KritzelResolvedTitlebar[]): boolean {
     const owner = this.findOwnerById(editing.ownerId);
     const isSelected = !!this._core.store.selectionGroup?.objectIds.includes(editing.ownerId);
-    return !!owner && !owner.markedForRemoval && isSelected && titlebars.some(titlebar => titlebar.editingItemId === editing.itemId && titlebar.owner.id === editing.ownerId);
+    return !!owner && !owner.markedForRemoval && isSelected && titlebars.some(titlebar => titlebar.editingElementId === editing.elementId && titlebar.owner.id === editing.ownerId);
   }
 
   private findOwnerById(id: string | null | undefined): KritzelBaseObject<any> | null {

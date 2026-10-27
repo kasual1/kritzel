@@ -994,8 +994,8 @@ getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked, in addition to calling the button's optional `action` callback. |
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
 
 ### Methods
 
-No titlebar-specific methods. Use [updateObject](#updateobject) to change the `name` of an existing object.
+No titlebar-specific methods. Titlebar menus are rendered by the editor itself. Use [updateObject](#updateobject) to change the `name` of an existing object.

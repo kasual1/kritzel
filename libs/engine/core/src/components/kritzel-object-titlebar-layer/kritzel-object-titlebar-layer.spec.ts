@@ -18,9 +18,9 @@ describe('KritzelObjectTitlebarLayer', () => {
       transform: 'translate(10px, 20px) rotate(0deg) scale(1)',
       width: 200,
       sections: {
-        left: [{ item: { id: 'title', type: 'title' }, section: 'left', text: `Title ${ownerId}` }],
+        left: [{ element: { id: 'title', type: 'title' }, section: 'left', text: `Title ${ownerId}` }],
         center: [],
-        right: [{ item: { id: 'play', type: 'button', icon: 'play' }, section: 'right', icon: 'play', tooltip: 'Play' }],
+        right: [{ element: { id: 'play', type: 'button', icon: 'play' }, section: 'right', icon: 'play', tooltip: 'Play' }],
       },
     }) as unknown as KritzelResolvedTitlebar;
 
@@ -78,10 +78,10 @@ describe('KritzelObjectTitlebarLayer', () => {
     expect(findAll(host, byClass('object-titlebar-right'))).toHaveLength(1);
   });
 
-  it('reports button clicks with owner, section and item, and blurs after pointer clicks', () => {
-    const itemClick = jest.fn();
+  it('reports button clicks with owner, section and element, and blurs after pointer clicks', () => {
+    const elementClick = jest.fn();
     component.titlebars = [createTitlebar('a', true)];
-    component.itemClick = itemClick;
+    component.elementClick = elementClick;
 
     const [button] = findAll(component.render(), node => node.$tag$ === 'button');
     const anchorRect = { x: 1, y: 2, width: 3, height: 4 } as DOMRect;
@@ -90,15 +90,35 @@ describe('KritzelObjectTitlebarLayer', () => {
 
     button.$attrs$.onClick(event);
 
-    expect(itemClick).toHaveBeenCalledWith('a', 'right', 'play', event, anchorRect);
+    expect(elementClick).toHaveBeenCalledWith('a', 'right', 'play', event, currentTarget);
     expect(currentTarget.blur).toHaveBeenCalled();
     expect(button.$attrs$.tabindex).toBe(0);
     expect(button.$attrs$['data-kritzel-titlebar-control']).toBe('');
   });
 
+  it('renders menus as buttons that announce and reflect their open state', () => {
+    const elementClick = jest.fn();
+    const titlebar: any = createTitlebar('a', true);
+    titlebar.sections.right = [{ element: { id: 'more', type: 'menu', icon: 'ellipsisVertical', items: [] }, section: 'right', icon: 'ellipsisVertical', isMenuOpen: true }];
+    component.titlebars = [titlebar];
+    component.elementClick = elementClick;
+
+    const [button] = findAll(component.render(), node => node.$tag$ === 'button');
+    const currentTarget = { blur: jest.fn() };
+    const event = { detail: 1, currentTarget } as unknown as MouseEvent;
+    button.$attrs$.onClick(event);
+
+    expect(button.$attrs$['aria-haspopup']).toBe('menu');
+    expect(button.$attrs$['aria-expanded']).toBe('true');
+    expect(button.$attrs$['aria-pressed']).toBeUndefined();
+    expect(button.$attrs$.part).toBe('titlebar-button titlebar-button-pressed titlebar-menu-button');
+    expect(byClass('is-pressed')(button)).toBe(true);
+    expect(elementClick).toHaveBeenCalledWith('a', 'right', 'more', event, currentTarget);
+  });
+
   it('keeps focus on keyboard-activated buttons', () => {
     component.titlebars = [createTitlebar('a')];
-    component.itemClick = jest.fn();
+    component.elementClick = jest.fn();
 
     const [button] = findAll(component.render(), node => node.$tag$ === 'button');
     const currentTarget = { getBoundingClientRect: () => ({}) as DOMRect, blur: jest.fn() };
@@ -115,7 +135,7 @@ describe('KritzelObjectTitlebarLayer', () => {
       const titlebar: any = createTitlebar('a', true);
       titlebar.owner.name = 'Desktop';
       titlebar.sections.left[0].isEditable = true;
-      titlebar.editingItemId = editing ? 'title' : undefined;
+      titlebar.editingElementId = editing ? 'title' : undefined;
       return titlebar as KritzelResolvedTitlebar;
     };
 

@@ -91,6 +91,7 @@ describe('KritzelObjectTitlebarManager', () => {
         objectTitlebar: { left: [{ id: 'title', type: 'title' }] } as KritzelObjectTitlebarConfig,
         objectConfig: { hasTitlebar: true } as KritzelObjectConfig,
         emitObjectTitlebarAction: jest.fn(),
+        emitObjectTitlebarMenuStateChange: jest.fn(),
         host: { shadowRoot: { elementsFromPoint: jest.fn().mockReturnValue([]) } },
       },
       store: {
@@ -102,6 +103,7 @@ describe('KritzelObjectTitlebarManager', () => {
           return Array.from(objects.values());
         },
       },
+      rerender: jest.fn(),
       localizationManager: {
         translate: jest.fn((key: string) => terms[key] ?? key),
       },
@@ -264,7 +266,7 @@ describe('KritzelObjectTitlebarManager', () => {
 
       const [titlebar] = manager.resolveTitlebars(Array.from(objects.values()));
 
-      expect(titlebar.sections.left.map(resolved => [resolved.item.id, resolved.text])).toEqual([['title', 'Desktop']]);
+      expect(titlebar.sections.left.map(resolved => [resolved.element.id, resolved.text])).toEqual([['title', 'Desktop']]);
       expect(titlebar.sections.center).toEqual([]);
       expect(titlebar.sections.right).toEqual([]);
     });
@@ -316,7 +318,7 @@ describe('KritzelObjectTitlebarManager', () => {
 
       const [titlebar] = manager.resolveTitlebars(Array.from(objects.values()));
 
-      expect(titlebar.sections.left.map(resolved => resolved.item.id)).toEqual(['always', 'inactive-only']);
+      expect(titlebar.sections.left.map(resolved => resolved.element.id)).toEqual(['always', 'inactive-only']);
     });
 
     it('evaluates dynamic values and translates button labels', () => {
@@ -344,7 +346,7 @@ describe('KritzelObjectTitlebarManager', () => {
       );
     });
 
-    it('isolates failing and asynchronous values and warns once per item', () => {
+    it('isolates failing and asynchronous values and warns once per element', () => {
       setConfig({
         left: [
           {
@@ -362,7 +364,7 @@ describe('KritzelObjectTitlebarManager', () => {
 
       const titlebars = manager.resolveTitlebars(Array.from(objects.values()));
 
-      expect(titlebars[0].sections.left.map(resolved => [resolved.item.id, resolved.text])).toEqual([['broken', '']]);
+      expect(titlebars[0].sections.left.map(resolved => [resolved.element.id, resolved.text])).toEqual([['broken', '']]);
       expect(console.warn).toHaveBeenCalledTimes(2);
     });
 
@@ -440,8 +442,9 @@ describe('KritzelObjectTitlebarManager', () => {
     });
   });
 
-  describe('invokeItem', () => {
+  describe('invokeElement', () => {
     const anchorRect = { x: 1, y: 2, width: 3, height: 4 } as DOMRect;
+    const anchor = { getBoundingClientRect: () => anchorRect } as unknown as HTMLElement;
     const click = {} as MouseEvent;
 
     it('runs the action and emits the action event', () => {
@@ -449,11 +452,11 @@ describe('KritzelObjectTitlebarManager', () => {
       setConfig({ right: [{ id: 'play', type: 'button', icon: 'play', action }] });
       createObject('a', { name: 'Desktop' });
 
-      manager.invokeItem('a', 'right', 'play', click, anchorRect);
+      manager.invokeElement('a', 'right', 'play', click, anchor);
 
       expect(action).toHaveBeenCalledWith(expect.objectContaining({ title: 'Desktop', objectType: 'KritzelShape' }), click);
       expect(mockCore.engine.emitObjectTitlebarAction).toHaveBeenCalledWith({
-        itemId: 'play',
+        elementId: 'play',
         section: 'right',
         objectId: 'a',
         objectType: 'KritzelShape',
@@ -467,22 +470,22 @@ describe('KritzelObjectTitlebarManager', () => {
       setConfig({ right: [{ id: 'play', type: 'button', action, isDisabled: true }] });
       createObject('a');
 
-      manager.invokeItem('a', 'right', 'play', click, anchorRect);
+      manager.invokeElement('a', 'right', 'play', click, anchor);
       setConfig({ right: [{ id: 'play', type: 'button', action }] });
       mockCore.store.isDisabled = true;
-      manager.invokeItem('a', 'right', 'play', click, anchorRect);
+      manager.invokeElement('a', 'right', 'play', click, anchor);
 
       expect(action).not.toHaveBeenCalled();
       expect(mockCore.engine.emitObjectTitlebarAction).not.toHaveBeenCalled();
     });
 
-    it('ignores unknown items and non-button items', () => {
+    it('ignores unknown elements and non-interactive elements', () => {
       setConfig({ left: [{ id: 'title', type: 'title' }] });
       createObject('a');
 
-      manager.invokeItem('a', 'left', 'title', click, anchorRect);
-      manager.invokeItem('a', 'left', 'missing', click, anchorRect);
-      manager.invokeItem('missing', 'left', 'title', click, anchorRect);
+      manager.invokeElement('a', 'left', 'title', click, anchor);
+      manager.invokeElement('a', 'left', 'missing', click, anchor);
+      manager.invokeElement('missing', 'left', 'title', click, anchor);
 
       expect(mockCore.engine.emitObjectTitlebarAction).not.toHaveBeenCalled();
     });
@@ -501,10 +504,175 @@ describe('KritzelObjectTitlebarManager', () => {
       });
       createObject('a');
 
-      manager.invokeItem('a', 'right', 'play', click, anchorRect);
+      manager.invokeElement('a', 'right', 'play', click, anchor);
 
       expect(console.error).toHaveBeenCalled();
       expect(mockCore.engine.emitObjectTitlebarAction).toHaveBeenCalled();
+    });
+  });
+
+  describe('titlebar menus', () => {
+    const anchorRect = { x: 10, y: 20, width: 22, height: 22 } as DOMRect;
+    const anchor = { getBoundingClientRect: () => anchorRect } as unknown as HTMLElement;
+    const click = {} as MouseEvent;
+    const resolve = () => manager.resolveTitlebars(Array.from(objects.values()));
+    const lastMenuState = () => mockCore.engine.emitObjectTitlebarMenuStateChange.mock.calls.at(-1)?.[0];
+
+    const configureMenu = (overrides: Record<string, unknown> = {}) => {
+      const duplicate = jest.fn();
+      setConfig({
+        right: [
+          {
+            id: 'more',
+            type: 'menu',
+            icon: 'ellipsisVertical',
+            items: [
+              { id: 'duplicate', label: 'menu.copy', icon: 'copy', action: duplicate },
+              { id: 'hidden', label: 'Hidden', isVisible: false },
+              { id: 'locked', label: 'Locked', isDisabled: context => context.isActive },
+            ],
+            ...overrides,
+          },
+        ],
+      } as KritzelObjectTitlebarConfig);
+      return duplicate;
+    };
+
+    it('opens with resolved items and toggles closed on a second click', () => {
+      configureMenu();
+      createObject('a');
+      select('a');
+
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+
+      expect(lastMenuState()).toEqual({
+        isVisible: true,
+        objectId: 'a',
+        elementId: 'more',
+        section: 'right',
+        items: [
+          expect.objectContaining({ id: 'duplicate', label: 'Copy', icon: 'copy', isDisabled: false }),
+          expect.objectContaining({ id: 'locked', label: 'Locked', isDisabled: true }),
+        ],
+        anchor,
+        anchorRect,
+      });
+      expect(resolve()[0].sections.right[0].isMenuOpen).toBe(true);
+      expect(mockCore.engine.emitObjectTitlebarAction).not.toHaveBeenCalled();
+
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+
+      expect(lastMenuState()).toEqual({ isVisible: false, items: [] });
+      expect(resolve()[0].sections.right[0].isMenuOpen).toBe(false);
+    });
+
+    it('selecting an item closes the menu, runs its action and emits the action event', () => {
+      const duplicate = configureMenu();
+      createObject('a', { name: 'Desktop' });
+      select('a');
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+
+      manager.selectMenuItem('duplicate');
+
+      expect(duplicate).toHaveBeenCalledWith(expect.objectContaining({ title: 'Desktop' }), expect.objectContaining({ id: 'duplicate', label: 'Copy' }));
+      expect(manager.menuState.isVisible).toBe(false);
+      expect(mockCore.engine.emitObjectTitlebarAction).toHaveBeenCalledWith({
+        elementId: 'more',
+        menuItemId: 'duplicate',
+        section: 'right',
+        objectId: 'a',
+        objectType: 'KritzelShape',
+        workspaceId: 'workspace-1',
+        anchorRect,
+      });
+    });
+
+    it('ignores disabled, hidden and unknown menu items and keeps the menu open', () => {
+      configureMenu();
+      createObject('a');
+      select('a');
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+
+      manager.selectMenuItem('locked');
+      manager.selectMenuItem('hidden');
+      manager.selectMenuItem('missing');
+
+      expect(manager.menuState.isVisible).toBe(true);
+      expect(mockCore.engine.emitObjectTitlebarAction).not.toHaveBeenCalled();
+    });
+
+    it('does not open disabled menus or while the engine is disabled', () => {
+      configureMenu({ isDisabled: true });
+      createObject('a');
+      select('a');
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+
+      configureMenu();
+      mockCore.store.isDisabled = true;
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+
+      expect(manager.menuState.isVisible).toBe(false);
+      expect(mockCore.engine.emitObjectTitlebarMenuStateChange).not.toHaveBeenCalled();
+    });
+
+    it('opens on inactive titlebars and stays open until the selection changes', () => {
+      configureMenu();
+      createObject('a');
+
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+      resolve();
+
+      expect(manager.menuState).toEqual(expect.objectContaining({ isVisible: true, objectId: 'a' }));
+      expect(manager.menuState.items.find(menuItem => menuItem.id === 'locked')?.isDisabled).toBe(false);
+
+      select('a');
+      resolve();
+
+      expect(manager.menuState.isVisible).toBe(false);
+    });
+
+    it('opening another menu replaces the open one', () => {
+      configureMenu();
+      createObject('a');
+      createObject('b', { translateX: 500 });
+      select('a', 'b');
+
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+      manager.invokeElement('b', 'right', 'more', click, anchor);
+
+      expect(manager.menuState).toEqual(expect.objectContaining({ isVisible: true, objectId: 'b' }));
+    });
+
+    it.each([
+      ['the camera moves', () => (mockCore.store.state.translateX = 15)],
+      ['the camera zooms', () => (mockCore.store.state.scale = 2)],
+      ['the object is deselected', () => select()],
+      ['the object is removed', () => objects.delete('a')],
+      ['the menu element is hidden', () => configureMenu({ isVisible: false })],
+    ])('closes when %s', (_, change) => {
+      configureMenu();
+      createObject('a');
+      select('a');
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+      expect(resolve()[0].sections.right[0].isMenuOpen).toBe(true);
+
+      change();
+      const titlebars = resolve();
+
+      expect(manager.menuState.isVisible).toBe(false);
+      expect(lastMenuState()).toEqual({ isVisible: false, items: [] });
+      expect(titlebars.flatMap(titlebar => titlebar.sections.right).some(resolved => resolved.isMenuOpen)).toBe(false);
+    });
+
+    it('closes when renaming starts', () => {
+      configureMenu();
+      createObject('a');
+      select('a');
+      manager.invokeElement('a', 'right', 'more', click, anchor);
+
+      manager.startTitleEditing('a', 'title');
+
+      expect(manager.menuState.isVisible).toBe(false);
     });
   });
 
@@ -532,7 +700,7 @@ describe('KritzelObjectTitlebarManager', () => {
 
       const [titlebar] = resolve();
 
-      expect(titlebar.sections.left.map(item => item.isEditable)).toEqual([false, true, true, false]);
+      expect(titlebar.sections.left.map(resolved => resolved.isEditable)).toEqual([false, true, true, false]);
     });
 
     it('renders the edited title while its object is selected', () => {
@@ -542,8 +710,8 @@ describe('KritzelObjectTitlebarManager', () => {
 
       manager.startTitleEditing('a', 'title');
 
-      expect(manager.editingTitle).toEqual({ ownerId: 'a', itemId: 'title' });
-      expect(resolve()[0].editingItemId).toBe('title');
+      expect(manager.editingTitle).toEqual({ ownerId: 'a', elementId: 'title' });
+      expect(resolve()[0].editingElementId).toBe('title');
       expect(mockCore.rerender).toHaveBeenCalled();
     });
 
@@ -611,7 +779,7 @@ describe('KritzelObjectTitlebarManager', () => {
 
       expect(object.name).toBe('Draft');
       expect(manager.editingTitle).toBeNull();
-      expect(titlebars[0].editingItemId).toBeUndefined();
+      expect(titlebars[0].editingElementId).toBeUndefined();
     });
 
     it('ends an edit without a draft when its title is no longer editable', () => {
@@ -643,7 +811,7 @@ describe('KritzelObjectTitlebarManager', () => {
       const title = createElement({ [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
       const input = createElement({ [KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }, surface);
 
-      expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [title, surface] })).toEqual({ ownerId: 'a', itemId: 'title' });
+      expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [title, surface] })).toEqual({ ownerId: 'a', elementId: 'title' });
       expect(manager.getEditableTitleFromEvent({ clientX: 0, clientY: 0, composedPath: () => [surface] })).toBeNull();
       expect(manager.isTitleInputEvent({ composedPath: () => [input, surface] })).toBe(true);
       expect(manager.isTitleInputEvent({ composedPath: () => [title, surface] })).toBe(false);
@@ -655,7 +823,7 @@ describe('KritzelObjectTitlebarManager', () => {
       const title = createElement({ [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: 'title' }, surface);
       mockCore.engine.host.shadowRoot.elementsFromPoint.mockReturnValue([title]);
 
-      expect(manager.getEditableTitleFromEvent({ clientX: 1, clientY: 2, composedPath: () => [] })).toEqual({ ownerId: 'a', itemId: 'title' });
+      expect(manager.getEditableTitleFromEvent({ clientX: 1, clientY: 2, composedPath: () => [] })).toEqual({ ownerId: 'a', elementId: 'title' });
     });
   });
 

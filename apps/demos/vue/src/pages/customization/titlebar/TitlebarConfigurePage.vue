@@ -69,9 +69,9 @@ const editor = getEditorRef('editor')
 const lastAction = ref('Click a titlebar button')
 
 async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
-  const { itemId, objectId, objectType } = event.detail
+  const { elementId, objectId, objectType } = event.detail
   const object = await editor.value?.getObjectById(objectId)
-  lastAction.value = `${actionLabels[itemId] ?? itemId} · ${object?.name ?? objectType}`
+  lastAction.value = `${actionLabels[elementId] ?? elementId} · ${object?.name ?? objectType}`
 }
 </script>
 

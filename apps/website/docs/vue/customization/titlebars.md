@@ -2,7 +2,7 @@
 sidebar_label: Titlebars
 displayed_sidebar: tutorialSidebar
 title: "Titlebars | Kritzel for Vue"
-description: "Render a configurable titlebar above objects with a title, text, icons, and buttons, and style it with theme tokens in Vue."
+description: "Render a configurable titlebar above objects with a title, text, icons, buttons, and menus, and style it with theme tokens in Vue."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
@@ -11,7 +11,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 ## Overview
 
-A titlebar is an optional bar rendered above an object, similar to the frame labels in design tools. It shows the object's title and can hold additional text, icons, and buttons. Pressing the bar selects its object, and dragging the bar moves the object.
+A titlebar is an optional bar rendered above an object, similar to the frame labels in design tools. It shows the object's title and can hold additional text, icons, buttons, and menus. Pressing the bar selects its object, and dragging the bar moves the object.
 
 Titlebars are set up in three places:
 
@@ -77,7 +77,7 @@ if (object) {
 
 The title is resolved in the following order:
 
-1. The `text` of the `title` item.
+1. The `text` of the `title` element.
 2. The `title(object)` resolver of the configuration.
 3. The object's `name`.
 4. A localized label for the object type, such as `Shape` or `Group` (see the `objectType.*` keys in [Localization Terms](../api-reference/localization-terms.md#object-type-labels)).
@@ -161,9 +161,9 @@ async function toggleTitlebar() {
 </template>
 ```
 
-## Configuring Items
+## Configuring Elements
 
-A titlebar has three sections: `left`, `center`, and `right`. Each section is an array of items that are rendered in order. `left` defaults to a single `title` item, `center` and `right` default to empty.
+A titlebar has three sections: `left`, `center`, and `right`. Each section is an array of elements that are rendered in order. `left` defaults to a single `title` element, `center` and `right` default to empty.
 
 ```ts
 const objectTitlebar: KritzelObjectTitlebarConfig = {
@@ -180,26 +180,27 @@ const objectTitlebar: KritzelObjectTitlebarConfig = {
 
 Define the configuration once in `<script setup>` instead of an inline object in the template, so that it keeps the same reference across renders.
 
-### Item Types
+### Element Types
 
 | Type | Options | Description |
 |------|---------|-------------|
-| title | text, isEditable | Shows the resolved title. `text` overrides it for this item. With `isEditable`, users can rename the object, see [Renaming Objects](#renaming-objects). |
+| title | text, isEditable | Shows the resolved title. `text` overrides it for this element. With `isEditable`, users can rename the object, see [Renaming Objects](#renaming-objects). |
 | text | text, tone | Shows arbitrary text. `tone` is `'default'`, `'muted'`, or `'strong'`. |
 | icon | icon | Shows a non-interactive icon from the icon registry. |
 | button | icon, label, tooltip, variant, isDisabled, isPressed, action | Shows an interactive button. |
+| menu | icon, label, tooltip, variant, isDisabled, items | Shows a button that opens a menu, see [Adding Menus](#adding-menus). |
 | spacer | - | Fills the remaining space of its section. |
 | separator | - | Shows a thin vertical divider. |
 
-Every item supports the following options:
+Every element supports the following options:
 
 | Option | Type | Description |
 |--------|------|-------------|
-| id | string | Stable identifier. Used as the `itemId` of `objectTitlebarAction` and as the `data-item-id` attribute. |
-| isVisible | boolean | Hides the item when `false`. |
-| showWhen | 'always' \| 'active' \| 'inactive' | Restricts the item to the active or inactive state. Defaults to `'always'`. |
-| minBarWidth | number | Hides the item while the titlebar is narrower than this many screen pixels. |
-| part | string | Additional part name for styling the item with `::part()`. |
+| id | string | Stable identifier. Used as the `elementId` of `objectTitlebarAction` and as the `data-element-id` attribute. |
+| isVisible | boolean | Hides the element when `false`. |
+| showWhen | 'always' \| 'active' \| 'inactive' | Restricts the element to the active or inactive state. Defaults to `'always'`. |
+| minBarWidth | number | Hides the element while the titlebar is narrower than this many screen pixels. |
+| part | string | Additional part name for styling the element with `::part()`. |
 
 Buttons support the following additional options:
 
@@ -217,7 +218,7 @@ Any titlebar or button icon can be a [default icon](../api-reference/icons.md) s
 
 ### Dynamic Values
 
-`text`, `icon`, `isVisible`, `isEditable`, `isDisabled`, and `isPressed` accept either a value or a function that receives the titlebar context and returns the value. Functions are evaluated synchronously on every render, so they must be cheap and must not return a promise. A function that throws or returns a promise falls back to the default value and logs a warning once.
+`text`, `icon`, `isVisible`, `isEditable`, `isDisabled`, `isPressed`, and the `items` of a menu accept either a value or a function that receives the titlebar context and returns the value. Functions are evaluated synchronously on every render, so they must be cheap and must not return a promise. A function that throws or returns a promise falls back to the default value and logs a warning once.
 
 ```ts
 { id: 'size', type: 'text', tone: 'muted', text: ({ size }) => `${Math.round(size.width)} × ${Math.round(size.height)}` }
@@ -241,9 +242,9 @@ The context contains the following fields:
 
 | Option | Type | Description |
 |--------|------|-------------|
-| left | KritzelTitlebarItem[] | Items of the left section. Defaults to a single `title` item. |
-| center | KritzelTitlebarItem[] | Items of the center section. |
-| right | KritzelTitlebarItem[] | Items of the right section. |
+| left | KritzelTitlebarElement[] | Elements of the left section. Defaults to a single `title` element. |
+| center | KritzelTitlebarElement[] | Elements of the center section. |
+| right | KritzelTitlebarElement[] | Elements of the right section. |
 | visibility | 'always' \| 'active' | Show titlebars always (default) or only while their object is selected. |
 | rotation | 'follow' \| 'upright' | Follow the object's rotation (default) or stay upright above its rotated bounding box. |
 | title | (object) => string \| undefined | Resolves the title of an object. Falls back to the object's `name`, then to a localized type label. |
@@ -252,7 +253,7 @@ The context contains the following fields:
 
 ## Renaming Objects
 
-Set `isEditable` on a title item to let users rename objects from their titlebar:
+Set `isEditable` on a title element to let users rename objects from their titlebar:
 
 ```ts
 { id: 'title', type: 'title', isEditable: true }
@@ -266,11 +267,11 @@ Renaming works like editing a selected text object: the first click on a titleba
 - **Shortcuts:** While the input has focus, keys such as Delete, Escape, or Ctrl+Z only affect the input, not the canvas.
 - **Per object:** `isEditable` also accepts a function of the titlebar context, for example `isEditable: ({ objectType }) => objectType === 'KritzelGroup'`. It defaults to `false`.
 
-A title item with a `text` override cannot be edited. A `title` resolver in the configuration takes precedence over the object's `name`, so a name set by renaming only shows when the resolver returns no title for that object.
+A title element with a `text` override cannot be edited. A `title` resolver in the configuration takes precedence over the object's `name`, so a name set by renaming only shows when the resolver returns no title for that object.
 
 ## Handling Button Clicks
 
-Every button click emits the `objectTitlebarAction` event, in addition to calling the optional `action` callback of the item. Listen for it with `@objectTitlebarAction`:
+Every button click emits the `objectTitlebarAction` event, in addition to calling the optional `action` callback of the button. Selecting a menu item emits the same event, see [Adding Menus](#adding-menus). Listen for it with `@objectTitlebarAction`:
 
 ```html
 <script setup lang="ts">
@@ -280,9 +281,9 @@ import type { KritzelObjectTitlebarActionEvent } from '@kritzel/vue-editor'
 const previewObjectId = ref<string | null>(null)
 
 function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
-  const { itemId, objectId } = event.detail
+  const { elementId, objectId } = event.detail
 
-  if (itemId === 'preview') {
+  if (elementId === 'preview') {
     previewObjectId.value = objectId
   }
 }
@@ -301,14 +302,15 @@ The event detail contains the following fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| itemId | string | `id` of the clicked button. |
-| section | 'left' \| 'center' \| 'right' | Section that contains the button. |
+| elementId | string | `id` of the clicked button, or of the menu that contains the selected menu item. |
+| menuItemId | string \| undefined | `id` of the selected menu item. Unset for button clicks. |
+| section | 'left' \| 'center' \| 'right' | Section that contains the button or menu. |
 | objectId | string | ID of the object or group the titlebar belongs to. |
 | objectType | string | Class name of the object, for example `'KritzelShape'`. |
 | workspaceId | string | ID of the workspace that contains the object. |
-| anchorRect | DOMRect | Client rect of the clicked button, for example to position a popover. |
+| anchorRect | DOMRect | Client rect of the clicked button or menu button, for example to position a popover. |
 
-You can also handle a click in the `action` callback of the item, which receives the titlebar context and the click event:
+You can also handle a click in the `action` callback of the button, which receives the titlebar context and the click event:
 
 ```ts
 const openedObjectId = ref<string | null>(null)
@@ -328,11 +330,81 @@ const objectTitlebar: KritzelObjectTitlebarConfig = {
 }
 ```
 
+## Adding Menus
+
+A `menu` element shows a button that opens a menu with several menu items, for example to group actions that do not fit into the titlebar. `<KritzelEditor>` renders the menu below the button with the same menu component as its other menus.
+
+```ts
+const objectTitlebar: KritzelObjectTitlebarConfig = {
+  left: [{ id: 'title', type: 'title' }],
+  right: [
+    {
+      id: 'more',
+      type: 'menu',
+      icon: 'ellipsisVertical',
+      tooltip: 'More',
+      items: [
+        { id: 'duplicate', label: 'Duplicate', icon: 'copy' },
+        { id: 'rename', label: 'Rename', action: ({ object }) => startRename(object.id) },
+        { id: 'ungroup', label: 'Ungroup', isDisabled: ({ objectType }) => objectType !== 'KritzelGroup' },
+      ],
+    },
+  ],
+}
+```
+
+Menus support the same `icon`, `label`, `tooltip`, `variant`, and `isDisabled` options as buttons, plus the following option:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| items | KritzelTitlebarMenuItem[] | Menu items, in order. Also accepts a function of the titlebar context, which is evaluated when the menu opens. |
+
+Menu items support the following options:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| id | string | Stable identifier. Used as the `menuItemId` of `objectTitlebarAction`. |
+| label | string | Text of the menu item. Localization term keys are translated through the active locale, other strings are used as is. |
+| icon | KritzelIconName | Icon shown in front of the label. |
+| isVisible | boolean \| (context) => boolean | Hides the menu item when `false`. |
+| isDisabled | boolean \| (context) => boolean | Disables the menu item. Disabled menu items cannot be selected. |
+| action | (context, menuItem) => void | Called when the menu item is selected. |
+
+Selecting a menu item closes the menu, calls its `action`, and emits `objectTitlebarAction` with the `id` of the menu as `elementId` and the `id` of the menu item as `menuItemId`:
+
+```html
+<script setup lang="ts">
+import type { KritzelObjectTitlebarActionEvent } from '@kritzel/vue-editor'
+
+function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
+  const { elementId, menuItemId, objectId } = event.detail
+
+  if (elementId === 'more' && menuItemId === 'duplicate') {
+    duplicateObject(objectId)
+  }
+}
+</script>
+
+<template>
+  <KritzelEditor
+    :objectTitlebar="objectTitlebar"
+    :objectConfig="objectConfig"
+    @objectTitlebarAction="onTitlebarAction"
+  />
+</template>
+```
+
+Keep the following in mind when adding menus:
+
+- **Opening and closing:** Clicking the menu button opens the menu, and clicking it again closes it. The menu also closes when a menu item is selected, when Escape is pressed or the user clicks elsewhere, when the camera moves, when the object is selected or deselected, when its titlebar is hidden, when renaming starts, and when the context menu opens. Only one titlebar menu is open at a time.
+- **Evaluation:** `items`, `isVisible`, and `isDisabled` are evaluated when the menu opens, and again when a menu item is selected, so a menu item that became disabled in the meantime cannot be selected.
+- **Without the editor:** `<kritzel-engine>` does not render menus itself. It emits `objectTitlebarMenuStateChange` with the resolved menu items and the menu button as `anchor`. Render your own menu from it, and call `selectObjectTitlebarMenuItem(menuItemId)` and `closeObjectTitlebarMenu()` on the engine.
+
 ## Behavior
 
 - **Active state:** A titlebar is highlighted while its object, or something inside its group, is selected. Set `visibility: 'active'` to show titlebars only in this state.
 - **Selecting and moving:** Pressing a titlebar selects its object, and dragging it moves the object exactly like dragging the object itself, including undo and sync. Holding Shift or Ctrl while pressing toggles the object in the selection. Set `draggable: false` to keep the selection behavior without moving.
-- **Buttons:** Clicking a button never changes the selection or starts a drag. Buttons of an active titlebar can be reached with the keyboard.
+- **Buttons and menus:** Clicking a button or menu button never changes the selection or starts a drag. Buttons and menu buttons of an active titlebar can be reached with the keyboard.
 - **Context menu:** Right-clicking or long-pressing a titlebar opens the object context menu.
 - **Text objects:** Clicking the titlebar of a text object selects it without entering edit mode.
 - **Drawing tools:** While a drawing tool is active, input passes through the titlebar surface to the canvas, while its buttons stay clickable.
@@ -412,21 +484,21 @@ The themes keep the names `light` and `dark` of the themes they spread, so the b
 | focusRing | 2px solid #007aff | 2px solid #4da3ff | Outline of focused buttons |
 | fontFamily | var(--kritzel-global-font-family, sans-serif) | var(--kritzel-global-font-family, sans-serif) | Font family |
 | fontSize | 12px | 12px | Font size |
-| fontWeight | 400 | 400 | Font weight of text items |
-| gap | 4px | 4px | Space between items |
+| fontWeight | 400 | 400 | Font weight of text elements |
+| gap | 4px | 4px | Space between elements |
 | height | 28px | 28px | Height of the titlebar |
 | hoverBackgroundColor | #ededed | #2f2f2f | Background of a hovered titlebar |
 | iconColor | #6b6b6b | #a0a0a0 | Icon color |
 | inputBackgroundColor | rgba(255, 255, 255, 0.9) | rgba(255, 255, 255, 0.12) | Background of the input shown while renaming an object |
 | inputPadding | 3px 6px | 3px 6px | Padding of the input shown while renaming an object |
 | iconSize | 16px | 16px | Icon size |
-| mutedTextColor | #9a9a9a | #7a7a7a | Color of muted text items |
+| mutedTextColor | #9a9a9a | #7a7a7a | Color of muted text elements |
 | offset | 6px | 6px | Space between the titlebar and its object |
 | paddingX | 6px | 6px | Horizontal padding |
 | selectionBackgroundColor | #007aff | #007aff | Background of selected text, for example the name selected when renaming starts |
 | selectionColor | #ffffff | #ffffff | Color of selected text |
 | textColor | #5f5f5f | #b0b0b0 | Text color |
-| titleFontWeight | 600 | 600 | Font weight of the title and strong text items |
+| titleFontWeight | 600 | 600 | Font weight of the title and strong text elements |
 | transition | background-color 120ms ease, color 120ms ease | background-color 120ms ease, color 120ms ease | Transition of hover and active states |
 
 ### Styling with CSS Parts
@@ -441,15 +513,16 @@ For styles that theme properties do not cover, titlebars expose parts on `<kritz
 | titlebar-left | Left section |
 | titlebar-center | Center section |
 | titlebar-right | Right section |
-| titlebar-title | Title items |
+| titlebar-title | Title elements |
 | titlebar-title-input | Input shown while renaming an object |
-| titlebar-text | Text items |
-| titlebar-icon | Icon items |
-| titlebar-button | Buttons |
-| titlebar-button-pressed | Pressed buttons |
+| titlebar-text | Text elements |
+| titlebar-icon | Icon elements |
+| titlebar-button | Buttons and menu buttons |
+| titlebar-button-pressed | Pressed buttons and menu buttons of open menus |
+| titlebar-menu-button | Menu buttons |
 | titlebar-separator | Separators |
 
-Items with a `part` option additionally expose that part name. Add the rules to a global stylesheet or a non-scoped `<style>` block, because `<style scoped>` rules do not reach `<kritzel-engine>`, which is created by the editor:
+Elements with a `part` option additionally expose that part name. Add the rules to a global stylesheet or a non-scoped `<style>` block, because `<style scoped>` rules do not reach `<kritzel-engine>`, which is created by the editor:
 
 ```css
 kritzel-engine::part(titlebar-title) {

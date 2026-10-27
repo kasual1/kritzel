@@ -1356,7 +1356,7 @@ describe('KritzelSelectionTool', () => {
     describe('title editing', () => {
       beforeEach(() => {
         mockCore.store.selectionGroup = { id: 'sg-1', objects: [owner], objectIds: ['owner-1'] };
-        mockCore.objectTitlebarManager.getEditableTitleFromEvent.mockReturnValue({ ownerId: 'owner-1', itemId: 'title' });
+        mockCore.objectTitlebarManager.getEditableTitleFromEvent.mockReturnValue({ ownerId: 'owner-1', elementId: 'title' });
       });
 
       it('starts renaming when the editable title of the selected object is clicked again', () => {

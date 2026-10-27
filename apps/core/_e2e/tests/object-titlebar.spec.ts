@@ -8,7 +8,7 @@ async function configureTitlebar(page: Page) {
     w.__titlebarActions = [];
     w.__titlebarEvents = [];
     const editor = document.querySelector('kritzel-editor') as any;
-    editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__titlebarEvents.push(event.detail.itemId));
+    editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__titlebarEvents.push(event.detail.elementId));
     editor.objectConfig = { hasTitlebar: (object: any) => object.__class__ === 'KritzelGroup' || !!object.name };
     editor.objectTitlebar = {
       left: [
@@ -67,7 +67,7 @@ test.describe('Object titlebar', () => {
     await expect(page.locator('kritzel-engine .object-titlebar')).toHaveCount(1);
     const titlebar = titlebarFor(page, named.id);
     await expect(titlebar.locator('.object-titlebar-title')).toHaveText('Desktop');
-    await expect(titlebar.locator('[data-item-id="size"]')).toHaveText('300');
+    await expect(titlebar.locator('[data-element-id="size"]')).toHaveText('300');
     await expect(titlebar).toHaveAttribute('data-state', 'inactive');
   });
 
@@ -156,7 +156,7 @@ test.describe('Object titlebar', () => {
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
     const titlebar = titlebarFor(page, shape.id);
 
-    await titlebar.locator('[data-item-id="play"]').click();
+    await titlebar.locator('[data-element-id="play"]').click();
 
     expect(await page.evaluate(() => (window as any).__titlebarActions)).toEqual([shape.id]);
     expect(await page.evaluate(() => (window as any).__titlebarEvents)).toEqual(['play']);
@@ -233,7 +233,7 @@ test.describe('Object titlebar', () => {
 
   test('buttons use the custom pointer cursor and disabled buttons the custom default cursor', async ({ editorPage, page }) => {
     const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
-    const button = titlebarFor(page, shape.id).locator('[data-item-id="play"]');
+    const button = titlebarFor(page, shape.id).locator('[data-element-id="play"]');
     const pointerCursor = await page.evaluate(() => getComputedStyle(document.body).getPropertyValue('--kritzel-global-pointer-cursor').trim());
     expect(pointerCursor).toMatch(/^url\(/);
 
@@ -251,6 +251,129 @@ test.describe('Object titlebar', () => {
 
     await expect(button).toHaveAttribute('aria-disabled', 'true');
     await expect(button).toHaveCSS('cursor', /^url\(/);
+  });
+
+  test.describe('menus', () => {
+    /** Adds a menu to the right section, recording selected menu items and action events on window. */
+    async function addMenu(page: Page) {
+      await page.evaluate(() => {
+        const w = window as any;
+        w.__menuActions = [];
+        w.__menuEvents = [];
+        const editor = document.querySelector('kritzel-editor') as any;
+        editor.addEventListener('objectTitlebarAction', (event: CustomEvent) => w.__menuEvents.push(event.detail));
+        editor.objectTitlebar = {
+          ...editor.objectTitlebar,
+          right: [
+            {
+              id: 'more',
+              type: 'menu',
+              icon: 'ellipsisVertical',
+              tooltip: 'More',
+              items: [
+                { id: 'duplicate', label: 'Duplicate', icon: 'copy', action: (context: any, menuItem: any) => w.__menuActions.push([context.object.id, menuItem.id]) },
+                { id: 'hidden', label: 'Hidden', isVisible: false },
+                { id: 'locked', label: 'Locked', isDisabled: true },
+              ],
+            },
+          ],
+        };
+      });
+      await nextFrame(page);
+    }
+
+    const menu = (page: Page) => page.locator('kritzel-menu[data-testid="object-titlebar-menu"]');
+    const menuItem = (page: Page, id: string) => menu(page).locator(`[data-testid="menu-item-${id}"]`);
+
+    test('opens below its button, lists visible menu items and runs the selected one', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await addMenu(page);
+      const button = titlebarFor(page, shape.id).locator('[data-element-id="more"]');
+
+      await expect(button).toHaveAttribute('aria-haspopup', 'menu');
+      await expect(button).toHaveAttribute('aria-expanded', 'false');
+      await button.click();
+
+      await expect(menu(page)).toBeVisible();
+      await expect(button).toHaveAttribute('aria-expanded', 'true');
+      await expect(menu(page).locator('kritzel-menu-item')).toHaveCount(2);
+      await expect(menuItem(page, 'duplicate')).toContainText('Duplicate');
+      await expect(menuItem(page, 'hidden')).toHaveCount(0);
+      const [buttonBox, menuBox] = await Promise.all([button.boundingBox(), menu(page).boundingBox()]);
+      expect(menuBox!.y).toBeGreaterThanOrEqual(buttonBox!.y + buttonBox!.height);
+
+      await menuItem(page, 'duplicate').click();
+
+      await expect(menu(page)).toBeHidden();
+      await expect(button).toHaveAttribute('aria-expanded', 'false');
+      expect(await page.evaluate(() => (window as any).__menuActions)).toEqual([[shape.id, 'duplicate']]);
+      expect(await page.evaluate(() => (window as any).__menuEvents)).toEqual([
+        expect.objectContaining({ elementId: 'more', menuItemId: 'duplicate', section: 'right', objectId: shape.id }),
+      ]);
+      expect(await editorPage.getSelectedObjects()).toHaveLength(0);
+    });
+
+    test('disabled menu items cannot be selected', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await addMenu(page);
+      await titlebarFor(page, shape.id).locator('[data-element-id="more"]').click();
+
+      await menuItem(page, 'locked').click({ force: true });
+
+      await expect(menu(page)).toBeVisible();
+      expect(await page.evaluate(() => (window as any).__menuEvents)).toEqual([]);
+    });
+
+    test('clicking the button again, pressing Escape or clicking elsewhere closes the menu', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await addMenu(page);
+      const button = titlebarFor(page, shape.id).locator('[data-element-id="more"]');
+
+      await button.click();
+      await expect(menu(page)).toBeVisible();
+      await button.click();
+      await expect(menu(page)).toBeHidden();
+
+      await button.click();
+      await expect(menu(page)).toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(menu(page)).toBeHidden();
+
+      await button.click();
+      await expect(menu(page)).toBeVisible();
+      const empty = await editorPage.worldToPage(800, 600);
+      await page.mouse.click(empty.pageX, empty.pageY);
+      await expect(menu(page)).toBeHidden();
+      await expect(button).toHaveAttribute('aria-expanded', 'false');
+    });
+
+    test('closes when the camera moves', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await addMenu(page);
+      await titlebarFor(page, shape.id).locator('[data-element-id="more"]').click();
+      await expect(menu(page)).toBeVisible();
+
+      await editorPage.setViewportRaw(40, 0, 1);
+      await nextFrame(page);
+
+      await expect(menu(page)).toBeHidden();
+    });
+
+    test('opening the menu of another titlebar replaces the open menu', async ({ editorPage, page }) => {
+      const first = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      const second = await editorPage.addShape({ translateX: 200, translateY: 500, width: 300, height: 150, name: 'Tablet' });
+      await addMenu(page);
+
+      await titlebarFor(page, first.id).locator('[data-element-id="more"]').click();
+      await expect(menu(page)).toBeVisible();
+      const secondButton = titlebarFor(page, second.id).locator('[data-element-id="more"]');
+      await secondButton.click();
+
+      await expect(menu(page)).toBeVisible();
+      await expect(titlebarFor(page, first.id).locator('[data-element-id="more"]')).toHaveAttribute('aria-expanded', 'false');
+      await expect(secondButton).toHaveAttribute('aria-expanded', 'true');
+      await expect(page.locator('body > [id^="portal-"]')).toHaveCount(1);
+    });
   });
 
   test.describe('renaming', () => {

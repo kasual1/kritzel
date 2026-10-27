@@ -2447,7 +2447,7 @@ declare namespace LocalJSX {
         "onLogin"?: (event: KritzelEditorCustomEvent<LoginEvent>) => void;
         "onLogout"?: (event: KritzelEditorCustomEvent<void>) => void;
         /**
-          * Emitted when a button in an object titlebar is clicked.
+          * Emitted when a button or a menu item in an object titlebar is clicked.
          */
         "onObjectTitlebarAction"?: (event: KritzelEditorCustomEvent<KritzelObjectTitlebarActionEvent>) => void;
         "onObjectsAdded"?: (event: KritzelEditorCustomEvent<ObjectsAddedEvent>) => void;

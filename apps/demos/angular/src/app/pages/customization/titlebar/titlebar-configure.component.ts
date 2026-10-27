@@ -102,9 +102,9 @@ export class TitlebarConfigureComponent {
 
   // The output runs inside the Angular zone, unlike `action` callbacks on the config.
   async onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEvent>) {
-    const { itemId, objectId, objectType } = event.detail;
+    const { elementId, objectId, objectType } = event.detail;
     const object = await this.editor.getObjectById(objectId);
-    const label = actionLabels[itemId] ?? itemId;
+    const label = actionLabels[elementId] ?? elementId;
     this.lastAction.set(`${label} · ${object?.name ?? objectType}`);
   }
 }

@@ -135,7 +135,7 @@ const objectTitlebar: KritzelObjectTitlebarConfig = {
 <KritzelEditor
   objectConfig={objectConfig}
   objectTitlebar={objectTitlebar}
-  onObjectTitlebarAction={e => setLastAction(e.detail.itemId)}
+  onObjectTitlebarAction={e => setLastAction(e.detail.elementId)}
 />
 ```
 
@@ -171,19 +171,20 @@ const toggleTitlebar = (id: string) => setTitlebarIds(ids => {
 <KritzelEditor objectConfig={objectConfig} objectTitlebar={KRITZEL_DEFAULT_OBJECT_TITLEBAR} />
 ```
 
-Items — every item needs a stable `id` (used in events) and accepts `isVisible`, `showWhen` (`'always'` | `'active'` | `'inactive'`), `minBarWidth` (screen px) and `part`:
+Elements — every element needs a stable `id` (used in events and as `data-element-id`) and accepts `isVisible`, `showWhen` (`'always'` | `'active'` | `'inactive'`), `minBarWidth` (screen px) and `part`:
 
 | `type` | Fields | Notes |
 |---|---|---|
-| `title` | `text?`, `isEditable?` | Resolved title: item `text` > `config.title(object)` > `object.name` > localized type label. `isEditable: true` (or a function of the context) lets users rename the object: clicking the title of the active bar of the only selected object again opens an input; Enter/blur stores the trimmed value in `name` (one undo step, emits `objectsUpdated` with `['name']`), Escape cancels, empty clears the name (default title). Not editable with a `text` override |
+| `title` | `text?`, `isEditable?` | Resolved title: element `text` > `config.title(object)` > `object.name` > localized type label. `isEditable: true` (or a function of the context) lets users rename the object: clicking the title of the active bar of the only selected object again opens an input; Enter/blur stores the trimmed value in `name` (one undo step, emits `objectsUpdated` with `['name']`), Escape cancels, empty clears the name (default title). Not editable with a `text` override |
 | `text` | `text`, `tone?` (`'default'` \| `'muted'` \| `'strong'`) | Arbitrary text, e.g. a size |
 | `icon` | `icon` | Registry icon name (`customSvgIcons` extend it) |
 | `button` | `icon?`, `label?`, `tooltip?`, `variant?` (`'ghost'` \| `'filled'` \| `'outlined'`), `isDisabled?`, `isPressed?`, `action?(context, event)` | Never selects or drags; always emits `objectTitlebarAction`. `label` / `tooltip` take term keys or plain strings |
+| `menu` | `icon?`, `label?`, `tooltip?`, `variant?`, `isDisabled?`, `items` (`KritzelTitlebarMenuItem[]` or a function of the context) | Button that opens a menu (rendered by the editor). Menu items: `id`, `label` (term key or string), `icon?`, `isVisible?`, `isDisabled?`, `action?(context, menuItem)`. Selecting one closes the menu and emits `objectTitlebarAction` with `elementId` = menu id and `menuItemId`. Closes on camera move, when the object is selected or deselected, when its titlebar is hidden, on renaming, or when the context menu opens |
 | `spacer` / `separator` | — | Flexible space / thin divider |
 
 Any value may be a function `(context) => value`. It runs **synchronously on every render**: keep it pure and cheap; promises are not supported (they resolve to the fallback and warn once). The context has `object`, `objectType`, `children`, `isActive`, `title`, `size` (world units), `contentSize` (`object.width` / `height`, e.g. a frame's `1200`), `barWidth` (screen px) and `t(key, vars)`.
 
-Config options: `left` (default: one title item), `center`, `right`, `visibility` (`'always'` default, or `'active'` = only while selected), `rotation` (`'follow'` default = along the rotated top edge, or `'upright'`), `title(object)` resolver, `draggable` (default `true`), `hideBelowWidth` (default `40` screen px). Which objects get a bar is not a titlebar option: it is `objectConfig.hasTitlebar`.
+Config options: `left` (default: one title element), `center`, `right`, `visibility` (`'always'` default, or `'active'` = only while selected), `rotation` (`'follow'` default = along the rotated top edge, or `'upright'`), `title(object)` resolver, `draggable` (default `true`), `hideBelowWidth` (default `40` screen px). Which objects get a bar is not a titlebar option: it is `objectConfig.hasTitlebar`.
 
 Behavior: the bar is active (highlighted) while its object, or something inside its group, is selected. Pressing the bar selects the object and dragging moves it exactly like dragging the object (same undo and sync); Shift/Ctrl-press toggles it in the selection. Right-click / long-press opens the object context menu. Clicking a text object's bar does not start editing. While a drawing tool is active, the bar lets input pass through but buttons stay clickable. Bars keep a constant screen size at any zoom, hide below `hideBelowWidth`, and are excluded from screenshots and exports.
 
@@ -214,7 +215,7 @@ const themes: KritzelTheme[] = [
 
 ### Styling with `::part()`
 
-For anything tokens do not cover, target parts on the engine from a global stylesheet (works under `KritzelEditor`, which renders the engine in light DOM): `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-title-input`, `titlebar-text`, `titlebar-icon`, `titlebar-button`, `titlebar-button-pressed`, `titlebar-separator`, plus any item's own `part`.
+For anything tokens do not cover, target parts on the engine from a global stylesheet (works under `KritzelEditor`, which renders the engine in light DOM): `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-title-input`, `titlebar-text`, `titlebar-icon`, `titlebar-button` (buttons and menu buttons), `titlebar-button-pressed` (also menu buttons of open menus), `titlebar-menu-button`, `titlebar-separator`, plus any element's own `part`.
 
 ```css
 kritzel-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #087ea4; }

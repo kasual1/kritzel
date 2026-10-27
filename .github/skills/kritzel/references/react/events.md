@@ -28,7 +28,7 @@ Handlers are typed as receiving `KritzelEditorCustomEvent<T>` (a `CustomEvent` s
 | `onIsPublicChange` | `IKritzelIsPublicChangeEvent` | Share-state of active workspace toggles |
 | `onAwarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `onLogin` / `onLogout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
-| `onObjectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`itemId`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked (also on the engine) — in addition to the item's own `action` |
+| `onObjectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`elementId`, `menuItemId?`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked or a titlebar menu item is selected (also on the engine) — in addition to the button's or menu item's own `action` |
 
 ## `<KritzelEngine>` event props
 
@@ -43,6 +43,7 @@ Engine emits the same object/viewport/undo/awareness events plus:
 | `onActiveWorkspaceChange` | `KritzelWorkspace` | Active workspace switches (full object, unlike editor) |
 | `onObjectsInViewportChange` | `ObjectsInViewportChangeEvent` | Set of visible objects changes |
 | `onLongpress` | `PointerEvent` | Touch/pen long-press — custom mobile context menus |
+| `onObjectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState` (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
 
 ## Canonical pattern: events → state
 
@@ -91,14 +92,14 @@ Use the granular triplet instead of `onObjectsChange` when maintaining your own 
 />
 ```
 
-## Titlebar button clicks
+## Titlebar button and menu clicks
 
-With an `objectTitlebar` configured (see theming-and-context-menus.md), every button click emits `onObjectTitlebarAction`. Identify the button by `itemId` and the object by `objectId`; `anchorRect` is the button's client rect for anchoring a popover:
+With an `objectTitlebar` configured (see theming-and-context-menus.md), every button click emits `onObjectTitlebarAction`. Identify the button by `elementId` and the object by `objectId`; `anchorRect` is the button's client rect for anchoring a popover. Selecting an item of a titlebar `menu` emits the same event with the menu's id as `elementId` and the menu item's id as `menuItemId`:
 
 ```tsx
 async function onTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
   const object = await editorRef.current?.getObjectById(detail.objectId);
-  setLastAction(`${detail.itemId} · ${object?.name ?? detail.objectType}`);
+  setLastAction(`${detail.menuItemId ?? detail.elementId} · ${object?.name ?? detail.objectType}`);
 }
 
 <KritzelEditor
@@ -110,7 +111,7 @@ async function onTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
 
 ## Import sources for event payload types
 
-All common payload types are re-exported by `@kritzel/react-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/react-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/react-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/react-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

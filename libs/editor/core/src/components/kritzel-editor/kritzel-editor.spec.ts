@@ -124,7 +124,7 @@ describe('KritzelEditor', () => {
     it('re-emits titlebar actions once, stopping the engine event', () => {
       const emit = jest.fn();
       (component as any).objectTitlebarAction = { emit };
-      const detail = { itemId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} };
+      const detail = { elementId: 'play', section: 'left', objectId: 'a', objectType: 'KritzelShape', workspaceId: 'w', anchorRect: {} };
       const event = { detail, stopPropagation: jest.fn() } as any;
 
       component.handleObjectTitlebarAction(event);
@@ -132,6 +132,37 @@ describe('KritzelEditor', () => {
       expect(event.stopPropagation).toHaveBeenCalled();
       expect(emit).toHaveBeenCalledTimes(1);
       expect(emit).toHaveBeenCalledWith(detail);
+    });
+
+    it('tracks the open titlebar menu and maps its items for kritzel-menu', () => {
+      const anchor = {} as HTMLElement;
+      const open = {
+        isVisible: true,
+        objectId: 'a',
+        elementId: 'more',
+        section: 'right',
+        anchor,
+        items: [
+          { id: 'copy', label: 'Copy', icon: 'copy', isDisabled: false, action: jest.fn() },
+          { id: 'lock', label: 'Lock', isDisabled: true },
+        ],
+      };
+      const event = (detail: any) => ({ detail, stopPropagation: jest.fn() }) as any;
+
+      const openEvent = event(open);
+      component.handleObjectTitlebarMenuStateChange(openEvent);
+
+      expect(openEvent.stopPropagation).toHaveBeenCalled();
+      expect(component.objectTitlebarMenuState).toBe(open);
+      expect((component as any).objectTitlebarMenuItems).toEqual([
+        { id: 'copy', label: 'Copy', icon: 'copy', isDisabled: false },
+        { id: 'lock', label: 'Lock', icon: undefined, isDisabled: true },
+      ]);
+
+      component.handleObjectTitlebarMenuStateChange(event({ isVisible: false, items: [] }));
+
+      expect(component.objectTitlebarMenuState).toBeUndefined();
+      expect((component as any).objectTitlebarMenuItems).toEqual([]);
     });
   });
 

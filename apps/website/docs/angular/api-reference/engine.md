@@ -978,8 +978,25 @@ getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked, in addition to calling the button's optional `action` callback. |
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
+| objectTitlebarMenuStateChange | KritzelObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. Contains the resolved menu items and the menu button as `anchor`, so that a host can render the menu. `<kritzel-editor>` renders titlebar menus itself and does not re-emit this event. |
 
 ### Methods
 
-No titlebar-specific methods. Use [updateObject](#updateobject) to change the `name` of an existing object.
+#### closeObjectTitlebarMenu
+
+Closes the open titlebar menu, if any.
+
+```ts
+closeObjectTitlebarMenu(): Promise<void>
+```
+
+#### selectObjectTitlebarMenuItem
+
+Selects a menu item of the open titlebar menu. Closes the menu, calls the menu item's `action`, and emits `objectTitlebarAction` with the `id` of the menu as `elementId` and `menuItemId`. Does nothing if no menu is open or the menu item is hidden or disabled.
+
+```ts
+selectObjectTitlebarMenuItem(menuItemId: string): Promise<void>
+```
+
+Use [updateObject](#updateobject) to change the `name` of an existing object.

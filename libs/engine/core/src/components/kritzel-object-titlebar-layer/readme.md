@@ -16,12 +16,12 @@ Must never use the `object` class: pointer handling treats `.object` elements as
 
 ## Properties
 
-| Property               | Attribute                | Description                                                                 | Type                                                                                                                 | Default     |
-| ---------------------- | ------------------------ | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ----------- |
-| `itemClick`            | --                       | Called when a titlebar button is clicked.                                   | `(ownerId: string, section: KritzelTitlebarSection, itemId: string, event: MouseEvent, anchorRect: DOMRect) => void` | `undefined` |
-| `surfacePointerEvents` | `surface-pointer-events` | Pointer events of the drag surfaces. Controls always receive pointer input. | `"auto" \| "none"`                                                                                                   | `'none'`    |
-| `titleEdit`            | --                       | Called while a title is edited to rename its object.                        | `KritzelTitlebarTitleEditHandlers`                                                                                   | `undefined` |
-| `titlebars`            | --                       | The titlebars to render, resolved by the engine for the current frame.      | `KritzelResolvedTitlebar[]`                                                                                          | `[]`        |
+| Property               | Attribute                | Description                                                                 | Type                                                                                                                    | Default     |
+| ---------------------- | ------------------------ | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ----------- |
+| `elementClick`         | --                       | Called when a titlebar button or menu button is clicked.                    | `(ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => void` | `undefined` |
+| `surfacePointerEvents` | `surface-pointer-events` | Pointer events of the drag surfaces. Controls always receive pointer input. | `"auto" \| "none"`                                                                                                      | `'none'`    |
+| `titleEdit`            | --                       | Called while a title is edited to rename its object.                        | `KritzelTitlebarTitleEditHandlers`                                                                                      | `undefined` |
+| `titlebars`            | --                       | The titlebars to render, resolved by the engine for the current frame.      | `KritzelResolvedTitlebar[]`                                                                                             | `[]`        |
 
 
 ## Dependencies

@@ -66,7 +66,7 @@ import { KritzelContextMenuState } from '../../interfaces/context-menu-state.int
 import { KritzelExportable, KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
 import { KritzelSvgExportHelper } from '../../helpers/svg-export.helper';
 import { KritzelToolDefinition } from '../../interfaces/tool.interface';
-import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
+import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
 import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
 import { KritzelResolvedTitlebar, KritzelTitlebarMetrics } from '../../classes/managers/object-titlebar.manager';
 
@@ -416,8 +416,14 @@ export class KritzelEngine {
   /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
   @Event() agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
 
-  /** Emitted when a button in an object titlebar is clicked. */
+  /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event() objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
+
+  /**
+   * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render
+   * `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
+   */
+  @Event() objectTitlebarMenuStateChange!: EventEmitter<KritzelObjectTitlebarMenuState>;
 
   @State() forceUpdate: number = 0;
 
@@ -1036,6 +1042,22 @@ export class KritzelEngine {
     this.core.store.state.isEnabled = true;
     this.emitContextMenuStateChange();
     this.core.rerender();
+  }
+
+  /** Closes the open object titlebar menu, if any. */
+  @Method()
+  async closeObjectTitlebarMenu() {
+    this.core.objectTitlebarManager.closeMenu();
+  }
+
+  /**
+   * Selects an item of the open object titlebar menu: closes the menu, runs the item's `action`
+   * and emits `objectTitlebarAction` with the item's id as `menuItemId`.
+   * @param menuItemId - The id of a menu item in the open menu's `objectTitlebarMenuStateChange` state.
+   */
+  @Method()
+  async selectObjectTitlebarMenuItem(menuItemId: string) {
+    this.core.objectTitlebarManager.selectMenuItem(menuItemId);
   }
 
   /**
@@ -2643,6 +2665,9 @@ export class KritzelEngine {
   }
 
   private emitContextMenuStateChange(): void {
+    if (this.core.store.state.isContextMenuVisible) {
+      this.core.objectTitlebarManager.closeMenu();
+    }
     this.contextMenuStateChange.emit({
       isVisible: this.core.store.state.isContextMenuVisible,
       isObjectMenu: !!this.core.store.selectionGroup,
@@ -3211,6 +3236,10 @@ export class KritzelEngine {
     this.objectTitlebarAction.emit(detail);
   }
 
+  emitObjectTitlebarMenuStateChange(detail: KritzelObjectTitlebarMenuState) {
+    this.objectTitlebarMenuStateChange.emit(detail);
+  }
+
   emitObjectsInViewportChange() {
     const visibleObjects = this.core.store.objectsInViewport;
     this.objectsInViewportChange.emit(visibleObjects);
@@ -3256,8 +3285,8 @@ export class KritzelEngine {
     return { multiplied, overridden };
   }
 
-  private readonly handleTitlebarItemClick = (ownerId: string, section: KritzelTitlebarSection, itemId: string, event: MouseEvent, anchorRect: DOMRect) => {
-    this.core.objectTitlebarManager.invokeItem(ownerId, section, itemId, event, anchorRect);
+  private readonly handleTitlebarElementClick = (ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => {
+    this.core.objectTitlebarManager.invokeElement(ownerId, section, elementId, event, anchor);
     this.core.rerender();
   };
 
@@ -4316,7 +4345,7 @@ export class KritzelEngine {
             <kritzel-object-titlebar-layer
               titlebars={titlebars}
               surfacePointerEvents={this.getTitlebarSurfacePointerEvents()}
-              itemClick={this.handleTitlebarItemClick}
+              elementClick={this.handleTitlebarElementClick}
               titleEdit={this.titlebarTitleEditHandlers}
             />
           )}

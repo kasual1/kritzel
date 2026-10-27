@@ -38,6 +38,7 @@ import {
   KritzelObjectConfig,
   KritzelObjectTitlebarActionEvent,
   KritzelObjectTitlebarConfig,
+  KritzelObjectTitlebarMenuState,
 } from "@kritzel/engine";
 import { DEFAULT_BRUSH_CONFIG } from "@kritzel/engine";
 import { DEFAULT_LINE_TOOL_CONFIG } from "@kritzel/engine";
@@ -472,7 +473,7 @@ export class KritzelEditor {
   /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
   @Event()
   agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
-  /** Emitted when a button in an object titlebar is clicked. */
+  /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event()
   objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
   @State() isEngineReady: boolean = false;
@@ -499,6 +500,7 @@ export class KritzelEditor {
   @State() activeNotification?: KritzelNotification;
   @State() isNotificationDismissing: boolean = false;
   @State() contextMenuState?: KritzelContextMenuState;
+  @State() objectTitlebarMenuState?: KritzelObjectTitlebarMenuState;
   @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
   @State() isLoadingOverlayVisible: boolean = false;
   private loadingOverlayShowTimeout?: ReturnType<typeof setTimeout>;
@@ -1597,6 +1599,24 @@ export class KritzelEditor {
     this.scheduleNotificationDismiss();
   }
 
+  handleObjectTitlebarMenuStateChange(
+    event: CustomEvent<KritzelObjectTitlebarMenuState>,
+  ) {
+    event.stopPropagation();
+    this.objectTitlebarMenuState = event.detail.isVisible
+      ? event.detail
+      : undefined;
+  }
+
+  private get objectTitlebarMenuItems(): IKritzelMenuItem[] {
+    return (this.objectTitlebarMenuState?.items ?? []).map((item) => ({
+      id: item.id,
+      label: item.label,
+      icon: item.icon,
+      isDisabled: item.isDisabled === true,
+    }));
+  }
+
   handleContextMenuStateChange(event: CustomEvent<KritzelContextMenuState>) {
     event.stopPropagation();
     this.contextMenuState = event.detail.isVisible ? event.detail : undefined;
@@ -2099,6 +2119,23 @@ export class KritzelEditor {
             ></kritzel-context-menu>
           )}
 
+          {/* Titlebar menus are tracked by the engine and rendered here, anchored to their menu button. */}
+          <kritzel-portal
+            anchor={this.objectTitlebarMenuState?.anchor ?? null}
+            offsetY={4}
+            onClose={() => void this.engineRef?.closeObjectTitlebarMenu()}
+          >
+            <kritzel-menu
+              data-testid="object-titlebar-menu"
+              items={this.objectTitlebarMenuItems}
+              onItemSelect={(event) =>
+                void this.engineRef?.selectObjectTitlebarMenuItem(
+                  event.detail.item.id,
+                )
+              }
+            ></kritzel-menu>
+          </kritzel-portal>
+
           <kritzel-loading-overlay
             visible={this.isLoadingOverlayVisible}
             text={this.resolvedTerms["editor.loading"] ?? "Loading..."}
@@ -2168,6 +2205,9 @@ export class KritzelEditor {
             }
             onObjectTitlebarAction={(event) =>
               this.handleObjectTitlebarAction(event)
+            }
+            onObjectTitlebarMenuStateChange={(event) =>
+              this.handleObjectTitlebarMenuStateChange(event)
             }
           ></kritzel-engine>
 

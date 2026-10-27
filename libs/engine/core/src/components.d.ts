@@ -12,7 +12,7 @@ import { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.int
 import { IKritzelUser } from "./interfaces/user.interface";
 import { KritzelToolDefinition } from "./interfaces/tool.interface";
 import { ContextMenuItem } from "./interfaces/context-menu-item.interface";
-import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from "./interfaces/object-titlebar.interface";
+import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState } from "./interfaces/object-titlebar.interface";
 import { KritzelObjectConfig } from "./interfaces/object-config.interface";
 import { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
@@ -38,7 +38,7 @@ import { KritzelObjectExportFormat } from "./interfaces/object-export.interface"
 import { KritzelSettingsConfig } from "./interfaces/settings.interface";
 import { KritzelIconName } from "./classes/registries/icon-registry.class";
 import { KritzelResolvedTitlebar } from "./classes/managers/object-titlebar.manager";
-import { KritzelTitlebarItemClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
+import { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export { KritzelCore } from "./classes/core/core.class";
 export { KritzelWorkspace } from "./classes/core/workspace.class";
 export { KritzelSyncConfig } from "./interfaces/sync-config.interface";
@@ -46,7 +46,7 @@ export { KritzelAssetStorageConfig } from "./interfaces/asset-storage-config.int
 export { IKritzelUser } from "./interfaces/user.interface";
 export { KritzelToolDefinition } from "./interfaces/tool.interface";
 export { ContextMenuItem } from "./interfaces/context-menu-item.interface";
-export { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig } from "./interfaces/object-titlebar.interface";
+export { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState } from "./interfaces/object-titlebar.interface";
 export { KritzelObjectConfig } from "./interfaces/object-config.interface";
 export { KritzelTheme, ThemeName } from "./interfaces/theme.interface";
 export { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from "./interfaces/localization.interface";
@@ -72,7 +72,7 @@ export { KritzelObjectExportFormat } from "./interfaces/object-export.interface"
 export { KritzelSettingsConfig } from "./interfaces/settings.interface";
 export { KritzelIconName } from "./classes/registries/icon-registry.class";
 export { KritzelResolvedTitlebar } from "./classes/managers/object-titlebar.manager";
-export { KritzelTitlebarItemClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
+export { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export namespace Components {
     /**
      * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
@@ -191,6 +191,10 @@ export namespace Components {
           * Deselects all currently selected objects.
          */
         "clearSelection": () => Promise<void>;
+        /**
+          * Closes the open object titlebar menu, if any.
+         */
+        "closeObjectTitlebarMenu": () => Promise<void>;
         /**
           * Declaratively configures the full locale catalog, replacing the available locale set. Pass `undefined` to restore the built-in locales (en/de/fr).
           * @param locales - The full locale catalog, or `undefined` for built-ins.
@@ -545,6 +549,11 @@ export namespace Components {
          */
         "selectAllObjectsInViewport": () => Promise<void>;
         /**
+          * Selects an item of the open object titlebar menu: closes the menu, runs the item's `action` and emits `objectTitlebarAction` with the item's id as `menuItemId`.
+          * @param menuItemId - The id of a menu item in the open menu's `objectTitlebarMenuStateChange` state.
+         */
+        "selectObjectTitlebarMenuItem": (menuItemId: string) => Promise<void>;
+        /**
           * Programmatically selects the given objects. Switches to the selection tool automatically.
           * @param objects - The objects to select.
          */
@@ -708,9 +717,9 @@ export namespace Components {
      */
     interface KritzelObjectTitlebarLayer {
         /**
-          * Called when a titlebar button is clicked.
+          * Called when a titlebar button or menu button is clicked.
          */
-        "itemClick"?: KritzelTitlebarItemClickHandler;
+        "elementClick"?: KritzelTitlebarElementClickHandler;
         /**
           * Pointer events of the drag surfaces. Controls always receive pointer input.
           * @default 'none'
@@ -792,6 +801,7 @@ declare global {
         "isLoadingChange": boolean;
         "agenticCursorDetached": KritzelAgenticCursorDetachedEvent;
         "objectTitlebarAction": KritzelObjectTitlebarActionEvent;
+        "objectTitlebarMenuStateChange": KritzelObjectTitlebarMenuState;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -988,9 +998,13 @@ declare namespace LocalJSX {
          */
         "onNotificationsChange"?: (event: KritzelEngineCustomEvent<KritzelNotification>) => void;
         /**
-          * Emitted when a button in an object titlebar is clicked.
+          * Emitted when a button or a menu item in an object titlebar is clicked.
          */
         "onObjectTitlebarAction"?: (event: KritzelEngineCustomEvent<KritzelObjectTitlebarActionEvent>) => void;
+        /**
+          * Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
+         */
+        "onObjectTitlebarMenuStateChange"?: (event: KritzelEngineCustomEvent<KritzelObjectTitlebarMenuState>) => void;
         /**
           * Emitted when one or more objects are added to the canvas.
          */
@@ -1101,9 +1115,9 @@ declare namespace LocalJSX {
      */
     interface KritzelObjectTitlebarLayer {
         /**
-          * Called when a titlebar button is clicked.
+          * Called when a titlebar button or menu button is clicked.
          */
-        "itemClick"?: KritzelTitlebarItemClickHandler;
+        "elementClick"?: KritzelTitlebarElementClickHandler;
         /**
           * Pointer events of the drag surfaces. Controls always receive pointer input.
           * @default 'none'

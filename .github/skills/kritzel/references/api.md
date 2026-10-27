@@ -58,6 +58,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | centerObjects | centerObjects(objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean> | Pans and zooms the viewport to fit the provided objects. Calculates the combined bounding box of the given objects and centers the viewport to show them. |
 | clearAgenticCursors | clearAgenticCursors() => Promise<void> | Removes all agentic cursors. |
 | clearSelection | clearSelection() => Promise<void> | Deselects all currently selected objects. |
+| closeObjectTitlebarMenu | closeObjectTitlebarMenu() => Promise<void> | Closes the open object titlebar menu, if any. |
 | configureLocales | configureLocales(locales?: KritzelLocale[]) => Promise<void> | Declaratively configures the full locale catalog, replacing the available locale set. Pass \`undefined\` to restore the built-in locales (en/de/fr). |
 | copy | copy() => Promise<void> | Copies the currently selected objects to the internal clipboard. |
 | createWorkspace | createWorkspace(workspace: KritzelWorkspace) => Promise<KritzelWorkspace \| null> | Creates a new workspace and emits a \`workspacesChange\` event. Emits \`activeWorkspaceChange\` if the created workspace is activated. |
@@ -115,6 +116,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | saveSettings | saveSettings(settings: KritzelSettingsConfig) => Promise<void> | Persists the given settings object to localStorage using the namespaced storage key. |
 | screenToWorld | screenToWorld(x: number, y: number) => Promise<{ x: number; y: number; }> | Converts screen-relative pixel coordinates to world coordinates. |
 | selectAllObjectsInViewport | selectAllObjectsInViewport() => Promise<void> | Selects all objects currently visible in the viewport. Switches to the selection tool automatically. |
+| selectObjectTitlebarMenuItem | selectObjectTitlebarMenuItem(menuItemId: string) => Promise<void> | Selects an item of the open object titlebar menu: closes the menu, runs the item's \`action\` and emits \`objectTitlebarAction\` with the item's id as \`menuItemId\`. |
 | selectObjects | selectObjects(objects: KritzelBaseObject[]) => Promise<void> | Programmatically selects the given objects. Switches to the selection tool automatically. |
 | sendBackward | sendBackward(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object, or each selected layer, one layer backward in the z-order, past the next layer below it. A group is one layer: all of its children move together. A grouped object moves within its group. |
 | sendToBack | sendToBack(object?: KritzelBaseObject<any>) => Promise<void> | Moves an object, or the selected layers, to the very back of the z-order, keeping the relative order of the moved layers. A group moves together with all of its children; a grouped object moves to the back of its group. |
@@ -153,7 +155,8 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. |
 | objectsSelectionChange | KritzelBaseObject<HTMLElement \| SVGElement>[] | Emitted when the set of selected objects changes. |
 | objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. |
-| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked. |
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button or a menu item in an object titlebar is clicked. |
+| objectTitlebarMenuStateChange | KritzelObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render \`items\` anchored to \`anchor\` and report selections through \`selectObjectTitlebarMenuItem\`. |
 | undoStateChange | KritzelUndoState | Emitted when the undo/redo state changes, providing current undo availability. |
 | viewportChange | KritzelViewportState | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize). |
 | workspacesChange | KritzelWorkspace[] | Emitted when workspaces are created, updated, or deleted. |
@@ -330,7 +333,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | objectsRemoved | ObjectsRemovedEvent |  |
 | objectsSelectionChange | KritzelBaseObject<HTMLElement \| SVGElement>[] |  |
 | objectsUpdated | ObjectsUpdatedEvent |  |
-| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked. |
+| objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button or a menu item in an object titlebar is clicked. |
 | themeChange | "dark" \| "light" \| string & {} |  |
 | undoStateChange | KritzelUndoState |  |
 | viewportChange | KritzelViewportState |  |

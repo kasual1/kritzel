@@ -5,12 +5,12 @@ import {
   KRITZEL_TITLEBAR_OWNER_ATTRIBUTE,
   KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
   KritzelResolvedTitlebar,
-  KritzelResolvedTitlebarItem,
+  KritzelResolvedTitlebarElement,
 } from '../../classes/managers/object-titlebar.manager';
 import { KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
 
-/** Handles a click on a titlebar button. */
-export type KritzelTitlebarItemClickHandler = (ownerId: string, section: KritzelTitlebarSection, itemId: string, event: MouseEvent, anchorRect: DOMRect) => void;
+/** Handles a click on a titlebar button or menu button. */
+export type KritzelTitlebarElementClickHandler = (ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => void;
 
 /** Callbacks of the input used to rename an object. */
 export interface KritzelTitlebarTitleEditHandlers {
@@ -41,13 +41,13 @@ export class KritzelObjectTitlebarLayer {
   /** Pointer events of the drag surfaces. Controls always receive pointer input. */
   @Prop() surfacePointerEvents: 'auto' | 'none' = 'none';
 
-  /** Called when a titlebar button is clicked. */
-  @Prop() itemClick?: KritzelTitlebarItemClickHandler;
+  /** Called when a titlebar button or menu button is clicked. */
+  @Prop() elementClick?: KritzelTitlebarElementClickHandler;
 
   /** Called while a title is edited to rename its object. */
   @Prop() titleEdit?: KritzelTitlebarTitleEditHandlers;
 
-  private readonly handleItemClick: KritzelTitlebarItemClickHandler = (...args) => this.itemClick?.(...args);
+  private readonly handleElementClick: KritzelTitlebarElementClickHandler = (...args) => this.elementClick?.(...args);
 
   private readonly titleEditHandlers: KritzelTitlebarTitleEditHandlers = {
     input: value => this.titleEdit?.input(value),
@@ -59,9 +59,9 @@ export class KritzelObjectTitlebarLayer {
     return (
       <Host class="object-titlebar-layer">
         {this.titlebars.map(titlebar => {
-          // While a title is renamed, its input replaces all items and spans the whole bar.
-          const editedTitle = titlebar.editingItemId
-            ? [...titlebar.sections.left, ...titlebar.sections.center, ...titlebar.sections.right].find(resolved => resolved.item.id === titlebar.editingItemId)
+          // While a title is renamed, its input replaces all elements and spans the whole bar.
+          const editedTitle = titlebar.editingElementId
+            ? [...titlebar.sections.left, ...titlebar.sections.center, ...titlebar.sections.right].find(resolved => resolved.element.id === titlebar.editingElementId)
             : undefined;
 
           return (
@@ -87,7 +87,7 @@ export class KritzelObjectTitlebarLayer {
                   : (['left', 'center', 'right'] as KritzelTitlebarSection[]).map(section =>
                       section === 'center' && titlebar.sections.center.length === 0 ? null : (
                         <div key={section} class={`object-titlebar-section object-titlebar-${section}`} part={`titlebar-${section}`}>
-                          {titlebar.sections[section].map(resolved => renderItem(titlebar, resolved, this.handleItemClick))}
+                          {titlebar.sections[section].map(resolved => renderElement(titlebar, resolved, this.handleElementClick))}
                         </div>
                       ),
                     )}
@@ -100,18 +100,18 @@ export class KritzelObjectTitlebarLayer {
   }
 }
 
-function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarItem, onItemClick: KritzelTitlebarItemClickHandler) {
-  const { item } = resolved;
+function renderElement(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarElement, onElementClick: KritzelTitlebarElementClickHandler) {
+  const { element } = resolved;
 
-  switch (item.type) {
+  switch (element.type) {
     case 'title':
       return (
         <span
-          key={item.id}
+          key={element.id}
           class={{ 'object-titlebar-title': true, 'is-editable': !!resolved.isEditable }}
-          part={parts('titlebar-title', item.part)}
-          data-item-id={item.id}
-          {...(resolved.isEditable ? { [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: item.id } : {})}
+          part={parts('titlebar-title', element.part)}
+          data-element-id={element.id}
+          {...(resolved.isEditable ? { [KRITZEL_TITLEBAR_EDITABLE_TITLE_ATTRIBUTE]: element.id } : {})}
           dir="auto"
         >
           {resolved.text}
@@ -119,42 +119,46 @@ function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolved
       );
     case 'text':
       return (
-        <span key={item.id} class={`object-titlebar-text tone-${item.tone ?? 'default'}`} part={parts('titlebar-text', item.part)} data-item-id={item.id} dir="auto">
+        <span key={element.id} class={`object-titlebar-text tone-${element.tone ?? 'default'}`} part={parts('titlebar-text', element.part)} data-element-id={element.id} dir="auto">
           {resolved.text}
         </span>
       );
     case 'icon':
       return resolved.icon ? (
-        <kritzel-icon key={item.id} class="object-titlebar-icon" part={parts('titlebar-icon', item.part)} data-item-id={item.id} name={resolved.icon} size={16}></kritzel-icon>
+        <kritzel-icon key={element.id} class="object-titlebar-icon" part={parts('titlebar-icon', element.part)} data-element-id={element.id} name={resolved.icon} size={16}></kritzel-icon>
       ) : null;
-    case 'button': {
-      const accessibleLabel = resolved.tooltip ?? resolved.label ?? item.id;
+    case 'button':
+    case 'menu': {
+      const accessibleLabel = resolved.tooltip ?? resolved.label ?? element.id;
+      const isMenu = element.type === 'menu';
+      const isPressed = isMenu ? !!resolved.isMenuOpen : !!resolved.isPressed;
       return (
         <button
-          key={item.id}
+          key={element.id}
           type="button"
           class={{
             'object-titlebar-button': true,
-            [`variant-${item.variant ?? 'ghost'}`]: true,
+            [`variant-${element.variant ?? 'ghost'}`]: true,
             'has-label': !!resolved.label,
-            'is-pressed': !!resolved.isPressed,
+            'is-pressed': isPressed,
           }}
-          part={parts('titlebar-button', resolved.isPressed && 'titlebar-button-pressed', item.part)}
-          data-item-id={item.id}
+          part={parts('titlebar-button', isPressed && 'titlebar-button-pressed', isMenu && 'titlebar-menu-button', element.part)}
+          data-element-id={element.id}
           {...{ [KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE]: '' }}
           title={resolved.tooltip}
           aria-label={accessibleLabel}
-          aria-pressed={item.isPressed === undefined ? undefined : String(!!resolved.isPressed)}
+          aria-pressed={isMenu || element.isPressed === undefined ? undefined : String(isPressed)}
+          aria-haspopup={isMenu ? 'menu' : undefined}
+          aria-expanded={isMenu ? String(isPressed) : undefined}
           aria-disabled={resolved.isDisabled ? 'true' : undefined}
           tabindex={titlebar.isActive ? 0 : -1}
           onClick={(event: MouseEvent) => {
             const button = event.currentTarget as HTMLElement;
-            const anchorRect = button.getBoundingClientRect();
             // Pointer clicks should not leave focus on the button, or canvas shortcuts stop working.
             if (event.detail > 0) {
               button.blur();
             }
-            onItemClick(titlebar.owner.id, resolved.section, item.id, event, anchorRect);
+            onElementClick(titlebar.owner.id, resolved.section, element.id, event, button);
           }}
         >
           {resolved.icon && <kritzel-icon name={resolved.icon} size={16}></kritzel-icon>}
@@ -163,9 +167,9 @@ function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolved
       );
     }
     case 'spacer':
-      return <span key={item.id} class="object-titlebar-spacer" data-item-id={item.id}></span>;
+      return <span key={element.id} class="object-titlebar-spacer" data-element-id={element.id}></span>;
     case 'separator':
-      return <span key={item.id} class="object-titlebar-separator" part={parts('titlebar-separator', item.part)} data-item-id={item.id}></span>;
+      return <span key={element.id} class="object-titlebar-separator" part={parts('titlebar-separator', element.part)} data-element-id={element.id}></span>;
     default:
       return null;
   }
@@ -175,17 +179,17 @@ function renderItem(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolved
  * Renders the input used to rename an object. Its value is only set when the input is created, so
  * the per-frame renders of the layer never overwrite what the user is typing.
  */
-function renderTitleInput(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarItem, titleEdit: KritzelTitlebarTitleEditHandlers) {
-  const { item } = resolved;
+function renderTitleInput(titlebar: KritzelResolvedTitlebar, resolved: KritzelResolvedTitlebarElement, titleEdit: KritzelTitlebarTitleEditHandlers) {
+  const { element } = resolved;
   const name = titlebar.owner.name ?? '';
 
   return (
     <input
-      key={`${item.id}:input`}
+      key={`${element.id}:input`}
       type="text"
       class="object-titlebar-title-input"
-      part={parts('titlebar-title-input', item.part)}
-      data-item-id={item.id}
+      part={parts('titlebar-title-input', element.part)}
+      data-element-id={element.id}
       {...{ [KRITZEL_TITLEBAR_CONTROL_ATTRIBUTE]: '', [KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE]: '' }}
       placeholder={name ? undefined : resolved.text}
       aria-label={titlebar.context.title}

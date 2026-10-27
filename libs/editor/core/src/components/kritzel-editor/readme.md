@@ -68,7 +68,7 @@
 | `objectsRemoved`         |                                                                                                               | `CustomEvent<ObjectsRemovedEvent>`                            |
 | `objectsSelectionChange` |                                                                                                               | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
 | `objectsUpdated`         |                                                                                                               | `CustomEvent<ObjectsUpdatedEvent>`                            |
-| `objectTitlebarAction`   | Emitted when a button in an object titlebar is clicked.                                                       | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
+| `objectTitlebarAction`   | Emitted when a button or a menu item in an object titlebar is clicked.                                        | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
 | `themeChange`            |                                                                                                               | `CustomEvent<"dark" \| "light" \| string & {}>`               |
 | `undoStateChange`        |                                                                                                               | `CustomEvent<KritzelUndoState>`                               |
 | `viewportChange`         |                                                                                                               | `CustomEvent<KritzelViewportState>`                           |
@@ -1420,6 +1420,8 @@ Type: `Promise<void>`
 - [kritzel-back-to-content](../kritzel-back-to-content)
 - [kritzel-notification-card](../kritzel-notification-card)
 - [kritzel-context-menu](../kritzel-context-menu)
+- [kritzel-portal](../kritzel-portal)
+- [kritzel-menu](../kritzel-menu)
 - [kritzel-loading-overlay](../kritzel-loading-overlay)
 - kritzel-engine
 - [kritzel-chat-box](../kritzel-chat-box)
@@ -1442,6 +1444,8 @@ graph TD;
   kritzel-editor --> kritzel-back-to-content
   kritzel-editor --> kritzel-notification-card
   kritzel-editor --> kritzel-context-menu
+  kritzel-editor --> kritzel-portal
+  kritzel-editor --> kritzel-menu
   kritzel-editor --> kritzel-loading-overlay
   kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-chat-box

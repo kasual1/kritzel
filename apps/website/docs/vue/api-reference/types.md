@@ -385,9 +385,9 @@ Passed to the `objectTitlebar` prop. The same configuration applies to every obj
 
 ```ts
 interface KritzelObjectTitlebarConfig {
-  left?: KritzelTitlebarItem[];   // defaults to [{ id: 'title', type: 'title' }]
-  center?: KritzelTitlebarItem[];
-  right?: KritzelTitlebarItem[];
+  left?: KritzelTitlebarElement[];   // defaults to [{ id: 'title', type: 'title' }]
+  center?: KritzelTitlebarElement[];
+  right?: KritzelTitlebarElement[];
   visibility?: 'always' | 'active';
   rotation?: 'follow' | 'upright';
   title?: (object: KritzelBaseObject) => string | undefined;
@@ -400,18 +400,19 @@ Which objects get a titlebar is decided by [`KritzelObjectConfig`](#kritzelobjec
 
 `KRITZEL_DEFAULT_OBJECT_TITLEBAR` is a ready-made configuration that shows an icon for the object type followed by the title. Pass it as is, or spread it and override individual options, for example `{ ...KRITZEL_DEFAULT_OBJECT_TITLEBAR, visibility: 'active' }`.
 
-### `KritzelTitlebarItem`
+### `KritzelTitlebarElement`
 
 ```ts
-type KritzelTitlebarItem =
-  | KritzelTitlebarTitleItem
-  | KritzelTitlebarTextItem
-  | KritzelTitlebarIconItem
-  | KritzelTitlebarButtonItem
-  | KritzelTitlebarSpacerItem;
+type KritzelTitlebarElement =
+  | KritzelTitlebarTitle
+  | KritzelTitlebarText
+  | KritzelTitlebarIcon
+  | KritzelTitlebarButton
+  | KritzelTitlebarMenu
+  | KritzelTitlebarSpacer;
 
-// Options shared by every item (internal, not exported)
-interface KritzelTitlebarItemBase {
+// Options shared by every element (internal, not exported)
+interface KritzelTitlebarElementBase {
   id: string;
   isVisible?: KritzelTitlebarValue<boolean>;
   showWhen?: 'always' | 'active' | 'inactive';
@@ -419,24 +420,24 @@ interface KritzelTitlebarItemBase {
   part?: string;
 }
 
-interface KritzelTitlebarTitleItem extends KritzelTitlebarItemBase {
+interface KritzelTitlebarTitle extends KritzelTitlebarElementBase {
   type: 'title';
   text?: KritzelTitlebarValue<string>;
   isEditable?: KritzelTitlebarValue<boolean>; // lets users rename the object, defaults to false
 }
 
-interface KritzelTitlebarTextItem extends KritzelTitlebarItemBase {
+interface KritzelTitlebarText extends KritzelTitlebarElementBase {
   type: 'text';
   text: KritzelTitlebarValue<string>;
   tone?: 'default' | 'muted' | 'strong';
 }
 
-interface KritzelTitlebarIconItem extends KritzelTitlebarItemBase {
+interface KritzelTitlebarIcon extends KritzelTitlebarElementBase {
   type: 'icon';
   icon: KritzelTitlebarValue<KritzelIconName>;
 }
 
-interface KritzelTitlebarButtonItem extends KritzelTitlebarItemBase {
+interface KritzelTitlebarButton extends KritzelTitlebarElementBase {
   type: 'button';
   icon?: KritzelTitlebarValue<KritzelIconName>;
   label?: KritzelTermKey | string;
@@ -447,8 +448,33 @@ interface KritzelTitlebarButtonItem extends KritzelTitlebarItemBase {
   action?: (context: KritzelObjectTitlebarContext, event: MouseEvent) => void;
 }
 
-interface KritzelTitlebarSpacerItem extends KritzelTitlebarItemBase {
+interface KritzelTitlebarMenu extends KritzelTitlebarElementBase {
+  type: 'menu';
+  icon?: KritzelTitlebarValue<KritzelIconName>;
+  label?: KritzelTermKey | string;
+  tooltip?: KritzelTermKey | string;
+  variant?: 'ghost' | 'filled' | 'outlined';
+  isDisabled?: KritzelTitlebarValue<boolean>;
+  items: KritzelTitlebarValue<KritzelTitlebarMenuItem[]>; // resolved when the menu opens
+}
+
+interface KritzelTitlebarSpacer extends KritzelTitlebarElementBase {
   type: 'spacer' | 'separator';
+}
+```
+
+### `KritzelTitlebarMenuItem`
+
+An entry of a [`KritzelTitlebarMenu`](#kritzeltitlebarelement). `isVisible` and `isDisabled` are evaluated when the menu opens and again when the menu item is selected.
+
+```ts
+interface KritzelTitlebarMenuItem {
+  id: string;                      // reported as menuItemId in objectTitlebarAction
+  label: KritzelTermKey | string;  // term keys are translated through the active locale
+  icon?: KritzelIconName;
+  isVisible?: KritzelTitlebarValue<boolean>;
+  isDisabled?: KritzelTitlebarValue<boolean>;
+  action?: (context: KritzelObjectTitlebarContext, menuItem: KritzelTitlebarMenuItem) => void;
 }
 ```
 
@@ -462,7 +488,7 @@ type KritzelTitlebarValue<T> = T | ((context: KritzelObjectTitlebarContext) => T
 
 ### `KritzelObjectTitlebarContext`
 
-Passed to dynamic item values and button `action` callbacks.
+Passed to dynamic element values and the `action` callbacks of buttons and menu items.
 
 ```ts
 interface KritzelObjectTitlebarContext {
@@ -484,11 +510,30 @@ Emitted by the `objectTitlebarAction` event.
 
 ```ts
 interface KritzelObjectTitlebarActionEvent {
-  itemId: string;
+  elementId: string;   // id of the clicked button, or of the menu that contains the selected menu item
+  menuItemId?: string; // id of the selected menu item, unset for button clicks
   section: 'left' | 'center' | 'right';
   objectId: string;
   objectType: string;
   workspaceId: string;
-  anchorRect: DOMRect;
+  anchorRect: DOMRect; // client rect of the clicked button or menu button
 }
 ```
+
+### `KritzelObjectTitlebarMenuState`
+
+Emitted by the `objectTitlebarMenuStateChange` event of `<kritzel-engine>` when a titlebar menu opens or closes. Only needed when rendering titlebar menus without `<kritzel-editor>`.
+
+```ts
+interface KritzelObjectTitlebarMenuState {
+  isVisible: boolean;
+  objectId?: string;                  // owner of the titlebar whose menu is open
+  elementId?: string;                 // id of the open menu element
+  section?: 'left' | 'center' | 'right';
+  items: KritzelTitlebarMenuItem[];   // visible menu items, labels translated and isDisabled evaluated
+  anchor?: HTMLElement;               // the menu button, inside the engine's shadow root
+  anchorRect?: DOMRect;               // client rect of the menu button when the menu opened
+}
+```
+
+Select a menu item with `selectObjectTitlebarMenuItem(menuItemId)` and close the menu with `closeObjectTitlebarMenu()` on the engine.

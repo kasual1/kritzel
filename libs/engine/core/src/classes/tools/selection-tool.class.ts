@@ -32,7 +32,7 @@ import { LineArrowConfig } from '../../interfaces/arrow-head.interface';
 /** Pointer movement in screen pixels up to which a press on a title still counts as a click. */
 const TITLE_EDIT_CLICK_TOLERANCE = 5;
 
-type SelectionToolTitleEditCandidate = { ownerId: string; itemId: string; clientX: number; clientY: number };
+type SelectionToolTitleEditCandidate = { ownerId: string; elementId: string; clientX: number; clientY: number };
 
 export class KritzelSelectionTool extends KritzelBaseTool {
   override toolType = 'selection' as const;
@@ -691,7 +691,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     // A click without a drag on the title of the selected object starts renaming it.
     const distance = titleEdit ? Math.hypot(event.clientX - titleEdit.clientX, event.clientY - titleEdit.clientY) : Infinity;
     if (titleEdit && distance <= TITLE_EDIT_CLICK_TOLERANCE && this._core.store.selectionGroup?.objectIds.includes(titleEdit.ownerId)) {
-      this._core.objectTitlebarManager.startTitleEditing(titleEdit.ownerId, titleEdit.itemId);
+      this._core.objectTitlebarManager.startTitleEditing(titleEdit.ownerId, titleEdit.elementId);
     }
   }
 

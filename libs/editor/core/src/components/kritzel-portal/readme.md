@@ -33,6 +33,7 @@
 
 ### Used by
 
+ - [kritzel-editor](../kritzel-editor)
  - [kritzel-menu-item](../kritzel-menu-item)
  - [kritzel-more-menu](../kritzel-more-menu)
  - [kritzel-split-button](../kritzel-split-button)
@@ -40,6 +41,7 @@
 ### Graph
 ```mermaid
 graph TD;
+  kritzel-editor --> kritzel-portal
   kritzel-menu-item --> kritzel-portal
   kritzel-more-menu --> kritzel-portal
   kritzel-split-button --> kritzel-portal

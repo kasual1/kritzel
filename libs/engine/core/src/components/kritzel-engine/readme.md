@@ -41,27 +41,28 @@
 
 ## Events
 
-| Event                     | Description                                                                                                   | Type                                                          |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `activeToolChange`        | Emitted when the active drawing tool changes.                                                                 | `CustomEvent<KritzelBaseTool>`                                |
-| `activeWorkspaceChange`   | Emitted when the active workspace changes (e.g., after import).                                               | `CustomEvent<KritzelWorkspace>`                               |
-| `agenticCursorDetached`   | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. | `CustomEvent<KritzelAgenticCursorDetachedEvent>`              |
-| `awarenessChange`         | Emitted when the awareness state changes (remote user cursors, presence).                                     | `CustomEvent<Map<number, Record<string, any>>>`               |
-| `contextMenuStateChange`  | Emitted when context-menu visibility, items, or position changes.                                             | `CustomEvent<KritzelContextMenuState>`                        |
-| `isEngineReady`           | Emitted when the engine has fully initialized and is ready for interaction.                                   | `CustomEvent<KritzelEngineState>`                             |
-| `isLoadingChange`         | Emitted while the selected workspace's objects are being initialized and synchronized.                        | `CustomEvent<boolean>`                                        |
-| `longpress`               | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                         | `CustomEvent<PointerEvent>`                                   |
-| `notificationsChange`     | Emitted when notifications change.                                                                            | `CustomEvent<KritzelNotification>`                            |
-| `objectsAdded`            | Emitted when one or more objects are added to the canvas.                                                     | `CustomEvent<ObjectsAddedEvent>`                              |
-| `objectsChange`           | Emitted when objects on the canvas are added, removed, or modified.                                           | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsInViewportChange` | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).            | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
-| `objectsRemoved`          | Emitted when one or more objects are removed from the canvas.                                                 | `CustomEvent<ObjectsRemovedEvent>`                            |
-| `objectsSelectionChange`  | Emitted when the set of selected objects changes.                                                             | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsUpdated`          | Emitted when one or more objects are updated on the canvas.                                                   | `CustomEvent<ObjectsUpdatedEvent>`                            |
-| `objectTitlebarAction`    | Emitted when a button in an object titlebar is clicked.                                                       | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
-| `undoStateChange`         | Emitted when the undo/redo state changes, providing current undo availability.                                | `CustomEvent<KritzelUndoState>`                               |
-| `viewportChange`          | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).           | `CustomEvent<KritzelViewportState>`                           |
-| `workspacesChange`        | Emitted when workspaces are created, updated, or deleted.                                                     | `CustomEvent<KritzelWorkspace[]>`                             |
+| Event                           | Description                                                                                                                                                                              | Type                                                          |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `activeToolChange`              | Emitted when the active drawing tool changes.                                                                                                                                            | `CustomEvent<KritzelBaseTool>`                                |
+| `activeWorkspaceChange`         | Emitted when the active workspace changes (e.g., after import).                                                                                                                          | `CustomEvent<KritzelWorkspace>`                               |
+| `agenticCursorDetached`         | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed.                                                                            | `CustomEvent<KritzelAgenticCursorDetachedEvent>`              |
+| `awarenessChange`               | Emitted when the awareness state changes (remote user cursors, presence).                                                                                                                | `CustomEvent<Map<number, Record<string, any>>>`               |
+| `contextMenuStateChange`        | Emitted when context-menu visibility, items, or position changes.                                                                                                                        | `CustomEvent<KritzelContextMenuState>`                        |
+| `isEngineReady`                 | Emitted when the engine has fully initialized and is ready for interaction.                                                                                                              | `CustomEvent<KritzelEngineState>`                             |
+| `isLoadingChange`               | Emitted while the selected workspace's objects are being initialized and synchronized.                                                                                                   | `CustomEvent<boolean>`                                        |
+| `longpress`                     | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                                                                                                    | `CustomEvent<PointerEvent>`                                   |
+| `notificationsChange`           | Emitted when notifications change.                                                                                                                                                       | `CustomEvent<KritzelNotification>`                            |
+| `objectsAdded`                  | Emitted when one or more objects are added to the canvas.                                                                                                                                | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsChange`                 | Emitted when objects on the canvas are added, removed, or modified.                                                                                                                      | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsInViewportChange`       | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).                                                                                       | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
+| `objectsRemoved`                | Emitted when one or more objects are removed from the canvas.                                                                                                                            | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsSelectionChange`        | Emitted when the set of selected objects changes.                                                                                                                                        | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsUpdated`                | Emitted when one or more objects are updated on the canvas.                                                                                                                              | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `objectTitlebarAction`          | Emitted when a button or a menu item in an object titlebar is clicked.                                                                                                                   | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
+| `objectTitlebarMenuStateChange` | Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`. | `CustomEvent<KritzelObjectTitlebarMenuState>`                 |
+| `undoStateChange`               | Emitted when the undo/redo state changes, providing current undo availability.                                                                                                           | `CustomEvent<KritzelUndoState>`                               |
+| `viewportChange`                | Emitted when the viewport position, scale, or dimensions change (e.g., after pan, zoom, or resize).                                                                                      | `CustomEvent<KritzelViewportState>`                           |
+| `workspacesChange`              | Emitted when workspaces are created, updated, or deleted.                                                                                                                                | `CustomEvent<KritzelWorkspace[]>`                             |
 
 
 ## Methods
@@ -280,6 +281,16 @@ Type: `Promise<void>`
 ### `clearSelection() => Promise<void>`
 
 Deselects all currently selected objects.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `closeObjectTitlebarMenu() => Promise<void>`
+
+Closes the open object titlebar menu, if any.
 
 #### Returns
 
@@ -1039,6 +1050,23 @@ World coordinates { x, y }.
 ### `selectAllObjectsInViewport() => Promise<void>`
 
 Selects all objects currently visible in the viewport. Switches to the selection tool automatically.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `selectObjectTitlebarMenuItem(menuItemId: string) => Promise<void>`
+
+Selects an item of the open object titlebar menu: closes the menu, runs the item's `action`
+and emits `objectTitlebarAction` with the item's id as `menuItemId`.
+
+#### Parameters
+
+| Name         | Type     | Description                                                                       |
+| ------------ | -------- | --------------------------------------------------------------------------------- |
+| `menuItemId` | `string` | - The id of a menu item in the open menu's `objectTitlebarMenuStateChange` state. |
 
 #### Returns
 

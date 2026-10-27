@@ -104,6 +104,7 @@ describe('KritzelEngine', () => {
       isControlEvent: jest.fn().mockReturnValue(false),
       isTitleInputEvent: jest.fn().mockReturnValue(false),
       resetWarnings: jest.fn(),
+      closeMenu: jest.fn(),
     },
     setEditorId: jest.fn(),
     setUser: jest.fn(),
@@ -1860,6 +1861,8 @@ describe('KritzelEngine', () => {
       await engine.openContextMenu({ x: 120, y: 240 });
 
       expect(open).toHaveBeenCalledWith({ x: 120, y: 240 });
+      // Only one menu is open at a time: the context menu closes an open titlebar menu.
+      expect(core.objectTitlebarManager.closeMenu).toHaveBeenCalled();
       expect((engine as any).contextMenuStateChange.emit).toHaveBeenCalledWith(
         expect.objectContaining({
           isVisible: true,
