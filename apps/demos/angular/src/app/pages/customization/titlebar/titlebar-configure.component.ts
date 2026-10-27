@@ -74,6 +74,7 @@ export class TitlebarConfigureComponent {
     // Only named frames get a titlebar.
     hasTitlebar: object => !!object.name,
     isRotatable: false,
+    isResizable: false,
   };
 
   // Declared once as a stable field and shared by every object accepted by `objectConfig.hasTitlebar`.

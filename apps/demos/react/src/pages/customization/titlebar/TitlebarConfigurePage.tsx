@@ -20,6 +20,7 @@ const objectConfig: KritzelObjectConfig = {
   // Only named frames get a titlebar.
   hasTitlebar: (object) => !!object.name,
   isRotatable: false,
+  isResizable: false,
 };
 
 // Declared once and shared by every object accepted by `objectConfig.hasTitlebar`.
