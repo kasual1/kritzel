@@ -439,4 +439,12 @@ export const darkTheme: KritzelTheme = {
     titleFontWeight: '600',
     transition: 'background-color 120ms ease, color 120ms ease',
   },
+
+  titlebarMenu: {
+    backgroundColor: '#2a2a2a',
+    border: '1px solid #3a3a3a',
+    boxShadow: '0 1px 8px rgba(0, 0, 0, 0.4)',
+    itemColor: '#e0e0e0',
+    itemHoverBackgroundColor: 'hsl(0, 0%, 100%, 8%)',
+  },
 };

@@ -608,6 +608,25 @@ export interface KritzelTheme {
     transition?: string;
   };
 
+  /** Titlebar menu variables, for the menu `kritzel-editor` opens from a titlebar `menu` element */
+  titlebarMenu?: {
+    backgroundColor?: string;
+    border?: string;
+    borderRadius?: string;
+    boxShadow?: string;
+    fontFamily?: string;
+    gap?: string;
+    itemBorderRadius?: string;
+    itemColor?: string;
+    itemFontSize?: string;
+    itemHeight?: string;
+    itemHoverBackgroundColor?: string;
+    itemPadding?: string;
+    maxWidth?: string;
+    minWidth?: string;
+    padding?: string;
+  };
+
   /** Toolbar variables */
   toolbar?: {
     backgroundColor?: string;

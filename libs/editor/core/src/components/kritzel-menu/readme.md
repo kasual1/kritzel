@@ -58,9 +58,9 @@ Type: `Promise<void>`
 
 ### Used by
 
- - [kritzel-editor](../kritzel-editor)
  - [kritzel-more-menu](../kritzel-more-menu)
  - [kritzel-split-button](../kritzel-split-button)
+ - [kritzel-titlebar-menu](../kritzel-titlebar-menu)
 
 ### Depends on
 
@@ -72,9 +72,9 @@ graph TD;
   kritzel-menu --> kritzel-menu-item
   kritzel-menu-item --> kritzel-icon
   kritzel-menu-item --> kritzel-portal
-  kritzel-editor --> kritzel-menu
   kritzel-more-menu --> kritzel-menu
   kritzel-split-button --> kritzel-menu
+  kritzel-titlebar-menu --> kritzel-menu
   style kritzel-menu fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

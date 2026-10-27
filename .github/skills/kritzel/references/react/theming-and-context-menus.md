@@ -215,6 +215,8 @@ const themes: KritzelTheme[] = [
 
 ### Styling with `::part()`
 
+The menu a titlebar `menu` element opens is themed by the `titlebarMenu` section (`--kritzel-titlebar-menu-*`): `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `fontFamily`, `gap`, `itemBorderRadius`, `itemColor`, `itemFontSize`, `itemHeight`, `itemHoverBackgroundColor`, `itemPadding`, `maxWidth`, `minWidth`, `padding`. Its defaults match the context menu (4px padding, 2px gap, 32px items).
+
 For anything tokens do not cover, target parts on the engine from a global stylesheet (works under `KritzelEditor`, which renders the engine in light DOM): `titlebar`, `titlebar-active`, `titlebar-inactive`, `titlebar-left`, `titlebar-center`, `titlebar-right`, `titlebar-title`, `titlebar-title-input`, `titlebar-text`, `titlebar-icon`, `titlebar-button` (buttons and menu buttons), `titlebar-button-pressed` (also menu buttons of open menus), `titlebar-menu-button`, `titlebar-separator`, plus any element's own `part`.
 
 ```css

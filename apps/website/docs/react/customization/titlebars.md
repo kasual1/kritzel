@@ -484,6 +484,19 @@ The themes keep the names `light` and `dark` of the themes they spread, so the b
 | titleFontWeight | 600 | 600 | Font weight of the title and strong text elements |
 | transition | background-color 120ms ease, color 120ms ease | background-color 120ms ease, color 120ms ease | Transition of hover and active states |
 
+### Styling the Menu
+
+The menu of a `menu` element is styled through the `titlebarMenu` section of `KritzelTheme`, whose properties map to CSS variables named `--kritzel-titlebar-menu-<property>`. By default, it is as compact as the context menu: `4px` padding, `2px` between menu items, and `32px` high menu items. Override individual properties the same way as the titlebar properties above:
+
+```ts
+const theme: KritzelTheme = {
+  ...lightTheme,
+  titlebarMenu: { ...lightTheme.titlebarMenu, itemHeight: '28px', itemFontSize: '13px', borderRadius: '8px', itemBorderRadius: '6px' },
+};
+```
+
+See [Theming](../api-reference/theming.md#titlebar-menu) for all properties.
+
 ### Styling with CSS Parts
 
 For styles that theme properties do not cover, titlebars expose parts on `<kritzel-engine>`, the canvas element rendered by `<KritzelEditor>`:

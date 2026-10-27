@@ -461,6 +461,28 @@ Applies to [object titlebars](../customization/titlebars.md). `height` and `offs
 | titleFontWeight | 600 | 600 |
 | transition | background-color 120ms ease, color 120ms ease | background-color 120ms ease, color 120ms ease |
 
+## Titlebar Menu
+
+Applies to the menu that the editor opens from a titlebar `menu` element, see [Titlebars](../customization/titlebars.md#adding-menus). The defaults match the context menu.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | #ffffff | #2a2a2a |
+| border | 1px solid #ebebeb | 1px solid #3a3a3a |
+| borderRadius | 12px | 12px |
+| boxShadow | 0 1px 6px rgba(0, 0, 0, 0.12) | 0 1px 8px rgba(0, 0, 0, 0.4) |
+| fontFamily | var(--kritzel-global-font-family, sans-serif) | var(--kritzel-global-font-family, sans-serif) |
+| gap | 2px | 2px |
+| itemBorderRadius | 12px | 12px |
+| itemColor | #333333 | #e0e0e0 |
+| itemFontSize | 14px | 14px |
+| itemHeight | 32px | 32px |
+| itemHoverBackgroundColor | hsl(0, 0%, 0%, 4.3%) | hsl(0, 0%, 100%, 8%) |
+| itemPadding | 8px | 8px |
+| maxWidth | 280px | 280px |
+| minWidth | 140px | 140px |
+| padding | 4px | 4px |
+
 ## Toolbar
 
 | Property | Light default | Dark default |

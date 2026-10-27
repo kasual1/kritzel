@@ -39,6 +39,7 @@ const INTERNAL_COMPONENTS = [
   'kritzel-pill-tabs',
   'kritzel-portal',
   'kritzel-slide-toggle',
+  'kritzel-titlebar-menu',
   'kritzel-tool-config',
   'kritzel-toolbar',
   'kritzel-tooltip',

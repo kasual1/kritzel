@@ -134,19 +134,8 @@ describe('KritzelEditor', () => {
       expect(emit).toHaveBeenCalledWith(detail);
     });
 
-    it('tracks the open titlebar menu and maps its items for kritzel-menu', () => {
-      const anchor = {} as HTMLElement;
-      const open = {
-        isVisible: true,
-        objectId: 'a',
-        elementId: 'more',
-        section: 'right',
-        anchor,
-        items: [
-          { id: 'copy', label: 'Copy', icon: 'copy', isDisabled: false, action: jest.fn() },
-          { id: 'lock', label: 'Lock', isDisabled: true },
-        ],
-      };
+    it('tracks the open titlebar menu', () => {
+      const open = { isVisible: true, objectId: 'a', elementId: 'more', section: 'right', anchor: {} as HTMLElement, items: [{ id: 'copy', label: 'Copy' }] };
       const event = (detail: any) => ({ detail, stopPropagation: jest.fn() }) as any;
 
       const openEvent = event(open);
@@ -154,15 +143,10 @@ describe('KritzelEditor', () => {
 
       expect(openEvent.stopPropagation).toHaveBeenCalled();
       expect(component.objectTitlebarMenuState).toBe(open);
-      expect((component as any).objectTitlebarMenuItems).toEqual([
-        { id: 'copy', label: 'Copy', icon: 'copy', isDisabled: false },
-        { id: 'lock', label: 'Lock', icon: undefined, isDisabled: true },
-      ]);
 
       component.handleObjectTitlebarMenuStateChange(event({ isVisible: false, items: [] }));
 
       expect(component.objectTitlebarMenuState).toBeUndefined();
-      expect((component as any).objectTitlebarMenuItems).toEqual([]);
     });
   });
 

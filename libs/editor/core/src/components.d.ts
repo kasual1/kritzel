@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
+import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
 import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 import { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
 import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
@@ -15,7 +15,7 @@ import { FontOption } from "./components/kritzel-font-family/kritzel-font-family
 import { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
 import { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs";
 import { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
-export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
+export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/engine";
 export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 export { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
 export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
@@ -1001,6 +1001,17 @@ export namespace Components {
          */
         "sizes": number[];
     }
+    /**
+     * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
+     * context menu through the `--kritzel-titlebar-menu-*` theme variables.
+     */
+    interface KritzelTitlebarMenu {
+        /**
+          * Menu items of the open titlebar menu, as resolved by the engine.
+          * @default []
+         */
+        "items": KritzelTitlebarMenuItem[];
+    }
     interface KritzelToolConfig {
         "engine": HTMLElement;
         /**
@@ -1239,6 +1250,10 @@ export interface KritzelSplitButtonCustomEvent<T> extends CustomEvent<T> {
 export interface KritzelStrokeSizeCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLKritzelStrokeSizeElement;
+}
+export interface KritzelTitlebarMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLKritzelTitlebarMenuElement;
 }
 export interface KritzelToolConfigCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1881,6 +1896,27 @@ declare global {
         prototype: HTMLKritzelStrokeSizeElement;
         new (): HTMLKritzelStrokeSizeElement;
     };
+    interface HTMLKritzelTitlebarMenuElementEventMap {
+        "menuItemSelect": string;
+    }
+    /**
+     * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
+     * context menu through the `--kritzel-titlebar-menu-*` theme variables.
+     */
+    interface HTMLKritzelTitlebarMenuElement extends Components.KritzelTitlebarMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLKritzelTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLKritzelTitlebarMenuElement, ev: KritzelTitlebarMenuCustomEvent<HTMLKritzelTitlebarMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLKritzelTitlebarMenuElementEventMap>(type: K, listener: (this: HTMLKritzelTitlebarMenuElement, ev: KritzelTitlebarMenuCustomEvent<HTMLKritzelTitlebarMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLKritzelTitlebarMenuElement: {
+        prototype: HTMLKritzelTitlebarMenuElement;
+        new (): HTMLKritzelTitlebarMenuElement;
+    };
     interface HTMLKritzelToolConfigElementEventMap {
         "toolChange": ConfigurableTool;
         "displayValuesChange": ToolDisplayValues;
@@ -2027,6 +2063,7 @@ declare global {
         "kritzel-slide-toggle": HTMLKritzelSlideToggleElement;
         "kritzel-split-button": HTMLKritzelSplitButtonElement;
         "kritzel-stroke-size": HTMLKritzelStrokeSizeElement;
+        "kritzel-titlebar-menu": HTMLKritzelTitlebarMenuElement;
         "kritzel-tool-config": HTMLKritzelToolConfigElement;
         "kritzel-toolbar": HTMLKritzelToolbarElement;
         "kritzel-tooltip": HTMLKritzelTooltipElement;
@@ -2957,6 +2994,21 @@ declare namespace LocalJSX {
          */
         "sizes"?: number[];
     }
+    /**
+     * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
+     * context menu through the `--kritzel-titlebar-menu-*` theme variables.
+     */
+    interface KritzelTitlebarMenu {
+        /**
+          * Menu items of the open titlebar menu, as resolved by the engine.
+          * @default []
+         */
+        "items"?: KritzelTitlebarMenuItem[];
+        /**
+          * Emitted with the id of the selected menu item.
+         */
+        "onMenuItemSelect"?: (event: KritzelTitlebarMenuCustomEvent<string>) => void;
+    }
     interface KritzelToolConfig {
         "engine"?: HTMLElement;
         /**
@@ -3315,6 +3367,7 @@ declare namespace LocalJSX {
         "kritzel-slide-toggle": Omit<KritzelSlideToggle, keyof KritzelSlideToggleAttributes> & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes]?: KritzelSlideToggle[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `attr:${K}`]?: KritzelSlideToggleAttributes[K] } & { [K in keyof KritzelSlideToggle & keyof KritzelSlideToggleAttributes as `prop:${K}`]?: KritzelSlideToggle[K] };
         "kritzel-split-button": Omit<KritzelSplitButton, keyof KritzelSplitButtonAttributes> & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes]?: KritzelSplitButton[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `attr:${K}`]?: KritzelSplitButtonAttributes[K] } & { [K in keyof KritzelSplitButton & keyof KritzelSplitButtonAttributes as `prop:${K}`]?: KritzelSplitButton[K] };
         "kritzel-stroke-size": Omit<KritzelStrokeSize, keyof KritzelStrokeSizeAttributes> & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes]?: KritzelStrokeSize[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `attr:${K}`]?: KritzelStrokeSizeAttributes[K] } & { [K in keyof KritzelStrokeSize & keyof KritzelStrokeSizeAttributes as `prop:${K}`]?: KritzelStrokeSize[K] };
+        "kritzel-titlebar-menu": KritzelTitlebarMenu;
         "kritzel-tool-config": Omit<KritzelToolConfig, keyof KritzelToolConfigAttributes> & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes]?: KritzelToolConfig[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `attr:${K}`]?: KritzelToolConfigAttributes[K] } & { [K in keyof KritzelToolConfig & keyof KritzelToolConfigAttributes as `prop:${K}`]?: KritzelToolConfig[K] };
         "kritzel-toolbar": Omit<KritzelToolbar, keyof KritzelToolbarAttributes> & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes]?: KritzelToolbar[K] } & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes as `attr:${K}`]?: KritzelToolbarAttributes[K] } & { [K in keyof KritzelToolbar & keyof KritzelToolbarAttributes as `prop:${K}`]?: KritzelToolbar[K] };
         "kritzel-tooltip": Omit<KritzelTooltip, keyof KritzelTooltipAttributes> & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes]?: KritzelTooltip[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `attr:${K}`]?: KritzelTooltipAttributes[K] } & { [K in keyof KritzelTooltip & keyof KritzelTooltipAttributes as `prop:${K}`]?: KritzelTooltip[K] };
@@ -3374,6 +3427,11 @@ declare module "@stencil/core" {
             "kritzel-slide-toggle": LocalJSX.IntrinsicElements["kritzel-slide-toggle"] & JSXBase.HTMLAttributes<HTMLKritzelSlideToggleElement>;
             "kritzel-split-button": LocalJSX.IntrinsicElements["kritzel-split-button"] & JSXBase.HTMLAttributes<HTMLKritzelSplitButtonElement>;
             "kritzel-stroke-size": LocalJSX.IntrinsicElements["kritzel-stroke-size"] & JSXBase.HTMLAttributes<HTMLKritzelStrokeSizeElement>;
+            /**
+             * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the
+             * context menu through the `--kritzel-titlebar-menu-*` theme variables.
+             */
+            "kritzel-titlebar-menu": LocalJSX.IntrinsicElements["kritzel-titlebar-menu"] & JSXBase.HTMLAttributes<HTMLKritzelTitlebarMenuElement>;
             "kritzel-tool-config": LocalJSX.IntrinsicElements["kritzel-tool-config"] & JSXBase.HTMLAttributes<HTMLKritzelToolConfigElement>;
             "kritzel-toolbar": LocalJSX.IntrinsicElements["kritzel-toolbar"] & JSXBase.HTMLAttributes<HTMLKritzelToolbarElement>;
             "kritzel-tooltip": LocalJSX.IntrinsicElements["kritzel-tooltip"] & JSXBase.HTMLAttributes<HTMLKritzelTooltipElement>;

@@ -1631,15 +1631,6 @@ export class KritzelEditor {
       : undefined;
   }
 
-  private get objectTitlebarMenuItems(): IKritzelMenuItem[] {
-    return (this.objectTitlebarMenuState?.items ?? []).map((item) => ({
-      id: item.id,
-      label: item.label,
-      icon: item.icon,
-      isDisabled: item.isDisabled === true,
-    }));
-  }
-
   handleContextMenuStateChange(event: CustomEvent<KritzelContextMenuState>) {
     event.stopPropagation();
     this.contextMenuState = event.detail.isVisible ? event.detail : undefined;
@@ -2151,15 +2142,14 @@ export class KritzelEditor {
               offsetY={4}
               onClose={() => void this.engineRef?.closeObjectTitlebarMenu()}
             >
-              <kritzel-menu
-                data-testid="object-titlebar-menu"
-                items={this.objectTitlebarMenuItems}
-                onItemSelect={(event) =>
+              <kritzel-titlebar-menu
+                items={this.objectTitlebarMenuState?.items ?? []}
+                onMenuItemSelect={(event) =>
                   void this.engineRef?.selectObjectTitlebarMenuItem(
-                    event.detail.item.id,
+                    event.detail,
                   )
                 }
-              ></kritzel-menu>
+              ></kritzel-titlebar-menu>
             </kritzel-portal>
           </div>
 

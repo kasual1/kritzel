@@ -444,4 +444,12 @@ export const lightTheme: KritzelTheme = {
     titleFontWeight: '600',
     transition: 'background-color 120ms ease, color 120ms ease',
   },
+
+  titlebarMenu: {
+    backgroundColor: '#ffffff',
+    border: '1px solid #ebebeb',
+    boxShadow: '0 1px 6px rgba(0, 0, 0, 0.12)',
+    itemColor: '#333333',
+    itemHoverBackgroundColor: 'hsl(0, 0%, 0%, 4.3%)',
+  },
 };

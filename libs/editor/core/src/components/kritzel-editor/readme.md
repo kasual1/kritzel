@@ -1421,7 +1421,7 @@ Type: `Promise<void>`
 - [kritzel-notification-card](../kritzel-notification-card)
 - [kritzel-context-menu](../kritzel-context-menu)
 - [kritzel-portal](../kritzel-portal)
-- [kritzel-menu](../kritzel-menu)
+- [kritzel-titlebar-menu](../kritzel-titlebar-menu)
 - [kritzel-loading-overlay](../kritzel-loading-overlay)
 - kritzel-engine
 - [kritzel-chat-box](../kritzel-chat-box)
@@ -1445,7 +1445,7 @@ graph TD;
   kritzel-editor --> kritzel-notification-card
   kritzel-editor --> kritzel-context-menu
   kritzel-editor --> kritzel-portal
-  kritzel-editor --> kritzel-menu
+  kritzel-editor --> kritzel-titlebar-menu
   kritzel-editor --> kritzel-loading-overlay
   kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-chat-box
@@ -1470,6 +1470,7 @@ graph TD;
   kritzel-back-to-content --> kritzel-icon
   kritzel-notification-card --> kritzel-icon
   kritzel-context-menu --> kritzel-icon
+  kritzel-titlebar-menu --> kritzel-menu
   kritzel-engine --> kritzel-icon
   kritzel-engine --> kritzel-object-titlebar-layer
   kritzel-engine --> kritzel-awareness-cursors

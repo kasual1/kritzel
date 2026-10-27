@@ -199,6 +199,12 @@ Applies to [object titlebars](../customization/titlebars.md). `height` and `offs
 
 `activeBackgroundColor`, `activeBorder`, `activeBoxShadow`, `activeButtonFilledBackgroundColor`, `activeIconColor`, `activeMutedTextColor`, `activeTextColor`, `backgroundColor`, `border`, `borderRadius`, `boxShadow`, `buttonBorderRadius`, `buttonFilledBackgroundColor`, `buttonFilledColor`, `buttonHoverBackgroundColor`, `buttonOutlineColor`, `buttonPressedBackgroundColor`, `buttonSize`, `focusRing`, `fontFamily`, `fontSize`, `fontWeight`, `gap`, `height`, `hoverBackgroundColor`, `iconColor`, `iconSize`, `inputBackgroundColor`, `inputPadding`, `mutedTextColor`, `offset`, `paddingX`, `selectionBackgroundColor`, `selectionColor`, `textColor`, `titleFontWeight`, `transition`.
 
+## Titlebar Menu
+
+Applies to the menu that the editor opens from a titlebar `menu` element, see [Titlebars](../customization/titlebars.md#adding-menus). The defaults match the context menu.
+
+`backgroundColor`, `border`, `borderRadius`, `boxShadow`, `fontFamily`, `gap`, `itemBorderRadius`, `itemColor`, `itemFontSize`, `itemHeight`, `itemHoverBackgroundColor`, `itemPadding`, `maxWidth`, `minWidth`, `padding`.
+
 ## Toolbar
 
 `backgroundColor`, `border`, `boxShadow`, `controlActiveBackgroundColor`, `controlColor`, `controlHoverBackgroundColor`, `controlSelectedBackgroundColor`, `controlSelectedColor`, `separatorColor`.

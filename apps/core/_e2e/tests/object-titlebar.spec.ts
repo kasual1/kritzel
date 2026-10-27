@@ -313,6 +313,32 @@ test.describe('Object titlebar', () => {
       expect(await editorPage.getSelectedObjects()).toHaveLength(0);
     });
 
+    test('is compact like the context menu and styled by titlebarMenu theme variables', async ({ editorPage, page }) => {
+      const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
+      await addMenu(page);
+      const button = titlebarFor(page, shape.id).locator('[data-element-id="more"]');
+
+      await button.click();
+      await expect(menu(page)).toBeVisible();
+      await expect(menu(page)).toHaveCSS('padding-top', '4px');
+      await expect(menu(page)).toHaveCSS('row-gap', '2px');
+      await expect(menu(page)).toHaveCSS('min-width', '140px');
+      await expect(menuItem(page, 'duplicate')).toHaveCSS('height', '32px');
+      await expect(menuItem(page, 'duplicate')).toHaveCSS('color', 'rgb(51, 51, 51)');
+      await button.click();
+
+      // Theme tokens are applied as variables on the editor, from where the portal copies them.
+      await page.evaluate(() => {
+        const editor = document.querySelector('kritzel-editor') as HTMLElement;
+        editor.style.setProperty('--kritzel-titlebar-menu-padding', '10px');
+        editor.style.setProperty('--kritzel-titlebar-menu-item-height', '40px');
+      });
+      await button.click();
+
+      await expect(menu(page)).toHaveCSS('padding-top', '10px');
+      await expect(menuItem(page, 'duplicate')).toHaveCSS('height', '40px');
+    });
+
     test('disabled menu items cannot be selected', async ({ editorPage, page }) => {
       const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
       await addMenu(page);
