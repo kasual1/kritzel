@@ -282,3 +282,28 @@ select:disabled,
 [aria-disabled="true"] {
   cursor: not-allowed !important;
 }
+/* Badges next to table of contents headings, declared via the `toc_badges` front matter.
+   Matches the sidebar badge in src/theme/DocSidebarItem/Link/styles.module.css. */
+.table-of-contents__link:has(.toc-badge) {
+  align-items: center;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.toc-badge-label {
+  min-width: 0;
+}
+
+.toc-badge {
+  background: #f3f5f7;
+  border: 1px solid #dce1e6;
+  border-radius: 999px;
+  color: #5f6975;
+  flex: 0 0 auto;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  padding: 0.18rem 0.38rem;
+  text-transform: uppercase;
+}

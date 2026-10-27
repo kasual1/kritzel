@@ -3,6 +3,8 @@ sidebar_label: Object Configuration
 displayed_sidebar: tutorialSidebar
 title: "Object Configuration | Kritzel for Angular"
 description: "Configure in one place which objects get a titlebar and which objects can be rotated or resized, using the objectConfig prop in Angular."
+toc_badges:
+  configuring-objects: Preview
 ---
 
 # Object Configuration
