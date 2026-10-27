@@ -73,6 +73,7 @@ export class TitlebarConfigureComponent {
   readonly objectConfig: KritzelObjectConfig = {
     // Only named frames get a titlebar.
     hasTitlebar: object => !!object.name,
+    isRotatable: false,
   };
 
   // Declared once as a stable field and shared by every object accepted by `objectConfig.hasTitlebar`.

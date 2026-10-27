@@ -37,6 +37,7 @@ const themes = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
 
 const objectConfig: KritzelObjectConfig = {
   hasTitlebar: (object) => object.__class__ === "KritzelShape",
+  isRotatable: false,
 };
 
 const objectTitlebar: KritzelObjectTitlebarConfig = {

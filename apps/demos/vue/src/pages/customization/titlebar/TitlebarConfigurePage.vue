@@ -17,6 +17,7 @@ import { editorStyle, hostStyle, statusBarStyle } from '../../shared/demo-shared
 const objectConfig: KritzelObjectConfig = {
   // Only named frames get a titlebar.
   hasTitlebar: object => !!object.name,
+  isRotatable: false,
 }
 
 const objectTitlebar: KritzelObjectTitlebarConfig = {
