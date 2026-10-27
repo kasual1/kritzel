@@ -92,6 +92,11 @@ export const angularThemeLight: KritzelTheme = {
     menuItemSelectedHoverBackgroundColor: 'rgba(221, 0, 48, 0.15)',
     menuItemSelectedColor: '#dd0031',
   },
+  text: {
+    ...lightTheme.text,
+    selectionBackgroundColor: '#dd0031',
+    selectionColor: '#ffffff',
+  },
   textInput: {
     ...lightTheme.textInput,
     focusBorderColor: '#dd0031',

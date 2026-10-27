@@ -92,6 +92,11 @@ export const reactThemeDark: KritzelTheme = {
     menuItemSelectedHoverBackgroundColor: "#5B8CFF",
     menuItemSelectedColor: "#ffffff",
   },
+  text: {
+    ...darkTheme.text,
+    selectionBackgroundColor: "#5B8CFF",
+    selectionColor: "#ffffff",
+  },
   textInput: {
     ...darkTheme.textInput,
     focusBorderColor: "#5B8CFF",

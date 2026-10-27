@@ -92,6 +92,11 @@ export const angularThemeDark: KritzelTheme = {
     menuItemSelectedHoverBackgroundColor: '#ff4081',
     menuItemSelectedColor: '#ffffff',
   },
+  text: {
+    ...darkTheme.text,
+    selectionBackgroundColor: '#ff4081',
+    selectionColor: '#ffffff',
+  },
   textInput: {
     ...darkTheme.textInput,
     focusBorderColor: '#ff4081',

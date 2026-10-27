@@ -123,6 +123,10 @@ export const reactThemeLight: KritzelTheme = {
     menuItemSelectedHoverBackgroundColor: 'rgba(74, 125, 255, 0.15)',
     menuItemSelectedColor: '#4A7DFF',
   },
+  text: {
+    selectionBackgroundColor: '#4A7DFF',
+    selectionColor: '#ffffff',
+  },
   textInput: {
     focusBorderColor: '#4A7DFF',
   },
