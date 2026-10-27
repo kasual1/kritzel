@@ -721,16 +721,30 @@ Type: `Promise<KritzelWorkspace[]>`
 
 
 
-### `group() => Promise<void>`
+### `group(objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup | null>`
 
-Creates a group (`KritzelGroup`) from the currently selected objects. Requires at least two selected objects.
-The grouped objects become one layer at the position of the topmost selected object.
+Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. The grouped objects
+become one layer at the position of the topmost object, as a single undoable step.
+
+Objects are resolved by id, so stale references work. Objects that are not in the active workspace are
+skipped with a console warning. Objects inside a common group are grouped within it; objects from different
+groups are grouped at the level that contains all of them. An object passed together with one of its
+ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced
+by the group in the selection.
+
+To group the current selection, pass `await getSelectedObjects()`.
+
+#### Parameters
+
+| Name      | Type                       | Description             |
+| --------- | -------------------------- | ----------------------- |
+| `objects` | `KritzelBaseObject<any>[]` | - The objects to group. |
 
 #### Returns
 
-Type: `Promise<void>`
+Type: `Promise<KritzelGroup>`
 
-
+The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
 
 ### `hideContextMenu() => Promise<void>`
 
@@ -1228,15 +1242,28 @@ Type: `Promise<void>`
 
 
 
-### `ungroup() => Promise<void>`
+### `ungroup(groups: KritzelGroup[]) => Promise<KritzelBaseObject<any>[]>`
 
-Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+Ungroups the given groups. Their children become individual objects again and keep their stacking order;
+the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.
+
+Groups are resolved by id, so stale references work. Entries that are not a `KritzelGroup` or not in the
+active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their
+children.
+
+To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
+
+#### Parameters
+
+| Name     | Type             | Description              |
+| -------- | ---------------- | ------------------------ |
+| `groups` | `KritzelGroup[]` | - The groups to ungroup. |
 
 #### Returns
 
-Type: `Promise<void>`
+Type: `Promise<KritzelBaseObject<any>[]>`
 
-
+The extracted children.
 
 ### `updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor>`
 

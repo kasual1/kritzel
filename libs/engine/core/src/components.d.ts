@@ -28,10 +28,10 @@ import { KritzelContextMenuState } from "./interfaces/context-menu-state.interfa
 import { KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget } from "./interfaces/agentic-cursor.interface";
 import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from "./interfaces/toolbar-item.interface";
 import { KritzelAlignment } from "./enums/alignment.enum";
+import { KritzelGroup } from "./classes/objects/group.class";
 import { Element, Event } from "@stencil/core";
 import { KritzelImage } from "./classes/objects/image.class";
 import { KritzelText } from "./classes/objects/text.class";
-import { KritzelGroup } from "./classes/objects/group.class";
 import { KritzelLine } from "./classes/objects/line.class";
 import { KritzelShortcut } from "./interfaces/shortcut.interface";
 import { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
@@ -62,10 +62,10 @@ export { KritzelContextMenuState } from "./interfaces/context-menu-state.interfa
 export { KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget } from "./interfaces/agentic-cursor.interface";
 export { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from "./interfaces/toolbar-item.interface";
 export { KritzelAlignment } from "./enums/alignment.enum";
+export { KritzelGroup } from "./classes/objects/group.class";
 export { Element, Event } from "@stencil/core";
 export { KritzelImage } from "./classes/objects/image.class";
 export { KritzelText } from "./classes/objects/text.class";
-export { KritzelGroup } from "./classes/objects/group.class";
 export { KritzelLine } from "./classes/objects/line.class";
 export { KritzelShortcut } from "./interfaces/shortcut.interface";
 export { KritzelObjectExportFormat } from "./interfaces/object-export.interface";
@@ -375,9 +375,11 @@ export namespace Components {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
-          * Creates a group (`KritzelGroup`) from the currently selected objects. Requires at least two selected objects. The grouped objects become one layer at the position of the topmost selected object.
+          * Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. The grouped objects become one layer at the position of the topmost object, as a single undoable step.  Objects are resolved by id, so stale references work. Objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. An object passed together with one of its ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced by the group in the selection.  To group the current selection, pass `await getSelectedObjects()`.
+          * @param objects - The objects to group.
+          * @returns The created group, or `null` (with a console warning) when fewer than two objects could be grouped.
          */
-        "group": () => Promise<void>;
+        "group": (objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup | null>;
         /**
           * Hides the context menu and resets any associated selection state.
          */
@@ -623,9 +625,11 @@ export namespace Components {
          */
         "undo": () => Promise<void>;
         /**
-          * Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+          * Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step.  Groups are resolved by id, so stale references work. Entries that are not a `KritzelGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children.  To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
+          * @param groups - The groups to ungroup.
+          * @returns The extracted children.
          */
-        "ungroup": () => Promise<void>;
+        "ungroup": (groups: KritzelGroup[]) => Promise<KritzelBaseObject<any>[]>;
         /**
           * Updates the name, color, status or visibility of an agentic cursor.
           * @param id - The cursor ID.

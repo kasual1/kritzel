@@ -12,6 +12,7 @@ import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interfac
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
+import type { KritzelGroup } from '../objects/group.class';
 
 /**
  * Central state management store for the Kritzel engine.
@@ -209,6 +210,14 @@ export class KritzelStore {
     }
     this._selectionGroupCacheValid = true;
     return this._cachedSelectionGroup;
+  }
+
+  /**
+   * Gets the groups in the local user's selection.
+   * @returns The selected `KritzelGroup` objects; empty when nothing is selected
+   */
+  get selectedGroups(): KritzelGroup[] {
+    return (this.selectionGroup?.objects ?? []).filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'));
   }
 
   /**

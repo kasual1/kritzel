@@ -94,7 +94,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | getTool | getTool(toolName: string) => Promise<KritzelBaseTool \| null> | Returns a tool registered in this engine instance. |
 | getViewport | getViewport() => Promise<KritzelViewportState> | Returns the current viewport state including position, scale, and dimensions. |
 | getWorkspaces | getWorkspaces() => Promise<KritzelWorkspace[]> | Returns all available workspaces. |
-| group | group() => Promise<void> | Creates a group (\`KritzelGroup\`) from the currently selected objects. Requires at least two selected objects. The grouped objects become one layer at the position of the topmost selected object. |
+| group | group(objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup \| null> | Creates a group (\`KritzelGroup\`) from the given objects. Requires at least two objects. The grouped objects become one layer at the position of the topmost object, as a single undoable step. Objects are resolved by id, so stale references work. Objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. An object passed together with one of its ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced by the group in the selection. To group the current selection, pass \`await getSelectedObjects()\`. |
 | hideContextMenu | hideContextMenu() => Promise<void> | Hides the context menu and resets any associated selection state. |
 | importFromFile | importFromFile() => Promise<void> | Opens a file picker dialog and imports the selected JSON file into the workspace. This method creates a hidden file input, triggers the browser's file chooser, reads the selected JSON file, and imports it using importFromJson. |
 | importFromJson | importFromJson(json: string) => Promise<void> | Imports a workspace from a JSON string into a new workspace. Creates a new workspace with the imported data and automatically switches to it. |
@@ -127,7 +127,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | t | t(key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string> | Resolves a term key to its translated string for the active locale. |
 | triggerSelectionChange | triggerSelectionChange() => Promise<void> | Manually triggers the \`objectsSelectionChange\` event. |
 | undo | undo() => Promise<void> | Undoes the last action. |
-| ungroup | ungroup() => Promise<void> | Ungroups the selected groups. Their children become individual objects again and keep their stacking order. |
+| ungroup | ungroup(groups: KritzelGroup[]) => Promise<KritzelBaseObject<any>[]> | Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step. Groups are resolved by id, so stale references work. Entries that are not a \`KritzelGroup\` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children. To ungroup the current selection, pass the \`KritzelGroup\` objects from \`await getSelectedObjects()\`. |
 | updateAgenticCursor | updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor> | Updates the name, color, status or visibility of an agentic cursor. |
 | updateObject | updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T \| null> | Updates properties of an existing canvas object. |
 | updateWorkspace | updateWorkspace(workspace: KritzelWorkspace) => Promise<void> | Applies a workspace as declared and emits a \`workspacesChange\` event. Metadata and viewport are always applied. When \`workspace.objects\` is set it is treated as the complete desired object set (\`undefined\` leaves objects untouched, \`[]\` removes them all); updating objects of a non-active workspace requires a configured sync provider. |
@@ -264,7 +264,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | getSelectedObjects | getSelectedObjects() => Promise<KritzelBaseObject[]> |  |
 | getViewport | getViewport() => Promise<KritzelViewportState> |  |
 | getWorkspaces | getWorkspaces() => Promise<KritzelWorkspace[]> |  |
-| group | group() => Promise<void> |  |
+| group | group(objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup \| null> |  |
 | hideContextMenu | hideContextMenu() => Promise<void> |  |
 | importFromFile | importFromFile() => Promise<void> |  |
 | importFromJson | importFromJson(json: string) => Promise<void> |  |
@@ -305,7 +305,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | triggerNotification | triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" \| "timestamp">>) => Promise<void> | Triggers a UI notification programmatically. |
 | triggerSelectionChange | triggerSelectionChange() => Promise<void> |  |
 | undo | undo() => Promise<void> |  |
-| ungroup | ungroup() => Promise<void> |  |
+| ungroup | ungroup(groups: KritzelGroup[]) => Promise<KritzelBaseObject<any>[]> |  |
 | updateAgenticCursor | updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch) => Promise<KritzelAgenticCursor> | Updates the name, color, status or visibility of an agentic cursor. |
 | updateObject | updateObject<T extends KritzelBaseObject>(object: T, updatedProperties: Partial<T>) => Promise<T \| null> |  |
 | updateWorkspace | updateWorkspace(workspace: KritzelWorkspace) => Promise<void> |  |

@@ -474,18 +474,18 @@ Alignment values: `StartHorizontal`, `CenterHorizontal`, `EndHorizontal`, `Start
 
 #### group
 
-Creates a group (`KritzelGroup`) from the currently selected objects (at least two). They become one layer at the position of the topmost selected object.
+Creates a group (`KritzelGroup`) from the given objects. Requires at least two objects. They become one layer at the position of the topmost object, in a single undoable step. Objects are resolved by id, so stale references work; objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. Selected objects that end up in the group are replaced by the group in the selection. Resolves to the created group, or `null` (with a console warning) when fewer than two objects could be grouped. To group the current selection, pass `await getSelectedObjects()`.
 
 ```ts
-group: Promise<void>
+group(objects: KritzelBaseObject[]): Promise<KritzelGroup | null>
 ```
 
 #### ungroup
 
-Ungroups the selected groups. Their children become individual objects again and keep their stacking order.
+Ungroups the given groups. Their children become individual objects again and keep their stacking order; the children of a nested group stay in its parent group. All groups are dissolved in a single undoable step. Groups are resolved by id, so stale references work; entries that are not a `KritzelGroup` or not in the active workspace are skipped with a console warning. Dissolved groups in the selection are replaced by their children. Resolves to the extracted children. To ungroup the current selection, pass the `KritzelGroup` objects from `await getSelectedObjects()`.
 
 ```ts
-ungroup: Promise<void>
+ungroup(groups: KritzelGroup[]): Promise<KritzelBaseObject[]>
 ```
 
 ---

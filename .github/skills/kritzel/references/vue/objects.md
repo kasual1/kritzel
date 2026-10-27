@@ -183,11 +183,15 @@ await editor.value?.clearSelection();
 
 Switching the active tool clears the selection by design. To preserve it: read `getSelectedObjects()` first, switch, then `selectObjects(saved)`.
 
-## Grouping, ordering, alignment (operate on current selection unless an object is passed)
+## Grouping, ordering, alignment
+
+`group(objects)` and `ungroup(groups)` always take explicit objects; ordering operates on the current selection unless an object is passed.
 
 ```ts
-await editor.value?.group();                  // groups selected objects (needs ≥ 2)
-await editor.value?.ungroup();                // selection must contain a KritzelGroup
+const selected = (await editor.value?.getSelectedObjects()) ?? [];
+const group = await editor.value?.group(selected);  // pass the objects explicitly (needs ≥ 2); resolves to the KritzelGroup or null
+const groups = selected.filter((o): o is KritzelGroup => o.__class__ === 'KritzelGroup');
+await editor.value?.ungroup(groups);       // only KritzelGroup entries
 
 await editor.value?.bringToFront(obj);        // omit obj → applies to selection
 await editor.value?.sendToBack();

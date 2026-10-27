@@ -34,6 +34,9 @@ describe('KritzelKeyHandler', () => {
         get selectionGroup() {
           return mockSelectionGroup;
         },
+        get selectedGroups() {
+          return (mockSelectionGroup?.objects ?? []).filter((obj: any) => obj.__class__ === 'KritzelGroup');
+        },
         get activeText() {
           return mockActiveText;
         },
@@ -266,15 +269,16 @@ describe('KritzelKeyHandler', () => {
     });
 
     describe('Grouping shortcuts', () => {
-      it('should call group when Ctrl+G is pressed with 2+ objects selected', () => {
-        mockSelectionGroup = { objects: [{}, {}] };
+      it('should group the selected objects when Ctrl+G is pressed with 2+ objects selected', () => {
+        const objects = [{}, {}];
+        mockSelectionGroup = { objects };
         const event = new KeyboardEvent('keydown', { key: 'g', ctrlKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
         keyHandler.handleKeyDown(event);
 
         expect(preventDefaultSpy).toHaveBeenCalled();
-        expect(mockCore.group).toHaveBeenCalled();
+        expect(mockCore.group).toHaveBeenCalledWith(objects);
       });
 
       it('should not call group when Ctrl+G is pressed with less than 2 objects', () => {
@@ -295,15 +299,16 @@ describe('KritzelKeyHandler', () => {
         expect(mockCore.group).not.toHaveBeenCalled();
       });
 
-      it('should call ungroup when Ctrl+Shift+G is pressed with selection', () => {
-        mockSelectionGroup = { objects: [] };
+      it('should ungroup the selected groups when Ctrl+Shift+G is pressed with selection', () => {
+        const group = { __class__: 'KritzelGroup' };
+        mockSelectionGroup = { objects: [group, { __class__: 'KritzelPath' }] };
         const event = new KeyboardEvent('keydown', { key: 'G', ctrlKey: true, shiftKey: true });
         const preventDefaultSpy = jest.spyOn(event, 'preventDefault');
 
         keyHandler.handleKeyDown(event);
 
         expect(preventDefaultSpy).toHaveBeenCalled();
-        expect(mockCore.ungroup).toHaveBeenCalled();
+        expect(mockCore.ungroup).toHaveBeenCalledWith([group]);
       });
 
       it('should not call ungroup when Ctrl+Shift+G is pressed without selection', () => {

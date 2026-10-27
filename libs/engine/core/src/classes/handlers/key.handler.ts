@@ -62,8 +62,8 @@ export class KritzelKeyHandler extends KritzelBaseHandler {
     { key: '_', shift: true, label: 'Send to Back', category: 'Object Layering', condition: c => !!c.store.selectionGroup, action: c => c.sendToBack() },
 
     // Grouping
-    { key: 'g', ctrl: true, label: 'Group', category: 'Grouping', condition: c => !!c.store.selectionGroup && c.store.selectionGroup.objects.length >= 2, action: c => c.group() },
-    { key: 'G', ctrl: true, shift: true, label: 'Ungroup', category: 'Grouping', condition: c => !!c.store.selectionGroup, action: c => c.ungroup() },
+    { key: 'g', ctrl: true, label: 'Group', category: 'Grouping', condition: c => !!c.store.selectionGroup && c.store.selectionGroup.objects.length >= 2, action: c => c.group(c.store.selectionGroup.objects) },
+    { key: 'G', ctrl: true, shift: true, label: 'Ungroup', category: 'Grouping', condition: c => !!c.store.selectionGroup, action: c => c.ungroup(c.store.selectedGroups) },
 
     // Movement
     {

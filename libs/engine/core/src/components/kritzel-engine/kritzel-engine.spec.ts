@@ -1286,14 +1286,22 @@ describe('KritzelEngine', () => {
       expect(core.alignObjects).toHaveBeenCalledWith(KritzelAlignment.CenterHorizontal);
     });
 
-    it('group delegates to core.group', async () => {
-      await engine.group();
-      expect(core.group).toHaveBeenCalledTimes(1);
+    it('group passes explicit objects to core.group and returns the created group', async () => {
+      const objects = [{ id: 'a' }, { id: 'b' }] as any[];
+      const created = { id: 'group' };
+      core.group.mockReturnValue(created);
+
+      await expect(engine.group(objects)).resolves.toBe(created);
+      expect(core.group).toHaveBeenCalledWith(objects);
     });
 
-    it('ungroup delegates to core.ungroup', async () => {
-      await engine.ungroup();
-      expect(core.ungroup).toHaveBeenCalledTimes(1);
+    it('ungroup passes explicit groups to core.ungroup and returns the extracted children', async () => {
+      const groups = [{ id: 'g1' }] as any[];
+      const children = [{ id: 'a' }, { id: 'b' }];
+      core.ungroup.mockReturnValue(children);
+
+      await expect(engine.ungroup(groups)).resolves.toBe(children);
+      expect(core.ungroup).toHaveBeenCalledWith(groups);
     });
   });
 

@@ -25,7 +25,7 @@ import { KritzelToolbarItem } from "@kritzel/engine";
 import { KritzelToolDefinition } from "@kritzel/engine";
 import { ShapeType } from "@kritzel/engine";
 import { KritzelAlignment } from "@kritzel/engine";
-import { KritzelBaseObject } from "@kritzel/engine";
+import { KritzelBaseObject, KritzelGroup } from "@kritzel/engine";
 import { KritzelSelectionTool } from "@kritzel/engine";
 import { KritzelEraserTool } from "@kritzel/engine";
 import { KritzelImageTool } from "@kritzel/engine";
@@ -324,12 +324,18 @@ export class KritzelEditor {
         {
           label: "menu.group",
           icon: "group",
-          action: () => this.engineRef.group(),
+          action: (_, objects) => this.engineRef.group(objects),
         },
         {
           label: "menu.ungroup",
           icon: "ungroup",
-          action: () => this.engineRef.ungroup(),
+          action: (_, objects) => {
+            const groups = objects.filter(
+              (object): object is KritzelGroup =>
+                object.__class__ === "KritzelGroup",
+            );
+            this.engineRef.ungroup(groups);
+          },
         },
       ],
     },
@@ -345,52 +351,56 @@ export class KritzelEditor {
    * Configures how objects behave, in one place for all objects: which objects get a titlebar,
    * and which can be rotated or resized. Each option is a boolean or a function of the object.
    */
-  @Prop() objectConfig?: KritzelObjectConfig = {
-    hasTitlebar: (object) =>
-      object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",
-    isRotatable: (object) =>
-      object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",
-  };
+  @Prop() objectConfig?: KritzelObjectConfig;
+  // = {
+  //   hasTitlebar: (object) =>
+  //     object.__class__ === "KritzelGroup" || object.__class__ === "KritzelText",
+  //   isRotatable: (object) =>
+  //     object.__class__ !== "KritzelGroup" && object.__class__ !== "KritzelText",
+  // };
 
   /**
    * Content of the titlebar rendered above every object for which `objectConfig.hasTitlebar`
    * is true. The same configuration applies to all objects. Leave unset to disable titlebars.
    */
-  @Prop() objectTitlebar?: KritzelObjectTitlebarConfig = {
-    left: [
-      { id: "title", type: "title", isEditable: true },
-      {
-        id: "size",
-        type: "text",
-        tone: "muted",
-        minBarWidth: 120, // hide the dimensions when the bar gets narrow
-        text: ({ size }) =>
-          `${Math.round(size.width)} × ${Math.round(size.height)}`,
-      },
-    ],
-    right: [
-      {
-        id: "more",
-        type: "menu",
-        icon: "ellipsisVertical",
-        tooltip: "More",
-        items: [
-          { id: "duplicate", label: "Duplicate", icon: "copy" },
-          {
-            id: "export",
-            label: "Export",
-            action: ({ object }) => console.log("Export object", object.id)
-          },
-          {
-            id: "ungroup",
-            label: "Ungroup",
-            isDisabled: ({ objectType }) => objectType !== "KritzelGroup",
-          },
-        ],
-      },
-      { id: "play", type: "button", icon: "play", tooltip: "Play" },
-    ],
-  };
+  @Prop() objectTitlebar?: KritzelObjectTitlebarConfig;
+  //  = {
+  //   left: [
+  //     { id: "title", type: "title", isEditable: true },
+  //     {
+  //       id: "size",
+  //       type: "text",
+  //       tone: "muted",
+  //       minBarWidth: 120, // hide the dimensions when the bar gets narrow
+  //       text: ({ size }) =>
+  //         `${Math.round(size.width)} × ${Math.round(size.height)}`,
+  //     },
+  //   ],
+  //   right: [
+  //     {
+  //       id: "more",
+  //       type: "menu",
+  //       icon: "ellipsisVertical",
+  //       tooltip: "More",
+  //       items: [
+  //         { id: "duplicate", label: "Duplicate"},
+  //         {
+  //           id: "export",
+  //           label: "Export",
+  //           action: ({ object }) => console.log("Export object", object.id)
+  //         },
+  //         {
+  //           id: "ungroup",
+  //           label: "Ungroup",
+  //           action: ({ object }) =>
+  //             this.engineRef.ungroup([object as KritzelGroup]),
+  //           isDisabled: ({ objectType }) => objectType !== "KritzelGroup",
+  //         },
+  //       ],
+  //     },
+  //     { id: "play", type: "button", icon: "play", tooltip: "Play" },
+  //   ],
+  // };
 
   @Prop() moreMenuItems?: IKritzelMenuItem[] = [
     {
@@ -937,13 +947,13 @@ export class KritzelEditor {
   }
 
   @Method()
-  async group() {
-    return this.engineRef.group();
+  async group(objects: KritzelBaseObject<any>[]): Promise<KritzelGroup | null> {
+    return this.engineRef.group(objects);
   }
 
   @Method()
-  async ungroup() {
-    return this.engineRef.ungroup();
+  async ungroup(groups: KritzelGroup[]): Promise<KritzelBaseObject<any>[]> {
+    return this.engineRef.ungroup(groups);
   }
 
   @Method()
