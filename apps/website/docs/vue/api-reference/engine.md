@@ -759,7 +759,7 @@ getAgenticCursors(): Promise<KritzelAgenticCursor[]>
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
 | objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button in an object titlebar is clicked or a menu item of a titlebar menu is selected, in addition to calling the optional `action` callback of the button or menu item. |
-| objectTitlebarMenuStateChange | KritzelObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. Contains the resolved menu items and the menu button as `anchor`, so that a host can render the menu. `<kritzel-editor>` renders titlebar menus itself and does not re-emit this event. |
+| objectTitlebarMenuStateChange | KritzelObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. Contains the resolved menu items and the menu button as `anchor`, so that a host can render the menu. `<KritzelEditor>` renders titlebar menus itself and does not re-emit this event. |
 
 ### Methods
 

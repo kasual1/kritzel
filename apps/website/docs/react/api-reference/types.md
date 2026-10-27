@@ -522,7 +522,7 @@ interface KritzelObjectTitlebarActionEvent {
 
 ### `KritzelObjectTitlebarMenuState`
 
-Emitted by the `objectTitlebarMenuStateChange` event of `<kritzel-engine>` when a titlebar menu opens or closes. Only needed when rendering titlebar menus without `<kritzel-editor>`.
+Emitted by the `objectTitlebarMenuStateChange` event of `<KritzelEngine>` when a titlebar menu opens or closes. Only needed when rendering titlebar menus without `<KritzelEditor>`.
 
 ```ts
 interface KritzelObjectTitlebarMenuState {
