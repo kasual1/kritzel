@@ -283,7 +283,7 @@ select:disabled,
   cursor: not-allowed !important;
 }
 
-/* Markers next to table of contents headings, declared via the `toc_badges` front matter.
+/* Markers next to table of contents headings, declared via the `heading_badges` front matter.
    The badge label is shown as a tooltip. Positioned absolutely without offsets, the marker stays right
    after the last word but takes up no width, so it never wraps the heading onto another line. */
 .toc-badge {

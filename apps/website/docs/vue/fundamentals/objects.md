@@ -3,7 +3,7 @@ sidebar_label: Objects
 displayed_sidebar: tutorialSidebar
 title: "Objects Concept | Kritzel for Vue"
 description: "Understand the core concept of Objects in Kritzel."
-toc_badges:
+heading_badges:
   configuring-objects: Preview
 ---
 

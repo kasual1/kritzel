@@ -3,7 +3,7 @@ sidebar_label: Controls
 displayed_sidebar: tutorialSidebar
 title: "Controls Concept | Kritzel for Angular"
 description: "Configure Kritzel Editor's built-in controls and context menus."
-toc_badges:
+heading_badges:
   object-titlebar: Preview
 ---
 
