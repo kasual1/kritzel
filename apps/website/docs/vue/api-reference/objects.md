@@ -42,8 +42,8 @@ Abstract base class for every object that can be placed on the canvas. All other
 | isMounted | boolean | false | Whether the object is mounted to the DOM |
 | isEditable | boolean | false | Whether the object is in edit mode |
 | isInteractive | boolean | false | Whether the object responds to interaction |
-| isResizable | boolean | true | Whether the object can be resized. Persisted and synced. Combines with `isResizable` of the [`objectConfig` prop](../customization/object-config.md#combining-with-object-flags): either one can forbid it |
-| isRotatable | boolean | true | Whether the object can be rotated. Persisted and synced. Combines with `isRotatable` of the [`objectConfig` prop](../customization/object-config.md#combining-with-object-flags): either one can forbid it |
+| isResizable | boolean | true | Whether the object can be resized. Persisted and synced. Combines with `isResizable` of the [`objectConfig` prop](../fundamentals/objects.md#configuring-objects): either one can forbid it |
+| isRotatable | boolean | true | Whether the object can be rotated. Persisted and synced. Combines with `isRotatable` of the [`objectConfig` prop](../fundamentals/objects.md#configuring-objects): either one can forbid it |
 
 ### Computed Properties
 
@@ -71,7 +71,7 @@ The constructor of every object accepts the following options in addition to its
 const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
 ```
 
-See [Titlebars](../customization/titlebars.md) for details.
+See [Object Titlebar](../fundamentals/controls.md#object-titlebar) for details.
 
 ### Methods
 

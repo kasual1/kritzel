@@ -15,8 +15,10 @@ import { vueThemeLight } from '../../../const/vue-theme-light'
 import { editorStyle, hostStyle, statusBarStyle } from '../../shared/demo-shared'
 
 const objectConfig: KritzelObjectConfig = {
-  // Only named frames get a titlebar; the unnamed note does not.
+  // Only named frames get a titlebar.
   hasTitlebar: object => !!object.name,
+  isRotatable: false,
+  isResizable: false,
 }
 
 const objectTitlebar: KritzelObjectTitlebarConfig = {
@@ -50,17 +52,6 @@ const workspaces = [
       new KritzelShape({ ...frameConfig, name: 'Desktop', translateX: -268, translateY: -130, width: 1200, height: 800 }),
       new KritzelShape({ ...frameConfig, name: 'Tablet', translateX: 4, translateY: -130, width: 768, height: 1024 }),
       new KritzelShape({ ...frameConfig, name: 'Phone', translateX: 190, translateY: -130, width: 390, height: 844 }),
-      // No `name`, so `hasTitlebar` skips this note and it renders without a titlebar.
-      new KritzelShape({
-        translateX: -268,
-        translateY: 62,
-        width: 120,
-        height: 80,
-        shapeType: ShapeType.Rectangle,
-        fillColor: { light: '#fff8e1', dark: '#4e3b12' },
-        strokeColor: { light: '#f9a825', dark: '#ffd54f' },
-        strokeWidth: 3,
-      }),
     ],
   }),
 ]

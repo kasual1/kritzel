@@ -127,6 +127,10 @@ test.describe('Fundamentals Pages Visual Regression', () => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/objects/ordering', 'fundamentals-objects-ordering');
   });
 
+  test('should match screenshot for fundamentals-objects-configuration', async ({ editorPage }) => {
+    await expectFundamentalScreenshot(editorPage, '/fundamentals/objects/configuration', 'fundamentals-objects-configuration');
+  });
+
   test('should match screenshot for fundamentals-objects-filter', async ({ editorPage }) => {
     await expectFundamentalScreenshot(editorPage, '/fundamentals/objects/filter', 'fundamentals-objects-filter');
   });

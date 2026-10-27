@@ -60,8 +60,6 @@ const sidebars: SidebarsConfig = {
         'customization/fonts',
         'customization/icons',
         'customization/locales',
-        'customization/titlebars',
-        'customization/object-config',
       ],
     },
     {

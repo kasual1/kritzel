@@ -44,6 +44,7 @@ import { ObjectsAddPage } from "./pages/fundamentals/objects/ObjectsAddPage";
 import { ObjectsFilterPage } from "./pages/fundamentals/objects/ObjectsFilterPage";
 import { ObjectsGroupingPage } from "./pages/fundamentals/objects/ObjectsGroupingPage";
 import { ObjectsOrderingPage } from "./pages/fundamentals/objects/ObjectsOrderingPage";
+import { ObjectsConfigurationPage } from "./pages/fundamentals/objects/ObjectsConfigurationPage";
 import { ObjectsRemovePage } from "./pages/fundamentals/objects/ObjectsRemovePage";
 import { ObjectsSelectionPage } from "./pages/fundamentals/objects/ObjectsSelectionPage";
 import { ObjectsUpdatePage } from "./pages/fundamentals/objects/ObjectsUpdatePage";
@@ -100,6 +101,7 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/fundamentals/objects/selection", title: "Object Selection", category: "Fundamentals", context: "Objects", component: ObjectsSelectionPage },
   { path: "/fundamentals/objects/grouping", title: "Object Grouping", category: "Fundamentals", context: "Objects", component: ObjectsGroupingPage },
   { path: "/fundamentals/objects/ordering", title: "Object Ordering", category: "Fundamentals", context: "Objects", component: ObjectsOrderingPage },
+  { path: "/fundamentals/objects/configuration", title: "Object Configuration", category: "Fundamentals", context: "Objects", component: ObjectsConfigurationPage },
 
   { path: "/fundamentals/tools/disable", title: "Disable Tools", category: "Fundamentals", context: "Tools", component: ToolsDisablePage },
   { path: "/fundamentals/tools/toolbar", title: "Toolbar", category: "Fundamentals", context: "Tools", component: ToolsToolbarPage },
