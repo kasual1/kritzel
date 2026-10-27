@@ -115,6 +115,10 @@ export const vueThemeLight: KritzelTheme = {
     menuItemSelectedHoverBackgroundColor: 'rgba(66, 184, 131, 0.15)',
     menuItemSelectedColor: '#42b883',
   },
+  text: {
+    selectionBackgroundColor: '#42b883',
+    selectionColor: '#ffffff',
+  },
   textInput: {
     focusBorderColor: '#42b883',
   },
