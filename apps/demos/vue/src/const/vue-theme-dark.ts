@@ -82,6 +82,11 @@ export const vueThemeDark: KritzelTheme = {
     menuItemSelectedHoverBackgroundColor: '#42b883',
     menuItemSelectedColor: '#ffffff',
   },
+  text: {
+    ...darkTheme.text,
+    selectionBackgroundColor: '#42b883',
+    selectionColor: '#ffffff',
+  },
   textInput: {
     ...darkTheme.textInput,
     focusBorderColor: '#42b883',
