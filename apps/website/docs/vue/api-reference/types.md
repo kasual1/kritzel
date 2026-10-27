@@ -353,7 +353,7 @@ interface KritzelAgenticCursorDetachedEvent {
 
 ## Object Config Types
 
-Types used by the [`objectConfig` prop](./editor.md#object). See [Object Configuration](../customization/object-config.md) for usage.
+Types used by the [`objectConfig` prop](./editor.md#object). See [Configuring Objects](../fundamentals/objects.md#configuring-objects) for usage.
 
 ### `KritzelObjectConfig`
 

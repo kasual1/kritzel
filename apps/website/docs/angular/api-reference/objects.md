@@ -43,8 +43,8 @@ Every object consists of properties, computed properties and methods.
 | isMounted | boolean | Whether the object is mounted to the DOM |
 | isEditable | boolean | Whether the object is in edit mode |
 | isInteractive | boolean | Whether the object responds to interaction |
-| isResizable | boolean | Whether the object can be resized. Persisted and synced. Combines with `isResizable` of the [`objectConfig` prop](../customization/object-config.md#combining-with-object-flags): either one can forbid it |
-| isRotatable | boolean | Whether the object can be rotated. Persisted and synced. Combines with `isRotatable` of the [`objectConfig` prop](../customization/object-config.md#combining-with-object-flags): either one can forbid it |
+| isResizable | boolean | Whether the object can be resized. Persisted and synced. Combines with `isResizable` of the [`objectConfig` prop](../fundamentals/objects.md#configuring-objects): either one can forbid it |
+| isRotatable | boolean | Whether the object can be rotated. Persisted and synced. Combines with `isRotatable` of the [`objectConfig` prop](../fundamentals/objects.md#configuring-objects): either one can forbid it |
 | centerX | number | Center X coordinate |
 | centerY | number | Center Y coordinate |
 | totalWidth | number | Width including padding and borders |

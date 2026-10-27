@@ -143,6 +143,6 @@ For the full list of related APIs, see the following reference sections.
 
 - [Editor UI Elements](../api-reference/editor.md#ui-elements)
 - [Editor Object Titlebar](../api-reference/editor.md#object-titlebar)
-- [Object Configuration](../customization/object-config.md)
+- [Configuring Objects](./objects.md#configuring-objects)
 - [Titlebar Theming](../api-reference/theming.md#titlebar)
 - [Object Titlebar Types](../api-reference/types.md#object-titlebar-types)

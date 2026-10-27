@@ -125,7 +125,7 @@ Shows a UI notification: `triggerNotification(notification: Omit<KritzelNotifica
 
 | Property | Type | Description |
 |----------|------|-------------|
-| objectConfig | KritzelObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Object Configuration](../customization/object-config.md). |
+| objectConfig | KritzelObjectConfig | Configures how objects behave, in one place for all objects: which objects get a titlebar, and which can be rotated or resized. Each option is a boolean or a function of the object. See [Configuring Objects](../fundamentals/objects.md#configuring-objects). |
 
 ### Methods
 

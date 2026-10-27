@@ -48,6 +48,7 @@ const LEGACY_DOC_PATHS: Record<string, string> = {
   "advanced/customization/concept-icons": "customization/icons",
   "advanced/customization/concept-localization": "customization/locales",
   "customization/titlebars": "fundamentals/controls",
+  "customization/object-config": "fundamentals/objects",
   "example-object-explorer": "examples/object-explorer",
   "example-blueprint-defect-mapper": "examples/blueprint-defect-mapper",
   "example-slideshow-presentation": "examples/slideshow-presentation",
