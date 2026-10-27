@@ -3,6 +3,8 @@ sidebar_label: Objects
 displayed_sidebar: tutorialSidebar
 title: "Objects Concept | Kritzel for Angular"
 description: "Understand the core concept of Objects in Kritzel."
+toc_badges:
+  configuring-objects: Preview
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';

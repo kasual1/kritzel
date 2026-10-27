@@ -5,8 +5,6 @@ displayed_sidebar: tutorialSidebar
 title: "Editor API Reference | Kritzel for React"
 description: "Complete API reference for the Kritzel editor component: props, methods, and events available in React."
 toc_max_heading_level: 2
-toc_badges:
-  object-titlebar: Preview
 ---
 
 # Editor

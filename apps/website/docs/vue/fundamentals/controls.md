@@ -3,6 +3,8 @@ sidebar_label: Controls
 displayed_sidebar: tutorialSidebar
 title: "Controls Concept | Kritzel for Vue"
 description: "Configure Kritzel Editor's built-in controls and context menus."
+toc_badges:
+  object-titlebar: Preview
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';

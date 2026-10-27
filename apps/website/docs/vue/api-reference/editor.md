@@ -5,8 +5,6 @@ displayed_sidebar: tutorialSidebar
 title: "Editor API Reference | Kritzel for Vue"
 description: "Complete API reference for the Kritzel editor component: props, methods, and events available in Vue."
 toc_max_heading_level: 2
-toc_badges:
-  object-titlebar: Preview
 ---
 
 # Editor
