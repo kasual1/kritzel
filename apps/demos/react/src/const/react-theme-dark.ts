@@ -105,4 +105,20 @@ export const reactThemeDark: KritzelTheme = {
     ...darkTheme.numericInput,
     focusBorderColor: "#5B8CFF",
   },
+  titlebar: {
+    ...darkTheme.titlebar,
+    activeBackgroundColor: "#28334c",
+    activeButtonFilledBackgroundColor: "#5B8CFF",
+    activeIconColor: "#5B8CFF",
+    activeMutedTextColor: "rgba(91, 140, 255, 0.6)",
+    activeTextColor: "#5B8CFF",
+    buttonHoverBackgroundColor: "rgba(91, 140, 255, 0.12)",
+    buttonPressedBackgroundColor: "rgba(91, 140, 255, 0.18)",
+    focusRing: "2px solid #5B8CFF",
+    selectionBackgroundColor: "#5B8CFF",
+  },
+  titlebarMenu: {
+    ...darkTheme.titlebarMenu,
+    itemHoverBackgroundColor: "rgba(91, 140, 255, 0.12)",
+  },
 };

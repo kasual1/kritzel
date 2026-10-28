@@ -105,4 +105,20 @@ export const angularThemeLight: KritzelTheme = {
     ...lightTheme.numericInput,
     focusBorderColor: '#dd0031',
   },
+  titlebar: {
+    ...lightTheme.titlebar,
+    activeBackgroundColor: '#fbe0e6',
+    activeButtonFilledBackgroundColor: '#dd0031',
+    activeIconColor: '#dd0031',
+    activeMutedTextColor: 'rgba(221, 0, 48, 0.6)',
+    activeTextColor: '#dd0031',
+    buttonHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
+    buttonPressedBackgroundColor: 'rgba(221, 0, 48, 0.12)',
+    focusRing: '2px solid #dd0031',
+    selectionBackgroundColor: '#dd0031',
+  },
+  titlebarMenu: {
+    ...lightTheme.titlebarMenu,
+    itemHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
+  },
 };

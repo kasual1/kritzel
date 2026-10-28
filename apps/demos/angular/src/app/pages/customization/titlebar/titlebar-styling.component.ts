@@ -7,13 +7,11 @@ import {
   KritzelTheme,
   KritzelWorkspace,
   ShapeType,
-  darkTheme,
-  lightTheme,
 } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 
-// `themes` replaces the registry, so each variant spreads the default titlebar tokens and overrides a few.
+// `themes` replaces the registry, so each variant spreads the app theme's titlebar tokens and overrides a few.
 const transparentTitlebar = {
   backgroundColor: 'transparent',
   hoverBackgroundColor: 'transparent',
@@ -24,18 +22,18 @@ const transparentTitlebar = {
 
 const transparentTitlebarLightTheme: KritzelTheme = {
   ...angularThemeLight,
-  titlebar: { ...lightTheme.titlebar, ...transparentTitlebar },
+  titlebar: { ...angularThemeLight.titlebar, ...transparentTitlebar },
 };
 
 const transparentTitlebarDarkTheme: KritzelTheme = {
   ...angularThemeDark,
-  titlebar: { ...darkTheme.titlebar, ...transparentTitlebar },
+  titlebar: { ...angularThemeDark.titlebar, ...transparentTitlebar },
 };
 
 const frameConfig = {
   shapeType: ShapeType.Rectangle,
-  fillColor: { light: '#faf9f5', dark: '#30302e' },
-  strokeColor: { light: '#e8e6dc', dark: '#3e3e38' },
+  fillColor: { light: '#f5f6f7', dark: '#2b2c2f' },
+  strokeColor: { light: '#f5f6f7', dark: '#2b2c2f' },
   strokeWidth: 2,
 };
 

@@ -40,8 +40,8 @@ const themes = [vueThemeLight, vueThemeDark]
 // Frames keep their real pixel size and are drawn at 1/5 scale, like a zoomed-out design canvas.
 const frameConfig = {
   shapeType: ShapeType.Rectangle,
-  fillColor: { light: '#f5f7ff', dark: '#1e2433' },
-  strokeColor: { light: '#d6defa', dark: '#3b4a6b' },
+  fillColor: { light: '#f5f6f7', dark: '#2b2c2f' },
+  strokeColor: { light: '#f5f6f7', dark: '#2b2c2f' },
   strokeWidth: 5,
   scale: 5,
 }
