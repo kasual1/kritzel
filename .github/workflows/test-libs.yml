@@ -3,9 +3,6 @@ name: Test libraries
 
 on:
   pull_request:
-    paths-ignore:
-      - "apps/app/**"
-      - ".github/workflows/*-app.yml"
   workflow_dispatch:
 
 jobs:
