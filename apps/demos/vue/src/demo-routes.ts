@@ -103,6 +103,20 @@ export const demoRoutes = [
     component: () => import('./pages/fundamentals/controls/ToolbarUtilityPanelPage.vue'),
   },
   {
+    path: '/fundamentals/controls/titlebar-configuration',
+    title: 'Titlebar Configuration',
+    category: 'fundamentals',
+    context: 'Controls',
+    component: () => import('./pages/fundamentals/controls/TitlebarConfigurationPage.vue'),
+  },
+  {
+    path: '/fundamentals/controls/titlebar-styling',
+    title: 'Titlebar Styling',
+    category: 'fundamentals',
+    context: 'Controls',
+    component: () => import('./pages/fundamentals/controls/TitlebarStylingPage.vue'),
+  },
+  {
     path: '/fundamentals/controls/zoom-panel-toggle',
     title: 'Zoom Panel Toggle',
     category: 'fundamentals',
@@ -465,20 +479,6 @@ export const demoRoutes = [
     category: 'customization',
     context: 'Localization',
     component: () => import('./pages/customization/localization/LocalizationListenPage.vue'),
-  },
-  {
-    path: '/customization/titlebar/configure',
-    title: 'Configure',
-    category: 'customization',
-    context: 'Titlebar',
-    component: () => import('./pages/customization/titlebar/TitlebarConfigurePage.vue'),
-  },
-  {
-    path: '/customization/titlebar/styling',
-    title: 'Styling',
-    category: 'customization',
-    context: 'Titlebar',
-    component: () => import('./pages/customization/titlebar/TitlebarStylingPage.vue'),
   },
   {
     path: '/examples/object-explorer',

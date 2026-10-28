@@ -43,8 +43,8 @@ const actionLabels: Record<string, string> = {
 // Frames keep their real pixel size and are drawn at 1/5 scale, like a zoomed-out design canvas.
 const frameConfig = {
   shapeType: ShapeType.Rectangle,
-  fillColor: { light: "#f5f7ff", dark: "#1e2433" },
-  strokeColor: { light: "#d6defa", dark: "#3b4a6b" },
+  fillColor: { light: "#f5f6f7", dark: "#2b2c2f" },
+  strokeColor: { light: "#f5f6f7", dark: "#2b2c2f" },
   strokeWidth: 5,
   scale: 5,
 };
@@ -57,7 +57,7 @@ function createFrames() {
   ];
 }
 
-export function TitlebarConfigurePage() {
+export function TitlebarConfigurationPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [lastAction, setLastAction] = useState("Click a titlebar button");
   const [workspaces] = useState(() => [
@@ -78,7 +78,7 @@ export function TitlebarConfigurePage() {
       </Toolbar>
       <KritzelEditor
         ref={editorRef}
-        editorId="titlebar-configure"
+        editorId="titlebar-configuration"
         theme="light"
         themes={themes}
         workspaces={workspaces}

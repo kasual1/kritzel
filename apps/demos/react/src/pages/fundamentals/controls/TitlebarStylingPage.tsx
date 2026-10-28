@@ -4,8 +4,6 @@ import {
   KritzelShape,
   KritzelWorkspace,
   ShapeType,
-  darkTheme,
-  lightTheme,
   type KritzelObjectConfig,
   type KritzelObjectTitlebarConfig,
   type KritzelTheme,
@@ -14,7 +12,7 @@ import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { editorStyle, hostStyle } from "../../shared/demo-shared";
 
-// `themes` replaces the registry, so each variant spreads the default titlebar tokens and overrides a few.
+// `themes` replaces the registry, so each variant spreads the app theme's titlebar tokens and overrides a few.
 const transparentTitlebar = {
   backgroundColor: "transparent",
   hoverBackgroundColor: "transparent",
@@ -25,12 +23,12 @@ const transparentTitlebar = {
 
 const transparentTitlebarLightTheme: KritzelTheme = {
   ...reactThemeLight,
-  titlebar: { ...lightTheme.titlebar, ...transparentTitlebar },
+  titlebar: { ...reactThemeLight.titlebar, ...transparentTitlebar },
 };
 
 const transparentTitlebarDarkTheme: KritzelTheme = {
   ...reactThemeDark,
-  titlebar: { ...darkTheme.titlebar, ...transparentTitlebar },
+  titlebar: { ...reactThemeDark.titlebar, ...transparentTitlebar },
 };
 
 const themes = [transparentTitlebarLightTheme, transparentTitlebarDarkTheme];
@@ -52,8 +50,8 @@ const objectTitlebar: KritzelObjectTitlebarConfig = {
 
 const frameConfig = {
   shapeType: ShapeType.Rectangle,
-  fillColor: { light: "#faf9f5", dark: "#30302e" },
-  strokeColor: { light: "#e8e6dc", dark: "#3e3e38" },
+  fillColor: { light: "#f5f6f7", dark: "#2b2c2f" },
+  strokeColor: { light: "#f5f6f7", dark: "#2b2c2f" },
   strokeWidth: 2,
 };
 

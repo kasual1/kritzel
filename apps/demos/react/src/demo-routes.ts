@@ -22,8 +22,6 @@ import { LocalizationSwitchPage } from "./pages/customization/localization/Local
 import { ThemingApplyPage } from "./pages/customization/theming/ThemingApplyPage";
 import { ThemingCustomPage } from "./pages/customization/theming/ThemingCustomPage";
 import { ThemingListenPage } from "./pages/customization/theming/ThemingListenPage";
-import { TitlebarConfigurePage } from "./pages/customization/titlebar/TitlebarConfigurePage";
-import { TitlebarStylingPage } from "./pages/customization/titlebar/TitlebarStylingPage";
 import { BlueprintDefectMapperPage } from "./pages/examples/BlueprintDefectMapperPage";
 import { PerformanceShowcasePage } from "./pages/examples/PerformanceShowcasePage";
 import { ImageAnnotationStudioPage } from "./pages/examples/ImageAnnotationStudioPage";
@@ -37,6 +35,8 @@ import { ContextMenusObjectInspectorPage } from "./pages/fundamentals/controls/C
 import { ContextMenusSmartConditionalPage } from "./pages/fundamentals/controls/ContextMenusSmartConditionalPage";
 import { MoreMenuOpenPage } from "./pages/fundamentals/controls/MoreMenuOpenPage";
 import { NotificationsTriggerPage } from "./pages/fundamentals/controls/NotificationsTriggerPage";
+import { TitlebarConfigurationPage } from "./pages/fundamentals/controls/TitlebarConfigurationPage";
+import { TitlebarStylingPage } from "./pages/fundamentals/controls/TitlebarStylingPage";
 import { ToolbarUtilityPanelPage } from "./pages/fundamentals/controls/ToolbarUtilityPanelPage";
 import { WorkspaceManagerOpenPage } from "./pages/fundamentals/controls/WorkspaceManagerOpenPage";
 import { ZoomPanelTogglePage } from "./pages/fundamentals/controls/ZoomPanelTogglePage";
@@ -92,6 +92,8 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/fundamentals/controls/workspace-manager-open", title: "Workspace Manager", category: "Fundamentals", context: "Controls", component: WorkspaceManagerOpenPage },
   { path: "/fundamentals/controls/more-menu-open", title: "More Menu", category: "Fundamentals", context: "Controls", component: MoreMenuOpenPage },
   { path: "/fundamentals/controls/toolbar-utility-panel", title: "Toolbar Utility Panel", category: "Fundamentals", context: "Controls", component: ToolbarUtilityPanelPage },
+  { path: "/fundamentals/controls/titlebar-configuration", title: "Titlebar Configuration", category: "Fundamentals", context: "Controls", component: TitlebarConfigurationPage },
+  { path: "/fundamentals/controls/titlebar-styling", title: "Titlebar Styling", category: "Fundamentals", context: "Controls", component: TitlebarStylingPage },
   { path: "/fundamentals/controls/zoom-panel-toggle", title: "Zoom Panel", category: "Fundamentals", context: "Controls", component: ZoomPanelTogglePage },
 
   { path: "/fundamentals/objects/add", title: "Add Objects", category: "Fundamentals", context: "Objects", component: ObjectsAddPage },
@@ -150,8 +152,6 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/customization/localization/switch", title: "Switch Locale", category: "Customization", context: "Localization", component: LocalizationSwitchPage },
   { path: "/customization/localization/custom", title: "Custom Locale", category: "Customization", context: "Localization", component: LocalizationCustomPage },
   { path: "/customization/localization/listen", title: "Locale Events", category: "Customization", context: "Localization", component: LocalizationListenPage },
-  { path: "/customization/titlebar/configure", title: "Configure Titlebars", category: "Customization", context: "Titlebar", component: TitlebarConfigurePage },
-  { path: "/customization/titlebar/styling", title: "Style Titlebars", category: "Customization", context: "Titlebar", component: TitlebarStylingPage },
 
   { path: "/examples/object-explorer", title: "Object Explorer", category: "Examples", component: ObjectExplorerPage },
   { path: "/examples/blueprint-defect-mapper", title: "Blueprint Defect Mapper", category: "Examples", component: BlueprintDefectMapperPage },

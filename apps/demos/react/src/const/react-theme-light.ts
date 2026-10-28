@@ -133,4 +133,18 @@ export const reactThemeLight: KritzelTheme = {
   numericInput: {
     focusBorderColor: '#4A7DFF',
   },
+  titlebar: {
+    activeBackgroundColor: '#e9efff',
+    activeButtonFilledBackgroundColor: '#4A7DFF',
+    activeIconColor: '#4A7DFF',
+    activeMutedTextColor: 'rgba(74, 125, 255, 0.6)',
+    activeTextColor: '#4A7DFF',
+    buttonHoverBackgroundColor: 'rgba(74, 125, 255, 0.08)',
+    buttonPressedBackgroundColor: 'rgba(74, 125, 255, 0.12)',
+    focusRing: '2px solid #4A7DFF',
+    selectionBackgroundColor: '#4A7DFF',
+  },
+  titlebarMenu: {
+    itemHoverBackgroundColor: 'rgba(74, 125, 255, 0.08)',
+  },
 };

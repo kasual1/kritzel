@@ -20,8 +20,8 @@ const actionLabels: Record<string, string> = {
 // Frames keep their real pixel size and are drawn at 1/5 scale, like a zoomed-out design canvas.
 const frameConfig = {
   shapeType: ShapeType.Rectangle,
-  fillColor: { light: '#f5f7ff', dark: '#1e2433' },
-  strokeColor: { light: '#d6defa', dark: '#3b4a6b' },
+  fillColor: { light: '#f5f6f7', dark: '#2b2c2f' },
+  strokeColor: { light: '#f5f6f7', dark: '#2b2c2f' },
   strokeWidth: 5,
   scale: 5,
 };
@@ -35,7 +35,7 @@ function createFrames() {
 }
 
 @Component({
-  selector: 'app-titlebar-configure',
+  selector: 'app-titlebar-configuration',
   imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -45,7 +45,7 @@ function createFrames() {
     </app-toolbar>
 
     <kritzel-editor
-      editorId="titlebar-configure"
+      editorId="titlebar-configuration"
       [theme]="'light'"
       [themes]="themes"
       [workspaces]="workspaces()"
@@ -63,7 +63,7 @@ function createFrames() {
     kritzel-editor { flex: 1; }
   `],
 })
-export class TitlebarConfigureComponent {
+export class TitlebarConfigurationComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];

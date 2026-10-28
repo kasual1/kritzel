@@ -31,8 +31,8 @@ A titlebar is an optional bar rendered above an object, similar to the frame lab
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
-  demoPath="/customization/titlebar/configure"
-  repoFiles={['src/pages/customization/titlebar/TitlebarConfigurePage.tsx']}
+  demoPath="/fundamentals/controls/titlebar-configuration"
+  repoFiles={['src/pages/fundamentals/controls/TitlebarConfigurationPage.tsx']}
 />
 
 The configuration has `left`, `center`, and `right` sections, each holding an array of `title`, `text`, `icon`, `button`, `menu`, `spacer`, or `separator` elements. Most element options accept a function of the titlebar context, for example to show the size of an object. Button clicks and menu item selections emit `objectTitlebarAction`, which you can handle with the `onObjectTitlebarAction` prop. Set `isEditable` on a `title` element to let users rename objects from their titlebar.
@@ -41,8 +41,8 @@ Titlebars are styled through the `titlebar` and `titlebarMenu` sections of `Krit
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
-  demoPath="/customization/titlebar/styling"
-  repoFiles={['src/pages/customization/titlebar/TitlebarStylingPage.tsx']}
+  demoPath="/fundamentals/controls/titlebar-styling"
+  repoFiles={['src/pages/fundamentals/controls/TitlebarStylingPage.tsx']}
 />
 
 ## Workspace Manager

@@ -131,4 +131,18 @@ export const vueThemeLight: KritzelTheme = {
   numericInput: {
     focusBorderColor: '#42b883',
   },
+  titlebar: {
+    activeBackgroundColor: '#e8f6f0',
+    activeButtonFilledBackgroundColor: '#42b883',
+    activeIconColor: '#42b883',
+    activeMutedTextColor: 'rgba(66, 184, 131, 0.6)',
+    activeTextColor: '#42b883',
+    buttonHoverBackgroundColor: 'rgba(66, 184, 131, 0.08)',
+    buttonPressedBackgroundColor: 'rgba(66, 184, 131, 0.12)',
+    focusRing: '2px solid #42b883',
+    selectionBackgroundColor: '#42b883',
+  },
+  titlebarMenu: {
+    itemHoverBackgroundColor: 'rgba(66, 184, 131, 0.08)',
+  },
 };
