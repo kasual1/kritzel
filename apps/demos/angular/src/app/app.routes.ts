@@ -15,6 +15,8 @@ import { ImportDialogComponent } from './pages/fundamentals/controls/import-dial
 import { WorkspaceManagerOpenComponent } from './pages/fundamentals/controls/workspace-manager-open.component';
 import { MoreMenuOpenComponent } from './pages/fundamentals/controls/more-menu-open.component';
 import { ToolbarUtilityPanelComponent } from './pages/fundamentals/controls/toolbar-utility-panel.component';
+import { TitlebarConfigurationComponent } from './pages/fundamentals/controls/titlebar-configuration.component';
+import { TitlebarStylingComponent } from './pages/fundamentals/controls/titlebar-styling.component';
 import { ZoomPanelToggleComponent } from './pages/fundamentals/controls/zoom-panel-toggle.component';
 import { ObjectsAddComponent } from './pages/fundamentals/objects/objects-add.component';
 import { ObjectsRemoveComponent } from './pages/fundamentals/objects/objects-remove.component';
@@ -54,8 +56,6 @@ import { AgenticCursorsBasicComponent } from './pages/advanced/agentic-cursors/a
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
 import { ThemingListenComponent } from './pages/customization/theming/theming-listen.component';
-import { TitlebarConfigureComponent } from './pages/customization/titlebar/titlebar-configure.component';
-import { TitlebarStylingComponent } from './pages/customization/titlebar/titlebar-styling.component';
 import { FontsRegisterComponent } from './pages/customization/fonts/fonts-register.component';
 import { FontsUiFontFamilyComponent } from './pages/customization/fonts/fonts-ui-font-family.component';
 import { IconsRegisterComponent } from './pages/customization/icons/icons-register.component';
@@ -98,6 +98,8 @@ export const routes: Routes = [
           { path: 'workspace-manager-open', component: WorkspaceManagerOpenComponent },
           { path: 'more-menu-open', component: MoreMenuOpenComponent },
           { path: 'toolbar-utility-panel', component: ToolbarUtilityPanelComponent },
+          { path: 'titlebar-configuration', component: TitlebarConfigurationComponent },
+          { path: 'titlebar-styling', component: TitlebarStylingComponent },
           { path: 'zoom-panel-toggle', component: ZoomPanelToggleComponent },
         ],
       },
@@ -209,13 +211,6 @@ export const routes: Routes = [
           { path: 'apply', component: ThemingApplyComponent },
           { path: 'custom', component: ThemingCustomComponent },
           { path: 'listen', component: ThemingListenComponent },
-        ],
-      },
-      {
-        path: 'titlebar',
-        children: [
-          { path: 'configure', component: TitlebarConfigureComponent },
-          { path: 'styling', component: TitlebarStylingComponent },
         ],
       },
       {

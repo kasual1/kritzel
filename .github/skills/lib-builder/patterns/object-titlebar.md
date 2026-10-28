@@ -138,4 +138,4 @@ Two DOM markers drive everything (constants exported from the manager):
 - Titlebar presses go through `selectObjects` / toggle + `moveHandler` only
 - Bars excluded from bounds, hit tests and screenshots
 - Light/dark tokens, generated theme interface and variable-count test updated together
-- Demos at `/customization/titlebar/configure` and `/customization/titlebar/styling` match across Angular, React and Vue
+- Demos at `/fundamentals/controls/titlebar-configuration` and `/fundamentals/controls/titlebar-styling` match across Angular, React and Vue

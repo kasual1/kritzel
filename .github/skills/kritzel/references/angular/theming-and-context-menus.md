@@ -241,4 +241,4 @@ kritzel-engine::part(titlebar-active) { box-shadow: 0 0 0 1px #dd0031; }
 kritzel-engine::part(titlebar-button) { border-radius: 999px; }
 ```
 
-Runnable demos: `/customization/titlebar/configure` and `/customization/titlebar/styling`.
+Runnable demos: `/fundamentals/controls/titlebar-configuration` and `/fundamentals/controls/titlebar-styling`.

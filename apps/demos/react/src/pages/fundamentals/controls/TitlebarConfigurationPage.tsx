@@ -57,7 +57,7 @@ function createFrames() {
   ];
 }
 
-export function TitlebarConfigurePage() {
+export function TitlebarConfigurationPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [lastAction, setLastAction] = useState("Click a titlebar button");
   const [workspaces] = useState(() => [
@@ -78,7 +78,7 @@ export function TitlebarConfigurePage() {
       </Toolbar>
       <KritzelEditor
         ref={editorRef}
-        editorId="titlebar-configure"
+        editorId="titlebar-configuration"
         theme="light"
         themes={themes}
         workspaces={workspaces}

@@ -70,7 +70,7 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
   <div :style="hostStyle">
     <KritzelEditor
       ref="editor"
-      editorId="titlebar-configure"
+      editorId="titlebar-configuration"
       theme="light"
       :themes="themes"
       :workspaces="workspaces"

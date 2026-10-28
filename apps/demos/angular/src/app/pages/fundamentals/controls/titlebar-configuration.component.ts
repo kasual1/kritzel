@@ -35,7 +35,7 @@ function createFrames() {
 }
 
 @Component({
-  selector: 'app-titlebar-configure',
+  selector: 'app-titlebar-configuration',
   imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -45,7 +45,7 @@ function createFrames() {
     </app-toolbar>
 
     <kritzel-editor
-      editorId="titlebar-configure"
+      editorId="titlebar-configuration"
       [theme]="'light'"
       [themes]="themes"
       [workspaces]="workspaces()"
@@ -63,7 +63,7 @@ function createFrames() {
     kritzel-editor { flex: 1; }
   `],
 })
-export class TitlebarConfigureComponent {
+export class TitlebarConfigurationComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
   themes = [angularThemeLight, angularThemeDark];
