@@ -1,6 +1,6 @@
 # Kritzel component API
 
-Source version: @kritzel/engine and @kritzel/editor 0.5.10.
+Source version: @kritzel/engine and @kritzel/editor 0.6.1.
 
 Generated from Stencil docs JSON. For framework bindings, use the matching setup and events references.
 
@@ -173,11 +173,12 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | chatBoxMode | "collapsed" \| "expanded" |  | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
 | cursorTarget | HTMLElement |  | The element to use as the target for the cursor. Defaults to the editor container if not set. |
 | customFonts | { [x: string]: KritzelFontRegistration; } |  | Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts. |
-| customSvgIcons | Partial<Record<"info" \| "type" \| "image" \| "download" \| "command" \| "cursor" \| "square" \| "x" \| "copy" \| "eraser" \| "arrowUp" \| "pen" \| "arrow" \| "arrowUpFromDot" \| "arrowDownFromDot" \| "highlighter" \| "shapes" \| "shapeRectangle" \| "shapeEllipse" \| "shapeTriangle" \| "imageOff" \| "chevronDown" \| "chevronUp" \| "chevronLeft" \| "chevronRight" \| "chevronsLeft" \| "paste" \| "cut" \| "delete" \| "bringToFront" \| "sendToBack" \| "selectAll" \| "upload" \| "undo" \| "redo" \| "plus" \| "play" \| "minus" \| "ellipsisVertical" \| "check" \| "group" \| "ungroup" \| "moveVertical" \| "hand" \| "handGrab" \| "mousePointer" \| "pointer" \| "settings" \| "share" \| "palette" \| "ordering" \| "layoutTemplate" \| "align" \| "alignStartHorizontal" \| "alignCenterHorizontal" \| "alignEndHorizontal" \| "alignStartVertical" \| "alignCenterVertical" \| "alignEndVertical" \| "viewport" \| "logOut" \| "usersRound" \| "google" \| "facebook" \| "github" \| "braces" \| "heart", string>> & Record<string, string> |  |  |
+| customSvgIcons | Partial<Record<"info" \| "type" \| "image" \| "download" \| "command" \| "cursor" \| "square" \| "x" \| "copy" \| "arrowUp" \| "pen" \| "arrow" \| "arrowUpFromDot" \| "arrowDownFromDot" \| "highlighter" \| "eraser" \| "shapes" \| "shapeRectangle" \| "shapeEllipse" \| "shapeTriangle" \| "imageOff" \| "chevronDown" \| "chevronUp" \| "chevronLeft" \| "chevronRight" \| "chevronsLeft" \| "paste" \| "cut" \| "delete" \| "bringToFront" \| "sendToBack" \| "selectAll" \| "upload" \| "undo" \| "redo" \| "plus" \| "play" \| "minus" \| "ellipsisVertical" \| "check" \| "group" \| "ungroup" \| "moveVertical" \| "hand" \| "handGrab" \| "mousePointer" \| "pointer" \| "settings" \| "share" \| "palette" \| "ordering" \| "layoutTemplate" \| "align" \| "alignStartHorizontal" \| "alignCenterHorizontal" \| "alignEndHorizontal" \| "alignStartVertical" \| "alignCenterVertical" \| "alignEndVertical" \| "viewport" \| "logOut" \| "usersRound" \| "google" \| "facebook" \| "github" \| "braces" \| "heart", string>> & Record<string, string> |  |  |
 | debugInfo | KritzelDebugInfo |  |  |
 | editorId | string |  | Optional unique identifier for namespacing storage keys across multiple editor instances. |
 | fallbackLocale | "de" \| "en" \| "fr" \| string & {} |  | The locale used to resolve terms missing from the active locale. |
 | globalContextMenuItems | ContextMenuItem[] |  |  |
+| isChatBoxLoading | boolean |  | Whether the chat box shows its progress ring and turns its send button into a stop button. |
 | isChatBoxVisible | boolean |  |  |
 | isMoreMenuVisible | boolean |  |  |
 | isPanningEnabled | boolean |  |  |

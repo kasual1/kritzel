@@ -463,6 +463,8 @@ export class KritzelEditor {
   @Prop() isChatBoxVisible: boolean = false;
   /** Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. */
   @Prop() chatBoxMode: KritzelChatBoxMode = "collapsed";
+  /** Whether the chat box shows its progress ring and turns its send button into a stop button. */
+  @Prop() isChatBoxLoading: boolean = false;
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
@@ -2180,6 +2182,7 @@ export class KritzelEditor {
           {this.isChatBoxVisible && (
             <kritzel-chat-box
               mode={this.chatBoxMode}
+              loading={this.isChatBoxLoading}
               terms={this.resolvedTerms}
               onChatSubmit={(event) => {
                 event.stopPropagation();

@@ -10,8 +10,9 @@
     "build-app": "vite build"
   },
   "dependencies": {
-    "@kritzel/react-engine": "file:../../libs/engine/react/dist",
+    "@anthropic-ai/sdk": "^1.3.0",
     "@kritzel/react-editor": "file:../../libs/editor/react/dist",
+    "@kritzel/react-engine": "file:../../libs/engine/react/dist",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-router-dom": "^7.15.1"

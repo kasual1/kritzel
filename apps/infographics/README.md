@@ -21,6 +21,22 @@ npm run infographics
 | ----------- | ----------------------------------------------- |
 | `#/welcome` | The animated "Welcome" path from `apps/app`.   |
 | `#/open-source` | The animated outline of the open source logo. |
+| `#/agentic-canvas` | An infinite agentic canvas: Claude builds web pages in frames from the chat box. |
+
+## Agentic canvas
+
+`src/infographics/agentic-canvas/` is the showcase for the "infinite agentic canvas" blog series. The editor shows its chat
+box instead of the toolbar. Every prompt runs Claude in a tool-use loop (`canvas-agent.ts`) whose tools
+(`canvas-tools.ts`) add, write, move and delete frames: `KritzelIframeObject`s with a titlebar and no rotation. A frame
+shows a skeleton while Claude writes it, and the play button in its titlebar opens the page fullscreen.
+
+To try it, add an Anthropic API key to `agent-config.ts`, or create `apps/infographics/.env.local` with:
+
+```bash
+VITE_ANTHROPIC_API_KEY=sk-ant-...
+```
+
+The key is used straight from the browser, so only run this locally.
 
 ## Record
 

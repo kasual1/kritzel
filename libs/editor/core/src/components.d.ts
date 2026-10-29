@@ -396,6 +396,11 @@ export namespace Components {
         "importFromFile": () => Promise<void>;
         "importFromJson": (json: string) => Promise<void>;
         /**
+          * Whether the chat box shows its progress ring and turns its send button into a stop button.
+          * @default false
+         */
+        "isChatBoxLoading": boolean;
+        /**
           * @default false
          */
         "isChatBoxVisible": boolean;
@@ -2372,6 +2377,11 @@ declare namespace LocalJSX {
          */
         "globalContextMenuItems"?: ContextMenuItem[];
         /**
+          * Whether the chat box shows its progress ring and turns its send button into a stop button.
+          * @default false
+         */
+        "isChatBoxLoading"?: boolean;
+        /**
           * @default false
          */
         "isChatBoxVisible"?: boolean;
@@ -3176,6 +3186,7 @@ declare namespace LocalJSX {
         "isToolbarVisible": boolean;
         "isChatBoxVisible": boolean;
         "chatBoxMode": KritzelChatBoxMode;
+        "isChatBoxLoading": boolean;
         "isUtilityPanelVisible": boolean;
         "isWorkspaceManagerVisible": boolean;
         "isMoreMenuVisible": boolean;
