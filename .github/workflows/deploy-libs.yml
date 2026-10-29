@@ -41,14 +41,18 @@ jobs:
       - name: Bump version
         run: npm run bump-${{ inputs.bump }}
 
-      - name: Refresh workspace lockfile after version bump
-        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-
       - name: Check bumped release versions
         run: node scripts/check-shared-versions.js
 
       - name: Build all packages
         run: npm run build
+
+      # After the build, not before: apps link @kritzel/angular-editor from libs/editor/angular/dist/lib,
+      # which only exists once built. Refreshing earlier keeps its old version in the lockfile, and on a
+      # minor bump npm then nests the previous release of @kritzel/editor and @kritzel/engine from the
+      # registry under libs/editor/angular, breaking every later `npm ci` build.
+      - name: Refresh workspace lockfile after version bump
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 
       - name: Typecheck CLI
         run: npm run typecheck -w libs/cli
