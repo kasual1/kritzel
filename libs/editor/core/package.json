@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/editor",
-  "version": "0.5.10",
+  "version": "0.6.0",
   "description": "Core editor package for Kritzel UI components.",
   "homepage": "https://kritzel.io/",
   "keywords": [
@@ -62,11 +62,11 @@
     "release": "npm publish"
   },
   "dependencies": {
-    "@kritzel/core": "^0.5.10",
+    "@kritzel/core": "^0.6.0",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@kritzel/engine": "^0.5.10",
+    "@kritzel/engine": "^0.6.0",
     "@stencil/angular-output-target": "^1.3.0",
     "@stencil/core": "^4.43.3",
     "@stencil/react-output-target": "^1.2.0",
@@ -80,7 +80,7 @@
     "ts-jest": "^29.4.4"
   },
   "peerDependencies": {
-    "@kritzel/engine": "^0.5.10",
+    "@kritzel/engine": "^0.6.0",
     "lib0": "^0.2.98",
     "y-indexeddb": "^9.0.12",
     "y-websocket": "^3.0.0",
