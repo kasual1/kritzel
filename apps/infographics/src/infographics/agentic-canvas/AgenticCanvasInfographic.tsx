@@ -10,12 +10,13 @@ import {
 import { CanvasAgent } from './canvas-agent';
 import { createFrameDocument, isFrame } from './frame';
 import { FramePreview } from './FramePreview';
-import { createWelcomeFrame } from './welcome-frame';
+import { WelcomeMessage } from './WelcomeMessage';
 
 const WORKSPACE_ID = 'agentic-canvas';
 const CURSOR_ID = 'claude';
 
 const hostStyle = {
+  position: 'relative',
   display: 'block',
   height: '100%',
   // Frames resize from their corners like in a design tool, without the corner squares.
@@ -53,8 +54,9 @@ export function AgenticCanvasInfographic() {
   const abortRef = useRef<AbortController | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [preview, setPreview] = useState<Preview | null>(null);
+  const [hasFrames, setHasFrames] = useState(false);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [createWelcomeFrame(CanvasAgent.hasApiKey)] }),
+    new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [] }),
   ]);
 
   async function onReady() {
@@ -68,7 +70,6 @@ export function AgenticCanvasInfographic() {
       onStatus: status => void editor.updateAgenticCursor(CURSOR_ID, { status }),
       onFrameFocus: frameId => void editor.moveAgenticCursor(CURSOR_ID, { objectId: frameId }),
     });
-    await editor.centerAllObjects(false);
   }
 
   async function onChatSubmit(prompt: string) {
@@ -126,8 +127,10 @@ export function AgenticCanvasInfographic() {
         onIsReady={() => void onReady()}
         onChatSubmit={event => void onChatSubmit(event.detail)}
         onChatStop={() => abortRef.current?.abort()}
+        onObjectsChange={event => setHasFrames(event.detail.some(isFrame))}
         onObjectTitlebarAction={event => void onTitlebarAction(event.detail)}
       />
+      <WelcomeMessage isVisible={!hasFrames && !isWorking} hasApiKey={CanvasAgent.hasApiKey} />
       {preview && <FramePreview title={preview.title} document={preview.document} onClose={closePreview} />}
     </div>
   );
