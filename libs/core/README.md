@@ -2,7 +2,7 @@
 
 The framework-agnostic core of [Kritzel](https://kritzel.io/): objects, tools, sync and asset providers, themes, locales and helpers.
 
-You don't install this package yourself. `@kritzel/engine` and `@kritzel/editor` depend on it and re-export its API, so keep importing from those packages (or their Angular, React and Vue wrappers).
+You don't install this package yourself. `@kritzel/engine` and `@kritzel/editor` depend on it, and `@kritzel/engine` and the Angular, React and Vue wrappers re-export its API, so keep importing from those packages.
 
 ## Why a separate package
 
