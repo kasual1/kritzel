@@ -275,11 +275,11 @@ type ShowcaseProps = {
   title: string;
   description: string;
   media: ReactNode;
-  link: ShowcaseLinkProps;
+  link?: ShowcaseLinkProps;
   reversed?: boolean;
 };
 
-/** Media next to a heading, description and link; `reversed` puts the media on the right. */
+/** Media next to a heading, description and optional link; `reversed` puts the media on the right. */
 function Showcase({ headingId, title, description, media, link, reversed = false }: ShowcaseProps) {
   return (
     <section aria-labelledby={headingId} className={styles.showcase} data-reversed={reversed ? "true" : undefined}>
@@ -290,7 +290,7 @@ function Showcase({ headingId, title, description, media, link, reversed = false
             {title}
           </h2>
           <p className={styles.sectionText}>{description}</p>
-          <ShowcaseLink {...link} />
+          {link && <ShowcaseLink {...link} />}
         </div>
       </div>
     </section>
@@ -321,6 +321,18 @@ export function PerformanceSection() {
       description="Kritzel is designed from the ground up to handle hundreds of objects. It only renders what is currently in the viewport, so the board stays fast as your canvas grows."
       media={<PerformanceDemo />}
       link={{ label: "Full Demo", to: performanceShowcasePath }}
+    />
+  );
+}
+
+/** A showcase row that holds the place of a section whose content is still to come. */
+export function PlaceholderSection({ headingId }: { headingId: string }) {
+  return (
+    <Showcase
+      headingId={headingId}
+      title="Coming soon"
+      description="This section is a placeholder. Its content will be added soon."
+      media={<div aria-hidden="true" className={styles.showcaseMedia} />}
     />
   );
 }

@@ -803,7 +803,8 @@
   color: var(--landing-ink);
 }
 
-.page .sectionText {
+/* Scoped to the html class rather than .page, so the agentic page (which has its own .page) gets it too. */
+:global(html.landing-page) .sectionText {
   margin: 0;
   font-size: clamp(16px, 1.5vw, 18px);
   line-height: 1.6;
