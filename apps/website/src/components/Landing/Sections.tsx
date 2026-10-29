@@ -326,14 +326,14 @@ export function PerformanceSection() {
   );
 }
 
-/** A showcase row that holds the place of a section whose content is still to come. */
-export function PlaceholderSection({ headingId }: { headingId: string }) {
+/** A showcase row that holds the place of a section whose content is still to come, or of its copy only. */
+export function PlaceholderSection({ headingId, media }: { headingId: string; media?: ReactNode }) {
   return (
     <Showcase
       headingId={headingId}
       title="Coming soon"
       description="This section is a placeholder. Its content will be added soon."
-      media={<div aria-hidden="true" className={styles.showcaseMedia} />}
+      media={media ?? <div aria-hidden="true" className={styles.showcaseMedia} />}
     />
   );
 }

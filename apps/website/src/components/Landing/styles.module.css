@@ -1113,6 +1113,424 @@
   height: 1.1em;
 }
 
+/* A mock design canvas with a dot grid and two frames of the same page, built by an agent (see FramesDemo). */
+.framesDemo {
+  --frames-cursor: #7c3aed;
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  background-color: #ffffff;
+  background-image: radial-gradient(circle, #e4e4e7 1px, transparent 1.5px);
+  background-size: 2.5cqw 2.5cqw;
+}
+
+.framesFrame {
+  position: absolute;
+  top: 15cqw;
+}
+
+.framesFrame[data-device="desktop"] {
+  left: 9.5cqw;
+  width: 56cqw;
+  height: 40cqw;
+}
+
+.framesFrame[data-device="phone"] {
+  left: 70.5cqw;
+  width: 20cqw;
+  height: 43.3cqw;
+}
+
+/* Kritzel's object titlebar (kritzel-object-titlebar-layer.css) scaled with the demo, blue while active. */
+.framesTitlebar {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 1.1cqw);
+  left: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.8cqw;
+  height: 4.6cqw;
+  padding: 0 0.6cqw;
+  overflow: hidden;
+  border-radius: 1.4cqw;
+  background: #f2f2f2;
+  color: #5f5f5f;
+  font-size: 2.1cqw;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.framesFrame[data-active] .framesTitlebar {
+  background: #e0efff;
+  color: #007aff;
+}
+
+.framesPlay,
+.framesAdd {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3.4cqw;
+  height: 3.4cqw;
+}
+
+.framesPlay {
+  border-radius: 0.9cqw;
+  background: #8e8e93;
+  color: #ffffff;
+}
+
+.framesFrame[data-active] .framesPlay {
+  background: #007aff;
+}
+
+.framesPlay svg {
+  width: 1.9cqw;
+  height: 1.9cqw;
+}
+
+.framesTitle {
+  font-weight: 600;
+}
+
+.framesWidth {
+  color: #9a9a9a;
+}
+
+.framesFrame[data-active] .framesWidth {
+  color: rgba(0, 122, 255, 0.6);
+}
+
+.framesAdd {
+  margin-left: auto;
+  color: #6b6b6b;
+}
+
+.framesFrame[data-active] .framesAdd {
+  color: #007aff;
+}
+
+.framesAdd svg {
+  width: 2.4cqw;
+  height: 2.4cqw;
+}
+
+/* Its own container, so the page inside sizes itself to the frame's width like a real layout would. */
+.framesPage {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  padding: 0 6%;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #fbf8f2;
+  box-shadow: 0 0 0 1px #ebe7df;
+  color: #1f2a22;
+}
+
+/* Parts of the page fade in as the agent builds them; the one it just built is outlined like a selection. */
+.framesBuild {
+  opacity: 0;
+  transform: translateY(2cqw);
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.framesBuild[data-built] {
+  opacity: 1;
+  transform: none;
+}
+
+.framesBuild[data-selected] {
+  outline: 1px solid #007aff;
+  outline-offset: 0.8cqw;
+}
+
+.siteNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 8cqw;
+  margin-top: 1.5cqw;
+  font-size: 2.3cqw;
+}
+
+.siteLogo {
+  display: flex;
+  align-items: center;
+  gap: 1.2cqw;
+  font-size: 3.2cqw;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* A leaf: round on three corners, pointed on the fourth. */
+.siteLogoMark {
+  width: 3.2cqw;
+  height: 3.2cqw;
+  border-radius: 50% 50% 50% 0;
+  background: #2f7d55;
+}
+
+.siteLinks {
+  display: flex;
+  gap: 4cqw;
+  color: #6f746c;
+}
+
+.siteButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.1cqw 2.6cqw;
+  border-radius: 999px;
+  background: #2f7d55;
+  color: #ffffff;
+  font-size: 2.3cqw;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.siteButtonOutline {
+  background: transparent;
+  color: #1f2a22;
+  box-shadow: inset 0 0 0 1px #cfd8cf;
+}
+
+.siteHero {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 5cqw;
+  margin-top: 4cqw;
+}
+
+.siteHeadline {
+  font-size: 6.6cqw;
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+}
+
+.siteText {
+  margin-top: 2.6cqw;
+  font-size: 2.5cqw;
+  line-height: 1.5;
+  color: #6f746c;
+}
+
+/* Shrink-wrapped, so its outline and the agent's cursor are on the buttons rather than the empty space beside them. */
+.siteActions {
+  display: flex;
+  width: fit-content;
+  gap: 1.6cqw;
+  margin-top: 3.6cqw;
+}
+
+.siteImage {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 3cqw;
+  background: #dcebdf;
+}
+
+.siteImage svg {
+  width: 86%;
+  height: 86%;
+}
+
+.siteFeatures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3cqw;
+  margin-top: 6cqw;
+}
+
+.siteFeature {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqw;
+  padding: 2.6cqw;
+  border-radius: 2cqw;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px #ebe7df;
+  font-size: 2.3cqw;
+  font-weight: 600;
+}
+
+.siteFeatureIcon {
+  flex: none;
+  width: 4cqw;
+  height: 4cqw;
+  border-radius: 1.2cqw;
+  background: #dcebdf;
+}
+
+/* The phone frame stacks the same page in a single column, sized for its narrower width. */
+.framesFrame[data-device="phone"] .siteNav {
+  height: 16cqw;
+  margin-top: 3cqw;
+}
+
+.framesFrame[data-device="phone"] .siteLogo {
+  gap: 3cqw;
+  font-size: 8cqw;
+}
+
+.framesFrame[data-device="phone"] .siteLogoMark {
+  width: 8cqw;
+  height: 8cqw;
+}
+
+.siteMenu {
+  width: 9cqw;
+  height: 5.4cqw;
+  box-sizing: border-box;
+  border-top: 1.4cqw solid #1f2a22;
+  border-bottom: 1.4cqw solid #1f2a22;
+}
+
+.framesFrame[data-device="phone"] .siteHeadline {
+  margin-top: 6cqw;
+  font-size: 14cqw;
+}
+
+.framesFrame[data-device="phone"] .siteText {
+  margin-top: 5cqw;
+  font-size: 6.2cqw;
+}
+
+.framesFrame[data-device="phone"] .siteActions {
+  width: auto;
+  margin-top: 7cqw;
+}
+
+.framesFrame[data-device="phone"] .siteButton {
+  justify-content: center;
+  width: 100%;
+  padding: 3.4cqw 0;
+  font-size: 6.2cqw;
+}
+
+.framesFrame[data-device="phone"] .siteImage {
+  aspect-ratio: 1.1;
+  margin-top: 8cqw;
+  border-radius: 7cqw;
+}
+
+.framesFrame[data-device="phone"] .siteFeatures {
+  grid-template-columns: 1fr;
+  gap: 4cqw;
+  margin-top: 8cqw;
+}
+
+.framesFrame[data-device="phone"] .siteFeature {
+  gap: 4cqw;
+  padding: 5cqw;
+  border-radius: 5cqw;
+  font-size: 6.2cqw;
+}
+
+.framesFrame[data-device="phone"] .siteFeatureIcon {
+  width: 10cqw;
+  height: 10cqw;
+  border-radius: 3cqw;
+}
+
+/* Kritzel's agentic cursor (kritzel-agentic-cursors.css): an arrow with a name label and a status below it.
+   It keeps Kritzel's size in wide demos and shrinks a little in narrow ones, so it does not cover the frames.
+   Its tip is at the translated point (set from FramesDemo). */
+.framesCursor {
+  --frames-arrow: clamp(16px, 3.8cqw, 20px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  color: var(--frames-cursor);
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* The arrow's tip is at (5, 3) in its 24-unit viewBox. */
+.framesCursorArrow {
+  display: block;
+  width: var(--frames-arrow);
+  height: var(--frames-arrow);
+  margin: calc(var(--frames-arrow) * -3 / 24) 0 0 calc(var(--frames-arrow) * -5 / 24);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+.framesCursorLabels {
+  position: absolute;
+  top: calc(var(--frames-arrow) * 0.8);
+  left: calc(var(--frames-arrow) * 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35em;
+  font-size: clamp(9px, 2.1cqw, 11px);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.framesCursorName {
+  padding: 0.2em 0.65em;
+  border-radius: 4px;
+  background: var(--frames-cursor);
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.framesCursorStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.2em 0.8em 0.2em 0.65em;
+  border: 1px solid color-mix(in srgb, var(--frames-cursor) 45%, transparent);
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  color: #1f2937;
+  animation: landing-frames-status-in 180ms ease-out;
+}
+
+.framesCursorDot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--frames-cursor);
+  animation: landing-frames-status-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes landing-frames-status-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes landing-frames-status-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .framesBuild,
+  .framesCursor {
+    transition: none;
+  }
+
+  .framesCursorStatus,
+  .framesCursorDot {
+    animation: none;
+  }
+}
+
 /* The terminal as a showcase's media: its text scales with the column so the ASCII logo fits, like on phones. */
 .cliMedia {
   flex: 1 1 0;
