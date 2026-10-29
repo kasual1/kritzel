@@ -71,7 +71,7 @@ const codeStyle: CSSProperties = {
 const EXAMPLE_PROMPTS = [
   'Build a landing page for the red running shoe',
   'Add a phone version next to it',
-  'Make the hero darker and the buttons rounder',
+  'Add the sock and strap variants below the hero',
 ];
 
 /** The empty-canvas guide, centered on the canvas until Claude adds the first frame. */

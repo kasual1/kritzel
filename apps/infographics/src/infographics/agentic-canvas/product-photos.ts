@@ -23,13 +23,13 @@ const PRODUCT_PHOTOS: ProductPhoto[] = [
     width: 928,
     height: 1152,
     description:
-      'The sock variant: the same red-accented runner with a high beige knit sock collar instead of laces. Side view, portrait.',
+      'The Sock variant: the same red-accented runner with a high beige knit sock collar instead of laces. Side view, portrait.',
   },
   {
     file: 'red-running-shoe-strap.jpg',
     width: 928,
     height: 1152,
-    description: 'The strap variant: the same runner with cut-out sides and a beige buckle strap across the instep. Side view, portrait.',
+    description: 'The Strap variant: the same runner with cut-out sides and a beige buckle strap across the instep. Side view, portrait.',
   },
 ];
 
