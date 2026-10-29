@@ -148,13 +148,6 @@ export const darkTheme: KritzelTheme = {
     backgroundColor: '#1a1a1a',
   },
 
-  editor: {
-    loadingOverlayBackground: 'rgba(26, 26, 26, 0.85)',
-    loadingOverlayColor: '#e0e0e0',
-    loadingOverlaySpinnerActiveColor: '#e0e0e0',
-    loadingOverlaySpinnerColor: '#555555',
-  },
-
   snap: {
     indicatorFill: 'rgba(10, 132, 255, 0.35)',
     indicatorFillInactive: 'rgba(10, 132, 255, 0.2)',

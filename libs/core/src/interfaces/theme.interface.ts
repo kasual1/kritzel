@@ -225,11 +225,6 @@ export interface KritzelTheme {
 
   /** Editor variables */
   editor?: {
-    loadingOverlayBackground?: string;
-    loadingOverlayColor?: string;
-    loadingOverlaySpinnerActiveColor?: string;
-    loadingOverlaySpinnerColor?: string;
-    loadingOverlayZIndex?: string;
     notificationAnimationDuration?: string;
     notificationAnimationEasing?: string;
     notificationDismissAnimationDuration?: string;

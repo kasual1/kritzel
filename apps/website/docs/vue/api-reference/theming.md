@@ -62,7 +62,7 @@ Use [Themes](../customization/themes.md) for Vue registration and binding exampl
 
 ## Editor
 
-`loadingOverlayBackground`, `loadingOverlayColor`, `loadingOverlaySpinnerActiveColor`, `loadingOverlaySpinnerColor`, `syncIndicatorBackground`, `syncIndicatorColor`, `syncIndicatorSpinnerColor`, `syncIndicatorSpinnerTrack`, `syncIndicatorZIndex`.
+`syncIndicatorBackground`, `syncIndicatorColor`, `syncIndicatorSpinnerColor`, `syncIndicatorSpinnerTrack`, `syncIndicatorZIndex`.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|

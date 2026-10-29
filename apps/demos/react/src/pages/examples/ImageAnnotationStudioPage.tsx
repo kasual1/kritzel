@@ -24,10 +24,6 @@ const annotationThemeDark: KritzelTheme = {
     ...darkTheme.engine,
     backgroundColor: "#090f18",
   },
-  editor: {
-    ...darkTheme.editor,
-    loadingOverlayBackground: "rgba(9, 15, 24, 0.72)",
-  },
 };
 
 const themes = [annotationThemeDark];

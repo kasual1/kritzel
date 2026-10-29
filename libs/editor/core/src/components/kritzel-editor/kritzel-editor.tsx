@@ -539,12 +539,6 @@ export class KritzelEditor {
   @State() contextMenuState?: KritzelContextMenuState;
   @State() objectTitlebarMenuState?: KritzelObjectTitlebarMenuState;
   @State() resolvedMoreMenuItems: IKritzelMenuItem[] = [];
-  @State() isLoadingOverlayVisible: boolean = false;
-  private loadingOverlayShowTimeout?: ReturnType<typeof setTimeout>;
-  private loadingOverlayHideTimeout?: ReturnType<typeof setTimeout>;
-  private loadingOverlayShownTimestamp?: number;
-  private readonly loadingOverlayDelayMs = 300;
-  private readonly loadingOverlayMinDisplayDurationMs = 400;
   private notificationDismissTimeout?: ReturnType<typeof setTimeout>;
   private notificationDismissAnimationTimeout?: ReturnType<typeof setTimeout>;
   private readonly notificationDisplayDurationMs = 5000;
@@ -1452,8 +1446,6 @@ export class KritzelEditor {
   }
 
   disconnectedCallback() {
-    this.clearLoadingOverlayShowTimer();
-    this.clearLoadingOverlayHideTimer();
     this.clearNotificationDismissTimer();
     this.clearNotificationDismissAnimationTimer();
   }
@@ -1648,57 +1640,6 @@ export class KritzelEditor {
   handleContextMenuStateChange(event: CustomEvent<KritzelContextMenuState>) {
     event.stopPropagation();
     this.contextMenuState = event.detail.isVisible ? event.detail : undefined;
-  }
-
-  handleIsLoadingChange(event: CustomEvent<boolean>) {
-    console.log("isLoadingChange event:", event.detail);
-    event.stopPropagation();
-
-    this.clearLoadingOverlayShowTimer();
-    this.clearLoadingOverlayHideTimer();
-
-    if (event.detail) {
-      this.loadingOverlayShowTimeout = setTimeout(() => {
-        this.isLoadingOverlayVisible = true;
-        this.loadingOverlayShownTimestamp = Date.now();
-        this.loadingOverlayShowTimeout = undefined;
-      }, this.loadingOverlayDelayMs);
-      return;
-    }
-
-    if (
-      this.isLoadingOverlayVisible &&
-      this.loadingOverlayShownTimestamp !== undefined
-    ) {
-      const elapsed = Date.now() - this.loadingOverlayShownTimestamp;
-      const remaining = this.loadingOverlayMinDisplayDurationMs - elapsed;
-
-      if (remaining > 0) {
-        this.loadingOverlayHideTimeout = setTimeout(() => {
-          this.isLoadingOverlayVisible = false;
-          this.loadingOverlayShownTimestamp = undefined;
-          this.loadingOverlayHideTimeout = undefined;
-        }, remaining);
-        return;
-      }
-    }
-
-    this.isLoadingOverlayVisible = false;
-    this.loadingOverlayShownTimestamp = undefined;
-  }
-
-  private clearLoadingOverlayShowTimer(): void {
-    if (this.loadingOverlayShowTimeout) {
-      clearTimeout(this.loadingOverlayShowTimeout);
-      this.loadingOverlayShowTimeout = undefined;
-    }
-  }
-
-  private clearLoadingOverlayHideTimer(): void {
-    if (this.loadingOverlayHideTimeout) {
-      clearTimeout(this.loadingOverlayHideTimeout);
-      this.loadingOverlayHideTimeout = undefined;
-    }
   }
 
   private handleContextMenuActionSelected(
@@ -2167,11 +2108,6 @@ export class KritzelEditor {
             </kritzel-portal>
           </div>
 
-          <kritzel-loading-overlay
-            visible={this.isLoadingOverlayVisible}
-            text={this.resolvedTerms["editor.loading"] ?? "Loading..."}
-          ></kritzel-loading-overlay>
-
           <kritzel-engine
             ref={(el) => {
               if (el) {
@@ -2230,7 +2166,6 @@ export class KritzelEditor {
             onContextMenuStateChange={(event) =>
               this.handleContextMenuStateChange(event)
             }
-            onIsLoadingChange={(event) => this.handleIsLoadingChange(event)}
             onAgenticCursorDetached={(event) =>
               this.handleAgenticCursorDetached(event)
             }

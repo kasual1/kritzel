@@ -28,10 +28,6 @@ const annotationTheme: KritzelTheme = {
     ...vueThemeDark.engine,
     backgroundColor: '#090f18',
   },
-  editor: {
-    ...vueThemeDark.editor,
-    loadingOverlayBackground: 'rgba(9, 15, 24, 0.72)',
-  },
 }
 
 const themes = [annotationTheme]
