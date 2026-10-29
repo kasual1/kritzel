@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/core",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "homepage": "https://kritzel.io/",
   "description": "Framework-agnostic core of Kritzel: objects, tools, sync, themes, locales and helpers shared by @kritzel/engine and @kritzel/editor.",
   "keywords": [

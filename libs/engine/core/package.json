@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/engine",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel helps you build infinite whiteboard experiences.",
   "keywords": [
@@ -62,7 +62,7 @@
     "release": "npm publish"
   },
   "dependencies": {
-    "@kritzel/core": "^0.6.0",
+    "@kritzel/core": "^0.6.1",
     "@types/lodash": "^4.17.20",
     "html-to-image": "^1.11.11",
     "lodash": "^4.17.21",

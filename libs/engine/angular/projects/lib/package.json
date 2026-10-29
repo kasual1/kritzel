@@ -1,6 +1,6 @@
 {
   "name": "@kritzel/angular-engine",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "homepage": "https://kritzel.io/",
   "description": "Kritzel engine wrapper for Angular.",
   "keywords": [
@@ -14,7 +14,7 @@
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0",
-    "@kritzel/engine": "^0.6.0"
+    "@kritzel/engine": "^0.6.1"
   },
   "dependencies": {
     "tslib": "^2.3.0"
