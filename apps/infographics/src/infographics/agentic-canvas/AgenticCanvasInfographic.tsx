@@ -15,10 +15,12 @@ import { createWelcomeFrame } from './welcome-frame';
 const WORKSPACE_ID = 'agentic-canvas';
 const CURSOR_ID = 'claude';
 
-const hostStyle: CSSProperties = {
+const hostStyle = {
   display: 'block',
   height: '100%',
-};
+  // Frames resize from their corners like in a design tool, without the corner squares.
+  '--kritzel-selection-resize-handle-visibility': 'hidden',
+} as CSSProperties;
 
 /** Frames get a titlebar and keep their orientation, like frames in a design tool. */
 const objectConfig: KritzelObjectConfig = {

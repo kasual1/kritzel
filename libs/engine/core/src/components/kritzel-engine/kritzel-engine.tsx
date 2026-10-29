@@ -4131,6 +4131,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
+                                        visibility: 'var(--kritzel-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4156,6 +4157,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
+                                        visibility: 'var(--kritzel-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4181,6 +4183,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
+                                        visibility: 'var(--kritzel-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
@@ -4206,6 +4209,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                         stroke: selectionHandleStrokeColor,
                                         strokeWidth: `calc(2px * ${handleScale} / ${this.core.store.state?.scale})`,
                                         paintOrder: 'fill',
+                                        visibility: 'var(--kritzel-selection-resize-handle-visibility, visible)',
                                       }}
                                     />
                                     <rect
