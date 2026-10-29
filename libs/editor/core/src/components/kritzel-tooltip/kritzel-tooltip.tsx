@@ -1,5 +1,5 @@
 ﻿import { Component, Host, Prop, h, Element, State, Listen, Method, Event, EventEmitter, Watch } from '@stencil/core';
-import { KritzelHTMLHelper } from '@kritzel/engine';
+import { KritzelHTMLHelper } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-tooltip',

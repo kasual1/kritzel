@@ -1,7 +1,7 @@
 import { Component, Host, h, Prop, State, Element, Event, EventEmitter, Watch, Method } from '@stencil/core';
-import { KritzelDevicesHelper } from '@kritzel/engine';
-import { IKritzelMenuItem } from '@kritzel/engine';
-import { KritzelTermKey } from '@kritzel/engine';
+import { KritzelDevicesHelper } from '@kritzel/core';
+import { IKritzelMenuItem } from '@kritzel/core';
+import { KritzelTermKey } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-more-menu',

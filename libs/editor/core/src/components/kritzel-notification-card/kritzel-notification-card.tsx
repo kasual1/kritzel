@@ -1,5 +1,5 @@
 ﻿import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { KritzelNotification } from '@kritzel/engine';
+import { KritzelNotification } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-notification-card',

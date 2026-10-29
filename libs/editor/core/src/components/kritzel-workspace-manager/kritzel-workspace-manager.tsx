@@ -1,6 +1,6 @@
-import { KritzelWorkspace } from '@kritzel/engine';
-import { IKritzelMenuItem } from '@kritzel/engine';
-import { KritzelTermKey } from '@kritzel/engine';
+import { KritzelWorkspace } from '@kritzel/core';
+import { IKritzelMenuItem } from '@kritzel/core';
+import { KritzelTermKey } from '@kritzel/core';
 import { Host, h, Component, State, Prop, Event, EventEmitter, Element, Listen, Method } from '@stencil/core';
 
 @Component({

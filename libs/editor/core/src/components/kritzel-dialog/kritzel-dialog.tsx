@@ -1,6 +1,6 @@
 ﻿import { Component, Element, Event, EventEmitter, Host, Listen, Method, Prop, State, Watch, h } from '@stencil/core';
-import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from '@kritzel/engine';
-import { KritzelHTMLHelper } from '@kritzel/engine';
+import { IKritzelDialogCloseEvent, KritzelDialogCloseReason } from '@kritzel/core';
+import { KritzelHTMLHelper } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-dialog',

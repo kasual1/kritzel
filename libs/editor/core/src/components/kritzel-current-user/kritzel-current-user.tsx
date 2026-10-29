@@ -1,6 +1,6 @@
 ﻿import { Component, Host, h, Prop } from '@stencil/core';
-import { IKritzelUser } from '@kritzel/engine';
-import { KritzelTermKey } from '@kritzel/engine';
+import { IKritzelUser } from '@kritzel/core';
+import { KritzelTermKey } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-current-user',

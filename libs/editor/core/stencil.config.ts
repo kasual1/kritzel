@@ -64,9 +64,10 @@ export const config: Config = {
     : {
         rollupConfig: {
           inputOptions: {
-            // The engine's components are compiled into this bundle from its Stencil collection.
-            // They import every class from @kritzel/core, so keep it external: the editor, the
-            // compiled engine components and @kritzel/engine then share one copy of each class.
+            // The engine's components are compiled into this bundle from its Stencil collection
+            // (see the `import "@kritzel/engine"` in kritzel-editor.tsx). They and the editor import
+            // every class from @kritzel/core, so keep it external: the editor, the compiled engine
+            // components and @kritzel/engine then share one copy of each class.
             // Keep yjs and its companions external (as the engine build does), otherwise the
             // editor ships its own copy next to the one @kritzel/engine imports and Yjs warns
             // "Yjs was already imported", breaking its constructor checks.

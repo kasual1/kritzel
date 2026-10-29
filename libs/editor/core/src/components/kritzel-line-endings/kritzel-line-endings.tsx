@@ -1,5 +1,5 @@
 ﻿import { Component, Host, h, Prop, Event, EventEmitter } from '@stencil/core';
-import { ArrowHeadStyle, LineArrowConfig } from '@kritzel/engine';
+import { ArrowHeadStyle, LineArrowConfig } from '@kritzel/core';
 
 export type LineEndingType = 'none' | ArrowHeadStyle;
 

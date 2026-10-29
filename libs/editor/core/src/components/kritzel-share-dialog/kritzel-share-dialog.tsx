@@ -1,5 +1,5 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop, Watch } from '@stencil/core';
-import { KritzelTermKey } from '@kritzel/engine';
+import { KritzelTermKey } from '@kritzel/core';
 import QRCode from 'qrcode';
 
 /**

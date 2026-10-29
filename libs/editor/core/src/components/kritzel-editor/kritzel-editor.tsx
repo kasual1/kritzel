@@ -11,6 +11,10 @@ import {
   EventEmitter,
   Watch,
 } from "@stencil/core";
+// Makes Stencil treat @kritzel/engine as a collection, so <kritzel-engine> and its child
+// components are compiled into this package, and loads its global HTMLKritzelEngineElement
+// type. Stencil removes this import from the output; classes come from @kritzel/core.
+import "@kritzel/engine";
 import {
   KritzelAgenticCursor,
   KritzelAgenticCursorDetachedEvent,
@@ -20,83 +24,83 @@ import {
   KritzelAgenticCursorPatch,
   KritzelAgenticCursorTarget,
   KritzelIconRegistry,
-} from "@kritzel/engine";
-import { KritzelToolbarItem } from "@kritzel/engine";
-import { KritzelToolDefinition } from "@kritzel/engine";
-import { ShapeType } from "@kritzel/engine";
-import { KritzelAlignment } from "@kritzel/engine";
-import { KritzelBaseObject, KritzelGroup } from "@kritzel/engine";
-import { KritzelSelectionTool } from "@kritzel/engine";
-import { KritzelEraserTool } from "@kritzel/engine";
-import { KritzelImageTool } from "@kritzel/engine";
-import { KritzelBrushTool } from "@kritzel/engine";
-import { KritzelLineTool } from "@kritzel/engine";
-import { KritzelTextTool } from "@kritzel/engine";
-import { KritzelShapeTool } from "@kritzel/engine";
-import { ContextMenuItem } from "@kritzel/engine";
+} from "@kritzel/core";
+import { KritzelToolbarItem } from "@kritzel/core";
+import { KritzelToolDefinition } from "@kritzel/core";
+import { ShapeType } from "@kritzel/core";
+import { KritzelAlignment } from "@kritzel/core";
+import { KritzelBaseObject, KritzelGroup } from "@kritzel/core";
+import { KritzelSelectionTool } from "@kritzel/core";
+import { KritzelEraserTool } from "@kritzel/core";
+import { KritzelImageTool } from "@kritzel/core";
+import { KritzelBrushTool } from "@kritzel/core";
+import { KritzelLineTool } from "@kritzel/core";
+import { KritzelTextTool } from "@kritzel/core";
+import { KritzelShapeTool } from "@kritzel/core";
+import { ContextMenuItem } from "@kritzel/core";
 import {
   KritzelObjectConfig,
   KritzelObjectTitlebarActionEvent,
   KritzelObjectTitlebarConfig,
   KritzelObjectTitlebarMenuState,
-} from "@kritzel/engine";
-import { DEFAULT_BRUSH_CONFIG } from "@kritzel/engine";
-import { DEFAULT_LINE_TOOL_CONFIG } from "@kritzel/engine";
-import { DEFAULT_TEXT_CONFIG } from "@kritzel/engine";
-import { DEFAULT_SHAPE_CONFIG } from "@kritzel/engine";
-import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from "@kritzel/engine";
-import { KritzelEngineState } from "@kritzel/engine";
-import { KritzelSettingsConfig } from "@kritzel/engine";
-import { KritzelDebugInfo } from "@kritzel/engine";
-import { IKritzelMenuItem } from "@kritzel/engine";
-import { KritzelWorkspace } from "@kritzel/engine";
-import { KritzelKeyboardHelper } from "@kritzel/engine";
-import { KritzelDevicesHelper } from "@kritzel/engine";
-import { KritzelSyncConfig, hasRemoteSyncProvider } from "@kritzel/engine";
-import { KritzelAssetStorageConfig } from "@kritzel/engine";
-import { KritzelBaseTool } from "@kritzel/engine";
+} from "@kritzel/core";
+import { DEFAULT_BRUSH_CONFIG } from "@kritzel/core";
+import { DEFAULT_LINE_TOOL_CONFIG } from "@kritzel/core";
+import { DEFAULT_TEXT_CONFIG } from "@kritzel/core";
+import { DEFAULT_SHAPE_CONFIG } from "@kritzel/core";
+import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from "@kritzel/core";
+import { KritzelEngineState } from "@kritzel/core";
+import { KritzelSettingsConfig } from "@kritzel/core";
+import { KritzelDebugInfo } from "@kritzel/core";
+import { IKritzelMenuItem } from "@kritzel/core";
+import { KritzelWorkspace } from "@kritzel/core";
+import { KritzelKeyboardHelper } from "@kritzel/core";
+import { KritzelDevicesHelper } from "@kritzel/core";
+import { KritzelSyncConfig, hasRemoteSyncProvider } from "@kritzel/core";
+import { KritzelAssetStorageConfig } from "@kritzel/core";
+import { KritzelBaseTool } from "@kritzel/core";
 import {
   KritzelBrushToolConfig,
   KritzelLineToolConfig,
   KritzelShapeToolConfig,
   KritzelTextToolConfig,
-} from "@kritzel/engine";
-import { ActiveWorkspaceChangeEvent } from "@kritzel/engine";
-import { DEFAULT_ASSET_STORAGE_CONFIG } from "@kritzel/engine";
-import { EditorIsReadyEvent } from "@kritzel/engine";
-import { KritzelUndoState } from "@kritzel/engine";
-import { DEFAULT_SYNC_CONFIG } from "@kritzel/engine";
-import { ThemeName, KritzelTheme } from "@kritzel/engine";
+} from "@kritzel/core";
+import { ActiveWorkspaceChangeEvent } from "@kritzel/core";
+import { DEFAULT_ASSET_STORAGE_CONFIG } from "@kritzel/core";
+import { EditorIsReadyEvent } from "@kritzel/core";
+import { KritzelUndoState } from "@kritzel/core";
+import { DEFAULT_SYNC_CONFIG } from "@kritzel/core";
+import { ThemeName, KritzelTheme } from "@kritzel/core";
 import {
   KritzelLocale,
   KritzelTermKey,
   KritzelTermVars,
   LocaleCode,
-} from "@kritzel/engine";
-import { ThemeHelper } from "@kritzel/engine";
-import { lightTheme } from "@kritzel/engine";
-import { darkTheme } from "@kritzel/engine";
-import { KritzelSelectionGroup } from "@kritzel/engine";
-import { KritzelSelectionBox } from "@kritzel/engine";
-import { KritzelShortcut } from "@kritzel/engine";
-import { KritzelViewportState } from "@kritzel/engine";
+} from "@kritzel/core";
+import { ThemeHelper } from "@kritzel/core";
+import { lightTheme } from "@kritzel/core";
+import { darkTheme } from "@kritzel/core";
+import { KritzelSelectionGroup } from "@kritzel/core";
+import { KritzelSelectionBox } from "@kritzel/core";
+import { KritzelShortcut } from "@kritzel/core";
+import { KritzelViewportState } from "@kritzel/core";
 import {
   ObjectsAddedEvent,
   ObjectsRemovedEvent,
   ObjectsUpdatedEvent,
-} from "@kritzel/engine";
-import { IKritzelUser } from "@kritzel/engine";
-import { IKritzelIsPublicChangeEvent } from "@kritzel/engine";
-import { KritzelLoginConfig as KritzelLoginConfig } from "@kritzel/engine";
-import { LoginEvent } from "@kritzel/engine";
-import { KritzelNotification } from "@kritzel/engine";
-import { ObjectHelper } from "@kritzel/engine";
-import { KritzelFontMap } from "@kritzel/engine";
-import { KritzelFontRegistry } from "@kritzel/engine";
-import { resolveTextToolAvailableFonts } from "@kritzel/engine";
-import { KritzelContextMenuState } from "@kritzel/engine";
-import { KritzelObjectExportFormat } from "@kritzel/engine";
-import { KritzelSvgIconMap } from "@kritzel/engine";
+} from "@kritzel/core";
+import { IKritzelUser } from "@kritzel/core";
+import { IKritzelIsPublicChangeEvent } from "@kritzel/core";
+import { KritzelLoginConfig as KritzelLoginConfig } from "@kritzel/core";
+import { LoginEvent } from "@kritzel/core";
+import { KritzelNotification } from "@kritzel/core";
+import { ObjectHelper } from "@kritzel/core";
+import { KritzelFontMap } from "@kritzel/core";
+import { KritzelFontRegistry } from "@kritzel/core";
+import { resolveTextToolAvailableFonts } from "@kritzel/core";
+import { KritzelContextMenuState } from "@kritzel/core";
+import { KritzelObjectExportFormat } from "@kritzel/core";
+import { KritzelSvgIconMap } from "@kritzel/core";
 import { KritzelChatBoxMode } from "../kritzel-chat-box/kritzel-chat-box";
 
 @Component({

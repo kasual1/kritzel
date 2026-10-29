@@ -1,5 +1,5 @@
 ﻿import { Component, Event, EventEmitter, h, Host, Prop } from '@stencil/core';
-import { KritzelTermKey } from '@kritzel/engine';
+import { KritzelTermKey } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-zoom-panel',

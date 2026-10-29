@@ -1,17 +1,17 @@
 import { Component, Host, Prop, h, Event, EventEmitter, State, Watch } from '@stencil/core';
-import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '@kritzel/engine';
-import { KritzelToolConfigHelper } from '@kritzel/engine';
-import { KritzelTextTool } from '@kritzel/engine';
+import { ConfigurableTool, ToolConfigDefinition, ToolDisplayValues } from '@kritzel/core';
+import { KritzelToolConfigHelper } from '@kritzel/core';
+import { KritzelTextTool } from '@kritzel/core';
 import { ShapeFillType } from '../kritzel-shape-fill/kritzel-shape-fill';
-import { LineArrowConfig } from '@kritzel/engine';
-import { KritzelColorHelper } from '@kritzel/engine';
-import { ThemeAwareColor } from '@kritzel/engine';
-import { ThemeName } from '@kritzel/engine';
-import { KritzelTermKey } from '@kritzel/engine';
-import { KritzelFontRegistration } from '@kritzel/engine';
+import { LineArrowConfig } from '@kritzel/core';
+import { KritzelColorHelper } from '@kritzel/core';
+import { ThemeAwareColor } from '@kritzel/core';
+import { ThemeName } from '@kritzel/core';
+import { KritzelTermKey } from '@kritzel/core';
+import { KritzelFontRegistration } from '@kritzel/core';
 import { FontOption } from '../kritzel-font-family/kritzel-font-family';
-import { resolveTextToolAvailableFonts } from '@kritzel/engine';
-import { KritzelFontRegistry } from '@kritzel/engine';
+import { resolveTextToolAvailableFonts } from '@kritzel/core';
+import { KritzelFontRegistry } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-tool-config',

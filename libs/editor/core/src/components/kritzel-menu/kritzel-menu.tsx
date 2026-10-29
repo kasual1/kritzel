@@ -1,5 +1,5 @@
 ﻿import { Component, Host, Prop, h, State, Event, EventEmitter, Element, Method } from '@stencil/core';
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/engine';
+import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-menu',

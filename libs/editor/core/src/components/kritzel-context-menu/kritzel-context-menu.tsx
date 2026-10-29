@@ -1,6 +1,6 @@
 import { Component, Host, h, Prop, Event, EventEmitter, State, Watch, Listen, Element } from '@stencil/core';
-import { ContextMenuItem } from '@kritzel/engine';
-import { KritzelBaseObject } from '@kritzel/engine';
+import { ContextMenuItem } from '@kritzel/core';
+import { KritzelBaseObject } from '@kritzel/core';
 
 interface ProcessedMenuItem {
   item: ContextMenuItem;

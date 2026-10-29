@@ -1,17 +1,17 @@
 import { Component, h, Prop, State, Element, Host, Listen, Event, EventEmitter, Method, Watch } from '@stencil/core';
-import { KritzelBrushTool } from '@kritzel/engine';
-import { KritzelLineTool } from '@kritzel/engine';
-import { KritzelShapeTool } from '@kritzel/engine';
-import { KritzelTextTool } from '@kritzel/engine';
-import { KritzelToolbarItem, KritzelToolbarSubOption } from '@kritzel/engine';
-import { KritzelBaseTool } from '@kritzel/engine';
-import { KritzelDevicesHelper } from '@kritzel/engine';
-import { KritzelUndoState } from '@kritzel/engine';
-import { ToolDisplayValues } from '@kritzel/engine';
-import { KritzelToolConfigHelper } from '@kritzel/engine';
-import { KritzelColorHelper } from '@kritzel/engine';
-import { ThemeName } from '@kritzel/engine';
-import { KritzelTermKey } from '@kritzel/engine';
+import { KritzelBrushTool } from '@kritzel/core';
+import { KritzelLineTool } from '@kritzel/core';
+import { KritzelShapeTool } from '@kritzel/core';
+import { KritzelTextTool } from '@kritzel/core';
+import { KritzelToolbarItem, KritzelToolbarSubOption } from '@kritzel/core';
+import { KritzelBaseTool } from '@kritzel/core';
+import { KritzelDevicesHelper } from '@kritzel/core';
+import { KritzelUndoState } from '@kritzel/core';
+import { ToolDisplayValues } from '@kritzel/core';
+import { KritzelToolConfigHelper } from '@kritzel/core';
+import { KritzelColorHelper } from '@kritzel/core';
+import { ThemeName } from '@kritzel/core';
+import { KritzelTermKey } from '@kritzel/core';
 
 type ToolConfig = Record<string, any>;
 

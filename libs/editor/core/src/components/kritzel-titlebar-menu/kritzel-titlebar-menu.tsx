@@ -1,5 +1,5 @@
 import { Component, Event, EventEmitter, Host, Prop, h } from '@stencil/core';
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, KritzelTitlebarMenuItem } from '@kritzel/engine';
+import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, KritzelTitlebarMenuItem } from '@kritzel/core';
 
 /**
  * The menu opened from a titlebar `menu` element: a compact `kritzel-menu` styled like the

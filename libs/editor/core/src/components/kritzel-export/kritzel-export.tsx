@@ -1,7 +1,7 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Prop } from '@stencil/core';
 import { DropdownOption } from '../kritzel-dropdown/kritzel-dropdown';
 import { KritzelPillTab } from '../kritzel-pill-tabs/kritzel-pill-tabs';
-import { KritzelTermKey } from '@kritzel/engine';
+import { KritzelTermKey } from '@kritzel/core';
 
 type ExportTab = 'viewport' | 'workspace';
 type ViewportExportFormat = 'png' | 'svg';
