@@ -87,6 +87,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          npm run release -w libs/core
           npm run release -w libs/engine/core
           npm run release -w libs/engine/angular
           npm run release -w libs/engine/react

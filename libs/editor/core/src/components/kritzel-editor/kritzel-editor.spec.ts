@@ -1,10 +1,10 @@
 ﻿import { KritzelEditor } from './kritzel-editor';
-import { KritzelBaseObject } from '@kritzel/engine';
-import { KritzelWorkspace } from '@kritzel/engine';
-import { KritzelFontRegistry } from '@kritzel/engine';
-import { KritzelIconRegistry } from '@kritzel/engine';
-import { KritzelKeyboardHelper } from '@kritzel/engine';
-import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@kritzel/engine';
+import { KritzelBaseObject } from '@kritzel/core';
+import { KritzelWorkspace } from '@kritzel/core';
+import { KritzelFontRegistry } from '@kritzel/core';
+import { KritzelIconRegistry } from '@kritzel/core';
+import { KritzelKeyboardHelper } from '@kritzel/core';
+import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@kritzel/core';
 
 // Simple mock for decorators
 jest.mock('@stencil/core', () => ({

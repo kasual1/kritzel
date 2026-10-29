@@ -9,7 +9,7 @@ const DEFAULT_WIDTH = 640;
 const DEFAULT_HEIGHT = 360;
 const DEFAULT_OUT_DIR = path.join(__dirname, 'recordings');
 const PROFILE_DIR = path.join(__dirname, '.profile');
-const ICON_REGISTRY = path.join(__dirname, '../../libs/engine/core/src/classes/registries/icon-registry.class.ts');
+const ICON_REGISTRY = path.join(__dirname, '../../libs/core/src/classes/registries/icon-registry.class.ts');
 // Same hotspot KritzelCursorHelper.getCursor() uses for the default cursor.
 const CURSOR_HOTSPOT = { x: 4, y: 4 };
 

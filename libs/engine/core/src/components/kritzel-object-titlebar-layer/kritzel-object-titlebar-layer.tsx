@@ -6,8 +6,8 @@ import {
   KRITZEL_TITLEBAR_TITLE_INPUT_ATTRIBUTE,
   KritzelResolvedTitlebar,
   KritzelResolvedTitlebarElement,
-} from '../../classes/managers/object-titlebar.manager';
-import { KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
+  KritzelTitlebarSection,
+} from '@kritzel/core';
 
 /** Handles a click on a titlebar button or menu button. */
 export type KritzelTitlebarElementClickHandler = (ownerId: string, section: KritzelTitlebarSection, elementId: string, event: MouseEvent, anchor: HTMLElement) => void;

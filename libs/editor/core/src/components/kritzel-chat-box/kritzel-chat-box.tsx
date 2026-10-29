@@ -1,5 +1,5 @@
 import { Component, Element, Event, EventEmitter, h, Host, Listen, Prop, State, Watch } from '@stencil/core';
-import { KritzelTermKey } from '@kritzel/engine';
+import { KritzelTermKey } from '@kritzel/core';
 
 export type KritzelChatBoxMode = 'collapsed' | 'expanded';
 

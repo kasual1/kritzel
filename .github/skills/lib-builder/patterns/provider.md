@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/engine/core/src/classes/providers/`
+`libs/core/src/classes/providers/`
 
 Organized into:
 - `assets/` — Asset storage/retrieval (images, files)

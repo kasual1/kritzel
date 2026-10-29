@@ -1,5 +1,5 @@
 ﻿import { Component, h, Prop, Host, State, Watch } from '@stencil/core';
-import { IKritzelUser } from '@kritzel/engine';
+import { IKritzelUser } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-avatar',

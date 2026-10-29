@@ -9,19 +9,18 @@ class MockKritzelPath { }
 class MockKritzelLine { }
 class MockKritzelShape { }
 
-jest.mock('../../classes/objects/path.class', () => ({
+jest.mock('@kritzel/core/src/classes/objects/path.class', () => ({
   KritzelPath: MockKritzelPath,
 }));
-jest.mock('../../classes/objects/line.class', () => ({
+jest.mock('@kritzel/core/src/classes/objects/line.class', () => ({
   KritzelLine: MockKritzelLine,
 }));
-jest.mock('../../classes/objects/shape.class', () => ({
+jest.mock('@kritzel/core/src/classes/objects/shape.class', () => ({
   KritzelShape: MockKritzelShape,
 }));
 
 import { KritzelAwarenessCursors } from './kritzel-awareness-cursors';
-import { KritzelCore } from '../../classes/core/core.class';
-import { KritzelViewportOverlayHelper } from '../../helpers/viewport-overlay.helper';
+import { KritzelCore, KritzelViewportOverlayHelper } from '@kritzel/core';
 
 describe('KritzelAwarenessCursors', () => {
   let component: KritzelAwarenessCursors;

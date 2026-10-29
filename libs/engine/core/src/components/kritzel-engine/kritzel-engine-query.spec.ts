@@ -1,6 +1,4 @@
-import { KritzelBaseObject } from '../../classes/objects/base-object.class';
-import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
-import { KritzelSelectionBox } from '../../classes/objects/selection-box.class';
+import { KritzelBaseObject, KritzelSelectionGroup, KritzelSelectionBox } from '@kritzel/core';
 
 /**
  * Unit tests for KritzelEngine.findObjects().

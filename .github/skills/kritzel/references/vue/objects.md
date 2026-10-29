@@ -237,7 +237,7 @@ const objectConfig: KritzelObjectConfig = {
 - Groups and multi-selections can be rotated / resized only when every selected object and everything nested inside groups allows it; the function is called for each of them. `hasTitlebar` is only asked about the top-level object or group itself.
 - A forbidden handle is hidden and dragging it does nothing. Line endpoint handles are not covered by `isResizable`. Programmatic API calls (`updateObject`, alignment, …) are not restricted.
 - Functions run **synchronously while rendering and handling input**: keep them pure and cheap. A non-boolean result, a throw or a returned promise resolves to the option's default; a throw or promise warns once per option (re-armed when a new config object is passed).
-- Check types with `object.__class__` (e.g. `'KritzelGroup'`), not `instanceof`, which fails when the app bundles more than one copy of the engine. To inspect a group's children, read `childIds` rather than the `children` getter.
+- Check types with `instanceof` against the classes your Kritzel package exports, or compare `object.__class__` (e.g. `'KritzelGroup'`). To inspect a group's children, read `childIds` rather than the `children` getter.
 - The config is read live, belongs to this editor instance and is neither persisted nor synced. Functions are re-evaluated on every render; when they depend on app state, pass a **new** config object after that state changes (derive it with `computed()`) so the canvas rerenders.
 
 ## Names and titlebars

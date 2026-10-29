@@ -5,10 +5,10 @@
 Use this pattern when maintaining the optional titlebar rendered above objects (`objectTitlebar` prop for content and appearance, `objectConfig.hasTitlebar` for which objects get a bar, `name` object field, `objectTitlebarAction` and `objectTitlebarMenuStateChange` events, titlebar menus). The `objectConfig` prop itself and its resolution are covered by [object-config.md](object-config.md).
 
 Primary touchpoints:
-- `libs/engine/core/src/interfaces/object-titlebar.interface.ts` — public config, element, menu item, context, event and menu state types
-- `libs/engine/core/src/classes/managers/object-titlebar.manager.ts` — owner/active resolution (owners via `core.objectConfigManager.hasTitlebar`), element evaluation, button invocation, menu state, `KRITZEL_DEFAULT_OBJECT_TITLEBAR`
-- `libs/engine/core/src/classes/managers/object-config.manager.ts` — resolves `objectConfig.hasTitlebar` per object (see object-config.md)
-- `libs/engine/core/src/helpers/object-titlebar.helper.ts` — pure geometry (anchor, transform, culling padding, pixel parsing)
+- `libs/core/src/interfaces/object-titlebar.interface.ts` — public config, element, menu item, context, event and menu state types
+- `libs/core/src/classes/managers/object-titlebar.manager.ts` — owner/active resolution (owners via `core.objectConfigManager.hasTitlebar`), element evaluation, button invocation, menu state, `KRITZEL_DEFAULT_OBJECT_TITLEBAR`
+- `libs/core/src/classes/managers/object-config.manager.ts` — resolves `objectConfig.hasTitlebar` per object (see object-config.md)
+- `libs/core/src/helpers/object-titlebar.helper.ts` — pure geometry (anchor, transform, culling padding, pixel parsing)
 - `libs/engine/core/src/components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer.tsx` + `.css` — internal `<kritzel-object-titlebar-layer>` component (`shadow: false`, so parts and `elementsFromPoint` reach the bars; listed in `INTERNAL_COMPONENTS` of the engine and editor Stencil configs); the engine passes it the resolved titlebars every render and an `elementClick` handler
 - `libs/engine/core/src/components/kritzel-engine/kritzel-engine.tsx` — prop, events, `closeObjectTitlebarMenu` / `selectObjectTitlebarMenuItem` methods, render query, pointer guards, rotation handle offset, screenshot filter
 - `classes/tools/selection-tool.class.ts`, `classes/handlers/selection.handler.ts`, `classes/handlers/context-menu.handler.ts`, `classes/tools/base-tool.class.ts` (+ text/shape tools), `classes/managers/cursor.manager.ts`
@@ -118,7 +118,7 @@ Two DOM markers drive everything (constants exported from the manager):
 - Keep the manager framework-agnostic and free of DOM writes; the layer is a functional component fed by resolved data
 - New object fields shared by all types go on `KritzelBaseObject` and, if settable at construction, into each object config interface and constructor (as `name` is); `serialize()` / `deserialize()` pick them up automatically
 - Never add `protected` or `private` members to `KritzelBaseObject` (or other public object classes): Vue's `ref()` unwrapping drops non-public members, so objects kept in a `ref` would no longer type-check as `KritzelBaseObject`. Put shared construction logic in a static helper instead
-- New public symbols must be exported from the engine barrel and all three wrapper `index.ts` / `public-api.ts` files
+- New public symbols must be exported from the core barrel (`libs/core/src/index.ts`) and all three wrapper `index.ts` / `public-api.ts` files
 
 ## Testing Matrix
 

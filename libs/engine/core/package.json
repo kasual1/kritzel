@@ -62,19 +62,10 @@
     "release": "npm publish"
   },
   "dependencies": {
-    "@hocuspocus/provider": "^3.4.0",
+    "@kritzel/core": "^0.5.10",
     "@types/lodash": "^4.17.20",
-    "browser-image-compression": "^2.0.2",
     "html-to-image": "^1.11.11",
     "lodash": "^4.17.21",
-    "perfect-freehand": "^1.2.2",
-    "prosemirror-commands": "^1.7.1",
-    "prosemirror-keymap": "^1.2.3",
-    "prosemirror-model": "^1.25.4",
-    "prosemirror-schema-basic": "^1.2.4",
-    "prosemirror-schema-list": "^1.5.1",
-    "prosemirror-state": "^1.4.4",
-    "prosemirror-view": "^1.41.3",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {

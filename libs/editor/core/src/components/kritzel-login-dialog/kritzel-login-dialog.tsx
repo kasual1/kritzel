@@ -1,6 +1,6 @@
 ﻿import { Component, Host, h, State, Event, EventEmitter, Method, Element, Prop } from '@stencil/core';
-import { KritzelLoginProvider } from '@kritzel/engine';
-import { LoginEvent } from '@kritzel/engine';
+import { KritzelLoginProvider } from '@kritzel/core';
+import { LoginEvent } from '@kritzel/core';
 
 /**
  * Login dialog component for displaying authentication provider buttons.

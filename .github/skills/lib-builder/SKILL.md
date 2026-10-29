@@ -1,6 +1,6 @@
 ---
 name: lib-builder
-description: "Add features, fix bugs, or edit existing code in the Kritzel engine core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/engine/core/src/."
+description: "Add features, fix bugs, or edit existing code in the Kritzel engine core library. Covers tools, handlers, objects, components, themes, helpers, providers, and managers. Use when working inside libs/core/src/ or libs/engine/core/src/."
 argument-hint: "Describe the feature, bug fix, or change to make in the stencil core"
 ---
 
@@ -8,13 +8,15 @@ argument-hint: "Describe the feature, bug fix, or change to make in the stencil 
 
 ## When to Use
 
-- Adding or editing a tool, handler, manager, object, component, provider, or helper in `libs/engine/core/src/`
+- Adding or editing a tool, handler, manager, object, provider, or helper in `libs/core/src/`, or a component in `libs/engine/core/src/components/`
 - Fixing a bug in the core rendering engine or state management
 - Adding or modifying CSS variables / theming
 - Integrating a new sync or asset provider
 - Extending or wiring the localization system (`KritzelLocalizationManager`, `engine.t()`, resolved UI term props)
 
 ## Architecture Overview
+
+Logic lives in `libs/core/src/` (`@kritzel/core`, plain TypeScript, no Stencil). Stencil components live in `libs/engine/core/src/components/` and import logic from `'@kritzel/core'`, never by relative path. Locations below are relative to `libs/core/src/`, except components.
 
 | Layer | Location | Responsibility |
 |-------|----------|----------------|
@@ -88,7 +90,7 @@ Select the relevant pattern based on what you're working on:
 
 To expose a class, function, interface, or constant publicly, it must be exported in **four** places:
 
-1. **`libs/engine/core/src/index.ts`** — the engine core barrel file
+1. **`libs/core/src/index.ts`** — the `@kritzel/core` barrel file, which `@kritzel/engine` re-exports
 2. **`libs/editor/angular/projects/lib/src/public-api.ts`** — re-exports from `@kritzel/engine`
 3. **`libs/editor/react/lib/index.ts`** — re-exports from `@kritzel/engine`
 4. **`libs/editor/vue/lib/index.ts`** — re-exports from `@kritzel/engine`
@@ -100,7 +102,7 @@ All three framework wrappers explicitly re-export symbols from `@kritzel/engine`
 Example (adding `KritzelFoo`):
 
 ```typescript
-// libs/engine/core/src/index.ts
+// libs/core/src/index.ts
 export * from './classes/objects/foo.class';
 
 // libs/editor/angular/projects/lib/src/public-api.ts

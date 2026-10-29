@@ -1,6 +1,6 @@
 ﻿import { Component, Host, h, Event, EventEmitter, Prop } from '@stencil/core';
-import { KritzelUndoState } from '@kritzel/engine';
-import { KritzelTermKey } from '@kritzel/engine';
+import { KritzelUndoState } from '@kritzel/core';
+import { KritzelTermKey } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-utility-panel',

@@ -1,53 +1,59 @@
 import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter, Watch } from '@stencil/core';
-import { KritzelViewport } from '../../classes/core/viewport.class';
-import { KritzelPath } from '../../classes/objects/path.class';
-import { KritzelLine } from '../../classes/objects/line.class';
-import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
-import { KritzelTextTool } from '../../classes/tools/text-tool.class';
-import { KritzelShapeTool } from '../../classes/tools/shape-tool.class';
-import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
-import { KritzelLineTool } from '../../classes/tools/line-tool.class';
-import { KritzelImageTool } from '../../classes/tools/image-tool.class';
-import { KritzelImage } from '../../classes/objects/image.class';
-import { KritzelText } from '../../classes/objects/text.class';
-import { KritzelShape } from '../../classes/objects/shape.class';
-import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
-import { KritzelGroup } from '../../classes/objects/group.class';
-import { KritzelSelectionBox } from '../../classes/objects/selection-box.class';
-import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
-import { KritzelBaseTool } from '../../classes/tools/base-tool.class';
-import { KritzelToolType } from '../../interfaces/tool-type.interface';
-import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
-import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
-import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../interfaces/toolbar-item.interface';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { KritzelContextMenuHandler } from '../../classes/handlers/context-menu.handler';
-import { KritzelBaseObject } from '../../classes/objects/base-object.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelClassHelper } from '../../helpers/class.helper';
-import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
-import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../constants/engine.constants';
-import { KritzelDynamicObject } from '../../classes/objects/dynamic-object.class';
-import { KritzelIframeObject } from '../../classes/objects/iframe.class';
-import { KritzelWorkspace, WORKSPACE_EXPORT_VERSION } from '../../classes/core/workspace.class';
-import { KritzelReviver } from '../../classes/core/reviver.class';
-import { KritzelEngineState } from '../../interfaces/engine-state.interface';
-import { KritzelDebugInfo } from '../../interfaces/debug-info.interface';
-import { KritzelSettingsConfig } from '../../interfaces/settings.interface';
-import { KritzelCore } from '../../classes/core/core.class';
-import { KritzelDevicesHelper } from '../../helpers/devices.helper';
-import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
-import { KritzelAssetStorageConfig } from '../../interfaces/asset-storage-config.interface';
-import { throttle } from 'lodash';
-import { KritzelColorHelper } from '../../helpers/color.helper';
-import { toPng, toSvg } from 'html-to-image';
-import { KritzelUndoState } from '../../interfaces/undo-state.interface';
-import { KritzelTheme, ThemeName } from '../../interfaces/theme.interface';
-import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../../interfaces/localization.interface';
-import { KritzelShortcut } from '../../interfaces/shortcut.interface';
-import { KritzelAlignment } from '../../enums/alignment.enum';
-import { KritzelViewportState } from '../../interfaces/viewport-state.interface';
 import {
+  KritzelViewport,
+  KritzelPath,
+  KritzelLine,
+  KritzelSelectionTool,
+  KritzelTextTool,
+  KritzelShapeTool,
+  KritzelBrushTool,
+  KritzelLineTool,
+  KritzelImageTool,
+  KritzelImage,
+  KritzelText,
+  KritzelShape,
+  KritzelSelectionGroup,
+  KritzelGroup,
+  KritzelSelectionBox,
+  KritzelKeyHandler,
+  KritzelBaseTool,
+  KritzelToolType,
+  ContextMenuItem,
+  KritzelEraserTool,
+  KritzelBrushToolConfig,
+  KritzelLineToolConfig,
+  KritzelShapeToolConfig,
+  KritzelTextToolConfig,
+  KritzelKeyboardHelper,
+  KritzelContextMenuHandler,
+  KritzelBaseObject,
+  KritzelEventHelper,
+  KritzelZOrderHelper,
+  ABSOLUTE_SCALE_MAX,
+  ABSOLUTE_SCALE_MIN,
+  KritzelDynamicObject,
+  KritzelIframeObject,
+  KritzelWorkspace,
+  WORKSPACE_EXPORT_VERSION,
+  KritzelReviver,
+  KritzelEngineState,
+  KritzelDebugInfo,
+  KritzelSettingsConfig,
+  KritzelCore,
+  KritzelDevicesHelper,
+  KritzelSyncConfig,
+  KritzelAssetStorageConfig,
+  KritzelColorHelper,
+  KritzelUndoState,
+  KritzelTheme,
+  ThemeName,
+  KritzelLocale,
+  KritzelTermKey,
+  KritzelTermVars,
+  LocaleCode,
+  KritzelShortcut,
+  KritzelAlignment,
+  KritzelViewportState,
   KritzelAgenticCursor,
   KritzelAgenticCursorDetachedEvent,
   KritzelAgenticCursorMoveOptions,
@@ -55,20 +61,32 @@ import {
   KritzelAgenticCursorOptions,
   KritzelAgenticCursorPatch,
   KritzelAgenticCursorTarget,
-} from '../../interfaces/agentic-cursor.interface';
-import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelWheelHelper } from '../../helpers/wheel.helper';
-import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../interfaces/object-change-event.interface';
-import { IKritzelUser } from '../../interfaces/user.interface';
-import { KritzelNotification } from '../../interfaces/notification.interface';
-import { resolveTextToolAvailableFonts } from '../../constants/text-tool-fonts.constants';
-import { KritzelContextMenuState } from '../../interfaces/context-menu-state.interface';
-import { KritzelExportable, KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
-import { KritzelSvgExportHelper } from '../../helpers/svg-export.helper';
-import { KritzelToolDefinition } from '../../interfaces/tool.interface';
-import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
-import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
-import { KritzelResolvedTitlebar, KritzelTitlebarMetrics } from '../../classes/managers/object-titlebar.manager';
+  ObjectHelper,
+  KritzelWheelHelper,
+  ObjectsAddedEvent,
+  ObjectsRemovedEvent,
+  ObjectsUpdatedEvent,
+  ObjectsInViewportChangeEvent,
+  IKritzelUser,
+  KritzelNotification,
+  resolveTextToolAvailableFonts,
+  KritzelContextMenuState,
+  KritzelExportable,
+  KritzelObjectExportContext,
+  KritzelObjectExportFormat,
+  KritzelSvgExportHelper,
+  KritzelToolDefinition,
+  KritzelObjectTitlebarActionEvent,
+  KritzelObjectTitlebarConfig,
+  KritzelObjectTitlebarMenuState,
+  KritzelTitlebarSection,
+  KritzelObjectConfig,
+  KritzelEngineHost,
+  KritzelResolvedTitlebar,
+  KritzelTitlebarMetrics,
+} from '@kritzel/core';
+import throttle from 'lodash/throttle';
+import { toPng, toSvg } from 'html-to-image';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
 
@@ -87,7 +105,7 @@ const TITLEBAR_CONTROL_KEYS = new Set(['Enter', ' ', 'Spacebar', 'Tab', 'ArrowLe
   styleUrl: 'kritzel-engine.css',
   shadow: true,
 })
-export class KritzelEngine {
+export class KritzelEngine implements KritzelEngineHost {
   @Element() host!: HTMLElement;
 
   private activeImportFileInput?: HTMLInputElement;
@@ -1155,13 +1173,13 @@ export class KritzelEngine {
     object.zIndex = this.core.store.currentZIndex;
     object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
-    if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+    if (object instanceof KritzelImage) {
       await object.prepareForInsert();
     }
 
     // Handle KritzelText: recreate the editor now that _core is available
     // The editor's dispatchTransaction callback needs _core for persisting changes
-    if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+    if (object instanceof KritzelText) {
       const pendingContent = object.content;
       object.editor = object.createEditor();
       if (pendingContent) {
@@ -1170,7 +1188,7 @@ export class KritzelEngine {
     }
 
     // Handle KritzelGroup: flush pending children (recursively for nested groups) into the store
-    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') && object._pendingChildren.length > 0) {
+    if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
       // Build a map of old ID → new ID across all nesting levels so we can
       // remap anchor references regardless of how deeply nested the line is.
       const idRemapping = new Map<string, string>();
@@ -1201,7 +1219,7 @@ export class KritzelEngine {
 
           // Recurse into nested groups before inserting so grandchildren get
           // proper IDs and `childIds` references before the parent is added.
-          if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+          if (child instanceof KritzelGroup) {
             flushGroup(child);
           }
         });
@@ -1211,7 +1229,7 @@ export class KritzelEngine {
 
       // Remap anchor references in lines across all flushed descendants
       allFlushedChildren.forEach(child => {
-        if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+        if (child instanceof KritzelLine) {
           if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
             child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
           }
@@ -1266,7 +1284,7 @@ export class KritzelEngine {
 
     for (const object of objects) {
       object._core = this.core;
-      if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+      if (object instanceof KritzelImage) {
         await object.prepareForInsert();
       }
     }
@@ -1279,7 +1297,7 @@ export class KritzelEngine {
         object.zIndex = this.core.store.currentZIndex;
         object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
-        if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+        if (object instanceof KritzelText) {
           const pendingContent = object.content;
           object.editor = object.createEditor();
           if (pendingContent) {
@@ -1287,7 +1305,7 @@ export class KritzelEngine {
           }
         }
 
-        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') && object._pendingChildren.length > 0) {
+        if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
           const idRemapping = new Map<string, string>();
           const allFlushedChildren: KritzelBaseObject<any>[] = [];
 
@@ -1313,7 +1331,7 @@ export class KritzelEngine {
               group.childIds.push(child.id);
               allFlushedChildren.push(child);
 
-              if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+              if (child instanceof KritzelGroup) {
                 flushGroup(child);
               }
             });
@@ -1322,7 +1340,7 @@ export class KritzelEngine {
           flushGroup(object);
 
           allFlushedChildren.forEach(child => {
-            if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+            if (child instanceof KritzelLine) {
               if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
                 child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
               }
@@ -2785,7 +2803,7 @@ export class KritzelEngine {
     // Unmount all remaining dynamic objects
     if (this.core.store.allObjects) {
       this.core.store.allObjects.forEach(object => {
-        if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
+        if (object instanceof KritzelDynamicObject) {
           (object as any).unmount();
         }
       });
@@ -3409,7 +3427,7 @@ export class KritzelEngine {
         return 'none';
       }
 
-      if (KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup')) {
+      if (object instanceof KritzelSelectionGroup) {
         return 'none';
       }
 
@@ -3421,7 +3439,7 @@ export class KritzelEngine {
         return 'none';
       }
 
-      if (!KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup')) {
+      if (!(object instanceof KritzelSelectionGroup)) {
         return 'auto';
       }
 
@@ -3533,7 +3551,7 @@ export class KritzelEngine {
                   pointerEvents: getObjectWrapperPointerEvents(object),
                 }}
               >
-                {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
+                {object instanceof KritzelPath && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -3559,7 +3577,7 @@ export class KritzelEngine {
                   </svg>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                {object instanceof KritzelLine && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -3633,7 +3651,7 @@ export class KritzelEngine {
                   </svg>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState === 'ready' && (
+                {object instanceof KritzelImage && object.loadState === 'ready' && (
                   <img
                     ref={el => el && object.mount(el)}
                     class={this.shouldAnimateImageFirstReveal(object) ? 'kritzel-image-object kritzel-image-object--first-reveal' : 'kritzel-image-object'}
@@ -3664,7 +3682,7 @@ export class KritzelEngine {
                   />
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState !== 'ready' && (
+                {object instanceof KritzelImage && object.loadState !== 'ready' && (
                   <div
                     ref={() => object.ensureLoaded()}
                     style={{
@@ -3702,7 +3720,7 @@ export class KritzelEngine {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject') && (
+                {object instanceof KritzelDynamicObject && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3726,7 +3744,7 @@ export class KritzelEngine {
                   ></div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelIframeObject>(object, 'KritzelIframeObject') && (
+                {object instanceof KritzelIframeObject && (
                   <div
                     style={{
                       position: 'absolute',
@@ -3772,7 +3790,7 @@ export class KritzelEngine {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && !this.core.displaySelectionLineUI(object) && (
+                {object instanceof KritzelSelectionGroup && !this.core.displaySelectionLineUI(object) && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3789,7 +3807,7 @@ export class KritzelEngine {
                   ></div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox') && (
+                {object instanceof KritzelSelectionBox && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3810,7 +3828,7 @@ export class KritzelEngine {
                   ></div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
+                {object instanceof KritzelText && (
                   <div
                     style={{
                       position: 'absolute',
@@ -3845,7 +3863,7 @@ export class KritzelEngine {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') &&
+                {object instanceof KritzelShape &&
                   (() => {
                     const fillResolved = KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme);
                     const strokeResolved = KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
@@ -3933,13 +3951,13 @@ export class KritzelEngine {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isSelected: {object.isSelected ? 'true' : 'false'}</div>
 
-                    {KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject') && (
+                    {object instanceof KritzelDynamicObject && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isInteractive: {object.isInteractive ? 'true' : 'false'}</div>
                       </div>
                     )}
 
-                    {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
+                    {object instanceof KritzelImage && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>assetId: {object.assetId}</div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>mimeType: {object.mimeType}</div>
@@ -3950,7 +3968,7 @@ export class KritzelEngine {
 
                 {(this.core.displaySelectionGroupUI(object) || this.core.displaySelectionLineUI(object)) &&
                   (() => {
-                    const isSelectionGroup = KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup');
+                    const isSelectionGroup = object instanceof KritzelSelectionGroup;
                     const localClientId = this.core.store.objects?.localClientId;
 
                     const awarenessStates = this.core.store.objects?.awareness?.getStates();
@@ -4025,9 +4043,9 @@ export class KritzelEngine {
                             {(() => {
                               const remoteLineObject =
                                 isRemoteSelection &&
-                                KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') &&
+                                object instanceof KritzelSelectionGroup &&
                                 object.objects.length === 1 &&
-                                KritzelClassHelper.isInstanceOf<KritzelLine>(object.objects[0], 'KritzelLine')
+                                object.objects[0] instanceof KritzelLine
                                   ? (object.objects[0] as KritzelLine)
                                   : null;
 
@@ -4245,7 +4263,7 @@ export class KritzelEngine {
                           </g>
                         )}
 
-                        {this.core.displaySelectionLineUI(object) && KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                        {this.core.displaySelectionLineUI(object) && object instanceof KritzelLine && (
                           <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
                             <g class="selection-line-borders">
                               <path

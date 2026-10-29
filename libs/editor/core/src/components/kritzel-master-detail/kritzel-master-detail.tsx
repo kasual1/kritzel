@@ -1,5 +1,5 @@
 import { Component, Element, Event, EventEmitter, Host, h, Prop, State, Watch } from '@stencil/core';
-import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '@kritzel/engine';
+import { IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-master-detail',

@@ -1,6 +1,5 @@
 import { Component, Host, Listen, Prop, State, h } from '@stencil/core';
-import { KritzelMouseButton } from '../../enums/event-button.enum';
-import { KritzelCore } from '../../classes/core/core.class';
+import { KritzelMouseButton, KritzelCore } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-cursor-trail',

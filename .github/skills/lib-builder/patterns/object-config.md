@@ -5,13 +5,13 @@
 Use this pattern when maintaining the `objectConfig` prop (`KritzelObjectConfig`) that configures object behavior in one place for all objects (`hasTitlebar`, `isRotatable`, `isResizable`), or when adding a new option to it.
 
 Primary touchpoints:
-- `libs/engine/core/src/interfaces/object-config.interface.ts` — `KritzelObjectConfig`, each option typed inline as `boolean | ((object: KritzelBaseObject) => boolean)` (no alias, so hovers and generated docs show the signature); the TSDoc here is the public documentation of every option
-- `libs/engine/core/src/classes/managers/object-config.manager.ts` — `KritzelObjectConfigManager`: live config read, per-option resolution, group/selection rules, warn-once
-- `libs/engine/core/src/classes/core/core.class.ts` — creates the manager and exposes it as `core.objectConfigManager`
+- `libs/core/src/interfaces/object-config.interface.ts` — `KritzelObjectConfig`, each option typed inline as `boolean | ((object: KritzelBaseObject) => boolean)` (no alias, so hovers and generated docs show the signature); the TSDoc here is the public documentation of every option
+- `libs/core/src/classes/managers/object-config.manager.ts` — `KritzelObjectConfigManager`: live config read, per-option resolution, group/selection rules, warn-once
+- `libs/core/src/classes/core/core.class.ts` — creates the manager and exposes it as `core.objectConfigManager`
 - `libs/engine/core/src/components/kritzel-engine/kritzel-engine.tsx` — `@Prop() objectConfig`, `@Watch('objectConfig')`, `getSelectionHandleCapabilities` (handle rendering)
 - `libs/editor/core/src/components/kritzel-editor/kritzel-editor.tsx` — `@Prop() objectConfig`, forwarded unchanged to `<kritzel-engine>`
 - Enforcement points: `classes/handlers/rotation.handler.ts`, `classes/handlers/resize.handler.ts`, `classes/managers/object-titlebar.manager.ts` (`getOwners`, see [object-titlebar.md](object-titlebar.md))
-- Public exports: `KritzelObjectConfig` and the manager are exported from `libs/engine/core/src/index.ts` and re-exported by the engine and editor wrappers (`react/lib/index.ts`, `vue/lib/index.ts`, `angular/.../public-api.ts`); `objectConfig` is in the Angular proxy `inputs` and the Vue `components.ts` prop lists of both packages
+- Public exports: `KritzelObjectConfig` and the manager are exported from `libs/core/src/index.ts` and re-exported by the engine and editor wrappers (`react/lib/index.ts`, `vue/lib/index.ts`, `angular/.../public-api.ts`); `objectConfig` is in the Angular proxy `inputs` and the Vue `components.ts` prop lists of both packages
 
 ## Maintainer Mental Model
 
@@ -47,7 +47,7 @@ Every option answers one yes/no question per object. Callers never read `engine.
   - `KritzelSelectionGroup` → every entry of `objects` must pass (the selection group itself is never passed to the app function)
   - any other object must pass `check` itself
   - `KritzelGroup` → additionally every `childIds` entry resolved through `store.objects.findById` must pass, recursively; ids that no longer resolve are skipped
-- Type checks use `KritzelClassHelper.isInstanceOf(object, '<ClassName>')` (compares `__class__`), never `instanceof`, so duplicated engine bundles keep working; children are walked through `childIds`, not the `children` getter
+- Type checks use `instanceof` (e.g. `object instanceof KritzelGroup`); children are walked through `childIds`, not the `children` getter
 - The flag check runs before the app function, so the function is not called for an object whose own flag already forbids it
 
 ## Where Each Option Is Enforced
@@ -81,8 +81,8 @@ Planned follow-ups: `isMovable`, `isDeletable`, `isCopyable`, `isSelectable`, `i
 - Never mutate objects or the store from the manager; it only answers questions
 - Never persist or sync the config, and never copy resolved results onto objects
 - Report failures once per option via `warnOnce`; never throw out of a manager method
-- Use `__class__` checks via `KritzelClassHelper.isInstanceOf` and `childIds` lookups, never `instanceof` or `children`
-- New public types must be exported from the engine barrel and every wrapper (see the lib-builder Public Exports section)
+- Use `instanceof` for type checks and `childIds` lookups, never `children`
+- New public types must be exported from the core barrel (`libs/core/src/index.ts`) and every wrapper (see the lib-builder Public Exports section)
 
 ## Testing Matrix
 

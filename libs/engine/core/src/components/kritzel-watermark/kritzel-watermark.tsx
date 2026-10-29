@@ -1,6 +1,5 @@
 import { Component, Host, Prop, h } from '@stencil/core';
-import { KritzelCore } from '../../classes/core/core.class';
-import { KRITZEL_WEBSITE_URL } from '../../constants/engine.constants';
+import { KritzelCore, KRITZEL_WEBSITE_URL } from '@kritzel/core';
 
 /**
  * "Powered by Kritzel" watermark shown in the bottom-right corner of the engine.

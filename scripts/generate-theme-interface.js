@@ -9,9 +9,10 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
+const CORE_SOURCE_DIR = path.join(__dirname, '../libs/core/src');
 const ENGINE_SOURCE_DIR = path.join(__dirname, '../libs/engine/core/src');
 const EDITOR_SOURCE_DIR = path.join(__dirname, '../libs/editor/core/src');
-const THEME_INTERFACE_PATH = path.join(ENGINE_SOURCE_DIR, 'interfaces', 'theme.interface.ts');
+const THEME_INTERFACE_PATH = path.join(CORE_SOURCE_DIR, 'interfaces', 'theme.interface.ts');
 const CSS_FILE_PATTERN = /\.(css|tsx|ts)$/;
 const CSS_VARIABLE_PATTERN = /--kritzel-([a-zA-Z0-9-]+)/g;
 
@@ -231,6 +232,7 @@ function main() {
   console.log('🔍 Scanning CSS files for CSS variables...\n');
 
   const cssFiles = [
+    ...findCssFiles(CORE_SOURCE_DIR),
     ...findCssFiles(ENGINE_SOURCE_DIR),
     ...findCssFiles(EDITOR_SOURCE_DIR),
   ];

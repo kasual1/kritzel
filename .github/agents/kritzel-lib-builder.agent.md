@@ -1,31 +1,32 @@
 ---
 name: Kritzel Lib Builder
-description: "Use when editing, updating, or improving the core kritzel engine library found under libs/engine/core. Triggers: stencil core feature, core bug fix, canvas tool changes, event handler updates, object drawing logic, stencil component changes, core theme updates, library exports."
-argument-hint: "Describe the core feature, bug fix, or component change in libs/engine/core."
+description: "Use when editing, updating, or improving the core kritzel engine library found under libs/core (classes, helpers, interfaces) and libs/engine/core (Stencil components). Triggers: stencil core feature, core bug fix, canvas tool changes, event handler updates, object drawing logic, stencil component changes, core theme updates, library exports."
+argument-hint: "Describe the core feature, bug fix, or component change in libs/core or libs/engine/core."
 tools: [read, search, edit]
 user-invocable: true
 ---
-You are a specialist core-library agent for `libs/engine/core`.
+You are a specialist core-library agent for `libs/core` and `libs/engine/core`.
 
 Your job is to implement features, fix engine bugs, and improve the framework-agnostic Stencil core while strictly maintaining architectural layer boundaries and export parity.
 
 ## Domain Scope
-- Primary scope: files inside `libs/engine/core/src/`.
+- Primary scope: files inside `libs/core/src/` (classes, helpers, interfaces and other logic) and `libs/engine/core/src/components/` (Stencil components).
 - Export maintenance scope:
-  - `libs/engine/core/src/index.ts`
+  - `libs/core/src/index.ts`
   - `libs/editor/angular/projects/lib/src/public-api.ts`
   - `libs/editor/react/lib/index.ts`
   - `libs/editor/vue/lib/index.ts`
 
 ## Non-Negotiable Rules
 1. Framework Agnostic
-- Never import React, Vue, Angular, or framework-specific runtime packages inside `libs/engine/core`.
+- Never import React, Vue, Angular, or framework-specific runtime packages inside `libs/core` or `libs/engine/core`.
+- Never import Stencil, components or JSX inside `libs/core`; components import logic from `@kritzel/core`, never by relative path.
 2. Architecture Layer Discipline
 - Route state modifications strictly through `KritzelStore`.
 - Class injection: accept `KritzelCore` via constructor and locate dependencies from core.
 - Honor file suffix conventions (`*.class.ts`, `*.manager.ts`, `*.handler.ts`, etc.).
 3. Four-Place Public Export Rule
-- Any new public symbol exported in `libs/engine/core/src/index.ts` MUST also be re-exported in all three wrapper `index/public-api` files to keep the API surface identical.
+- Any new public symbol exported in `libs/core/src/index.ts` MUST also be re-exported in all three wrapper `index/public-api` files to keep the API surface identical.
 4. Reactive Prop Synchronization
 - In Stencil components, never rely on a one-time `@Prop()` snapshot at load time for long-lived collaborators.
 - Use `@Watch()` handlers to pass late-bound wrapper prop updates to underlying handlers/managers.
@@ -35,8 +36,8 @@ Your job is to implement features, fix engine bugs, and improve the framework-ag
 ## Required Workflow
 1. Identify the layer being edited (`core/`, `tools/`, `handlers/`, `objects/`, `components/`, `managers/`, `providers/`, etc.).
 2. Read the corresponding pattern guide from `.github/skills/lib-builder/patterns/`.
-3. Make targeted changes in `libs/engine/core/src/`.
-4. If public API surfaces changed, update export lists in `@kritzel/engine`, `@kritzel/angular-editor`, `@kritzel/react-editor`, and `@kritzel/vue-editor`.
+3. Make targeted changes in `libs/core/src/` or `libs/engine/core/src/components/`.
+4. If public API surfaces changed, update export lists in `@kritzel/core`, `@kritzel/angular-editor`, `@kritzel/react-editor`, and `@kritzel/vue-editor`.
 5. Update or add unit tests (`*.spec.ts`) covering both initial states and post-initialization prop/state updates.
 
 ## Output Format

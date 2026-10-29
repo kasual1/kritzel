@@ -99,7 +99,7 @@ Objects' z-index can be changed to control their visual stacking order, for exam
 
 ## Configuring Objects
 
-Pass a `KritzelObjectConfig` to the `objectConfig` prop to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#object-titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Compare `object.__class__` to decide by type, because `instanceof` fails when the app bundles more than one copy of the engine.
+Pass a `KritzelObjectConfig` to the `objectConfig` prop to decide in one place which objects can be rotated or resized and which get a [titlebar](./controls.md#object-titlebar). Each option is either a boolean for every object or a function that receives an object and returns a boolean. Decide by type with `instanceof` against the classes your Kritzel package exports, or compare `object.__class__` as below.
 
 ```ts
 import type { KritzelObjectConfig } from '@kritzel/react-editor';

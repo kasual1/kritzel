@@ -16,14 +16,14 @@ jest.mock('@stencil/core', () => ({
 // KritzelEngine's constructor instantiates `new KritzelCore(this)`. Replace
 // it with a lightweight mock so we don't pull in Yjs, IndexedDB, etc.
 const mockCoreInstance: any = {};
-jest.mock('../../classes/core/core.class', () => ({
+jest.mock('@kritzel/core/src/classes/core/core.class', () => ({
   KritzelCore: jest.fn().mockImplementation(() => mockCoreInstance),
 }));
 
 // Avoid heavy class graphs the engine module imports at top-level.
-jest.mock('../../classes/core/viewport.class', () => ({ KritzelViewport: jest.fn() }));
-jest.mock('../../classes/handlers/key.handler', () => ({ KritzelKeyHandler: jest.fn() }));
-jest.mock('../../classes/handlers/context-menu.handler', () => ({ KritzelContextMenuHandler: jest.fn() }));
+jest.mock('@kritzel/core/src/classes/core/viewport.class', () => ({ KritzelViewport: jest.fn() }));
+jest.mock('@kritzel/core/src/classes/handlers/key.handler', () => ({ KritzelKeyHandler: jest.fn() }));
+jest.mock('@kritzel/core/src/classes/handlers/context-menu.handler', () => ({ KritzelContextMenuHandler: jest.fn() }));
 
 class MockKritzelSelectionTool {
   toolType = 'selection';
@@ -51,41 +51,42 @@ class MockKritzelSelectionBox {}
 class MockKritzelSelectionGroup {}
 class MockKritzelGroup {}
 
-jest.mock('../../classes/tools/selection-tool.class', () => ({ KritzelSelectionTool: MockKritzelSelectionTool }));
-jest.mock('../../classes/tools/text-tool.class', () => ({ KritzelTextTool: MockKritzelTextTool }));
-jest.mock('../../classes/tools/shape-tool.class', () => ({ KritzelShapeTool: MockKritzelShapeTool }));
-jest.mock('../../classes/tools/eraser-tool.class', () => ({ KritzelEraserTool: MockKritzelEraserTool }));
-jest.mock('../../classes/tools/brush-tool.class', () => ({ KritzelBrushTool: MockKritzelBrushTool }));
-jest.mock('../../classes/tools/line-tool.class', () => ({ KritzelLineTool: MockKritzelLineTool }));
-jest.mock('../../classes/tools/image-tool.class', () => ({ KritzelImageTool: MockKritzelImageTool }));
-jest.mock('../../classes/tools/base-tool.class', () => ({ KritzelBaseTool: MockKritzelBaseTool }));
-jest.mock('../../classes/objects/selection-box.class', () => ({ KritzelSelectionBox: MockKritzelSelectionBox }));
-jest.mock('../../classes/objects/selection-group.class', () => ({ KritzelSelectionGroup: MockKritzelSelectionGroup }));
-jest.mock('../../classes/objects/group.class', () => ({ KritzelGroup: MockKritzelGroup }));
+jest.mock('@kritzel/core/src/classes/tools/selection-tool.class', () => ({ KritzelSelectionTool: MockKritzelSelectionTool }));
+jest.mock('@kritzel/core/src/classes/tools/text-tool.class', () => ({ KritzelTextTool: MockKritzelTextTool }));
+jest.mock('@kritzel/core/src/classes/tools/shape-tool.class', () => ({ KritzelShapeTool: MockKritzelShapeTool }));
+jest.mock('@kritzel/core/src/classes/tools/eraser-tool.class', () => ({ KritzelEraserTool: MockKritzelEraserTool }));
+jest.mock('@kritzel/core/src/classes/tools/brush-tool.class', () => ({ KritzelBrushTool: MockKritzelBrushTool }));
+jest.mock('@kritzel/core/src/classes/tools/line-tool.class', () => ({ KritzelLineTool: MockKritzelLineTool }));
+jest.mock('@kritzel/core/src/classes/tools/image-tool.class', () => ({ KritzelImageTool: MockKritzelImageTool }));
+jest.mock('@kritzel/core/src/classes/tools/base-tool.class', () => ({ KritzelBaseTool: MockKritzelBaseTool }));
+jest.mock('@kritzel/core/src/classes/objects/selection-box.class', () => ({ KritzelSelectionBox: MockKritzelSelectionBox }));
+jest.mock('@kritzel/core/src/classes/objects/selection-group.class', () => ({ KritzelSelectionGroup: MockKritzelSelectionGroup }));
+jest.mock('@kritzel/core/src/classes/objects/group.class', () => ({ KritzelGroup: MockKritzelGroup }));
 
 jest.mock('html-to-image', () => ({
   toPng: jest.fn().mockResolvedValue('data:image/png;base64,xxx'),
   toSvg: jest.fn().mockResolvedValue('data:image/svg+xml;base64,xxx'),
 }));
 
-jest.mock('../../helpers/keyboard.helper', () => ({
+jest.mock('@kritzel/core/src/helpers/keyboard.helper', () => ({
   KritzelKeyboardHelper: {
     forceHideKeyboard: jest.fn(),
   },
 }));
 
-jest.mock('../../helpers/class.helper', () => ({
-  KritzelClassHelper: {
-    isInstanceOf: jest.fn().mockReturnValue(false),
-  },
-}));
-
 import { KritzelEngine } from './kritzel-engine';
-import { KritzelAlignment } from '../../enums/alignment.enum';
-import { KritzelWorkspace } from '../../classes/core/workspace.class';
-import { KritzelBaseObject } from '../../classes/objects/base-object.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
-import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '../../constants/text-tool-fonts.constants';
+import {
+  KritzelAlignment,
+  KritzelWorkspace,
+  KritzelBaseObject,
+  KritzelDynamicObject,
+  KritzelImage,
+  DEFAULT_TEXT_TOOL_AVAILABLE_FONTS,
+} from '@kritzel/core';
+
+/** Builds a fake object whose prototype makes `instanceof` checks in the engine pass. */
+const withPrototype = <T = any>(cls: { prototype: object }, fields: Record<string, unknown>): T =>
+  Object.assign(Object.create(cls.prototype), fields);
 
 describe('KritzelEngine', () => {
   let engine: KritzelEngine;
@@ -926,7 +927,7 @@ describe('KritzelEngine', () => {
       const embeddedRoot = document.createElement('div');
       embeddedRoot.appendChild(target);
 
-      const dynamicObjectObject = {
+      const dynamicObjectObject = withPrototype(KritzelDynamicObject, {
         id: 'custom-1',
         isInteractive: true,
         isSelected: true,
@@ -935,13 +936,10 @@ describe('KritzelEngine', () => {
         setIsInteractive: jest.fn(),
         hasFocusedInputElement: jest.fn(),
         getEmbeddedContentRoots: jest.fn(() => [embeddedRoot]),
-      } as any;
+      });
 
       (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
       core.store.selectionGroup = { objects: [dynamicObjectObject] };
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === dynamicObjectObject && className === 'KritzelDynamicObject';
-      });
 
       const event = {
         pointerId: 11,
@@ -956,23 +954,21 @@ describe('KritzelEngine', () => {
       objectElement.id = 'custom-2';
       objectElement.classList.add('object');
 
-      const createEmbeddedObject = (id: string) => ({
-        id,
-        isInteractive: true,
-        isSelected: true,
-        mount: jest.fn(),
-        unmount: jest.fn(),
-        setIsInteractive: jest.fn(),
-        hasFocusedInputElement: jest.fn(),
-        getEmbeddedContentRoots: jest.fn(() => []),
-      });
+      const createEmbeddedObject = (id: string) =>
+        withPrototype(KritzelDynamicObject, {
+          id,
+          isInteractive: true,
+          isSelected: true,
+          mount: jest.fn(),
+          unmount: jest.fn(),
+          setIsInteractive: jest.fn(),
+          hasFocusedInputElement: jest.fn(),
+          getEmbeddedContentRoots: jest.fn(() => []),
+        });
       const nonSelectedDynamicObject = createEmbeddedObject('custom-2');
       const differentSelectedDynamicObject = createEmbeddedObject('custom-1');
       (core.store.objects.findById as jest.Mock).mockReturnValue(nonSelectedDynamicObject);
       core.store.selectionGroup = { objects: [differentSelectedDynamicObject] };
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return (obj === nonSelectedDynamicObject || obj === differentSelectedDynamicObject) && className === 'KritzelDynamicObject';
-      });
 
       const activeTool = { handlePointerDown: jest.fn() };
       core.store.state.activeTool = activeTool;
@@ -1057,7 +1053,7 @@ describe('KritzelEngine', () => {
       const input = document.createElement('input');
       rendererContainer.appendChild(input);
 
-      const dynamicObjectObject = {
+      const dynamicObjectObject = withPrototype(KritzelDynamicObject, {
         id: 'custom-3',
         isInteractive: true,
         isSelected: true,
@@ -1066,13 +1062,10 @@ describe('KritzelEngine', () => {
         setIsInteractive: jest.fn(),
         hasFocusedInputElement: jest.fn(),
         getEmbeddedContentRoots: jest.fn(() => [rendererContainer]),
-      } as any;
+      });
 
       (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
       core.store.selectionGroup = { objects: [dynamicObjectObject] };
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === dynamicObjectObject && className === 'KritzelDynamicObject';
-      });
 
       const activeTool = { handlePointerDown: jest.fn() };
       core.store.state.activeTool = activeTool;
@@ -1105,7 +1098,7 @@ describe('KritzelEngine', () => {
       shadowRoot.appendChild(input);
       rendererContainer.appendChild(shadowHost);
 
-      const dynamicObjectObject = {
+      const dynamicObjectObject = withPrototype(KritzelDynamicObject, {
         id: 'custom-4',
         isInteractive: true,
         isSelected: true,
@@ -1114,13 +1107,10 @@ describe('KritzelEngine', () => {
         setIsInteractive: jest.fn(),
         hasFocusedInputElement: jest.fn(),
         getEmbeddedContentRoots: jest.fn(() => [rendererContainer]),
-      } as any;
+      });
 
       (core.store.objects.findById as jest.Mock).mockReturnValue(dynamicObjectObject);
       core.store.selectionGroup = { objects: [dynamicObjectObject] };
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: unknown, className: string) => {
-        return obj === dynamicObjectObject && className === 'KritzelDynamicObject';
-      });
 
       const activeTool = { handlePointerDown: jest.fn() };
       core.store.state.activeTool = activeTool;
@@ -2766,11 +2756,10 @@ describe('KritzelEngine', () => {
     });
 
     it('addObject calls prepareForInsert for KritzelImage objects', async () => {
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((_: unknown, className: string) => className === 'KritzelImage');
-      const imageObject = {
+      const imageObject = withPrototype(KritzelImage, {
         ...makeObject(1),
         prepareForInsert: jest.fn().mockResolvedValue(undefined),
-      };
+      });
 
       await engine.addObject(imageObject as any);
 
@@ -2778,15 +2767,14 @@ describe('KritzelEngine', () => {
     });
 
     it('addObjects calls prepareForInsert for each KritzelImage object before transaction insert', async () => {
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((_: unknown, className: string) => className === 'KritzelImage');
-      const a = {
+      const a = withPrototype(KritzelImage, {
         ...makeObject(1),
         prepareForInsert: jest.fn().mockResolvedValue(undefined),
-      };
-      const b = {
+      });
+      const b = withPrototype(KritzelImage, {
         ...makeObject(2),
         prepareForInsert: jest.fn().mockResolvedValue(undefined),
-      };
+      });
 
       await engine.addObjects([a as any, b as any]);
 
@@ -2806,7 +2794,6 @@ describe('KritzelEngine', () => {
     });
 
     beforeEach(() => {
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
       core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
       core.store.allObjects = [];
       jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
@@ -2896,27 +2883,24 @@ describe('KritzelEngine', () => {
       generateId: jest.fn().mockReturnValue(id),
     });
 
-    const makeGroup = (id: string, children: any[]): any => ({
-      ...makeObject(id),
-      __class__: 'KritzelGroup',
-      childIds: children.map(child => child.id),
-      _pendingChildren: children,
-      finalize: jest.fn(),
-    });
+    // KritzelGroup is mocked above, so the engine's `instanceof KritzelGroup` checks compare against MockKritzelGroup.
+    const makeGroup = (id: string, children: any[]): any =>
+      withPrototype(MockKritzelGroup, {
+        ...makeObject(id),
+        __class__: 'KritzelGroup',
+        childIds: children.map(child => child.id),
+        _pendingChildren: children,
+        finalize: jest.fn(),
+      });
 
     beforeEach(() => {
       core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
       jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, className: string) => obj?.__class__ === className);
 
       // Like the real store, currentZIndex is one above the highest stored zIndex.
       stored = new Map([['existing', 4]]);
       core.addObject.mockImplementation((object: any) => stored.set(object.id, object.zIndex));
       Object.defineProperty(core.store, 'currentZIndex', { get: () => Math.max(0, ...stored.values()) + 1, configurable: true });
-    });
-
-    afterEach(() => {
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
     });
 
     it('addObject stacks pending children bottom to top in the order they were added', async () => {

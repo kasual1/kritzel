@@ -5,8 +5,7 @@ jest.mock('@stencil/core', () => ({
 }));
 
 import { KritzelWatermark } from './kritzel-watermark';
-import { KritzelCore } from '../../classes/core/core.class';
-import { KRITZEL_WEBSITE_URL } from '../../constants/engine.constants';
+import { KritzelCore, KRITZEL_WEBSITE_URL } from '@kritzel/core';
 
 describe('KritzelWatermark', () => {
   let component: KritzelWatermark;

@@ -5,7 +5,7 @@ jest.mock('@stencil/core', () => ({
 }));
 
 import { KritzelObjectTitlebarLayer } from './kritzel-object-titlebar-layer';
-import { KritzelResolvedTitlebar } from '../../classes/managers/object-titlebar.manager';
+import { KritzelResolvedTitlebar } from '@kritzel/core';
 
 describe('KritzelObjectTitlebarLayer', () => {
   let component: KritzelObjectTitlebarLayer;

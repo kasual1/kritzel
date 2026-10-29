@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/engine/core/src/classes/objects/`
+`libs/core/src/classes/objects/`
 
 ## Base Class
 
@@ -78,7 +78,7 @@ The `KritzelReviver` uses `__class__` to reconstruct the correct instance during
 
 ## Rendering
 
-Objects are rendered in `kritzel-engine.tsx`. The engine iterates over `store.objects` and renders each based on its `__class__` type using conditional blocks.
+Objects are rendered in `kritzel-engine.tsx`. The engine iterates over `store.objects` and renders each based on its class (`object instanceof KritzelText`, …) using conditional blocks.
 
 ## Mounting
 

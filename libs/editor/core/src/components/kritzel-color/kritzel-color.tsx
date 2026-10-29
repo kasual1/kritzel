@@ -1,7 +1,7 @@
 ﻿import { Component, Host, Prop, h } from '@stencil/core';
-import { ThemeAwareColor } from '@kritzel/engine';
-import { ThemeName } from '@kritzel/engine';
-import { KritzelColorHelper } from '@kritzel/engine';
+import { ThemeAwareColor } from '@kritzel/core';
+import { ThemeName } from '@kritzel/core';
+import { KritzelColorHelper } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-color',

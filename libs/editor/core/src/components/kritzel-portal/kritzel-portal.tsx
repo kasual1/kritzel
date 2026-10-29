@@ -1,7 +1,7 @@
 ﻿import { Component, Host, Listen, Prop, Watch, h, Event, EventEmitter, Element } from '@stencil/core';
-import { ObjectHelper } from '@kritzel/engine';
-import { KritzelHTMLHelper } from '@kritzel/engine';
-import { KritzelKeyboardHelper } from '@kritzel/engine';
+import { ObjectHelper } from '@kritzel/core';
+import { KritzelHTMLHelper } from '@kritzel/core';
+import { KritzelKeyboardHelper } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-portal',

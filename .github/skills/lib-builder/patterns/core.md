@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/engine/core/src/classes/core/core.class.ts`
+`libs/core/src/classes/core/core.class.ts`
 
 ## Purpose
 

@@ -2,6 +2,7 @@ import { Config } from '@stencil/core';
 import { angularOutputTarget } from '@stencil/angular-output-target';
 import { reactOutputTarget } from '@stencil/react-output-target';
 import { vueOutputTarget } from '@stencil/vue-output-target';
+import { resolve } from 'path';
 
 const INTERNAL_COMPONENTS = [
   'kritzel-cursor-trail',
@@ -20,15 +21,21 @@ export const config: Config = {
   // Ship non-minified ESM: pre-minified dist/components (adjacent top-level classes) breaks
   // @angular/build >= 22.1.0 advancedOptimizations (angular-cli#33699); consumers minify anyway
   minifyJs: false,
-  // Exclude yjs and its dependencies from the bundle, as they will be loaded separately in the consuming application
-  // Otherwise yjs will throw mulitple import error
-  ...(isDev ? {} : {
-    rollupConfig: {
-      inputOptions: {
-        external: [/^(yjs|y-websocket|y-indexeddb|lib0)(\/.*)?$/],
-      },
-    },
-  }),
+  // Exclude @kritzel/core, yjs and its dependencies from the bundle, as they will be loaded separately in the consuming application.
+  // @kritzel/core holds every class, so all outputs (and the editor, which compiles these components) share one copy of them.
+  // Bundling yjs would also make it throw a multiple import error
+  ...(isDev
+    ? {
+        // Rebuild when `npm run dev -w libs/core` writes new output
+        watchExternalDirs: [resolve(process.cwd(), '../../core/dist')],
+      }
+    : {
+        rollupConfig: {
+          inputOptions: {
+            external: [/^@kritzel\/core(\/.*)?$/, /^(yjs|y-websocket|y-indexeddb|lib0)(\/.*)?$/],
+          },
+        },
+      }),
   outputTargets: [
     { type: 'dist', esmLoaderPath: '../loader' },
     { type: 'dist-custom-elements', externalRuntime: false, customElementsExportBehavior: 'single-export-module' },
@@ -62,7 +69,13 @@ export const config: Config = {
   ],
   testing: {
     browserHeadless: 'shell',
-    transform: { '^.+\\.(ts|tsx)$': 'ts-jest' },
+    transform: { '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }] },
+    // Specs run against @kritzel/core's source, so they don't need a core build. The `src/` alias is
+    // test-only and lets specs mock single core modules with jest.mock('@kritzel/core/src/...').
+    moduleNameMapper: {
+      '^@kritzel/core$': '<rootDir>/../../core/src/index.ts',
+      '^@kritzel/core/src/(.*)$': '<rootDir>/../../core/src/$1',
+    },
     setupFiles: ['<rootDir>/jest.setup.ts'],
     testPathIgnorePatterns: ['/node_modules/'],
     testRegex: ['(/__tests__/.*|(\\.|/)(spec|e2e))\\.(tsx?|ts?)$'],

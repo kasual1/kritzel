@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/engine/core/src/helpers/`
+`libs/core/src/helpers/`
 
 ## Structure
 
@@ -30,7 +30,6 @@ export class MyHelper {
 | `ObjectHelper` | UUID generation, object utilities |
 | `KeyboardHelper` | Key detection, modifier keys |
 | `HtmlHelper` | DOM utilities |
-| `ClassHelper` | `isInstanceOf` runtime type checks using `__class__` |
 | `EventHelper` | Event creation and dispatch utilities |
 
 ## Conventions

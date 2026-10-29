@@ -62,6 +62,7 @@
     "release": "npm publish"
   },
   "dependencies": {
+    "@kritzel/core": "^0.5.10",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {

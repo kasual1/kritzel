@@ -1,6 +1,6 @@
 import { Component, h, Prop, State, Event, EventEmitter, Host, Element, Method } from '@stencil/core';
-import { KritzelDevicesHelper } from '@kritzel/engine';
-import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/engine';
+import { KritzelDevicesHelper } from '@kritzel/core';
+import { IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent } from '@kritzel/core';
 
 @Component({
   tag: 'kritzel-split-button',
