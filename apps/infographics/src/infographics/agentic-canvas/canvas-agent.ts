@@ -3,6 +3,7 @@ import type { HTMLKritzelEditorElement } from '@kritzel/react-editor';
 import { ANTHROPIC_API_KEY, CLAUDE_EFFORT, CLAUDE_MODEL } from './agent-config';
 import { CANVAS_TOOLS, CanvasToolError, CanvasToolRunner } from './canvas-tools';
 import { isFrame } from './frame';
+import { describeProductPhotos } from './product-photos';
 
 const SYSTEM_PROMPT = `You are a web designer working on an infinite canvas, like Framer. The canvas holds frames: \
 fixed-size viewports that each render one web page. The user talks to you through a chat box and sees every change live.
@@ -12,8 +13,18 @@ read it with read_frame first and then write the complete new version. Lay out r
 tablet and phone version of the same page.
 
 Pages are self-contained: no external scripts or stylesheets, except Google Fonts. Use inline SVG for icons and illustrations \
-and CSS gradients instead of photos. Design modern, polished pages with a clear visual hierarchy, generous whitespace and \
-realistic copy. Make the frame tall enough to show the whole page, because a frame does not scroll on the canvas.
+and CSS gradients instead of photos, except for the product photos below. Design modern, polished pages with a clear visual \
+hierarchy, generous whitespace and realistic copy. Make the frame tall enough to show the whole page, because a frame does not \
+scroll on the canvas.
+
+The canvas has photos of one product, the red running shoe, shot on a light grey studio background. Use them with <img> and \
+these exact URLs whenever a page is about the shoe, its variants, sneakers or running:
+${describeProductPhotos()}
+
+A page about the shoe is a modern fashion website, like a sneaker drop from a luxury label: an editorial, magazine-like layout \
+with big confident typography, a calm off-white and grey palette that lets the shoe's red accents stand out, and the shoe as \
+the hero. The photo backgrounds are a soft grey around #e6e6e6, so blend them in by placing them on that color or using \
+mix-blend-mode: multiply on a lighter background, and give them room.
 
 Keep chat replies to one short sentence; the canvas shows the result.`;
 

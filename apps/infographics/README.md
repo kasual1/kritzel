@@ -30,6 +30,10 @@ box instead of the toolbar. Every prompt runs Claude in a tool-use loop (`canvas
 (`canvas-tools.ts`) add, write, move and delete frames: `KritzelIframeObject`s with a titlebar and no rotation. A frame
 shows a skeleton while Claude writes it, and the play button in its titlebar opens the page fullscreen.
 
+Claude can put the red running shoe from the website's agentic landing page into its pages: the photos live in
+`public/products/` and `product-photos.ts` describes them to Claude, since it cannot see them. A page about the shoe is
+designed as a fashion website.
+
 To try it, add an Anthropic API key to `agent-config.ts`, or create `apps/infographics/.env.local` with:
 
 ```bash
