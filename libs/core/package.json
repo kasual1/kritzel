@@ -1,0 +1,79 @@
+{
+  "name": "@kritzel/core",
+  "version": "0.5.10",
+  "homepage": "https://kritzel.io/",
+  "description": "Framework-agnostic core of Kritzel: objects, tools, sync, themes, locales and helpers shared by @kritzel/engine and @kritzel/editor.",
+  "keywords": [
+    "infinite canvas",
+    "collaboration",
+    "whiteboard",
+    "drawing"
+  ],
+  "license": "MIT",
+  "main": "./dist/cjs/index.cjs",
+  "module": "./dist/esm/index.mjs",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kasual1/kritzel.git",
+    "directory": "libs/core"
+  },
+  "scripts": {
+    "build": "rimraf dist && node build.mjs && tsc -p tsconfig.build.json",
+    "dev": "node build.mjs --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "jest --maxWorkers=2",
+    "clean": "rimraf dist node_modules",
+    "release": "npm publish"
+  },
+  "dependencies": {
+    "@hocuspocus/provider": "^3.4.0",
+    "@types/lodash": "^4.17.20",
+    "browser-image-compression": "^2.0.2",
+    "lodash": "^4.17.21",
+    "perfect-freehand": "^1.2.2",
+    "prosemirror-commands": "^1.7.1",
+    "prosemirror-keymap": "^1.2.3",
+    "prosemirror-model": "^1.25.4",
+    "prosemirror-schema-basic": "^1.2.4",
+    "prosemirror-schema-list": "^1.5.1",
+    "prosemirror-state": "^1.4.4",
+    "prosemirror-view": "^1.41.3",
+    "y-protocols": "^1.0.6"
+  },
+  "devDependencies": {
+    "@stencil/core": "^4.43.3",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.14.1",
+    "esbuild": "^0.28.2",
+    "fake-indexeddb": "^6.2.2",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.4",
+    "lib0": "^0.2.98",
+    "y-indexeddb": "^9.0.12",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.27"
+  },
+  "peerDependencies": {
+    "lib0": "^0.2.98",
+    "y-indexeddb": "^9.0.12",
+    "y-websocket": "^3.0.0",
+    "yjs": "^13.6.27"
+  }
+}
