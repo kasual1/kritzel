@@ -1,11 +1,5 @@
 import { Component, Host, Prop, State, h } from '@stencil/core';
-import { KritzelCore } from '../../classes/core/core.class';
-import { KritzelPath } from '../../classes/objects/path.class';
-import { KritzelLine } from '../../classes/objects/line.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
-import { KritzelRemoteCursorState } from '../../interfaces/remote-cursor.interface';
-import { IKritzelUser } from '../../interfaces/user.interface';
-import { KritzelViewportOverlayHelper } from '../../helpers/viewport-overlay.helper';
+import { KritzelCore, KritzelPath, KritzelLine, KritzelClassHelper, KritzelRemoteCursorState, IKritzelUser, KritzelViewportOverlayHelper } from '@kritzel/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
 const STALE_THRESHOLD_MS = 10_000;

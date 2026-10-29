@@ -32,6 +32,7 @@ jobs:
         with:
           name: stencil-dist
           path: |
+            libs/core/dist
             libs/engine/core/dist
             libs/engine/core/loader
             libs/engine/angular/dist/lib

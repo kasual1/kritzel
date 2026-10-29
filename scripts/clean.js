@@ -9,6 +9,7 @@ const cleanTargets = [
   { path: '../apps/core/angular', folders: ['node_modules', 'dist', '.angular'] },
   { path: '../apps/core/react', folders: ['node_modules', 'dist'] },
   { path: '../apps/core/vue', folders: ['node_modules', 'dist'] },
+  { path: '../libs/core', folders: ['node_modules', 'dist'] },
   { path: '../libs/engine/core', folders: ['node_modules', 'dist'] },
   { path: '../libs/engine/angular', folders: ['node_modules', 'dist'] },
   { path: '../libs/engine/react', folders: ['node_modules', 'dist'] },

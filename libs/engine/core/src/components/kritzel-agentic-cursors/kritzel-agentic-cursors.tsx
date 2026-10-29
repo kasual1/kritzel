@@ -1,7 +1,5 @@
 import { Component, Host, Prop, State, h } from '@stencil/core';
-import { KritzelCore } from '../../classes/core/core.class';
-import { KritzelAgenticCursor } from '../../interfaces/agentic-cursor.interface';
-import { KritzelViewportOverlayHelper } from '../../helpers/viewport-overlay.helper';
+import { KritzelCore, KritzelAgenticCursor, KritzelViewportOverlayHelper } from '@kritzel/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
 interface RenderedPosition {

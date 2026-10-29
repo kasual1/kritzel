@@ -4,6 +4,7 @@ const path = require('path');
 // Paths to all publishable package.json files, plus the generated version constant.
 const paths = {
   engineCore: path.resolve(__dirname, '../libs/engine/core/package.json'),
+  core: path.resolve(__dirname, '../libs/core/package.json'),
   engineAngular: path.resolve(__dirname, '../libs/engine/angular/projects/lib/package.json'),
   engineReact: path.resolve(__dirname, '../libs/engine/react/package.json'),
   engineVue: path.resolve(__dirname, '../libs/engine/vue/package.json'),
@@ -12,7 +13,7 @@ const paths = {
   editorReact: path.resolve(__dirname, '../libs/editor/react/package.json'),
   editorVue: path.resolve(__dirname, '../libs/editor/vue/package.json'),
   cli: path.resolve(__dirname, '../libs/cli/package.json'),
-  version: path.resolve(__dirname, '../libs/engine/core/src/constants/version.ts'),
+  version: path.resolve(__dirname, '../libs/core/src/constants/version.ts'),
 };
 
 function readJson(filePath) {
@@ -34,15 +35,21 @@ export const KRITZEL_VERSION = '${version}';
   fs.writeFileSync(paths.version, content, 'utf8');
 }
 
-// Bumps @kritzel/engine, @kritzel/editor, @kritzel/cli and all framework wrappers to the
+// Bumps @kritzel/core, @kritzel/engine, @kritzel/editor, @kritzel/cli and all framework wrappers to the
 // same new version, keeping cross-package (peer) dependencies in sync.
 function bump(bumpVersion) {
   const enginePackage = readJson(paths.engineCore);
   const newVersion = bumpVersion(enginePackage.version);
 
   enginePackage.version = newVersion;
+  enginePackage.dependencies['@kritzel/core'] = `^${newVersion}`;
   writeJson(paths.engineCore, enginePackage);
   console.log(`Bumped @kritzel/engine version to ${newVersion}`);
+
+  const corePackage = readJson(paths.core);
+  corePackage.version = newVersion;
+  writeJson(paths.core, corePackage);
+  console.log(`Updated ${corePackage.name} package to version ${newVersion}`);
 
   updateVersionFile(newVersion);
   console.log(`Updated version.ts to ${newVersion}`);
@@ -61,6 +68,7 @@ function bump(bumpVersion) {
   // @kritzel/editor depends on @kritzel/engine
   const editorPackage = readJson(paths.editorCore);
   editorPackage.version = newVersion;
+  editorPackage.dependencies['@kritzel/core'] = `^${newVersion}`;
   if (editorPackage.peerDependencies?.['@kritzel/engine']) {
     editorPackage.peerDependencies['@kritzel/engine'] = `^${newVersion}`;
   }

@@ -71,7 +71,7 @@ const ICONS = {
 
 const DEFAULT_OUTPUT = path.join(
   __dirname,
-  '../libs/engine/core/src/classes/registries/default-icons.ts',
+  '../libs/core/src/classes/registries/default-icons.ts',
 );
 const MATERIAL_SYMBOLS_BASE_URL =
   'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined';

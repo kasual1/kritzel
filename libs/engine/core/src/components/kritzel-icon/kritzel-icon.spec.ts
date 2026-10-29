@@ -6,7 +6,7 @@ jest.mock('@stencil/core', () => ({
 }));
 
 import { forceUpdate } from '@stencil/core';
-import { KritzelIconRegistry } from '../../classes/registries/icon-registry.class';
+import { KritzelIconRegistry } from '@kritzel/core';
 import { KritzelIcon } from './kritzel-icon';
 
 describe('kritzel-icon', () => {

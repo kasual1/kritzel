@@ -1,53 +1,60 @@
 import { Component, Host, h, Listen, Element, Prop, Method, State, Event, EventEmitter, Watch } from '@stencil/core';
-import { KritzelViewport } from '../../classes/core/viewport.class';
-import { KritzelPath } from '../../classes/objects/path.class';
-import { KritzelLine } from '../../classes/objects/line.class';
-import { KritzelSelectionTool } from '../../classes/tools/selection-tool.class';
-import { KritzelTextTool } from '../../classes/tools/text-tool.class';
-import { KritzelShapeTool } from '../../classes/tools/shape-tool.class';
-import { KritzelBrushTool } from '../../classes/tools/brush-tool.class';
-import { KritzelLineTool } from '../../classes/tools/line-tool.class';
-import { KritzelImageTool } from '../../classes/tools/image-tool.class';
-import { KritzelImage } from '../../classes/objects/image.class';
-import { KritzelText } from '../../classes/objects/text.class';
-import { KritzelShape } from '../../classes/objects/shape.class';
-import { KritzelSelectionGroup } from '../../classes/objects/selection-group.class';
-import { KritzelGroup } from '../../classes/objects/group.class';
-import { KritzelSelectionBox } from '../../classes/objects/selection-box.class';
-import { KritzelKeyHandler } from '../../classes/handlers/key.handler';
-import { KritzelBaseTool } from '../../classes/tools/base-tool.class';
-import { KritzelToolType } from '../../interfaces/tool-type.interface';
-import { ContextMenuItem } from '../../interfaces/context-menu-item.interface';
-import { KritzelEraserTool } from '../../classes/tools/eraser-tool.class';
-import { KritzelBrushToolConfig, KritzelLineToolConfig, KritzelShapeToolConfig, KritzelTextToolConfig } from '../../interfaces/toolbar-item.interface';
-import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
-import { KritzelContextMenuHandler } from '../../classes/handlers/context-menu.handler';
-import { KritzelBaseObject } from '../../classes/objects/base-object.class';
-import { KritzelEventHelper } from '../../helpers/event.helper';
-import { KritzelClassHelper } from '../../helpers/class.helper';
-import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
-import { ABSOLUTE_SCALE_MAX, ABSOLUTE_SCALE_MIN } from '../../constants/engine.constants';
-import { KritzelDynamicObject } from '../../classes/objects/dynamic-object.class';
-import { KritzelIframeObject } from '../../classes/objects/iframe.class';
-import { KritzelWorkspace, WORKSPACE_EXPORT_VERSION } from '../../classes/core/workspace.class';
-import { KritzelReviver } from '../../classes/core/reviver.class';
-import { KritzelEngineState } from '../../interfaces/engine-state.interface';
-import { KritzelDebugInfo } from '../../interfaces/debug-info.interface';
-import { KritzelSettingsConfig } from '../../interfaces/settings.interface';
-import { KritzelCore } from '../../classes/core/core.class';
-import { KritzelDevicesHelper } from '../../helpers/devices.helper';
-import { KritzelSyncConfig } from '../../interfaces/sync-config.interface';
-import { KritzelAssetStorageConfig } from '../../interfaces/asset-storage-config.interface';
-import { throttle } from 'lodash';
-import { KritzelColorHelper } from '../../helpers/color.helper';
-import { toPng, toSvg } from 'html-to-image';
-import { KritzelUndoState } from '../../interfaces/undo-state.interface';
-import { KritzelTheme, ThemeName } from '../../interfaces/theme.interface';
-import { KritzelLocale, KritzelTermKey, KritzelTermVars, LocaleCode } from '../../interfaces/localization.interface';
-import { KritzelShortcut } from '../../interfaces/shortcut.interface';
-import { KritzelAlignment } from '../../enums/alignment.enum';
-import { KritzelViewportState } from '../../interfaces/viewport-state.interface';
 import {
+  KritzelViewport,
+  KritzelPath,
+  KritzelLine,
+  KritzelSelectionTool,
+  KritzelTextTool,
+  KritzelShapeTool,
+  KritzelBrushTool,
+  KritzelLineTool,
+  KritzelImageTool,
+  KritzelImage,
+  KritzelText,
+  KritzelShape,
+  KritzelSelectionGroup,
+  KritzelGroup,
+  KritzelSelectionBox,
+  KritzelKeyHandler,
+  KritzelBaseTool,
+  KritzelToolType,
+  ContextMenuItem,
+  KritzelEraserTool,
+  KritzelBrushToolConfig,
+  KritzelLineToolConfig,
+  KritzelShapeToolConfig,
+  KritzelTextToolConfig,
+  KritzelKeyboardHelper,
+  KritzelContextMenuHandler,
+  KritzelBaseObject,
+  KritzelEventHelper,
+  KritzelClassHelper,
+  KritzelZOrderHelper,
+  ABSOLUTE_SCALE_MAX,
+  ABSOLUTE_SCALE_MIN,
+  KritzelDynamicObject,
+  KritzelIframeObject,
+  KritzelWorkspace,
+  WORKSPACE_EXPORT_VERSION,
+  KritzelReviver,
+  KritzelEngineState,
+  KritzelDebugInfo,
+  KritzelSettingsConfig,
+  KritzelCore,
+  KritzelDevicesHelper,
+  KritzelSyncConfig,
+  KritzelAssetStorageConfig,
+  KritzelColorHelper,
+  KritzelUndoState,
+  KritzelTheme,
+  ThemeName,
+  KritzelLocale,
+  KritzelTermKey,
+  KritzelTermVars,
+  LocaleCode,
+  KritzelShortcut,
+  KritzelAlignment,
+  KritzelViewportState,
   KritzelAgenticCursor,
   KritzelAgenticCursorDetachedEvent,
   KritzelAgenticCursorMoveOptions,
@@ -55,21 +62,32 @@ import {
   KritzelAgenticCursorOptions,
   KritzelAgenticCursorPatch,
   KritzelAgenticCursorTarget,
-} from '../../interfaces/agentic-cursor.interface';
-import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelWheelHelper } from '../../helpers/wheel.helper';
-import { ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ObjectsInViewportChangeEvent } from '../../interfaces/object-change-event.interface';
-import { IKritzelUser } from '../../interfaces/user.interface';
-import { KritzelNotification } from '../../interfaces/notification.interface';
-import { resolveTextToolAvailableFonts } from '../../constants/text-tool-fonts.constants';
-import { KritzelContextMenuState } from '../../interfaces/context-menu-state.interface';
-import { KritzelExportable, KritzelObjectExportContext, KritzelObjectExportFormat } from '../../interfaces/object-export.interface';
-import { KritzelSvgExportHelper } from '../../helpers/svg-export.helper';
-import { KritzelToolDefinition } from '../../interfaces/tool.interface';
-import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
-import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
-import { KritzelEngineHost } from '../../interfaces/engine-host.interface';
-import { KritzelResolvedTitlebar, KritzelTitlebarMetrics } from '../../classes/managers/object-titlebar.manager';
+  ObjectHelper,
+  KritzelWheelHelper,
+  ObjectsAddedEvent,
+  ObjectsRemovedEvent,
+  ObjectsUpdatedEvent,
+  ObjectsInViewportChangeEvent,
+  IKritzelUser,
+  KritzelNotification,
+  resolveTextToolAvailableFonts,
+  KritzelContextMenuState,
+  KritzelExportable,
+  KritzelObjectExportContext,
+  KritzelObjectExportFormat,
+  KritzelSvgExportHelper,
+  KritzelToolDefinition,
+  KritzelObjectTitlebarActionEvent,
+  KritzelObjectTitlebarConfig,
+  KritzelObjectTitlebarMenuState,
+  KritzelTitlebarSection,
+  KritzelObjectConfig,
+  KritzelEngineHost,
+  KritzelResolvedTitlebar,
+  KritzelTitlebarMetrics,
+} from '@kritzel/core';
+import throttle from 'lodash/throttle';
+import { toPng, toSvg } from 'html-to-image';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
 

@@ -1,5 +1,5 @@
 import { FunctionalComponent, h } from '@stencil/core';
-import { KritzelOverlayEdge } from '../../../helpers/viewport-overlay.helper';
+import { KritzelOverlayEdge } from '@kritzel/core';
 
 /** Arrow-shaped pointer used by remote and agentic cursors. */
 export const CursorArrow: FunctionalComponent<{ color: string }> = ({ color }) => (

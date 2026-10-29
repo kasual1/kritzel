@@ -16,14 +16,14 @@ jest.mock('@stencil/core', () => ({
 // KritzelEngine's constructor instantiates `new KritzelCore(this)`. Replace
 // it with a lightweight mock so we don't pull in Yjs, IndexedDB, etc.
 const mockCoreInstance: any = {};
-jest.mock('../../classes/core/core.class', () => ({
+jest.mock('@kritzel/core/src/classes/core/core.class', () => ({
   KritzelCore: jest.fn().mockImplementation(() => mockCoreInstance),
 }));
 
 // Avoid heavy class graphs the engine module imports at top-level.
-jest.mock('../../classes/core/viewport.class', () => ({ KritzelViewport: jest.fn() }));
-jest.mock('../../classes/handlers/key.handler', () => ({ KritzelKeyHandler: jest.fn() }));
-jest.mock('../../classes/handlers/context-menu.handler', () => ({ KritzelContextMenuHandler: jest.fn() }));
+jest.mock('@kritzel/core/src/classes/core/viewport.class', () => ({ KritzelViewport: jest.fn() }));
+jest.mock('@kritzel/core/src/classes/handlers/key.handler', () => ({ KritzelKeyHandler: jest.fn() }));
+jest.mock('@kritzel/core/src/classes/handlers/context-menu.handler', () => ({ KritzelContextMenuHandler: jest.fn() }));
 
 class MockKritzelSelectionTool {
   toolType = 'selection';
@@ -51,41 +51,37 @@ class MockKritzelSelectionBox {}
 class MockKritzelSelectionGroup {}
 class MockKritzelGroup {}
 
-jest.mock('../../classes/tools/selection-tool.class', () => ({ KritzelSelectionTool: MockKritzelSelectionTool }));
-jest.mock('../../classes/tools/text-tool.class', () => ({ KritzelTextTool: MockKritzelTextTool }));
-jest.mock('../../classes/tools/shape-tool.class', () => ({ KritzelShapeTool: MockKritzelShapeTool }));
-jest.mock('../../classes/tools/eraser-tool.class', () => ({ KritzelEraserTool: MockKritzelEraserTool }));
-jest.mock('../../classes/tools/brush-tool.class', () => ({ KritzelBrushTool: MockKritzelBrushTool }));
-jest.mock('../../classes/tools/line-tool.class', () => ({ KritzelLineTool: MockKritzelLineTool }));
-jest.mock('../../classes/tools/image-tool.class', () => ({ KritzelImageTool: MockKritzelImageTool }));
-jest.mock('../../classes/tools/base-tool.class', () => ({ KritzelBaseTool: MockKritzelBaseTool }));
-jest.mock('../../classes/objects/selection-box.class', () => ({ KritzelSelectionBox: MockKritzelSelectionBox }));
-jest.mock('../../classes/objects/selection-group.class', () => ({ KritzelSelectionGroup: MockKritzelSelectionGroup }));
-jest.mock('../../classes/objects/group.class', () => ({ KritzelGroup: MockKritzelGroup }));
+jest.mock('@kritzel/core/src/classes/tools/selection-tool.class', () => ({ KritzelSelectionTool: MockKritzelSelectionTool }));
+jest.mock('@kritzel/core/src/classes/tools/text-tool.class', () => ({ KritzelTextTool: MockKritzelTextTool }));
+jest.mock('@kritzel/core/src/classes/tools/shape-tool.class', () => ({ KritzelShapeTool: MockKritzelShapeTool }));
+jest.mock('@kritzel/core/src/classes/tools/eraser-tool.class', () => ({ KritzelEraserTool: MockKritzelEraserTool }));
+jest.mock('@kritzel/core/src/classes/tools/brush-tool.class', () => ({ KritzelBrushTool: MockKritzelBrushTool }));
+jest.mock('@kritzel/core/src/classes/tools/line-tool.class', () => ({ KritzelLineTool: MockKritzelLineTool }));
+jest.mock('@kritzel/core/src/classes/tools/image-tool.class', () => ({ KritzelImageTool: MockKritzelImageTool }));
+jest.mock('@kritzel/core/src/classes/tools/base-tool.class', () => ({ KritzelBaseTool: MockKritzelBaseTool }));
+jest.mock('@kritzel/core/src/classes/objects/selection-box.class', () => ({ KritzelSelectionBox: MockKritzelSelectionBox }));
+jest.mock('@kritzel/core/src/classes/objects/selection-group.class', () => ({ KritzelSelectionGroup: MockKritzelSelectionGroup }));
+jest.mock('@kritzel/core/src/classes/objects/group.class', () => ({ KritzelGroup: MockKritzelGroup }));
 
 jest.mock('html-to-image', () => ({
   toPng: jest.fn().mockResolvedValue('data:image/png;base64,xxx'),
   toSvg: jest.fn().mockResolvedValue('data:image/svg+xml;base64,xxx'),
 }));
 
-jest.mock('../../helpers/keyboard.helper', () => ({
+jest.mock('@kritzel/core/src/helpers/keyboard.helper', () => ({
   KritzelKeyboardHelper: {
     forceHideKeyboard: jest.fn(),
   },
 }));
 
-jest.mock('../../helpers/class.helper', () => ({
+jest.mock('@kritzel/core/src/helpers/class.helper', () => ({
   KritzelClassHelper: {
     isInstanceOf: jest.fn().mockReturnValue(false),
   },
 }));
 
 import { KritzelEngine } from './kritzel-engine';
-import { KritzelAlignment } from '../../enums/alignment.enum';
-import { KritzelWorkspace } from '../../classes/core/workspace.class';
-import { KritzelBaseObject } from '../../classes/objects/base-object.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
-import { DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '../../constants/text-tool-fonts.constants';
+import { KritzelAlignment, KritzelWorkspace, KritzelBaseObject, KritzelClassHelper, DEFAULT_TEXT_TOOL_AVAILABLE_FONTS } from '@kritzel/core';
 
 describe('KritzelEngine', () => {
   let engine: KritzelEngine;

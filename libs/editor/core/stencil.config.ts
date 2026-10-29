@@ -2,6 +2,7 @@ import { Config } from '@stencil/core';
 import { angularOutputTarget } from '@stencil/angular-output-target';
 import { reactOutputTarget } from '@stencil/react-output-target';
 import { vueOutputTarget } from '@stencil/vue-output-target';
+import { resolve } from 'path';
 
 const INTERNAL_COMPONENTS = [
   'kritzel-active-users',
@@ -56,15 +57,21 @@ export const config: Config = {
   namespace: 'kritzel-editor',
   minifyJs: false,
   ...(isDev
-    ? {}
+    ? {
+        // Rebuild when `npm run dev -w libs/core` writes new output
+        watchExternalDirs: [resolve(process.cwd(), '../../core/dist')],
+      }
     : {
         rollupConfig: {
           inputOptions: {
             // The engine's components are compiled into this bundle from its Stencil collection.
+            // They import every class from @kritzel/core, so keep it external: the editor, the
+            // compiled engine components and @kritzel/engine then share one copy of each class.
             // Keep yjs and its companions external (as the engine build does), otherwise the
             // editor ships its own copy next to the one @kritzel/engine imports and Yjs warns
             // "Yjs was already imported", breaking its constructor checks.
             external: [
+              /^@kritzel\/core(\/.*)?$/,
               '@kritzel/engine',
               '@kritzel/engine/loader',
               '@kritzel/engine/dist/components',
@@ -103,7 +110,11 @@ export const config: Config = {
       ],
   testing: {
     browserHeadless: 'shell',
-    transform: { '^.+\\.(ts|tsx)$': 'ts-jest' },
+    transform: { '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }] },
+    // Specs run against @kritzel/core's source, so they don't need a core build.
+    moduleNameMapper: {
+      '^@kritzel/core$': '<rootDir>/../../core/src/index.ts',
+    },
     testPathIgnorePatterns: ['/node_modules/'],
     testRegex: ['(/__tests__/.*|(\\.|/)(spec|e2e))\\.(tsx?|ts?)$'],
   },

@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@kritzel/core": ["../../core/src/index.ts"]
+    }
+  }
+}
