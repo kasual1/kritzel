@@ -135,3 +135,24 @@ export * from './constants/text-tool-fonts.constants';
 export * from './constants/engine.constants';
 export * from './constants/version';
 
+
+// Engine internals: used by the @kritzel/engine components, which import them from
+// @kritzel/core. Not a stable API; they can change in any release.
+export * from './classes/core/core.class';
+export * from './classes/core/reviver.class';
+export * from './classes/core/viewport.class';
+export * from './classes/handlers/context-menu.handler';
+export * from './classes/handlers/key.handler';
+export * from './enums/event-button.enum';
+export * from './helpers/class.helper';
+export * from './helpers/event.helper';
+export * from './helpers/svg-export.helper';
+export * from './helpers/viewport-overlay.helper';
+export * from './helpers/wheel.helper';
+export * from './helpers/z-order.helper';
+export * from './interfaces/context-menu-item.interface';
+export * from './interfaces/engine-host.interface';
+export * from './interfaces/notification.interface';
+export * from './interfaces/remote-cursor.interface';
+export * from './interfaces/tool-type.interface';
+export * from './interfaces/undo-state.interface';
