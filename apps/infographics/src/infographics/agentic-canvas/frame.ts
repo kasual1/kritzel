@@ -1,66 +1,29 @@
 import { KritzelIframeObject, type KritzelBaseObject, type KritzelIframeContent } from '@kritzel/react-editor';
 
 /** Gap in world units between frames placed next to each other. */
-export const FRAME_GAP = 160;
+export const FRAME_GAP = 64;
 
 /**
- * A shimmering wireframe of a generic web page, shown inside a frame while Claude writes its content.
+ * Frames are drawn smaller than their page, like an overview in a design tool: a 1440 px wide page takes 576 world units.
+ * The page inside still lays out at its full width.
+ */
+export const FRAME_SCALE = 2.5;
+
+/**
+ * A plain grey surface with a soft shimmer, shown inside a frame while Claude writes its content.
  * It lives in the frame's `loadingContent`, so toggling `isLoading` swaps between it and the real page.
  */
 export const FRAME_SKELETON: KritzelIframeContent = {
-  html: `
-    <div class="skeleton" aria-busy="true" aria-label="Generating">
-      <div class="row nav">
-        <div class="bone logo"></div>
-        <div class="spacer"></div>
-        <div class="bone link"></div><div class="bone link"></div><div class="bone link"></div>
-        <div class="bone button"></div>
-      </div>
-      <div class="hero">
-        <div class="bone eyebrow"></div>
-        <div class="bone title"></div>
-        <div class="bone title short"></div>
-        <div class="bone text"></div>
-        <div class="bone text shorter"></div>
-        <div class="row actions"><div class="bone button large"></div><div class="bone button large ghost"></div></div>
-      </div>
-      <div class="cards">
-        <div class="card"><div class="bone icon"></div><div class="bone line"></div><div class="bone line short"></div></div>
-        <div class="card"><div class="bone icon"></div><div class="bone line"></div><div class="bone line short"></div></div>
-        <div class="card"><div class="bone icon"></div><div class="bone line"></div><div class="bone line short"></div></div>
-      </div>
-    </div>`,
+  html: '<div class="shimmer" aria-busy="true" aria-label="Generating"></div>',
   css: `
-    :root { --bone: #eceef2; --shine: #f8f9fb; --surface: #ffffff; }
-    body { background: var(--surface); font-family: system-ui, sans-serif; }
-    .skeleton { box-sizing: border-box; height: 100%; padding: 32px 6%; display: flex; flex-direction: column; gap: 9%; overflow: hidden; }
-    .row { display: flex; align-items: center; gap: 16px; }
-    .spacer { flex: 1; }
-    .bone {
-      border-radius: 8px;
-      background: linear-gradient(100deg, var(--bone) 40%, var(--shine) 50%, var(--bone) 60%) var(--bone);
+    .shimmer {
+      height: 100%;
+      background: linear-gradient(100deg, #ececec 30%, #f6f6f6 50%, #ececec 70%) #ececec;
       background-size: 300% 100%;
-      animation: shimmer 1.6s ease-in-out infinite;
+      animation: shimmer 1.8s ease-in-out infinite;
     }
-    .logo { width: 112px; height: 28px; }
-    .link { width: 64px; height: 12px; }
-    .button { width: 104px; height: 36px; border-radius: 999px; }
-    .button.large { width: 152px; height: 48px; }
-    .button.ghost { opacity: 0.6; }
-    .hero { display: flex; flex-direction: column; align-items: center; gap: 16px; }
-    .eyebrow { width: 140px; height: 14px; border-radius: 999px; }
-    .title { width: 64%; height: 44px; }
-    .title.short { width: 44%; }
-    .text { width: 52%; height: 14px; margin-top: 8px; }
-    .text.shorter { width: 38%; margin-top: 0; }
-    .actions { margin-top: 16px; }
-    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    .card { display: flex; flex-direction: column; gap: 14px; padding: 24px; border-radius: 16px; border: 1px solid var(--bone); }
-    .icon { width: 40px; height: 40px; border-radius: 12px; }
-    .line { width: 80%; height: 14px; }
-    .line.short { width: 56%; }
     @keyframes shimmer { from { background-position: 100% 0; } to { background-position: 0 0; } }
-    @media (prefers-reduced-motion: reduce) { .bone { animation: none; } }`,
+    @media (prefers-reduced-motion: reduce) { .shimmer { animation: none; } }`,
   script: '',
 };
 
@@ -95,7 +58,7 @@ export function createFrame({ name, x, y, width, height, content, isLoading = fa
     translateY: y,
     width,
     height,
-    scale: 1,
+    scale: FRAME_SCALE,
     borderRadius: 12,
     boxShadow: '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.18)',
   });

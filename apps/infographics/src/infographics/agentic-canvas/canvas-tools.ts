@@ -2,6 +2,9 @@ import type Anthropic from '@anthropic-ai/sdk';
 import type { HTMLKritzelEditorElement, KritzelIframeObject } from '@kritzel/react-editor';
 import { createFrame, FRAME_GAP, isFrame } from './frame';
 
+/** Room left around the frames when the viewport moves to show them, enough to clear the titlebars and the chat box. */
+const REVEAL_PADDING = 1.4;
+
 /**
  * The tools Claude uses to change the canvas. Inputs stream eagerly, so the server does not validate them:
  * every handler checks its input before touching the canvas.
@@ -9,7 +12,9 @@ import { createFrame, FRAME_GAP, isFrame } from './frame';
 export const CANVAS_TOOLS: Anthropic.Beta.BetaTool[] = [
   {
     name: 'list_frames',
-    description: 'Lists every frame on the canvas with its id, name, position and size in canvas units.',
+    description:
+      'Lists every frame on the canvas with its id, name, position in canvas units and page size in CSS pixels. ' +
+      'Frames are drawn smaller than their page: canvas size = page size / scale.',
     input_schema: { type: 'object', properties: {} },
   },
   {
@@ -179,7 +184,24 @@ export class CanvasToolRunner {
       y: Math.round(frame.translateY),
       width: Math.round(frame.width),
       height: Math.round(frame.height),
+      scale: frame.scale,
     };
+  }
+
+  /** Centers the frames in the viewport, zooming out when they do not fit but never zooming in past 100 %. */
+  private async reveal(frames: KritzelIframeObject[]): Promise<void> {
+    const boxes = frames.map(frame => frame.boundingBox);
+    const minX = Math.min(...boxes.map(box => box.x));
+    const minY = Math.min(...boxes.map(box => box.y));
+    const maxX = Math.max(...boxes.map(box => box.x + box.width));
+    const maxY = Math.max(...boxes.map(box => box.y + box.height));
+    const viewport = await this.editor.getViewport();
+    const scale = Math.min(
+      viewport.width / ((maxX - minX) * REVEAL_PADDING),
+      viewport.height / ((maxY - minY) * REVEAL_PADDING),
+      1,
+    );
+    await this.editor.setViewport((minX + maxX) / 2, (minY + maxY) / 2, scale);
   }
 
   private async createFrame(input: ToolInput) {
@@ -201,7 +223,7 @@ export class CanvasToolRunner {
       throw new CanvasToolError('The frame could not be added.');
     }
     await this.editor.clearSelection();
-    await this.editor.centerObjects(await this.getFrames());
+    await this.reveal(await this.getFrames());
     return this.describe(frame);
   }
 
@@ -234,6 +256,7 @@ export class CanvasToolRunner {
     if (height !== undefined) changes.height = height;
 
     await this.editor.updateObject(frame, changes);
+    await this.reveal(await this.getFrames());
     return this.describe(await this.getFrame(frame.id));
   }
 }
