@@ -5,7 +5,8 @@ It is built with Stencil and has wrappers for Angular, React, and Vue.
 ### General Folder Structure
 Kritzel is a monorepo containing the core library and its framework-specific wrappers. The core functionality is built with Stencil, and wrappers are provided for Angular, React, and Vue.
 
-- **`libs/engine/core`**: The engine Stencil library where most business logic, canvas entities, providers, managers, and the engine component reside.
+- **`libs/core`**: `@kritzel/core`, a plain TypeScript package (no Stencil) holding the business logic, canvas entities, providers, managers, helpers, interfaces, themes and locales. `@kritzel/engine` and `@kritzel/editor` depend on it and keep it external in their builds, so apps get one copy of every class.
+- **`libs/engine/core`**: The engine Stencil library with the engine component and its internal child components. It imports all logic from `@kritzel/core` and re-exports it.
 - **`libs/engine/angular`**, **`libs/engine/react`**, **`libs/engine/vue`**: Framework-specific wrapper package slots for engine-only consumption.
 - **`libs/editor/core`**: The editor package slot for the higher-level UI shell.
 - **`libs/editor/angular`**, **`libs/editor/react`**, **`libs/editor/vue`**: Framework-specific wrapper libraries for editor consumption.
@@ -13,8 +14,8 @@ Kritzel is a monorepo containing the core library and its framework-specific wra
 - **`apps/core/*`**: Core harness applications for e2e testing framework integrations.
 - **`apps/website`**: The Docusaurus-based documentation website.
 
-### Stencil Folder Structure
-The core Stencil library follows a structured approach to organize its components, classes, and utilities.
+### Core Folder Structure
+The logic lives in `libs/core/src`; the Stencil components live in `libs/engine/core/src/components`.
 
 - **`src/classes`**: Houses TypeScript classes that encapsulate core logic and functionality of the library.
     - **`src/classes/tools`**: Contains classes for different drawing tools (e.g., pencil, eraser, text, image).
@@ -28,14 +29,14 @@ The core Stencil library follows a structured approach to organize its component
         - **`src/classes/core/workspace`**: Contains classes and utilities for managing the workspace.
         - **`src/classes/core/core`**: Encapsulates core functionalities like database, history, store, viewport.
         - **`src/classes/core/yjs-document`**: Contains classes and utilities for collaborative features and persisting data to indexeddb using Yjs.
-- **`src/components`**: Contains all Stencil components, each in its own folder with related files (e.g., `.tsx`, `.css`, `.spec.ts`).
+- **`libs/engine/core/src/components`**: Contains all engine Stencil components, each in its own folder with related files (e.g., `.tsx`, `.css`, `.spec.ts`).
 - **`src/configs`**: Contains default configuration files for tools, objects, and the core library.
 - **`src/helpers`**: Contains utility functions and helpers used across the library.
 - **`src/interfaces`**: Contains TypeScript interfaces and types for type safety and code clarity.
 
 ### Coding Conventions
 - Follow consistent naming conventions for files, classes, methods, and variables.
-- All classes inside `libs/engine/core` should be prefixed with `Kritzel` but their filenames should not have the prefix.
+- All classes inside `libs/core` and `libs/engine/core` should be prefixed with `Kritzel` but their filenames should not have the prefix.
 
 ### Unit Testing
 - Unit test files use the `.spec.ts` extension and should be placed in the same directory as the file they are testing (e.g., `my-class.ts` and `my-class.spec.ts` should be in the same folder).
@@ -50,6 +51,6 @@ The core Stencil library follows a structured approach to organize its component
 ### Theming
 Kritzel uses a CSS custom property (CSS variables) based theming system. All themeable properties are defined as `--kritzel-*` CSS variables in component stylesheets.
 
-- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--kritzel-*` variables and automatically generate/update the `KritzelTheme` interface in `src/interfaces/theme.interface.ts`. This groups variables by category (e.g., toolbar, menu, dialog).
-- **Theme Definitions**: Theme presets are defined in `src/themes/` (e.g., `light-theme.ts`, `dark-theme.ts`) and implement the `KritzelTheme` interface.
+- **Theme Interface Generation**: Run `node scripts/generate-theme-interface.js` to scan all CSS and TSX files for `--kritzel-*` variables and automatically generate/update the `KritzelTheme` interface in `libs/core/src/interfaces/theme.interface.ts`. This groups variables by category (e.g., toolbar, menu, dialog).
+- **Theme Definitions**: Theme presets are defined in `libs/core/src/themes/` (e.g., `light-theme.ts`, `dark-theme.ts`) and implement the `KritzelTheme` interface.
 - **Adding New Theme Variables**: When adding new CSS variables to components, re-run the generation script and update the theme files accordingly.

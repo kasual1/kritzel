@@ -2,9 +2,9 @@
 
 ## Location
 
-`libs/engine/core/src/interfaces/localization.interface.ts`
-`libs/engine/core/src/classes/managers/localization.manager.ts`
-`libs/engine/core/src/locales/`
+`libs/core/src/interfaces/localization.interface.ts`
+`libs/core/src/classes/managers/localization.manager.ts`
+`libs/core/src/locales/`
 `libs/engine/core/src/components/core/kritzel-engine/`
 `libs/engine/core/src/components/core/kritzel-editor/`
 `libs/engine/core/src/components/ui/`

@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/engine/core/src/classes/handlers/`
+`libs/core/src/classes/handlers/`
 
 ## Base Class
 

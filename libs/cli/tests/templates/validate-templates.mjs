@@ -137,6 +137,7 @@ async function main() {
   const vuePackageRequire = createRequire(path.join(repositoryRoot, 'libs/engine/vue/package.json'));
   const vueRuntimePackage = path.resolve(path.dirname(vuePackageRequire.resolve('@stencil/vue-output-target/runtime')), '..');
   const packages = [
+    ['core', 'libs/core'],
     ['engine', 'libs/engine/core'],
     ['editor', 'libs/editor/core'],
     ['angular-engine', 'libs/engine/angular/dist/lib'],

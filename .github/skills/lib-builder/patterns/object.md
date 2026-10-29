@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/engine/core/src/classes/objects/`
+`libs/core/src/classes/objects/`
 
 ## Base Class
 

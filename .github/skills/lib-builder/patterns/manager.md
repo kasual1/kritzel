@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/engine/core/src/classes/managers/`
+`libs/core/src/classes/managers/`
 
 ## Purpose
 

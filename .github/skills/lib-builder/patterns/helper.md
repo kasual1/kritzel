@@ -2,7 +2,7 @@
 
 ## Location
 
-`libs/engine/core/src/helpers/`
+`libs/core/src/helpers/`
 
 ## Structure
 
