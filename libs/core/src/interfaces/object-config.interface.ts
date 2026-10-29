@@ -6,8 +6,7 @@ import { KritzelBaseObject } from '../classes/objects/base-object.class';
  * Every option is a fixed value for every object, or a function deciding per object.
  * Functions are called synchronously while the engine renders or handles input, so they must be
  * cheap and must not return a promise. A function that throws resolves to the option's default.
- * Compare `object.__class__` (e.g. `'KritzelGroup'`) rather than using `instanceof`, which fails
- * when the app bundles more than one copy of the engine.
+ * Check types with `instanceof` or by comparing `object.__class__` (e.g. `'KritzelGroup'`).
  *
  * Restrictions combine with the persisted flags of each object: an object can only be rotated
  * when both its own `isRotatable` flag and `isRotatable` here allow it.

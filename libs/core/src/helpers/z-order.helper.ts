@@ -1,6 +1,5 @@
 import type { KritzelBaseObject } from '../classes/objects/base-object.class';
-import type { KritzelGroup } from '../classes/objects/group.class';
-import { KritzelClassHelper } from './class.helper';
+import { KritzelGroup } from '../classes/objects/group.class';
 
 /**
  * Minimal view of an object needed to plan z-order changes.
@@ -158,7 +157,7 @@ export class KritzelZOrderHelper {
   }
 
   private static isGroup(object: KritzelBaseObject<any>): object is KritzelGroup {
-    return KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup');
+    return object instanceof KritzelGroup;
   }
 }
 

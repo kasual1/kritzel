@@ -1,7 +1,6 @@
 import { KritzelHandleType } from '../../enums/handle-type.enum';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelColorHelper } from '../../helpers/color.helper';
 import { KritzelMoveHandler } from '../handlers/move.handler';
 import { KritzelResizeHandler } from '../handlers/resize.handler';
@@ -96,7 +95,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   private flattenObjects(objects: any[]): any[] {
     let result: any[] = [];
     for (const obj of objects) {
-      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
+      if (obj instanceof KritzelGroup) {
         result = result.concat(this.flattenObjects(obj.children));
       } else {
         result.push(obj);
@@ -114,7 +113,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     if (objects.length === 0) return DEFAULT_COLOR_PALETTE[0];
     for (const obj of objects) {
       if (obj instanceof KritzelPath) return obj.fill;
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) return obj.stroke;
+      if (obj instanceof KritzelLine) return obj.stroke;
       if (obj instanceof KritzelText) return obj.fontColor;
       if (obj instanceof KritzelShape) return obj.strokeColor;
     }
@@ -129,7 +128,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
       if (obj instanceof KritzelPath) this._core.updateObject(obj, { fill: value });
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) this._core.updateObject(obj, { stroke: value });
+      if (obj instanceof KritzelLine) this._core.updateObject(obj, { stroke: value });
       if (obj instanceof KritzelText) this._core.updateObject(obj, { fontColor: value });
       if (obj instanceof KritzelShape) this._core.updateObject(obj, { strokeColor: value });
     });
@@ -165,7 +164,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     if (objects.length === 0) return 1;
     for (const obj of objects) {
       if (obj instanceof KritzelPath) return obj.strokeWidth;
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) return obj.strokeWidth;
+      if (obj instanceof KritzelLine) return obj.strokeWidth;
       if (obj instanceof KritzelText) return obj.fontSize;
       if (obj instanceof KritzelShape) return obj.strokeWidth;
     }
@@ -181,7 +180,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
       if (obj instanceof KritzelPath) this._core.updateObject(obj, { strokeWidth: value });
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) this._core.updateObject(obj, { strokeWidth: value });
+      if (obj instanceof KritzelLine) this._core.updateObject(obj, { strokeWidth: value });
       if (obj instanceof KritzelText) this._core.updateObject(obj, { fontSize: value });
       if (obj instanceof KritzelShape) this._core.updateObject(obj, { strokeWidth: value });
     });
@@ -257,7 +256,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   get arrows(): LineArrowConfig {
     const objects = this.flattenObjects(this.getSelectedObjects());
     for (const obj of objects) {
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) return obj.arrows ?? { start: { enabled: false }, end: { enabled: false } };
+      if (obj instanceof KritzelLine) return obj.arrows ?? { start: { enabled: false }, end: { enabled: false } };
     }
     return { start: { enabled: false }, end: { enabled: false } };
   }
@@ -269,7 +268,7 @@ export class KritzelSelectionTool extends KritzelBaseTool {
   set arrows(value: LineArrowConfig) {
     const objects = this.flattenObjects(this.getSelectedObjects());
     objects.forEach(obj => {
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) this._core.updateObject(obj, { arrows: value });
+      if (obj instanceof KritzelLine) this._core.updateObject(obj, { arrows: value });
     });
     this._core.rerender();
     this.refreshSelectionGroupDimensions();
@@ -289,10 +288,10 @@ export class KritzelSelectionTool extends KritzelBaseTool {
 
     const hasShape = objects.some(o => o instanceof KritzelShape);
     const hasText = objects.some(o => o instanceof KritzelText);
-    const hasLine = objects.some(o => KritzelClassHelper.isInstanceOf<KritzelLine>(o, 'KritzelLine'));
+    const hasLine = objects.some(o => o instanceof KritzelLine);
     const hasImage = objects.some(o => o instanceof KritzelImage);
     const hasStroke = objects.some(
-      o => o instanceof KritzelPath || KritzelClassHelper.isInstanceOf<KritzelLine>(o, 'KritzelLine') || o instanceof KritzelShape
+      o => o instanceof KritzelPath || o instanceof KritzelLine || o instanceof KritzelShape
     );
 
     // If only images are selected, return config with opacity only (no palette, no controls)

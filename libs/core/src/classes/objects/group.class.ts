@@ -1,7 +1,6 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /**
@@ -701,7 +700,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
         this.children.forEach(child => {
             child.workspaceId = workspaceId;
             // Recursively update nested groups
-            if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+            if (child instanceof KritzelGroup) {
                 child.updateWorkspaceId(workspaceId);
             }
         });

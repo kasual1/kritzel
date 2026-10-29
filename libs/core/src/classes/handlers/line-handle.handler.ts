@@ -2,7 +2,6 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelBaseHandler } from './base.handler';
 import { SnapTarget } from '../../interfaces/anchor.interface';
 import { KritzelColorHelper } from '../../helpers/color.helper';
@@ -537,7 +536,7 @@ export class KritzelLineHandleHandler extends KritzelBaseHandler {
     }
 
     const object = selectionGroup.objects[0];
-    if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
+    if (object instanceof KritzelLine) {
       return object;
     }
 

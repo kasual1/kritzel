@@ -47,7 +47,7 @@ Every option answers one yes/no question per object. Callers never read `engine.
   - `KritzelSelectionGroup` → every entry of `objects` must pass (the selection group itself is never passed to the app function)
   - any other object must pass `check` itself
   - `KritzelGroup` → additionally every `childIds` entry resolved through `store.objects.findById` must pass, recursively; ids that no longer resolve are skipped
-- Type checks use `KritzelClassHelper.isInstanceOf(object, '<ClassName>')` (compares `__class__`), never `instanceof`, so duplicated engine bundles keep working; children are walked through `childIds`, not the `children` getter
+- Type checks use `instanceof` (e.g. `object instanceof KritzelGroup`); children are walked through `childIds`, not the `children` getter
 - The flag check runs before the app function, so the function is not called for an object whose own flag already forbids it
 
 ## Where Each Option Is Enforced
@@ -81,7 +81,7 @@ Planned follow-ups: `isMovable`, `isDeletable`, `isCopyable`, `isSelectable`, `i
 - Never mutate objects or the store from the manager; it only answers questions
 - Never persist or sync the config, and never copy resolved results onto objects
 - Report failures once per option via `warnOnce`; never throw out of a manager method
-- Use `__class__` checks via `KritzelClassHelper.isInstanceOf` and `childIds` lookups, never `instanceof` or `children`
+- Use `instanceof` for type checks and `childIds` lookups, never `children`
 - New public types must be exported from the core barrel (`libs/core/src/index.ts`) and every wrapper (see the lib-builder Public Exports section)
 
 ## Testing Matrix

@@ -9,6 +9,8 @@ import {
 } from './object-titlebar.manager';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelGroup } from '../objects/group.class';
+import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelIconRegistry } from '../registries/icon-registry.class';
 import { KritzelObjectTitlebarConfig } from '../../interfaces/object-titlebar.interface';
 import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
@@ -207,8 +209,8 @@ describe('KritzelObjectTitlebarManager', () => {
       setObjectConfig({ hasTitlebar });
       createObject('child');
       const group = createGroup('group', ['child']);
-      createObject('sg', { __class__: 'KritzelSelectionGroup' });
-      createObject('sb', { __class__: 'KritzelSelectionBox' });
+      Object.setPrototypeOf(createObject('sg', { __class__: 'KritzelSelectionGroup' }), KritzelSelectionGroup.prototype);
+      Object.setPrototypeOf(createObject('sb', { __class__: 'KritzelSelectionBox' }), KritzelSelectionBox.prototype);
       createObject('erased', { markedForRemoval: true });
 
       expect(owners()).toEqual([group]);

@@ -28,7 +28,6 @@ import {
   KritzelContextMenuHandler,
   KritzelBaseObject,
   KritzelEventHelper,
-  KritzelClassHelper,
   KritzelZOrderHelper,
   ABSOLUTE_SCALE_MAX,
   ABSOLUTE_SCALE_MIN,
@@ -1174,13 +1173,13 @@ export class KritzelEngine implements KritzelEngineHost {
     object.zIndex = this.core.store.currentZIndex;
     object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
-    if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+    if (object instanceof KritzelImage) {
       await object.prepareForInsert();
     }
 
     // Handle KritzelText: recreate the editor now that _core is available
     // The editor's dispatchTransaction callback needs _core for persisting changes
-    if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+    if (object instanceof KritzelText) {
       const pendingContent = object.content;
       object.editor = object.createEditor();
       if (pendingContent) {
@@ -1189,7 +1188,7 @@ export class KritzelEngine implements KritzelEngineHost {
     }
 
     // Handle KritzelGroup: flush pending children (recursively for nested groups) into the store
-    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') && object._pendingChildren.length > 0) {
+    if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
       // Build a map of old ID → new ID across all nesting levels so we can
       // remap anchor references regardless of how deeply nested the line is.
       const idRemapping = new Map<string, string>();
@@ -1220,7 +1219,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
           // Recurse into nested groups before inserting so grandchildren get
           // proper IDs and `childIds` references before the parent is added.
-          if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+          if (child instanceof KritzelGroup) {
             flushGroup(child);
           }
         });
@@ -1230,7 +1229,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
       // Remap anchor references in lines across all flushed descendants
       allFlushedChildren.forEach(child => {
-        if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+        if (child instanceof KritzelLine) {
           if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
             child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
           }
@@ -1285,7 +1284,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
     for (const object of objects) {
       object._core = this.core;
-      if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+      if (object instanceof KritzelImage) {
         await object.prepareForInsert();
       }
     }
@@ -1298,7 +1297,7 @@ export class KritzelEngine implements KritzelEngineHost {
         object.zIndex = this.core.store.currentZIndex;
         object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
-        if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+        if (object instanceof KritzelText) {
           const pendingContent = object.content;
           object.editor = object.createEditor();
           if (pendingContent) {
@@ -1306,7 +1305,7 @@ export class KritzelEngine implements KritzelEngineHost {
           }
         }
 
-        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') && object._pendingChildren.length > 0) {
+        if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
           const idRemapping = new Map<string, string>();
           const allFlushedChildren: KritzelBaseObject<any>[] = [];
 
@@ -1332,7 +1331,7 @@ export class KritzelEngine implements KritzelEngineHost {
               group.childIds.push(child.id);
               allFlushedChildren.push(child);
 
-              if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+              if (child instanceof KritzelGroup) {
                 flushGroup(child);
               }
             });
@@ -1341,7 +1340,7 @@ export class KritzelEngine implements KritzelEngineHost {
           flushGroup(object);
 
           allFlushedChildren.forEach(child => {
-            if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+            if (child instanceof KritzelLine) {
               if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
                 child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
               }
@@ -2804,7 +2803,7 @@ export class KritzelEngine implements KritzelEngineHost {
     // Unmount all remaining dynamic objects
     if (this.core.store.allObjects) {
       this.core.store.allObjects.forEach(object => {
-        if (KritzelClassHelper.isInstanceOf<any>(object, 'KritzelDynamicObject')) {
+        if (object instanceof KritzelDynamicObject) {
           (object as any).unmount();
         }
       });
@@ -3428,7 +3427,7 @@ export class KritzelEngine implements KritzelEngineHost {
         return 'none';
       }
 
-      if (KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup')) {
+      if (object instanceof KritzelSelectionGroup) {
         return 'none';
       }
 
@@ -3440,7 +3439,7 @@ export class KritzelEngine implements KritzelEngineHost {
         return 'none';
       }
 
-      if (!KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup')) {
+      if (!(object instanceof KritzelSelectionGroup)) {
         return 'auto';
       }
 
@@ -3552,7 +3551,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   pointerEvents: getObjectWrapperPointerEvents(object),
                 }}
               >
-                {KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath') && (
+                {object instanceof KritzelPath && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -3578,7 +3577,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   </svg>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                {object instanceof KritzelLine && (
                   <svg
                     ref={el => el && object.mount(el)}
                     xmlns="http://www.w3.org/2000/svg"
@@ -3652,7 +3651,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   </svg>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState === 'ready' && (
+                {object instanceof KritzelImage && object.loadState === 'ready' && (
                   <img
                     ref={el => el && object.mount(el)}
                     class={this.shouldAnimateImageFirstReveal(object) ? 'kritzel-image-object kritzel-image-object--first-reveal' : 'kritzel-image-object'}
@@ -3683,7 +3682,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   />
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && object.loadState !== 'ready' && (
+                {object instanceof KritzelImage && object.loadState !== 'ready' && (
                   <div
                     ref={() => object.ensureLoaded()}
                     style={{
@@ -3721,7 +3720,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject') && (
+                {object instanceof KritzelDynamicObject && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3745,7 +3744,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   ></div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelIframeObject>(object, 'KritzelIframeObject') && (
+                {object instanceof KritzelIframeObject && (
                   <div
                     style={{
                       position: 'absolute',
@@ -3791,7 +3790,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') && !this.core.displaySelectionLineUI(object) && (
+                {object instanceof KritzelSelectionGroup && !this.core.displaySelectionLineUI(object) && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3808,7 +3807,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   ></div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelSelectionBox>(object, 'KritzelSelectionBox') && (
+                {object instanceof KritzelSelectionBox && (
                   <div
                     ref={el => el && object.mount(el)}
                     style={{
@@ -3829,7 +3828,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   ></div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText') && (
+                {object instanceof KritzelText && (
                   <div
                     style={{
                       position: 'absolute',
@@ -3864,7 +3863,7 @@ export class KritzelEngine implements KritzelEngineHost {
                   </div>
                 )}
 
-                {KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape') &&
+                {object instanceof KritzelShape &&
                   (() => {
                     const fillResolved = KritzelColorHelper.resolveThemeColor(object.fillColor, currentTheme);
                     const strokeResolved = KritzelColorHelper.resolveThemeColor(object.strokeColor, currentTheme);
@@ -3952,13 +3951,13 @@ export class KritzelEngine implements KritzelEngineHost {
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>zIndex: {object.zIndex}</div>
                     <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isSelected: {object.isSelected ? 'true' : 'false'}</div>
 
-                    {KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject') && (
+                    {object instanceof KritzelDynamicObject && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>isInteractive: {object.isInteractive ? 'true' : 'false'}</div>
                       </div>
                     )}
 
-                    {KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage') && (
+                    {object instanceof KritzelImage && (
                       <div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>assetId: {object.assetId}</div>
                         <div style={{ whiteSpace: 'nowrap', fontSize: '10px' }}>mimeType: {object.mimeType}</div>
@@ -3969,7 +3968,7 @@ export class KritzelEngine implements KritzelEngineHost {
 
                 {(this.core.displaySelectionGroupUI(object) || this.core.displaySelectionLineUI(object)) &&
                   (() => {
-                    const isSelectionGroup = KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup');
+                    const isSelectionGroup = object instanceof KritzelSelectionGroup;
                     const localClientId = this.core.store.objects?.localClientId;
 
                     const awarenessStates = this.core.store.objects?.awareness?.getStates();
@@ -4044,9 +4043,9 @@ export class KritzelEngine implements KritzelEngineHost {
                             {(() => {
                               const remoteLineObject =
                                 isRemoteSelection &&
-                                KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup') &&
+                                object instanceof KritzelSelectionGroup &&
                                 object.objects.length === 1 &&
-                                KritzelClassHelper.isInstanceOf<KritzelLine>(object.objects[0], 'KritzelLine')
+                                object.objects[0] instanceof KritzelLine
                                   ? (object.objects[0] as KritzelLine)
                                   : null;
 
@@ -4264,7 +4263,7 @@ export class KritzelEngine implements KritzelEngineHost {
                           </g>
                         )}
 
-                        {this.core.displaySelectionLineUI(object) && KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') && (
+                        {this.core.displaySelectionLineUI(object) && object instanceof KritzelLine && (
                           <g class="selection-line-ui" style={{ pointerEvents: 'none' }}>
                             <g class="selection-line-borders">
                               <path

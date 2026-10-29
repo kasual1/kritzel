@@ -24,12 +24,11 @@ import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
 import { KritzelObjectTitlebarManager } from '../managers/object-titlebar.manager';
 import { KritzelObjectConfigManager } from '../managers/object-config.manager';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelZOrderHelper, KritzelZOrderItem, KritzelZOrderOperation } from '../../helpers/z-order.helper';
 import { IKritzelUser } from '../../interfaces/user.interface';
-import type { KritzelText } from '../objects/text.class';
-import type { KritzelImage } from '../objects/image.class';
+import { KritzelText } from '../objects/text.class';
+import { KritzelImage } from '../objects/image.class';
 
 interface InitializeWorkspaceOptions {
   /**
@@ -469,7 +468,7 @@ export class KritzelCore {
     // happen before the (synchronous) Yjs transaction that inserts the objects.
     for (const object of pendingObjects) {
       object._core = this;
-      if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+      if (object instanceof KritzelImage) {
         await object.prepareForInsert();
       }
     }
@@ -491,7 +490,7 @@ export class KritzelCore {
     object.zIndex = zIndex;
 
     // Recreate the text editor now that _core is available for persistence callbacks
-    if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+    if (object instanceof KritzelText) {
       const pendingContent = object.content;
       object.editor = object.createEditor();
       if (pendingContent) {
@@ -499,7 +498,7 @@ export class KritzelCore {
       }
     }
 
-    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+    if (object instanceof KritzelGroup) {
       object.updateWorkspaceId(workspaceId);
     } else {
       object.workspaceId = workspaceId;
@@ -543,7 +542,7 @@ export class KritzelCore {
       const existingObject = existingById.get(object.id);
       const isNewOrReplaced = !existingObject || existingObject !== object;
 
-      if (isNewOrReplaced && KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+      if (isNewOrReplaced && object instanceof KritzelImage) {
         object._core = this;
         await object.prepareForInsert();
       }
@@ -927,7 +926,7 @@ export class KritzelCore {
    */
   removeObject(object: KritzelBaseObject<any>, preserveChildren: boolean = false): void {
     // Handle KritzelGroup: recursively delete all children first (unless preserveChildren is true)
-    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') && !preserveChildren) {
+    if (object instanceof KritzelGroup && !preserveChildren) {
       // Get children before removing the group
       const children = [...object.children];
       children.forEach(child => {
@@ -940,7 +939,7 @@ export class KritzelCore {
     }
 
     // Handle anchor cleanup
-    if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
+    if (object instanceof KritzelLine) {
       // If removing a line, clean up its anchor index entries
       this._anchorManager.handleLineDeleted(object.id);
     } else {
@@ -1028,7 +1027,7 @@ export class KritzelCore {
     const allSelectionGroupsInStore = this._store.objects
       .allObjects()
       .filter((object): object is KritzelSelectionGroup => {
-        return object instanceof KritzelSelectionGroup || KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup');
+        return object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionGroup;
       });
 
     const allLocalSelectionGroups = allSelectionGroupsInStore.filter(selectionGroup => this.isLocalSelectionGroup(selectionGroup));
@@ -1341,7 +1340,7 @@ export class KritzelCore {
   ungroup(groups: KritzelGroup[]): KritzelBaseObject<any>[] {
     const { objects, items } = this.getZOrderItems();
     const toDissolve = this.resolveObjects(groups ?? [], objects, 'ungroup').filter(obj => {
-      const isGroup = KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup');
+      const isGroup = obj instanceof KritzelGroup;
       if (!isGroup) {
         console.warn(`[KritzelCore] Cannot ungroup object '${obj.id}': it is not a KritzelGroup.`);
       }
@@ -1416,7 +1415,7 @@ export class KritzelCore {
       }
       ids.add(id);
       const object = objects.get(id);
-      if (object && KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+      if (object && object instanceof KritzelGroup) {
         object.childIds.forEach(visit);
       }
     };
@@ -1786,7 +1785,7 @@ export class KritzelCore {
     const selectionGroup = this._store.selectionGroup;
     if (!selectionGroup) {
       // During selection phase (no group yet), hide UI for KritzelLine objects
-      return !KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine');
+      return !(object instanceof KritzelLine);
     }
 
     // Once a local selection group exists, only the selection-group object
@@ -1803,7 +1802,7 @@ export class KritzelCore {
     // Hide UI if selection contains a single KritzelLine
     if (selectionGroup.objects.length === 1) {
       const selectedObject = selectionGroup.objects[0];
-      return !KritzelClassHelper.isInstanceOf<KritzelLine>(selectedObject, 'KritzelLine');
+      return !(selectedObject instanceof KritzelLine);
     }
 
     return true;
@@ -1817,7 +1816,7 @@ export class KritzelCore {
    */
   displaySelectionLineUI(object: KritzelBaseObject<any>): boolean {
     // Only show line UI on KritzelLine objects, not on selection groups
-    if (!KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
+    if (!(object instanceof KritzelLine)) {
       return false;
     }
 
@@ -1834,7 +1833,7 @@ export class KritzelCore {
     // Show UI only if selection contains exactly one KritzelLine and it's this object
     if (selectionGroup.objects.length === 1) {
       const selectedObject = selectionGroup.objects[0];
-      return KritzelClassHelper.isInstanceOf<KritzelLine>(selectedObject, 'KritzelLine') && selectedObject.id === object.id;
+      return selectedObject instanceof KritzelLine && selectedObject.id === object.id;
     }
 
     return false;
