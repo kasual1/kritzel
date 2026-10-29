@@ -1122,6 +1122,18 @@
   background: #ffffff;
 }
 
+/* Everything on the canvas. While only the desktop frame is on it, the view is panned so that frame sits in the
+   middle; it pans back as the phone frame comes in, so the two stay centered together. */
+.framesWorld {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.framesWorld[data-solo] {
+  transform: translateX(12.5cqw);
+}
+
 .framesFrame {
   position: absolute;
   top: 15cqw;
@@ -1137,6 +1149,16 @@
   left: 70.5cqw;
   width: 20cqw;
   height: 43.3cqw;
+  transform-origin: 0 50%;
+  transition:
+    opacity 0.5s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Until it is added, the phone frame waits a little to the left, as if it slid out of the desktop frame. */
+.framesFrame[data-hidden] {
+  opacity: 0;
+  transform: translateX(-4cqw) scale(0.96);
 }
 
 /* Kritzel's object titlebar (kritzel-object-titlebar-layer.css) scaled with the demo, blue while active. */
@@ -1158,6 +1180,9 @@
   font-size: 2.1cqw;
   line-height: 1;
   white-space: nowrap;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
 }
 
 .framesFrame[data-active] .framesTitlebar {
@@ -1178,6 +1203,7 @@
   border-radius: 0.9cqw;
   background: #8e8e93;
   color: #ffffff;
+  transition: background-color 0.25s ease;
 }
 
 .framesFrame[data-active] .framesPlay {
@@ -1203,7 +1229,16 @@
 
 .framesAdd {
   margin-left: auto;
+  border-radius: 0.9cqw;
   color: #6b6b6b;
+  transition:
+    background-color 0.15s ease,
+    color 0.25s ease;
+}
+
+/* Pressed by the agent's click, like Kritzel's titlebar buttons. */
+.framesAdd[data-pressed] {
+  background: rgba(0, 122, 255, 0.16);
 }
 
 .framesFrame[data-active] .framesAdd {
@@ -1250,6 +1285,12 @@
 .framesBuild[data-selected] {
   outline: 1px solid #007aff;
   outline-offset: 0.8cqw;
+}
+
+/* The phone page arrives complete: its parts fade in one after another once the frame is in (--part from
+   FramesDemo). */
+.framesFrame[data-device="phone"] .framesBuild {
+  transition-delay: calc(0.25s + var(--part, 0) * 0.08s);
 }
 
 .siteNav {
@@ -1484,13 +1525,19 @@
   transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* The arrow's tip is at (5, 3) in its 24-unit viewBox. */
+/* The arrow's tip is at (5, 3) in its 24-unit viewBox; a click squeezes the arrow towards it. */
 .framesCursorArrow {
   display: block;
   width: var(--frames-arrow);
   height: var(--frames-arrow);
   margin: calc(var(--frames-arrow) * -3 / 24) 0 0 calc(var(--frames-arrow) * -5 / 24);
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  transform-origin: 20.8% 12.5%;
+  transition: transform 0.12s ease;
+}
+
+.framesCursor[data-pressed] .framesCursorArrow {
+  transform: scale(0.82);
 }
 
 .framesCursorLabels {
@@ -1504,6 +1551,13 @@
   font-size: clamp(9px, 2.1cqw, 11px);
   line-height: 1.4;
   white-space: nowrap;
+}
+
+/* Flipped to the left of the arrow near the demo's right edge (set from FramesDemo). */
+.framesCursor[data-flip] .framesCursorLabels {
+  right: calc(100% + var(--frames-arrow) * 0.2);
+  left: auto;
+  align-items: flex-end;
 }
 
 .framesCursorName {
@@ -1550,6 +1604,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .framesWorld,
+  .framesFrame,
   .framesBuild,
   .framesCursor {
     transition: none;
