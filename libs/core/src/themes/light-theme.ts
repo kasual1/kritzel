@@ -148,13 +148,6 @@ export const lightTheme: KritzelTheme = {
     backgroundColor: '#ffffff',
   },
 
-  editor: {
-    loadingOverlayBackground: 'rgba(255, 255, 255, 0.85)',
-    loadingOverlayColor: '#333333',
-    loadingOverlaySpinnerActiveColor: '#333333',
-    loadingOverlaySpinnerColor: '#cccccc',
-  },
-
   snap: {
     indicatorFill: 'rgba(59, 130, 246, 0.3)',
     indicatorFillInactive: 'rgba(59, 130, 246, 0.18)',

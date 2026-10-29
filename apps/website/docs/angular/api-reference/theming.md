@@ -129,10 +129,6 @@ const customTheme: KritzelTheme = {
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
-| loadingOverlayBackground | rgba(255, 255, 255, 0.85) | rgba(26, 26, 26, 0.85) |
-| loadingOverlayColor | #333333 | #e0e0e0 |
-| loadingOverlaySpinnerActiveColor | #333333 | #e0e0e0 |
-| loadingOverlaySpinnerColor | #cccccc | #555555 |
 | syncIndicatorBackground | rgba(255, 255, 255, 0.92) | rgba(30, 30, 30, 0.95) |
 | syncIndicatorColor | #334155 | #e0e0e0 |
 | syncIndicatorSpinnerColor | #4A7DFF | #5B8CFF |

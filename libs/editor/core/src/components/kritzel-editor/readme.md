@@ -1434,7 +1434,6 @@ Type: `Promise<void>`
 - [kritzel-context-menu](../kritzel-context-menu)
 - [kritzel-portal](../kritzel-portal)
 - [kritzel-titlebar-menu](../kritzel-titlebar-menu)
-- [kritzel-loading-overlay](../kritzel-loading-overlay)
 - kritzel-engine
 - [kritzel-chat-box](../kritzel-chat-box)
 - [kritzel-toolbar](../kritzel-toolbar)
@@ -1458,7 +1457,6 @@ graph TD;
   kritzel-editor --> kritzel-context-menu
   kritzel-editor --> kritzel-portal
   kritzel-editor --> kritzel-titlebar-menu
-  kritzel-editor --> kritzel-loading-overlay
   kritzel-editor --> kritzel-engine
   kritzel-editor --> kritzel-chat-box
   kritzel-editor --> kritzel-toolbar

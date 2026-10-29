@@ -131,9 +131,6 @@ export const IT_LOCALE: KritzelLocale = {
     // More menu button
     'moreMenu.ariaLabel': 'Altre opzioni',
 
-    // Editor
-    'editor.loading': 'Caricamento...',
-
     // Watermark
     'watermark.poweredBy': 'Offerto da Kritzel',
 

@@ -138,9 +138,6 @@ export interface KritzelTerms {
   // More menu button
   'moreMenu.ariaLabel': string;
 
-  // Editor
-  'editor.loading': string;
-
   // Watermark
   'watermark.poweredBy': string;
 

@@ -104,7 +104,6 @@ function normalizeExportedViewportSvg(svg: string): string {
   return svg
     .replace(/\r\n/g, '\n')
     .replace(/<\?xml[^>]*>\s*/g, '')
-    .replace(/<kritzel-loading-overlay[\s\S]*?<\/kritzel-loading-overlay>/g, '')
     .replace(/<kritzel-sync-indicator[\s\S]*?<\/kritzel-sync-indicator>/g, '')
     .replace(/\sclass="hydrated"/g, '')
     .replace(/\sid="[^"]*"/g, '')

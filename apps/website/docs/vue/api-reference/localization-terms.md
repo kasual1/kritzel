@@ -191,11 +191,10 @@ const customLocales: KritzelLocale[] = [customEnglish]
 | toolConfig.expand | Expand |
 | moreMenu.ariaLabel | More options |
 
-### Editor and watermark
+### Watermark
 
 | Key | Default text |
 |------|--------------|
-| editor.loading | Loading... |
 | watermark.poweredBy | Powered by Kritzel |
 
 ### Object type labels

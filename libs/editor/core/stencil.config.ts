@@ -28,7 +28,6 @@ const INTERNAL_COMPONENTS = [
   'kritzel-icon',
   'kritzel-input',
   'kritzel-line-endings',
-  'kritzel-loading-overlay',
   'kritzel-login-dialog',
   'kritzel-master-detail',
   'kritzel-menu',
