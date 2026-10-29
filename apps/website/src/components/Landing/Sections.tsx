@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import DomCanvasDemo from "./DomCanvasDemo";
+import HeartBubbles from "./HeartBubbles";
 import Icon, { ArrowIcon } from "./Icon";
 import PerformanceDemo from "./PerformanceDemo";
 import { WORDMARK_LETTERS } from "./paths";
@@ -617,6 +618,7 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
       </div>
       {isSkill ? (
         <div aria-hidden="true" className={styles.frameworkTileAnchor}>
+          <HeartBubbles />
           <div className={styles.skillTileStatic}>
             <div className={`${styles.frameworkTile} ${styles.skillTile}`}>
               <BotIcon />

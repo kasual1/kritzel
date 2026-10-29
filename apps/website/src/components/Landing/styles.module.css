@@ -1367,7 +1367,25 @@
   transform: scale(0.85);
 }
 
+/* Positioned so the tile stacks above the hearts' canvas and the hearts rise from behind it. */
 .skillTileStatic {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* The canvas the hearts bubble up in (HeartBubbles): around the skill tile and well above it. */
+.heartBubbles {
+  position: absolute;
+  top: -200px;
+  right: -64px;
+  bottom: -16px;
+  left: -64px;
+  pointer-events: none;
+}
+
+.heartBubbles canvas {
+  display: block;
   width: 100%;
   height: 100%;
 }
