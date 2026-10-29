@@ -1113,15 +1113,13 @@
   height: 1.1em;
 }
 
-/* A mock design canvas with a dot grid and two frames of the same page, built by an agent (see FramesDemo). */
+/* A mock design canvas with two frames of the same page, built by an agent (see FramesDemo). */
 .framesDemo {
   --frames-cursor: #7c3aed;
   position: relative;
   overflow: hidden;
   container-type: inline-size;
-  background-color: #ffffff;
-  background-image: radial-gradient(circle, #e4e4e7 1px, transparent 1.5px);
-  background-size: 2.5cqw 2.5cqw;
+  background: #ffffff;
 }
 
 .framesFrame {
@@ -1217,17 +1215,22 @@
   height: 2.4cqw;
 }
 
-/* Its own container, so the page inside sizes itself to the frame's width like a real layout would. */
+/* Its own container, so the page inside sizes itself to the frame's width like a real layout would. The red
+   is taken from the shoe in its photo, the gray from the photo's backdrop. */
 .framesPage {
+  --site-ink: #18181b;
+  --site-muted: #71717a;
+  --site-red: #d03545;
+  --site-photo: #eaeaea;
   position: absolute;
   inset: 0;
   box-sizing: border-box;
   padding: 0 6%;
   overflow: hidden;
   container-type: inline-size;
-  background: #fbf8f2;
-  box-shadow: 0 0 0 1px #ebe7df;
-  color: #1f2a22;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px #e4e4e7;
+  color: var(--site-ink);
 }
 
 /* Parts of the page fade in as the agent builds them; the one it just built is outlined like a selection. */
@@ -1267,18 +1270,19 @@
   letter-spacing: -0.02em;
 }
 
-/* A leaf: round on three corners, pointed on the fourth. */
+/* A slanted bar, for speed. */
 .siteLogoMark {
-  width: 3.2cqw;
-  height: 3.2cqw;
-  border-radius: 50% 50% 50% 0;
-  background: #2f7d55;
+  width: 3.4cqw;
+  height: 2.4cqw;
+  border-radius: 0.5cqw;
+  background: var(--site-red);
+  transform: skewX(-20deg);
 }
 
 .siteLinks {
   display: flex;
   gap: 4cqw;
-  color: #6f746c;
+  color: var(--site-muted);
 }
 
 .siteButton {
@@ -1286,22 +1290,26 @@
   align-items: center;
   padding: 1.1cqw 2.6cqw;
   border-radius: 999px;
-  background: #2f7d55;
+  background: var(--site-red);
   color: #ffffff;
   font-size: 2.3cqw;
   font-weight: 600;
   white-space: nowrap;
 }
 
+.siteButtonDark {
+  background: var(--site-ink);
+}
+
 .siteButtonOutline {
   background: transparent;
-  color: #1f2a22;
-  box-shadow: inset 0 0 0 1px #cfd8cf;
+  color: var(--site-ink);
+  box-shadow: inset 0 0 0 1px #d4d4d8;
 }
 
 .siteHero {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
+  grid-template-columns: 0.95fr 1.05fr;
   align-items: center;
   gap: 5cqw;
   margin-top: 4cqw;
@@ -1312,13 +1320,14 @@
   font-weight: 800;
   line-height: 1.04;
   letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
 .siteText {
   margin-top: 2.6cqw;
   font-size: 2.5cqw;
   line-height: 1.5;
-  color: #6f746c;
+  color: var(--site-muted);
 }
 
 /* Shrink-wrapped, so its outline and the agent's cursor are on the buttons rather than the empty space beside them. */
@@ -1329,18 +1338,33 @@
   margin-top: 3.6cqw;
 }
 
+/* About as wide as the product photo, which fills it with only its edges cropped; the backdrop color shows
+   while the photo loads. */
 .siteImage {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1;
+  position: relative;
+  aspect-ratio: 1.4;
   overflow: hidden;
   border-radius: 3cqw;
-  background: #dcebdf;
+  background: var(--site-photo);
 }
 
-.siteImage svg {
-  width: 86%;
-  height: 86%;
+.siteImage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.siteBadge {
+  position: absolute;
+  top: 2.4cqw;
+  left: 2.4cqw;
+  padding: 0.7cqw 1.8cqw;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--site-red);
+  font-size: 2cqw;
+  font-weight: 700;
 }
 
 .siteFeatures {
@@ -1356,8 +1380,7 @@
   gap: 1.6cqw;
   padding: 2.6cqw;
   border-radius: 2cqw;
-  background: #ffffff;
-  box-shadow: 0 0 0 1px #ebe7df;
+  background: #f4f4f5;
   font-size: 2.3cqw;
   font-weight: 600;
 }
@@ -1367,7 +1390,7 @@
   width: 4cqw;
   height: 4cqw;
   border-radius: 1.2cqw;
-  background: #dcebdf;
+  background: #f9d7db;
 }
 
 /* The phone frame stacks the same page in a single column, sized for its narrower width. */
@@ -1382,16 +1405,17 @@
 }
 
 .framesFrame[data-device="phone"] .siteLogoMark {
-  width: 8cqw;
-  height: 8cqw;
+  width: 8.5cqw;
+  height: 6cqw;
+  border-radius: 1.2cqw;
 }
 
 .siteMenu {
   width: 9cqw;
   height: 5.4cqw;
   box-sizing: border-box;
-  border-top: 1.4cqw solid #1f2a22;
-  border-bottom: 1.4cqw solid #1f2a22;
+  border-top: 1.4cqw solid var(--site-ink);
+  border-bottom: 1.4cqw solid var(--site-ink);
 }
 
 .framesFrame[data-device="phone"] .siteHeadline {
@@ -1417,9 +1441,15 @@
 }
 
 .framesFrame[data-device="phone"] .siteImage {
-  aspect-ratio: 1.1;
   margin-top: 8cqw;
   border-radius: 7cqw;
+}
+
+.framesFrame[data-device="phone"] .siteBadge {
+  top: 5cqw;
+  left: 5cqw;
+  padding: 1.6cqw 4cqw;
+  font-size: 5cqw;
 }
 
 .framesFrame[data-device="phone"] .siteFeatures {

@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import useBaseUrl from "@docusaurus/useBaseUrl";
 import styles from "./styles.module.css";
 
 /** The parts of the page the agent builds, in order, and what its cursor says while it builds each one. */
@@ -7,7 +8,7 @@ const STEPS = [
   "Writing headline",
   "Writing intro",
   "Adding buttons",
-  "Adding hero image",
+  "Adding product photo",
   "Adding features",
 ] as const;
 
@@ -94,22 +95,7 @@ function PlusIcon() {
   );
 }
 
-/** A potted plant for the hero image. */
-function Plant() {
-  return (
-    <svg viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="46" r="30" fill="#c9e2cf" />
-      <path d="M48 64C34 60 22 48 20 34c14 2 24 14 28 30Z" fill="#4c9a6c" />
-      <path d="M52 64c14-4 26-16 28-30-14 2-24 14-28 30Z" fill="#3f8a5f" />
-      <path d="M50 64c-10-14-10-34 0-50 10 16 10 36 0 50Z" fill="#2f7d55" />
-      <path d="M47 66c-9 0-17-4-21-10 9-2 17 2 21 10Z" fill="#66b083" />
-      <rect x="33" y="62" width="34" height="7" rx="2" fill="#c96a45" />
-      <path d="M36 69h28l-4 19a2 2 0 0 1-2 2H42a2 2 0 0 1-2-2Z" fill="#e07f57" />
-    </svg>
-  );
-}
-
-const FEATURES = ["Pet friendly", "Free delivery", "Plant care"];
+const FEATURES = ["Breathable mesh", "Cushioned sole", "Free returns"];
 
 type FrameProps = {
   device: "desktop" | "phone";
@@ -139,10 +125,13 @@ function Frame({ device, title, width, active, children }: FrameProps) {
 }
 
 /**
- * A mock canvas with a desktop and a phone frame, in which an agent's cursor builds a small website part by
- * part, like a page taking shape in a design tool. Each part appears in both frames at once.
+ * A mock canvas with a desktop and a phone frame, in which an agent's cursor builds a product page for the
+ * red running shoe from the hero part by part, like a page taking shape in a design tool. Each part appears
+ * in both frames at once.
  */
 export default function FramesDemo() {
+  // The hero's photo, so the page loads nothing extra for it.
+  const shoeUrl = useBaseUrl("/img/red_running_shoe_3.jpg");
   const boxRef = useRef<HTMLDivElement | null>(null);
   const partRefs = useRef<(HTMLElement | null)[]>([]);
   const state = useBuildSession(boxRef);
@@ -186,30 +175,31 @@ export default function FramesDemo() {
         <div {...part(0, true)} className={`${styles.framesBuild} ${styles.siteNav}`}>
           <span className={styles.siteLogo}>
             <span className={styles.siteLogoMark} />
-            Fern
+            Pace
           </span>
           <span className={styles.siteLinks}>
-            <span>Shop</span>
-            <span>About</span>
-            <span>Journal</span>
+            <span>Men</span>
+            <span>Women</span>
+            <span>Sale</span>
           </span>
-          <span className={styles.siteButton}>Sign up</span>
+          <span className={`${styles.siteButton} ${styles.siteButtonDark}`}>Cart</span>
         </div>
         <div className={styles.siteHero}>
           <div>
             <div {...part(1, true)} className={`${styles.framesBuild} ${styles.siteHeadline}`}>
-              Plants that grow with you.
+              Made for the long run.
             </div>
             <div {...part(2, true)} className={`${styles.framesBuild} ${styles.siteText}`}>
-              Hand-picked plants, delivered to your door with care tips for every leaf.
+              Breathable mesh, red accents and a cushioned sole for every mile.
             </div>
             <div {...part(3, true)} className={`${styles.framesBuild} ${styles.siteActions}`}>
-              <span className={styles.siteButton}>Shop plants</span>
-              <span className={`${styles.siteButton} ${styles.siteButtonOutline}`}>How it works</span>
+              <span className={styles.siteButton}>Buy now · $180</span>
+              <span className={`${styles.siteButton} ${styles.siteButtonOutline}`}>Find your size</span>
             </div>
           </div>
           <div {...part(4, true)} className={`${styles.framesBuild} ${styles.siteImage}`}>
-            <Plant />
+            <img src={shoeUrl} alt="" loading="lazy" draggable={false} />
+            <span className={styles.siteBadge}>New</span>
           </div>
         </div>
         <div {...part(5, true)} className={`${styles.framesBuild} ${styles.siteFeatures}`}>
@@ -225,21 +215,22 @@ export default function FramesDemo() {
         <div {...part(0)} className={`${styles.framesBuild} ${styles.siteNav}`}>
           <span className={styles.siteLogo}>
             <span className={styles.siteLogoMark} />
-            Fern
+            Pace
           </span>
           <span className={styles.siteMenu} />
         </div>
         <div {...part(1)} className={`${styles.framesBuild} ${styles.siteHeadline}`}>
-          Plants that grow with you.
+          Made for the long run.
         </div>
         <div {...part(2)} className={`${styles.framesBuild} ${styles.siteText}`}>
-          Hand-picked plants, delivered to your door with care tips for every leaf.
+          Breathable mesh, red accents and a cushioned sole for every mile.
         </div>
         <div {...part(3)} className={`${styles.framesBuild} ${styles.siteActions}`}>
-          <span className={styles.siteButton}>Shop plants</span>
+          <span className={styles.siteButton}>Buy now · $180</span>
         </div>
         <div {...part(4)} className={`${styles.framesBuild} ${styles.siteImage}`}>
-          <Plant />
+          <img src={shoeUrl} alt="" loading="lazy" draggable={false} />
+          <span className={styles.siteBadge}>New</span>
         </div>
         <div {...part(5)} className={`${styles.framesBuild} ${styles.siteFeatures}`}>
           {FEATURES.map((feature) => (
