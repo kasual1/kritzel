@@ -5,8 +5,9 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 
-jest.mock('lodash', () => ({
-  debounce: (fn: Function) => {
+jest.mock('lodash/debounce', () => ({
+  __esModule: true,
+  default: (fn: Function) => {
     const debounced = jest.fn((...args: any[]) => fn(...args)) as any;
     debounced.cancel = jest.fn();
     return debounced;

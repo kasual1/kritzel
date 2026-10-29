@@ -3,7 +3,8 @@ import { KritzelMouseButton } from '../../enums/event-button.enum';
 import { KritzelCore } from './core.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelViewportState } from '../../interfaces/viewport-state.interface';
-import { debounce, DebouncedFunc } from 'lodash';
+import debounce from 'lodash/debounce';
+import type { DebouncedFunc } from 'lodash';
 import { KritzelKeyboardHelper } from '../../helpers/keyboard.helper';
 import { KritzelDevicesHelper } from '../../helpers/devices.helper';
 
