@@ -534,6 +534,8 @@ function BotIcon() {
       <rect width="16" height="12" x="4" y="8" rx="2" />
       <path d="M2 14h2" />
       <path d="M20 14h2" />
+      <ellipse className={styles.skillBlush} cx="6.9" cy="17.4" rx="1.4" ry="0.8" />
+      <ellipse className={styles.skillBlush} cx="17.1" cy="17.4" rx="1.4" ry="0.8" />
       <g ref={eyesRef} className={styles.skillEyes}>
         <g ref={lidsRef} className={styles.skillLids}>
           <path d="M15 13v2" />

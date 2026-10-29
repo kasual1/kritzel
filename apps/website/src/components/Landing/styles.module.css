@@ -1438,6 +1438,28 @@
   transform-origin: 12px 14px;
 }
 
+/* Blushing cheeks below the eyes, slowly deepening and fading again. */
+.skillBlush {
+  fill: #fb7185;
+  stroke: none;
+  opacity: 0.5;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: landing-blush 4s ease-in-out infinite;
+}
+
+@keyframes landing-blush {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1);
+  }
+}
+
 .skillIcon {
   display: block;
   width: 56px;
@@ -1633,6 +1655,7 @@
   .grassImageAnchor,
   .frameworkTileMotion,
   .skillAntenna,
+  .skillBlush,
   .faqAnswer {
     animation: none !important;
   }
