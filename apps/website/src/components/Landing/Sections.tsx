@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import DomCanvasDemo from "./DomCanvasDemo";
@@ -455,6 +455,7 @@ function BotIcon() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const eyesRef = useRef<SVGGElement | null>(null);
   const lidsRef = useRef<SVGGElement | null>(null);
+  const blushFilterId = useId();
   const antennaRef = useRef<SVGGElement | null>(null);
 
   useEffect(() => {
@@ -528,14 +529,26 @@ function BotIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
+      <defs>
+        {/* Softens the cheeks into a grainy blush: blurred, then speckled by fine noise in its alpha. */}
+        <filter id={blushFilterId} filterUnits="userSpaceOnUse" x="3" y="13" width="18" height="8" colorInterpolationFilters="sRGB">
+          <feGaussianBlur stdDeviation="0.5" result="soft" />
+          <feTurbulence type="fractalNoise" baseFrequency="2.5" seed="3" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2 1.6" result="grain" />
+          <feComposite in="soft" in2="grain" operator="in" />
+        </filter>
+      </defs>
       <g ref={antennaRef} className={styles.skillAntennaSpin}>
         <path className={styles.skillAntenna} d="M12 8V4H8" />
+      </g>
+      {/* Before the face's outline, which covers whatever of the blur spreads past it. */}
+      <g filter={`url(#${blushFilterId})`}>
+        <ellipse className={styles.skillBlush} cx="7" cy="17.3" rx="1.6" ry="1" />
+        <ellipse className={styles.skillBlush} cx="17" cy="17.3" rx="1.6" ry="1" />
       </g>
       <rect width="16" height="12" x="4" y="8" rx="2" />
       <path d="M2 14h2" />
       <path d="M20 14h2" />
-      <ellipse className={styles.skillBlush} cx="6.9" cy="17.4" rx="1.4" ry="0.8" />
-      <ellipse className={styles.skillBlush} cx="17.1" cy="17.4" rx="1.4" ry="0.8" />
       <g ref={eyesRef} className={styles.skillEyes}>
         <g ref={lidsRef} className={styles.skillLids}>
           <path d="M15 13v2" />
