@@ -2,6 +2,7 @@ import { KritzelSelectionGroup } from './selection-group.class';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelGroup } from './group.class';
+import { KritzelLine } from './line.class';
 
 describe('KritzelSelectionGroup', () => {
   let selectionGroup: KritzelSelectionGroup;
@@ -90,6 +91,12 @@ describe('KritzelSelectionGroup', () => {
     Object.assign(obj, overrides);
     mockObjectsStore.push(obj);
     return obj;
+  }
+
+  function createMockLine(overrides: Partial<KritzelBaseObject<HTMLElement>> = {}): KritzelLine {
+    const line = createMockObject({ __class__: 'KritzelLine', ...overrides } as any);
+    Object.setPrototypeOf(line, KritzelLine.prototype);
+    return line as unknown as KritzelLine;
   }
 
   describe('constructor', () => {
@@ -549,8 +556,7 @@ describe('KritzelSelectionGroup', () => {
       const obj = createMockObject({ id: 'obj-1', translateX: 0, translateY: 0, width: 50, height: 50 });
       obj.rotate = jest.fn();
 
-      const line = createMockObject({ id: 'line-1', translateX: 0, translateY: 0, width: 50, height: 50 });
-      line.__class__ = 'KritzelLine';
+      const line = createMockLine({ id: 'line-1', translateX: 0, translateY: 0, width: 50, height: 50 });
       (line as unknown as { endAnchor: { objectId: string } }).endAnchor = { objectId: 'external-1' };
       line.rotate = jest.fn();
 
@@ -861,10 +867,7 @@ describe('KritzelSelectionGroup', () => {
 
   describe('hasExternalAnchoredLineConnections', () => {
     it('should return true when a selected line has an anchor to an unselected object', () => {
-      const line = createMockObject({
-        id: 'line-1',
-        __class__: 'KritzelLine',
-      } as any) as any;
+      const line = createMockLine({ id: 'line-1' }) as any;
       line.startAnchor = { objectId: 'external-obj' };
       line.endAnchor = undefined;
 
@@ -874,10 +877,7 @@ describe('KritzelSelectionGroup', () => {
     });
 
     it('should return false when line anchors only reference selected objects', () => {
-      const line = createMockObject({
-        id: 'line-1',
-        __class__: 'KritzelLine',
-      } as any) as any;
+      const line = createMockLine({ id: 'line-1' }) as any;
       line.startAnchor = { objectId: 'shape-1' };
       line.endAnchor = undefined;
 
@@ -951,7 +951,7 @@ describe('KritzelSelectionGroup', () => {
       selectionGroup.scale = 1;
       selectionGroup.padding = 0;
 
-      const lineObj = createMockObject({ id: 'line-1', __class__: 'KritzelLine' } as any);
+      const lineObj = createMockLine({ id: 'line-1' });
       lineObj.hitTest = jest.fn(() => true);
       selectionGroup.objectIds = ['line-1'];
 

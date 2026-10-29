@@ -5,7 +5,6 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelLine } from '../objects/line.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 import { KritzelReviver } from '../core/reviver.class';
 import { KritzelPasteIntentProviderRegistry } from '../registries/paste-intent-provider.registry';
@@ -72,7 +71,7 @@ export class KritzelClipboardManager {
   private serializeForClipboard(object: KritzelBaseObject<any>): SerializedClipboardObject {
     const serialized = (typeof object.serialize === 'function' ? object.serialize() : object) as SerializedClipboardObject;
 
-    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+    if (object instanceof KritzelGroup) {
       serialized.__children__ = object.children.map(child => this.serializeForClipboard(child));
     }
 
@@ -115,7 +114,7 @@ export class KritzelClipboardManager {
       return null;
     }
 
-    if (__children__ && KritzelClassHelper.isInstanceOf<KritzelGroup>(revived, 'KritzelGroup')) {
+    if (__children__ && revived instanceof KritzelGroup) {
       const children = __children__.map(child => this.reviveClipboardObject(child)).filter((child): child is KritzelBaseObject<any> => child != null);
 
       revived._pendingChildren = children;
@@ -133,12 +132,12 @@ export class KritzelClipboardManager {
    */
   private regenerateIdsAndRemapAnchors(topLevel: KritzelBaseObject<any>[]): void {
     const all: KritzelBaseObject<any>[] = [];
-    const hasOnlyTopLevelLines = topLevel.length > 0 && topLevel.every(object => KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine'));
+    const hasOnlyTopLevelLines = topLevel.length > 0 && topLevel.every(object => object instanceof KritzelLine);
 
     const collect = (objects: KritzelBaseObject<any>[]): void => {
       for (const object of objects) {
         all.push(object);
-        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+        if (object instanceof KritzelGroup) {
           collect(object._pendingChildren);
         }
       }
@@ -154,11 +153,11 @@ export class KritzelClipboardManager {
     }
 
     for (const object of all) {
-      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+      if (object instanceof KritzelGroup) {
         object.childIds = object.childIds.map(id => idMap.get(id) ?? id);
       }
 
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
+      if (object instanceof KritzelLine) {
         if (object.startAnchor && idMap.has(object.startAnchor.objectId)) {
           object.startAnchor = { objectId: idMap.get(object.startAnchor.objectId)! };
         } else if (hasOnlyTopLevelLines) {
@@ -341,7 +340,7 @@ export class KritzelClipboardManager {
         .sort((a, b) => a.anchor - b.anchor)
         .map(({ object }) => object);
     const sortPendingChildren = (object: KritzelBaseObject<any>): void => {
-      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+      if (object instanceof KritzelGroup) {
         object._pendingChildren.forEach(sortPendingChildren);
         object._pendingChildren = sortByStackOrder(object._pendingChildren);
       }
@@ -366,7 +365,7 @@ export class KritzelClipboardManager {
 
           child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
 
-          if (KritzelClassHelper.isInstanceOf<KritzelGroup>(child, 'KritzelGroup')) {
+          if (child instanceof KritzelGroup) {
             flushPendingChildren(child);
           }
 
@@ -385,7 +384,7 @@ export class KritzelClipboardManager {
 
         obj.updatePosition(obj.translateX + offsetX, obj.translateY + offsetY);
 
-        if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
+        if (obj instanceof KritzelGroup) {
           flushPendingChildren(obj);
         }
 

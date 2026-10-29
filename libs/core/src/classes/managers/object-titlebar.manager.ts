@@ -1,7 +1,8 @@
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelGroup } from '../objects/group.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelSelectionBox } from '../objects/selection-box.class';
 import {
   KRITZEL_TITLEBAR_DEFAULT_HEIGHT,
   KRITZEL_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH,
@@ -181,7 +182,7 @@ export class KritzelObjectTitlebarManager {
 
     const childIds = new Set<string>();
     for (const candidate of candidates) {
-      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(candidate, 'KritzelGroup')) {
+      if (candidate instanceof KritzelGroup) {
         for (const childId of candidate.childIds) {
           childIds.add(childId);
         }
@@ -192,8 +193,8 @@ export class KritzelObjectTitlebarManager {
       candidate =>
         !candidate.markedForRemoval &&
         !childIds.has(candidate.id) &&
-        !KritzelClassHelper.isInstanceOf(candidate, 'KritzelSelectionGroup') &&
-        !KritzelClassHelper.isInstanceOf(candidate, 'KritzelSelectionBox') &&
+        !(candidate instanceof KritzelSelectionGroup) &&
+        !(candidate instanceof KritzelSelectionBox) &&
         objectConfigManager.hasTitlebar(candidate),
     );
   }
@@ -211,7 +212,7 @@ export class KritzelObjectTitlebarManager {
 
     const parentOf = new Map<string, string>();
     for (const candidate of candidates) {
-      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(candidate, 'KritzelGroup')) {
+      if (candidate instanceof KritzelGroup) {
         for (const childId of candidate.childIds) {
           parentOf.set(childId, candidate.id);
         }
@@ -318,7 +319,7 @@ export class KritzelObjectTitlebarManager {
       objectType: owner.__class__,
       // Resolving group children scans the store, so only do it when a callback asks for them.
       get children(): KritzelBaseObject[] {
-        return KritzelClassHelper.isInstanceOf<KritzelGroup>(owner, 'KritzelGroup') ? owner.children : [];
+        return owner instanceof KritzelGroup ? owner.children : [];
       },
       isActive,
       title,

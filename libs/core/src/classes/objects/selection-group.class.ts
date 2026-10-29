@@ -2,7 +2,6 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
 import { KritzelBaseObject } from './base-object.class';
 import { KritzelGroup } from './group.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ThemeAwareColor } from '../../constants/color-palette.constants';
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelLine } from './line.class';
@@ -267,7 +266,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
 
     // Groups need their own child snapshots aligned with the current transform.
     for (const obj of children) {
-      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
+      if (obj instanceof KritzelGroup) {
         obj.finalize();
       }
     }
@@ -288,7 +287,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const descendantIds = new Set<string>();
     for (const obj of children) {
       obj.isSelected = false;
-      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
+      if (obj instanceof KritzelGroup) {
         KritzelGroup.collectDescendantIds(obj as KritzelGroup, descendantIds);
       }
     }
@@ -534,7 +533,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     const selectedIds = new Set(children.map(child => child.id));
 
     for (const child of children) {
-      if (!KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+      if (!(child instanceof KritzelLine)) {
         continue;
       }
 
@@ -709,7 +708,7 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
       const anchorTargetIds = new Set<string>();
       for (const child of children) {
         anchorTargetIds.add(child.id);
-        if (KritzelClassHelper.isInstanceOf<KritzelLine>(child, 'KritzelLine')) {
+        if (child instanceof KritzelLine) {
           const line = child as KritzelLine;
           if (line.startAnchor) anchorTargetIds.add(line.startAnchor.objectId);
           if (line.endAnchor) anchorTargetIds.add(line.endAnchor.objectId);

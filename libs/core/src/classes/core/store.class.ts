@@ -5,14 +5,13 @@ import { KritzelText } from '../objects/text.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelLine } from '../objects/line.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
 import { StateChangeListener, StatePropertyKey } from '../../types/state.types';
 import { KritzelObjectMap } from '../structures/object-map.structure';
 import { KritzelBaseObject } from '../objects/base-object.class';
-import type { KritzelGroup } from '../objects/group.class';
+import { KritzelGroup } from '../objects/group.class';
 
 /**
  * Central state management store for the Kritzel engine.
@@ -217,7 +216,7 @@ export class KritzelStore {
    * @returns The selected `KritzelGroup` objects; empty when nothing is selected
    */
   get selectedGroups(): KritzelGroup[] {
-    return (this.selectionGroup?.objects ?? []).filter(obj => KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup'));
+    return (this.selectionGroup?.objects ?? []).filter(obj => obj instanceof KritzelGroup);
   }
 
   /**
@@ -308,7 +307,7 @@ export class KritzelStore {
    * @returns The incomplete line object, or null if no line is being drawn
    */
   get currentLine(): KritzelLine | null {
-    const drawingLines = this.objects.filter(o => KritzelClassHelper.isInstanceOf<KritzelLine>(o, 'KritzelLine') && (o as KritzelLine).isCompleted === false);
+    const drawingLines = this.objects.filter(o => o instanceof KritzelLine && (o as KritzelLine).isCompleted === false);
     return drawingLines.length > 0 ? (drawingLines[0] as KritzelLine) : null;
   }
 

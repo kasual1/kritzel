@@ -523,8 +523,8 @@ describe('KritzelStore', () => {
     });
 
     it('should return only the groups of the selection', () => {
-      const group = { id: 'group', __class__: 'KritzelGroup' };
-      const path = { id: 'path', __class__: 'KritzelPath' };
+      const group = Object.assign(Object.create(KritzelGroup.prototype), { id: 'group', __class__: 'KritzelGroup' });
+      const path = Object.assign(Object.create(KritzelPath.prototype), { id: 'path', __class__: 'KritzelPath' });
       const selGroup = new KritzelSelectionGroup();
       Object.defineProperty(selGroup, 'objects', { get: () => [group, path] });
       mockState.objects.insert(selGroup);

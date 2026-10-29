@@ -7,7 +7,6 @@ import { KritzelImage } from '../classes/objects/image.class';
 import { KritzelGroup } from '../classes/objects/group.class';
 import { KritzelDynamicObject } from '../classes/objects/dynamic-object.class';
 import { KritzelIframeObject } from '../classes/objects/iframe.class';
-import { KritzelClassHelper } from './class.helper';
 import { KritzelColorHelper } from './color.helper';
 import { ThemeName } from '../interfaces/theme.interface';
 import { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
@@ -139,7 +138,7 @@ export class KritzelSvgExportHelper {
     const result: KritzelBaseObject[] = [];
     
     for (const obj of objects) {
-      if (KritzelClassHelper.isInstanceOf<KritzelGroup>(obj, 'KritzelGroup')) {
+      if (obj instanceof KritzelGroup) {
         result.push(...this.flattenObjects(obj.children));
       } else {
         result.push(obj);
@@ -173,7 +172,7 @@ export class KritzelSvgExportHelper {
       return dataUrls;
     }
 
-    const images = this.flattenObjects(objects).filter((obj): obj is KritzelImage => KritzelClassHelper.isInstanceOf<KritzelImage>(obj, 'KritzelImage'));
+    const images = this.flattenObjects(objects).filter((obj): obj is KritzelImage => obj instanceof KritzelImage);
 
     await Promise.all(
       images.map(async image => {
@@ -266,7 +265,7 @@ export class KritzelSvgExportHelper {
     const defs: string[] = [];
 
     for (const obj of objects) {
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) {
+      if (obj instanceof KritzelLine) {
         if (obj.hasStartArrow) {
           defs.push(this.generateArrowMarker(obj, 'start', theme));
         }
@@ -314,28 +313,28 @@ export class KritzelSvgExportHelper {
     imageDataUrls?: Map<string, string>,
     rasterSafeForCanvas: boolean = false,
   ): string {
-    if (KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')) {
+    if (object instanceof KritzelPath) {
       return this.pathToSvg(object, theme);
     }
-    if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
+    if (object instanceof KritzelLine) {
       return this.lineToSvg(object, theme);
     }
-    if (KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape')) {
+    if (object instanceof KritzelShape) {
       return this.shapeToSvg(object, theme);
     }
-    if (KritzelClassHelper.isInstanceOf<KritzelText>(object, 'KritzelText')) {
+    if (object instanceof KritzelText) {
       return this.textToSvg(object, theme, rasterSafeForCanvas);
     }
-    if (KritzelClassHelper.isInstanceOf<KritzelImage>(object, 'KritzelImage')) {
+    if (object instanceof KritzelImage) {
       return this.imageToSvg(object, imageDataUrls);
     }
-    if (KritzelClassHelper.isInstanceOf<KritzelDynamicObject>(object, 'KritzelDynamicObject')) {
+    if (object instanceof KritzelDynamicObject) {
       return this.dynamicObjectToSvg(object, rasterSafeForCanvas);
     }
-    if (KritzelClassHelper.isInstanceOf<KritzelIframeObject>(object, 'KritzelIframeObject')) {
+    if (object instanceof KritzelIframeObject) {
       return this.iframeObjectToSvg(object);
     }
-    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+    if (object instanceof KritzelGroup) {
       return this.groupToSvg(object, theme, imageDataUrls, rasterSafeForCanvas);
     }
 

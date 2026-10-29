@@ -4,7 +4,9 @@ import { KritzelLine } from '../objects/line.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
-import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelGroup } from '../objects/group.class';
+import { KritzelPath } from '../objects/path.class';
+import { KritzelShape } from '../objects/shape.class';
 import { SnapCandidate, SnapPreviewCandidate } from '../../interfaces/anchor.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 
@@ -16,7 +18,6 @@ jest.mock('../objects/selection-group.class');
 jest.mock('../objects/shape.class');
 jest.mock('../objects/path.class');
 jest.mock('../../helpers/geometry.helper');
-jest.mock('../../helpers/class.helper');
 
 describe('KritzelAnchorManager', () => {
   let manager: KritzelAnchorManager;
@@ -83,8 +84,8 @@ describe('KritzelAnchorManager', () => {
     return line;
   };
 
-  const createMockObject = (overrides: Partial<KritzelBaseObject<Element>> = {}): KritzelBaseObject<Element> => {
-    const obj = {
+  const createMockObject = (overrides: Partial<KritzelBaseObject<Element>> = {}, prototype: object = Object.prototype): KritzelBaseObject<Element> => {
+    const fields = {
       __class__: 'KritzelBaseObject',
       id: 'obj-1',
       x: 0,
@@ -111,6 +112,8 @@ describe('KritzelAnchorManager', () => {
         };
       },
     };
+    // Copy property descriptors so the getters stay live on objects with a class prototype
+    const obj = Object.create(prototype, Object.getOwnPropertyDescriptors(fields));
     return Object.assign(obj, overrides) as unknown as KritzelBaseObject<Element>;
   };
 
@@ -119,7 +122,7 @@ describe('KritzelAnchorManager', () => {
 
   const createMockGroup = (id: string, zIndex: number, children: KritzelBaseObject<Element>[]): KritzelBaseObject<Element> => {
     children.forEach(child => knownObjects.set(child.id, child));
-    return createMockObject({ __class__: 'KritzelGroup', id, zIndex, childIds: children.map(child => child.id) } as Partial<KritzelBaseObject<Element>>);
+    return createMockObject({ __class__: 'KritzelGroup', id, zIndex, childIds: children.map(child => child.id) } as Partial<KritzelBaseObject<Element>>, KritzelGroup.prototype);
   };
 
   // Resolves objects by id in the given order.
@@ -158,11 +161,6 @@ describe('KritzelAnchorManager', () => {
     } as unknown as jest.Mocked<KritzelCore>;
 
     manager = new KritzelAnchorManager(mockCore);
-
-    // Default: KritzelClassHelper.isInstanceOf compares __class__ like the real implementation
-    (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation(
-      (object: any, className: string) => !!object && object.__class__ === className,
-    );
   });
 
   afterEach(() => {
@@ -725,9 +723,6 @@ describe('KritzelAnchorManager', () => {
 
     describe('z-order ties', () => {
       beforeEach(() => {
-        (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation(
-          (obj: any, className: string) => obj?.__class__ === className
-        );
         (KritzelGeometryHelper.isPointInPolygon as jest.Mock).mockReturnValue(true);
       });
 
@@ -950,7 +945,6 @@ describe('KritzelAnchorManager', () => {
     it('should return null when selected object is not a line', () => {
       const obj = createMockObject({ id: 'obj-1' });
       mockCore.store.selectionGroup = { objects: [obj] };
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
 
       const result = manager.getAnchorLinesRenderData();
 
@@ -960,7 +954,6 @@ describe('KritzelAnchorManager', () => {
     it('should return null when line has no anchors', () => {
       const line = createMockLine({ id: 'line-1' });
       mockCore.store.selectionGroup = { objects: [line] };
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(true);
 
       const result = manager.getAnchorLinesRenderData();
 
@@ -977,9 +970,6 @@ describe('KritzelAnchorManager', () => {
       const targetObject = createMockObject({ id: 'obj-1' });
       mockCore.store.selectionGroup = { objects: [line] };
       mockCore.store.allNonSelectionObjects = [targetObject];
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation(
-        (_obj: any, className: string) => className === 'KritzelLine'
-      );
       // Mock getObjectById to return the target
       mockObjectsMap.filter.mockImplementation((fn: (o: any) => boolean) => {
         if (fn(targetObject)) return [targetObject];
@@ -1243,7 +1233,7 @@ describe('KritzelAnchorManager', () => {
         startAnchor: { objectId: 'obj-1' },
       });
 
-      // KritzelLine instances must pass the __class__ check
+      // KritzelLine instances must pass the instanceof check
       mockCore.store.allObjects = [line1, line2];
 
       manager.rebuildIndex();
@@ -1507,26 +1497,24 @@ describe('KritzelAnchorManager', () => {
         controlX: 50,
         controlY: 50,
       });
-      const pathObject = createMockObject({ id: 'path-1' }) as any;
+      const pathObject = createMockObject({ id: 'path-1' }, KritzelPath.prototype) as any;
       pathObject.__class__ = 'KritzelPath';
       pathObject.points = [[0, 0], [50, 50], [100, 0]];
       pathObject.strokeWidth = 4;
       pathObject.scale = 1;
       pathObject.rotation = 0;
 
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation(
-        (_obj: any, className: string) => className === 'KritzelPath'
-      );
+      const findCurveExitPointForPathSpy = jest.spyOn(manager as any, 'findCurveExitPointForPath');
 
       manager.computeAnchorClipInfo(line, 'start', pathObject);
 
       // Path clip detection was used
-      expect(KritzelClassHelper.isInstanceOf).toHaveBeenCalled();
+      expect(findCurveExitPointForPathSpy).toHaveBeenCalledWith(line, 'start', pathObject);
     });
 
     it('should handle shape objects with custom clip polygon', () => {
       const line = createMockLine({ id: 'line-1' });
-      const shapeObject = createMockObject({ id: 'shape-1' }) as any;
+      const shapeObject = createMockObject({ id: 'shape-1' }, KritzelShape.prototype) as any;
       shapeObject.__class__ = 'KritzelShape';
       shapeObject.getClipPolygon = jest.fn().mockReturnValue([
         { x: 0, y: 50 },
@@ -1535,9 +1523,6 @@ describe('KritzelAnchorManager', () => {
         { x: 50, y: 100 },
       ]);
 
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation(
-        (_obj: any, className: string) => className === 'KritzelShape'
-      );
       (KritzelGeometryHelper.getLinePointsArrayIntersection as jest.Mock).mockReturnValue({ x: 50, y: 0 });
 
       const result = manager.computeAnchorClipInfo(line, 'start', shapeObject);

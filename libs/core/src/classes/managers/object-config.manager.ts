@@ -2,7 +2,6 @@ import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
 
 type KritzelObjectConfigKey = keyof KritzelObjectConfig;
@@ -57,7 +56,7 @@ export class KritzelObjectConfigManager {
 
   /** Applies a check to an object and everything a transform of it also transforms. */
   private allowsAll(object: KritzelBaseObject<any>, check: (object: KritzelBaseObject<any>) => boolean): boolean {
-    if (KritzelClassHelper.isInstanceOf<KritzelSelectionGroup>(object, 'KritzelSelectionGroup')) {
+    if (object instanceof KritzelSelectionGroup) {
       return object.objects.every(selected => this.allowsAll(selected, check));
     }
 
@@ -65,7 +64,7 @@ export class KritzelObjectConfigManager {
       return false;
     }
 
-    if (KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup')) {
+    if (object instanceof KritzelGroup) {
       return object.childIds.every(childId => {
         const child = this._core.store.objects.findById(childId);
         return !child || this.allowsAll(child, check);

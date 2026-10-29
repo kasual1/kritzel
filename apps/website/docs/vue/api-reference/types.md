@@ -373,7 +373,7 @@ interface KritzelObjectConfig {
 
 The configuration is local to your app and neither persisted nor synced. Pass a new object to update it.
 
-Each option is a fixed value for every object, or a function deciding per object. Functions are called synchronously while the engine renders or handles input, so they must be cheap and must not return a promise. A function that throws or returns a promise resolves to the option's default and logs a warning once. Any return value other than a boolean also resolves to the default. Compare `object.__class__` (for example `'KritzelGroup'`) rather than using `instanceof`, which fails when the app bundles more than one copy of the engine, and prefer `childIds` over `children` to inspect a group's children, for example `object => object.__class__ === 'KritzelGroup' && (object as KritzelGroup).childIds.length > 1`.
+Each option is a fixed value for every object, or a function deciding per object. Functions are called synchronously while the engine renders or handles input, so they must be cheap and must not return a promise. A function that throws or returns a promise resolves to the option's default and logs a warning once. Any return value other than a boolean also resolves to the default. Check types with `instanceof` against the classes your Kritzel package exports or compare `object.__class__` (for example `'KritzelGroup'`), and prefer `childIds` over `children` to inspect a group's children, for example `object => object.__class__ === 'KritzelGroup' && (object as KritzelGroup).childIds.length > 1`.
 
 ## Object Titlebar Types
 

@@ -17,8 +17,7 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelPath } from '../objects/path.class';
 import { KritzelGeometryHelper } from '../../helpers/geometry.helper';
-import { KritzelClassHelper } from '../../helpers/class.helper';
-import type { KritzelGroup } from '../objects/group.class';
+import { KritzelGroup } from '../objects/group.class';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelPolygon } from '../../interfaces/polygon.interface';
 
@@ -460,7 +459,7 @@ export class KritzelAnchorManager {
     if (!selectionGroup || selectionGroup.objects.length !== 1) return null;
 
     const selectedObject = selectionGroup.objects[0];
-    if (!KritzelClassHelper.isInstanceOf<KritzelLine>(selectedObject, 'KritzelLine')) return null;
+    if (!(selectedObject instanceof KritzelLine)) return null;
 
     const line = selectedObject as KritzelLine;
 
@@ -710,7 +709,7 @@ export class KritzelAnchorManager {
     const objects = this._core.store.allObjects;
 
     for (const object of objects) {
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
+      if (object instanceof KritzelLine) {
         if (object.startAnchor) {
           this.addToIndex(object.startAnchor.objectId, object.id, 'start');
         }
@@ -790,7 +789,7 @@ export class KritzelAnchorManager {
       return null;
     }
     const object = objects[0];
-    return KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine') ? object : null;
+    return object instanceof KritzelLine ? object : null;
   }
 
   /**
@@ -1108,7 +1107,7 @@ export class KritzelAnchorManager {
    */
   private computeCurvedClipInfo(line: KritzelLine, endpoint: 'start' | 'end', targetObject: KritzelBaseObject<Element>): AnchorClipInfo | null {
     // Check for path object (uses stroke edge detection via sampling)
-    if (KritzelClassHelper.isInstanceOf<KritzelPath>(targetObject, 'KritzelPath')) {
+    if (targetObject instanceof KritzelPath) {
       // For curved lines to paths, sample along the curve to find stroke edge
       const path = targetObject as KritzelPath;
       return this.findCurveExitPointForPath(line, endpoint, path);
@@ -1676,7 +1675,7 @@ export class KritzelAnchorManager {
    */
   private getClipPolygonForObject(object: KritzelBaseObject<Element>): KritzelPoint[] | null {
     // Check if the object is a KritzelShape with a custom clip polygon
-    if (KritzelClassHelper.isInstanceOf<KritzelShape>(object, 'KritzelShape')) {
+    if (object instanceof KritzelShape) {
       const shape = object as KritzelShape;
       return shape.getClipPolygon();
     }
@@ -1693,7 +1692,7 @@ export class KritzelAnchorManager {
    * @returns The intersection point on the path's stroke edge, or null if not a path or no intersection.
    */
   private getPathClipPoint(object: KritzelBaseObject<Element>, outsidePoint: KritzelPoint): KritzelPoint | null {
-    if (KritzelClassHelper.isInstanceOf<KritzelPath>(object, 'KritzelPath')) {
+    if (object instanceof KritzelPath) {
       const path = object as KritzelPath;
       return path.getClipPoint(outsidePoint);
     }
@@ -1798,7 +1797,7 @@ export class KritzelAnchorManager {
    * @param descendant - The potential descendant.
    */
   private containsDescendant(object: KritzelBaseObject<Element> | undefined, descendant: KritzelBaseObject<Element>, visited = new Set<string>()): boolean {
-    if (!KritzelClassHelper.isInstanceOf<KritzelGroup>(object, 'KritzelGroup') || visited.has(object.id)) {
+    if (!(object instanceof KritzelGroup) || visited.has(object.id)) {
       return false;
     }
     visited.add(object.id);
@@ -1820,7 +1819,7 @@ export class KritzelAnchorManager {
     }
 
     // Exclude line objects - lines cannot be anchored to other lines
-    if (KritzelClassHelper.isInstanceOf<KritzelLine>(object, 'KritzelLine')) {
+    if (object instanceof KritzelLine) {
       return false;
     }
 

@@ -1,5 +1,5 @@
 import { Component, Host, Prop, State, h } from '@stencil/core';
-import { KritzelCore, KritzelPath, KritzelLine, KritzelClassHelper, KritzelRemoteCursorState, IKritzelUser, KritzelViewportOverlayHelper } from '@kritzel/core';
+import { KritzelCore, KritzelPath, KritzelLine, KritzelRemoteCursorState, IKritzelUser, KritzelViewportOverlayHelper } from '@kritzel/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
 const STALE_THRESHOLD_MS = 10_000;
@@ -161,7 +161,7 @@ export class KritzelAwarenessCursors {
       };
     }
 
-    if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine') && !obj.isCompleted) {
+    if (obj instanceof KritzelLine && !obj.isCompleted) {
       return {
         x: (obj.endX - obj.x) / obj.scale + obj.translateX,
         y: (obj.endY - obj.y) / obj.scale + obj.translateY,

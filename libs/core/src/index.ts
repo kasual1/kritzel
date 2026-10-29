@@ -137,7 +137,6 @@ export * from './classes/core/viewport.class';
 export * from './classes/handlers/context-menu.handler';
 export * from './classes/handlers/key.handler';
 export * from './enums/event-button.enum';
-export * from './helpers/class.helper';
 export * from './helpers/event.helper';
 export * from './helpers/svg-export.helper';
 export * from './helpers/viewport-overlay.helper';

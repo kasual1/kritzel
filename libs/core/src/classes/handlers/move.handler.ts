@@ -2,7 +2,6 @@ import { KritzelEventHelper } from '../../helpers/event.helper';
 import { KritzelBaseHandler } from './base.handler';
 import { KritzelCore } from '../core/core.class';
 import { KritzelLine } from '../objects/line.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
 
 /** Threshold in screen pixels for disconnecting anchored lines during drag */
 const ANCHOR_DISCONNECT_THRESHOLD = 30;
@@ -305,7 +304,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
     // If moving lines with other objects (e.g. shapes they might be anchored to), prevent auto-disconnect.
     // Cache objects once to avoid repeated getter calls
     const children = selectionGroup.objects;
-    const onlyLines = children.every(obj => KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine'));
+    const onlyLines = children.every(obj => obj instanceof KritzelLine);
     if (!onlyLines) {
       return;
     }
@@ -318,7 +317,7 @@ export class KritzelMoveHandler extends KritzelBaseHandler {
       }
 
       // Check if this is a line with anchors
-      if (KritzelClassHelper.isInstanceOf<KritzelLine>(obj, 'KritzelLine')) {
+      if (obj instanceof KritzelLine) {
         const line = obj;
         const hasAnchors = line.startAnchor || line.endAnchor;
 

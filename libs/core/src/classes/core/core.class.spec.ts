@@ -29,6 +29,16 @@ jest.mock('../managers/theme.manager');
 jest.mock('./store.class');
 jest.mock('../registries/tool.registry');
 
+/** Builds a fake object that passes `instanceof` checks for the given class without running its constructor. */
+const createWithPrototype = <T>(cls: abstract new (...args: any[]) => T, fields: Record<string, any>): T => {
+  const obj = Object.create(cls.prototype);
+  // Define own data properties so fields shadow getter-only accessors of the prototype (e.g. `objects`).
+  for (const [key, value] of Object.entries(fields)) {
+    Object.defineProperty(obj, key, { value, writable: true, enumerable: true, configurable: true });
+  }
+  return obj;
+};
+
 describe('KritzelCore', () => {
   let core: KritzelCore;
   let mockEngine: any;
@@ -916,7 +926,7 @@ describe('KritzelCore', () => {
         isSelected: true,
       } as unknown as KritzelBaseObject<any>;
 
-      const orphanGroup = {
+      const orphanGroup = createWithPrototype(KritzelSelectionGroup, {
         id: 'orphan-sg',
         __class__: 'KritzelSelectionGroup',
         userId: undefined,
@@ -924,7 +934,7 @@ describe('KritzelCore', () => {
         deselectAllChildren: jest.fn(() => {
           orphanChild.isSelected = false;
         }),
-      } as unknown as KritzelSelectionGroup;
+      });
 
       mockObjectsMap.allObjects.mockReturnValue([orphanGroup]);
 
@@ -999,7 +1009,7 @@ describe('KritzelCore', () => {
         isSelected: true,
       } as unknown as KritzelBaseObject<any>;
 
-      const referencedGroup = {
+      const referencedGroup = createWithPrototype(KritzelSelectionGroup, {
         id: 'sg-1',
         __class__: 'KritzelSelectionGroup',
         userId: undefined,
@@ -1007,7 +1017,7 @@ describe('KritzelCore', () => {
         deselectAllChildren: jest.fn(() => {
           selectedChild.isSelected = false;
         }),
-      } as unknown as KritzelSelectionGroup;
+      });
 
       const orphanChild = {
         id: 'obj-2',
@@ -1015,7 +1025,7 @@ describe('KritzelCore', () => {
         isSelected: true,
       } as unknown as KritzelBaseObject<any>;
 
-      const orphanGroup = {
+      const orphanGroup = createWithPrototype(KritzelSelectionGroup, {
         id: 'sg-2',
         __class__: 'KritzelSelectionGroup',
         userId: undefined,
@@ -1023,7 +1033,7 @@ describe('KritzelCore', () => {
         deselectAllChildren: jest.fn(() => {
           orphanChild.isSelected = false;
         }),
-      } as unknown as KritzelSelectionGroup;
+      });
 
       mockStore.selectionGroup = referencedGroup;
       mockObjectsMap.allObjects.mockReturnValue([referencedGroup, orphanGroup]);
@@ -1130,7 +1140,8 @@ describe('KritzelCore', () => {
 
   // Plain store objects for the z-order tests; groups reference their children via childIds.
   const createObj = (id: string, zIndex: number) => ({ id, zIndex, onAfterUpdate: jest.fn() }) as any;
-  const createGroup = (id: string, zIndex: number, childIds: string[]) => ({ ...createObj(id, zIndex), __class__: 'KritzelGroup', childIds }) as any;
+  const createGroup = (id: string, zIndex: number, childIds: string[], fields: Record<string, any> = {}) =>
+    createWithPrototype(KritzelGroup, { ...createObj(id, zIndex), __class__: 'KritzelGroup', childIds, ...fields }) as any;
   const zIndices = (...objs: any[]) => objs.map(obj => obj.zIndex);
 
   /** Sets the objects of the whole workspace (store order), independent of the viewport. */
@@ -1546,7 +1557,7 @@ describe('KritzelCore', () => {
       const a = createShape('a', 1);
       const b = createShape('b', 2);
       const c = createShape('c', 3);
-      const parent = { ...createGroup('parent', 3, ['a', 'b', 'c']), finalize: jest.fn() };
+      const parent = createGroup('parent', 3, ['a', 'b', 'c'], { finalize: jest.fn() });
       const objs = [a, b, c, parent];
       setStoreObjects(...objs);
       const store = trackStoreWrites(objs);
@@ -1565,7 +1576,7 @@ describe('KritzelCore', () => {
       const a = createShape('a', 1);
       const b = createShape('b', 2);
       const c = createShape('c', 3);
-      const parent = { ...createGroup('parent', 3, ['a', 'b', 'c']), rotation: Math.PI / 4, finalize: jest.fn() };
+      const parent = createGroup('parent', 3, ['a', 'b', 'c'], { rotation: Math.PI / 4, finalize: jest.fn() });
       setStoreObjects(a, b, c, parent);
       select(a, b);
 
@@ -1582,7 +1593,7 @@ describe('KritzelCore', () => {
       const d = createShape('d', 3);
       const inner = createGroup('inner', 3, ['c', 'd']);
       const y = createShape('y', 4);
-      const outer = { ...createGroup('outer', 4, ['x', 'inner', 'y']), rotatedPolygon: x.rotatedPolygon };
+      const outer = createGroup('outer', 4, ['x', 'inner', 'y'], { rotatedPolygon: x.rotatedPolygon });
       const top = createShape('top', 5);
       setStoreObjects(x, c, d, inner, y, outer, top);
       select(inner, top);
@@ -1694,7 +1705,7 @@ describe('KritzelCore', () => {
         const a = createShape('a', 1);
         const b = createShape('b', 2);
         const c = createShape('c', 3);
-        const parent = { ...createGroup('parent', 3, ['a', 'b', 'c']), finalize: jest.fn() };
+        const parent = createGroup('parent', 3, ['a', 'b', 'c'], { finalize: jest.fn() });
         setStoreObjects(a, b, c, parent);
 
         const group = core.group([a, b]);
@@ -1790,7 +1801,7 @@ describe('KritzelCore', () => {
       const d = createChild('d', 3);
       const inner = createKritzelGroup('inner', 3, ['c', 'd']);
       const y = createChild('y', 4);
-      const parent = { ...createGroup('parent', 4, ['x', 'inner', 'y']), finalize: jest.fn() };
+      const parent = createGroup('parent', 4, ['x', 'inner', 'y'], { finalize: jest.fn() });
       const live = setMutableStoreObjects(x, c, d, inner, y, parent);
       select(inner);
 
@@ -1953,7 +1964,7 @@ describe('KritzelCore', () => {
         const c = createChild('c', 2);
         const d = createChild('d', 3);
         const inner = createKritzelGroup('inner', 3, ['c', 'd']);
-        const parent = { ...createGroup('parent', 3, ['x', 'inner']), finalize: jest.fn() };
+        const parent = createGroup('parent', 3, ['x', 'inner'], { finalize: jest.fn() });
         setMutableStoreObjects(x, c, d, inner, parent);
 
         core.ungroup([inner]);
@@ -2128,7 +2139,7 @@ describe('KritzelCore', () => {
     it('should sort a group above its tied top member regardless of query order', () => {
       const below = { id: 'below', zIndex: 1 } as any;
       const member = { id: 'member', zIndex: 2 } as any;
-      const group = { id: 'group', zIndex: 2, __class__: 'KritzelGroup' } as any;
+      const group = createWithPrototype(KritzelGroup, { id: 'group', zIndex: 2, __class__: 'KritzelGroup' }) as any;
 
       mockObjectsMap.query.mockReturnValue([group, member, below]);
       expect(core.getObjectsInViewport()).toEqual([below, member, group]);
@@ -2216,13 +2227,8 @@ describe('KritzelCore', () => {
       expect(core.displaySelectionLineUI(obj)).toBe(false);
     });
 
-    it('should show line UI and hide group UI for a line created from a different KritzelLine class copy', () => {
-      // Consumer-constructed objects (e.g. imported via a framework wrapper package) are
-      // not instances of the engine's own KritzelLine class, but carry the same __class__.
-      class ForeignKritzelLine {
-        __class__ = 'KritzelLine';
-      }
-      const line = Object.assign(new ForeignKritzelLine(), { id: 'line-1', isSelected: true }) as any;
+    it('should show line UI and hide group UI for a single selected line in a local selection group', () => {
+      const line = createWithPrototype(KritzelLine, { __class__: 'KritzelLine', id: 'line-1', isSelected: true }) as any;
       const localGroup = Object.create(KritzelSelectionGroup.prototype);
       localGroup.id = 'group-1';
       localGroup.isSelected = true;

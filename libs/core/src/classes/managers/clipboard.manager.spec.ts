@@ -1,6 +1,7 @@
 import { KritzelClipboardManager } from './clipboard.manager';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelClassHelper } from '../../helpers/class.helper';
+import { KritzelGroup } from '../objects/group.class';
+import { KritzelLine } from '../objects/line.class';
 import { KritzelReviver } from '../core/reviver.class';
 import { KritzelImage } from '../objects/image.class';
 import imageCompression from 'browser-image-compression';
@@ -16,11 +17,14 @@ jest.mock('../objects/selection-group.class', () => ({
   },
 }));
 
-jest.mock('../../helpers/class.helper', () => ({
-  KritzelClassHelper: {
-    isInstanceOf: jest.fn().mockReturnValue(false),
-  },
-}));
+/** Builds a fake object whose prototype is the given class, so `instanceof` checks match. */
+const withPrototype = (cls: { prototype: object }, fields: Record<string, any>): any => Object.assign(Object.create(cls.prototype), fields);
+
+/** Prototypes for fake revived objects, keyed by their `__class__`. */
+const PROTOTYPES_BY_CLASS: Record<string, { prototype: object }> = {
+  KritzelGroup,
+  KritzelLine,
+};
 
 describe('KritzelClipboardManager', () => {
   let manager: KritzelClipboardManager;
@@ -100,16 +104,16 @@ describe('KritzelClipboardManager', () => {
 
     it('embeds group children under __children__', () => {
       const child = { id: 'child', zIndex: 0, serialize: jest.fn().mockReturnValue({ id: 'child', __class__: 'KritzelShape' }) } as any;
-      const group = {
+      // Without a core, a group's children are its pending children.
+      const group = withPrototype(KritzelGroup, {
         id: 'group',
         zIndex: 1,
-        children: [child],
+        _pendingChildren: [child],
         serialize: jest.fn().mockReturnValue({ id: 'group', __class__: 'KritzelGroup' }),
-      } as any;
+      });
       const setData = jest.fn();
 
       mockCore.store.selectionGroup = { objects: [group] };
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, name: string) => name === 'KritzelGroup' && obj.id === 'group');
 
       manager.copy({ clipboardData: { setData } } as any);
 
@@ -163,18 +167,23 @@ describe('KritzelClipboardManager', () => {
   describe('paste', () => {
     const PAYLOAD_PREFIX = 'kritzel-clipboard/v1:';
 
-    const makeRevived = (overrides: Record<string, any> = {}): any => ({
-      id: 'revived-1',
-      zIndex: 1,
-      workspaceId: 'workspace-1',
-      translateX: 100,
-      translateY: 200,
-      rotation: 0,
-      isMounted: true,
-      generateId: jest.fn().mockReturnValue('fresh-1'),
-      updatePosition: jest.fn(),
-      ...overrides,
-    });
+    /** Fake revived object; gets the prototype of the class named by `__class__` (if any) so `instanceof` checks match. */
+    const makeRevived = (overrides: Record<string, any> = {}): any => {
+      const cls = PROTOTYPES_BY_CLASS[overrides.__class__];
+      const fields = {
+        id: 'revived-1',
+        zIndex: 1,
+        workspaceId: 'workspace-1',
+        translateX: 100,
+        translateY: 200,
+        rotation: 0,
+        isMounted: true,
+        generateId: jest.fn().mockReturnValue('fresh-1'),
+        updatePosition: jest.fn(),
+        ...overrides,
+      };
+      return cls ? withPrototype(cls, fields) : fields;
+    };
 
     const makeSelectionGroup = (): any => ({
       addOrRemove: jest.fn(),
@@ -259,7 +268,6 @@ describe('KritzelClipboardManager', () => {
         generateId: jest.fn().mockReturnValue('fresh-line-1'),
       });
 
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, name: string) => obj?.__class__ === name);
       jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValue(revivedLine);
       (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
@@ -284,7 +292,6 @@ describe('KritzelClipboardManager', () => {
         generateId: jest.fn().mockReturnValue('fresh-line-2'),
       });
 
-      (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, name: string) => obj?.__class__ === name);
       jest.spyOn(KritzelReviver.prototype, 'revive').mockReturnValueOnce(firstLine).mockReturnValueOnce(secondLine);
       (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
 
@@ -424,12 +431,7 @@ describe('KritzelClipboardManager', () => {
       beforeEach(() => {
         inserted = {};
         mockCore.addObject.mockImplementation((object: any) => (inserted[object.id] = object.zIndex));
-        (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockImplementation((obj: any, name: string) => obj?.__class__ === name);
-        (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
-      });
-
-      afterEach(() => {
-        (KritzelClassHelper.isInstanceOf as unknown as jest.Mock).mockReturnValue(false);
+          (KritzelSelectionGroup.create as jest.Mock).mockReturnValue(makeSelectionGroup());
       });
 
       /** Puts the entries on the clipboard and lets the reviver return a matching object (keeping its id) per entry. */

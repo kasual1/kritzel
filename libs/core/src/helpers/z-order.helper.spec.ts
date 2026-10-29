@@ -1,6 +1,9 @@
 import { KritzelZOrderHelper, KritzelZOrderItem, KritzelZOrderOperation } from './z-order.helper';
 import type { KritzelBaseObject } from '../classes/objects/base-object.class';
-import type { KritzelGroup } from '../classes/objects/group.class';
+import { KritzelGroup } from '../classes/objects/group.class';
+
+/** Builds a fake carrying the KritzelGroup prototype, so it counts as a group for instanceof checks. */
+const asGroupInstance = <T extends object>(fields: T): T => Object.assign(Object.create(KritzelGroup.prototype), fields);
 
 // Items are listed in store order; the order matters for tied zIndex values.
 const obj = (id: string, zIndex: number): KritzelZOrderItem => ({ id, zIndex, isGroup: false, childIds: [] });
@@ -410,7 +413,7 @@ describe('KritzelZOrderHelper', () => {
 
   describe('compareStackOrder', () => {
     const object = (id: string, zIndex: number) => ({ id, zIndex, __class__: 'KritzelShape' }) as unknown as KritzelBaseObject;
-    const group = (id: string, zIndex: number) => ({ id, zIndex, __class__: 'KritzelGroup', childIds: [] }) as unknown as KritzelBaseObject;
+    const group = (id: string, zIndex: number) => asGroupInstance({ id, zIndex, __class__: 'KritzelGroup', childIds: [] }) as unknown as KritzelBaseObject;
 
     it('sorts a group after a non-group with the same zIndex', () => {
       expect(KritzelZOrderHelper.compareStackOrder(group('G', 2), object('b', 2))).toBeGreaterThan(0);
@@ -439,13 +442,14 @@ describe('KritzelZOrderHelper', () => {
     }
 
     const fakeObject = (id: string, zIndex = 0): FakeObject => ({ id, zIndex, __class__: 'KritzelShape' });
-    const fakeGroup = (id: string, kids: FakeObject[], zIndex = 0): FakeObject => ({
-      id,
-      zIndex,
-      __class__: 'KritzelGroup',
-      childIds: kids.map(kid => kid.id),
-      kids,
-    });
+    const fakeGroup = (id: string, kids: FakeObject[], zIndex = 0): FakeObject =>
+      asGroupInstance({
+        id,
+        zIndex,
+        __class__: 'KritzelGroup',
+        childIds: kids.map(kid => kid.id),
+        kids,
+      });
     const asObject = (fake: FakeObject) => fake as unknown as KritzelBaseObject;
     const getChildren = (group: KritzelGroup) => ((group as unknown as FakeObject).kids ?? []) as unknown as KritzelBaseObject[];
 
