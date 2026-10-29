@@ -68,6 +68,7 @@ import { KritzelSvgExportHelper } from '../../helpers/svg-export.helper';
 import { KritzelToolDefinition } from '../../interfaces/tool.interface';
 import { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelTitlebarSection } from '../../interfaces/object-titlebar.interface';
 import { KritzelObjectConfig } from '../../interfaces/object-config.interface';
+import { KritzelEngineHost } from '../../interfaces/engine-host.interface';
 import { KritzelResolvedTitlebar, KritzelTitlebarMetrics } from '../../classes/managers/object-titlebar.manager';
 
 type WorkspaceExportMode = 'lightweight' | 'portable';
@@ -87,7 +88,7 @@ const TITLEBAR_CONTROL_KEYS = new Set(['Enter', ' ', 'Spacebar', 'Tab', 'ArrowLe
   styleUrl: 'kritzel-engine.css',
   shadow: true,
 })
-export class KritzelEngine {
+export class KritzelEngine implements KritzelEngineHost {
   @Element() host!: HTMLElement;
 
   private activeImportFileInput?: HTMLInputElement;

@@ -1,4 +1,4 @@
-import { KritzelEngine } from '../../components/kritzel-engine/kritzel-engine';
+import type { KritzelEngineHost } from '../../interfaces/engine-host.interface';
 import { DEFAULT_ENGINE_CONFIG } from '../../configs/default-engine-config';
 import { AlignmentHelper } from '../../helpers/alignment.helper';
 import { KritzelAlignment } from '../../enums/alignment.enum';
@@ -53,7 +53,7 @@ export interface KritzelWorkspaceObjectsDiff {
  */
 export class KritzelCore {
   /** The underlying Kritzel engine component */
-  private readonly _kritzelEngine: KritzelEngine;
+  private readonly _kritzelEngine: KritzelEngineHost;
   /** State management store */
   private readonly _store: KritzelStore;
   /** Optional sync configuration for collaborative features */
@@ -90,9 +90,9 @@ export class KritzelCore {
 
   /**
    * Gets the Kritzel engine instance.
-   * @returns The KritzelEngine managing rendering and events
+   * @returns The engine component managing rendering and events
    */
-  get engine(): KritzelEngine {
+  get engine(): KritzelEngineHost {
     return this._kritzelEngine;
   }
 
@@ -230,10 +230,10 @@ export class KritzelCore {
   /**
    * Creates a new KritzelCore instance.
    * Initializes the store with default configuration and sets up all managers.
-   * @param kritzelEngine - The KritzelEngine component to orchestrate
+   * @param kritzelEngine - The engine component to orchestrate
    * @param editorId - Optional unique identifier for namespacing storage keys
    */
-  constructor(kritzelEngine: KritzelEngine, editorId?: string) {
+  constructor(kritzelEngine: KritzelEngineHost, editorId?: string) {
     this._kritzelEngine = kritzelEngine;
     this._editorId = editorId;
     this._store = new KritzelStore(DEFAULT_ENGINE_CONFIG);
@@ -308,7 +308,7 @@ export class KritzelCore {
    * configuration. Safe to call multiple times: subsequent calls are
    * no-ops because {@link KritzelAssetResolver.init} is idempotent.
    * To apply a new configuration after initialization, destroy the
-   * resolver first or use {@link KritzelEngine.reinitSync}.
+   * resolver first or use the engine's `reinitSync` method.
    */
   async initializeAssetStorage(): Promise<void> {
     await this._assetResolver.init(this._assetStorageConfig);
