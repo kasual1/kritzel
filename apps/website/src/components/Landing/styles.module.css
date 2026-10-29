@@ -1156,6 +1156,23 @@
     width: 72px;
     height: 72px;
   }
+
+  /* The skill tile is a little smaller still, as its white face and outline read larger than a logo tile. */
+  .cliMedia .skillTileAnchor {
+    right: -19px;
+    bottom: -22px;
+    width: 80px;
+    height: 80px;
+  }
+
+  .cliMedia .skillTile {
+    border-radius: 16px;
+  }
+
+  .cliMedia .skillIcon {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .cliMedia .terminalCursor {

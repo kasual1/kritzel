@@ -616,7 +616,7 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
         )}
       </div>
       {isSkill ? (
-        <div aria-hidden="true" className={styles.frameworkTileAnchor}>
+        <div aria-hidden="true" className={`${styles.frameworkTileAnchor} ${styles.skillTileAnchor}`}>
           <div className={styles.skillTileStatic}>
             <div className={`${styles.frameworkTile} ${styles.skillTile}`}>
               <BotIcon />
