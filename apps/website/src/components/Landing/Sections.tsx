@@ -530,12 +530,9 @@ function BotIcon() {
       strokeLinejoin="round"
     >
       <defs>
-        {/* Softens the cheeks into a grainy blush: blurred, then speckled by fine noise in its alpha. */}
+        {/* Blurs the cheeks so the blush fades out smoothly instead of ending in a sharp edge. */}
         <filter id={blushFilterId} filterUnits="userSpaceOnUse" x="3" y="13" width="18" height="8" colorInterpolationFilters="sRGB">
-          <feGaussianBlur stdDeviation="0.5" result="soft" />
-          <feTurbulence type="fractalNoise" baseFrequency="2.5" seed="3" />
-          <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2 1.6" result="grain" />
-          <feComposite in="soft" in2="grain" operator="in" />
+          <feGaussianBlur stdDeviation="0.6" />
         </filter>
       </defs>
       <g ref={antennaRef} className={styles.skillAntennaSpin}>
