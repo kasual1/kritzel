@@ -35,20 +35,6 @@ const MAX_REQUESTS = 24;
 /** Consecutive retries when a streamed tool input is not valid JSON. */
 const MAX_JSON_RETRIES = 2;
 
-export interface CanvasAgentCallbacks {
-  /** Short description of what Claude is doing right now. */
-  onStatus: (status: string) => void;
-  /** Claude started working on this frame. */
-  onFrameFocus: (frameId: string) => void;
-}
-
-/** The last sentence of streamed text, shortened to fit a cursor label. */
-function toStatus(text: string): string {
-  const sentences = text.trim().split(/(?<=[.!?])\s+/);
-  const sentence = sentences[sentences.length - 1] ?? '';
-  return sentence.length > 64 ? `${sentence.slice(0, 63)}…` : sentence;
-}
-
 /**
  * A chat with Claude about the canvas. Each prompt runs an agentic loop: Claude calls canvas tools until the request is done.
  * The conversation is kept between prompts, so follow-ups like "make it darker" work.
@@ -58,10 +44,7 @@ export class CanvasAgent {
   private readonly tools: CanvasToolRunner;
   private readonly messages: Anthropic.Beta.BetaMessageParam[] = [];
 
-  constructor(
-    private readonly editor: HTMLKritzelEditorElement,
-    private readonly callbacks: CanvasAgentCallbacks,
-  ) {
+  constructor(private readonly editor: HTMLKritzelEditorElement) {
     this.tools = new CanvasToolRunner(editor);
   }
 
@@ -69,12 +52,12 @@ export class CanvasAgent {
     return ANTHROPIC_API_KEY.length > 0;
   }
 
-  async send(prompt: string, signal: AbortSignal): Promise<string> {
+  async send(prompt: string, signal: AbortSignal): Promise<void> {
     const historyLength = this.messages.length;
     this.messages.push({ role: 'user', content: await this.withSelection(prompt) });
 
     try {
-      return await this.runLoop(signal);
+      await this.runLoop(signal);
     } catch (error) {
       // Drop the unfinished exchange: a tool call without its result would make every later request fail.
       this.messages.length = historyLength;
@@ -97,13 +80,10 @@ export class CanvasAgent {
     return `${prompt}\n\n<selection>The user has selected: ${frames}.</selection>`;
   }
 
-  private async runLoop(signal: AbortSignal): Promise<string> {
-    let reply = '';
+  private async runLoop(signal: AbortSignal): Promise<void> {
     let jsonRetries = 0;
 
     for (let request = 0; request < MAX_REQUESTS; request++) {
-      this.callbacks.onStatus('Thinking…');
-
       let message: Anthropic.Beta.BetaMessage;
       try {
         message = await this.streamTurn(signal);
@@ -116,10 +96,8 @@ export class CanvasAgent {
         continue;
       }
 
-      reply = message.content.map(block => (block.type === 'text' ? block.text : '')).join('').trim() || reply;
-
       if (message.stop_reason === 'refusal') {
-        return 'Claude declined this request.';
+        return;
       }
 
       const toolUses = message.content.filter((block): block is Anthropic.Beta.BetaToolUseBlock => block.type === 'tool_use');
@@ -129,7 +107,7 @@ export class CanvasAgent {
 
       this.messages.push({ role: 'assistant', content: message.content });
       if (!toolUses.length) {
-        return reply;
+        return;
       }
 
       const results: Anthropic.Beta.BetaToolResultBlockParam[] = [];
@@ -138,8 +116,6 @@ export class CanvasAgent {
       }
       this.messages.push({ role: 'user', content: results });
     }
-
-    return reply || 'Stopped after too many steps.';
   }
 
   /** Streams one model response, reporting progress and showing the skeleton in a frame as soon as Claude starts rewriting it. */
@@ -160,7 +136,6 @@ export class CanvasAgent {
       { signal },
     );
 
-    let text = '';
     let toolName = '';
     let toolInput = '';
     let editedFrameId: string | undefined;
@@ -171,21 +146,14 @@ export class CanvasAgent {
           toolName = event.content_block.name;
           toolInput = '';
           editedFrameId = undefined;
-          this.callbacks.onStatus(toolName === 'create_frame' ? 'Adding a frame…' : toolName === 'write_frame' ? 'Designing…' : 'Working…');
-        } else if (event.content_block.type === 'text') {
-          text = '';
         }
       } else if (event.type === 'content_block_delta') {
-        if (event.delta.type === 'text_delta') {
-          text += event.delta.text;
-          this.callbacks.onStatus(toStatus(text));
-        } else if (event.delta.type === 'input_json_delta' && toolName === 'write_frame' && !editedFrameId) {
+        if (event.delta.type === 'input_json_delta' && toolName === 'write_frame' && !editedFrameId) {
           // `frame_id` is the first property, so it arrives long before the page itself.
           toolInput += event.delta.partial_json;
           editedFrameId = /"frame_id"\s*:\s*"([^"]+)"/.exec(toolInput)?.[1];
           if (editedFrameId) {
             await this.tools.setLoading(editedFrameId, true);
-            this.callbacks.onFrameFocus(editedFrameId);
           }
         }
       }
@@ -201,9 +169,6 @@ export class CanvasAgent {
         throw new CanvasToolError('The input must be a JSON object.');
       }
       const result = await this.tools.run(toolUse.name, input as Record<string, unknown>);
-      if (toolUse.name === 'create_frame') {
-        this.callbacks.onFrameFocus((result as { id: string }).id);
-      }
       return { type: 'tool_result', tool_use_id: toolUse.id, content: JSON.stringify(result) };
     } catch (error) {
       if (!(error instanceof CanvasToolError)) {

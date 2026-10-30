@@ -13,7 +13,6 @@ import { FramePreview } from './FramePreview';
 import { WelcomeMessage } from './WelcomeMessage';
 
 const WORKSPACE_ID = 'agentic-canvas';
-const CURSOR_ID = 'claude';
 
 const hostStyle = {
   position: 'relative',
@@ -59,46 +58,34 @@ export function AgenticCanvasInfographic() {
     new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [] }),
   ]);
 
-  async function onReady() {
-    const editor = editorRef.current;
-    if (!editor) {
-      return;
+  function onReady() {
+    if (editorRef.current) {
+      agentRef.current = new CanvasAgent(editorRef.current);
     }
-
-    await editor.addAgenticCursor({ id: CURSOR_ID, name: 'Claude', color: '#d97757', visible: false });
-    agentRef.current = new CanvasAgent(editor, {
-      onStatus: status => void editor.updateAgenticCursor(CURSOR_ID, { status }),
-      onFrameFocus: frameId => void editor.moveAgenticCursor(CURSOR_ID, { objectId: frameId }),
-    });
   }
 
   async function onChatSubmit(prompt: string) {
-    const editor = editorRef.current;
     const agent = agentRef.current;
-    if (!editor || !agent || abortRef.current) {
+    if (!agent || abortRef.current) {
       return;
     }
 
     const abort = new AbortController();
     abortRef.current = abort;
     setIsWorking(true);
-    await editor.updateAgenticCursor(CURSOR_ID, { visible: true, status: 'Thinking…' });
 
-    let status: string;
-    if (!CanvasAgent.hasApiKey) {
-      status = 'Add your API key in agent-config.ts';
-    } else {
+    if (CanvasAgent.hasApiKey) {
       try {
-        status = await agent.send(prompt, abort.signal);
+        await agent.send(prompt, abort.signal);
       } catch (error) {
-        status = abort.signal.aborted ? 'Stopped' : error instanceof Error ? error.message : 'Something went wrong';
-        console.error(error);
+        if (!abort.signal.aborted) {
+          console.error(error);
+        }
       }
     }
 
     abortRef.current = null;
     setIsWorking(false);
-    await editor.updateAgenticCursor(CURSOR_ID, { status });
   }
 
   async function onTitlebarAction({ elementId, objectId }: KritzelObjectTitlebarActionEvent) {
@@ -124,7 +111,7 @@ export function AgenticCanvasInfographic() {
         isChatBoxVisible
         isChatBoxLoading={isWorking}
         isWorkspaceManagerVisible={false}
-        onIsReady={() => void onReady()}
+        onIsReady={onReady}
         onChatSubmit={event => void onChatSubmit(event.detail)}
         onChatStop={() => abortRef.current?.abort()}
         onObjectsChange={event => setHasFrames(event.detail.some(isFrame))}
