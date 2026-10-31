@@ -1115,7 +1115,7 @@
 
 /* A mock design canvas with two frames of the same page, built by an agent (see FramesDemo). */
 .framesDemo {
-  --frames-cursor: #7c3aed;
+  --frames-cursor: #000000;
   position: relative;
   overflow: hidden;
   container-type: inline-size;
@@ -1268,7 +1268,7 @@
   color: var(--site-ink);
 }
 
-/* Parts of the page fade in as the agent builds them; the one it just built is outlined like a selection. */
+/* The page fades in once the agent has generated it. */
 .framesBuild {
   opacity: 0;
   transform: translateY(2cqw);
@@ -1282,15 +1282,36 @@
   transform: none;
 }
 
-.framesBuild[data-selected] {
-  outline: 1px solid #007aff;
-  outline-offset: 0.8cqw;
+/* Fills a frame while its page is generated, with a glare sweeping across it over and over. */
+.framesLoading {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--site-photo);
+  transition: opacity 0.35s ease;
 }
 
-/* The phone page arrives complete: its parts fade in one after another once the frame is in (--part from
-   FramesDemo). */
-.framesFrame[data-device="phone"] .framesBuild {
-  transition-delay: calc(0.25s + var(--part, 0) * 0.08s);
+.framesLoading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.75) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: framesGlare 1.5s ease-in-out infinite;
+}
+
+.framesLoading[data-done] {
+  opacity: 0;
+}
+
+.framesLoading[data-done]::after {
+  animation-play-state: paused;
+}
+
+@keyframes framesGlare {
+  to {
+    transform: translateX(100%);
+  }
 }
 
 .siteNav {
@@ -1512,8 +1533,7 @@
   border-radius: 3cqw;
 }
 
-/* Kritzel's agentic cursor (kritzel-agentic-cursors.css): an arrow with a name label and a status below it.
-   It keeps Kritzel's size in wide demos and shrinks a little in narrow ones, so it does not cover the frames.
+/* Kritzel's agentic cursor (kritzel-agentic-cursors.css), just the arrow. It keeps Kritzel's size in wide demos and shrinks a little in narrow ones, so it does not cover the frames.
    Its tip is at the translated point (set from FramesDemo). */
 .framesCursor {
   --frames-arrow: clamp(16px, 3.8cqw, 20px);
@@ -1522,7 +1542,13 @@
   left: 0;
   z-index: 1;
   color: var(--frames-cursor);
-  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+  transition:
+    opacity 0.25s ease,
+    transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.framesCursor[data-hidden] {
+  opacity: 0;
 }
 
 /* The arrow's tip is at (5, 3) in its 24-unit viewBox; a click squeezes the arrow towards it. */
@@ -1540,80 +1566,12 @@
   transform: scale(0.82);
 }
 
-.framesCursorLabels {
-  position: absolute;
-  top: calc(var(--frames-arrow) * 0.8);
-  left: calc(var(--frames-arrow) * 0.8);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.35em;
-  font-size: clamp(9px, 2.1cqw, 11px);
-  line-height: 1.4;
-  white-space: nowrap;
-}
-
-/* Flipped to the left of the arrow near the demo's right edge (set from FramesDemo). */
-.framesCursor[data-flip] .framesCursorLabels {
-  right: calc(100% + var(--frames-arrow) * 0.2);
-  left: auto;
-  align-items: flex-end;
-}
-
-.framesCursorName {
-  padding: 0.2em 0.65em;
-  border-radius: 4px;
-  background: var(--frames-cursor);
-  color: #ffffff;
-  font-weight: 500;
-}
-
-.framesCursorStatus {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45em;
-  padding: 0.2em 0.8em 0.2em 0.65em;
-  border: 1px solid color-mix(in srgb, var(--frames-cursor) 45%, transparent);
-  border-radius: 999px;
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-  color: #1f2937;
-  animation: landing-frames-status-in 180ms ease-out;
-}
-
-.framesCursorDot {
-  flex: none;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--frames-cursor);
-  animation: landing-frames-status-pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes landing-frames-status-in {
-  from {
-    opacity: 0;
-    transform: translateY(-2px);
-  }
-}
-
-@keyframes landing-frames-status-pulse {
-  50% {
-    opacity: 0.35;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .framesWorld,
   .framesFrame,
   .framesBuild,
   .framesCursor {
     transition: none;
-  }
-
-  .framesCursorStatus,
-  .framesCursorDot {
-    animation: none;
   }
 }
 
@@ -1899,6 +1857,10 @@
   background: #ffffff;
   box-shadow: 0 18px 20px -12px rgba(10, 10, 10, 0.25);
   color: var(--landing-ink);
+  /* The anchor around it ignores the pointer; the bot hops when the pointer enters (see BotIcon). */
+  pointer-events: auto;
+  /* Quick clicks on it would otherwise select the nearest text, like the section's title. */
+  user-select: none;
 }
 
 /* Every few seconds the antenna gives a short wobble around its base on the head. */
@@ -1942,6 +1904,17 @@
   transform-origin: 12px 14px;
 }
 
+/* The arms swing around their shoulders on the head (animated from BotIcon). */
+.skillArmLeft {
+  transform-box: view-box;
+  transform-origin: 4px 14px;
+}
+
+.skillArmRight {
+  transform-box: view-box;
+  transform-origin: 20px 14px;
+}
+
 /* Blushing cheeks below the eyes, slowly deepening and fading again. */
 .skillBlush {
   fill: #fb7185;
@@ -1964,10 +1937,130 @@
   }
 }
 
+/* Squashes against its feet when it hops (animated from BotIcon). */
 .skillIcon {
   display: block;
   width: 56px;
   height: 56px;
+  transform-origin: 50% 100%;
+}
+
+/* A mock canvas whose controls morph from one theme into the next (see ThemesDemo, which sets the --theme-*
+   values). Everything transitions over the same time, so the whole UI changes as one. */
+.themesDemo {
+  --themes-morph: 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  background-color: var(--theme-canvas);
+  transition: background-color var(--themes-morph);
+}
+
+.themesControl {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0.8cqw;
+  border-radius: var(--theme-radius);
+  background-color: var(--theme-surface);
+  /* The border is a ring of shadow: real border widths snap to whole pixels and shift the layout as they change. */
+  box-shadow: 0 0 0 var(--theme-border-width) var(--theme-border), var(--theme-shadow);
+  color: var(--theme-ink);
+  transition:
+    background-color var(--themes-morph),
+    border-radius var(--themes-morph),
+    box-shadow var(--themes-morph),
+    color var(--themes-morph);
+}
+
+.themesWorkspaces {
+  top: 4cqw;
+  left: 4cqw;
+}
+
+.themesMore {
+  top: 4cqw;
+  right: 4cqw;
+}
+
+.themesChat {
+  right: 14cqw;
+  bottom: 4cqw;
+  left: 14cqw;
+}
+
+.themesButton {
+  display: grid;
+  place-items: center;
+  width: 6.4cqw;
+  height: 6.4cqw;
+}
+
+.themesButton svg {
+  width: 3.6cqw;
+  height: 3.6cqw;
+}
+
+.themesDivider {
+  width: 0.25cqw;
+  height: 3.6cqw;
+  background-color: var(--theme-border);
+  transition: background-color var(--themes-morph);
+}
+
+.themesField {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  padding: 1.2cqw 1.2cqw 1.2cqw 2.4cqw;
+  border-radius: var(--theme-radius);
+  background-color: var(--theme-field);
+  transition:
+    background-color var(--themes-morph),
+    border-radius var(--themes-morph);
+}
+
+.themesPrompt {
+  overflow: hidden;
+  color: var(--theme-muted);
+  font-size: 2.8cqw;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color var(--themes-morph);
+}
+
+.themesSend {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 6.4cqw;
+  height: 6.4cqw;
+  border-radius: var(--theme-send-radius);
+  background-color: var(--theme-accent);
+  color: var(--theme-on-accent);
+  transition:
+    background-color var(--themes-morph),
+    border-radius var(--themes-morph),
+    color var(--themes-morph);
+}
+
+.themesSend svg {
+  width: 3.6cqw;
+  height: 3.6cqw;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themesDemo,
+  .themesControl,
+  .themesDivider,
+  .themesField,
+  .themesPrompt,
+  .themesSend {
+    transition: none;
+  }
 }
 
 /* ---------- FAQ ---------- */

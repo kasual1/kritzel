@@ -2,9 +2,11 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import DomCanvasDemo from "./DomCanvasDemo";
+import FramesDemo from "./FramesDemo";
 import HeartBubbles from "./HeartBubbles";
 import Icon, { ArrowIcon } from "./Icon";
 import PerformanceDemo from "./PerformanceDemo";
+import ThemesDemo from "./ThemesDemo";
 import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
 import {
@@ -326,14 +328,27 @@ export function PerformanceSection() {
   );
 }
 
-/** A showcase row that holds the place of a section whose content is still to come, or of its copy only. */
-export function PlaceholderSection({ headingId, media }: { headingId: string; media?: ReactNode }) {
+export function GenerativeUiSection() {
   return (
     <Showcase
-      headingId={headingId}
-      title="Coming soon"
-      description="This section is a placeholder. Its content will be added soon."
-      media={media ?? <div aria-hidden="true" className={styles.showcaseMedia} />}
+      headingId="generative-ui-heading"
+      title="Build generative UI"
+      description="Give your agent a set of ready-made components to build with. It assembles real, interactive UI right on the canvas, frame by frame, so you can watch it take shape and step in at any point."
+      media={<FramesDemo />}
+    />
+  );
+}
+
+export function CustomizationSection() {
+  const themesPath = useDocsPath("customization/themes");
+
+  return (
+    <Showcase
+      headingId="customization-heading"
+      title="Highly customizable"
+      description="Adjust Kritzel's components to fit your product, down to their fonts, icons and labels. Start from the built-in light and dark themes or create your own, so the editor looks like part of your app."
+      media={<ThemesDemo />}
+      link={{ label: "Themes", to: themesPath }}
     />
   );
 }
@@ -449,7 +464,7 @@ const between = (min: number, max: number) => min + Math.random() * (max - min);
 
 /**
  * Lucide's bot icon whose eyes and antenna follow the pointer around the page. It blinks on its own at
- * irregular intervals.
+ * irregular intervals and happily hops and wiggles its arms when the pointer enters its tile.
  */
 function BotIcon() {
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -457,6 +472,65 @@ function BotIcon() {
   const lidsRef = useRef<SVGGElement | null>(null);
   const blushFilterId = useId();
   const antennaRef = useRef<SVGGElement | null>(null);
+  const leftArmRef = useRef<SVGPathElement | null>(null);
+  const rightArmRef = useRef<SVGPathElement | null>(null);
+
+  useEffect(() => {
+    const svg = svgRef.current;
+    const leftArm = leftArmRef.current;
+    const rightArm = rightArmRef.current;
+    if (!svg || !leftArm || !rightArm || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const tile = svg.parentElement;
+    if (!tile) {
+      return;
+    }
+
+    // Both arms swing up around their shoulders and back a few times, mirroring each other.
+    const wiggle = (arm: SVGPathElement, direction: 1 | -1) =>
+      arm.animate(
+        [0, 40, 5, 40, 5, 40, 0].map((angle) => ({ transform: `rotate(${direction * angle}deg)` })),
+        { duration: 650, easing: "ease-in-out" },
+      );
+
+    // A little hop off the tile's floor: crouch, jump, land with a squash and settle. Its height, length, lean
+    // and squash differ each time.
+    const hop = () => {
+      const height = between(8, 16);
+      const lean = between(-8, 8);
+      const squash = between(0.06, 0.12);
+      const crouched = `scale(${1 + squash}, ${1 - squash})`;
+      svg.animate(
+        [
+          { offset: 0, transform: "none", easing: "ease-out" },
+          { offset: 0.15, transform: crouched, easing: "cubic-bezier(0.2, 0.7, 0.4, 1)" },
+          {
+            offset: 0.5,
+            transform: `translateY(${-height}px) rotate(${lean}deg) scale(${1 - squash / 2}, ${1 + squash / 2})`,
+            easing: "cubic-bezier(0.6, 0, 0.8, 0.3)",
+          },
+          { offset: 0.82, transform: crouched, easing: "ease-out" },
+          { offset: 1, transform: "none" },
+        ],
+        { duration: between(420, 560) },
+      );
+    };
+
+    let wiggling: Animation | undefined;
+    const onPointerEnter = () => {
+      if (wiggling?.playState === "running") {
+        return;
+      }
+      hop();
+      wiggling = wiggle(leftArm, 1);
+      wiggle(rightArm, -1);
+    };
+
+    tile.addEventListener("pointerenter", onPointerEnter);
+    return () => tile.removeEventListener("pointerenter", onPointerEnter);
+  }, []);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -544,8 +618,8 @@ function BotIcon() {
         <ellipse className={styles.skillBlush} cx="17" cy="17.3" rx="1.6" ry="1" />
       </g>
       <rect width="16" height="12" x="4" y="8" rx="2" />
-      <path d="M2 14h2" />
-      <path d="M20 14h2" />
+      <path ref={leftArmRef} className={styles.skillArmLeft} d="M2 14h2" />
+      <path ref={rightArmRef} className={styles.skillArmRight} d="M20 14h2" />
       <g ref={eyesRef} className={styles.skillEyes}>
         <g ref={lidsRef} className={styles.skillLids}>
           <path d="M15 13v2" />

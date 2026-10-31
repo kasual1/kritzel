@@ -3,12 +3,12 @@ import Layout from "@theme/Layout";
 import { HtmlClassNameProvider } from "@docusaurus/theme-common";
 import Head from "@docusaurus/Head";
 import Hero from "@site/src/components/Agentic/Hero";
-import FramesDemo from "@site/src/components/Landing/FramesDemo";
 import {
   CliSection,
   Faq,
   Features,
-  PlaceholderSection,
+  CustomizationSection,
+  GenerativeUiSection,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
 import styles from "@site/src/components/Agentic/styles.module.css";
@@ -51,9 +51,9 @@ export default function Agentic(): ReactNode {
             <div aria-hidden="true" className={styles.heroSpacer} />
             <Features variant="agentic" />
           </div>
-          <PlaceholderSection headingId="agentic-first-heading" media={<FramesDemo />} />
+          <GenerativeUiSection />
           <CliSection variant="skill" layout="split" />
-          <PlaceholderSection headingId="agentic-third-heading" />
+          <CustomizationSection />
           <Faq variant="agentic" />
           <Wordmark />
         </main>

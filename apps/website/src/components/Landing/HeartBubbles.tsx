@@ -5,7 +5,10 @@ import styles from "./styles.module.css";
 const COLORS = ["#f43f5e", "#fb7185", "#fda4af"];
 
 /** The most hearts in the air at once; a new one only spawns once an earlier one has faded. */
-const MAX_HEARTS = 10;
+const MAX_HEARTS = 14;
+
+/** How many extra, much faster hearts bubble up per click on the tile. */
+const CLICK_HEARTS = 5;
 
 /** Random number in [min, max). */
 const between = (min: number, max: number) => min + Math.random() * (max - min);
@@ -14,8 +17,8 @@ const between = (min: number, max: number) => min + Math.random() * (max - min);
 const easeOutBack = (t: number) => 1 + 2.70158 * (t - 1) ** 3 + 1.70158 * (t - 1) ** 2;
 
 /**
- * Three.js hearts that slowly bubble up from behind the skill tile, so the bot looks like it is in love.
- * Rendered inside the tile's anchor and animated only while on screen; with reduced motion or without
+ * Three.js hearts that slowly bubble up from behind the skill tile, so the bot looks like it is in love, with
+ * a few more shooting up for every click on the tile. Rendered inside the tile's anchor and animated only while on screen; with reduced motion or without
  * WebGL nothing is drawn.
  */
 export default function HeartBubbles() {
@@ -119,10 +122,10 @@ export default function HeartBubbles() {
         };
 
         // Hearts start just below the tile's top edge, mostly behind it, so they peek out as they rise.
-        const spawn = (heart: Heart, now: number) => {
+        const spawn = (heart: Heart, now: number, life: number) => {
           heart.born = now;
-          heart.life = between(4, 5.5);
-          heart.size = between(14, 24);
+          heart.life = life;
+          heart.size = between(24, 38);
           heart.sway = between(4, 10);
           // Keeps the whole path, from x to x + drift give or take the sway, within the visible part.
           const room = heart.sway + heart.size / 2 + 4;
@@ -140,6 +143,8 @@ export default function HeartBubbles() {
         let clock = 0;
         let last = 0;
         let nextSpawn = 0;
+        let extraHearts = 0;
+        let nextExtra = 0;
         let frame = 0;
         let running = false;
         const tick = (time: number) => {
@@ -148,8 +153,14 @@ export default function HeartBubbles() {
           last = time;
           if (clock >= nextSpawn) {
             const heart = hearts.find((candidate) => !candidate.mesh.visible);
-            if (heart) spawn(heart, clock);
-            nextSpawn = clock + between(0.6, 1);
+            if (heart) spawn(heart, clock, between(2.5, 3.4));
+            nextSpawn = clock + between(0.6, 0.95);
+          }
+          if (extraHearts > 0 && clock >= nextExtra) {
+            const heart = hearts.find((candidate) => !candidate.mesh.visible);
+            if (heart) spawn(heart, clock, between(1.1, 1.6));
+            extraHearts -= 1;
+            nextExtra = clock + between(0.05, 0.1);
           }
           for (const heart of hearts) {
             if (!heart.mesh.visible) continue;
@@ -182,6 +193,12 @@ export default function HeartBubbles() {
           window.cancelAnimationFrame(frame);
         };
 
+        // The anchor itself ignores the pointer, so this only fires for clicks on the tile inside it.
+        const onClick = () => {
+          extraHearts = Math.min(extraHearts + CLICK_HEARTS, MAX_HEARTS);
+        };
+        tile.addEventListener("click", onClick);
+
         const resizeObserver = new ResizeObserver(resize);
         resizeObserver.observe(host);
         // The canvas keeps its size while the layout around it moves with the window.
@@ -201,6 +218,7 @@ export default function HeartBubbles() {
         renderer.domElement.addEventListener("webglcontextlost", contextLost);
         dispose = () => {
           stop();
+          tile.removeEventListener("click", onClick);
           resizeObserver.disconnect();
           window.removeEventListener("resize", resize);
           visibilityObserver.disconnect();
