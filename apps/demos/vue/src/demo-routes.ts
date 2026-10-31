@@ -510,4 +510,10 @@ export const demoRoutes = [
     category: 'examples',
     component: () => import('./pages/examples/PerformanceShowcasePage.vue'),
   },
+  {
+    path: '/examples/generative-ui',
+    title: 'Generative UI',
+    category: 'examples',
+    component: () => import('./pages/examples/generative-ui/GenerativeUiPage.vue'),
+  },
 ] satisfies readonly DemoRoute[]

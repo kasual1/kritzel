@@ -111,4 +111,13 @@ export const vueThemeDark: KritzelTheme = {
     ...darkTheme.titlebarMenu,
     itemHoverBackgroundColor: 'rgba(66, 184, 131, 0.12)',
   },
+  chatBox: {
+    ...darkTheme.chatBox,
+    buttonBackgroundColor: '#42b883',
+    buttonColor: '#ffffff',
+    buttonHoverBackgroundColor: '#369a6e',
+    caretColor: '#42b883',
+    selectionBackgroundColor: '#42b883',
+    selectionColor: '#ffffff',
+  },
 };

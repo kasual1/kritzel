@@ -343,6 +343,8 @@ test.describe('Object titlebar', () => {
       const shape = await editorPage.addShape({ translateX: 200, translateY: 200, width: 300, height: 150, name: 'Desktop' });
       await addMenu(page);
       await titlebarFor(page, shape.id).locator('[data-element-id="more"]').click();
+      // The menu opens hidden and moves under its button a frame later; a forced click before that misses it.
+      await expect(menu(page)).toBeVisible();
 
       await menuItem(page, 'locked').click({ force: true });
 

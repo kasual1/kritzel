@@ -1,0 +1,275 @@
+/* --gen-ui-accent and --gen-ui-accent-hover come from the theme, see GenerativeUiPage. */
+.generative-ui {
+  position: relative;
+  height: 100%;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* UIs resize from their corners like frames in a design tool, without the corner squares. */
+  --kritzel-selection-resize-handle-visibility: hidden;
+}
+
+.generative-ui__editor {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Centered on the empty canvas. Clicks and wheel events go through to the canvas, except on the controls. */
+.welcome {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow: auto;
+  pointer-events: none;
+  transition: opacity 240ms ease-out, transform 240ms ease-out;
+}
+
+/* Hidden only after the fade, which also takes the guide out of the tab order. */
+.welcome--hidden {
+  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 240ms ease-out, transform 240ms ease-out, visibility 0s 240ms;
+}
+
+.welcome__content {
+  max-width: 640px;
+  padding: 24px 24px 96px;
+  color: #18181b;
+}
+
+.welcome__content form,
+.welcome__connected,
+.welcome__example {
+  pointer-events: auto;
+}
+
+.welcome__eyebrow {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gen-ui-accent);
+}
+
+.welcome__title {
+  margin: 12px 0 20px;
+  font-size: 52px;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.welcome__hint {
+  margin: 0 0 24px;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #52525b;
+}
+
+.welcome__label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3f3f46;
+}
+
+.welcome__providers {
+  display: inline-flex;
+  gap: 2px;
+  margin-bottom: 10px;
+  padding: 3px;
+  border-radius: 10px;
+  background: #f4f4f5;
+}
+
+.welcome__provider {
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #52525b;
+  cursor: pointer;
+}
+
+.welcome__provider[aria-pressed="true"] {
+  background: #ffffff;
+  color: #18181b;
+  box-shadow: 0 1px 2px rgba(20, 18, 31, 0.12);
+}
+
+.welcome__key-row {
+  display: flex;
+  gap: 8px;
+}
+
+.welcome__key {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid #e4e4e7;
+  border-radius: 12px;
+  background: #ffffff;
+  font: inherit;
+  font-size: 16px;
+  color: #18181b;
+}
+
+.welcome__key:focus {
+  border-color: var(--gen-ui-accent);
+  outline: 2px solid color-mix(in srgb, var(--gen-ui-accent) 25%, transparent);
+}
+
+.welcome__connect {
+  height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--gen-ui-accent);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.welcome__connect:hover {
+  background: var(--gen-ui-accent-hover);
+}
+
+.welcome__note {
+  margin: 8px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #71717a;
+}
+
+.welcome__note a,
+.welcome__change {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--gen-ui-accent);
+  cursor: pointer;
+}
+
+.welcome__error {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #b91c1c;
+}
+
+.welcome__connected {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: #f4f4f5;
+  font-size: 16px;
+  color: #3f3f46;
+}
+
+.welcome__connected::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+}
+
+.welcome__connected .welcome__change {
+  margin-left: auto;
+}
+
+.welcome__examples {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.welcome__example {
+  width: 100%;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #f4f4f5;
+  font: inherit;
+  font-size: 16px;
+  text-align: left;
+  color: #3f3f46;
+  cursor: pointer;
+}
+
+.welcome__example:hover {
+  background: #e4e4e7;
+}
+
+.welcome__footer {
+  margin: 24px 0 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #52525b;
+}
+
+.welcome__footer kbd {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #e4e4e7;
+  font: inherit;
+  font-size: 0.9em;
+}
+
+.ui-preview {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  animation: ui-preview-in 180ms ease-out;
+}
+
+@keyframes ui-preview-in {
+  from { opacity: 0; transform: scale(0.98); }
+}
+
+.ui-preview__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px;
+  padding: 0 8px 0 16px;
+  border-bottom: 1px solid #e4e4e7;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3f3f46;
+}
+
+.ui-preview__close {
+  margin-left: auto;
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #f4f4f5;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.ui-preview__frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+}
