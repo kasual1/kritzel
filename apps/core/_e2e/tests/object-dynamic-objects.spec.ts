@@ -128,7 +128,8 @@ test.describe('Dynamic objects', () => {
     await editorPage.removeObject(created);
 
     expect(await editorPage.getObjectsTotalCount()).toBe(0);
-    expect(await editorPage.getObjectElementCount()).toBe(0);
+    // The element leaves the DOM with the engine's next render, after removeObject resolves.
+    await expect.poll(() => editorPage.getObjectElementCount()).toBe(0);
   });
 
   test('should pass wheel handling to viewport when selected dynamic object is not scrollable', async ({ editorPage }) => {
