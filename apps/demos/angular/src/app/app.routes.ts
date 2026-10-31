@@ -68,6 +68,7 @@ import { PerformanceShowcaseComponent } from './pages/examples/performance-showc
 import { BlueprintDefectMapperComponent } from './pages/examples/blueprint-defect-mapper.component';
 import { SlideshowPresentationComponent } from './pages/examples/slideshow-presentation.component';
 import { ImageAnnotationStudioComponent } from './pages/examples/image-annotation-studio.component';
+import { GenerativeUiComponent } from './pages/examples/generative-ui/generative-ui.component';
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'getting-started/quick-start' },
@@ -245,6 +246,7 @@ export const routes: Routes = [
       { path: 'slideshow-presentation', component: SlideshowPresentationComponent },
       { path: 'image-annotation-studio', component: ImageAnnotationStudioComponent },
       { path: 'performance-showcase', component: PerformanceShowcaseComponent },
+      { path: 'generative-ui', component: GenerativeUiComponent },
     ],
   },
   { path: '**', redirectTo: 'getting-started/quick-start' },
