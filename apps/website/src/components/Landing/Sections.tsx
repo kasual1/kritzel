@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
 import DomCanvasDemo from "./DomCanvasDemo";
+import FramesDemo from "./FramesDemo";
+import HeartBubbles from "./HeartBubbles";
 import Icon, { ArrowIcon } from "./Icon";
 import PerformanceDemo from "./PerformanceDemo";
+import ThemesDemo from "./ThemesDemo";
 import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
 import {
@@ -275,11 +278,11 @@ type ShowcaseProps = {
   title: string;
   description: string;
   media: ReactNode;
-  link: ShowcaseLinkProps;
+  link?: ShowcaseLinkProps;
   reversed?: boolean;
 };
 
-/** Media next to a heading, description and link; `reversed` puts the media on the right. */
+/** Media next to a heading, description and optional link; `reversed` puts the media on the right. */
 function Showcase({ headingId, title, description, media, link, reversed = false }: ShowcaseProps) {
   return (
     <section aria-labelledby={headingId} className={styles.showcase} data-reversed={reversed ? "true" : undefined}>
@@ -290,7 +293,7 @@ function Showcase({ headingId, title, description, media, link, reversed = false
             {title}
           </h2>
           <p className={styles.sectionText}>{description}</p>
-          <ShowcaseLink {...link} />
+          {link && <ShowcaseLink {...link} />}
         </div>
       </div>
     </section>
@@ -321,6 +324,31 @@ export function PerformanceSection() {
       description="Kritzel is designed from the ground up to handle hundreds of objects. It only renders what is currently in the viewport, so the board stays fast as your canvas grows."
       media={<PerformanceDemo />}
       link={{ label: "Full Demo", to: performanceShowcasePath }}
+    />
+  );
+}
+
+export function GenerativeUiSection() {
+  return (
+    <Showcase
+      headingId="generative-ui-heading"
+      title="Build generative UI"
+      description="Give your agent a set of ready-made components to build with. It assembles real, interactive UI right on the canvas, frame by frame, so you can watch it take shape and step in at any point."
+      media={<FramesDemo />}
+    />
+  );
+}
+
+export function CustomizationSection() {
+  const themesPath = useDocsPath("customization/themes");
+
+  return (
+    <Showcase
+      headingId="customization-heading"
+      title="Highly customizable"
+      description="Adjust Kritzel's components to fit your product, down to their fonts, icons and labels. Start from the built-in light and dark themes or create your own, so the editor looks like part of your app."
+      media={<ThemesDemo />}
+      link={{ label: "Themes", to: themesPath }}
     />
   );
 }
@@ -436,13 +464,73 @@ const between = (min: number, max: number) => min + Math.random() * (max - min);
 
 /**
  * Lucide's bot icon whose eyes and antenna follow the pointer around the page. It blinks on its own at
- * irregular intervals.
+ * irregular intervals and happily hops and wiggles its arms when the pointer enters its tile.
  */
 function BotIcon() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const eyesRef = useRef<SVGGElement | null>(null);
   const lidsRef = useRef<SVGGElement | null>(null);
+  const blushFilterId = useId();
   const antennaRef = useRef<SVGGElement | null>(null);
+  const leftArmRef = useRef<SVGPathElement | null>(null);
+  const rightArmRef = useRef<SVGPathElement | null>(null);
+
+  useEffect(() => {
+    const svg = svgRef.current;
+    const leftArm = leftArmRef.current;
+    const rightArm = rightArmRef.current;
+    if (!svg || !leftArm || !rightArm || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const tile = svg.parentElement;
+    if (!tile) {
+      return;
+    }
+
+    // Both arms swing up around their shoulders and back a few times, mirroring each other.
+    const wiggle = (arm: SVGPathElement, direction: 1 | -1) =>
+      arm.animate(
+        [0, 40, 5, 40, 5, 40, 0].map((angle) => ({ transform: `rotate(${direction * angle}deg)` })),
+        { duration: 650, easing: "ease-in-out" },
+      );
+
+    // A little hop off the tile's floor: crouch, jump, land with a squash and settle. Its height, length, lean
+    // and squash differ each time.
+    const hop = () => {
+      const height = between(8, 16);
+      const lean = between(-8, 8);
+      const squash = between(0.06, 0.12);
+      const crouched = `scale(${1 + squash}, ${1 - squash})`;
+      svg.animate(
+        [
+          { offset: 0, transform: "none", easing: "ease-out" },
+          { offset: 0.15, transform: crouched, easing: "cubic-bezier(0.2, 0.7, 0.4, 1)" },
+          {
+            offset: 0.5,
+            transform: `translateY(${-height}px) rotate(${lean}deg) scale(${1 - squash / 2}, ${1 + squash / 2})`,
+            easing: "cubic-bezier(0.6, 0, 0.8, 0.3)",
+          },
+          { offset: 0.82, transform: crouched, easing: "ease-out" },
+          { offset: 1, transform: "none" },
+        ],
+        { duration: between(420, 560) },
+      );
+    };
+
+    let wiggling: Animation | undefined;
+    const onPointerEnter = () => {
+      if (wiggling?.playState === "running") {
+        return;
+      }
+      hop();
+      wiggling = wiggle(leftArm, 1);
+      wiggle(rightArm, -1);
+    };
+
+    tile.addEventListener("pointerenter", onPointerEnter);
+    return () => tile.removeEventListener("pointerenter", onPointerEnter);
+  }, []);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -515,12 +603,23 @@ function BotIcon() {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
+      <defs>
+        {/* Blurs the cheeks so the blush fades out smoothly instead of ending in a sharp edge. */}
+        <filter id={blushFilterId} filterUnits="userSpaceOnUse" x="3" y="13" width="18" height="8" colorInterpolationFilters="sRGB">
+          <feGaussianBlur stdDeviation="0.6" />
+        </filter>
+      </defs>
       <g ref={antennaRef} className={styles.skillAntennaSpin}>
         <path className={styles.skillAntenna} d="M12 8V4H8" />
       </g>
+      {/* Before the face's outline, which covers whatever of the blur spreads past it. */}
+      <g filter={`url(#${blushFilterId})`}>
+        <ellipse className={styles.skillBlush} cx="7" cy="17.3" rx="1.6" ry="1" />
+        <ellipse className={styles.skillBlush} cx="17" cy="17.3" rx="1.6" ry="1" />
+      </g>
       <rect width="16" height="12" x="4" y="8" rx="2" />
-      <path d="M2 14h2" />
-      <path d="M20 14h2" />
+      <path ref={leftArmRef} className={styles.skillArmLeft} d="M2 14h2" />
+      <path ref={rightArmRef} className={styles.skillArmRight} d="M20 14h2" />
       <g ref={eyesRef} className={styles.skillEyes}>
         <g ref={lidsRef} className={styles.skillLids}>
           <path d="M15 13v2" />
@@ -605,6 +704,7 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
       </div>
       {isSkill ? (
         <div aria-hidden="true" className={styles.frameworkTileAnchor}>
+          <HeartBubbles />
           <div className={styles.skillTileStatic}>
             <div className={`${styles.frameworkTile} ${styles.skillTile}`}>
               <BotIcon />
