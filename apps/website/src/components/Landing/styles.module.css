@@ -803,7 +803,8 @@
   color: var(--landing-ink);
 }
 
-.page .sectionText {
+/* Scoped to the html class rather than .page, so the agentic page (which has its own .page) gets it too. */
+:global(html.landing-page) .sectionText {
   margin: 0;
   font-size: clamp(16px, 1.5vw, 18px);
   line-height: 1.6;
@@ -1112,6 +1113,468 @@
   height: 1.1em;
 }
 
+/* A mock design canvas with two frames of the same page, built by an agent (see FramesDemo). */
+.framesDemo {
+  --frames-cursor: #000000;
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #ffffff;
+}
+
+/* Everything on the canvas. While only the desktop frame is on it, the view is panned so that frame sits in the
+   middle; it pans back as the phone frame comes in, so the two stay centered together. */
+.framesWorld {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.framesWorld[data-solo] {
+  transform: translateX(12.5cqw);
+}
+
+.framesFrame {
+  position: absolute;
+  top: 15cqw;
+}
+
+.framesFrame[data-device="desktop"] {
+  left: 9.5cqw;
+  width: 56cqw;
+  height: 40cqw;
+}
+
+.framesFrame[data-device="phone"] {
+  left: 70.5cqw;
+  width: 20cqw;
+  height: 43.3cqw;
+  transform-origin: 0 50%;
+  transition:
+    opacity 0.5s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Until it is added, the phone frame waits a little to the left, as if it slid out of the desktop frame. */
+.framesFrame[data-hidden] {
+  opacity: 0;
+  transform: translateX(-4cqw) scale(0.96);
+}
+
+/* Kritzel's object titlebar (kritzel-object-titlebar-layer.css) scaled with the demo, blue while active. */
+.framesTitlebar {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 1.1cqw);
+  left: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 0.8cqw;
+  height: 4.6cqw;
+  padding: 0 0.6cqw;
+  overflow: hidden;
+  border-radius: 1.4cqw;
+  background: #f2f2f2;
+  color: #5f5f5f;
+  font-size: 2.1cqw;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.framesFrame[data-active] .framesTitlebar {
+  background: #e0efff;
+  color: #007aff;
+}
+
+.framesPlay,
+.framesAdd {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 3.4cqw;
+  height: 3.4cqw;
+}
+
+.framesPlay {
+  border-radius: 0.9cqw;
+  background: #8e8e93;
+  color: #ffffff;
+  transition: background-color 0.25s ease;
+}
+
+.framesFrame[data-active] .framesPlay {
+  background: #007aff;
+}
+
+.framesPlay svg {
+  width: 1.9cqw;
+  height: 1.9cqw;
+}
+
+.framesTitle {
+  font-weight: 600;
+}
+
+.framesWidth {
+  color: #9a9a9a;
+}
+
+.framesFrame[data-active] .framesWidth {
+  color: rgba(0, 122, 255, 0.6);
+}
+
+.framesAdd {
+  margin-left: auto;
+  border-radius: 0.9cqw;
+  color: #6b6b6b;
+  transition:
+    background-color 0.15s ease,
+    color 0.25s ease;
+}
+
+/* Pressed by the agent's click, like Kritzel's titlebar buttons. */
+.framesAdd[data-pressed] {
+  background: rgba(0, 122, 255, 0.16);
+}
+
+.framesFrame[data-active] .framesAdd {
+  color: #007aff;
+}
+
+.framesAdd svg {
+  width: 2.4cqw;
+  height: 2.4cqw;
+}
+
+/* Its own container, so the page inside sizes itself to the frame's width like a real layout would. The red
+   is taken from the shoe in its photo, the gray from the photo's backdrop. */
+.framesPage {
+  --site-ink: #18181b;
+  --site-muted: #71717a;
+  --site-red: #d03545;
+  --site-photo: #eaeaea;
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  padding: 0 6%;
+  overflow: hidden;
+  container-type: inline-size;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px #e4e4e7;
+  color: var(--site-ink);
+}
+
+/* The page fades in once the agent has generated it. */
+.framesBuild {
+  opacity: 0;
+  transform: translateY(2cqw);
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.framesBuild[data-built] {
+  opacity: 1;
+  transform: none;
+}
+
+/* Fills a frame while its page is generated, with a glare sweeping across it over and over. */
+.framesLoading {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--site-photo);
+  transition: opacity 0.35s ease;
+}
+
+.framesLoading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, 0.75) 50%, transparent 80%);
+  transform: translateX(-100%);
+  animation: framesGlare 1.5s ease-in-out infinite;
+}
+
+.framesLoading[data-done] {
+  opacity: 0;
+}
+
+.framesLoading[data-done]::after {
+  animation-play-state: paused;
+}
+
+@keyframes framesGlare {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.siteNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 8cqw;
+  margin-top: 1.5cqw;
+  font-size: 2.3cqw;
+}
+
+.siteLogo {
+  display: flex;
+  align-items: center;
+  gap: 1.2cqw;
+  font-size: 3.2cqw;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+/* A slanted bar, for speed. */
+.siteLogoMark {
+  width: 3.4cqw;
+  height: 2.4cqw;
+  border-radius: 0.5cqw;
+  background: var(--site-red);
+  transform: skewX(-20deg);
+}
+
+.siteLinks {
+  display: flex;
+  gap: 4cqw;
+  color: var(--site-muted);
+}
+
+.siteButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 1.1cqw 2.6cqw;
+  border-radius: 999px;
+  background: var(--site-red);
+  color: #ffffff;
+  font-size: 2.3cqw;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.siteButtonDark {
+  background: var(--site-ink);
+}
+
+.siteButtonOutline {
+  background: transparent;
+  color: var(--site-ink);
+  box-shadow: inset 0 0 0 1px #d4d4d8;
+}
+
+.siteHero {
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  align-items: center;
+  gap: 5cqw;
+  margin-top: 4cqw;
+}
+
+.siteHeadline {
+  font-size: 6.6cqw;
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.siteText {
+  margin-top: 2.6cqw;
+  font-size: 2.5cqw;
+  line-height: 1.5;
+  color: var(--site-muted);
+}
+
+/* Shrink-wrapped, so its outline and the agent's cursor are on the buttons rather than the empty space beside them. */
+.siteActions {
+  display: flex;
+  width: fit-content;
+  gap: 1.6cqw;
+  margin-top: 3.6cqw;
+}
+
+/* About as wide as the product photo, which fills it with only its edges cropped; the backdrop color shows
+   while the photo loads. */
+.siteImage {
+  position: relative;
+  aspect-ratio: 1.4;
+  overflow: hidden;
+  border-radius: 3cqw;
+  background: var(--site-photo);
+}
+
+.siteImage img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.siteBadge {
+  position: absolute;
+  top: 2.4cqw;
+  left: 2.4cqw;
+  padding: 0.7cqw 1.8cqw;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--site-red);
+  font-size: 2cqw;
+  font-weight: 700;
+}
+
+.siteFeatures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3cqw;
+  margin-top: 6cqw;
+}
+
+.siteFeature {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqw;
+  padding: 2.6cqw;
+  border-radius: 2cqw;
+  background: #f4f4f5;
+  font-size: 2.3cqw;
+  font-weight: 600;
+}
+
+.siteFeatureIcon {
+  flex: none;
+  width: 4cqw;
+  height: 4cqw;
+  border-radius: 1.2cqw;
+  background: #f9d7db;
+}
+
+/* The phone frame stacks the same page in a single column, sized for its narrower width. */
+.framesFrame[data-device="phone"] .siteNav {
+  height: 16cqw;
+  margin-top: 3cqw;
+}
+
+.framesFrame[data-device="phone"] .siteLogo {
+  gap: 3cqw;
+  font-size: 8cqw;
+}
+
+.framesFrame[data-device="phone"] .siteLogoMark {
+  width: 8.5cqw;
+  height: 6cqw;
+  border-radius: 1.2cqw;
+}
+
+.siteMenu {
+  width: 9cqw;
+  height: 5.4cqw;
+  box-sizing: border-box;
+  border-top: 1.4cqw solid var(--site-ink);
+  border-bottom: 1.4cqw solid var(--site-ink);
+}
+
+.framesFrame[data-device="phone"] .siteHeadline {
+  margin-top: 6cqw;
+  font-size: 14cqw;
+}
+
+.framesFrame[data-device="phone"] .siteText {
+  margin-top: 5cqw;
+  font-size: 6.2cqw;
+}
+
+.framesFrame[data-device="phone"] .siteActions {
+  width: auto;
+  margin-top: 7cqw;
+}
+
+.framesFrame[data-device="phone"] .siteButton {
+  justify-content: center;
+  width: 100%;
+  padding: 3.4cqw 0;
+  font-size: 6.2cqw;
+}
+
+.framesFrame[data-device="phone"] .siteImage {
+  margin-top: 8cqw;
+  border-radius: 7cqw;
+}
+
+.framesFrame[data-device="phone"] .siteBadge {
+  top: 5cqw;
+  left: 5cqw;
+  padding: 1.6cqw 4cqw;
+  font-size: 5cqw;
+}
+
+.framesFrame[data-device="phone"] .siteFeatures {
+  grid-template-columns: 1fr;
+  gap: 4cqw;
+  margin-top: 8cqw;
+}
+
+.framesFrame[data-device="phone"] .siteFeature {
+  gap: 4cqw;
+  padding: 5cqw;
+  border-radius: 5cqw;
+  font-size: 6.2cqw;
+}
+
+.framesFrame[data-device="phone"] .siteFeatureIcon {
+  width: 10cqw;
+  height: 10cqw;
+  border-radius: 3cqw;
+}
+
+/* Kritzel's agentic cursor (kritzel-agentic-cursors.css), just the arrow. It keeps Kritzel's size in wide demos and shrinks a little in narrow ones, so it does not cover the frames.
+   Its tip is at the translated point (set from FramesDemo). */
+.framesCursor {
+  --frames-arrow: clamp(16px, 3.8cqw, 20px);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  color: var(--frames-cursor);
+  transition:
+    opacity 0.25s ease,
+    transform 1.2s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.framesCursor[data-hidden] {
+  opacity: 0;
+}
+
+/* The arrow's tip is at (5, 3) in its 24-unit viewBox; a click squeezes the arrow towards it. */
+.framesCursorArrow {
+  display: block;
+  width: var(--frames-arrow);
+  height: var(--frames-arrow);
+  margin: calc(var(--frames-arrow) * -3 / 24) 0 0 calc(var(--frames-arrow) * -5 / 24);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+  transform-origin: 20.8% 12.5%;
+  transition: transform 0.12s ease;
+}
+
+.framesCursor[data-pressed] .framesCursorArrow {
+  transform: scale(0.82);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .framesWorld,
+  .framesFrame,
+  .framesBuild,
+  .framesCursor {
+    transition: none;
+  }
+}
+
 /* The terminal as a showcase's media: its text scales with the column so the ASCII logo fits, like on phones. */
 .cliMedia {
   flex: 1 1 0;
@@ -1366,7 +1829,25 @@
   transform: scale(0.85);
 }
 
+/* Positioned so the tile stacks above the hearts' canvas and the hearts rise from behind it. */
 .skillTileStatic {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* The canvas the hearts bubble up in (HeartBubbles): around the skill tile and well above it. */
+.heartBubbles {
+  position: absolute;
+  top: -200px;
+  right: -64px;
+  bottom: -16px;
+  left: -64px;
+  pointer-events: none;
+}
+
+.heartBubbles canvas {
+  display: block;
   width: 100%;
   height: 100%;
 }
@@ -1376,6 +1857,10 @@
   background: #ffffff;
   box-shadow: 0 18px 20px -12px rgba(10, 10, 10, 0.25);
   color: var(--landing-ink);
+  /* The anchor around it ignores the pointer; the bot hops when the pointer enters (see BotIcon). */
+  pointer-events: auto;
+  /* Quick clicks on it would otherwise select the nearest text, like the section's title. */
+  user-select: none;
 }
 
 /* Every few seconds the antenna gives a short wobble around its base on the head. */
@@ -1419,10 +1904,163 @@
   transform-origin: 12px 14px;
 }
 
+/* The arms swing around their shoulders on the head (animated from BotIcon). */
+.skillArmLeft {
+  transform-box: view-box;
+  transform-origin: 4px 14px;
+}
+
+.skillArmRight {
+  transform-box: view-box;
+  transform-origin: 20px 14px;
+}
+
+/* Blushing cheeks below the eyes, slowly deepening and fading again. */
+.skillBlush {
+  fill: #fb7185;
+  stroke: none;
+  opacity: 0.7;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: landing-blush 4s ease-in-out infinite;
+}
+
+@keyframes landing-blush {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+}
+
+/* Squashes against its feet when it hops (animated from BotIcon). */
 .skillIcon {
   display: block;
   width: 56px;
   height: 56px;
+  transform-origin: 50% 100%;
+}
+
+/* A mock canvas whose controls morph from one theme into the next (see ThemesDemo, which sets the --theme-*
+   values). Everything transitions over the same time, so the whole UI changes as one. */
+.themesDemo {
+  --themes-morph: 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  background-color: var(--theme-canvas);
+  transition: background-color var(--themes-morph);
+}
+
+.themesControl {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0.8cqw;
+  border-radius: var(--theme-radius);
+  background-color: var(--theme-surface);
+  /* The border is a ring of shadow: real border widths snap to whole pixels and shift the layout as they change. */
+  box-shadow: 0 0 0 var(--theme-border-width) var(--theme-border), var(--theme-shadow);
+  color: var(--theme-ink);
+  transition:
+    background-color var(--themes-morph),
+    border-radius var(--themes-morph),
+    box-shadow var(--themes-morph),
+    color var(--themes-morph);
+}
+
+.themesWorkspaces {
+  top: 4cqw;
+  left: 4cqw;
+}
+
+.themesMore {
+  top: 4cqw;
+  right: 4cqw;
+}
+
+.themesChat {
+  right: 14cqw;
+  bottom: 4cqw;
+  left: 14cqw;
+}
+
+.themesButton {
+  display: grid;
+  place-items: center;
+  width: 6.4cqw;
+  height: 6.4cqw;
+}
+
+.themesButton svg {
+  width: 3.6cqw;
+  height: 3.6cqw;
+}
+
+.themesDivider {
+  width: 0.25cqw;
+  height: 3.6cqw;
+  background-color: var(--theme-border);
+  transition: background-color var(--themes-morph);
+}
+
+.themesField {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
+  padding: 1.2cqw 1.2cqw 1.2cqw 2.4cqw;
+  border-radius: var(--theme-radius);
+  background-color: var(--theme-field);
+  transition:
+    background-color var(--themes-morph),
+    border-radius var(--themes-morph);
+}
+
+.themesPrompt {
+  overflow: hidden;
+  color: var(--theme-muted);
+  font-size: 2.8cqw;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: color var(--themes-morph);
+}
+
+.themesSend {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 6.4cqw;
+  height: 6.4cqw;
+  border-radius: var(--theme-send-radius);
+  background-color: var(--theme-accent);
+  color: var(--theme-on-accent);
+  transition:
+    background-color var(--themes-morph),
+    border-radius var(--themes-morph),
+    color var(--themes-morph);
+}
+
+.themesSend svg {
+  width: 3.6cqw;
+  height: 3.6cqw;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .themesDemo,
+  .themesControl,
+  .themesDivider,
+  .themesField,
+  .themesPrompt,
+  .themesSend {
+    transition: none;
+  }
 }
 
 /* ---------- FAQ ---------- */
@@ -1614,6 +2252,7 @@
   .grassImageAnchor,
   .frameworkTileMotion,
   .skillAntenna,
+  .skillBlush,
   .faqAnswer {
     animation: none !important;
   }

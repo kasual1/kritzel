@@ -7,6 +7,8 @@ import {
   CliSection,
   Faq,
   Features,
+  CustomizationSection,
+  GenerativeUiSection,
   Wordmark,
 } from "@site/src/components/Landing/Sections";
 import styles from "@site/src/components/Agentic/styles.module.css";
@@ -49,7 +51,9 @@ export default function Agentic(): ReactNode {
             <div aria-hidden="true" className={styles.heroSpacer} />
             <Features variant="agentic" />
           </div>
-          <CliSection variant="skill" />
+          <GenerativeUiSection />
+          <CliSection variant="skill" layout="split" />
+          <CustomizationSection />
           <Faq variant="agentic" />
           <Wordmark />
         </main>
