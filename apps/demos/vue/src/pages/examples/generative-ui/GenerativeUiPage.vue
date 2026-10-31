@@ -7,14 +7,11 @@ import {
   type KritzelBaseObject,
   type KritzelObjectTitlebarActionEvent,
 } from '@kritzel/vue-editor'
-import { vueThemeDark } from '../../../const/vue-theme-dark'
-import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from './generative-ui'
 import type { Credentials } from './llm-providers'
 import UiPreview from './UiPreview.vue'
 import WelcomePanel from './WelcomePanel.vue'
 
-const themes = [vueThemeLight, vueThemeDark]
 const workspaces = [new KritzelWorkspace({ name: 'Generative UI', objects: [] })]
 
 const editor = getEditorRef('editor')
@@ -92,7 +89,6 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
       class="generative-ui__editor"
       editorId="generative-ui"
       theme="light"
-      :themes="themes"
       :workspaces="workspaces"
       :objectConfig="objectConfig"
       :objectTitlebar="objectTitlebar"
@@ -119,8 +115,8 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
 
 <style scoped>
 .generative-ui {
-  --gen-ui-accent: #42b883;
-  --gen-ui-accent-hover: #369a6e;
+  --gen-ui-accent: #4a7dff;
+  --gen-ui-accent-hover: #3f6ad9;
   position: relative;
   height: 100%;
   font-family:

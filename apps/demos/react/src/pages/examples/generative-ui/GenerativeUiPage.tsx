@@ -5,15 +5,11 @@ import {
   type HTMLKritzelEditorElement,
   type KritzelObjectTitlebarActionEvent,
 } from "@kritzel/react-editor";
-import { reactThemeDark } from "../../../const/react-theme-dark";
-import { reactThemeLight } from "../../../const/react-theme-light";
 import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from "./generative-ui";
 import type { Credentials } from "./llm-providers";
 import { UiPreview } from "./UiPreview";
 import { WelcomePanel } from "./WelcomePanel";
 import "./generative-ui.css";
-
-const themes = [reactThemeLight, reactThemeDark];
 
 interface Preview {
   title: string;
@@ -85,7 +81,6 @@ export function GenerativeUiPage() {
         className="generative-ui__editor"
         editorId="generative-ui"
         theme="light"
-        themes={themes}
         workspaces={workspaces}
         objectConfig={objectConfig}
         objectTitlebar={objectTitlebar}

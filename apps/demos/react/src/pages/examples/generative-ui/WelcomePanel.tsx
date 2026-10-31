@@ -55,9 +55,7 @@ export function WelcomePanel({ isVisible, credentials, error, onConnect, onDisco
 
         {credentials ? (
           <div className="welcome__connected">
-            <span>
-              Connected to {provider.name} · {provider.model}
-            </span>
+            <span>{`Connected to ${provider.name} · ${provider.model}`}</span>
             <button type="button" className="welcome__change" onClick={onDisconnect}>
               Change key
             </button>
@@ -96,7 +94,7 @@ export function WelcomePanel({ isVisible, credentials, error, onConnect, onDisco
               </button>
             </div>
             <p className="welcome__note">
-              Kept in this tab&apos;s memory only and sent straight to {provider.name}.{" "}
+              {`Kept in this tab's memory only and sent straight to ${provider.name}. `}
               <a href={provider.keyUrl} target="_blank" rel="noreferrer">
                 Get a key
               </a>
@@ -113,7 +111,7 @@ export function WelcomePanel({ isVisible, credentials, error, onConnect, onDisco
           {EXAMPLE_PROMPTS.map((prompt) => (
             <li key={prompt}>
               <button type="button" className="welcome__example" onClick={() => onExample(prompt)}>
-                “{prompt}”
+                {`“${prompt}”`}
               </button>
             </li>
           ))}
