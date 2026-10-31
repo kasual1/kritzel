@@ -7,10 +7,20 @@ import {
   type KritzelBaseObject,
   type KritzelObjectTitlebarActionEvent,
 } from '@kritzel/vue-editor'
+import { vueThemeDark } from '../../../const/vue-theme-dark'
+import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from './generative-ui'
 import type { Credentials } from './llm-providers'
 import UiPreview from './UiPreview.vue'
 import WelcomePanel from './WelcomePanel.vue'
+
+const themes = [vueThemeLight, vueThemeDark]
+
+/** The welcome guide takes its accent from the theme, like the editor's own controls. */
+const accentStyle = {
+  '--gen-ui-accent': vueThemeLight.global?.primaryColor,
+  '--gen-ui-accent-hover': vueThemeLight.global?.primaryHoverColor,
+}
 
 const workspaces = [new KritzelWorkspace({ name: 'Generative UI', objects: [] })]
 
@@ -83,12 +93,13 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
 </script>
 
 <template>
-  <div class="generative-ui">
+  <div class="generative-ui" :style="accentStyle">
     <KritzelEditor
       ref="editor"
       class="generative-ui__editor"
       editorId="generative-ui"
       theme="light"
+      :themes="themes"
       :workspaces="workspaces"
       :objectConfig="objectConfig"
       :objectTitlebar="objectTitlebar"
@@ -114,9 +125,8 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
 </template>
 
 <style scoped>
+/* --gen-ui-accent and --gen-ui-accent-hover come from the theme, see accentStyle. */
 .generative-ui {
-  --gen-ui-accent: #4a7dff;
-  --gen-ui-accent-hover: #3f6ad9;
   position: relative;
   height: 100%;
   font-family:

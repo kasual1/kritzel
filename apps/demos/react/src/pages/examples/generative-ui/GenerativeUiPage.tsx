@@ -1,15 +1,25 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, type CSSProperties } from "react";
 import {
   KritzelEditor,
   KritzelWorkspace,
   type HTMLKritzelEditorElement,
   type KritzelObjectTitlebarActionEvent,
 } from "@kritzel/react-editor";
+import { reactThemeDark } from "../../../const/react-theme-dark";
+import { reactThemeLight } from "../../../const/react-theme-light";
 import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from "./generative-ui";
 import type { Credentials } from "./llm-providers";
 import { UiPreview } from "./UiPreview";
 import { WelcomePanel } from "./WelcomePanel";
 import "./generative-ui.css";
+
+const themes = [reactThemeLight, reactThemeDark];
+
+/** The welcome guide takes its accent from the theme, like the editor's own controls. */
+const accentStyle = {
+  "--gen-ui-accent": reactThemeLight.global?.primaryColor,
+  "--gen-ui-accent-hover": reactThemeLight.global?.primaryHoverColor,
+} as CSSProperties;
 
 interface Preview {
   title: string;
@@ -75,12 +85,13 @@ export function GenerativeUiPage() {
   const closePreview = useCallback(() => setPreview(null), []);
 
   return (
-    <div className="generative-ui">
+    <div className="generative-ui" style={accentStyle}>
       <KritzelEditor
         ref={editorRef}
         className="generative-ui__editor"
         editorId="generative-ui"
         theme="light"
+        themes={themes}
         workspaces={workspaces}
         objectConfig={objectConfig}
         objectTitlebar={objectTitlebar}

@@ -1,6 +1,5 @@
+/* --gen-ui-accent and --gen-ui-accent-hover come from the theme, see GenerativeUiPage. */
 .generative-ui {
-  --gen-ui-accent: #4a7dff;
-  --gen-ui-accent-hover: #3f6ad9;
   position: relative;
   height: 100%;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;

@@ -5,6 +5,8 @@ import {
   KritzelObjectTitlebarActionEvent,
   KritzelWorkspace,
 } from '@kritzel/angular-editor';
+import { angularThemeDark } from '../../../const/angular-theme-dark';
+import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from './generative-ui';
 import type { Credentials } from './llm-providers';
 import { UiPreviewComponent } from './ui-preview.component';
@@ -14,10 +16,16 @@ import { WelcomePanelComponent } from './welcome-panel.component';
   selector: 'app-generative-ui',
   imports: [KritzelEditor, UiPreviewComponent, WelcomePanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  // The welcome guide takes its accent from the theme, like the editor's own controls.
+  host: {
+    '[style.--gen-ui-accent]': 'accentColor',
+    '[style.--gen-ui-accent-hover]': 'accentHoverColor',
+  },
   template: `
     <kritzel-editor
       editorId="generative-ui"
       [theme]="'light'"
+      [themes]="themes"
       [workspaces]="workspaces"
       [objectConfig]="objectConfig"
       [objectTitlebar]="objectTitlebar"
@@ -46,8 +54,6 @@ import { WelcomePanelComponent } from './welcome-panel.component';
   `,
   styles: [`
     :host {
-      --gen-ui-accent: #4a7dff;
-      --gen-ui-accent-hover: #3f6ad9;
       position: relative;
       display: block;
       height: 100%;
@@ -66,6 +72,9 @@ import { WelcomePanelComponent } from './welcome-panel.component';
 export class GenerativeUiComponent {
   @ViewChild(KritzelEditor) editor!: KritzelEditor;
 
+  readonly themes = [angularThemeLight, angularThemeDark];
+  readonly accentColor = angularThemeLight.global?.primaryColor;
+  readonly accentHoverColor = angularThemeLight.global?.primaryHoverColor;
   readonly workspaces = [new KritzelWorkspace({ name: 'Generative UI', objects: [] })];
   readonly objectConfig = objectConfig;
   readonly objectTitlebar = objectTitlebar;
