@@ -147,4 +147,12 @@ export const reactThemeLight: KritzelTheme = {
   titlebarMenu: {
     itemHoverBackgroundColor: 'rgba(74, 125, 255, 0.08)',
   },
+  chatBox: {
+    buttonBackgroundColor: '#4A7DFF',
+    buttonColor: '#ffffff',
+    buttonHoverBackgroundColor: '#3F6AD9',
+    caretColor: '#4A7DFF',
+    selectionBackgroundColor: '#4A7DFF',
+    selectionColor: '#ffffff',
+  },
 };

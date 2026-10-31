@@ -121,4 +121,13 @@ export const angularThemeLight: KritzelTheme = {
     ...lightTheme.titlebarMenu,
     itemHoverBackgroundColor: 'rgba(221, 0, 48, 0.08)',
   },
+  chatBox: {
+    ...lightTheme.chatBox,
+    buttonBackgroundColor: '#dd0031',
+    buttonColor: '#ffffff',
+    buttonHoverBackgroundColor: '#b70028',
+    caretColor: '#dd0031',
+    selectionBackgroundColor: '#dd0031',
+    selectionColor: '#ffffff',
+  },
 };

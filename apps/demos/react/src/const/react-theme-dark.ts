@@ -121,4 +121,13 @@ export const reactThemeDark: KritzelTheme = {
     ...darkTheme.titlebarMenu,
     itemHoverBackgroundColor: "rgba(91, 140, 255, 0.12)",
   },
+  chatBox: {
+    ...darkTheme.chatBox,
+    buttonBackgroundColor: "#5B8CFF",
+    buttonColor: "#ffffff",
+    buttonHoverBackgroundColor: "#4D77D9",
+    caretColor: "#5B8CFF",
+    selectionBackgroundColor: "#5B8CFF",
+    selectionColor: "#ffffff",
+  },
 };

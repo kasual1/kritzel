@@ -145,4 +145,12 @@ export const vueThemeLight: KritzelTheme = {
   titlebarMenu: {
     itemHoverBackgroundColor: 'rgba(66, 184, 131, 0.08)',
   },
+  chatBox: {
+    buttonBackgroundColor: '#42b883',
+    buttonColor: '#ffffff',
+    buttonHoverBackgroundColor: '#369a6e',
+    caretColor: '#42b883',
+    selectionBackgroundColor: '#42b883',
+    selectionColor: '#ffffff',
+  },
 };

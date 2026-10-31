@@ -121,5 +121,14 @@ export const angularThemeDark: KritzelTheme = {
     ...darkTheme.titlebarMenu,
     itemHoverBackgroundColor: 'rgba(255, 64, 129, 0.12)',
   },
+  chatBox: {
+    ...darkTheme.chatBox,
+    buttonBackgroundColor: '#ff4081',
+    buttonColor: '#ffffff',
+    buttonHoverBackgroundColor: '#d81b60',
+    caretColor: '#ff4081',
+    selectionBackgroundColor: '#ff4081',
+    selectionColor: '#ffffff',
+  },
 };
 
