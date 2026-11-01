@@ -1552,6 +1552,12 @@
   font-size: 0.7em;
 }
 
+/* The snippets' widest line is about 60 characters with the line numbers, i.e. about 36em of monospace. */
+.cliMedia .codeBody {
+  padding-top: 24px;
+  font-size: min(14px, max(11px, calc((100cqw - 36px) / 36)));
+}
+
 /* A smaller framework tile beside the narrower terminal; phones already get their own size below. */
 @media (min-width: 769px) {
   .cliMedia .frameworkTileAnchor {
@@ -1733,6 +1739,81 @@
 .terminalSuccess {
   white-space: pre;
   color: var(--landing-muted);
+}
+
+/* ---------- Code window (the terminal's look, holding a typed snippet) ---------- */
+
+.codeFile {
+  margin-left: 10px;
+  font-family: var(--landing-mono);
+  font-size: 13px;
+  color: #71717a;
+}
+
+.codeBody {
+  overflow-x: hidden;
+}
+
+.code {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  overflow: visible;
+}
+
+/* A line wraps under its own text, never under the line number, if it does not fit. */
+.codeLine {
+  display: grid;
+  grid-template-columns: 2ch minmax(0, 1fr);
+  column-gap: 2ch;
+  align-items: baseline;
+}
+
+.codeLineNumber {
+  text-align: right;
+  color: #a1a1aa;
+  user-select: none;
+}
+
+.codeText {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: inherit;
+  color: inherit;
+  vertical-align: baseline;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.codeKeyword {
+  color: #8250df;
+}
+
+.codeString {
+  color: #0a7d4f;
+}
+
+.codeTag {
+  color: #0550ae;
+}
+
+.codeDecorator {
+  color: #b35900;
+}
+
+.codeCursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  margin-left: 1px;
+  vertical-align: -0.2em;
+  background: var(--landing-ink);
 }
 
 .frameworkTileAnchor {
