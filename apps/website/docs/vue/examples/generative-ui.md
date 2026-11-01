@@ -32,9 +32,7 @@ This example makes use of the following core concepts. Click on the links below 
 
 Add an API key in the welcome panel, then type into the chat box or pick one of the example prompts. A new UI appears right away with an animated placeholder, and the real interface replaces the placeholder once the model has answered. The answer arrives in one piece, not streamed. To change a UI, select it and send another prompt; with nothing selected, the next prompt adds a new UI to the right of the others. The ▶ button in a titlebar opens the UI in fullscreen.
 
-:::warning Keep API keys off the client in production
-The demo sends requests straight from the browser with a key that only lives in the component's memory. That is fine for trying things out with your own key, but anyone can read a key in a web page. A real app should send these requests through its own backend. All of the provider code sits behind `complete()` in `llm-providers.ts`, so that function is the one to replace.
-:::
+**Keep API keys off the client in production.** The demo sends requests straight from the browser with a key that only lives in the component's memory. That is fine for trying things out with your own key, but anyone can read a key in a web page. A real app should send these requests through its own backend. All of the provider code sits behind `complete()` in `llm-providers.ts`, so that function is the one to replace.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
