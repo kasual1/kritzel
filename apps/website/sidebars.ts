@@ -66,7 +66,20 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Examples',
       collapsed: true,
-      items: ['examples/object-explorer', 'examples/blueprint-defect-mapper', 'examples/slideshow-presentation', 'examples/image-annotation-studio', 'examples/performance-showcase', 'examples/generative-ui'],
+      items: [
+        'examples/object-explorer',
+        'examples/blueprint-defect-mapper',
+        'examples/slideshow-presentation',
+        'examples/image-annotation-studio',
+        'examples/performance-showcase',
+        {
+          type: 'doc',
+          id: 'examples/generative-ui',
+          customProps: {
+            badge: 'Preview',
+          },
+        },
+      ],
     },
     {
       type: 'category',

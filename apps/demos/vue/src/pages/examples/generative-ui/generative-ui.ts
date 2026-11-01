@@ -6,7 +6,7 @@ import {
   type KritzelObjectConfig,
   type KritzelObjectTitlebarConfig,
 } from '@kritzel/vue-editor'
-import { complete, type Credentials } from './llm-providers'
+import type { CompletionRequest } from './llm-providers'
 
 /** The page size of a new UI in CSS pixels. A resized UI lays its page out again at the new size. */
 const UI_WIDTH = 800
@@ -149,7 +149,7 @@ function summarize(prompt: string): string {
 export class GenerativeUi {
   constructor(private readonly editor: GenerativeUiEditor) {}
 
-  async generate(prompt: string, credentials: Credentials, signal: AbortSignal): Promise<void> {
+  async generate(prompt: string, complete: (request: CompletionRequest) => Promise<string>, signal: AbortSignal): Promise<void> {
     const selected = (await this.editor.getSelectedObjects()).filter(isUi)
     const existing = selected.length === 1 ? selected[0] : undefined
     const ui = existing ?? (await this.addUi(summarize(prompt)))
@@ -160,7 +160,7 @@ export class GenerativeUi {
 
     await this.setLoading(ui.id, true)
     try {
-      const answer = await complete(credentials, { system: SYSTEM_PROMPT, prompt: request, signal })
+      const answer = await complete({ system: SYSTEM_PROMPT, prompt: request, signal })
       const { title, content } = parseUiDocument(answer, getUiTitle(ui))
       // Look the UI up again: the instance in the store can be replaced in the meantime, e.g. by undo.
       const current = await this.getUi(ui.id)

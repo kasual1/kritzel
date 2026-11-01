@@ -8,13 +8,15 @@ import {
 import { angularThemeDark } from '../../../const/angular-theme-dark';
 import { angularThemeLight } from '../../../const/angular-theme-light';
 import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from './generative-ui';
-import type { Credentials } from './llm-providers';
+import { complete, type CompletionRequest, type Credentials } from './llm-providers';
+import { MockChatBoxComponent } from './mock-chat-box.component';
+import { completeWithMock, type MockUi, type RequestMode } from './mock-uis';
 import { UiPreviewComponent } from './ui-preview.component';
 import { WelcomePanelComponent } from './welcome-panel.component';
 
 @Component({
   selector: 'app-generative-ui',
-  imports: [KritzelEditor, UiPreviewComponent, WelcomePanelComponent],
+  imports: [KritzelEditor, MockChatBoxComponent, UiPreviewComponent, WelcomePanelComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // The welcome guide takes its accent from the theme, like the editor's own controls.
   host: {
@@ -29,8 +31,9 @@ import { WelcomePanelComponent } from './welcome-panel.component';
       [workspaces]="workspaces"
       [objectConfig]="objectConfig"
       [objectTitlebar]="objectTitlebar"
-      [isChatBoxVisible]="true"
+      [isChatBoxVisible]="mode() === 'live'"
       [isChatBoxLoading]="isWorking()"
+      [isToolbarVisible]="false"
       [isWorkspaceManagerVisible]="false"
       (isReady)="onReady()"
       (chatSubmit)="generate($event.detail)"
@@ -41,12 +44,18 @@ import { WelcomePanelComponent } from './welcome-panel.component';
 
     <app-welcome-panel
       [isVisible]="!hasUis() && !isWorking()"
+      [mode]="mode()"
       [credentials]="credentials()"
       [error]="keyError()"
+      (modeChange)="changeMode($event)"
       (connected)="connect($event)"
       (disconnect)="credentials.set(null)"
       (example)="generate($event)"
     />
+
+    @if (mode() === 'mock') {
+      <app-mock-chat-box [isWorking]="isWorking()" (send)="generateMock($event)" />
+    }
 
     @if (preview(); as current) {
       <app-ui-preview [title]="current.title" [document]="current.document" (closed)="preview.set(null)" />
@@ -79,6 +88,7 @@ export class GenerativeUiComponent {
   readonly objectConfig = objectConfig;
   readonly objectTitlebar = objectTitlebar;
 
+  readonly mode = signal<RequestMode | null>(null);
   // The key only lives in this component's memory: it is gone when the page reloads.
   readonly credentials = signal<Credentials | null>(null);
   readonly keyError = signal('');
@@ -93,13 +103,23 @@ export class GenerativeUiComponent {
     this.generator = new GenerativeUi(this.editor);
   }
 
-  async generate(prompt: string) {
+  generate(prompt: string) {
     const credentials = this.credentials();
-    if (!this.generator || this.abort || !prompt.trim()) {
-      return;
-    }
     if (!credentials) {
       this.keyError.set('Add an API key to start generating UIs.');
+      return;
+    }
+    void this.run(prompt, request => complete(credentials, request));
+  }
+
+  /** A mocked prompt always adds a new UI, because its answer is not a change of the selected one. */
+  async generateMock(ui: MockUi) {
+    await this.editor.clearSelection();
+    await this.run(ui.prompt, () => completeWithMock(ui));
+  }
+
+  private async run(prompt: string, completion: (request: CompletionRequest) => Promise<string>) {
+    if (!this.generator || this.abort || !prompt.trim()) {
       return;
     }
 
@@ -107,7 +127,7 @@ export class GenerativeUiComponent {
     this.abort = abort;
     this.isWorking.set(true);
     try {
-      await this.generator.generate(prompt, credentials, abort.signal);
+      await this.generator.generate(prompt, completion, abort.signal);
     } catch (error) {
       if (!abort.signal.aborted) {
         const message = error instanceof Error ? error.message : String(error);
@@ -125,6 +145,11 @@ export class GenerativeUiComponent {
 
   connect(credentials: Credentials) {
     this.credentials.set(credentials);
+    this.keyError.set('');
+  }
+
+  changeMode(mode: RequestMode | null) {
+    this.mode.set(mode);
     this.keyError.set('');
   }
 

@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from './llm-providers';
+import type { RequestMode } from './mock-uis';
 
-/** The empty-canvas guide, centered on the canvas until the first UI is added. It also takes the API key. */
+/** The empty-canvas guide, centered on the canvas until the first UI is added. It asks how to answer prompts and takes the API key. */
 @Component({
   selector: 'app-welcome-panel',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,6 +15,27 @@ import { detectProvider, getProvider, PROVIDERS, type Credentials, type Provider
     <div class="welcome__content">
       <p class="welcome__eyebrow">Generative UI</p>
       <h1 class="welcome__title">Describe an interface.<br />Watch it come to life.</h1>
+
+      @if (mode() === null) {
+        <p class="welcome__hint">Generate UIs with a real model, or try the demo with mocked requests.</p>
+        <div class="welcome__choices">
+          <button type="button" class="welcome__choice welcome__choice--primary" (click)="modeChange.emit('live')">
+            <strong>Use a real API key</strong>
+            <span>Describe any UI, with your own Anthropic, OpenAI or Gemini key.</span>
+          </button>
+          <button type="button" class="welcome__choice" (click)="modeChange.emit('mock')">
+            <strong>Mock the requests</strong>
+            <span>Send prefilled prompts with canned answers. No key needed.</span>
+          </button>
+        </div>
+      } @else if (mode() === 'mock') {
+        <p class="welcome__hint">Send the prefilled prompts from the chat box below. The UIs are canned, so no model is involved.</p>
+        <div class="welcome__connected">
+          <span>Mocked requests</span>
+          <button type="button" class="welcome__change" (click)="modeChange.emit(null)">Change</button>
+        </div>
+        <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
+      } @else {
       <p class="welcome__hint">
         @if (credentials()) {
           Type into the chat box below. The model builds a working UI on the canvas while you watch. Select a UI to
@@ -61,6 +83,7 @@ import { detectProvider, getProvider, PROVIDERS, type Credentials, type Provider
             Kept in this tab's memory only and sent straight to {{ provider().name }}.
             <a [href]="provider().keyUrl" target="_blank" rel="noreferrer">Get a key</a>
           </p>
+          <button type="button" class="welcome__change welcome__back" (click)="modeChange.emit(null)">Back to the options</button>
         </form>
       }
       @if (error()) {
@@ -75,6 +98,7 @@ import { detectProvider, getProvider, PROVIDERS, type Credentials, type Provider
         }
       </ul>
       <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
+      }
     </div>
   `,
   styles: [`
@@ -105,8 +129,55 @@ import { detectProvider, getProvider, PROVIDERS, type Credentials, type Provider
 
     .welcome__content form,
     .welcome__connected,
+    .welcome__choice,
     .welcome__example {
       pointer-events: auto;
+    }
+
+    .welcome__choices {
+      display: grid;
+      gap: 10px;
+    }
+
+    .welcome__choice {
+      display: grid;
+      gap: 2px;
+      padding: 14px 16px;
+      border: 0;
+      border-radius: 12px;
+      background: #f4f4f5;
+      font: inherit;
+      font-size: 14px;
+      text-align: left;
+      color: #52525b;
+      cursor: pointer;
+    }
+
+    .welcome__choice strong {
+      font-size: 16px;
+      color: #18181b;
+    }
+
+    .welcome__choice:hover {
+      background: #e4e4e7;
+    }
+
+    .welcome__choice--primary,
+    .welcome__choice--primary strong {
+      color: #ffffff;
+    }
+
+    .welcome__choice--primary {
+      background: var(--gen-ui-accent);
+    }
+
+    .welcome__choice--primary:hover {
+      background: var(--gen-ui-accent-hover);
+    }
+
+    .welcome__back {
+      margin-top: 8px;
+      font-size: 13px;
     }
 
     .welcome__eyebrow {
@@ -298,9 +369,11 @@ import { detectProvider, getProvider, PROVIDERS, type Credentials, type Provider
 })
 export class WelcomePanelComponent {
   readonly isVisible = input.required<boolean>();
+  readonly mode = input.required<RequestMode | null>();
   readonly credentials = input.required<Credentials | null>();
   readonly error = input('');
 
+  readonly modeChange = output<RequestMode | null>();
   readonly connected = output<Credentials>();
   readonly disconnect = output<void>();
   readonly example = output<string>();

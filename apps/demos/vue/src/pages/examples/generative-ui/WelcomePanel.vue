@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from './llm-providers'
+import type { RequestMode } from './mock-uis'
 
 const EXAMPLE_PROMPTS = [
   'A pomodoro timer with a circular progress ring',
@@ -10,11 +11,13 @@ const EXAMPLE_PROMPTS = [
 
 const props = defineProps<{
   isVisible: boolean
+  mode: RequestMode | null
   credentials: Credentials | null
   error: string
 }>()
 
 const emit = defineEmits<{
+  modeChange: [mode: RequestMode | null]
   connect: [credentials: Credentials]
   disconnect: []
   example: [prompt: string]
@@ -40,10 +43,37 @@ function connect() {
 }
 </script>
 
-<!-- The empty-canvas guide, centered on the canvas until the first UI is added. It also takes the API key. -->
+<!-- The empty-canvas guide, centered on the canvas until the first UI is added. It asks how to answer prompts and takes the API key. -->
 <template>
   <div class="welcome" :class="{ 'welcome--hidden': !isVisible }" :aria-hidden="!isVisible">
-    <div class="welcome__content">
+    <div v-if="mode === null" class="welcome__content">
+      <p class="welcome__eyebrow">Generative UI</p>
+      <h1 class="welcome__title">Describe an interface.<br />Watch it come to life.</h1>
+      <p class="welcome__hint">Generate UIs with a real model, or try the demo with mocked requests.</p>
+      <div class="welcome__choices">
+        <button type="button" class="welcome__choice welcome__choice--primary" @click="emit('modeChange', 'live')">
+          <strong>Use a real API key</strong>
+          <span>Describe any UI, with your own Anthropic, OpenAI or Gemini key.</span>
+        </button>
+        <button type="button" class="welcome__choice" @click="emit('modeChange', 'mock')">
+          <strong>Mock the requests</strong>
+          <span>Send prefilled prompts with canned answers. No key needed.</span>
+        </button>
+      </div>
+    </div>
+
+    <div v-else-if="mode === 'mock'" class="welcome__content">
+      <p class="welcome__eyebrow">Generative UI</p>
+      <h1 class="welcome__title">Describe an interface.<br />Watch it come to life.</h1>
+      <p class="welcome__hint">Send the prefilled prompts from the chat box below. The UIs are canned, so no model is involved.</p>
+      <div class="welcome__connected">
+        <span>Mocked requests</span>
+        <button type="button" class="welcome__change" @click="emit('modeChange', null)">Change</button>
+      </div>
+      <p class="welcome__footer">Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.</p>
+    </div>
+
+    <div v-else class="welcome__content">
       <p class="welcome__eyebrow">Generative UI</p>
       <h1 class="welcome__title">Describe an interface.<br />Watch it come to life.</h1>
       <p class="welcome__hint">
@@ -89,6 +119,7 @@ function connect() {
           Kept in this tab's memory only and sent straight to {{ provider.name }}.
           <a :href="provider.keyUrl" target="_blank" rel="noreferrer">Get a key</a>
         </p>
+        <button type="button" class="welcome__change welcome__back" @click="emit('modeChange', null)">Back to the options</button>
       </form>
       <p v-if="error" class="welcome__error" role="alert">{{ error }}</p>
 
@@ -135,8 +166,55 @@ function connect() {
 
 .welcome__content form,
 .welcome__connected,
+.welcome__choice,
 .welcome__example {
   pointer-events: auto;
+}
+
+.welcome__choices {
+  display: grid;
+  gap: 10px;
+}
+
+.welcome__choice {
+  display: grid;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 12px;
+  background: #f4f4f5;
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  color: #52525b;
+  cursor: pointer;
+}
+
+.welcome__choice strong {
+  font-size: 16px;
+  color: #18181b;
+}
+
+.welcome__choice:hover {
+  background: #e4e4e7;
+}
+
+.welcome__choice--primary,
+.welcome__choice--primary strong {
+  color: #ffffff;
+}
+
+.welcome__choice--primary {
+  background: var(--gen-ui-accent);
+}
+
+.welcome__choice--primary:hover {
+  background: var(--gen-ui-accent-hover);
+}
+
+.welcome__back {
+  margin-top: 8px;
+  font-size: 13px;
 }
 
 .welcome__eyebrow {

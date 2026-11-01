@@ -8,7 +8,9 @@ import {
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
 import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from "./generative-ui";
-import type { Credentials } from "./llm-providers";
+import { complete, type CompletionRequest, type Credentials } from "./llm-providers";
+import { MockChatBox } from "./MockChatBox";
+import { completeWithMock, type MockUi, type RequestMode } from "./mock-uis";
 import { UiPreview } from "./UiPreview";
 import { WelcomePanel } from "./WelcomePanel";
 import "./generative-ui.css";
@@ -30,6 +32,7 @@ export function GenerativeUiPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const generatorRef = useRef<GenerativeUi | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const [mode, setMode] = useState<RequestMode | null>(null);
   // The key only lives in this component's memory: it is gone when the page reloads.
   const [credentials, setCredentials] = useState<Credentials | null>(null);
   const [keyError, setKeyError] = useState("");
@@ -44,13 +47,23 @@ export function GenerativeUiPage() {
     }
   }
 
-  async function generate(prompt: string) {
-    const generator = generatorRef.current;
-    if (!generator || abortRef.current || !prompt.trim()) {
-      return;
-    }
+  function generate(prompt: string) {
     if (!credentials) {
       setKeyError("Add an API key to start generating UIs.");
+      return;
+    }
+    void run(prompt, (request) => complete(credentials, request));
+  }
+
+  /** A mocked prompt always adds a new UI, because its answer is not a change of the selected one. */
+  async function generateMock(ui: MockUi) {
+    await editorRef.current?.clearSelection();
+    await run(ui.prompt, () => completeWithMock(ui));
+  }
+
+  async function run(prompt: string, completion: (request: CompletionRequest) => Promise<string>) {
+    const generator = generatorRef.current;
+    if (!generator || abortRef.current || !prompt.trim()) {
       return;
     }
 
@@ -58,7 +71,7 @@ export function GenerativeUiPage() {
     abortRef.current = abort;
     setIsWorking(true);
     try {
-      await generator.generate(prompt, credentials, abort.signal);
+      await generator.generate(prompt, completion, abort.signal);
     } catch (error) {
       if (!abort.signal.aborted) {
         const message = error instanceof Error ? error.message : String(error);
@@ -72,6 +85,11 @@ export function GenerativeUiPage() {
 
   function connect(next: Credentials) {
     setCredentials(next);
+    setKeyError("");
+  }
+
+  function changeMode(next: RequestMode | null) {
+    setMode(next);
     setKeyError("");
   }
 
@@ -95,23 +113,27 @@ export function GenerativeUiPage() {
         workspaces={workspaces}
         objectConfig={objectConfig}
         objectTitlebar={objectTitlebar}
-        isChatBoxVisible
+        isChatBoxVisible={mode === "live"}
         isChatBoxLoading={isWorking}
+        isToolbarVisible={false}
         isWorkspaceManagerVisible={false}
         onIsReady={onReady}
-        onChatSubmit={(event) => void generate(event.detail)}
+        onChatSubmit={(event) => generate(event.detail)}
         onChatStop={() => abortRef.current?.abort()}
         onObjectsChange={(event) => setHasUis(event.detail.some(isUi))}
         onObjectTitlebarAction={(event) => void onTitlebarAction(event.detail)}
       />
       <WelcomePanel
         isVisible={!hasUis && !isWorking}
+        mode={mode}
         credentials={credentials}
         error={keyError}
+        onModeChange={changeMode}
         onConnect={connect}
         onDisconnect={() => setCredentials(null)}
-        onExample={(prompt) => void generate(prompt)}
+        onExample={generate}
       />
+      {mode === "mock" && <MockChatBox isWorking={isWorking} onSend={(ui) => void generateMock(ui)} />}
       {preview && <UiPreview title={preview.title} document={preview.document} onClose={closePreview} />}
     </div>
   );

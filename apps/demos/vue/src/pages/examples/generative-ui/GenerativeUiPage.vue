@@ -10,7 +10,9 @@ import {
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from './generative-ui'
-import type { Credentials } from './llm-providers'
+import { complete, type CompletionRequest, type Credentials } from './llm-providers'
+import MockChatBox from './MockChatBox.vue'
+import { completeWithMock, type MockUi, type RequestMode } from './mock-uis'
 import UiPreview from './UiPreview.vue'
 import WelcomePanel from './WelcomePanel.vue'
 
@@ -28,6 +30,7 @@ const editor = getEditorRef('editor')
 let generator: GenerativeUi | null = null
 let abort: AbortController | null = null
 
+const mode = ref<RequestMode | null>(null)
 // The key only lives in this component's memory: it is gone when the page reloads.
 const credentials = shallowRef<Credentials | null>(null)
 const keyError = ref('')
@@ -41,12 +44,23 @@ function onReady() {
   }
 }
 
-async function generate(prompt: string) {
-  if (!generator || abort || !prompt.trim()) {
+function generate(prompt: string) {
+  const current = credentials.value
+  if (!current) {
+    keyError.value = 'Add an API key to start generating UIs.'
     return
   }
-  if (!credentials.value) {
-    keyError.value = 'Add an API key to start generating UIs.'
+  void run(prompt, request => complete(current, request))
+}
+
+/** A mocked prompt always adds a new UI, because its answer is not a change of the selected one. */
+async function generateMock(ui: MockUi) {
+  await editor.value?.clearSelection()
+  await run(ui.prompt, () => completeWithMock(ui))
+}
+
+async function run(prompt: string, completion: (request: CompletionRequest) => Promise<string>) {
+  if (!generator || abort || !prompt.trim()) {
     return
   }
 
@@ -54,7 +68,7 @@ async function generate(prompt: string) {
   abort = controller
   isWorking.value = true
   try {
-    await generator.generate(prompt, credentials.value, controller.signal)
+    await generator.generate(prompt, completion, controller.signal)
   } catch (error) {
     if (!controller.signal.aborted) {
       const message = error instanceof Error ? error.message : String(error)
@@ -67,7 +81,7 @@ async function generate(prompt: string) {
 }
 
 function onChatSubmit(event: CustomEvent<string>) {
-  void generate(event.detail)
+  generate(event.detail)
 }
 
 function stop() {
@@ -76,6 +90,11 @@ function stop() {
 
 function connect(next: Credentials) {
   credentials.value = next
+  keyError.value = ''
+}
+
+function changeMode(next: RequestMode | null) {
+  mode.value = next
   keyError.value = ''
 }
 
@@ -103,8 +122,9 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
       :workspaces="workspaces"
       :objectConfig="objectConfig"
       :objectTitlebar="objectTitlebar"
-      :isChatBoxVisible="true"
+      :isChatBoxVisible="mode === 'live'"
       :isChatBoxLoading="isWorking"
+      :isToolbarVisible="false"
       :isWorkspaceManagerVisible="false"
       @isReady="onReady"
       @chatSubmit="onChatSubmit"
@@ -114,12 +134,15 @@ async function onTitlebarAction(event: CustomEvent<KritzelObjectTitlebarActionEv
     />
     <WelcomePanel
       :isVisible="!hasUis && !isWorking"
+      :mode="mode"
       :credentials="credentials"
       :error="keyError"
+      @modeChange="changeMode"
       @connect="connect"
       @disconnect="credentials = null"
       @example="generate"
     />
+    <MockChatBox v-if="mode === 'mock'" :isWorking="isWorking" @send="generateMock" />
     <UiPreview v-if="preview" :title="preview.title" :document="preview.document" @close="preview = null" />
   </div>
 </template>

@@ -13,7 +13,7 @@ This example connects a language model to the editor's built-in chat box. Descri
 
 ## Prerequisites
 
-Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup. To try the demo you need an API key from Anthropic, OpenAI or Google Gemini.
+Complete the [Quick Start](../getting-started/quick-start.md) guide to have a working `<kritzel-editor>` rendered in your application. This example builds on that setup. To generate UIs with a model you need an API key from Anthropic, OpenAI or Google Gemini.
 
 ---
 
@@ -97,7 +97,7 @@ const ui = await this.editor.addObject(
 The system prompt asks the model for one self-contained HTML document, and tells it about the frame's size and sandbox limits. `parseUiDocument()` splits the answer into the `html` and `css` of the iframe's content and takes the frame's title from the document's `<title>`.
 
 ```typescript
-const answer = await complete(credentials, { system: SYSTEM_PROMPT, prompt: request, signal });
+const answer = await complete({ system: SYSTEM_PROMPT, prompt: request, signal });
 const { title, content } = parseUiDocument(answer, getUiTitle(ui));
 // Look the UI up again: the instance in the store can be replaced in the meantime, e.g. by undo.
 const current = await this.getUi(ui.id);

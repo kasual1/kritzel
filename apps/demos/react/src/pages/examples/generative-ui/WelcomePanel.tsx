@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { detectProvider, getProvider, PROVIDERS, type Credentials, type ProviderId } from "./llm-providers";
+import type { RequestMode } from "./mock-uis";
 
 const EXAMPLE_PROMPTS = [
   "A pomodoro timer with a circular progress ring",
@@ -9,15 +10,17 @@ const EXAMPLE_PROMPTS = [
 
 export interface WelcomePanelProps {
   isVisible: boolean;
+  mode: RequestMode | null;
   credentials: Credentials | null;
   error: string;
+  onModeChange: (mode: RequestMode | null) => void;
   onConnect: (credentials: Credentials) => void;
   onDisconnect: () => void;
   onExample: (prompt: string) => void;
 }
 
-/** The empty-canvas guide, centered on the canvas until the first UI is added. It also takes the API key. */
-export function WelcomePanel({ isVisible, credentials, error, onConnect, onDisconnect, onExample }: WelcomePanelProps) {
+/** The empty-canvas guide, centered on the canvas until the first UI is added. It asks how to answer prompts and takes the API key. */
+export function WelcomePanel({ isVisible, mode, credentials, error, onModeChange, onConnect, onDisconnect, onExample }: WelcomePanelProps) {
   const [providerId, setProviderId] = useState<ProviderId>("anthropic");
   const [apiKey, setApiKey] = useState("");
   const provider = getProvider(credentials?.provider ?? providerId);
@@ -38,15 +41,62 @@ export function WelcomePanel({ isVisible, credentials, error, onConnect, onDisco
     }
   }
 
+  const heading = (
+    <>
+      <p className="welcome__eyebrow">Generative UI</p>
+      <h1 className="welcome__title">
+        Describe an interface.
+        <br />
+        Watch it come to life.
+      </h1>
+    </>
+  );
+
+  if (mode === null) {
+    return (
+      <div className={`welcome${isVisible ? "" : " welcome--hidden"}`} aria-hidden={!isVisible}>
+        <div className="welcome__content">
+          {heading}
+          <p className="welcome__hint">Generate UIs with a real model, or try the demo with mocked requests.</p>
+          <div className="welcome__choices">
+            <button type="button" className="welcome__choice welcome__choice--primary" onClick={() => onModeChange("live")}>
+              <strong>Use a real API key</strong>
+              <span>Describe any UI, with your own Anthropic, OpenAI or Gemini key.</span>
+            </button>
+            <button type="button" className="welcome__choice" onClick={() => onModeChange("mock")}>
+              <strong>Mock the requests</strong>
+              <span>Send prefilled prompts with canned answers. No key needed.</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === "mock") {
+    return (
+      <div className={`welcome${isVisible ? "" : " welcome--hidden"}`} aria-hidden={!isVisible}>
+        <div className="welcome__content">
+          {heading}
+          <p className="welcome__hint">Send the prefilled prompts from the chat box below. The UIs are canned, so no model is involved.</p>
+          <div className="welcome__connected">
+            <span>Mocked requests</span>
+            <button type="button" className="welcome__change" onClick={() => onModeChange(null)}>
+              Change
+            </button>
+          </div>
+          <p className="welcome__footer">
+            Press <kbd>▶</kbd> in a titlebar to open a UI in fullscreen.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`welcome${isVisible ? "" : " welcome--hidden"}`} aria-hidden={!isVisible}>
       <div className="welcome__content">
-        <p className="welcome__eyebrow">Generative UI</p>
-        <h1 className="welcome__title">
-          Describe an interface.
-          <br />
-          Watch it come to life.
-        </h1>
+        {heading}
         <p className="welcome__hint">
           {credentials
             ? "Type into the chat box below. The model builds a working UI on the canvas while you watch. Select a UI to change it."
@@ -99,6 +149,9 @@ export function WelcomePanel({ isVisible, credentials, error, onConnect, onDisco
                 Get a key
               </a>
             </p>
+            <button type="button" className="welcome__change welcome__back" onClick={() => onModeChange(null)}>
+              Back to the options
+            </button>
           </form>
         )}
         {error && (

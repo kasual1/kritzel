@@ -25,6 +25,20 @@
       "autoPort": false
     },
     {
+      "name": "demos-vue",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "--workspace", "apps/demos/vue", "--", "--port", "5191", "--strictPort"],
+      "port": 5191,
+      "autoPort": false
+    },
+    {
+      "name": "demos-angular",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "start", "--workspace", "apps/demos/angular", "--", "--port", "5192"],
+      "port": 5192,
+      "autoPort": false
+    },
+    {
       "name": "infographics",
       "runtimeExecutable": "npm",
       "runtimeArgs": [
