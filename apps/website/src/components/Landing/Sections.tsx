@@ -10,7 +10,7 @@ import ThemesDemo from "./ThemesDemo";
 import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
 import { InstallCommand } from "./InstallCommand";
-import { docsPath, usePreferredFramework } from "@site/src/utils/frameworkPreference";
+import { docsPath, getPreferredFramework, usePreferredFramework } from "@site/src/utils/frameworkPreference";
 
 export function CallToActionBar({ docsPath }: { docsPath: string }) {
   return (
@@ -308,24 +308,165 @@ const KRITZEL_ASCII =`██╗  ██╗██████╗ ██╗██�
 ██║  ██╗██║  ██║██║   ██║   ███████╗███████╗███████╗
 ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝   ╚═╝   ╚══════╝╚══════╝╚══════╝`;
 
-const CLI_SESSIONS = {
-  frameworks: {
-    command: "npx kritzel init",
-    question: "Which framework do you want to use?",
-  },
-  skill: {
-    command: "npx skills add kasual1/kritzel",
-    question: "Install the kritzel skill for your agent?",
-  },
+const SKILL_SESSION = {
+  command: "npx skills add kasual1/kritzel",
+  question: "Install the kritzel skill for your agent?",
 } as const;
 
-type CliVariant = keyof typeof CLI_SESSIONS;
+type CliVariant = "frameworks" | "skill";
 
-const CLI_FRAMEWORKS = [
-  { name: "React", logo: "/img/logo-react.svg", color: "#4a7dff" },
-  { name: "Vue", logo: "/img/logo_vue.svg", color: "#42b883" },
-  { name: "Angular", logo: "/img/logo_angular.svg", color: "#dd0031" },
+/** The smallest setup of the editor in each framework, as in the framework's quick start. */
+const CODE_FRAMEWORKS = [
+  {
+    id: "react",
+    name: "React",
+    logo: "/img/logo-react.svg",
+    color: "#4a7dff",
+    file: "Editor.tsx",
+    code: `import { KritzelEditor } from '@kritzel/react-editor';
+
+export function Editor() {
+  return <KritzelEditor />;
+}`,
+  },
+  {
+    id: "vue",
+    name: "Vue",
+    logo: "/img/logo_vue.svg",
+    color: "#42b883",
+    file: "Editor.vue",
+    code: `<script setup lang="ts">
+import { KritzelEditor } from '@kritzel/vue-editor';
+</script>
+
+<template>
+  <KritzelEditor />
+</template>`,
+  },
+  {
+    id: "angular",
+    name: "Angular",
+    logo: "/img/logo_angular.svg",
+    color: "#dd0031",
+    file: "editor.component.ts",
+    code: `import { Component } from '@angular/core';
+import { KritzelEditor } from '@kritzel/angular-editor';
+
+@Component({
+  selector: 'app-editor',
+  imports: [KritzelEditor],
+  template: \`<kritzel-editor />\`,
+})
+export class EditorComponent {}`,
+  },
 ] as const;
+
+type CodeState = {
+  /** Index into CODE_FRAMEWORKS. */
+  framework: number;
+  /** How many characters of the framework's code are typed so far. */
+  typed: number;
+  typing: boolean;
+  leaving: boolean;
+  round: number;
+};
+
+/**
+ * Types each framework's snippet in turn, starting with the visitor's preferred framework, once the editor
+ * scrolls into view.
+ */
+function useCodeTyping(bodyRef: React.RefObject<HTMLDivElement | null>) {
+  const [state, setState] = useState<CodeState>({
+    framework: 0,
+    typed: CODE_FRAMEWORKS[0].code.length,
+    typing: false,
+    leaving: false,
+    round: 0,
+  });
+
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!body || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    let timers: number[] = [];
+    const at = (ms: number, fn: () => void) => timers.push(window.setTimeout(fn, ms));
+    const update = (patch: Partial<CodeState>) => setState((current) => ({ ...current, ...patch }));
+
+    const run = (framework: number, round: number) => {
+      timers.forEach(window.clearTimeout);
+      timers = [];
+      const { code } = CODE_FRAMEWORKS[framework];
+      setState({ framework, typed: 0, typing: true, leaving: false, round });
+
+      // Characters come quickly, with a short pause at the end of each line like a person typing.
+      let t = 350;
+      for (let i = 1; i <= code.length; i++) {
+        t += code[i - 1] === "\n" ? 140 : 22;
+        const typed = i;
+        at(t, () => update({ typed }));
+      }
+      at(t + 75, () => update({ typing: false }));
+      at(t + 2700, () => update({ leaving: true }));
+      at(t + 2950, () => run((framework + 1) % CODE_FRAMEWORKS.length, round + 1));
+    };
+
+    let started = false;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!started && entries.some((entry) => entry.isIntersecting)) {
+          started = true;
+          observer.disconnect();
+          const preferred = getPreferredFramework();
+          run(Math.max(0, CODE_FRAMEWORKS.findIndex((option) => option.id === preferred)), 0);
+        }
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(body);
+
+    return () => {
+      observer.disconnect();
+      timers.forEach(window.clearTimeout);
+    };
+  }, [bodyRef]);
+
+  return state;
+}
+
+const CODE_TOKEN =
+  /('[^'\n]*'?|"[^"\n]*"?|`[^`\n]*`?)|\b(import|from|export|function|return|class|setup)\b|(@\w+)|(<\/?[A-Za-z][\w-]*|\/?>)/g;
+
+/** A light syntax highlighting of a (partly typed) line of the snippets above. */
+function highlight(line: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  let last = 0;
+  for (const match of line.matchAll(CODE_TOKEN)) {
+    const [text, string, keyword, decorator] = match;
+    const index = match.index ?? 0;
+    if (index > last) {
+      parts.push(line.slice(last, index));
+    }
+    const className = string
+      ? styles.codeString
+      : keyword
+        ? styles.codeKeyword
+        : decorator
+          ? styles.codeDecorator
+          : styles.codeTag;
+    parts.push(
+      <span key={index} className={className}>
+        {text}
+      </span>,
+    );
+    last = index + text.length;
+  }
+  if (last < line.length) {
+    parts.push(line.slice(last));
+  }
+  return parts;
+}
 
 type TerminalState = {
   typed: string;
@@ -350,7 +491,7 @@ const FINAL_STATE: Omit<TerminalState, "typed"> = {
   round: 0,
 };
 
-/** Replays a CLI session (`npx kritzel init` or `npx skills add`) once the terminal scrolls into view. */
+/** Replays the `npx skills add` session once the terminal scrolls into view. */
 function useTerminalSession(terminalRef: React.RefObject<HTMLDivElement | null>, command: string) {
   const [state, setState] = useState<TerminalState>({ ...FINAL_STATE, typed: command });
 
@@ -578,24 +719,69 @@ function BotIcon() {
   );
 }
 
-/**
- * The terminal replaying a CLI session, either centered below its heading (`stacked`) or as the media of a
- * showcase row with the heading on the left (`split`).
- */
-export function CliSection({ variant = "frameworks", layout = "stacked" }: { variant?: CliVariant; layout?: "stacked" | "split" }) {
-  const session = CLI_SESSIONS[variant];
-  const isSkill = variant === "skill";
-  const terminalRef = useRef<HTMLDivElement | null>(null);
-  const state = useTerminalSession(terminalRef, session.command);
-  const framework = CLI_FRAMEWORKS[state.round % CLI_FRAMEWORKS.length];
+/** The mocked editor typing how Kritzel is added to a React, Vue or Angular app, framework by framework. */
+function CodeWindow() {
+  const bodyRef = useRef<HTMLDivElement | null>(null);
+  const state = useCodeTyping(bodyRef);
+  const framework = CODE_FRAMEWORKS[state.framework];
   const frameworkLogoUrl = useBaseUrl(framework.logo);
-  const quickStartPath = useDocsPath("getting-started/quick-start");
-  const title = isSkill ? "Agents love Kritzel" : "Easy to get started";
-  const description = isSkill
-    ? "Add the Kritzel skill to your coding agent, so it knows how to build and extend your canvas right away."
-    : "The Kritzel CLI installs and configures the canvas in your React, Vue or Angular project, so you can start building right away.";
+  const lines = framework.code.slice(0, state.typed).split("\n");
 
-  const terminal = (
+  return (
+    <div className={styles.terminal}>
+      <div className={styles.terminalBar}>
+        <span className={styles.terminalDot} style={{ background: "#ff5f57" }} />
+        <span className={styles.terminalDot} style={{ background: "#febc2e" }} />
+        <span className={styles.terminalDot} style={{ background: "#28c840" }} />
+        <span className={styles.codeFile}>{framework.file}</span>
+      </div>
+      <div ref={bodyRef} className={`${styles.terminalBody} ${styles.codeBody}`}>
+        <pre className={styles.code} aria-label={`${framework.file}: ${framework.code}`}>
+          {lines.map((line, index) => (
+            <div key={index} className={styles.codeLine}>
+              <span className={styles.codeLineNumber} aria-hidden="true">
+                {index + 1}
+              </span>
+              <code className={styles.codeText}>
+                {highlight(line)}
+                {index === lines.length - 1 && (
+                  <span
+                    aria-hidden="true"
+                    className={`${styles.codeCursor} ${state.typing ? "" : styles.terminalCursorBlink}`}
+                  />
+                )}
+              </code>
+            </div>
+          ))}
+        </pre>
+      </div>
+      <div aria-label={`Framework: ${framework.name}`} className={styles.frameworkTileAnchor}>
+        <div key={state.round} className={styles.frameworkTileMotion} data-leaving={state.leaving ? "true" : undefined}>
+          <div
+            className={styles.frameworkTile}
+            style={{ background: framework.color, boxShadow: `0 18px 20px -12px ${framework.color}40` }}
+          >
+            <img
+              className={styles.frameworkLogo}
+              data-framework={framework.name}
+              src={frameworkLogoUrl}
+              alt=""
+              width={88}
+              height={88}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** The terminal replaying `npx skills add`, with the agent's bot hopping in the corner. */
+function SkillTerminal() {
+  const terminalRef = useRef<HTMLDivElement | null>(null);
+  const state = useTerminalSession(terminalRef, SKILL_SESSION.command);
+
+  return (
     <div className={styles.terminal}>
       <div className={styles.terminalBar}>
         <span className={styles.terminalDot} style={{ background: "#ff5f57" }} />
@@ -620,27 +806,18 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
         {state.question && (
           <div className={styles.terminalLine}>
             <span className={styles.terminalBold}>?</span>{" "}
-            <span className={styles.terminalMedium}>{session.question}</span>
+            <span className={styles.terminalMedium}>{SKILL_SESSION.question}</span>
             {state.answered && (
               <>
                 {" "}
-                <span className={styles.terminalPath}>›</span>{" "}
-                <span className={styles.terminalAnswer}>{isSkill ? "Yes" : framework.name}</span>
+                <span className={styles.terminalPath}>›</span> <span className={styles.terminalAnswer}>Yes</span>
               </>
             )}
           </div>
         )}
         {state.added && (
           <div className={styles.terminalSuccess}>
-            {isSkill ? (
-              <>
-                ✔ Added the <span className={styles.terminalStrong}>kritzel</span> skill to your agent
-              </>
-            ) : (
-              <>
-                ✔ Added kritzel to your <span className={styles.terminalStrong}>{framework.name}</span> project
-              </>
-            )}
+            ✔ Added the <span className={styles.terminalStrong}>kritzel</span> skill to your agent
           </div>
         )}
         {state.prompt && (
@@ -650,36 +827,30 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
           </div>
         )}
       </div>
-      {isSkill ? (
-        <div aria-hidden="true" className={styles.frameworkTileAnchor}>
-          <HeartBubbles />
-          <div className={styles.skillTileStatic}>
-            <div className={`${styles.frameworkTile} ${styles.skillTile}`}>
-              <BotIcon />
-            </div>
+      <div aria-hidden="true" className={styles.frameworkTileAnchor}>
+        <HeartBubbles />
+        <div className={styles.skillTileStatic}>
+          <div className={`${styles.frameworkTile} ${styles.skillTile}`}>
+            <BotIcon />
           </div>
         </div>
-      ) : (
-        <div aria-label={`Selected framework: ${framework.name}`} className={styles.frameworkTileAnchor}>
-          <div key={state.round} className={styles.frameworkTileMotion} data-leaving={state.leaving ? "true" : undefined}>
-            <div
-              className={styles.frameworkTile}
-              style={{ background: framework.color, boxShadow: `0 18px 20px -12px ${framework.color}40` }}
-            >
-              <img
-                className={styles.frameworkLogo}
-                data-framework={framework.name}
-                src={frameworkLogoUrl}
-                alt=""
-                width={88}
-                height={88}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
+}
+
+/**
+ * How to add Kritzel to an app (`frameworks`) or to a coding agent (`skill`), either centered below its heading
+ * (`stacked`) or as the media of a showcase row with the heading on the left (`split`).
+ */
+export function CliSection({ variant = "frameworks", layout = "stacked" }: { variant?: CliVariant; layout?: "stacked" | "split" }) {
+  const isSkill = variant === "skill";
+  const quickStartPath = useDocsPath("getting-started/quick-start");
+  const title = isSkill ? "Agents love Kritzel" : "Easy to get started";
+  const description = isSkill
+    ? "Add the Kritzel skill to your coding agent, so it knows how to build and extend your canvas right away."
+    : "Install the editor for React, Vue or Angular and render its component, so you can start building right away.";
+  const terminal = isSkill ? <SkillTerminal /> : <CodeWindow />;
 
   if (layout === "split") {
     return (
