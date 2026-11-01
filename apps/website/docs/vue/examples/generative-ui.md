@@ -50,7 +50,7 @@ Add an API key in the welcome panel, then type into the chat box or pick one of 
 
 The `isChatBoxVisible` prop shows the chat box and `isChatBoxLoading` switches it to its busy state. The `chatSubmit` event delivers the prompt in `event.detail`, and `chatStop` fires when the user stops a running request, which the page forwards to an `AbortController`.
 
-```vue
+```html
 <KritzelEditor
   ref="editor"
   editorId="generative-ui"
