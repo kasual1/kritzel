@@ -18,8 +18,7 @@
     "apps/core/react",
     "apps/core/vue",
     "apps/infographics",
-    "apps/website",
-    "libs/cli"
+    "apps/website"
   ],
   "devDependencies": {
     "@angular/common": "^22.0.0",
@@ -42,11 +41,10 @@
     "bump-patch": "node ./scripts/bump-patch.js",
     "bump-minor": "node ./scripts/bump-minor.js",
     "bump-major": "node ./scripts/bump-major.js",
-    "test": "npm run test -w libs/core && npm run test -w libs/engine/core && npm run test:cli",
-    "test:cli": "npm run test -w libs/cli",
+    "test": "npm run test -w libs/core && npm run test -w libs/engine/core",
     "test:starters": "node tools/starter-smoke/validate-starters.mjs",
-    "build": "npm run build -w libs/core && npm run build -w libs/engine/core && npm run build -w libs/engine/angular && npm run build -w libs/engine/react && npm run build -w libs/engine/vue && npm run build -w libs/editor/core && npm run build -w libs/editor/angular && npm run build -w libs/editor/react && npm run build -w libs/editor/vue && npm run build -w libs/cli",
-    "publish": "npm run release -w libs/core && npm run release -w libs/engine/core && npm run release -w libs/engine/angular && npm run release -w libs/engine/react && npm run release -w libs/engine/vue && npm run release -w libs/editor/core && npm run release -w libs/editor/angular && npm run release -w libs/editor/react && npm run release -w libs/editor/vue && npm run release -w libs/cli",
+    "build": "npm run build -w libs/core && npm run build -w libs/engine/core && npm run build -w libs/engine/angular && npm run build -w libs/engine/react && npm run build -w libs/engine/vue && npm run build -w libs/editor/core && npm run build -w libs/editor/angular && npm run build -w libs/editor/react && npm run build -w libs/editor/vue",
+    "publish": "npm run release -w libs/core && npm run release -w libs/engine/core && npm run release -w libs/engine/angular && npm run release -w libs/engine/react && npm run release -w libs/engine/vue && npm run release -w libs/editor/core && npm run release -w libs/editor/angular && npm run release -w libs/editor/react && npm run release -w libs/editor/vue",
     "dev": "npm run dev:editor",
     "dev:core": "npm run dev -w libs/core",
     "dev:engine": "npm run build -w libs/core && run-p dev:core dev:engine:serve",

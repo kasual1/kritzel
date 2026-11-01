@@ -54,17 +54,8 @@ jobs:
       - name: Refresh workspace lockfile after version bump
         run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 
-      - name: Typecheck CLI
-        run: npm run typecheck -w libs/cli
-
-      - name: Run library and CLI tests
+      - name: Run library tests
         run: npm test
-
-      - name: Validate packed CLI
-        run: npm run test:pack -w libs/cli
-
-      - name: Validate real package-manager workspace installations
-        run: npm run test:managers -w libs/cli
 
       - name: Install browser for starter smoke tests
         run: npx playwright install --with-deps chromium
@@ -87,7 +78,7 @@ jobs:
           git push --tags
 
       # Explicit fail-fast sequencing: npm's --workspaces runner can continue after a failure.
-      - name: Publish canvas packages, then CLI
+      - name: Publish packages
         shell: bash
         run: |
           set -euo pipefail
@@ -100,6 +91,5 @@ jobs:
           npm run release -w libs/editor/angular
           npm run release -w libs/editor/react
           npm run release -w libs/editor/vue
-          npm run release -w libs/cli
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
