@@ -2,7 +2,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  /* Spans the row below the two buttons and takes their width, without its own content widening them. */
+  /* Spans the row above the two buttons and takes their width, without its own content widening them. */
   grid-column: 1 / -1;
   width: 0;
   min-width: 100%;
@@ -62,7 +62,7 @@
 
 .menu {
   position: absolute;
-  /* Opens upward: the canvas toolbar sits right below the hero's call to action. */
+  /* Opens upward: the hero's buttons sit right below the command. */
   bottom: calc(100% + 8px);
   left: 0;
   z-index: 30;

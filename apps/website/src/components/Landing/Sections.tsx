@@ -16,13 +16,13 @@ export function CallToActionBar({ docsPath }: { docsPath: string }) {
   return (
     <div className={styles.ctaAnchor}>
       <div className={styles.ctaBar}>
+        <InstallCommand />
         <Link href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
           Demo <ArrowIcon />
         </Link>
         <Link to={docsPath} className={styles.ctaSecondary}>
           Get started <ArrowIcon />
         </Link>
-        <InstallCommand />
       </div>
     </div>
   );
