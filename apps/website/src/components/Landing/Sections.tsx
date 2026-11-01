@@ -849,7 +849,7 @@ export function CliSection({ variant = "frameworks", layout = "stacked" }: { var
   const title = isSkill ? "Agents love Kritzel" : "Easy to get started";
   const description = isSkill
     ? "Add the Kritzel skill to your coding agent, so it knows how to build and extend your canvas right away."
-    : "Kritzel comes with ready-made templates, thorough docs and plenty of examples, so you can add it to your existing app in no time.";
+    : "Kritzel comes with detailed documentation and extensive examples to ensure a quick and effortless integration into your app.";
   const terminal = isSkill ? <SkillTerminal /> : <CodeWindow />;
 
   if (layout === "split") {
