@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 const STORAGE_KEY = 'kritzel-preferred-framework';
 const CHANGE_EVENT = 'kritzel-framework-preference-change';
 
@@ -50,6 +52,18 @@ export function subscribeToPreferredFramework(callback: (framework: Framework) =
     window.removeEventListener(CHANGE_EVENT, customHandler);
     window.removeEventListener('storage', storageHandler);
   };
+}
+
+/** The framework a visitor picked on an earlier visit; React until the client knows. */
+export function usePreferredFramework(): Framework {
+  const [framework, setFramework] = useState<Framework>('react');
+
+  useEffect(() => {
+    setFramework(getPreferredFramework());
+    return subscribeToPreferredFramework(setFramework);
+  }, []);
+
+  return framework;
 }
 
 export function getFrameworkFromPath(path: string): Framework | null {

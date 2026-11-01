@@ -624,8 +624,8 @@
 }
 
 .ctaBar {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto auto;
   align-items: center;
   justify-content: center;
   gap: 12px;
@@ -663,55 +663,6 @@
 
 .page .ctaSecondary:hover {
   color: var(--landing-ink);
-  background: #f4f4f5;
-}
-
-.ctaInstall {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 52px;
-  padding: 0 8px 0 18px;
-  box-sizing: border-box;
-  border: var(--landing-border);
-  border-radius: 14px;
-  font-size: 14px;
-  color: var(--landing-ink);
-}
-
-.ctaInstall,
-.ctaInstall * {
-  font-family: var(--landing-mono) !important;
-}
-
-.ctaPrompt {
-  color: #6b6b75;
-}
-
-.ctaCode {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
-  font-size: 14px;
-  line-height: inherit !important;
-}
-
-.ctaCopy {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  margin-left: 6px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--landing-ink);
-  cursor: pointer;
-}
-
-.ctaCopy:hover {
   background: #f4f4f5;
 }
 
@@ -2507,6 +2458,7 @@
   }
 
   .ctaBar {
+    display: flex;
     width: 100%;
     max-width: 420px;
     flex-direction: row;
@@ -2522,10 +2474,6 @@
   .page .ctaPrimary,
   .page .ctaSecondary {
     padding: 0 18px;
-  }
-
-  .ctaInstall {
-    display: none;
   }
 
   .features {

@@ -9,33 +9,10 @@ import PerformanceDemo from "./PerformanceDemo";
 import ThemesDemo from "./ThemesDemo";
 import { WORDMARK_LETTERS } from "./paths";
 import styles from "./styles.module.css";
-import {
-  docsPath,
-  getPreferredFramework,
-  subscribeToPreferredFramework,
-  type Framework,
-} from "@site/src/utils/frameworkPreference";
-
-const INSTALL_COMMAND = "npm i @kritzel/cli";
+import { InstallCommand } from "./InstallCommand";
+import { docsPath, usePreferredFramework } from "@site/src/utils/frameworkPreference";
 
 export function CallToActionBar({ docsPath }: { docsPath: string }) {
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    if (!copied) {
-      return;
-    }
-    const timeout = window.setTimeout(() => setCopied(false), 1500);
-    return () => window.clearTimeout(timeout);
-  }, [copied]);
-
-  const copy = () => {
-    navigator.clipboard?.writeText(INSTALL_COMMAND).then(
-      () => setCopied(true),
-      () => setCopied(false),
-    );
-  };
-
   return (
     <div className={styles.ctaAnchor}>
       <div className={styles.ctaBar}>
@@ -45,27 +22,7 @@ export function CallToActionBar({ docsPath }: { docsPath: string }) {
         <Link to={docsPath} className={styles.ctaSecondary}>
           Get started <ArrowIcon />
         </Link>
-        <div className={styles.ctaInstall}>
-          <span className={styles.ctaPrompt}>$</span>
-          <code className={styles.ctaCode}>{INSTALL_COMMAND}</code>
-          <button
-            type="button"
-            className={styles.ctaCopy}
-            onClick={copy}
-            aria-label={copied ? "Copied install command" : "Copy install command"}
-          >
-            {copied ? (
-              <Icon size={16}>
-                <path d="M20 6 9 17l-5-5" />
-              </Icon>
-            ) : (
-              <Icon size={16}>
-                <rect x="9" y="9" width="12" height="12" rx="2" />
-                <path d="M5 15V5a2 2 0 0 1 2-2h10" />
-              </Icon>
-            )}
-          </button>
-        </div>
+        <InstallCommand />
       </div>
     </div>
   );
@@ -227,18 +184,6 @@ export function Features({ variant = "default" }: { variant?: "default" | "agent
       </div>
     </section>
   );
-}
-
-/** The framework a visitor picked on an earlier visit; React until the client knows. */
-function usePreferredFramework(): Framework {
-  const [framework, setFramework] = useState<Framework>("react");
-
-  useEffect(() => {
-    setFramework(getPreferredFramework());
-    return subscribeToPreferredFramework(setFramework);
-  }, []);
-
-  return framework;
 }
 
 /** A docs page in the visitor's preferred framework, e.g. useDocsPath('advanced/dynamic-objects'). */

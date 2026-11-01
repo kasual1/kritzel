@@ -1,0 +1,141 @@
+.install {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  /* Spans the row below the two buttons and takes their width, without its own content widening them. */
+  grid-column: 1 / -1;
+  width: 0;
+  min-width: 100%;
+  min-height: 52px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  border: var(--landing-border);
+  border-radius: 14px;
+  font-size: 14px;
+  color: var(--landing-ink);
+}
+
+.install,
+.install * {
+  font-family: var(--landing-mono) !important;
+}
+
+.install:not([data-ready]) .trigger .logo,
+.install:not([data-ready]) .code {
+  visibility: hidden;
+}
+
+.picker {
+  position: relative;
+  margin-right: 4px;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 6px 0 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--landing-ink);
+  cursor: pointer;
+}
+
+.trigger:hover {
+  background: #f4f4f5;
+}
+
+.logo {
+  display: block;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+}
+
+.menu {
+  position: absolute;
+  /* Opens upward: the canvas toolbar sits right below the hero's call to action. */
+  bottom: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  min-width: 148px;
+  margin: 0;
+  padding: 4px;
+  border: var(--landing-border);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 12px 32px -12px rgba(20, 18, 31, 0.25);
+  list-style: none;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 14px;
+  text-align: left;
+  color: var(--landing-ink);
+  cursor: pointer;
+}
+
+.option:hover,
+.option[aria-current="true"] {
+  background: #f4f4f5;
+}
+
+.prompt {
+  color: #6b6b75;
+}
+
+.code {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 14px;
+  line-height: inherit !important;
+}
+
+.copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  flex: none;
+  height: 36px;
+  margin-left: 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--landing-ink);
+  cursor: pointer;
+}
+
+.copy:hover {
+  background: #f4f4f5;
+}
+
+@media (max-width: 1199px) {
+  .install {
+    display: none;
+  }
+}
