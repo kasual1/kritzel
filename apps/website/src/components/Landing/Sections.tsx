@@ -16,13 +16,13 @@ export function CallToActionBar({ docsPath }: { docsPath: string }) {
   return (
     <div className={styles.ctaAnchor}>
       <div className={styles.ctaBar}>
+        <InstallCommand />
         <Link href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
           Demo <ArrowIcon />
         </Link>
         <Link to={docsPath} className={styles.ctaSecondary}>
           Get started <ArrowIcon />
         </Link>
-        <InstallCommand />
       </div>
     </div>
   );
@@ -757,10 +757,7 @@ function CodeWindow() {
       </div>
       <div aria-label={`Framework: ${framework.name}`} className={styles.frameworkTileAnchor}>
         <div key={state.round} className={styles.frameworkTileMotion} data-leaving={state.leaving ? "true" : undefined}>
-          <div
-            className={styles.frameworkTile}
-            style={{ background: framework.color, boxShadow: `0 18px 20px -12px ${framework.color}40` }}
-          >
+          <div className={styles.frameworkTile} style={{ background: framework.color }}>
             <img
               className={styles.frameworkLogo}
               data-framework={framework.name}
