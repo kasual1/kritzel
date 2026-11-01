@@ -38,7 +38,7 @@ function checkSharedVersions() {
 
 if (require.main === module) {
   try {
-    console.log(`All ten publishable packages and KRITZEL_VERSION match ${checkSharedVersions()}`);
+    console.log(`All nine publishable packages and KRITZEL_VERSION match ${checkSharedVersions()}`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;
