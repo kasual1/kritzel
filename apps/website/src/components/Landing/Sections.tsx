@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Link from "@docusaurus/Link";
 import useBaseUrl from "@docusaurus/useBaseUrl";
-import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
 import DomCanvasDemo from "./DomCanvasDemo";
 import FramesDemo from "./FramesDemo";
 import HeartBubbles from "./HeartBubbles";
@@ -247,14 +246,6 @@ function useDocsPath(page: string): string {
   return docsPath(usePreferredFramework(), page);
 }
 
-/** A hosted demo route in the visitor's preferred framework, e.g. useDemoUrl('/examples/generative-ui'). */
-function useDemoUrl(route: string): string {
-  const framework = usePreferredFramework();
-  const { siteConfig } = useDocusaurusContext();
-  const demoBaseUrls = siteConfig.customFields.demoBaseUrls as Record<Framework, string>;
-  return `${demoBaseUrls[framework]}/#${route}`;
-}
-
 type ShowcaseLinkProps = { label: string; to?: string; href?: string };
 
 /** A text link with a trailing arrow; `href` opens an external page in a new tab. */
@@ -338,7 +329,7 @@ export function PerformanceSection() {
 }
 
 export function GenerativeUiSection() {
-  const generativeUiDemoUrl = useDemoUrl("/examples/generative-ui");
+  const generativeUiPath = useDocsPath("examples/generative-ui");
 
   return (
     <Showcase
@@ -346,7 +337,7 @@ export function GenerativeUiSection() {
       title="Build generative UI"
       description="Give your agent a set of ready-made components to build with. It assembles real, interactive UI right on the canvas, frame by frame, so you can watch it take shape and step in at any point."
       media={<FramesDemo />}
-      link={{ label: "Full Demo", href: generativeUiDemoUrl }}
+      link={{ label: "Full Demo", to: generativeUiPath }}
     />
   );
 }
