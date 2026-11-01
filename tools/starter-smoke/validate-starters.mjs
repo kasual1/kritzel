@@ -1,25 +1,26 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
-import { mkdtemp, mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { cp, mkdtemp, mkdir, readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { parseTemplate } from '@angular/compiler';
 import ts from 'typescript';
 import { compileScript, compileTemplate, parse as parseVue } from '@vue/compiler-sfc';
-import spawn from 'cross-spawn';
 import { runBrowserSmoke } from './browser-smoke.mjs';
 
+// Packs the publishable Kritzel packages, adds each starter in fixtures/ to its own temporary app and checks
+// that every starter compiles against the packed packages and runs in a browser.
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(scriptDirectory, '../..');
-const repositoryRoot = path.resolve(packageRoot, '../..');
-const validationRoot = path.join(packageRoot, '.validation');
+const repositoryRoot = path.resolve(scriptDirectory, '../..');
+const fixturesRoot = path.join(scriptDirectory, 'fixtures');
+// Inside the repository, so the temporary apps resolve React, Vue, Angular and Vite from its node_modules.
+const validationRoot = path.join(scriptDirectory, '.validation');
 await mkdir(validationRoot, { recursive: true });
 const temporaryDirectory = await mkdtemp(path.join(validationRoot, 'templates-'));
-const require = createRequire(import.meta.url);
 
 function run(command, args, cwd) {
-  const result = spawn.sync(command, args, { cwd, encoding: 'utf8' });
+  const result = spawnSync(command, args, { cwd, encoding: 'utf8', shell: process.platform === 'win32' });
   if (result.error || result.status !== 0) {
     throw new Error(`${command} ${args.join(' ')} failed: ${result.error || result.stderr || result.stdout}`);
   }
@@ -49,7 +50,7 @@ function normalizePackResult(result) {
 function verifyPackResultFormats() {
   const metadata = { filename: 'kritzel.tgz' };
   assert.equal(normalizePackResult([metadata]), metadata, 'npm array pack output should be supported');
-  assert.equal(normalizePackResult({ '@kritzel/cli': metadata }), metadata, 'npm keyed pack output should be supported');
+  assert.equal(normalizePackResult({ '@kritzel/core': metadata }), metadata, 'npm keyed pack output should be supported');
   assert.equal(normalizePackResult(metadata), metadata, 'direct pack metadata should be supported');
 }
 
@@ -77,38 +78,15 @@ async function packDependency(name, relativeDirectory) {
   return targetDirectory;
 }
 
-async function compileCliGenerator(buildDirectory) {
-  const configPath = path.join(packageRoot, 'tsconfig.json');
-  const config = ts.readConfigFile(configPath, ts.sys.readFile);
-  if (config.error) throw new Error(diagnosticsText([config.error]));
-  const parsed = ts.parseJsonConfigFileContent(config.config, ts.sys, packageRoot, {
-    noEmit: false,
-    outDir: buildDirectory,
-    declaration: false,
-    sourceMap: false,
-    incremental: false,
-  }, configPath);
-  const srcDirectory = path.join(packageRoot, 'src');
-  const rootNames = [
-    path.join(srcDirectory, 'generation/generate-component.ts'),
-    path.join(srcDirectory, 'shared/errors.ts'),
-    path.join(srcDirectory, 'shared/types.ts'),
-  ];
-  const program = ts.createProgram(rootNames, {
-    ...parsed.options,
-    rootDir: srcDirectory,
-    outDir: buildDirectory,
-    noEmit: false,
-    declaration: false,
-    sourceMap: false,
-    incremental: false,
-  });
-  const diagnostics = ts.getPreEmitDiagnostics(program);
-  if (diagnostics.length) throw new Error(`CLI generator typecheck failed:\n${diagnosticsText(diagnostics)}`);
-  const emitted = program.emit();
-  if (emitted.emitSkipped || emitted.diagnostics.length) {
-    throw new Error(`CLI generator compilation failed:\n${diagnosticsText(emitted.diagnostics)}`);
+/** Every file below a directory, relative to it and with forward slashes. */
+async function listFiles(directory, prefix = '') {
+  const files = [];
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) files.push(...await listFiles(path.join(directory, entry.name), relative));
+    else files.push(relative);
   }
+  return files.sort();
 }
 
 function typecheckGeneratedFiles(sourceFiles) {
@@ -150,9 +128,6 @@ async function main() {
   ];
   for (const [name, directory] of packages) await packDependency(name, directory);
 
-  const buildDirectory = path.join(temporaryDirectory, 'cli-build');
-  await compileCliGenerator(buildDirectory);
-  const { prepareGeneration, writeGeneration } = require(path.join(buildDirectory, 'generation', 'generate-component.js'));
   const contexts = [];
   const generatedSources = [];
   const combinations = [
@@ -166,26 +141,10 @@ async function main() {
 
   for (const [framework, component] of combinations) {
     const appDirectory = path.join(temporaryDirectory, 'apps', `${framework}-${component}`);
-    const sourceDirectory = framework === 'angular' ? 'src/app' : 'src/components';
-    await mkdir(path.join(appDirectory, sourceDirectory), { recursive: true });
-    const context = {
-      appDir: appDirectory,
-      workspaceDir: appDirectory,
-      manifest: {
-        name: `template-${framework}-${component}`,
-        dependencies: {
-          '@kritzel/engine': `^${release}`,
-          ...(component === 'editor' ? { '@kritzel/editor': `^${release}` } : {}),
-          [`@kritzel/${framework}-${component}`]: `^${release}`,
-        },
-      },
-      framework,
-      manager: 'npm',
-      managerVersion: '10.0.0',
-    };
-    const plan = await prepareGeneration(context, component);
-    const writtenFiles = await writeGeneration(plan);
-    const generated = writtenFiles.map(file => path.join(appDirectory, ...file.split('/')));
+    const fixtureDirectory = path.join(fixturesRoot, `${framework}-${component}`);
+    await cp(fixtureDirectory, appDirectory, { recursive: true });
+    const generated = (await listFiles(fixtureDirectory)).map(file => path.join(appDirectory, ...file.split('/')));
+    assert(generated.length > 0, `${fixtureDirectory} holds no starter files`);
 
     for (const file of generated.filter(candidate => candidate.endsWith('.html'))) {
       const template = parseTemplate(await readFile(file, 'utf8'), file);
@@ -217,7 +176,7 @@ async function main() {
   }
 
   typecheckGeneratedFiles(generatedSources);
-  console.log(`Validated ${contexts.length} generated starters against packed Kritzel ${release} packages: Angular, React and Vue editor/engine templates compile.`);
+  console.log(`Validated ${contexts.length} starters against packed Kritzel ${release} packages: Angular, React and Vue editor/engine templates compile.`);
   await runBrowserSmoke(contexts, temporaryDirectory);
 }
 

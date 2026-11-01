@@ -1,0 +1,8 @@
+<kritzel-engine
+  [editorId]="editorId"
+  (isEngineReady)="onEngineReady()"
+  aria-label="Kritzel canvas"
+></kritzel-engine>
+@if (initializationError) {
+  <p role="alert">{{ initializationError }}</p>
+}

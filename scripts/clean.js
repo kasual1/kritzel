@@ -19,6 +19,7 @@ const cleanTargets = [
   { path: '../libs/editor/react', folders: ['node_modules', 'dist'] },
   { path: '../libs/editor/vue', folders: ['node_modules', 'dist'] },
   { path: '../libs/cli', folders: ['node_modules', 'dist', 'coverage', '.validation', 'playwright-report', 'test-results'] },
+  { path: '../tools/starter-smoke', folders: ['.validation'] },
   { path: '../apps/website', folders: ['node_modules', 'build', '.docusaurus'] },
 ];
 

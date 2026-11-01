@@ -1,0 +1,6 @@
+<kritzel-editor
+  [editorId]="editorId"
+  (isReady)="onReady()"
+  aria-label="Kritzel canvas"
+></kritzel-editor>
+<p role="status">{{ isReady ? 'Kritzel is ready.' : 'Loading Kritzel…' }}</p>

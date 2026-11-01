@@ -30,7 +30,6 @@
     "test": "jest --runInBand",
     "test:pack": "node tests/pack-check.cjs",
     "test:managers": "node tests/manager-smoke.cjs",
-    "test:templates": "node tests/templates/validate-templates.mjs",
     "release": "npm publish"
   },
   "dependencies": {

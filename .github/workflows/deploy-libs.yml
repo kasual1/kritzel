@@ -66,11 +66,11 @@ jobs:
       - name: Validate real package-manager workspace installations
         run: npm run test:managers -w libs/cli
 
-      - name: Install browser for template smoke tests
+      - name: Install browser for starter smoke tests
         run: npx playwright install --with-deps chromium
 
-      - name: Validate generated TypeScript integrations
-        run: npm run test:cli:templates
+      - name: Validate starters against the packed packages
+        run: npm run test:starters
 
       - name: Get new version
         id: version

@@ -23,6 +23,7 @@ apps/demos/_e2e/playwright-report/
 apps/demos/_e2e/blob-report/
 test-results/
 libs/cli/.validation/
+tools/starter-smoke/.validation/
 libs/cli/coverage/
 libs/cli/playwright-report/
 libs/cli/test-results/
