@@ -16,6 +16,10 @@ const AGENT_CURSOR_ID = 'agent';
 const PICKABLE_SELECTOR = '[data-kritzel-id]';
 const EMPTY_VALUE = '—';
 const MAX_TEXT_LENGTH = 24;
+// The panel is docked to the bottom-left corner and the card sits above it, so they don't overlap even in the
+// 560px high docs embed. The agent starts just right of the card's top edge.
+const CARD_TOP = -250;
+const AGENT_START = { x: 170, y: CARD_TOP + 10 };
 
 function describe(element: KritzelObjectElementInfo): string {
   const name = element.kritzelId ?? element.tagName;
@@ -23,7 +27,7 @@ function describe(element: KritzelObjectElementInfo): string {
     return name;
   }
 
-  const text = element.text.length > MAX_TEXT_LENGTH ? `${element.text.slice(0, MAX_TEXT_LENGTH)}…` : element.text;
+  const text = element.text.length > MAX_TEXT_LENGTH ? `${element.text.slice(0, MAX_TEXT_LENGTH - 1)}…` : element.text;
   return `${name} "${text}"`;
 }
 
@@ -41,6 +45,7 @@ function describe(element: KritzelObjectElementInfo): string {
       [isToolbarVisible]="false"
       [isMoreMenuVisible]="false"
       [isWorkspaceManagerVisible]="false"
+      [isZoomPanelVisible]="false"
       [workspaces]="workspaces()"
       (isReady)="onReady()"
       (objectElementHover)="onElementHover($event)"
@@ -66,6 +71,7 @@ function describe(element: KritzelObjectElementInfo): string {
       <div class="actions">
         <button
           type="button"
+          class="toggle"
           data-testid="toggle-picking"
           [class.active]="isPicking()"
           [attr.aria-pressed]="isPicking()"
@@ -79,14 +85,16 @@ function describe(element: KritzelObjectElementInfo): string {
   styles: [`
     :host { position: relative; display: block; height: 100%; }
     kritzel-editor { display: block; width: 100%; height: 100%; }
-    .events-panel { position: absolute; top: 16px; left: 16px; z-index: 20; box-sizing: border-box; width: 280px; max-width: calc(100% - 32px); padding: 12px 14px; border: 1px solid #e5e7eb; border-radius: 12px; background: #ffffff; box-shadow: 0 8px 24px rgba(32, 33, 36, 0.12); color: #202124; font-family: Roboto, system-ui, sans-serif; font-size: 13px; line-height: 1.4; }
-    .hint { margin: 0 0 10px; color: #5f6368; }
-    dl { display: flex; flex-direction: column; gap: 4px; margin: 0 0 12px; }
-    .row { display: flex; gap: 10px; min-width: 0; }
-    dt { flex: none; width: 60px; color: #5f6368; font-weight: 600; }
-    dd { flex: 1; min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .events-panel { position: absolute; left: 16px; bottom: 16px; z-index: 20; display: flex; flex-direction: column; gap: 8px; box-sizing: border-box; width: min(280px, calc(100% - 32px)); padding: 12px; border: 1px solid #e5e7eb; border-radius: 12px; background: #ffffff; box-shadow: 0 8px 24px rgba(32, 33, 36, 0.12); color: #202124; font-family: Roboto, system-ui, sans-serif; font-size: 13px; line-height: 1.4; }
+    .hint { margin: 0; color: #5f6368; }
+    dl { display: grid; gap: 4px; margin: 0; }
+    .row { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; }
+    dt { color: #5f6368; }
+    dd { margin: 0; overflow: hidden; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
     .actions { display: flex; flex-wrap: wrap; gap: 6px; }
-    button { height: 28px; padding: 0 10px; border: 1px solid #dadce0; border-radius: 8px; background: #ffffff; color: #202124; cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; }
+    .actions > button { flex: 1 1 auto; }
+    .actions > .toggle { flex-basis: 100%; }
+    button { height: 28px; padding: 0 10px; border: 1px solid #dadce0; border-radius: 8px; background: #ffffff; color: #202124; cursor: pointer; font: inherit; font-weight: 600; }
     button:hover { background: #f3f4f6; }
     button.active { border-color: #dd0031; background: #dd0031; color: #ffffff; }
     button.active:hover { background: #b70028; }
@@ -114,7 +122,7 @@ export class DynamicObjectsIframeElementsComponent {
         id: AGENT_CURSOR_ID,
         name: 'Agent',
         status: 'Pick an element',
-        position: { x: 190, y: -150 },
+        position: AGENT_START,
       });
     } catch (error) {
       console.warn('Could not prepare the iframe elements demo.', error);
@@ -183,7 +191,7 @@ export class DynamicObjectsIframeElementsComponent {
       title: 'Team plan',
       content: iframeElementsContent,
       translateX: -150,
-      translateY: -170,
+      translateY: CARD_TOP,
       width: 300,
       height: 290,
       borderRadius: 12,
