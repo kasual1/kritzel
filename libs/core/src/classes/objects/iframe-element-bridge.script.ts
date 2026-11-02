@@ -24,10 +24,12 @@ export const IFRAME_ELEMENT_PICKING_CSS =
   `html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}], html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] * { cursor: var(--kritzel-iframe-default-cursor) !important; }`;
 
 /**
- * Creates the script that runs in the page before the author's script. It describes, highlights and tracks
- * elements and reports hovers, clicks and picks to the host. It is plain JavaScript in a string because it
- * runs in the sandboxed page, and is wrapped in a function so its names can't clash with the author's script.
- * It must stay free of `</script` so it can be inlined into `srcdoc`.
+ * Creates the script that runs in the page's `<head>`, before any script of the content. It describes,
+ * highlights and tracks elements and reports hovers, clicks and picks to the host. Running first lets its
+ * window capture listeners see presses before the content does, which picking relies on.
+ *
+ * It is plain JavaScript in a string because it runs in the sandboxed page, and is wrapped in a function so its
+ * names can't clash with the content's scripts. It must stay free of `</script` so it can be inlined into `srcdoc`.
  */
 export function createIframeElementBridgeScript(): string {
   return `(() => {
@@ -54,7 +56,9 @@ export function createIframeElementBridgeScript(): string {
   const state = {
     interactive: false,
     picking: false,
+    // null: any element can be picked. An invalid selector makes nothing pickable instead of everything.
     pickSelector: null,
+    pickSelectorInvalid: false,
     pickColor: null,
     highlights: [],
     track: [],
@@ -63,11 +67,15 @@ export function createIframeElementBridgeScript(): string {
   let hoveredTarget = null;
   let hovered = null;
   let pointerStart = null;
+  let clickReported = false;
+  const blockedPointers = new Set();
   let frame = 0;
   let overlayHost = null;
   let layer = null;
+  let topLayer = [];
   let reportedRects = new Map();
   const supportsColorMix = !!(window.CSS && CSS.supports && CSS.supports('color', 'color-mix(in srgb, red 12%, transparent)'));
+  const supportsPopover = typeof HTMLElement !== 'undefined' && 'showPopover' in HTMLElement.prototype;
 
   const post = message => {
     try { host.postMessage(message, '*'); } catch (error) { /* The host is gone. */ }
@@ -131,6 +139,56 @@ export function createIframeElementBridgeScript(): string {
     return clip(text.replace(/\\s+/g, ' ').trim(), MAX_TEXT);
   };
   const toRect = rect => ({ x: round(rect.left), y: round(rect.top), width: round(rect.width), height: round(rect.height) });
+
+  // The part of an element that can be seen: its border box clipped by every ancestor that clips its overflow and
+  // by the page's viewport. null for elements that are not rendered, invisible or scrolled out of view.
+  // clipCache memoizes the clip box of ancestors within one frame.
+  const clipBoxOf = (ancestor, clipCache) => {
+    if (clipCache && clipCache.has(ancestor)) return clipCache.get(ancestor);
+    const style = getComputedStyle(ancestor);
+    let box = null;
+    if (style.overflowX !== 'visible' || style.overflowY !== 'visible' || /paint|strict|content/.test(style.contain || '')) {
+      const rect = ancestor.getBoundingClientRect();
+      const left = rect.left + ancestor.clientLeft;
+      const top = rect.top + ancestor.clientTop;
+      box = { left, top, right: left + ancestor.clientWidth, bottom: top + ancestor.clientHeight };
+    }
+    const result = { box, fixed: style.position === 'fixed' };
+    if (clipCache) clipCache.set(ancestor, result);
+    return result;
+  };
+  const visibleRectOf = (element, clipCache) => {
+    if (!element.isConnected || element.getClientRects().length === 0) return null;
+    const style = getComputedStyle(element);
+    if (style.visibility === 'hidden' || style.visibility === 'collapse') return null;
+    const rect = element.getBoundingClientRect();
+    if (rect.width === 0 && rect.height === 0) return null;
+    let left = rect.left;
+    let top = rect.top;
+    let right = rect.right;
+    let bottom = rect.bottom;
+    // Fixed elements are only clipped by the viewport.
+    if (style.position !== 'fixed') {
+      for (let ancestor = element.parentElement; ancestor && ancestor !== document.documentElement; ancestor = ancestor.parentElement) {
+        const clipping = clipBoxOf(ancestor, clipCache);
+        if (clipping.box) {
+          left = Math.max(left, clipping.box.left);
+          top = Math.max(top, clipping.box.top);
+          right = Math.min(right, clipping.box.right);
+          bottom = Math.min(bottom, clipping.box.bottom);
+        }
+        if (clipping.fixed) break;
+      }
+    }
+    left = Math.max(left, 0);
+    top = Math.max(top, 0);
+    right = Math.min(right, document.documentElement.clientWidth || window.innerWidth);
+    bottom = Math.min(bottom, document.documentElement.clientHeight || window.innerHeight);
+    if (right <= left && bottom <= top) return null;
+    if (right < left || bottom < top) return null;
+    return { left, top, width: right - left, height: bottom - top };
+  };
+
   const describe = element => {
     const attributes = {};
     let count = 0;
@@ -149,6 +207,8 @@ export function createIframeElementBridgeScript(): string {
       attributes,
       rect: toRect(element.getBoundingClientRect()),
     };
+    const visibleRect = visibleRectOf(element, null);
+    if (visibleRect) info.visibleRect = toRect(visibleRect);
     const kritzelId = element.getAttribute('data-kritzel-id');
     if (kritzelId) info.kritzelId = clip(kritzelId, MAX_ATTRIBUTE);
     if (element.id) info.id = clip(element.id, MAX_ATTRIBUTE);
@@ -165,11 +225,14 @@ export function createIframeElementBridgeScript(): string {
     if (classes.length) name += '.' + classes.join('.');
     return clip(name, 60);
   };
-  const resolve = (node, selector) => {
+  // The element a press or hover refers to: the innermost element, or while picking with a selector the closest
+  // matching ancestor.
+  const resolve = (node, forPicking) => {
     let element = node && node.nodeType === 1 ? node : node && node.parentElement;
     if (!element || isOverlay(element)) return null;
-    if (selector) {
-      try { element = element.closest(selector); } catch (error) { element = null; }
+    if (forPicking && state.pickSelectorInvalid) return null;
+    if (forPicking && state.pickSelector) {
+      try { element = element.closest(state.pickSelector); } catch (error) { element = null; }
     }
     return element;
   };
@@ -177,17 +240,37 @@ export function createIframeElementBridgeScript(): string {
 
   const setHovered = target => {
     hoveredTarget = target;
-    const element = resolve(target, state.picking ? state.pickSelector : null);
+    const element = resolve(target, state.picking);
     if (element === hovered) return;
     hovered = element;
     post({ type: MESSAGES.hover, element: element ? describe(element) : null });
     schedule();
   };
 
+  // The overlay lives in the top layer when the browser supports popovers, so highlights stay above modal dialogs
+  // and popovers of the page. It is raised again whenever the page opens another top layer element.
+  const openTopLayer = () => {
+    for (const selector of [':modal, :popover-open', 'dialog[open]']) {
+      try { return Array.from(document.querySelectorAll(selector)).filter(element => element !== overlayHost); } catch (error) { /* Unsupported selector. */ }
+    }
+    return [];
+  };
+  const raiseOverlay = force => {
+    if (!supportsPopover) return;
+    const current = openTopLayer();
+    const opened = current.some(element => !topLayer.includes(element));
+    topLayer = current;
+    if (!force && !opened && overlayHost.matches(':popover-open')) return;
+    try {
+      if (overlayHost.matches(':popover-open')) overlayHost.hidePopover();
+      overlayHost.showPopover();
+    } catch (error) { /* Not connected yet. */ }
+  };
   const ensureOverlay = () => {
     if (!overlayHost) {
       overlayHost = document.createElement(OVERLAY_TAG);
       overlayHost.setAttribute('aria-hidden', 'true');
+      if (supportsPopover) overlayHost.setAttribute('popover', 'manual');
       overlayHost.style.cssText = 'all: initial !important; display: block !important; position: fixed !important; inset: 0 !important; z-index: 2147483647 !important; pointer-events: none !important; contain: strict !important;';
       const root = overlayHost.attachShadow({ mode: 'closed' });
       const style = document.createElement('style');
@@ -198,7 +281,12 @@ export function createIframeElementBridgeScript(): string {
       layer = document.createElement('div');
       root.append(style, layer);
     }
-    if (overlayHost.parentNode !== document.documentElement) document.documentElement.appendChild(overlayHost);
+    if (overlayHost.parentNode !== document.documentElement) {
+      document.documentElement.appendChild(overlayHost);
+      raiseOverlay(true);
+    } else {
+      raiseOverlay(false);
+    }
   };
   const tint = color => supportsColorMix ? 'color-mix(in srgb, ' + color + ' 12%, transparent)' : 'transparent';
   const draw = boxes => {
@@ -232,13 +320,13 @@ export function createIframeElementBridgeScript(): string {
       label.classList.toggle('below', rect.top < 20);
     });
   };
-  const collectBoxes = () => {
+  const collectBoxes = clipCache => {
     const boxes = [];
     for (const highlight of state.highlights) {
       const matches = queryAll(highlight.selector) || [];
       for (const element of matches.slice(0, MAX_MATCHES)) {
-        const rect = element.getBoundingClientRect();
-        if (rect.width === 0 && rect.height === 0) continue;
+        const rect = visibleRectOf(element, clipCache);
+        if (!rect) continue;
         boxes.push({
           rect,
           color: highlight.color || state.theme.color,
@@ -247,24 +335,29 @@ export function createIframeElementBridgeScript(): string {
         });
       }
     }
-    if (state.picking && hovered && hovered.isConnected) {
-      const rect = hovered.getBoundingClientRect();
-      boxes.push({
-        rect,
-        color: state.pickColor || state.theme.color,
-        background: state.pickColor ? tint(state.pickColor) : state.theme.backgroundColor,
-        label: shortName(hovered),
-      });
+    if (state.picking && hovered) {
+      const rect = visibleRectOf(hovered, clipCache);
+      if (rect) {
+        boxes.push({
+          rect,
+          color: state.pickColor || state.theme.color,
+          background: state.pickColor ? tint(state.pickColor) : state.theme.backgroundColor,
+          label: shortName(hovered),
+        });
+      }
     }
     return boxes;
   };
-  const reportRects = () => {
+  // Positions of tracked elements. An element that can't be seen is reported as null, so the host keeps its last
+  // visible position.
+  const reportRects = clipCache => {
     if (!state.track.length) return;
     const rects = {};
     let changed = false;
     for (const selector of state.track) {
       const element = (queryAll(selector) || [])[0];
-      const rect = element ? toRect(element.getBoundingClientRect()) : null;
+      const visibleRect = element ? visibleRectOf(element, clipCache) : null;
+      const rect = visibleRect ? toRect(visibleRect) : null;
       const key = rect ? rect.x + ',' + rect.y + ',' + rect.width + ',' + rect.height : 'none';
       if (reportedRects.get(selector) !== key) {
         reportedRects.set(selector, key);
@@ -277,26 +370,29 @@ export function createIframeElementBridgeScript(): string {
   const isActive = () => state.highlights.length > 0 || state.track.length > 0 || (state.picking && !!hovered);
   const render = () => {
     frame = 0;
-    draw(collectBoxes());
-    reportRects();
+    const clipCache = new Map();
+    draw(collectBoxes(clipCache));
+    reportRects(clipCache);
     if (isActive()) schedule();
   };
   function schedule() {
     if (!frame) frame = requestAnimationFrame(render);
   }
 
-  const sanitizeSelector = value => {
-    if (typeof value !== 'string' || !value.trim()) return null;
-    try { document.querySelector(value); return value; } catch (error) { return null; }
+  const isValidSelector = value => {
+    if (typeof value !== 'string' || !value.trim()) return false;
+    try { document.querySelector(value); return true; } catch (error) { return false; }
   };
   const sync = message => {
     const wasPicking = state.picking;
     state.interactive = message.interactive === true;
     state.picking = message.picking === true;
-    state.pickSelector = sanitizeSelector(message.pickSelector);
+    const hasPickSelector = typeof message.pickSelector === 'string' && message.pickSelector.trim() !== '';
+    state.pickSelectorInvalid = hasPickSelector && !isValidSelector(message.pickSelector);
+    state.pickSelector = hasPickSelector && !state.pickSelectorInvalid ? message.pickSelector : null;
     state.pickColor = typeof message.pickColor === 'string' && message.pickColor ? message.pickColor : null;
     state.highlights = (Array.isArray(message.highlights) ? message.highlights : [])
-      .filter(highlight => highlight && sanitizeSelector(highlight.selector))
+      .filter(highlight => highlight && isValidSelector(highlight.selector))
       .slice(0, MAX_HIGHLIGHTS)
       .map(highlight => ({
         selector: highlight.selector,
@@ -311,6 +407,7 @@ export function createIframeElementBridgeScript(): string {
     const tracked = new Set(state.track);
     reportedRects = new Map(Array.from(reportedRects).filter(([selector]) => tracked.has(selector)));
     document.documentElement.toggleAttribute(PICKING_ATTRIBUTE, state.picking);
+    if (!state.picking) blockedPointers.clear();
     if (!state.interactive) {
       setHovered(null);
     } else if (wasPicking !== state.picking) {
@@ -347,16 +444,16 @@ export function createIframeElementBridgeScript(): string {
     if (event.pointerType !== 'touch' && !event.relatedTarget) setHovered(null);
   }, true);
 
-  // While picking, presses never reach the page. These listeners run first because they are registered on
-  // the window in the capture phase before the author's script runs.
+  // While picking, presses never reach the page. These listeners run first because this script runs before any
+  // script of the content and registers them on the window in the capture phase.
   const block = event => {
-    if (!state.picking || !event.isTrusted) return false;
     event.preventDefault();
     event.stopImmediatePropagation();
-    return true;
   };
-  for (const type of ['pointerup', 'mousedown', 'mouseup', 'dblclick', 'auxclick', 'dragstart', 'selectstart']) {
-    window.addEventListener(type, block, true);
+  for (const type of ['mousedown', 'dblclick', 'auxclick', 'dragstart', 'selectstart']) {
+    window.addEventListener(type, event => {
+      if (state.picking && event.isTrusted) block(event);
+    }, true);
   }
   for (const type of ['touchstart', 'touchend']) {
     window.addEventListener(type, event => {
@@ -365,24 +462,54 @@ export function createIframeElementBridgeScript(): string {
   }
   window.addEventListener('pointerdown', event => {
     pointerStart = { x: event.screenX, y: event.screenY };
-    block(event);
+    if (state.picking && event.isTrusted) {
+      blockedPointers.add(event.pointerId);
+      block(event);
+    }
+  }, true);
+  const pick = (event, target) => {
+    const element = resolve(target, true);
+    if (element) post(Object.assign({ type: MESSAGES.pick, element: describe(element) }, modifiers(event)));
+  };
+  // Only the ends of presses that picking blocked are blocked, so a press that began before picking was turned on
+  // still reaches the page and the host. Pointer presses pick on release: browsers send no click to disabled
+  // controls, but they do send pointer events.
+  for (const type of ['pointerup', 'pointercancel']) {
+    window.addEventListener(type, event => {
+      if (!blockedPointers.delete(event.pointerId)) return;
+      block(event);
+      if (type === 'pointerup' && state.picking && event.button === 0) pick(event, event.target);
+    }, true);
+  }
+  window.addEventListener('mouseup', event => {
+    if (state.picking && event.isTrusted && blockedPointers.size > 0) block(event);
   }, true);
   window.addEventListener('click', event => {
     if (!event.isTrusted) return;
     if (state.picking) {
       block(event);
-      const element = resolve(event.target, state.pickSelector);
-      if (element) post(Object.assign({ type: MESSAGES.pick, element: describe(element) }, modifiers(event)));
+      // Pointer presses picked on release. A click without a press (detail 0) comes from the keyboard.
+      if (event.detail === 0) pick(event, event.target);
       return;
     }
     // A press that moved, e.g. to drag the object, is not a click. Keyboard clicks (detail 0) have no press.
     const start = pointerStart;
     pointerStart = null;
     if (event.detail > 0 && start && Math.hypot(event.screenX - start.x, event.screenY - start.y) > CLICK_SLOP) return;
-    const element = resolve(event.target, null);
-    if (element) post(Object.assign({ type: MESSAGES.click, element: describe(element) }, modifiers(event)));
+    // Clicking a label also clicks its control in the same task. Both belong to one user click.
+    if (clickReported) return;
+    const element = resolve(event.target, false);
+    if (!element) return;
+    clickReported = true;
+    setTimeout(() => { clickReported = false; }, 0);
+    post(Object.assign({ type: MESSAGES.click, element: describe(element) }, modifiers(event)));
   }, true);
 
-  post({ type: MESSAGES.ready });
+  // The content's scripts have run once the document is parsed, so the host can query it from then on.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => post({ type: MESSAGES.ready }), { once: true });
+  } else {
+    post({ type: MESSAGES.ready });
+  }
 })();`;
 }

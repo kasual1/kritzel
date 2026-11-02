@@ -887,7 +887,7 @@ so it follows them afterwards. An element target needs the object to be mounted 
 Type: `Promise<KritzelAgenticCursorMoveResult>`
 
 Resolves when the animation ends; `completed` is `false` if the move was interrupted.
-Rejects if an element target's object isn't mounted or has no element that matches the selector.
+Rejects if an element target's object isn't mounted or has no visible element that matches the selector.
 
 ### `openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void>`
 

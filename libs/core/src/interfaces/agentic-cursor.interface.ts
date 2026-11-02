@@ -31,10 +31,10 @@ export interface KritzelAgenticCursorObjectTarget {
 
 /**
  * An element inside an object's content to move to (and, by default, stick to), e.g. a button in the page of a
- * `KritzelIframeObject`. The object must support elements (see `KritzelElementAwareObject`) and be mounted when
- * the cursor starts moving. While attached, the cursor follows the element when it moves inside the content.
- * If the element disappears, e.g. while the content is regenerated, the cursor stays at the element's last known
- * position on the object and returns to the element once it reappears.
+ * `KritzelIframeObject`. The object must support elements (see `KritzelElementAwareObject`) and be mounted, and the
+ * element must be visible, when the cursor starts moving. While attached, the cursor follows the element when it
+ * moves inside the content. If the element disappears or is scrolled out of view, e.g. while the content is
+ * regenerated, the cursor stays at the element's last visible position and returns to the element once it reappears.
  */
 export interface KritzelAgenticCursorElementTarget {
   /** ID of the canvas object. */

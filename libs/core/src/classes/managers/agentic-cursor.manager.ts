@@ -151,7 +151,7 @@ export class KritzelAgenticCursorManager {
    * Animates a cursor to a world point, an object anchor or an element inside an object.
    * Resolves when the animation ends. An interrupted move resolves with `completed: false`.
    * A move to an element first asks the object where the element is, and rejects if the
-   * object isn't mounted or has no element that matches the selector.
+   * object isn't mounted or has no visible element that matches the selector.
    */
   move(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
     const entry = this.getEntryOrThrow(id);
@@ -361,10 +361,12 @@ export class KritzelAgenticCursorManager {
         if (!isCurrent()) {
           return { completed: false };
         }
-        if (elements.length === 0) {
+        if (elements.length === 0 || !elements[0].visibleRect) {
           this.setTrackedElement(entry, null);
           this.emitChange();
-          throw new Error(`Element "${target.selector}" not found in object "${target.objectId}".`);
+          throw new Error(elements.length === 0
+            ? `Element "${target.selector}" not found in object "${target.objectId}".`
+            : `Element "${target.selector}" in object "${target.objectId}" is not visible.`);
         }
         const destination = this.resolveTarget(target) ?? entry.position;
         return this.startAnimation(entry, target, destination, options);

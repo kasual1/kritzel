@@ -14,6 +14,8 @@ export interface KritzelIframeElementBridgeOwner {
   readonly isMounted: boolean;
   /** The mounted iframe, or `null`. */
   getIframe(): HTMLIFrameElement | null;
+  /** Size of the content (the iframe's viewport) in CSS pixels, used to keep reported positions inside the object. */
+  getContentSize(): { width: number; height: number };
   emitHover(element: KritzelObjectElementInfo | null, isPicking: boolean): void;
   emitClick(element: KritzelObjectElementInfo, modifiers: KritzelObjectElementModifiers): void;
   emitPick(element: KritzelObjectElementInfo, modifiers: KritzelObjectElementModifiers): void;
@@ -89,6 +91,8 @@ export function readElementInfo(value: unknown): KritzelObjectElementInfo | null
   }
 
   const info: KritzelObjectElementInfo = { selector, tagName: tagName.toLowerCase(), classList, attributes, rect };
+  const visibleRect = readRect(value.visibleRect);
+  if (visibleRect) info.visibleRect = visibleRect;
   const kritzelId = readString(value.kritzelId);
   const id = readString(value.id);
   const text = readString(value.text);
@@ -107,8 +111,23 @@ function readModifiers(value: Record<string, unknown>): KritzelObjectElementModi
   };
 }
 
-function isValidSelector(selector: unknown): selector is string {
-  return typeof selector === 'string' && selector.trim().length > 0 && selector.length <= MAX_SELECTOR_LENGTH;
+/**
+ * Whether a selector is a non-empty CSS selector the browser can parse. Selectors are checked here, where errors
+ * can be reported to the caller, because the page silently ignores selectors it can't parse.
+ */
+export function isValidElementSelector(selector: unknown): selector is string {
+  if (typeof selector !== 'string' || selector.trim().length === 0 || selector.length > MAX_SELECTOR_LENGTH) {
+    return false;
+  }
+  if (typeof document === 'undefined' || typeof document.createDocumentFragment !== 'function') {
+    return true;
+  }
+  try {
+    document.createDocumentFragment().querySelector(selector);
+    return true;
+  } catch (error) {
+    return (error as { name?: unknown } | null)?.name !== 'SyntaxError';
+  }
 }
 
 /**
@@ -154,8 +173,8 @@ export class KritzelIframeElementBridge {
   }
 
   setPicking(enabled: boolean, options: KritzelObjectElementPickingOptions = {}): void {
-    if (options.selector !== undefined && options.selector !== '' && !isValidSelector(options.selector)) {
-      throw new Error('Invalid picking selector.');
+    if (options.selector !== undefined && options.selector !== '' && !isValidElementSelector(options.selector)) {
+      throw new Error(`Invalid picking selector "${options.selector}".`);
     }
     this._picking = enabled
       ? { enabled: true, selector: options.selector || undefined, color: options.color || undefined }
@@ -172,8 +191,8 @@ export class KritzelIframeElementBridge {
       throw new Error(`At most ${MAX_HIGHLIGHTS} highlights are supported.`);
     }
     this._highlights = highlights.map(highlight => {
-      if (!highlight || !isValidSelector(highlight.selector)) {
-        throw new Error('Every highlight needs a non-empty CSS selector.');
+      if (!highlight || !isValidElementSelector(highlight.selector)) {
+        throw new Error(`Invalid highlight selector "${highlight?.selector}".`);
       }
       const next: KritzelObjectElementHighlight = { selector: highlight.selector };
       if (typeof highlight.color === 'string' && highlight.color) next.color = highlight.color;
@@ -188,8 +207,8 @@ export class KritzelIframeElementBridge {
   }
 
   track(selector: string): void {
-    if (!isValidSelector(selector)) {
-      throw new Error('Invalid element selector.');
+    if (!isValidElementSelector(selector)) {
+      throw new Error(`Invalid element selector "${selector}".`);
     }
     const count = this._tracked.get(selector) ?? 0;
     if (count === 0 && this._tracked.size >= MAX_TRACKED) {
@@ -221,8 +240,8 @@ export class KritzelIframeElementBridge {
   }
 
   query(selector: string, limit: number = IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT): Promise<KritzelObjectElementInfo[]> {
-    if (!isValidSelector(selector)) {
-      return Promise.reject(new Error('Invalid element selector.'));
+    if (!isValidElementSelector(selector)) {
+      return Promise.reject(new Error(`Invalid element selector "${selector}".`));
     }
     if (!this._owner.isMounted || !this._owner.getIframe()) {
       return Promise.reject(new Error(`Object "${this._owner.id}" is not mounted. Its content can only be queried while it is in or near the viewport.`));
@@ -344,7 +363,7 @@ export class KritzelIframeElementBridge {
         continue;
       }
       // A missing element keeps its last known position, so a cursor pointing at it stays put until it is back.
-      const rect = readRect(value);
+      const rect = this.clampToContent(readRect(value));
       if (rect) {
         this._rects.set(selector, rect);
       }
@@ -368,10 +387,30 @@ export class KritzelIframeElementBridge {
       .slice(0, query.limit)
       .map(element => readElementInfo(element))
       .filter((element): element is KritzelObjectElementInfo => element !== null);
-    if (elements.length > 0 && this._tracked.has(query.selector)) {
-      this._rects.set(query.selector, { ...elements[0].rect });
+    const visibleRect = this.clampToContent(elements[0]?.visibleRect ?? null);
+    if (visibleRect && this._tracked.has(query.selector)) {
+      this._rects.set(query.selector, visibleRect);
     }
     query.resolve(elements);
+  }
+
+  /** The page reports positions, so a page could claim any position: they are kept inside the content. */
+  private clampToContent(rect: KritzelObjectElementRect | null): KritzelObjectElementRect | null {
+    if (!rect) {
+      return null;
+    }
+    const { width, height } = this._owner.getContentSize();
+    if (!(width > 0) || !(height > 0)) {
+      return { ...rect };
+    }
+    const left = Math.min(Math.max(rect.x, 0), width);
+    const top = Math.min(Math.max(rect.y, 0), height);
+    const right = Math.min(Math.max(rect.x + rect.width, 0), width);
+    const bottom = Math.min(Math.max(rect.y + rect.height, 0), height);
+    if (right <= left && bottom <= top && (rect.width > 0 || rect.height > 0)) {
+      return null;
+    }
+    return { x: left, y: top, width: right - left, height: bottom - top };
   }
 
   private clearHover(): void {

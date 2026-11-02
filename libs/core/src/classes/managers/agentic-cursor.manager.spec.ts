@@ -214,7 +214,7 @@ describe('KritzelAgenticCursorManager', () => {
   });
 
   describe('element targets', () => {
-    const elementInfo = (selector: string, rect: { x: number; y: number; width: number; height: number }) => ({ selector, tagName: 'button', classList: [], attributes: {}, rect });
+    const elementInfo = (selector: string, rect: { x: number; y: number; width: number; height: number }) => ({ selector, tagName: 'button', classList: [], attributes: {}, rect, visibleRect: rect });
 
     // Content coordinates are scaled by 1/2 into the object space, like an iframe object with scale 2.
     const createElementObject = (id: string, x: number, y: number, width: number, height: number, rects: Record<string, { x: number; y: number; width: number; height: number }>, rotation = 0) => {
@@ -313,6 +313,16 @@ describe('KritzelAgenticCursorManager', () => {
       const cursor = manager.add({ position: { x: 0, y: 0 } });
 
       await expect(manager.move(cursor.id, { objectId: 'frame', selector: '#missing' })).rejects.toThrow('Element "#missing" not found in object "frame".');
+      expect(object.tracked.size).toBe(0);
+    });
+
+    it('should reject when the element cannot be seen and release it', async () => {
+      const object = createElementObject('frame', 0, 0, 200, 200, {});
+      object.queryElements.mockResolvedValueOnce([{ selector: '#hidden', tagName: 'button', classList: [], attributes: {}, rect: { x: 0, y: 0, width: 0, height: 0 } } as any]);
+      objects.set('frame', object);
+      const cursor = manager.add({ position: { x: 0, y: 0 } });
+
+      await expect(manager.move(cursor.id, { objectId: 'frame', selector: '#hidden' })).rejects.toThrow('Element "#hidden" in object "frame" is not visible.');
       expect(object.tracked.size).toBe(0);
     });
 

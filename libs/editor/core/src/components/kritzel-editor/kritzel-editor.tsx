@@ -1099,7 +1099,7 @@ export class KritzelEditor {
    * @param target - `{ x, y }` in world coordinates, `{ objectId, anchor?, offset? }` or `{ objectId, selector, anchor?, offset? }`.
    * @param options - Duration, easing, speed and whether to attach to an object or element target.
    * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
-   * Rejects if an element target's object isn't mounted or has no element that matches the selector.
+   * Rejects if an element target's object isn't mounted or has no visible element that matches the selector.
    */
   @Method()
   async moveAgenticCursor(

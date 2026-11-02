@@ -39,6 +39,11 @@ export interface KritzelObjectElementInfo {
   attributes: Record<string, string>;
   /** The element's bounding box in content coordinates when it was reported. */
   rect: KritzelObjectElementRect;
+  /**
+   * The part of `rect` that can be seen: clipped by scrolling containers and the content's viewport. Omitted when
+   * nothing of the element can be seen, e.g. with `display: none`, `visibility: hidden` or scrolled out of view.
+   */
+  visibleRect?: KritzelObjectElementRect;
 }
 
 /** A highlight drawn over elements inside an object's content. */
@@ -124,13 +129,16 @@ export interface KritzelElementAwareObject {
    */
   queryElements(selector: string, limit?: number): Promise<KritzelObjectElementInfo[]>;
 
-  /** Starts reporting the position of the first element that matches a selector. Calls are reference-counted. */
+  /** Starts reporting the visible position of the first element that matches a selector. Calls are reference-counted. */
   trackElement(selector: string): void;
 
   /** Undoes one `trackElement()` call for a selector. */
   untrackElement(selector: string): void;
 
-  /** Last known bounding box of a tracked element in content coordinates, or `null` if it hasn't been seen yet. */
+  /**
+   * Last known visible bounding box of a tracked element in content coordinates, or `null` if it hasn't been seen yet.
+   * While the element can't be seen, e.g. while the content is regenerated, its last visible position is kept.
+   */
   getTrackedElementRect(selector: string): KritzelObjectElementRect | null;
 
   /** Converts a point in content coordinates to world units in the object's local, unrotated space, relative to its top-left corner. */

@@ -15,6 +15,7 @@ describe('KritzelIframeElementBridge', () => {
     attributes: { 'data-kritzel-id': 'equals', type: 'button' },
     text: '=',
     rect: { x: 10, y: 20, width: 30, height: 40 },
+    visibleRect: { x: 10, y: 20, width: 30, height: 35 },
     ...overrides,
   });
 
@@ -34,6 +35,7 @@ describe('KritzelIframeElementBridge', () => {
       isInteractive: true,
       isMounted: true,
       getIframe: () => iframe,
+      getContentSize: () => ({ width: 300, height: 200 }),
       emitHover: jest.fn(),
       emitClick: jest.fn(),
       emitPick: jest.fn(),
@@ -134,6 +136,27 @@ describe('KritzelIframeElementBridge', () => {
       highlights[0].selector = 'changed';
 
       expect(bridge.getHighlights()).toEqual([{ selector: 'p' }]);
+    });
+
+    it('rejects selectors the browser cannot parse', async () => {
+      // Browsers throw a SyntaxError DOMException for selectors they can't parse; the test DOM doesn't, so it is simulated.
+      const invalid = new Set(['.pickable >', 'button[', '#a,,']);
+      const createDocumentFragment = jest.spyOn(document, 'createDocumentFragment').mockReturnValue({
+        querySelector: (selector: string) => {
+          if (invalid.has(selector)) throw Object.assign(new Error(`'${selector}' is not a valid selector.`), { name: 'SyntaxError' });
+          if (selector === ':unsupported-by-this-dom') throw new Error('Not supported');
+          return null;
+        },
+      } as unknown as DocumentFragment);
+
+      expect(() => bridge.setPicking(true, { selector: '.pickable >' })).toThrow('Invalid picking selector ".pickable >"');
+      expect(() => bridge.setHighlights([{ selector: 'button[' }])).toThrow('Invalid highlight selector "button["');
+      expect(() => bridge.track('#a,,')).toThrow('Invalid element selector "#a,,"');
+      await expect(bridge.query('button[')).rejects.toThrow('Invalid element selector "button["');
+      expect(() => bridge.setHighlights([{ selector: '[data-kritzel-id="equals"] > span:nth-of-type(2)' }])).not.toThrow();
+      // Only syntax errors count: other failures of the DOM implementation must not reject valid selectors.
+      expect(() => bridge.track(':unsupported-by-this-dom')).not.toThrow();
+      createDocumentFragment.mockRestore();
     });
 
     it('rejects an invalid picking selector', () => {
@@ -264,6 +287,15 @@ describe('KritzelIframeElementBridge', () => {
       expect(bridge.getRect('#display')).toBeNull();
     });
 
+    it('keeps reported positions inside the content', () => {
+      bridge.track('#a');
+      bridge.track('#b');
+      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#a': { x: 280, y: -10, width: 40, height: 30 }, '#b': { x: 5000, y: 5000, width: 10, height: 10 } } });
+
+      expect(bridge.getRect('#a')).toEqual({ x: 280, y: 0, width: 20, height: 20 });
+      expect(bridge.getRect('#b')).toBeNull();
+    });
+
     it('rejects invalid selectors and too many tracked elements', () => {
       expect(() => bridge.track('')).toThrow();
       for (let index = 0; index < 50; index++) bridge.track(`#e${index}`);
@@ -274,7 +306,7 @@ describe('KritzelIframeElementBridge', () => {
 
   describe('queries', () => {
     it('rejects while the object is not mounted and for invalid selectors', async () => {
-      await expect(bridge.query('')).rejects.toThrow('Invalid element selector.');
+      await expect(bridge.query('')).rejects.toThrow('Invalid element selector');
       owner.isMounted = false;
       await expect(bridge.query('button')).rejects.toThrow('is not mounted');
     });
@@ -296,7 +328,7 @@ describe('KritzelIframeElementBridge', () => {
       await expect(promise).resolves.toEqual([expect.objectContaining({ selector: '[data-kritzel-id="equals"]' })]);
     });
 
-    it('stores the first match as the rect of a tracked selector', async () => {
+    it('stores the visible part of the first match as the rect of a tracked selector', async () => {
       ready();
       bridge.track('button');
       const promise = bridge.query('button', 1);
@@ -304,7 +336,18 @@ describe('KritzelIframeElementBridge', () => {
       bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element()] });
       await promise;
 
-      expect(bridge.getRect('button')).toEqual({ x: 10, y: 20, width: 30, height: 40 });
+      expect(bridge.getRect('button')).toEqual({ x: 10, y: 20, width: 30, height: 35 });
+    });
+
+    it('does not store a rect for a match that cannot be seen', async () => {
+      ready();
+      bridge.track('button');
+      const promise = bridge.query('button', 1);
+      const request = sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
+      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element({ visibleRect: undefined })] });
+
+      await expect(promise).resolves.toEqual([expect.not.objectContaining({ visibleRect: expect.anything() })]);
+      expect(bridge.getRect('button')).toBeNull();
     });
 
     it('rejects when the page reports an invalid selector', async () => {
@@ -355,6 +398,11 @@ describe('readElementInfo', () => {
 
   it('accepts a minimal element and normalizes the tag name', () => {
     expect(readElementInfo(valid)).toEqual({ selector: 'p', tagName: 'p', classList: [], attributes: {}, rect: { x: 0, y: 0, width: 1, height: 1 } });
+  });
+
+  it('keeps a valid visible rect and drops an invalid one', () => {
+    expect(readElementInfo({ ...valid, visibleRect: { x: 1, y: 1, width: 2, height: 2 } })?.visibleRect).toEqual({ x: 1, y: 1, width: 2, height: 2 });
+    expect(readElementInfo({ ...valid, visibleRect: { x: 1, y: 1, width: -2, height: 2 } })).not.toHaveProperty('visibleRect');
   });
 
   it('rejects elements without selector, tag name or a valid rect', () => {

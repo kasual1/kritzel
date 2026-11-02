@@ -463,6 +463,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
       get isInteractive() { return object.isInteractive; },
       get isMounted() { return object.isMounted; },
       getIframe: () => object.isMounted && object.elementRef ? object.elementRef : null,
+      getContentSize: () => ({ width: object.totalWidth, height: object.totalHeight }),
       emitHover: (element, isPicking) => object._core?.engine?.emitObjectElementHover?.({ objectId: object.id, element, isPicking }),
       emitClick: (element, modifiers) => object._core?.engine?.emitObjectElementClick?.({ objectId: object.id, element, ...modifiers }),
       emitPick: (element, modifiers) => object._core?.engine?.emitObjectElementPick?.({ objectId: object.id, element, ...modifiers }),
@@ -506,10 +507,10 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
       ${IFRAME_ELEMENT_PICKING_CSS}
       ${css}
     </style>
+    <script>${createIframeElementBridgeScript()}<\/script>
   </head>
   <body>
     ${activeContent.html}
-    <script>${createIframeElementBridgeScript()}<\/script>
     <script>
       const kritzel = globalThis.kritzel = {
         state: ${state},

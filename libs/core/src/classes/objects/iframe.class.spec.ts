@@ -327,16 +327,17 @@ describe('KritzelIframeObject', () => {
       return core;
     };
 
-    it('runs the bridge in its own script before the author script', () => {
-      const object = new KritzelIframeObject({ script: 'const marker = 1;' });
+    it('runs the bridge in its own script in the head, before any script of the content', () => {
+      const object = new KritzelIframeObject({ html: '<script>const inline = 1;</script>', script: 'const marker = 1;' });
       const iframe = document.createElement('iframe');
       object.mount(iframe);
 
       const bridgeIndex = iframe.srcdoc.indexOf(IFRAME_ELEMENT_MESSAGES.ready);
-      const authorIndex = iframe.srcdoc.indexOf('const marker = 1;');
       expect(bridgeIndex).toBeGreaterThan(-1);
-      expect(bridgeIndex).toBeLessThan(authorIndex);
-      expect(iframe.srcdoc.slice(bridgeIndex, authorIndex)).toContain('</script>');
+      expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('</head>'));
+      expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('const inline = 1;'));
+      expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('const marker = 1;'));
+      expect(iframe.srcdoc.slice(bridgeIndex, iframe.srcdoc.indexOf('</head>'))).toContain('</script>');
       expect(iframe.srcdoc).toContain('html[data-kritzel-picking]');
     });
 
