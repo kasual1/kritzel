@@ -1644,7 +1644,6 @@ export class KritzelEditor {
   }
 
   handleObjectsSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
-    console.log(event.detail);
     event.stopPropagation();
     this.objectsSelectionChange.emit(event.detail);
   }
