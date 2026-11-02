@@ -190,7 +190,6 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     this.messageListener = event => this.handleMessage(event);
     window.addEventListener('message', this.messageListener);
     iframe.srcdoc = this.createSourceDocument();
-    iframeElementBridges.get(this)?.onDocumentReset();
     this.onMount(this.createLifecycleContext());
   }
 
@@ -326,6 +325,16 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     iframeElementBridges.get(this)?.refreshTheme();
   }
 
+  adoptElementStateFrom(previous: unknown): void {
+    const elementBridge = previous instanceof KritzelIframeObject && previous !== this ? iframeElementBridges.get(previous) : undefined;
+    if (!elementBridge) {
+      return;
+    }
+    iframeElementBridges.delete(previous as KritzelIframeObject);
+    iframeElementBridges.set(this, elementBridge);
+    elementBridge.attach(this.createElementBridgeOwner());
+  }
+
   hasFocusedInputElement(): boolean {
     return this.isInteractive && this.isMounted && document.activeElement === this.elementRef;
   }
@@ -421,12 +430,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     this.isSelected = previous.isSelected;
     this.isHovered = previous.isHovered;
 
-    const elementBridge = iframeElementBridges.get(previous);
-    if (elementBridge && previous !== this) {
-      iframeElementBridges.delete(previous);
-      iframeElementBridges.set(this, elementBridge);
-      elementBridge.attach(this.createElementBridgeOwner());
-    }
+    this.adoptElementStateFrom(previous);
 
     if (!previous.isMounted || !(previous.elementRef instanceof HTMLElement) || previous.elementRef.tagName !== 'IFRAME') {
       return;
@@ -507,7 +511,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
       ${IFRAME_ELEMENT_PICKING_CSS}
       ${css}
     </style>
-    <script>${createIframeElementBridgeScript()}<\/script>
+    <script>${createIframeElementBridgeScript(this.elementBridge.beginDocument())}<\/script>
   </head>
   <body>
     ${activeContent.html}
@@ -681,7 +685,6 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   private refreshDocument(): void {
     if (this.isMounted && this.elementRef) {
       this.elementRef.srcdoc = this.createSourceDocument();
-      iframeElementBridges.get(this)?.onDocumentReset();
     }
   }
 

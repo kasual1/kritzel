@@ -31,10 +31,11 @@ export const IFRAME_ELEMENT_PICKING_CSS =
  * It is plain JavaScript in a string because it runs in the sandboxed page, and is wrapped in a function so its
  * names can't clash with the content's scripts. It must stay free of `</script` so it can be inlined into `srcdoc`.
  */
-export function createIframeElementBridgeScript(): string {
+export function createIframeElementBridgeScript(documentToken: number): string {
   return `(() => {
   'use strict';
   const MESSAGES = ${JSON.stringify(IFRAME_ELEMENT_MESSAGES)};
+  const DOCUMENT = ${Number(documentToken) || 0};
   const OVERLAY_TAG = '${IFRAME_ELEMENT_OVERLAY_TAG}';
   const PICKING_ATTRIBUTE = '${IFRAME_ELEMENT_PICKING_ATTRIBUTE}';
   const MAX_TEXT = 200;
@@ -63,6 +64,8 @@ export function createIframeElementBridgeScript(): string {
     highlights: [],
     track: [],
     theme: { color: '#007AFF', backgroundColor: 'rgba(0, 122, 255, 0.12)', labelTextColor: '#ffffff' },
+    // Version of the last applied sync, sent with hovers, clicks and picks so the host can judge them by this state.
+    version: 0,
   };
   let hoveredTarget = null;
   let hovered = null;
@@ -78,6 +81,7 @@ export function createIframeElementBridgeScript(): string {
   const supportsPopover = typeof HTMLElement !== 'undefined' && 'showPopover' in HTMLElement.prototype;
 
   const post = message => {
+    message.doc = DOCUMENT;
     try { host.postMessage(message, '*'); } catch (error) { /* The host is gone. */ }
   };
   const clip = (value, max) => value.length > max ? value.slice(0, max - 1) + '\\u2026' : value;
@@ -243,7 +247,7 @@ export function createIframeElementBridgeScript(): string {
     const element = resolve(target, state.picking);
     if (element === hovered) return;
     hovered = element;
-    post({ type: MESSAGES.hover, element: element ? describe(element) : null });
+    post({ type: MESSAGES.hover, element: element ? describe(element) : null, version: state.version });
     schedule();
   };
 
@@ -385,6 +389,7 @@ export function createIframeElementBridgeScript(): string {
   };
   const sync = message => {
     const wasPicking = state.picking;
+    state.version = typeof message.version === 'number' ? message.version : 0;
     state.interactive = message.interactive === true;
     state.picking = message.picking === true;
     const hasPickSelector = typeof message.pickSelector === 'string' && message.pickSelector.trim() !== '';
@@ -469,7 +474,7 @@ export function createIframeElementBridgeScript(): string {
   }, true);
   const pick = (event, target) => {
     const element = resolve(target, true);
-    if (element) post(Object.assign({ type: MESSAGES.pick, element: describe(element) }, modifiers(event)));
+    if (element) post(Object.assign({ type: MESSAGES.pick, element: describe(element), version: state.version }, modifiers(event)));
   };
   // Only the ends of presses that picking blocked are blocked, so a press that began before picking was turned on
   // still reaches the page and the host. Pointer presses pick on release: browsers send no click to disabled
@@ -502,7 +507,7 @@ export function createIframeElementBridgeScript(): string {
     if (!element) return;
     clickReported = true;
     setTimeout(() => { clickReported = false; }, 0);
-    post(Object.assign({ type: MESSAGES.click, element: describe(element) }, modifiers(event)));
+    post(Object.assign({ type: MESSAGES.click, element: describe(element), version: state.version }, modifiers(event)));
   }, true);
 
   // The content's scripts have run once the document is parsed, so the host can query it from then on.

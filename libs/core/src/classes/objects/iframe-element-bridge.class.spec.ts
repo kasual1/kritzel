@@ -1,4 +1,5 @@
 import {
+  IFRAME_ELEMENT_LOAD_TIMEOUT,
   IFRAME_ELEMENT_QUERY_TIMEOUT,
   KritzelIframeElementBridge,
   KritzelIframeElementBridgeOwner,
@@ -25,7 +26,9 @@ describe('KritzelIframeElementBridge', () => {
 
   const sent = () => postMessage.mock.calls.map(call => call[0]);
   const lastSync = () => sent().filter(message => message.type === IFRAME_ELEMENT_MESSAGES.sync).pop();
-  const ready = () => bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.ready });
+  // Messages of a page that runs the current document and applied the latest sync.
+  const receive = (message: Record<string, unknown>) => bridge.handleMessage({ doc: bridge.documentToken, version: bridge.syncVersion, ...message });
+  const ready = () => receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
 
   beforeEach(() => {
     postMessage = jest.fn();
@@ -58,6 +61,7 @@ describe('KritzelIframeElementBridge', () => {
 
       expect(lastSync()).toEqual({
         type: IFRAME_ELEMENT_MESSAGES.sync,
+        version: 1,
         interactive: true,
         picking: true,
         pickSelector: '[data-kritzel-id]',
@@ -82,7 +86,7 @@ describe('KritzelIframeElementBridge', () => {
 
     it('stops sending after the document is reset until the next ready', () => {
       ready();
-      bridge.onDocumentReset();
+      bridge.beginDocument();
       postMessage.mockClear();
 
       bridge.setHighlights([{ selector: 'h2' }]);
@@ -116,9 +120,33 @@ describe('KritzelIframeElementBridge', () => {
       expect(postMessage).not.toHaveBeenCalled();
     });
 
+    it('ignores messages of a replaced document', () => {
+      ready();
+      const stale = bridge.documentToken;
+      bridge.beginDocument();
+      postMessage.mockClear();
+
+      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.ready, doc: stale });
+      expect(bridge.isReady).toBe(false);
+      expect(postMessage).not.toHaveBeenCalled();
+      expect(bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element(), doc: stale })).toBe(true);
+      expect(owner.emitHover).not.toHaveBeenCalled();
+    });
+
+    it('treats a second ready as a reload and reports that the hover ended', () => {
+      ready();
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
+      postMessage.mockClear();
+
+      ready();
+
+      expect(owner.emitHover).toHaveBeenLastCalledWith(null, false);
+      expect(lastSync()).toBeDefined();
+    });
+
     it('ignores messages that do not belong to the element bridge', () => {
-      expect(bridge.handleMessage({ type: 'kritzel-iframe-state', state: {} })).toBe(false);
-      expect(bridge.handleMessage({})).toBe(false);
+      expect(receive({ type: 'kritzel-iframe-state', state: {} })).toBe(false);
+      expect(receive({})).toBe(false);
     });
   });
 
@@ -170,32 +198,33 @@ describe('KritzelIframeElementBridge', () => {
 
   describe('hover, click and pick', () => {
     it('emits hovers with the picking state and ignores repeated leaves', () => {
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
+      ready();
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
       expect(owner.emitHover).toHaveBeenLastCalledWith(expect.objectContaining({ selector: '[data-kritzel-id="equals"]' }), false);
       expect(bridge.hoveredElement?.tagName).toBe('button');
 
       bridge.setPicking(true);
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
       expect(owner.emitHover).toHaveBeenLastCalledWith(expect.any(Object), true);
 
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: null });
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: null });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: null });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: null });
       expect(owner.emitHover).toHaveBeenCalledTimes(3);
       expect(owner.emitHover).toHaveBeenLastCalledWith(null, true);
     });
 
     it('ignores hovers while the object is not interactive and invalid elements', () => {
       owner.isInteractive = false;
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
       owner.isInteractive = true;
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: { selector: 'p' } });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: { selector: 'p' } });
 
       expect(owner.emitHover).not.toHaveBeenCalled();
     });
 
     it('clears the hover when the object stops being interactive', () => {
       ready();
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
       owner.isInteractive = false;
       postMessage.mockClear();
 
@@ -206,47 +235,73 @@ describe('KritzelIframeElementBridge', () => {
     });
 
     it('clears the hover when the document is reset or the iframe unmounts', () => {
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
-      bridge.onDocumentReset();
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
+      bridge.beginDocument();
       expect(owner.emitHover).toHaveBeenLastCalledWith(null, false);
 
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element: element() });
       bridge.onUnmounted();
       expect(owner.emitHover).toHaveBeenCalledTimes(4);
       expect(owner.emitHover).toHaveBeenLastCalledWith(null, false);
     });
 
     it('emits clicks only while interactive and not picking', () => {
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.click, element: element(), shiftKey: true, metaKey: 'yes' });
+      ready();
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element(), shiftKey: true, metaKey: 'yes' });
       expect(owner.emitClick).toHaveBeenCalledWith(expect.objectContaining({ tagName: 'button' }), { shiftKey: true, ctrlKey: false, altKey: false, metaKey: false });
 
       bridge.setPicking(true);
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.click, element: element() });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element() });
       bridge.setPicking(false);
       owner.isInteractive = false;
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.click, element: element() });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element() });
 
       expect(owner.emitClick).toHaveBeenCalledTimes(1);
     });
 
     it('emits picks only while picking and interactive', () => {
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element() });
+      ready();
+      receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element() });
       expect(owner.emitPick).not.toHaveBeenCalled();
 
       bridge.setPicking(true);
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element(), altKey: true });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element(), altKey: true });
       expect(owner.emitPick).toHaveBeenCalledWith(expect.objectContaining({ kritzelId: 'equals' }), { shiftKey: false, ctrlKey: false, altKey: true, metaKey: false });
 
       owner.isInteractive = false;
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element() });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element() });
       expect(owner.emitPick).toHaveBeenCalledTimes(1);
+    });
+
+    it('judges clicks and picks by the state the page had when the user pressed', () => {
+      ready();
+      const beforePicking = bridge.syncVersion;
+      bridge.setPicking(true);
+      const whilePicking = bridge.syncVersion;
+
+      // The page had not applied the new state yet: the press reached the page and is a click.
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element(), version: beforePicking });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element(), version: beforePicking });
+      expect(owner.emitClick).toHaveBeenCalledTimes(1);
+      expect(owner.emitPick).not.toHaveBeenCalled();
+
+      bridge.setPicking(false);
+      // A pick of the page that still picked counts, the click it blocked never happened.
+      receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element(), version: whilePicking });
+      expect(owner.emitPick).toHaveBeenCalledTimes(1);
+
+      // Versions the host never sent are ignored.
+      receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element(), version: 999 });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element(), version: 'x' });
+      expect(owner.emitPick).toHaveBeenCalledTimes(1);
+      expect(owner.emitClick).toHaveBeenCalledTimes(1);
     });
 
     it('emits through the owner it was handed to', () => {
       const nextOwner = { ...owner, emitClick: jest.fn() };
       bridge.attach(nextOwner);
 
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.click, element: element() });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element() });
 
       expect(nextOwner.emitClick).toHaveBeenCalledTimes(1);
       expect(owner.emitClick).not.toHaveBeenCalled();
@@ -273,14 +328,14 @@ describe('KritzelIframeElementBridge', () => {
 
     it('keeps the last known rect of tracked elements only', () => {
       bridge.track('#display');
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#display': { x: 1, y: 2, width: 3, height: 4 }, '#other': { x: 0, y: 0, width: 1, height: 1 } } });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#display': { x: 1, y: 2, width: 3, height: 4 }, '#other': { x: 0, y: 0, width: 1, height: 1 } } });
       expect(bridge.getRect('#display')).toEqual({ x: 1, y: 2, width: 3, height: 4 });
       expect(bridge.getRect('#other')).toBeNull();
 
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#display': null } });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#display': null } });
       expect(bridge.getRect('#display')).toEqual({ x: 1, y: 2, width: 3, height: 4 });
 
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#display': { x: 'a', y: 2, width: 3, height: 4 } } });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#display': { x: 'a', y: 2, width: 3, height: 4 } } });
       expect(bridge.getRect('#display')).toEqual({ x: 1, y: 2, width: 3, height: 4 });
 
       bridge.untrack('#display');
@@ -290,7 +345,7 @@ describe('KritzelIframeElementBridge', () => {
     it('keeps reported positions inside the content', () => {
       bridge.track('#a');
       bridge.track('#b');
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#a': { x: 280, y: -10, width: 40, height: 30 }, '#b': { x: 5000, y: 5000, width: 10, height: 10 } } });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#a': { x: 280, y: -10, width: 40, height: 30 }, '#b': { x: 5000, y: 5000, width: 10, height: 10 } } });
 
       expect(bridge.getRect('#a')).toEqual({ x: 280, y: 0, width: 20, height: 20 });
       expect(bridge.getRect('#b')).toBeNull();
@@ -319,7 +374,7 @@ describe('KritzelIframeElementBridge', () => {
       const request = sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
       expect(request).toEqual({ type: IFRAME_ELEMENT_MESSAGES.query, requestId: expect.any(Number), selector: 'button', limit: 2 });
 
-      bridge.handleMessage({
+      receive({
         type: IFRAME_ELEMENT_MESSAGES.queryResult,
         requestId: request.requestId,
         elements: [element(), { selector: 'broken' }, element({ selector: 'button:nth-of-type(2)' }), element({ selector: 'button:nth-of-type(3)' })],
@@ -333,7 +388,7 @@ describe('KritzelIframeElementBridge', () => {
       bridge.track('button');
       const promise = bridge.query('button', 1);
       const request = sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element()] });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element()] });
       await promise;
 
       expect(bridge.getRect('button')).toEqual({ x: 10, y: 20, width: 30, height: 35 });
@@ -344,7 +399,7 @@ describe('KritzelIframeElementBridge', () => {
       bridge.track('button');
       const promise = bridge.query('button', 1);
       const request = sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element({ visibleRect: undefined })] });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element({ visibleRect: undefined })] });
 
       await expect(promise).resolves.toEqual([expect.not.objectContaining({ visibleRect: expect.anything() })]);
       expect(bridge.getRect('button')).toBeNull();
@@ -354,20 +409,22 @@ describe('KritzelIframeElementBridge', () => {
       ready();
       const promise = bridge.query('button[');
       const request = sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, error: 'Invalid selector' });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, error: 'Invalid selector' });
 
       await expect(promise).rejects.toThrow('Invalid element selector "button["');
     });
 
-    it('sends pending queries again when a new document is ready', () => {
+    it('sends pending queries again when a new document is ready', async () => {
       ready();
-      void bridge.query('button');
-      bridge.onDocumentReset();
+      const promise = bridge.query('button');
+      bridge.beginDocument();
       postMessage.mockClear();
 
       ready();
 
       expect(sent().filter(message => message.type === IFRAME_ELEMENT_MESSAGES.query)).toHaveLength(1);
+      bridge.onUnmounted();
+      await expect(promise).rejects.toThrow('was unmounted');
     });
 
     it('rejects when the page does not respond in time', async () => {
@@ -380,13 +437,35 @@ describe('KritzelIframeElementBridge', () => {
       await expect(promise).rejects.toThrow('did not respond');
     });
 
+    it('gives a loading page more time and starts the answer timeout once the query is sent', async () => {
+      jest.useFakeTimers();
+      const promise = bridge.query('button');
+
+      jest.advanceTimersByTime(IFRAME_ELEMENT_QUERY_TIMEOUT + 1000);
+      ready();
+      jest.advanceTimersByTime(IFRAME_ELEMENT_QUERY_TIMEOUT - 1);
+      const request = sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element()] });
+
+      await expect(promise).resolves.toHaveLength(1);
+    });
+
+    it('rejects when the page does not load in time', async () => {
+      jest.useFakeTimers();
+      const promise = bridge.query('button');
+
+      jest.advanceTimersByTime(IFRAME_ELEMENT_LOAD_TIMEOUT);
+
+      await expect(promise).rejects.toThrow('did not finish loading');
+    });
+
     it('rejects pending queries when the iframe unmounts and ignores late answers', async () => {
       ready();
       const promise = bridge.query('button');
       const request = sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
 
       bridge.onUnmounted();
-      bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element()] });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element()] });
 
       await expect(promise).rejects.toThrow('was unmounted');
     });

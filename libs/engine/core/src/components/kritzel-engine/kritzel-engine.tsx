@@ -2716,7 +2716,8 @@ export class KritzelEngine implements KritzelEngineHost {
   private _syncConfigRevision: number = 0;
   private _assetStorageConfigRevision: number = 0;
   private _workspacesRevision: number = 0;
-  private _previousVisibleDynamicObjects: Set<string> = new Set();
+  /** Embedded objects rendered by the previous render, by id, so they can be unmounted even after they were deleted. */
+  private _previousVisibleDynamicObjects: Map<string, { unmount(): void }> = new Map();
   private _revealedImageKeys: Set<string> = new Set();
   private _sceneBootstrapOpacity: number = 1;
   private _sceneBootstrapTransitionEnabled: boolean = false;
@@ -3560,17 +3561,18 @@ export class KritzelEngine implements KritzelEngineHost {
     };
 
     // Track visible dynamic objects and unmount culled ones
-    const currentVisibleDynamicObjects = new Set<string>();
+    const currentVisibleDynamicObjects = new Map<string, { unmount(): void }>();
     visibleObjects.forEach(object => {
       if (ObjectHelper.isKritzelEmbeddedObject(object)) {
-        currentVisibleDynamicObjects.add(object.id);
+        currentVisibleDynamicObjects.set(object.id, object);
       }
     });
 
-    // Unmount dynamic objects that left the viewport
-    this._previousVisibleDynamicObjects.forEach(id => {
+    // Unmount dynamic objects that left the viewport. Objects that were deleted without being unmounted, e.g. by
+    // undo or a collaborator, are no longer in the store, so the instance from the previous render is unmounted.
+    this._previousVisibleDynamicObjects.forEach((previous, id) => {
       if (!currentVisibleDynamicObjects.has(id)) {
-        const object = this.core.store.objects.findById(id);
+        const object = this.core.store.objects.findById(id) ?? previous;
         if (object && ObjectHelper.isKritzelEmbeddedObject(object)) {
           object.unmount();
         }

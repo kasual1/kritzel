@@ -63,6 +63,8 @@ interface AgenticCursorEntry {
   trackedElement: AgenticCursorTrackedElement | null;
   /** Incremented by every move, so a move that waits for its element can tell it was superseded. */
   moveToken: number;
+  /** Settles the pending element lookup of a move with `completed: false`. */
+  cancelLookup: (() => void) | null;
 }
 
 /**
@@ -128,6 +130,7 @@ export class KritzelAgenticCursorManager {
       animation: null,
       trackedElement,
       moveToken: 0,
+      cancelLookup: null,
     };
 
     this._cursors.set(id, entry);
@@ -160,7 +163,7 @@ export class KritzelAgenticCursorManager {
     }
 
     const destination = this.resolveTargetOrThrow(target);
-    entry.moveToken++;
+    this.supersede(entry);
     this.finishAnimation(entry, false);
     entry.attachedTo = null;
     this.setTrackedElement(entry, null);
@@ -182,6 +185,7 @@ export class KritzelAgenticCursorManager {
   remove(id: string): boolean {
     const entry = this._cursors.get(id);
     if (!entry) return false;
+    this.supersede(entry);
     this.finishAnimation(entry, false);
     this.setTrackedElement(entry, null);
     this._cursors.delete(id);
@@ -194,6 +198,7 @@ export class KritzelAgenticCursorManager {
   clear(): void {
     if (this._cursors.size === 0) return;
     this._cursors.forEach(entry => {
+      this.supersede(entry);
       this.finishAnimation(entry, false);
       this.setTrackedElement(entry, null);
     });
@@ -338,47 +343,90 @@ export class KritzelAgenticCursorManager {
 
   /** Stops the animation loop and resolves pending moves. Cursors are kept. */
   cleanup(): void {
-    this._cursors.forEach(entry => this.finishAnimation(entry, false));
+    this._cursors.forEach(entry => {
+      this.supersede(entry);
+      this.finishAnimation(entry, false);
+    });
     this.stopLoop();
   }
 
+  /** Marks the cursor's moves as superseded: a move still looking up its element resolves with `completed: false`. */
+  private supersede(entry: AgenticCursorEntry): void {
+    entry.moveToken++;
+    const cancelLookup = entry.cancelLookup;
+    entry.cancelLookup = null;
+    cancelLookup?.();
+  }
+
+  /**
+   * Moves to an element once the object confirms that it exists and can be seen. Until then the cursor keeps its
+   * current move, attachment and element, so a failed lookup changes nothing. A move, removal or clear during the
+   * lookup resolves this move with `completed: false` right away.
+   */
   private moveToElement(
     entry: AgenticCursorEntry,
     target: KritzelAgenticCursorElementTarget,
     options: KritzelAgenticCursorMoveOptions,
   ): Promise<KritzelAgenticCursorMoveResult> {
     const object = this.validateElementTarget(target);
-    // Tracking starts before the lookup, so the object keeps the element's position from the lookup's answer.
-    this.setTrackedElement(entry, { objectId: target.objectId, selector: target.selector });
-    const token = ++entry.moveToken;
-    this.finishAnimation(entry, false);
-    entry.attachedTo = null;
-    this.emitChange();
-
+    const lookup: AgenticCursorTrackedElement = { objectId: target.objectId, selector: target.selector };
+    // The lookup tracks the element, so the object keeps the element's position from the lookup's answer.
+    object.trackElement(lookup.selector);
+    this.supersede(entry);
+    const token = entry.moveToken;
     const isCurrent = () => entry.moveToken === token && this._cursors.get(entry.id) === entry;
-    return object.queryElements(target.selector, 1).then(
-      elements => {
-        if (!isCurrent()) {
-          return { completed: false };
+
+    return new Promise<KritzelAgenticCursorMoveResult>((resolve, reject) => {
+      let settled = false;
+      const settle = (callback: () => void) => {
+        if (!settled) {
+          settled = true;
+          callback();
         }
-        if (elements.length === 0 || !elements[0].visibleRect) {
+      };
+      entry.cancelLookup = () => settle(() => resolve({ completed: false }));
+
+      object.queryElements(lookup.selector, 1).then(
+        elements => {
+          if (!isCurrent()) {
+            this.untrack(lookup);
+            settle(() => resolve({ completed: false }));
+            return;
+          }
+          entry.cancelLookup = null;
+          if (elements.length === 0 || !elements[0].visibleRect) {
+            this.untrack(lookup);
+            settle(() => reject(new Error(elements.length === 0
+              ? `Element "${lookup.selector}" not found in object "${lookup.objectId}".`
+              : `Element "${lookup.selector}" in object "${lookup.objectId}" is not visible.`)));
+            return;
+          }
+          // The move starts: it interrupts the running move and replaces the attachment and the tracked element.
+          this.finishAnimation(entry, false);
+          entry.attachedTo = null;
           this.setTrackedElement(entry, null);
-          this.emitChange();
-          throw new Error(elements.length === 0
-            ? `Element "${target.selector}" not found in object "${target.objectId}".`
-            : `Element "${target.selector}" in object "${target.objectId}" is not visible.`);
-        }
-        const destination = this.resolveTarget(target) ?? entry.position;
-        return this.startAnimation(entry, target, destination, options);
-      },
-      error => {
-        if (isCurrent()) {
-          this.setTrackedElement(entry, null);
-          this.emitChange();
-        }
-        throw error;
-      },
-    );
+          entry.trackedElement = lookup;
+          const destination = this.resolveTarget(target) ?? entry.position;
+          this.startAnimation(entry, target, destination, options).then(result => settle(() => resolve(result)));
+        },
+        error => {
+          this.untrack(lookup);
+          if (!isCurrent()) {
+            settle(() => resolve({ completed: false }));
+            return;
+          }
+          entry.cancelLookup = null;
+          settle(() => reject(error));
+        },
+      );
+    });
+  }
+
+  private untrack(tracked: AgenticCursorTrackedElement): void {
+    const object = this._core.store.objects?.findById(tracked.objectId);
+    if (ObjectHelper.isKritzelElementAwareObject(object)) {
+      object.untrackElement(tracked.selector);
+    }
   }
 
   private startAnimation(
@@ -432,10 +480,7 @@ export class KritzelAgenticCursorManager {
       }
     }
     if (previous) {
-      const object = this._core.store.objects?.findById(previous.objectId);
-      if (ObjectHelper.isKritzelElementAwareObject(object)) {
-        object.untrackElement(previous.selector);
-      }
+      this.untrack(previous);
     }
     entry.trackedElement = next;
   }

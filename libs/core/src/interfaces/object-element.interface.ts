@@ -146,4 +146,10 @@ export interface KritzelElementAwareObject {
 
   /** Re-reads the element highlight colors from the theme. Called by the engine when the theme changes. */
   refreshElementTheme(): void;
+
+  /**
+   * Takes over highlights, picking and tracked elements from an instance with the same id that this object replaces,
+   * e.g. when a workspace's objects are replaced. Called by the core after the previous instance was unmounted.
+   */
+  adoptElementStateFrom?(previous: unknown): void;
 }

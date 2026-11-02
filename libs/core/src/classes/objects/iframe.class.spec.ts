@@ -316,8 +316,12 @@ describe('KritzelIframeObject', () => {
       const contentWindow = { postMessage: jest.fn() };
       Object.defineProperty(iframe, 'contentWindow', { configurable: true, value: contentWindow });
       object.mount(iframe);
-      const receive = (data: Record<string, unknown>) => (object as any).handleMessage({ source: contentWindow, data });
       const syncs = () => contentWindow.postMessage.mock.calls.map(call => call[0]).filter(message => message.type === IFRAME_ELEMENT_MESSAGES.sync);
+      // Messages of the page's current document that applied the latest sync, as the bridge script sends them.
+      const receive = (data: Record<string, unknown>) => (object as any).handleMessage({
+        source: contentWindow,
+        data: { doc: Number(/const DOCUMENT = (\d+);/.exec(iframe.srcdoc)?.[1]), version: syncs().pop()?.version ?? 0, ...data },
+      });
       return { iframe, contentWindow, receive, syncs };
     };
 
@@ -342,9 +346,10 @@ describe('KritzelIframeObject', () => {
     });
 
     it('generates a bridge script that parses and can be inlined', () => {
-      const script = createIframeElementBridgeScript();
+      const script = createIframeElementBridgeScript(1);
 
       expect(() => new Function(script)).not.toThrow();
+      expect(script).toContain('const DOCUMENT = 1;');
       expect(script.toLowerCase()).not.toContain('</script');
     });
 
@@ -387,6 +392,7 @@ describe('KritzelIframeObject', () => {
       const object = KritzelIframeObject.create(core);
       const { receive } = mountWithWindow(object);
       object.setIsInteractive(true);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
 
       receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element });
       receive({ type: IFRAME_ELEMENT_MESSAGES.click, element, ctrlKey: true });
@@ -444,7 +450,7 @@ describe('KritzelIframeObject', () => {
     it('hands element state to the instance that replaces it after a synced update', () => {
       const core = createEngineCore();
       const previous = KritzelIframeObject.create(core);
-      const { receive, syncs } = mountWithWindow(previous);
+      const { iframe, receive, syncs } = mountWithWindow(previous);
       receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
       previous.setIsInteractive(true);
       previous.setElementHighlights([{ selector: 'p' }]);
@@ -459,7 +465,8 @@ describe('KritzelIframeObject', () => {
       expect(revived.getTrackedElementRect('#run')).toEqual(element.rect);
       expect(previous.getElementHighlights()).toEqual([]);
 
-      (revived as any).handleMessage({ source: (revived.elementRef as HTMLIFrameElement).contentWindow, data: { type: IFRAME_ELEMENT_MESSAGES.hover, element } });
+      const doc = Number(/const DOCUMENT = (\d+);/.exec(iframe.srcdoc)?.[1]);
+      (revived as any).handleMessage({ source: (revived.elementRef as HTMLIFrameElement).contentWindow, data: { type: IFRAME_ELEMENT_MESSAGES.hover, element, doc } });
       expect(core.engine.emitObjectElementHover).toHaveBeenCalledWith(expect.objectContaining({ objectId: revived.id }));
 
       revived.setElementHighlights([]);

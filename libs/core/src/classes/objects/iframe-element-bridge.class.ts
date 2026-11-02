@@ -26,10 +26,13 @@ interface PendingQuery {
   limit: number;
   resolve: (elements: KritzelObjectElementInfo[]) => void;
   reject: (error: Error) => void;
-  timer: ReturnType<typeof setTimeout>;
+  timer: ReturnType<typeof setTimeout> | null;
 }
 
+/** How long the page has to answer a query once it was sent. */
 export const IFRAME_ELEMENT_QUERY_TIMEOUT = 3000;
+/** How long a query waits for the page to load, e.g. right after the content was replaced. */
+export const IFRAME_ELEMENT_LOAD_TIMEOUT = 15000;
 export const IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT = 100;
 export const IFRAME_ELEMENT_MAX_QUERY_LIMIT = 500;
 
@@ -38,6 +41,8 @@ const MAX_STRING_LENGTH = 500;
 const MAX_LIST_LENGTH = 50;
 const MAX_HIGHLIGHTS = 50;
 const MAX_TRACKED = 50;
+const MAX_REMEMBERED_VERSIONS = 64;
+const BRIDGE_MESSAGE_TYPES = new Set<unknown>(Object.values(IFRAME_ELEMENT_MESSAGES));
 
 const THEME_VARIABLES = {
   color: ['--kritzel-element-highlight-color', '#007AFF'],
@@ -146,6 +151,14 @@ export class KritzelIframeElementBridge {
   private readonly _queries = new Map<number, PendingQuery>();
   private _hovered: KritzelObjectElementInfo | null = null;
   private _requestCounter = 0;
+  /** Token of the current document. The page sends it with every message, so messages of replaced documents are ignored. */
+  private _document = 0;
+  /**
+   * Every sync has a version, and the page sends the version it applied with hovers, clicks and picks. The host
+   * judges them by the state the page had: a click right after picking was turned on is still a click.
+   */
+  private _syncVersion = 0;
+  private readonly _pickingAtVersion = new Map<number, boolean>([[0, false]]);
 
   constructor(owner: KritzelIframeElementBridgeOwner) {
     this._owner = owner;
@@ -162,6 +175,16 @@ export class KritzelIframeElementBridge {
 
   get isReady(): boolean {
     return this._isReady;
+  }
+
+  /** Token of the current document, see `beginDocument()`. */
+  get documentToken(): number {
+    return this._document;
+  }
+
+  /** Version of the last state sent to the page. */
+  get syncVersion(): number {
+    return this._syncVersion;
   }
 
   get hoveredElement(): KritzelObjectElementInfo | null {
@@ -250,13 +273,11 @@ export class KritzelIframeElementBridge {
 
     return new Promise<KritzelObjectElementInfo[]>((resolve, reject) => {
       const requestId = ++this._requestCounter;
-      const timer = setTimeout(() => {
-        this._queries.delete(requestId);
-        reject(new Error(`The content of object "${this._owner.id}" did not respond.`));
-      }, IFRAME_ELEMENT_QUERY_TIMEOUT);
-      this._queries.set(requestId, { selector, limit: normalizedLimit, resolve, reject, timer });
+      this._queries.set(requestId, { selector, limit: normalizedLimit, resolve, reject, timer: null });
       if (this._isReady) {
         this.postQuery(requestId);
+      } else {
+        this.startQueryTimer(requestId, IFRAME_ELEMENT_LOAD_TIMEOUT, `The content of object "${this._owner.id}" did not finish loading.`);
       }
     });
   }
@@ -266,10 +287,15 @@ export class KritzelIframeElementBridge {
     this.sync();
   }
 
-  /** Called when the iframe gets a new document. Until it reports `ready`, nothing can be sent to it. */
-  onDocumentReset(): void {
+  /**
+   * Called for every new document of the iframe. Until it reports `ready`, nothing can be sent to it.
+   * @returns The token the document's bridge script has to send with its messages.
+   */
+  beginDocument(): number {
+    this._document++;
     this._isReady = false;
     this.clearHover();
+    return this._document;
   }
 
   /** Called when the iframe is unmounted. State is kept and sent again when the object mounts. */
@@ -278,7 +304,7 @@ export class KritzelIframeElementBridge {
     this.clearHover();
     const error = new Error(`Object "${this._owner.id}" was unmounted.`);
     this._queries.forEach(query => {
-      clearTimeout(query.timer);
+      if (query.timer) clearTimeout(query.timer);
       query.reject(error);
     });
     this._queries.clear();
@@ -296,8 +322,19 @@ export class KritzelIframeElementBridge {
    * The caller must have checked that the message comes from this object's iframe.
    */
   handleMessage(message: Record<string, unknown>): boolean {
+    if (!BRIDGE_MESSAGE_TYPES.has(message.type)) {
+      return false;
+    }
+    if (message.doc !== this._document) {
+      // A message of a document that was replaced while it was on its way.
+      return true;
+    }
     switch (message.type) {
       case IFRAME_ELEMENT_MESSAGES.ready:
+        if (this._isReady) {
+          // The document reloaded without a new srcdoc, e.g. because the iframe moved in the DOM.
+          this.clearHover();
+        }
         this._isReady = true;
         this.sync();
         // Queries sent to a previous document are lost with it, so all pending ones are sent again.
@@ -319,7 +356,7 @@ export class KritzelIframeElementBridge {
         this.handleQueryResult(message);
         return true;
       default:
-        return false;
+        return true;
     }
   }
 
@@ -335,12 +372,12 @@ export class KritzelIframeElementBridge {
       return;
     }
     this._hovered = element;
-    this._owner.emitHover(element, this._picking.enabled);
+    this._owner.emitHover(element, this.pickingAt(message.version) ?? this._picking.enabled);
   }
 
   private handleClick(message: Record<string, unknown>): void {
     const element = readElementInfo(message.element);
-    if (!element || !this._owner.isInteractive || this._picking.enabled) {
+    if (!element || !this._owner.isInteractive || this.pickingAt(message.version) !== false) {
       return;
     }
     this._owner.emitClick(element, readModifiers(message));
@@ -348,10 +385,15 @@ export class KritzelIframeElementBridge {
 
   private handlePick(message: Record<string, unknown>): void {
     const element = readElementInfo(message.element);
-    if (!element || !this._owner.isInteractive || !this._picking.enabled) {
+    if (!element || !this._owner.isInteractive || this.pickingAt(message.version) !== true) {
       return;
     }
     this._owner.emitPick(element, readModifiers(message));
+  }
+
+  /** Whether the page was picking in the state of a sync version, or `undefined` for versions the host never sent. */
+  private pickingAt(version: unknown): boolean | undefined {
+    return typeof version === 'number' ? this._pickingAtVersion.get(version) : undefined;
   }
 
   private handleRects(message: Record<string, unknown>): void {
@@ -377,7 +419,7 @@ export class KritzelIframeElementBridge {
       return;
     }
     this._queries.delete(requestId as number);
-    clearTimeout(query.timer);
+    if (query.timer) clearTimeout(query.timer);
 
     if (typeof message.error === 'string' || !Array.isArray(message.elements)) {
       query.reject(new Error(`Invalid element selector "${query.selector}".`));
@@ -424,15 +466,34 @@ export class KritzelIframeElementBridge {
     const query = this._queries.get(requestId);
     if (query) {
       this.post({ type: IFRAME_ELEMENT_MESSAGES.query, requestId, selector: query.selector, limit: query.limit });
+      this.startQueryTimer(requestId, IFRAME_ELEMENT_QUERY_TIMEOUT, `The content of object "${this._owner.id}" did not respond.`);
     }
+  }
+
+  private startQueryTimer(requestId: number, timeout: number, message: string): void {
+    const query = this._queries.get(requestId);
+    if (!query) {
+      return;
+    }
+    if (query.timer) {
+      clearTimeout(query.timer);
+    }
+    query.timer = setTimeout(() => {
+      this._queries.delete(requestId);
+      query.reject(new Error(message));
+    }, timeout);
   }
 
   private sync(): void {
     if (!this._isReady) {
       return;
     }
+    const version = ++this._syncVersion;
+    this._pickingAtVersion.set(version, this._picking.enabled);
+    this._pickingAtVersion.delete(version - MAX_REMEMBERED_VERSIONS);
     this.post({
       type: IFRAME_ELEMENT_MESSAGES.sync,
+      version,
       interactive: this._owner.isInteractive,
       picking: this._picking.enabled,
       pickSelector: this._picking.selector ?? null,

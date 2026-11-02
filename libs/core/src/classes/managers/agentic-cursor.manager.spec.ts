@@ -355,6 +355,7 @@ describe('KritzelAgenticCursorManager', () => {
       const first = manager.move(cursor.id, { objectId: 'frame', selector: '#run' }, { duration: 100 });
       const second = manager.move(cursor.id, { objectId: 'frame', selector: '#stop' }, { duration: 100 });
       await expect(first).resolves.toEqual({ completed: false });
+      await flush();
       expect(Array.from(object.tracked.keys())).toEqual(['#stop']);
 
       manager.tick(1100);
@@ -371,6 +372,51 @@ describe('KritzelAgenticCursorManager', () => {
       manager.remove(cursor.id);
 
       await expect(promise).resolves.toEqual({ completed: false });
+      await flush();
+      expect(object.tracked.size).toBe(0);
+    });
+
+    it('should resolve an interrupted element move with completed: false even if its lookup fails later', async () => {
+      const object = createElementObject('frame', 0, 0, 200, 200, {});
+      let failLookup: (error: Error) => void = () => undefined;
+      object.queryElements.mockImplementationOnce(() => new Promise((_resolve, reject) => { failLookup = reject; }));
+      objects.set('frame', object);
+      const cursor = manager.add({ position: { x: 0, y: 0 } });
+
+      const first = manager.move(cursor.id, { objectId: 'frame', selector: '#run' });
+      const second = manager.move(cursor.id, { x: 10, y: 0 }, { duration: 0 });
+      failLookup(new Error('Object "frame" was unmounted.'));
+      manager.tick(1000);
+
+      await expect(first).resolves.toEqual({ completed: false });
+      await expect(second).resolves.toEqual({ completed: true });
+      await flush();
+      expect(object.tracked.size).toBe(0);
+    });
+
+    it('should keep the current move and attachment when an element move fails', async () => {
+      const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 20, y: 40, width: 40, height: 20 } });
+      objects.set('frame', object);
+      const cursor = manager.add({ position: { objectId: 'frame', selector: '#run' } });
+      object.queryElements.mockRejectedValueOnce(new Error('Object "frame" is not mounted.'));
+
+      await expect(manager.move(cursor.id, { objectId: 'frame', selector: '#run' })).rejects.toThrow('is not mounted');
+
+      expect(manager.get(cursor.id)!.attachedTo).toEqual({ objectId: 'frame', selector: '#run', anchor: 'center', offset: { x: 0, y: 0 } });
+      expect(object.tracked.get('#run')).toBe(1);
+    });
+
+    it('should resolve element moves that are still looking up their element on cleanup', async () => {
+      const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 0, y: 0, width: 10, height: 10 } });
+      objects.set('frame', object);
+      const cursor = manager.add({ position: { x: 0, y: 0 } });
+
+      const promise = manager.move(cursor.id, { objectId: 'frame', selector: '#run' });
+      manager.cleanup();
+
+      await expect(promise).resolves.toEqual({ completed: false });
+      await flush();
+      expect(manager.get(cursor.id)!.isMoving).toBe(false);
       expect(object.tracked.size).toBe(0);
     });
 
