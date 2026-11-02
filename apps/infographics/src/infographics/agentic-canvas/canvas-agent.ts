@@ -2,17 +2,21 @@ import Anthropic from '@anthropic-ai/sdk';
 import { KritzelIframeObject, type HTMLKritzelEditorElement, type KritzelBaseObject } from '@kritzel/react-editor';
 
 /**
- * `ANTHROPIC_API_KEY` from the `.env` file at the repository root (see `.env.example`).
+ * `ANTHROPIC_API_KEY` from a `.env` file, injected by `vite.config.ts` (see `.env.example` at the repository root).
  * The page calls the Claude API straight from the browser, so anyone who opens it can read the key: only run it locally.
  * A real app would send the requests through its own backend.
  */
-const API_KEY = import.meta.env.ANTHROPIC_API_KEY ?? '';
+const API_KEY = __ANTHROPIC_API_KEY__;
+
+export const MISSING_API_KEY_MESSAGE =
+  'Set ANTHROPIC_API_KEY in the .env file at the repository root, then restart the dev server.';
 
 const MODEL = 'claude-opus-5-5';
 
 const SYSTEM_PROMPT = `You build small interactive web apps on an infinite canvas. The user describes what they want in a \
 chat box, and you put it on the canvas with add_iframe: each call adds one object that renders its own web page in an \
-iframe, with a titlebar above it.
+iframe, with a titlebar above it. Every request is something to build: when it is vague, make reasonable choices and \
+build it instead of asking questions.
 
 Pages are self-contained: no external scripts, stylesheets or images, except Google Fonts. Use inline SVG for icons and \
 illustrations. Design modern, polished pages, and size the object so the whole page fits, because it does not scroll.
@@ -86,6 +90,20 @@ export function isIframe(object: KritzelBaseObject): object is KritzelIframeObje
   return object.__class__ === 'KritzelIframeObject';
 }
 
+/** A message for the user about a failed prompt. */
+export function describeError(error: unknown): string {
+  if (error instanceof Anthropic.AuthenticationError) {
+    return 'The Claude API rejected the API key. Check ANTHROPIC_API_KEY in your .env file, then restart the dev server.';
+  }
+  if (error instanceof Anthropic.APIConnectionError) {
+    return 'The Claude API could not be reached. Check your network connection.';
+  }
+  if (error instanceof Anthropic.APIError) {
+    return `The Claude API returned an error: ${error.message}`;
+  }
+  return error instanceof Error ? error.message : String(error);
+}
+
 /**
  * A chat with Claude about the canvas. Each prompt runs a tool-use loop in which Claude adds iframe objects until it is done.
  * The conversation is kept between prompts, so follow-ups like "now a dark version of it" work.
@@ -98,12 +116,13 @@ export class CanvasAgent {
 
   constructor(private readonly editor: HTMLKritzelEditorElement) {}
 
-  async send(prompt: string, signal: AbortSignal): Promise<void> {
+  /** Runs a prompt and returns Claude's closing reply. */
+  async send(prompt: string, signal: AbortSignal): Promise<string> {
     const historyLength = this.messages.length;
     this.messages.push({ role: 'user', content: prompt });
 
     try {
-      await this.runLoop(signal);
+      return await this.runLoop(signal);
     } catch (error) {
       // Drop the unfinished exchange: a tool call without its result would make every later request fail.
       this.messages.length = historyLength;
@@ -111,7 +130,7 @@ export class CanvasAgent {
     }
   }
 
-  private async runLoop(signal: AbortSignal): Promise<void> {
+  private async runLoop(signal: AbortSignal): Promise<string> {
     let jsonRetries = 0;
 
     for (let request = 0; request < MAX_REQUESTS; request++) {
@@ -144,7 +163,7 @@ export class CanvasAgent {
       }
 
       if (message.stop_reason === 'refusal') {
-        return;
+        throw new Error('Claude declined this request. Try rephrasing it.');
       }
 
       const toolUses = message.content.filter((block): block is Anthropic.Beta.BetaToolUseBlock => block.type === 'tool_use');
@@ -154,7 +173,10 @@ export class CanvasAgent {
 
       this.messages.push({ role: 'assistant', content: message.content });
       if (!toolUses.length) {
-        return;
+        return message.content
+          .flatMap(block => (block.type === 'text' ? [block.text] : []))
+          .join('\n')
+          .trim();
       }
 
       const results: Anthropic.Beta.BetaToolResultBlockParam[] = [];
@@ -163,6 +185,7 @@ export class CanvasAgent {
       }
       this.messages.push({ role: 'user', content: results });
     }
+    return '';
   }
 
   private async runTool(toolUse: Anthropic.Beta.BetaToolUseBlock): Promise<Anthropic.Beta.BetaToolResultBlockParam> {

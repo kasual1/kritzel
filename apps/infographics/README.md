@@ -29,13 +29,15 @@ npm run infographics
 box instead of the toolbar. Every prompt runs Claude in a tool-use loop (`canvas-agent.ts`) with a single `add_iframe`
 tool, which adds a `KritzelIframeObject` with a titlebar that renders the page Claude wrote.
 
-To try it, copy `.env.example` at the repository root to `.env` and set your Anthropic API key:
+To try it, copy `.env.example` at the repository root to `.env`, set your Anthropic API key and (re)start the dev server:
 
 ```bash
-VITE_ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-The key is used straight from the browser, so only run this locally.
+`vite.config.ts` also reads the key from `apps/infographics/.env` (or `.env.local`), from the shell environment, and
+under the name `VITE_ANTHROPIC_API_KEY`. Only the dev server passes it to the page, which calls the Claude API straight
+from the browser, so only run this locally. Errors and Claude's replies show above the chat box.
 
 ## Record
 
