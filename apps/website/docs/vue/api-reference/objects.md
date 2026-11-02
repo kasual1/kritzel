@@ -347,4 +347,45 @@ User-defined custom HTML element on the canvas.
 | setIsInteractive(isInteractive) | Updates interactivity state for the embedded HTML content |
 | hasFocusedInputElement() | Returns true when a text-input-like element inside this object currently has focus |
 
+---
 
+## Iframe Object
+
+HTML, CSS, and JavaScript in a sandboxed iframe on the canvas.
+
+- See [Rendering iFrames](../advanced/dynamic-objects.md#rendering-iframes) and [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content)
+- The editor's [object element methods](./editor.md#object-elements) call the element methods below by object ID
+
+### Properties
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| content | KritzelIframeContent | — | The `html`, `css`, and `script` of the page |
+| loadingContent | KritzelIframeContent | — | Content shown instead of `content` while `isLoading` is true |
+| isLoading | boolean | false | Whether the loading content is shown |
+| state | `Record<string, unknown>` | — | Serializable state shared with the page as `kritzel.state` |
+| title | string | 'Embedded content' | Title of the iframe element |
+| sandbox | string[] | ['allow-scripts'] | Sandbox tokens of the iframe |
+
+### Computed Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| isElementPicking | boolean | Whether the object is picking elements (not persisted) |
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| setContent(content) | Replaces the content and reloads the page |
+| setLoadingContent(content) | Replaces the loading content |
+| setLoading(isLoading) | Shows or hides the loading content |
+| setState(state) | Replaces the state and sends it to the page |
+| setElementPicking(enabled, options) | Turns element picking on or off. While picking, a click on an element of the page picks it instead of reaching the page |
+| setElementHighlights(highlights) | Replaces the element highlights drawn inside the page. Pass an empty array to remove them |
+| getElementHighlights() | Returns the current element highlights |
+| queryElements(selector, limit) | Describes the elements of the page that match a CSS selector, in document order. `limit` defaults to 100 and can be at most 500 |
+| trackElement(selector) | Starts reporting the visible position of the first element that matches a selector. Calls are counted, so each call needs a matching `untrackElement`. Agentic cursors use this to follow elements |
+| untrackElement(selector) | Undoes one `trackElement` call for a selector |
+| getTrackedElementRect(selector) | Returns the last known visible bounding box of a tracked element in content coordinates, or `null` if it hasn't been seen yet |
+| contentToObjectLocal(point) | Converts a point in content coordinates to world units in the object's local, unrotated space, relative to its top-left corner |

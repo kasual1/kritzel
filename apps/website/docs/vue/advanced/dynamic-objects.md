@@ -66,9 +66,158 @@ This example uses predefined prompts rather than a live LLM. Each prompt replace
   ]}
 />
 
+## Interacting with iFrame Content
+
+Every `KritzelIframeObject` runs a small bridge inside its page. Through it, your application can see which element the user points at or clicks, let the user pick an element, highlight elements, and look elements up by CSS selector. DOM nodes cannot leave the sandboxed page, so elements are reported as plain [element descriptions](#element-descriptions) and addressed by CSS selectors.
+
+In this example, the panel shows the element under the pointer and the last clicked and picked element of the card. **Pick element** turns on picking: the picked element is highlighted and an agentic cursor moves to it. **Highlight buttons** outlines every button in the card.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
+  demoPath="/advanced/dynamic-objects/iframe-elements"
+  repoFiles={[
+    'src/pages/advanced/dynamic-objects/DynamicObjectsIframeElementsPage.vue',
+    'src/pages/advanced/dynamic-objects/iframe-elements-content.ts',
+  ]}
+/>
+
+### Hover and Click Events
+
+While an iframe object is selected, its page is interactive and the editor emits two events:
+
+- `objectElementHover` whenever the element under a mouse or pen pointer changes. `element` is `null` when the pointer leaves the page or the object is deselected.
+- `objectElementClick` when the user clicks an element. The click still reaches the page as usual. A press that moved more than a few pixels, for example to drag the object, is not a click, and clicking a label is reported once.
+
+```html
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  getEditorRef,
+  KritzelEditor,
+  type KritzelObjectElementClickEvent,
+  type KritzelObjectElementHoverEvent,
+} from '@kritzel/vue-editor'
+
+const editor = getEditorRef('editor')
+const hovered = ref<string | null>(null)
+
+function onElementHover(event: CustomEvent<KritzelObjectElementHoverEvent>) {
+  hovered.value = event.detail.element?.text ?? null
+}
+
+function onElementClick(event: CustomEvent<KritzelObjectElementClickEvent>) {
+  const { objectId, element, shiftKey } = event.detail
+  console.log(objectId, element.selector, shiftKey)
+}
+</script>
+
+<template>
+  <KritzelEditor ref="editor" @objectElementHover="onElementHover" @objectElementClick="onElementClick" />
+</template>
+```
+
+Click events include the state of the modifier keys (`shiftKey`, `ctrlKey`, `altKey`, `metaKey`). Hover events include `isPicking`.
+
+### Picking Elements
+
+Picking lets the user choose an element instead of using it, for example to tell an agent which part of a page to change. Turn it on with `setObjectElementPicking()`. While picking, the element under the pointer is highlighted, a press or click no longer reaches the page, and the editor emits `objectElementPick` instead. Disabled buttons and keyboard activation can be picked as well. Pointing at a nested frame inside the page picks the element that contains it.
+
+```html
+<script setup lang="ts">
+import { getEditorRef, KritzelEditor, type KritzelObjectElementPickEvent } from '@kritzel/vue-editor'
+
+const editor = getEditorRef('editor')
+
+async function startPicking() {
+  await editor.value?.selectObjects([iframeObject])
+  await editor.value?.setObjectElementPicking(iframeObject.id, true, { selector: '[data-kritzel-id]' })
+}
+
+async function onElementPick(event: CustomEvent<KritzelObjectElementPickEvent>) {
+  const { objectId, element } = event.detail
+  await editor.value?.setObjectElementPicking(objectId, false)
+  console.log('Picked', element.selector)
+}
+</script>
+
+<template>
+  <KritzelEditor ref="editor" @objectElementPick="onElementPick" />
+</template>
+```
+
+| Option | Type | Description |
+|--------|------|-------------|
+| selector | string | Limits picking to elements that match this CSS selector, for example `'[data-kritzel-id]'`. The closest matching ancestor of the element under the pointer is picked, and content outside any match can't be picked. |
+| color | string | Any CSS color for the picking highlight. Defaults to the theme's `elementHighlight.color`. |
+
+Picking only works while the object is selected, and turning it on does not select the object. It stays on until you turn it off. Pick events include the same modifier keys as click events.
+
+### Highlighting Elements
+
+`highlightObjectElements()` outlines elements inside the page, for example the elements an agent is about to change. Every element that matches a selector is highlighted, up to 100 per selector, and each highlight can have its own `color` and `label`. A call replaces the previous highlights of that object:
+
+```ts
+await editor.value?.highlightObjectElements(iframeObject.id, [
+  { selector: 'button' },
+  { selector: '[data-kritzel-id="checkout"]', color: '#16A34A', label: 'Next step' },
+]);
+
+// Remove the highlights of one object, or of all objects
+await editor.value?.clearObjectElementHighlights(iframeObject.id);
+await editor.value?.clearObjectElementHighlights();
+```
+
+Highlights are drawn inside the page, above its modal dialogs and popovers, and only cover the visible part of each element. They follow the elements when the layout changes or the page scrolls, and they are shown whether or not the object is selected. Without a `color`, they use the [`elementHighlight`](../api-reference/theming.md#element-highlight) colors of the theme.
+
+### Querying Elements
+
+`queryObjectElements()` describes the elements that match a CSS selector, in document order. Use it to find the element an agent should work on, or to give an LLM an overview of a page:
+
+```ts
+const buttons = await editor.value?.queryObjectElements(iframeObject.id, 'button');
+const named = await editor.value?.queryObjectElements(iframeObject.id, '[data-kritzel-id]', 200);
+```
+
+`limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. The promise rejects for an invalid selector, and when the page does not answer in time: within 3 seconds, or within 15 seconds while it is still loading.
+
+To point an agentic cursor at an element, see [Pointing at Elements](./agentic-cursors.md#pointing-at-elements).
+
+### Element Descriptions
+
+Events and queries describe elements as `KritzelObjectElementInfo`:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| selector | string | A CSS selector that matched exactly this element when it was reported. Built from `data-kritzel-id` or `id` when possible, otherwise from the element's position in the page. |
+| kritzelId | string | The element's `data-kritzel-id` attribute. |
+| tagName | string | Lowercase tag name, for example `'button'`. |
+| id | string | The element's `id` attribute. |
+| classList | string[] | The element's classes. |
+| text | string | The element's text without script and style content, with collapsed whitespace, truncated to 200 characters. |
+| attributes | `Record<string, string>` | Descriptive attributes: `role`, `aria-*`, `data-*`, `name`, `type`, `href`, `src`, `alt`, `title`, `placeholder`, and `for`. Form field values are never included. |
+| rect | KritzelObjectElementRect | The element's bounding box in content coordinates: CSS pixels relative to the top-left corner of the iframe, before canvas zoom, object scale, and rotation. |
+| visibleRect | KritzelObjectElementRect | The visible part of `rect`, clipped by scrolling containers and the iframe. Omitted when no part of the element can be seen. |
+
+Pass `selector` back to highlight the element, query it again, or point an agentic cursor at it. A selector built from the element's position, such as `main > button:nth-of-type(2)`, may match another element once the page changes. Add a `data-kritzel-id` to meaningful elements, and ask an LLM that writes pages to do the same, so their selectors keep working when the content is regenerated:
+
+```html
+<button data-kritzel-id="checkout" type="button">Checkout</button>
+```
+
+### Local and Untrusted
+
+Highlights, picking, and the elements tracked by agentic cursors are local to the editor. They are not saved, not synchronized to collaborators, and not part of undo and redo. They are kept when the page reloads, for example after `setContent()` or while the object shows its loading content, and when a collaborator updates the object.
+
+The page runs untrusted content, and element descriptions come from the page. Treat their text, attributes, and selectors like any other untrusted input, for example when you pass them to an LLM. The element methods reject invalid selectors, and objects that don't exist or have no content elements. The page also reports hovers, clicks, and picks itself, so untrusted content can report them without a real user action while the object is selected or picking. Don't treat a pick as the user's confirmation of something consequential.
+
+The element features need the page to run scripts. With a `sandbox` that leaves out `allow-scripts`, nothing is reported or highlighted and queries reject.
+
 ## API Details
 
 For the full list of related APIs, see the following reference sections.
 
 - [Dynamic Object](../api-reference/objects.md#dynamic-object)
+- [Iframe Object](../api-reference/objects.md#iframe-object)
 - [Object](../api-reference/editor.md#object)
+- [Object Elements](../api-reference/editor.md#object-elements)
+- [Object Element Types](../api-reference/types.md#object-element-types)

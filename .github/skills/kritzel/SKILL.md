@@ -54,7 +54,7 @@ After choosing a framework, open the corresponding file under `./references/<fra
 | Add, update, select, group or query objects; configure object behavior (`objectConfig`: titlebars, rotating, resizing) | `objects.md` |
 | Pan, zoom, coordinates or boundaries | `viewport.md` |
 | Tools and toolbar | `tools-and-toolbar.md` |
-| Ready, change and titlebar action events | `events.md` |
+| Ready, change, titlebar action and iframe element events (hover, click, pick, highlights, queries) | `events.md` |
 | Workspaces, persistence and collaboration | `workspaces-and-persistence.md` |
 | Themes, context menus and object titlebar content (`objectTitlebar`) | `theming-and-context-menus.md` |
 | End-to-end examples | `recipes.md` |

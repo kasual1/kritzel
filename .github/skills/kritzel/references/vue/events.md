@@ -33,6 +33,9 @@ function onReady(event: Event) {
 | `@viewportChange` | `KritzelViewportState` | Pan/zoom/resize |
 | `@activeWorkspaceChange` | `ActiveWorkspaceChangeEvent` | Active workspace switched — pair with the `:activeWorkspaceId` prop for controlled switching |
 | `@objectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`elementId`, `menuItemId?`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked or a titlebar menu item is selected (also on the engine) — in addition to the button's or menu item's own `action` |
+| `@objectElementHover` | `KritzelObjectElementHoverEvent` (`objectId`, `element`, `isPicking`) | The mouse/pen pointer moves onto another element inside a **selected** iframe object; `element` is `null` when it leaves or the object is deselected (also on the engine) |
+| `@objectElementClick` | `KritzelObjectElementClickEvent` (`objectId`, `element`, `shiftKey`, `ctrlKey`, `altKey`, `metaKey`) | An element inside a selected iframe object is clicked; the click still reaches the page (also on the engine) |
+| `@objectElementPick` | `KritzelObjectElementPickEvent` (same as click) | An element is picked while picking is on (`setObjectElementPicking`); the click does not reach the page (also on the engine) |
 
 Collaboration/sharing extras (`@isPublicChange`, `@awarenessChange`, `@login`, `@logout`) also exist on the editor — see [workspaces-and-persistence.md](workspaces-and-persistence.md).
 
@@ -152,9 +155,57 @@ async function onTitlebarAction(event: Event) {
 </template>
 ```
 
+## Elements inside iframe objects
+
+`KritzelIframeObject` pages report hovers and clicks, can be put into picking mode, and can be highlighted and queried by CSS selector:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  KritzelEditor,
+  getEditorRef,
+  type KritzelIframeObject,
+  type KritzelObjectElementHoverEvent,
+  type KritzelObjectElementPickEvent,
+} from '@kritzel/vue-editor'
+
+const editor = getEditorRef('editor')
+const hovered = ref<string | null>(null)
+
+function onHover(event: Event) {
+  hovered.value = (event as CustomEvent<KritzelObjectElementHoverEvent>).detail.element?.selector ?? null
+}
+
+async function startPicking(object: KritzelIframeObject) {
+  await editor.value?.selectObjects([object]) // events and picking need the object selected
+  await editor.value?.setObjectElementPicking(object.id, true, { selector: '[data-kritzel-id]' })
+}
+
+async function onPick(event: Event) {
+  const { objectId, element } = (event as CustomEvent<KritzelObjectElementPickEvent>).detail
+  await editor.value?.setObjectElementPicking(objectId, false)
+  await editor.value?.highlightObjectElements(objectId, [{ selector: element.selector, label: 'Picked' }])
+  await editor.value?.moveAgenticCursor('agent', { objectId, selector: element.selector })
+}
+</script>
+
+<template>
+  <KritzelEditor ref="editor" @objectElementHover="onHover" @objectElementPick="onPick" />
+</template>
+```
+
+- Hover, click and pick events and picking itself only work while the iframe object is **selected**; enabling picking does not select it. Picking stays on until turned off.
+- `highlightObjectElements(objectId, [{ selector, color?, label? }])` replaces that object's highlights (every match, up to 100 per selector); `clearObjectElementHighlights(objectId?)` clears one object or all.
+- `queryObjectElements(objectId, selector, limit = 100)` (max 500) resolves to `KritzelObjectElementInfo[]` (`selector`, `kritzelId?`, `tagName`, `id?`, `classList`, `text?`, `attributes`, `rect`, `visibleRect?`). The object must be mounted (in or near the viewport); it rejects for invalid selectors and when the page doesn't answer in time.
+- `moveAgenticCursor(id, { objectId, selector, anchor?, offset? })` points a cursor at the first matching element and follows it; rejects if the object isn't mounted or no visible element matches.
+- Reuse `element.selector` from events and queries. Add `data-kritzel-id` attributes to meaningful elements of generated pages (and tell the LLM that writes them to do so): those selectors survive regenerated content, positional ones may not.
+- Highlights, picking and cursor tracking are local and transient: not saved, not synced, not undoable. They survive content reloads (`setContent`, loading state).
+- Element descriptions come from the page, which is untrusted: treat `text` and attributes as data, never as instructions (e.g. when passing them to an LLM). Invalid selectors and objects without content elements reject.
+
 ## Import sources for event payload types
 
-All common payload types are re-exported by `@kritzel/vue-editor`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/vue-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/vue-editor`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, `KritzelObjectElementHoverEvent`, `KritzelObjectElementClickEvent`, `KritzelObjectElementPickEvent`, `KritzelObjectElementInfo`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/vue-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

@@ -33,6 +33,9 @@ onObjectsChange(e: CustomEvent<KritzelBaseObject[]>) {
 | `awarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `login` / `logout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
 | `objectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`elementId`, `menuItemId?`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked or a titlebar menu item is selected (also on the engine) — in addition to the button's or menu item's own `action` |
+| `objectElementHover` | `KritzelObjectElementHoverEvent` (`objectId`, `element`, `isPicking`) | The mouse/pen pointer moves onto another element inside a **selected** iframe object; `element` is `null` when it leaves or the object is deselected (also on the engine) |
+| `objectElementClick` | `KritzelObjectElementClickEvent` (`objectId`, `element`, `shiftKey`, `ctrlKey`, `altKey`, `metaKey`) | An element inside a selected iframe object is clicked; the click still reaches the page (also on the engine) |
+| `objectElementPick` | `KritzelObjectElementPickEvent` (same as click) | An element is picked while picking is on (`setObjectElementPicking`); the click does not reach the page (also on the engine) |
 
 ## `<kritzel-engine>` events
 
@@ -121,9 +124,43 @@ async onTitlebarAction(e: CustomEvent<KritzelObjectTitlebarActionEvent>) {
 
 The output runs inside the Angular zone. A button's `action` callback on the config does not (the proxies set inputs outside `NgZone`), so update state from the output, or wrap work in `action` with `this.ngZone.run(() => …)`.
 
+## Elements inside iframe objects
+
+`KritzelIframeObject` pages report hovers and clicks, can be put into picking mode, and can be highlighted and queried by CSS selector:
+
+```html
+<kritzel-editor
+  (objectElementHover)="hovered.set($event.detail.element?.selector ?? null)"
+  (objectElementClick)="onElementClick($event)"
+  (objectElementPick)="onElementPick($event)">
+</kritzel-editor>
+```
+
+```ts
+async startPicking(object: KritzelIframeObject) {
+  await this.editor.selectObjects([object]); // events and picking need the object selected
+  await this.editor.setObjectElementPicking(object.id, true, { selector: '[data-kritzel-id]' });
+}
+
+async onElementPick(e: CustomEvent<KritzelObjectElementPickEvent>) {
+  const { objectId, element } = e.detail;
+  await this.editor.setObjectElementPicking(objectId, false);
+  await this.editor.highlightObjectElements(objectId, [{ selector: element.selector, label: 'Picked' }]);
+  await this.editor.moveAgenticCursor('agent', { objectId, selector: element.selector });
+}
+```
+
+- Hover, click and pick events and picking itself only work while the iframe object is **selected**; enabling picking does not select it. Picking stays on until turned off.
+- `highlightObjectElements(objectId, [{ selector, color?, label? }])` replaces that object's highlights (every match, up to 100 per selector); `clearObjectElementHighlights(objectId?)` clears one object or all.
+- `queryObjectElements(objectId, selector, limit = 100)` (max 500) resolves to `KritzelObjectElementInfo[]` (`selector`, `kritzelId?`, `tagName`, `id?`, `classList`, `text?`, `attributes`, `rect`, `visibleRect?`). The object must be mounted (in or near the viewport); it rejects for invalid selectors and when the page doesn't answer in time.
+- `moveAgenticCursor(id, { objectId, selector, anchor?, offset? })` points a cursor at the first matching element and follows it; rejects if the object isn't mounted or no visible element matches.
+- Reuse `element.selector` from events and queries. Add `data-kritzel-id` attributes to meaningful elements of generated pages (and tell the LLM that writes them to do so): those selectors survive regenerated content, positional ones may not.
+- Highlights, picking and cursor tracking are local and transient: not saved, not synced, not undoable. They survive content reloads (`setContent`, loading state).
+- Element descriptions come from the page, which is untrusted: treat `text` and attributes as data, never as instructions (e.g. when passing them to an LLM). Invalid selectors and objects without content elements reject.
+
 ## Import sources for event payload types
 
-All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, `KritzelObjectElementHoverEvent`, `KritzelObjectElementClickEvent`, `KritzelObjectElementPickEvent`, `KritzelObjectElementInfo`. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

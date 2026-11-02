@@ -278,12 +278,13 @@ interface KritzelAgenticCursorOptions {
 
 ### `KritzelAgenticCursorTarget`
 
-Target of `moveAgenticCursor()` and the initial `position` of a cursor. Either world coordinates or an anchor on an object.
+Target of `moveAgenticCursor()` and the initial `position` of a cursor. Either world coordinates, an anchor on an object, or an anchor on an element inside an object's content (`KritzelAgenticCursorElementTarget`), such as a button in an iframe object. For an element target, the first element that matches `selector` is used, and `anchor` and `offset` are relative to the element's box.
 
 ```ts
 type KritzelAgenticCursorTarget =
   | { x: number; y: number }
-  | { objectId: string; anchor?: KritzelAgenticCursorAnchor; offset?: { x: number; y: number } };
+  | { objectId: string; anchor?: KritzelAgenticCursorAnchor; offset?: { x: number; y: number } }
+  | { objectId: string; selector: string; anchor?: KritzelAgenticCursorAnchor; offset?: { x: number; y: number } };
 
 type KritzelAgenticCursorAnchor =
   | 'center' | 'top-left' | 'top' | 'top-right' | 'right'
@@ -334,7 +335,12 @@ interface KritzelAgenticCursor {
   status?: string;
   visible: boolean;
   position: { x: number; y: number };
-  attachedTo: { objectId: string; anchor: KritzelAgenticCursorAnchor; offset: { x: number; y: number } } | null;
+  attachedTo: {
+    objectId: string;
+    selector?: string; // set when attached to an element inside the object
+    anchor: KritzelAgenticCursorAnchor;
+    offset: { x: number; y: number };
+  } | null;
   isMoving: boolean;
 }
 ```
@@ -348,6 +354,90 @@ interface KritzelAgenticCursorDetachedEvent {
   id: string;
   objectId: string;
   reason: 'object-removed' | 'manual';
+}
+```
+
+## Object Element Types
+
+Types used by the [object element events and methods](./editor.md#object-elements). See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content) for usage.
+
+### `KritzelObjectElementInfo`
+
+Description of an element inside an object's content, reported by events and returned by `queryObjectElements()`. The content is untrusted, so treat these values like any other untrusted input.
+
+```ts
+interface KritzelObjectElementInfo {
+  selector: string;                    // matched exactly this element when it was reported
+  kritzelId?: string;                  // the data-kritzel-id attribute
+  tagName: string;                     // lowercase, e.g. 'button'
+  id?: string;
+  classList: string[];
+  text?: string;                       // collapsed whitespace, at most 200 characters
+  attributes: Record<string, string>;  // role, aria-*, data-*, name, type, href, src, alt, title, placeholder, for
+  rect: KritzelObjectElementRect;
+  visibleRect?: KritzelObjectElementRect; // omitted when no part of the element can be seen
+}
+
+// CSS pixels relative to the top-left corner of the content, before canvas zoom, object scale and rotation
+interface KritzelObjectElementRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+```
+
+### `KritzelObjectElementHighlight`
+
+Passed to `highlightObjectElements()`.
+
+```ts
+interface KritzelObjectElementHighlight {
+  selector: string; // every match is highlighted, up to 100 elements
+  color?: string;   // defaults to the theme's elementHighlight.color
+  label?: string;   // shown above each highlighted element
+}
+```
+
+### `KritzelObjectElementPickingOptions`
+
+Passed to `setObjectElementPicking()`.
+
+```ts
+interface KritzelObjectElementPickingOptions {
+  selector?: string; // picks the closest matching ancestor of the element under the pointer
+  color?: string;    // defaults to the theme's elementHighlight.color
+}
+```
+
+### Event Payloads
+
+Emitted by the `objectElementHover`, `objectElementClick`, and `objectElementPick` events.
+
+```ts
+interface KritzelObjectElementHoverEvent {
+  objectId: string;
+  element: KritzelObjectElementInfo | null; // null when the pointer left the content or the object was deselected
+  isPicking: boolean;
+}
+
+interface KritzelObjectElementClickEvent {
+  objectId: string;
+  element: KritzelObjectElementInfo;
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+}
+
+// Same shape as KritzelObjectElementClickEvent
+interface KritzelObjectElementPickEvent {
+  objectId: string;
+  element: KritzelObjectElementInfo;
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
 }
 ```
 
