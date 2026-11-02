@@ -241,6 +241,13 @@ export interface KritzelTheme {
     topRightButtonsTop?: string;
   };
 
+  /** Element highlight variables, for highlights and picking inside the content of objects such as `KritzelIframeObject` */
+  elementHighlight?: {
+    backgroundColor?: string;
+    color?: string;
+    labelTextColor?: string;
+  };
+
   /** Engine variables */
   engine?: {
     backgroundColor?: string;

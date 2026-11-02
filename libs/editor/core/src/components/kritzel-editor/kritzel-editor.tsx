@@ -41,6 +41,12 @@ import { ContextMenuItem } from "@kritzel/core";
 import {
   KritzelObjectConfig,
   KritzelObjectTitlebarActionEvent,
+  KritzelObjectElementClickEvent,
+  KritzelObjectElementHighlight,
+  KritzelObjectElementHoverEvent,
+  KritzelObjectElementInfo,
+  KritzelObjectElementPickEvent,
+  KritzelObjectElementPickingOptions,
   KritzelObjectTitlebarConfig,
   KritzelObjectTitlebarMenuState,
 } from "@kritzel/core";
@@ -515,6 +521,18 @@ export class KritzelEditor {
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event()
   objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
+  /**
+   * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
+   * such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
+   */
+  @Event()
+  objectElementHover!: EventEmitter<KritzelObjectElementHoverEvent>;
+  /** Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. */
+  @Event()
+  objectElementClick!: EventEmitter<KritzelObjectElementClickEvent>;
+  /** Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`. */
+  @Event()
+  objectElementPick!: EventEmitter<KritzelObjectElementPickEvent>;
   @State() isEngineReady: boolean = false;
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
@@ -1074,12 +1092,14 @@ export class KritzelEditor {
   }
 
   /**
-   * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
-   * Object targets attach the cursor by default, so it follows the object afterwards.
+   * Smoothly moves an agentic cursor to world coordinates, to an anchor on an object or to an element inside an
+   * object's content, such as a button in an iframe object. Object and element targets attach the cursor by default,
+   * so it follows them afterwards. An element target needs the object to be mounted (in or near the viewport).
    * @param id - The cursor ID.
-   * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
-   * @param options - Duration, easing, speed and whether to attach to an object target.
+   * @param target - `{ x, y }` in world coordinates, `{ objectId, anchor?, offset? }` or `{ objectId, selector, anchor?, offset? }`.
+   * @param options - Duration, easing, speed and whether to attach to an object or element target.
    * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+   * Rejects if an element target's object isn't mounted or has no element that matches the selector.
    */
   @Method()
   async moveAgenticCursor(
@@ -1129,6 +1149,63 @@ export class KritzelEditor {
   @Method()
   async getAgenticCursors(): Promise<KritzelAgenticCursor[]> {
     return this.engineRef.getAgenticCursors();
+  }
+
+  /**
+   * Turns element picking on or off for an object whose content has elements, such as an iframe object.
+   * While picking, the element under the pointer is highlighted, and a click emits `objectElementPick`
+   * instead of reaching the content. Picking works while the object is interactive, which it is while selected.
+   * @param objectId - The object ID.
+   * @param enabled - Whether the object picks elements.
+   * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
+   */
+  @Method()
+  async setObjectElementPicking(
+    objectId: string,
+    enabled: boolean,
+    options: KritzelObjectElementPickingOptions = {},
+  ): Promise<void> {
+    return this.engineRef.setObjectElementPicking(objectId, enabled, options);
+  }
+
+  /**
+   * Highlights elements inside an object's content, replacing its previous highlights.
+   * Highlights are local: they are neither saved nor shown to collaborators.
+   * @param objectId - The object ID.
+   * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
+   */
+  @Method()
+  async highlightObjectElements(
+    objectId: string,
+    highlights: KritzelObjectElementHighlight[],
+  ): Promise<void> {
+    return this.engineRef.highlightObjectElements(objectId, highlights);
+  }
+
+  /**
+   * Removes element highlights.
+   * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
+   */
+  @Method()
+  async clearObjectElementHighlights(objectId?: string): Promise<void> {
+    return this.engineRef.clearObjectElementHighlights(objectId);
+  }
+
+  /**
+   * Describes the elements inside an object's content that match a CSS selector, in document order.
+   * The object must be mounted, which it is while it is in or near the viewport.
+   * @param objectId - The object ID.
+   * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+   * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
+   * @returns The matching elements, each with a `selector` that can be used to highlight it or point a cursor at it.
+   */
+  @Method()
+  async queryObjectElements(
+    objectId: string,
+    selector: string,
+    limit?: number,
+  ): Promise<KritzelObjectElementInfo[]> {
+    return this.engineRef.queryObjectElements(objectId, selector, limit);
   }
 
   @Method()
@@ -1619,6 +1696,21 @@ export class KritzelEditor {
   ) {
     event.stopPropagation();
     this.objectTitlebarAction.emit(event.detail);
+  }
+
+  handleObjectElementHover(event: CustomEvent<KritzelObjectElementHoverEvent>) {
+    event.stopPropagation();
+    this.objectElementHover.emit(event.detail);
+  }
+
+  handleObjectElementClick(event: CustomEvent<KritzelObjectElementClickEvent>) {
+    event.stopPropagation();
+    this.objectElementClick.emit(event.detail);
+  }
+
+  handleObjectElementPick(event: CustomEvent<KritzelObjectElementPickEvent>) {
+    event.stopPropagation();
+    this.objectElementPick.emit(event.detail);
   }
 
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
@@ -2177,6 +2269,13 @@ export class KritzelEditor {
             onObjectTitlebarMenuStateChange={(event) =>
               this.handleObjectTitlebarMenuStateChange(event)
             }
+            onObjectElementHover={(event) =>
+              this.handleObjectElementHover(event)
+            }
+            onObjectElementClick={(event) =>
+              this.handleObjectElementClick(event)
+            }
+            onObjectElementPick={(event) => this.handleObjectElementPick(event)}
           ></kritzel-engine>
 
           {this.isChatBoxVisible && (

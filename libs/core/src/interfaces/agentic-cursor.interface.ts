@@ -29,7 +29,25 @@ export interface KritzelAgenticCursorObjectTarget {
   offset?: KritzelPoint;
 }
 
-export type KritzelAgenticCursorTarget = KritzelAgenticCursorPointTarget | KritzelAgenticCursorObjectTarget;
+/**
+ * An element inside an object's content to move to (and, by default, stick to), e.g. a button in the page of a
+ * `KritzelIframeObject`. The object must support elements (see `KritzelElementAwareObject`) and be mounted when
+ * the cursor starts moving. While attached, the cursor follows the element when it moves inside the content.
+ * If the element disappears, e.g. while the content is regenerated, the cursor stays at the element's last known
+ * position on the object and returns to the element once it reappears.
+ */
+export interface KritzelAgenticCursorElementTarget {
+  /** ID of the canvas object. */
+  objectId: string;
+  /** CSS selector of the element. The first match is used. */
+  selector: string;
+  /** Anchor point on the element. Defaults to `'center'`. */
+  anchor?: KritzelAgenticCursorAnchor;
+  /** Offset from the anchor in world units, in the object's local (unrotated) space. */
+  offset?: KritzelPoint;
+}
+
+export type KritzelAgenticCursorTarget = KritzelAgenticCursorPointTarget | KritzelAgenticCursorObjectTarget | KritzelAgenticCursorElementTarget;
 
 /** Options for creating an agentic cursor. */
 export interface KritzelAgenticCursorOptions {
@@ -64,7 +82,7 @@ export interface KritzelAgenticCursorMoveOptions {
   easing?: KritzelEasing;
   /** Movement speed in screen pixels per second, used when `duration` is omitted. Defaults to 1200. */
   speed?: number;
-  /** Whether the cursor sticks to the object after arriving. Only applies to object targets. Defaults to `true`. */
+  /** Whether the cursor sticks to the object or element after arriving. Only applies to object and element targets. Defaults to `true`. */
   attach?: boolean;
 }
 
@@ -74,9 +92,11 @@ export interface KritzelAgenticCursorMoveResult {
   completed: boolean;
 }
 
-/** The object an agentic cursor is attached to. */
+/** The object, or the element inside an object, an agentic cursor is attached to. */
 export interface KritzelAgenticCursorAttachment {
   objectId: string;
+  /** Selector of the element inside the object, when attached to an element. */
+  selector?: string;
   anchor: KritzelAgenticCursorAnchor;
   offset: KritzelPoint;
 }

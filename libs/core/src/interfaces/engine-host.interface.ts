@@ -1,6 +1,7 @@
 import type { KritzelBaseObject } from '../classes/objects/base-object.class';
 import type { KritzelViewport } from '../classes/core/viewport.class';
 import type { KritzelObjectConfig } from './object-config.interface';
+import type { KritzelObjectElementClickEvent, KritzelObjectElementHoverEvent, KritzelObjectElementPickEvent } from './object-element.interface';
 import type { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState } from './object-titlebar.interface';
 
 /**
@@ -30,5 +31,8 @@ export interface KritzelEngineHost {
   emitAwarenessChange(states: Map<number, Record<string, any>>): void;
   emitObjectTitlebarAction(detail: KritzelObjectTitlebarActionEvent): void;
   emitObjectTitlebarMenuStateChange(detail: KritzelObjectTitlebarMenuState): void;
+  emitObjectElementHover(detail: KritzelObjectElementHoverEvent): void;
+  emitObjectElementClick(detail: KritzelObjectElementClickEvent): void;
+  emitObjectElementPick(detail: KritzelObjectElementPickEvent): void;
   emitObjectsInViewportChange(): void;
 }

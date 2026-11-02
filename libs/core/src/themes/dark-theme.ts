@@ -144,6 +144,12 @@ export const darkTheme: KritzelTheme = {
     textColor: '#e0e0e0',
   },
 
+  elementHighlight: {
+    backgroundColor: 'rgba(10, 132, 255, 0.18)',
+    color: '#0A84FF',
+    labelTextColor: '#ffffff',
+  },
+
   engine: {
     backgroundColor: '#1a1a1a',
   },

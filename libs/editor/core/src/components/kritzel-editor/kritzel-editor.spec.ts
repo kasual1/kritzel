@@ -134,6 +134,47 @@ describe('KritzelEditor', () => {
       expect(emit).toHaveBeenCalledWith(detail);
     });
 
+    it('re-emits object element hovers, clicks and picks, stopping the engine events', () => {
+      const element = { selector: '#run', tagName: 'button', classList: [], attributes: {}, rect: { x: 0, y: 0, width: 1, height: 1 } };
+      const modifiers = { shiftKey: false, ctrlKey: false, altKey: false, metaKey: false };
+      const cases = [
+        { field: 'objectElementHover', handler: 'handleObjectElementHover', detail: { objectId: 'a', element, isPicking: true } },
+        { field: 'objectElementClick', handler: 'handleObjectElementClick', detail: { objectId: 'a', element, ...modifiers } },
+        { field: 'objectElementPick', handler: 'handleObjectElementPick', detail: { objectId: 'a', element, ...modifiers } },
+      ];
+
+      for (const { field, handler, detail } of cases) {
+        const emit = jest.fn();
+        (component as any)[field] = { emit };
+        const event = { detail, stopPropagation: jest.fn() } as any;
+
+        (component as any)[handler](event);
+
+        expect(event.stopPropagation).toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith(detail);
+      }
+    });
+
+    it('forwards the object element methods to the engine', async () => {
+      const engineRef = {
+        setObjectElementPicking: jest.fn().mockResolvedValue(undefined),
+        highlightObjectElements: jest.fn().mockResolvedValue(undefined),
+        clearObjectElementHighlights: jest.fn().mockResolvedValue(undefined),
+        queryObjectElements: jest.fn().mockResolvedValue([]),
+      };
+      (component as any).engineRef = engineRef;
+
+      await component.setObjectElementPicking('a', true, { selector: 'button' });
+      await component.highlightObjectElements('a', [{ selector: 'p' }]);
+      await component.clearObjectElementHighlights();
+      await component.queryObjectElements('a', 'p', 2);
+
+      expect(engineRef.setObjectElementPicking).toHaveBeenCalledWith('a', true, { selector: 'button' });
+      expect(engineRef.highlightObjectElements).toHaveBeenCalledWith('a', [{ selector: 'p' }]);
+      expect(engineRef.clearObjectElementHighlights).toHaveBeenCalledWith(undefined);
+      expect(engineRef.queryObjectElements).toHaveBeenCalledWith('a', 'p', 2);
+    });
+
     it('tracks the open titlebar menu', () => {
       const open = { isVisible: true, objectId: 'a', elementId: 'more', section: 'right', anchor: {} as HTMLElement, items: [{ id: 'copy', label: 'Copy' }] };
       const event = (detail: any) => ({ detail, stopPropagation: jest.fn() }) as any;

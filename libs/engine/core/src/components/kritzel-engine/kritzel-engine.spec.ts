@@ -2100,6 +2100,84 @@ describe('KritzelEngine', () => {
     });
   });
 
+  describe('object elements', () => {
+    const createElementAwareObject = (id = 'frame') => ({
+      id,
+      isElementPicking: false,
+      setElementPicking: jest.fn(),
+      setElementHighlights: jest.fn(),
+      getElementHighlights: jest.fn().mockReturnValue([{ selector: 'p' }]),
+      queryElements: jest.fn().mockResolvedValue([{ selector: 'p' }]),
+      trackElement: jest.fn(),
+      untrackElement: jest.fn(),
+      getTrackedElementRect: jest.fn().mockReturnValue(null),
+      contentToObjectLocal: jest.fn(),
+      refreshElementTheme: jest.fn(),
+    });
+
+    it('delegates picking, highlights and queries to the object', async () => {
+      const object = createElementAwareObject();
+      core.store.objects.findById.mockImplementation((id: string) => (id === 'frame' ? object : null));
+
+      await engine.setObjectElementPicking('frame', true, { selector: 'button' });
+      await engine.highlightObjectElements('frame', [{ selector: '#run', label: 'Run' }]);
+      await engine.clearObjectElementHighlights('frame');
+      const elements = await engine.queryObjectElements('frame', 'p', 3);
+
+      expect(object.setElementPicking).toHaveBeenCalledWith(true, { selector: 'button' });
+      expect(object.setElementHighlights).toHaveBeenNthCalledWith(1, [{ selector: '#run', label: 'Run' }]);
+      expect(object.setElementHighlights).toHaveBeenNthCalledWith(2, []);
+      expect(object.queryElements).toHaveBeenCalledWith('p', 3);
+      expect(elements).toEqual([{ selector: 'p' }]);
+    });
+
+    it('rejects for missing objects and objects without elements', async () => {
+      core.store.objects.findById.mockImplementation((id: string) => (id === 'shape' ? { id: 'shape' } : null));
+
+      await expect(engine.setObjectElementPicking('missing', true)).rejects.toThrow('Object "missing" not found.');
+      await expect(engine.highlightObjectElements('shape', [])).rejects.toThrow('Object "shape" has no content elements.');
+      await expect(engine.queryObjectElements('shape', 'p')).rejects.toThrow('has no content elements');
+    });
+
+    it('clears the highlights of all objects when no object is given', async () => {
+      const highlighted = createElementAwareObject('a');
+      const plain = createElementAwareObject('b');
+      plain.getElementHighlights.mockReturnValue([]);
+      core.store.objects.allObjects = jest.fn().mockReturnValue([highlighted, plain, { id: 'shape' }]);
+
+      await engine.clearObjectElementHighlights();
+
+      expect(highlighted.setElementHighlights).toHaveBeenCalledWith([]);
+      expect(plain.setElementHighlights).not.toHaveBeenCalled();
+    });
+
+    it('refreshes element highlight colors when the theme changes', () => {
+      const object = createElementAwareObject();
+      core.store.objects.allObjects = jest.fn().mockReturnValue([object, { id: 'shape' }]);
+
+      engine.onThemeChange('dark');
+
+      expect(core.themeManager.setTheme).toHaveBeenCalledWith('dark');
+      expect(object.refreshElementTheme).toHaveBeenCalledTimes(1);
+    });
+
+    it('emits hover, click and pick events', () => {
+      (engine as any).objectElementHover = { emit: jest.fn() };
+      (engine as any).objectElementClick = { emit: jest.fn() };
+      (engine as any).objectElementPick = { emit: jest.fn() };
+      const element = { selector: 'p', tagName: 'p', classList: [], attributes: {}, rect: { x: 0, y: 0, width: 1, height: 1 } };
+      const modifiers = { shiftKey: false, ctrlKey: false, altKey: false, metaKey: false };
+
+      engine.emitObjectElementHover({ objectId: 'frame', element, isPicking: false });
+      engine.emitObjectElementClick({ objectId: 'frame', element, ...modifiers });
+      engine.emitObjectElementPick({ objectId: 'frame', element, ...modifiers });
+
+      expect((engine as any).objectElementHover.emit).toHaveBeenCalledWith({ objectId: 'frame', element, isPicking: false });
+      expect((engine as any).objectElementClick.emit).toHaveBeenCalledWith({ objectId: 'frame', element, ...modifiers });
+      expect((engine as any).objectElementPick.emit).toHaveBeenCalledWith({ objectId: 'frame', element, ...modifiers });
+    });
+  });
+
   describe('event emission helpers', () => {
     it('emitObjectsAdded emits with the provided objects', () => {
       const objects: any[] = [{ id: 'a' }];

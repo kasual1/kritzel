@@ -57,6 +57,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | centerObjectInViewport | centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement \| SVGElement>> | Pans and zooms the viewport to center on the given object. |
 | centerObjects | centerObjects(objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean> | Pans and zooms the viewport to fit the provided objects. Calculates the combined bounding box of the given objects and centers the viewport to show them. |
 | clearAgenticCursors | clearAgenticCursors() => Promise<void> | Removes all agentic cursors. |
+| clearObjectElementHighlights | clearObjectElementHighlights(objectId?: string) => Promise<void> | Removes element highlights. |
 | clearSelection | clearSelection() => Promise<void> | Deselects all currently selected objects. |
 | closeObjectTitlebarMenu | closeObjectTitlebarMenu() => Promise<void> | Closes the open object titlebar menu, if any. |
 | configureLocales | configureLocales(locales?: KritzelLocale[]) => Promise<void> | Declaratively configures the full locale catalog, replacing the available locale set. Pass \`undefined\` to restore the built-in locales (en/de/fr). |
@@ -96,16 +97,18 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | getWorkspaces | getWorkspaces() => Promise<KritzelWorkspace[]> | Returns all available workspaces. |
 | group | group(objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup \| null> | Creates a group (\`KritzelGroup\`) from the given objects. Requires at least two objects. The grouped objects become one layer at the position of the topmost object, as a single undoable step. Objects are resolved by id, so stale references work. Objects that are not in the active workspace are skipped with a console warning. Objects inside a common group are grouped within it; objects from different groups are grouped at the level that contains all of them. An object passed together with one of its ancestor groups is grouped as part of that ancestor. Selected objects that end up in the group are replaced by the group in the selection. To group the current selection, pass \`await getSelectedObjects()\`. |
 | hideContextMenu | hideContextMenu() => Promise<void> | Hides the context menu and resets any associated selection state. |
+| highlightObjectElements | highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]) => Promise<void> | Highlights elements inside an object's content, replacing its previous highlights. Highlights are local: they are neither saved nor shown to collaborators. |
 | importFromFile | importFromFile() => Promise<void> | Opens a file picker dialog and imports the selected JSON file into the workspace. This method creates a hidden file input, triggers the browser's file chooser, reads the selected JSON file, and imports it using importFromJson. |
 | importFromJson | importFromJson(json: string) => Promise<void> | Imports a workspace from a JSON string into a new workspace. Creates a new workspace with the imported data and automatically switches to it. |
 | loadObjectsFromJson | loadObjectsFromJson(json: string) => Promise<number> | Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready. |
 | loadSettings | loadSettings() => Promise<Partial<KritzelSettingsConfig> \| null> | Loads the persisted settings object from localStorage. |
 | loadSharedWorkspace | loadSharedWorkspace(token: string) => Promise<void> | Loads a shared workspace by token. If the workspace exists locally, it switches to it. If it doesn't exist, it adds it to the local workspaces list and then switches to it. |
-| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult> | Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards. |
+| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult> | Smoothly moves an agentic cursor to world coordinates, to an anchor on an object or to an element inside an object's content, such as a button in an iframe object. Object and element targets attach the cursor by default, so it follows them afterwards. An element target needs the object to be mounted (in or near the viewport). |
 | openContextMenu | openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void> | Programmatically opens the context menu at a specified world-coordinate position. If \`objectId\` is provided and found, the object context menu is shown for that object. If no \`objectId\` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown. |
 | panTo | panTo(x: number, y: number) => Promise<void> | Pans the viewport to center on the given world coordinates without changing the scale. |
 | panToObject | panToObject(object: KritzelBaseObject) => Promise<void> | Pans the viewport to center on the given object without changing the zoom level. Unlike \`centerObjectInViewport\`, this moves the camera — not the object. |
 | paste | paste(x: number, y: number) => Promise<void> | Pastes previously copied objects at the specified world coordinates. |
+| queryObjectElements | queryObjectElements(objectId: string, selector: string, limit?: number) => Promise<KritzelObjectElementInfo[]> | Describes the elements inside an object's content that match a CSS selector, in document order. The object must be mounted, which it is while it is in or near the viewport. |
 | redo | redo() => Promise<void> | Redoes the last undone action. |
 | registerLocales | registerLocales(locales: KritzelLocale[]) => Promise<void> | Registers additional locale definitions (with optional partial term overrides). |
 | registerTool | registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig \| KritzelBrushToolConfig \| KritzelLineToolConfig \| KritzelShapeToolConfig) => Promise<KritzelBaseTool \| null> | Registers a new drawing tool with the engine. |
@@ -123,6 +126,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | setActiveTool | setActiveTool(toolName: string) => Promise<void> | Switches the active drawing tool by its registered name. |
 | setActiveWorkspace | setActiveWorkspace(id: string) => Promise<void> | Switches the active workspace in the engine by ID. |
 | setLocale | setLocale(code: LocaleCode) => Promise<void> | Sets the active locale (language) and re-renders the UI. |
+| setObjectElementPicking | setObjectElementPicking(objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions) => Promise<void> | Turns element picking on or off for an object whose content has elements, such as an iframe object. While picking, the element under the pointer is highlighted, and a click emits \`objectElementPick\` instead of reaching the content. Picking works while the object is interactive, which it is while selected. |
 | setViewport | setViewport(x: number, y: number, scale: number) => Promise<void> | Sets the viewport to center on the given world coordinates at the specified scale. |
 | t | t(key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string> | Resolves a term key to its translated string for the active locale. |
 | triggerSelectionChange | triggerSelectionChange() => Promise<void> | Manually triggers the \`objectsSelectionChange\` event. |
@@ -149,6 +153,9 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | isLoadingChange | boolean | Emitted while the selected workspace's objects are being initialized and synchronized. |
 | longpress | PointerEvent | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile. |
 | notificationsChange | KritzelNotification | Emitted when notifications change. |
+| objectElementClick | KritzelObjectElementClickEvent | Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. |
+| objectElementHover | KritzelObjectElementHoverEvent | Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with \`element: null\` when it leaves the content or the object stops being interactive. |
+| objectElementPick | KritzelObjectElementPickEvent | Emitted when the user picks an element inside an object that is picking elements, see \`setObjectElementPicking\`. |
 | objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. |
 | objectsChange | KritzelBaseObject<HTMLElement \| SVGElement>[] | Emitted when objects on the canvas are added, removed, or modified. |
 | objectsInViewportChange | KritzelBaseObject<Element>[] | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom). |
@@ -226,6 +233,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | centerObjectInViewport | centerObjectInViewport(object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement \| SVGElement>> |  |
 | centerObjects | centerObjects(objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean> |  |
 | clearAgenticCursors | clearAgenticCursors() => Promise<void> | Removes all agentic cursors. |
+| clearObjectElementHighlights | clearObjectElementHighlights(objectId?: string) => Promise<void> | Removes element highlights. |
 | clearSelection | clearSelection() => Promise<void> |  |
 | closeExportDialog | closeExportDialog() => Promise<void> |  |
 | closeImportDialog | closeImportDialog() => Promise<void> |  |
@@ -267,11 +275,12 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | getWorkspaces | getWorkspaces() => Promise<KritzelWorkspace[]> |  |
 | group | group(objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup \| null> |  |
 | hideContextMenu | hideContextMenu() => Promise<void> |  |
+| highlightObjectElements | highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]) => Promise<void> | Highlights elements inside an object's content, replacing its previous highlights. Highlights are local: they are neither saved nor shown to collaborators. |
 | importFromFile | importFromFile() => Promise<void> |  |
 | importFromJson | importFromJson(json: string) => Promise<void> |  |
 | loadObjectsFromJson | loadObjectsFromJson(json: string) => Promise<number> |  |
 | loadSharedWorkspace | loadSharedWorkspace(token: string) => Promise<void> |  |
-| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult> | Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards. |
+| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult> | Smoothly moves an agentic cursor to world coordinates, to an anchor on an object or to an element inside an object's content, such as a button in an iframe object. Object and element targets attach the cursor by default, so it follows them afterwards. An element target needs the object to be mounted (in or near the viewport). |
 | openContextMenu | openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void> |  |
 | openExportDialog | openExportDialog() => Promise<void> |  |
 | openImportDialog | openImportDialog() => Promise<void> |  |
@@ -284,6 +293,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | panTo | panTo(x: number, y: number) => Promise<void> |  |
 | panToObject | panToObject(object: KritzelBaseObject) => Promise<void> |  |
 | paste | paste(x: number, y: number) => Promise<void> |  |
+| queryObjectElements | queryObjectElements(objectId: string, selector: string, limit?: number) => Promise<KritzelObjectElementInfo[]> | Describes the elements inside an object's content that match a CSS selector, in document order. The object must be mounted, which it is while it is in or near the viewport. |
 | redo | redo() => Promise<void> |  |
 | registerFonts | registerFonts(fonts: KritzelFontMap) => Promise<void> | Registers custom fonts for the editor runtime. |
 | registerLocales | registerLocales(locales: KritzelLocale[]) => Promise<void> | Registers additional locale definitions (with optional partial term overrides). |
@@ -301,6 +311,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | setActiveWorkspace | setActiveWorkspace(id: string) => Promise<void> |  |
 | setLocale | setLocale(code: LocaleCode) => Promise<void> | Sets the active locale (language) and re-renders the UI. |
 | setLoginLoading | setLoginLoading(provider: string \| null) => Promise<void> |  |
+| setObjectElementPicking | setObjectElementPicking(objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions) => Promise<void> | Turns element picking on or off for an object whose content has elements, such as an iframe object. While picking, the element under the pointer is highlighted, and a click emits \`objectElementPick\` instead of reaching the content. Picking works while the object is interactive, which it is while selected. |
 | setViewport | setViewport(x: number, y: number, scale: number) => Promise<void> |  |
 | t | t(key: KritzelTermKey, vars?: KritzelTermVars) => Promise<string> | Resolves a term key to its translated string for the active locale. |
 | triggerNotification | triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick<KritzelNotification, "id" \| "timestamp">>) => Promise<void> | Triggers a UI notification programmatically. |
@@ -329,6 +340,9 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | localeChange | "de" \| "en" \| "fr" \| string & {} |  |
 | login | LoginEvent |  |
 | logout | void |  |
+| objectElementClick | KritzelObjectElementClickEvent | Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. |
+| objectElementHover | KritzelObjectElementHoverEvent | Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with \`element: null\` when it leaves the content or the object stops being interactive. |
+| objectElementPick | KritzelObjectElementPickEvent | Emitted when the user picks an element inside an object that is picking elements, see \`setObjectElementPicking\`. |
 | objectsAdded | ObjectsAddedEvent |  |
 | objectsChange | KritzelBaseObject<HTMLElement \| SVGElement>[] |  |
 | objectsRemoved | ObjectsRemovedEvent |  |

@@ -52,27 +52,30 @@
 
 ## Events
 
-| Event                    | Description                                                                                                   | Type                                                          |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `activeWorkspaceChange`  |                                                                                                               | `CustomEvent<ActiveWorkspaceChangeEvent>`                     |
-| `agenticCursorDetached`  | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. | `CustomEvent<KritzelAgenticCursorDetachedEvent>`              |
-| `awarenessChange`        |                                                                                                               | `CustomEvent<Map<number, Record<string, any>>>`               |
-| `chatStop`               | Emitted when the user stops the current chat response.                                                        | `CustomEvent<void>`                                           |
-| `chatSubmit`             | Emitted with the chat box text when the user submits it.                                                      | `CustomEvent<string>`                                         |
-| `isPublicChange`         |                                                                                                               | `CustomEvent<IKritzelIsPublicChangeEvent>`                    |
-| `isReady`                |                                                                                                               | `CustomEvent<EditorIsReadyEvent>`                             |
-| `localeChange`           |                                                                                                               | `CustomEvent<"de" \| "en" \| "fr" \| string & {}>`            |
-| `login`                  |                                                                                                               | `CustomEvent<LoginEvent>`                                     |
-| `logout`                 |                                                                                                               | `CustomEvent<void>`                                           |
-| `objectsAdded`           |                                                                                                               | `CustomEvent<ObjectsAddedEvent>`                              |
-| `objectsChange`          |                                                                                                               | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsRemoved`         |                                                                                                               | `CustomEvent<ObjectsRemovedEvent>`                            |
-| `objectsSelectionChange` |                                                                                                               | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsUpdated`         |                                                                                                               | `CustomEvent<ObjectsUpdatedEvent>`                            |
-| `objectTitlebarAction`   | Emitted when a button or a menu item in an object titlebar is clicked.                                        | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
-| `themeChange`            |                                                                                                               | `CustomEvent<"dark" \| "light" \| string & {}>`               |
-| `undoStateChange`        |                                                                                                               | `CustomEvent<KritzelUndoState>`                               |
-| `viewportChange`         |                                                                                                               | `CustomEvent<KritzelViewportState>`                           |
+| Event                    | Description                                                                                                                                                                                                                      | Type                                                          |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `activeWorkspaceChange`  |                                                                                                                                                                                                                                  | `CustomEvent<ActiveWorkspaceChangeEvent>`                     |
+| `agenticCursorDetached`  | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed.                                                                                                                    | `CustomEvent<KritzelAgenticCursorDetachedEvent>`              |
+| `awarenessChange`        |                                                                                                                                                                                                                                  | `CustomEvent<Map<number, Record<string, any>>>`               |
+| `chatStop`               | Emitted when the user stops the current chat response.                                                                                                                                                                           | `CustomEvent<void>`                                           |
+| `chatSubmit`             | Emitted with the chat box text when the user submits it.                                                                                                                                                                         | `CustomEvent<string>`                                         |
+| `isPublicChange`         |                                                                                                                                                                                                                                  | `CustomEvent<IKritzelIsPublicChangeEvent>`                    |
+| `isReady`                |                                                                                                                                                                                                                                  | `CustomEvent<EditorIsReadyEvent>`                             |
+| `localeChange`           |                                                                                                                                                                                                                                  | `CustomEvent<"de" \| "en" \| "fr" \| string & {}>`            |
+| `login`                  |                                                                                                                                                                                                                                  | `CustomEvent<LoginEvent>`                                     |
+| `logout`                 |                                                                                                                                                                                                                                  | `CustomEvent<void>`                                           |
+| `objectElementClick`     | Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.                                                                                                        | `CustomEvent<KritzelObjectElementClickEvent>`                 |
+| `objectElementHover`     | Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive. | `CustomEvent<KritzelObjectElementHoverEvent>`                 |
+| `objectElementPick`      | Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.                                                                                                                 | `CustomEvent<KritzelObjectElementPickEvent>`                  |
+| `objectsAdded`           |                                                                                                                                                                                                                                  | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsChange`          |                                                                                                                                                                                                                                  | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsRemoved`         |                                                                                                                                                                                                                                  | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsSelectionChange` |                                                                                                                                                                                                                                  | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
+| `objectsUpdated`         |                                                                                                                                                                                                                                  | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `objectTitlebarAction`   | Emitted when a button or a menu item in an object titlebar is clicked.                                                                                                                                                           | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
+| `themeChange`            |                                                                                                                                                                                                                                  | `CustomEvent<"dark" \| "light" \| string & {}>`               |
+| `undoStateChange`        |                                                                                                                                                                                                                                  | `CustomEvent<KritzelUndoState>`                               |
+| `viewportChange`         |                                                                                                                                                                                                                                  | `CustomEvent<KritzelViewportState>`                           |
 
 
 ## Methods
@@ -261,6 +264,22 @@ Type: `Promise<boolean>`
 ### `clearAgenticCursors() => Promise<void>`
 
 Removes all agentic cursors.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `clearObjectElementHighlights(objectId?: string) => Promise<void>`
+
+Removes element highlights.
+
+#### Parameters
+
+| Name       | Type     | Description                                                                                    |
+| ---------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `objectId` | `string` | - The object whose highlights are removed. Removes the highlights of all objects when omitted. |
 
 #### Returns
 
@@ -738,6 +757,24 @@ Type: `Promise<void>`
 
 
 
+### `highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]) => Promise<void>`
+
+Highlights elements inside an object's content, replacing its previous highlights.
+Highlights are local: they are neither saved nor shown to collaborators.
+
+#### Parameters
+
+| Name         | Type                              | Description                                                                                     |
+| ------------ | --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `objectId`   | `string`                          | - The object ID.                                                                                |
+| `highlights` | `KritzelObjectElementHighlight[]` | - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `importFromFile() => Promise<void>`
 
 
@@ -798,22 +835,24 @@ Type: `Promise<void>`
 
 ### `moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>`
 
-Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
-Object targets attach the cursor by default, so it follows the object afterwards.
+Smoothly moves an agentic cursor to world coordinates, to an anchor on an object or to an element inside an
+object's content, such as a button in an iframe object. Object and element targets attach the cursor by default,
+so it follows them afterwards. An element target needs the object to be mounted (in or near the viewport).
 
 #### Parameters
 
-| Name      | Type                                                                  | Description                                                            |
-| --------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `id`      | `string`                                                              | - The cursor ID.                                                       |
-| `target`  | `KritzelAgenticCursorPointTarget \| KritzelAgenticCursorObjectTarget` | - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`. |
-| `options` | `KritzelAgenticCursorMoveOptions`                                     | - Duration, easing, speed and whether to attach to an object target.   |
+| Name      | Type                                                                                                       | Description                                                                                                        |
+| --------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `id`      | `string`                                                                                                   | - The cursor ID.                                                                                                   |
+| `target`  | `KritzelAgenticCursorPointTarget \| KritzelAgenticCursorObjectTarget \| KritzelAgenticCursorElementTarget` | - `{ x, y }` in world coordinates, `{ objectId, anchor?, offset? }` or `{ objectId, selector, anchor?, offset? }`. |
+| `options` | `KritzelAgenticCursorMoveOptions`                                                                          | - Duration, easing, speed and whether to attach to an object or element target.                                    |
 
 #### Returns
 
 Type: `Promise<KritzelAgenticCursorMoveResult>`
 
 Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+Rejects if an element target's object isn't mounted or has no element that matches the selector.
 
 ### `openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void>`
 
@@ -960,6 +999,25 @@ Type: `Promise<void>`
 Type: `Promise<void>`
 
 
+
+### `queryObjectElements(objectId: string, selector: string, limit?: number) => Promise<KritzelObjectElementInfo[]>`
+
+Describes the elements inside an object's content that match a CSS selector, in document order.
+The object must be mounted, which it is while it is in or near the viewport.
+
+#### Parameters
+
+| Name       | Type     | Description                                                 |
+| ---------- | -------- | ----------------------------------------------------------- |
+| `objectId` | `string` | - The object ID.                                            |
+| `selector` | `string` | - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`. |
+| `limit`    | `number` | - Maximum number of elements, 1 to 500. Defaults to 100.    |
+
+#### Returns
+
+Type: `Promise<KritzelObjectElementInfo[]>`
+
+The matching elements, each with a `selector` that can be used to highlight it or point a cursor at it.
 
 ### `redo() => Promise<void>`
 
@@ -1211,6 +1269,26 @@ Type: `Promise<void>`
 | Name       | Type     | Description |
 | ---------- | -------- | ----------- |
 | `provider` | `string` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setObjectElementPicking(objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions) => Promise<void>`
+
+Turns element picking on or off for an object whose content has elements, such as an iframe object.
+While picking, the element under the pointer is highlighted, and a click emits `objectElementPick`
+instead of reaching the content. Picking works while the object is interactive, which it is while selected.
+
+#### Parameters
+
+| Name       | Type                                 | Description                                                                         |
+| ---------- | ------------------------------------ | ----------------------------------------------------------------------------------- |
+| `objectId` | `string`                             | - The object ID.                                                                    |
+| `enabled`  | `boolean`                            | - Whether the object picks elements.                                                |
+| `options`  | `KritzelObjectElementPickingOptions` | - `selector` limits picking to matching elements, `color` sets the highlight color. |
 
 #### Returns
 

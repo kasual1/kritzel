@@ -1,0 +1,141 @@
+import { KritzelPoint } from './point.interface';
+
+/**
+ * A rectangle in the coordinates of an object's content, in CSS pixels relative to the top-left corner of the
+ * content (for a `KritzelIframeObject`, the iframe's viewport), before canvas zoom, object scale and rotation.
+ */
+export interface KritzelObjectElementRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Serializable description of an element inside an object's content, for example an element of the page
+ * rendered by a `KritzelIframeObject`. DOM nodes can't leave the content, so this is what the engine reports.
+ */
+export interface KritzelObjectElementInfo {
+  /**
+   * A CSS selector that matched exactly this element when it was reported. Pass it back to highlight the
+   * element, query it again or point an agentic cursor at it. Selectors built from a `data-kritzel-id` or an
+   * `id` survive regenerated content; positional ones (`:nth-of-type`) may point elsewhere once the content changes.
+   */
+  selector: string;
+  /** Value of the element's `data-kritzel-id` attribute: a stable identifier content authors can assign. */
+  kritzelId?: string;
+  /** Lowercase tag name, e.g. `'button'`. */
+  tagName: string;
+  /** The element's `id` attribute. */
+  id?: string;
+  /** The element's classes. */
+  classList: string[];
+  /** The element's text with collapsed whitespace, truncated to 200 characters. Omitted when empty. */
+  text?: string;
+  /**
+   * Descriptive attributes: `role`, `aria-*`, `data-*`, `name`, `type`, `href`, `src`, `alt`, `title`,
+   * `placeholder` and `for`, each truncated to 200 characters. Form field values are never included.
+   */
+  attributes: Record<string, string>;
+  /** The element's bounding box in content coordinates when it was reported. */
+  rect: KritzelObjectElementRect;
+}
+
+/** A highlight drawn over elements inside an object's content. */
+export interface KritzelObjectElementHighlight {
+  /** CSS selector of the elements to highlight. Every match is highlighted, up to 100 elements. */
+  selector: string;
+  /** Any CSS color. Defaults to the theme's `elementHighlight.color`. */
+  color?: string;
+  /** Text shown above each highlighted element. */
+  label?: string;
+}
+
+/** Options for picking elements inside an object's content. */
+export interface KritzelObjectElementPickingOptions {
+  /**
+   * Limits picking to elements that match this CSS selector, e.g. `'[data-kritzel-id]'`. The closest matching
+   * ancestor of the element under the pointer is used, and content outside any match can't be picked.
+   */
+  selector?: string;
+  /** Color of the highlight that follows the pointer while picking. Defaults to the theme's `elementHighlight.color`. */
+  color?: string;
+}
+
+/** State of the modifier keys during a pointer interaction. */
+export interface KritzelObjectElementModifiers {
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+}
+
+/** Emitted when the pointer moves onto another element inside an interactive object's content. */
+export interface KritzelObjectElementHoverEvent {
+  /** ID of the object. */
+  objectId: string;
+  /** The element under the pointer, or `null` when the pointer left the content or the object stopped being interactive. */
+  element: KritzelObjectElementInfo | null;
+  /** Whether the object is picking elements. While picking, `element` honors the picking `selector`. */
+  isPicking: boolean;
+}
+
+/** Emitted when the user clicks an element inside an interactive object's content. The click works as usual. */
+export interface KritzelObjectElementClickEvent extends KritzelObjectElementModifiers {
+  /** ID of the object. */
+  objectId: string;
+  /** The clicked element: the innermost element under the pointer. */
+  element: KritzelObjectElementInfo;
+}
+
+/** Emitted when the user picks an element while the object is picking. The click doesn't reach the content. */
+export interface KritzelObjectElementPickEvent extends KritzelObjectElementModifiers {
+  /** ID of the object. */
+  objectId: string;
+  /** The picked element. */
+  element: KritzelObjectElementInfo;
+}
+
+/**
+ * An object whose content elements can be observed, picked, highlighted, queried and pointed at with agentic
+ * cursors. Implemented by `KritzelIframeObject`. Highlights, picking and tracking are local and transient:
+ * they are neither serialized nor synchronized to collaborators.
+ */
+export interface KritzelElementAwareObject {
+  /** Whether the object is picking elements. */
+  readonly isElementPicking: boolean;
+
+  /**
+   * Turns element picking on or off. While picking, the element under the pointer is highlighted and a click
+   * picks it instead of reaching the content. Picking needs the object to be interactive, which it is while selected.
+   */
+  setElementPicking(enabled: boolean, options?: KritzelObjectElementPickingOptions): void;
+
+  /** Replaces the element highlights. Pass an empty array to remove them. */
+  setElementHighlights(highlights: KritzelObjectElementHighlight[]): void;
+
+  /** Returns the current element highlights. */
+  getElementHighlights(): KritzelObjectElementHighlight[];
+
+  /**
+   * Describes the elements that match a CSS selector, in document order.
+   * Rejects if the selector is invalid, the object isn't mounted or its content doesn't respond.
+   * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
+   */
+  queryElements(selector: string, limit?: number): Promise<KritzelObjectElementInfo[]>;
+
+  /** Starts reporting the position of the first element that matches a selector. Calls are reference-counted. */
+  trackElement(selector: string): void;
+
+  /** Undoes one `trackElement()` call for a selector. */
+  untrackElement(selector: string): void;
+
+  /** Last known bounding box of a tracked element in content coordinates, or `null` if it hasn't been seen yet. */
+  getTrackedElementRect(selector: string): KritzelObjectElementRect | null;
+
+  /** Converts a point in content coordinates to world units in the object's local, unrotated space, relative to its top-left corner. */
+  contentToObjectLocal(point: KritzelPoint): KritzelPoint;
+
+  /** Re-reads the element highlight colors from the theme. Called by the engine when the theme changes. */
+  refreshElementTheme(): void;
+}
