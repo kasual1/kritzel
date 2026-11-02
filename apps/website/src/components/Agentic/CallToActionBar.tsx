@@ -6,8 +6,8 @@ import styles from "./styles.module.css";
 export function CallToActionBar({ docsPath }: { docsPath: string }) {
   return (
     <div className={styles.ctaAnchor}>
+      <InstallCommand />
       <div className={styles.ctaBar}>
-        <InstallCommand />
         <Link href="https://app.kritzel.io" className={styles.ctaPrimary}>
           Demo <ArrowIcon />
         </Link>

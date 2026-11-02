@@ -2,10 +2,6 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  /* Spans the row above the two buttons and takes their width, without its own content widening them. */
-  grid-column: 1 / -1;
-  width: 0;
-  min-width: 100%;
   min-height: 52px;
   padding: 0 8px;
   box-sizing: border-box;

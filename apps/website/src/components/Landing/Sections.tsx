@@ -15,8 +15,8 @@ import { docsPath, getPreferredFramework, usePreferredFramework } from "@site/sr
 export function CallToActionBar({ docsPath }: { docsPath: string }) {
   return (
     <div className={styles.ctaAnchor}>
+      <InstallCommand />
       <div className={styles.ctaBar}>
-        <InstallCommand />
         <Link href="https://app.kritzel.io" target="_blank" rel="noopener noreferrer" className={styles.ctaPrimary}>
           Demo <ArrowIcon />
         </Link>
