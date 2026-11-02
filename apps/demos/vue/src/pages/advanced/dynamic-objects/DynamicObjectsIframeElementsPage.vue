@@ -16,7 +16,6 @@ import { iframeElementsContent } from './iframe-elements-content'
 
 const AGENT = 'agent'
 const EMPTY = '—'
-const PICK_SELECTOR = '[data-kritzel-id]'
 // The panel is docked to the bottom-left corner and the card sits above it, so they don't overlap even in the
 // 560px high docs embed. The agent starts just right of the card's top edge.
 const CARD_TOP = -250
@@ -104,7 +103,7 @@ async function togglePicking() {
   if (!current) return
   const enabled = !isPicking.value
   try {
-    await current.setObjectElementPicking(planObject.id, enabled, { selector: PICK_SELECTOR })
+    await current.setObjectElementPicking(planObject.id, enabled)
     isPicking.value = enabled
   } catch (error) {
     console.warn('Could not toggle element picking.', error)

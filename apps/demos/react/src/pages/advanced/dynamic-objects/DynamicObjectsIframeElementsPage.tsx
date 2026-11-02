@@ -12,7 +12,6 @@ import { reactThemeLight } from "../../../const/react-theme-light";
 import { iframeElementsContent } from "./iframe-elements-content";
 
 const AGENT = "agent";
-const PICK_SELECTOR = "[data-kritzel-id]";
 const EMPTY = "—";
 const MAX_TEXT_LENGTH = 24;
 // The panel is docked to the bottom-left corner and the card sits above it, so they don't overlap even in the
@@ -93,7 +92,7 @@ export function DynamicObjectsIframeElementsPage() {
 
     setIsPicking(enabled);
     try {
-      await editor.setObjectElementPicking(planObject.id, enabled, { selector: PICK_SELECTOR });
+      await editor.setObjectElementPicking(planObject.id, enabled);
     } catch (error) {
       setIsPicking(false);
       console.warn("Could not change element picking.", error);
@@ -123,7 +122,7 @@ export function DynamicObjectsIframeElementsPage() {
     if (!editor) return;
 
     try {
-      await editor.setObjectElementPicking(objectId, false, { selector: PICK_SELECTOR });
+      await editor.setObjectElementPicking(objectId, false);
       await editor.highlightObjectElements(objectId, [{ selector: element.selector, label: "Picked" }]);
       await editor.updateAgenticCursor(AGENT, { status: `Looking at ${element.kritzelId ?? element.tagName}` });
       await editor.moveAgenticCursor(AGENT, { objectId, selector: element.selector });

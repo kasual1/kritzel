@@ -150,12 +150,9 @@ test.describe('Iframe Element Interaction', () => {
     await expect(toggle).toHaveText('Stop picking');
     await expect.poll(async () => (await getPlanObjectState(page)).isElementPicking).toBe(true);
 
-    // While picking, hovers honor the picking selector '[data-kritzel-id]': the "Total" label has no such
-    // ancestor, so it reports no element. This also proves the page inside the iframe is picking.
-    await pointAt(page, cardElement(page, 'seats-increase'));
-    await expect(hovered).toHaveText('seats-increase "+"');
+    // Any element can be picked, also ones without a data-kritzel-id such as the "Total" label.
     await pointAt(page, card(page).locator('.total .label'));
-    await expect(hovered).toHaveText(NONE);
+    await expect(hovered).toHaveText('span "Total"');
 
     await pointAt(page, cardElement(page, 'seats-increase'));
     await expect(hovered).toHaveText('seats-increase "+"');

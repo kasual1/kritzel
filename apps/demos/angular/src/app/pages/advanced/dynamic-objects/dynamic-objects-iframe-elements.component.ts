@@ -13,7 +13,6 @@ import { angularThemeLight } from '../../../const/angular-theme-light';
 import { iframeElementsContent } from './iframe-elements-content';
 
 const AGENT_CURSOR_ID = 'agent';
-const PICKABLE_SELECTOR = '[data-kritzel-id]';
 const EMPTY_VALUE = '—';
 const MAX_TEXT_LENGTH = 24;
 // The panel is docked to the bottom-left corner and the card sits above it, so they don't overlap even in the
@@ -162,7 +161,7 @@ export class DynamicObjectsIframeElementsComponent {
 
     const enabled = !this.isPicking();
     try {
-      await editor.setObjectElementPicking(this.iframeObject.id, enabled, { selector: PICKABLE_SELECTOR });
+      await editor.setObjectElementPicking(this.iframeObject.id, enabled);
       this.isPicking.set(enabled);
     } catch (error) {
       console.warn('Could not toggle element picking.', error);
