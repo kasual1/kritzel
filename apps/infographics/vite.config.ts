@@ -4,6 +4,8 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  // Reads VITE_ANTHROPIC_API_KEY for the agentic canvas from the .env file at the repository root.
+  envDir: '../..',
   server: {
     port: 5180,
   },
