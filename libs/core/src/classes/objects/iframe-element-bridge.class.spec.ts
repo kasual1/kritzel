@@ -503,6 +503,21 @@ describe('KritzelIframeElementBridge', () => {
       await expect(promise).rejects.toThrow('did not respond');
     });
 
+    it('gives queries a new answer timeout when the page reloads by itself', async () => {
+      jest.useFakeTimers();
+      ready();
+      const promise = bridge.query('button');
+
+      jest.advanceTimersByTime(IFRAME_ELEMENT_QUERY_TIMEOUT - 100);
+      ready();
+      jest.advanceTimersByTime(IFRAME_ELEMENT_QUERY_TIMEOUT - 100);
+      const requests = sent().filter(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
+      expect(requests).toHaveLength(2);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: requests[1].requestId, elements: [element()] });
+
+      await expect(promise).resolves.toHaveLength(1);
+    });
+
     it('rejects when the page does not load in time', async () => {
       jest.useFakeTimers();
       const promise = bridge.query('button');

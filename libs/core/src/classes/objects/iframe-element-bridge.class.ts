@@ -345,8 +345,12 @@ export class KritzelIframeElementBridge {
     switch (message.type) {
       case IFRAME_ELEMENT_MESSAGES.ready:
         if (this._isReady) {
-          // The document reloaded without a new srcdoc, e.g. because the iframe moved in the DOM.
+          // The document reloaded without a new srcdoc, e.g. because the iframe moved in the DOM. It ignored queries
+          // while it loaded, so they get a new answer timeout, still bounded by their deadline.
           this.clearHover();
+          this._queries.forEach(query => {
+            query.isAwaitingAnswer = false;
+          });
         }
         this._isReady = true;
         // A new document starts in the initial state until it applied the sync below.

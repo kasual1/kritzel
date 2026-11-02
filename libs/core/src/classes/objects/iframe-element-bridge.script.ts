@@ -72,6 +72,8 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     // Version of the last applied sync, sent with hovers, clicks and picks so the host can judge them by this state.
     version: 0,
   };
+  // Queries are answered once the document is parsed, so a half-loaded page never reports missing elements.
+  let isReady = false;
   let hoveredTarget = null;
   let hovered = null;
   let pointerStart = null;
@@ -443,7 +445,7 @@ export function createIframeElementBridgeScript(documentToken: number): string {
   window.addEventListener('message', event => {
     if (event.source !== host || !event.data || typeof event.data !== 'object') return;
     if (event.data.type === MESSAGES.sync) sync(event.data);
-    else if (event.data.type === MESSAGES.query) query(event.data);
+    else if (event.data.type === MESSAGES.query && isReady) query(event.data);
   });
 
   // Hover. Touch has no hover, so only mouse and pen pointers report it.
@@ -515,11 +517,16 @@ export function createIframeElementBridgeScript(documentToken: number): string {
     post(Object.assign({ type: MESSAGES.click, element: describe(element), version: state.version }, modifiers(event)));
   }, true);
 
-  // The content's scripts have run once the document is parsed, so the host can query it from then on.
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => post({ type: MESSAGES.ready }), { once: true });
-  } else {
+  // The content's scripts have run once the document is parsed, so the host can query it from then on. Queries
+  // that arrived earlier are sent again by the host when it gets 'ready'.
+  const announceReady = () => {
+    isReady = true;
     post({ type: MESSAGES.ready });
+  };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', announceReady, { once: true });
+  } else {
+    announceReady();
   }
 })();`;
 }
