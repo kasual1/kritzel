@@ -297,6 +297,42 @@ describe('KritzelIframeElementBridge', () => {
       expect(owner.emitClick).toHaveBeenCalledTimes(1);
     });
 
+    it('ignores clicks and picks that cite a replaced state after a moment', () => {
+      jest.useFakeTimers();
+      ready();
+      bridge.setPicking(true);
+      const whilePicking = bridge.syncVersion;
+      bridge.setPicking(false);
+
+      jest.advanceTimersByTime(1001);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element: element(), version: whilePicking });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element(), version: 0 });
+
+      expect(owner.emitPick).not.toHaveBeenCalled();
+      expect(owner.emitClick).not.toHaveBeenCalled();
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element() });
+      expect(owner.emitClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('accepts clicks of a freshly loaded page before it applied the first state', () => {
+      ready();
+      bridge.beginDocument();
+      receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element(), version: 0 });
+
+      expect(owner.emitClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps the visible part of reported elements inside the content', () => {
+      ready();
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element({ visibleRect: { x: -1e6, y: -1e6, width: 2e6, height: 2e6 } }) });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element: element({ visibleRect: { x: 5000, y: 5000, width: 10, height: 10 } }) });
+
+      expect(owner.emitClick.mock.calls[0][0].visibleRect).toEqual({ x: 0, y: 0, width: 300, height: 200 });
+      expect(owner.emitClick.mock.calls[1][0]).not.toHaveProperty('visibleRect');
+    });
+
     it('emits through the owner it was handed to', () => {
       const nextOwner = { ...owner, emitClick: jest.fn() };
       bridge.attach(nextOwner);
@@ -448,6 +484,23 @@ describe('KritzelIframeElementBridge', () => {
       receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element()] });
 
       await expect(promise).resolves.toHaveLength(1);
+    });
+
+    it('does not let a page that keeps reloading extend the timeouts', async () => {
+      jest.useFakeTimers();
+      ready();
+      const promise = bridge.query('button');
+      const settled = jest.fn();
+      promise.then(settled, settled);
+
+      for (let index = 0; index < 10; index++) {
+        jest.advanceTimersByTime(IFRAME_ELEMENT_QUERY_TIMEOUT - 500);
+        ready();
+      }
+      await Promise.resolve();
+
+      expect(settled).toHaveBeenCalled();
+      await expect(promise).rejects.toThrow('did not respond');
     });
 
     it('rejects when the page does not load in time', async () => {

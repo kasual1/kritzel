@@ -27,6 +27,16 @@ interface PendingQuery {
   resolve: (elements: KritzelObjectElementInfo[]) => void;
   reject: (error: Error) => void;
   timer: ReturnType<typeof setTimeout> | null;
+  /** Whether the timer waits for an answer (started when the query was first sent) rather than for the page to load. */
+  isAwaitingAnswer: boolean;
+  /** Time after which the query fails whatever the page does, so a page that keeps reloading can't hold it forever. */
+  deadline: number;
+}
+
+interface SyncVersion {
+  picking: boolean;
+  /** When a newer state was sent, or `null` while this is the newest state. */
+  supersededAt: number | null;
 }
 
 /** How long the page has to answer a query once it was sent. */
@@ -41,7 +51,8 @@ const MAX_STRING_LENGTH = 500;
 const MAX_LIST_LENGTH = 50;
 const MAX_HIGHLIGHTS = 50;
 const MAX_TRACKED = 50;
-const MAX_REMEMBERED_VERSIONS = 64;
+/** How long the page may still report clicks and picks for a state after a newer one was sent. */
+const VERSION_GRACE_PERIOD = 1000;
 const BRIDGE_MESSAGE_TYPES = new Set<unknown>(Object.values(IFRAME_ELEMENT_MESSAGES));
 
 const THEME_VARIABLES = {
@@ -139,7 +150,8 @@ export function isValidElementSelector(selector: unknown): selector is string {
  * Host side of the element bridge of a `KritzelIframeObject`: keeps the transient element state (picking,
  * highlights, tracked elements, pending queries), sends it to the page whenever the page (re)loads or the state
  * changes, and validates what the page reports. The page runs untrusted content, so every message is checked
- * and hovers, clicks and picks are only accepted in the states in which a user could have caused them.
+ * and hovers, clicks and picks are only accepted in the states in which a user could have caused them. A page can
+ * still report them without a real user gesture in those states, so their contents stay untrusted.
  */
 export class KritzelIframeElementBridge {
   private _owner: KritzelIframeElementBridgeOwner;
@@ -158,7 +170,7 @@ export class KritzelIframeElementBridge {
    * judges them by the state the page had: a click right after picking was turned on is still a click.
    */
   private _syncVersion = 0;
-  private readonly _pickingAtVersion = new Map<number, boolean>([[0, false]]);
+  private readonly _versions = new Map<number, SyncVersion>([[0, { picking: false, supersededAt: null }]]);
 
   constructor(owner: KritzelIframeElementBridgeOwner) {
     this._owner = owner;
@@ -273,7 +285,8 @@ export class KritzelIframeElementBridge {
 
     return new Promise<KritzelObjectElementInfo[]>((resolve, reject) => {
       const requestId = ++this._requestCounter;
-      this._queries.set(requestId, { selector, limit: normalizedLimit, resolve, reject, timer: null });
+      const deadline = Date.now() + IFRAME_ELEMENT_LOAD_TIMEOUT;
+      this._queries.set(requestId, { selector, limit: normalizedLimit, resolve, reject, timer: null, isAwaitingAnswer: false, deadline });
       if (this._isReady) {
         this.postQuery(requestId);
       } else {
@@ -336,6 +349,8 @@ export class KritzelIframeElementBridge {
           this.clearHover();
         }
         this._isReady = true;
+        // A new document starts in the initial state until it applied the sync below.
+        this._versions.set(0, { picking: false, supersededAt: null });
         this.sync();
         // Queries sent to a previous document are lost with it, so all pending ones are sent again.
         this._queries.forEach((_query, requestId) => this.postQuery(requestId));
@@ -364,7 +379,7 @@ export class KritzelIframeElementBridge {
     if (!this._owner.isInteractive) {
       return;
     }
-    const element = message.element === null ? null : readElementInfo(message.element);
+    const element = message.element === null ? null : this.readContentElement(message.element);
     if (element === null && message.element !== null) {
       return;
     }
@@ -376,7 +391,7 @@ export class KritzelIframeElementBridge {
   }
 
   private handleClick(message: Record<string, unknown>): void {
-    const element = readElementInfo(message.element);
+    const element = this.readContentElement(message.element);
     if (!element || !this._owner.isInteractive || this.pickingAt(message.version) !== false) {
       return;
     }
@@ -384,16 +399,38 @@ export class KritzelIframeElementBridge {
   }
 
   private handlePick(message: Record<string, unknown>): void {
-    const element = readElementInfo(message.element);
+    const element = this.readContentElement(message.element);
     if (!element || !this._owner.isInteractive || this.pickingAt(message.version) !== true) {
       return;
     }
     this._owner.emitPick(element, readModifiers(message));
   }
 
-  /** Whether the page was picking in the state of a sync version, or `undefined` for versions the host never sent. */
+  /**
+   * Whether the page was picking in the state of a sync version. `undefined` for versions the host never sent and
+   * for states that were replaced more than a moment ago: the page applies a new state within one round trip, so
+   * only a click on its way while the state changed may cite the previous one.
+   */
   private pickingAt(version: unknown): boolean | undefined {
-    return typeof version === 'number' ? this._pickingAtVersion.get(version) : undefined;
+    const entry = typeof version === 'number' ? this._versions.get(version) : undefined;
+    if (!entry || (entry.supersededAt !== null && Date.now() - entry.supersededAt > VERSION_GRACE_PERIOD)) {
+      return undefined;
+    }
+    return entry.picking;
+  }
+
+  /** An element description from the page, with its visible part kept inside the content like tracked positions. */
+  private readContentElement(value: unknown): KritzelObjectElementInfo | null {
+    const element = readElementInfo(value);
+    if (element?.visibleRect) {
+      const visibleRect = this.clampToContent(element.visibleRect);
+      if (visibleRect) {
+        element.visibleRect = visibleRect;
+      } else {
+        delete element.visibleRect;
+      }
+    }
+    return element;
   }
 
   private handleRects(message: Record<string, unknown>): void {
@@ -427,11 +464,11 @@ export class KritzelIframeElementBridge {
     }
     const elements = message.elements
       .slice(0, query.limit)
-      .map(element => readElementInfo(element))
+      .map(element => this.readContentElement(element))
       .filter((element): element is KritzelObjectElementInfo => element !== null);
-    const visibleRect = this.clampToContent(elements[0]?.visibleRect ?? null);
+    const visibleRect = elements[0]?.visibleRect;
     if (visibleRect && this._tracked.has(query.selector)) {
-      this._rects.set(query.selector, visibleRect);
+      this._rects.set(query.selector, { ...visibleRect });
     }
     query.resolve(elements);
   }
@@ -464,8 +501,13 @@ export class KritzelIframeElementBridge {
 
   private postQuery(requestId: number): void {
     const query = this._queries.get(requestId);
-    if (query) {
-      this.post({ type: IFRAME_ELEMENT_MESSAGES.query, requestId, selector: query.selector, limit: query.limit });
+    if (!query) {
+      return;
+    }
+    this.post({ type: IFRAME_ELEMENT_MESSAGES.query, requestId, selector: query.selector, limit: query.limit });
+    // The answer timeout starts once and is never extended by later re-sends, e.g. after the page reloaded.
+    if (!query.isAwaitingAnswer) {
+      query.isAwaitingAnswer = true;
       this.startQueryTimer(requestId, IFRAME_ELEMENT_QUERY_TIMEOUT, `The content of object "${this._owner.id}" did not respond.`);
     }
   }
@@ -481,7 +523,7 @@ export class KritzelIframeElementBridge {
     query.timer = setTimeout(() => {
       this._queries.delete(requestId);
       query.reject(new Error(message));
-    }, timeout);
+    }, Math.max(0, Math.min(timeout, query.deadline - Date.now())));
   }
 
   private sync(): void {
@@ -489,8 +531,15 @@ export class KritzelIframeElementBridge {
       return;
     }
     const version = ++this._syncVersion;
-    this._pickingAtVersion.set(version, this._picking.enabled);
-    this._pickingAtVersion.delete(version - MAX_REMEMBERED_VERSIONS);
+    const now = Date.now();
+    this._versions.forEach((entry, key) => {
+      if (entry.supersededAt === null) {
+        entry.supersededAt = now;
+      } else if (now - entry.supersededAt > VERSION_GRACE_PERIOD) {
+        this._versions.delete(key);
+      }
+    });
+    this._versions.set(version, { picking: this._picking.enabled, supersededAt: null });
     this.post({
       type: IFRAME_ELEMENT_MESSAGES.sync,
       version,

@@ -19,9 +19,14 @@ export const IFRAME_ELEMENT_OVERLAY_TAG = 'kritzel-element-overlay';
 /** Attribute set on the page's root element while picking, used to show the default cursor everywhere. */
 export const IFRAME_ELEMENT_PICKING_ATTRIBUTE = 'data-kritzel-picking';
 
-/** CSS that keeps the default cursor on links and buttons while picking, since clicks don't activate them. */
+/**
+ * CSS used while picking: keeps the default cursor on links and buttons, since clicks don't activate them, and lets
+ * presses on nested frames land in the page, where picking can intercept them (a nested frame's own content would
+ * receive them otherwise). Pointing at a nested frame picks the element that contains it.
+ */
 export const IFRAME_ELEMENT_PICKING_CSS =
-  `html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}], html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] * { cursor: var(--kritzel-iframe-default-cursor) !important; }`;
+  `html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}], html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] * { cursor: var(--kritzel-iframe-default-cursor) !important; }`
+  + ` html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] iframe, html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] embed, html[${IFRAME_ELEMENT_PICKING_ATTRIBUTE}] object { pointer-events: none !important; }`;
 
 /**
  * Creates the script that runs in the page's `<head>`, before any script of the content. It describes,

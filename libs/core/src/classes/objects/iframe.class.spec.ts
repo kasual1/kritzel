@@ -491,6 +491,7 @@ describe('KritzelIframeObject', () => {
 
       await expect(promise).resolves.toEqual([expect.objectContaining({ selector: '#run' })]);
       await expect(new KritzelIframeObject().queryElements('button')).rejects.toThrow('is not mounted');
+      await expect(new KritzelIframeObject({ sandbox: ['allow-forms'] }).queryElements('button')).rejects.toThrow('without scripts');
     });
   });
 });

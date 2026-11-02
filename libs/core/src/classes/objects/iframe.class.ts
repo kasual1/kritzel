@@ -300,6 +300,9 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
    * Rejects if the selector is invalid, the object isn't mounted or the page doesn't respond.
    */
   queryElements(selector: string, limit?: number): Promise<KritzelObjectElementInfo[]> {
+    if (!this.sandbox.includes('allow-scripts')) {
+      return Promise.reject(new Error(`Object "${this.id}" runs its content without scripts, so its elements can't be reached.`));
+    }
     return this.elementBridge.query(selector, limit);
   }
 
