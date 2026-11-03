@@ -30,11 +30,13 @@ interface ChipPosition {
   width: number;
 }
 
-const hostStyle: CSSProperties = {
+const hostStyle = {
   position: 'relative',
   display: 'block',
   height: '100%',
-};
+  // Pages resize from their corners like frames in a design tool, without the white corner squares.
+  '--kritzel-selection-resize-handle-visibility': 'hidden',
+} as CSSProperties;
 
 const chipStyle: CSSProperties = {
   position: 'absolute',
@@ -75,9 +77,10 @@ const chipButtonStyle: CSSProperties = {
   cursor: 'pointer',
 };
 
-/** The pages Claude adds get a titlebar. */
+/** The pages Claude adds get a titlebar and keep their orientation. */
 const objectConfig: KritzelObjectConfig = {
   hasTitlebar: isIframe,
+  isRotatable: false,
 };
 
 /** The titlebar shows the page's name, which users can rename by clicking it while the page is selected. */
