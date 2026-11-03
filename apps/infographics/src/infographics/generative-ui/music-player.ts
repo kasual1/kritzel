@@ -7,7 +7,7 @@ export const MUSIC_PLAYER: PageInput = {
   width: 320,
   height: 520,
   html: `<main class="player" data-kritzel-id="player">
-  <svg class="cover" data-kritzel-id="album-cover" viewBox="0 0 100 100" role="img" aria-label="Album cover of Velvet Midnight">
+  <svg class="cover" data-kritzel-id="album-cover" viewBox="0 0 100 100" role="img" aria-label="Album cover of Full Control">
     <rect width="100" height="100" fill="#1c1917" />
     <circle cx="62" cy="38" r="27" fill="#e8a33d" />
     <circle cx="20" cy="24" r="6" fill="#d9572b" />
@@ -21,15 +21,15 @@ export const MUSIC_PLAYER: PageInput = {
       <circle cx="44" cy="35" r="1.4" />
       <circle cx="44" cy="43" r="1.4" />
     </g>
-    <text x="8" y="82" textLength="84" lengthAdjust="spacingAndGlyphs" fill="#f5ecd7"
-      font-family="system-ui, sans-serif" font-size="9" font-weight="800">VELVET MIDNIGHT</text>
-    <text x="8" y="91" textLength="50" lengthAdjust="spacingAndGlyphs" fill="#e8a33d"
-      font-family="system-ui, sans-serif" font-size="4.5" font-weight="600">RAY MOREAU QUARTET</text>
+    <text x="8" y="82" textLength="68" lengthAdjust="spacingAndGlyphs" fill="#f5ecd7"
+      font-family="system-ui, sans-serif" font-size="9" font-weight="800">FULL CONTROL</text>
+    <text x="8" y="91" textLength="42" lengthAdjust="spacingAndGlyphs" fill="#e8a33d"
+      font-family="system-ui, sans-serif" font-size="4.5" font-weight="600">LUCA MOULINBEAU</text>
   </svg>
 
   <header class="track-info" data-kritzel-id="track-info">
-    <h1 data-kritzel-id="track-title">Velvet Midnight</h1>
-    <p data-kritzel-id="artist">Ray Moreau Quartet</p>
+    <h1 data-kritzel-id="track-title">Full Control</h1>
+    <p data-kritzel-id="artist">Luca Moulinbeau</p>
   </header>
 
   <div class="progress" data-kritzel-id="progress">
