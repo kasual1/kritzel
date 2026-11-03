@@ -41,7 +41,7 @@ export function AgenticCanvasInfographic() {
       return;
     }
     if (!CanvasAgent.hasApiKey) {
-      console.warn('Add VITE_ANTHROPIC_API_KEY to the .env file at the repository root and restart the dev server.');
+      console.warn('Add ANTHROPIC_API_KEY to the .env file at the repository root and restart the dev server.');
       return;
     }
 

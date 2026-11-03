@@ -234,7 +234,7 @@ export function GenerativeUiInfographic() {
     if (!GenerativeUiAgent.hasApiKey) {
       await editor.triggerNotification({
         type: 'warning',
-        message: 'Add VITE_ANTHROPIC_API_KEY to the .env file at the repository root and restart the dev server.',
+        message: 'Add ANTHROPIC_API_KEY to the .env file at the repository root and restart the dev server.',
       });
       return;
     }

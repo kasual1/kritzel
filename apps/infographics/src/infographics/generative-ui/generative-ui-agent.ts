@@ -8,11 +8,11 @@ import {
 import { isIframe } from '../agentic-canvas/canvas-agent';
 
 /**
- * `VITE_ANTHROPIC_API_KEY` from the `.env` file at the repository root (see `.env.example`).
+ * `ANTHROPIC_API_KEY` from the `.env` file at the repository root (see `.env.example`); `vite.config.ts` exposes it.
  * The page calls the Claude API straight from the browser, so anyone who opens it can read the key: only run it locally.
  * A real app would send the requests through its own backend.
  */
-const API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY ?? '';
+const API_KEY = import.meta.env.ANTHROPIC_API_KEY ?? '';
 
 const MODEL = 'claude-opus-5-5';
 

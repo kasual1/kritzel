@@ -33,10 +33,11 @@ tool, which adds a `KritzelIframeObject` with a titlebar that renders the page C
 To try it, copy `.env.example` at the repository root to `.env` and set your Anthropic API key:
 
 ```bash
-VITE_ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-The key is used straight from the browser, so only run this locally.
+The key is used straight from the browser, so only run this locally. Vite normally only hands `VITE_*` variables to
+the page, so `vite.config.ts` lets `ANTHROPIC_API_KEY` through as well. A `vite build` puts the key into `dist`.
 
 ## Generative UI
 
