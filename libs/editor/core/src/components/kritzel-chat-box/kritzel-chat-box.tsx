@@ -10,7 +10,7 @@ export type KritzelChatBoxMode = 'collapsed' | 'expanded';
 })
 export class KritzelChatBox {
   /** Time in ms after the last caret movement before the caret starts blinking again. */
-  private static readonly CARET_IDLE_DELAY = 600;
+  private static readonly CARET_IDLE_DELAY = 150;
 
   /** Current text value of the chat box. */
   @Prop({ mutable: true }) value: string = '';
@@ -56,6 +56,9 @@ export class KritzelChatBox {
   private resizeObserver?: ResizeObserver;
 
   private shouldRevealCaret = false;
+
+  /** Set by keyboard input so only typing (not clicking or focusing) keeps the caret solid. */
+  private isTyping = false;
 
   @Element() host!: HTMLKritzelChatBoxElement;
 
@@ -186,6 +189,7 @@ export class KritzelChatBox {
     const isFocused = this.host.shadowRoot?.activeElement === textarea;
     if (!isFocused || this.disabled || textarea.selectionStart !== textarea.selectionEnd) {
       this.shouldRevealCaret = false;
+      this.isTyping = false;
       clearTimeout(this.caretIdleTimer);
       caret.classList.remove('visible', 'typing');
       return;
@@ -221,10 +225,18 @@ export class KritzelChatBox {
     caret.style.transform = `translate(${left}px, ${top}px)`;
     caret.classList.add('visible');
 
-    // Keep the caret solid while the user types or moves it; blinking resumes once they pause.
-    caret.classList.add('typing');
-    clearTimeout(this.caretIdleTimer);
-    this.caretIdleTimer = setTimeout(() => caret.classList.remove('typing'), KritzelChatBox.CARET_IDLE_DELAY);
+    if (this.isTyping) {
+      // Keep the caret solid while the user types; blinking resumes once they pause.
+      this.isTyping = false;
+      caret.classList.add('typing');
+      clearTimeout(this.caretIdleTimer);
+      this.caretIdleTimer = setTimeout(() => caret.classList.remove('typing'), KritzelChatBox.CARET_IDLE_DELAY);
+    } else if (!caret.classList.contains('typing')) {
+      // Clicking or otherwise moving the caret restarts the blink so it appears right away.
+      caret.style.animation = 'none';
+      void caret.offsetWidth;
+      caret.style.animation = '';
+    }
   }
 
   private getTextMirror(textarea: HTMLTextAreaElement): HTMLDivElement {
@@ -298,6 +310,7 @@ export class KritzelChatBox {
 
   private handleInput = (event: Event): void => {
     this.shouldRevealCaret = true;
+    this.isTyping = true;
     this.value = (event.target as HTMLTextAreaElement).value;
     this.expandIfOverflowing();
     this.scheduleCaretUpdate();
@@ -356,6 +369,7 @@ export class KritzelChatBox {
 
   private handleKeyDown = (event: KeyboardEvent): void => {
     this.shouldRevealCaret = true;
+    this.isTyping = true;
     this.scheduleCaretUpdate();
 
     if (event.key === 'Escape' && !event.isComposing) {
