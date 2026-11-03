@@ -7,23 +7,29 @@ export const MUSIC_PLAYER: PageInput = {
   width: 320,
   height: 520,
   html: `<main class="player" data-kritzel-id="player">
-  <svg class="cover" data-kritzel-id="album-cover" viewBox="0 0 100 100" role="img" aria-label="Album cover">
-    <defs>
-      <linearGradient id="sunset" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#fed7aa" />
-        <stop offset="0.55" stop-color="#fb923c" />
-        <stop offset="1" stop-color="#e11d48" />
-      </linearGradient>
-    </defs>
-    <rect width="100" height="100" fill="url(#sunset)" />
-    <circle cx="50" cy="58" r="20" fill="#fff7ed" opacity="0.9" />
-    <rect y="68" width="100" height="32" fill="#9f1239" opacity="0.35" />
-    <path d="M14 76h30M56 76h30M24 84h52M36 92h28" stroke="#fff7ed" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+  <svg class="cover" data-kritzel-id="album-cover" viewBox="0 0 100 100" role="img" aria-label="Album cover of Velvet Midnight">
+    <rect width="100" height="100" fill="#1c1917" />
+    <circle cx="62" cy="38" r="27" fill="#e8a33d" />
+    <circle cx="20" cy="24" r="6" fill="#d9572b" />
+    <g stroke="#f5ecd7" stroke-linecap="round" fill="none">
+      <path d="M44 18v32a11 11 0 0 0 22 0v-6" stroke-width="6" />
+      <path d="M44 18l-7-7" stroke-width="3.5" />
+    </g>
+    <path d="M60 37h12l-2.5 8h-7z" fill="#f5ecd7" />
+    <g fill="#1c1917">
+      <circle cx="44" cy="27" r="1.4" />
+      <circle cx="44" cy="35" r="1.4" />
+      <circle cx="44" cy="43" r="1.4" />
+    </g>
+    <text x="8" y="82" textLength="84" lengthAdjust="spacingAndGlyphs" fill="#f5ecd7"
+      font-family="system-ui, sans-serif" font-size="9" font-weight="800">VELVET MIDNIGHT</text>
+    <text x="8" y="91" textLength="50" lengthAdjust="spacingAndGlyphs" fill="#e8a33d"
+      font-family="system-ui, sans-serif" font-size="4.5" font-weight="600">RAY MOREAU QUARTET</text>
   </svg>
 
   <header class="track-info" data-kritzel-id="track-info">
-    <h1 data-kritzel-id="track-title">Slow Sunday</h1>
-    <p data-kritzel-id="artist">Nora Vale</p>
+    <h1 data-kritzel-id="track-title">Velvet Midnight</h1>
+    <p data-kritzel-id="artist">Ray Moreau Quartet</p>
   </header>
 
   <div class="progress" data-kritzel-id="progress">
@@ -57,12 +63,12 @@ body {
   height: auto;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 12px 28px -10px rgba(194, 65, 12, 0.45);
+  box-shadow: 0 12px 28px -10px rgba(28, 25, 23, 0.5);
 }
 .track-info h1 { margin: 0; font-size: 21px; font-weight: 700; }
 .track-info p { margin: 4px 0 0; font-size: 15px; color: #78716c; }
 .track { height: 4px; border-radius: 2px; background: #e7e5e4; overflow: hidden; }
-.fill { width: 38%; height: 100%; background: #f97316; }
+.fill { width: 38%; height: 100%; background: #d9572b; }
 .times {
   display: flex;
   justify-content: space-between;
