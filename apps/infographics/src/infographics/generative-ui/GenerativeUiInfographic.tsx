@@ -10,7 +10,8 @@ import {
   type KritzelObjectTitlebarConfig,
 } from '@kritzel/react-editor';
 import { isIframe } from '../agentic-canvas/canvas-agent';
-import { GenerativeUiAgent, type PageReference } from './generative-ui-agent';
+import { GenerativeUiAgent, revealPage, type PageReference } from './generative-ui-agent';
+import { createWeatherWidget } from './weather-widget';
 
 const WORKSPACE_ID = 'generative-ui';
 
@@ -18,6 +19,9 @@ const WORKSPACE_ID = 'generative-ui';
 const CHIP_GAP = 8;
 
 const MAX_TEXT_LENGTH = 32;
+
+/** Pointing into an inline SVG icon picks the whole icon instead of one of its paths. */
+const PICKABLE_SELECTOR = ':not(svg *)';
 
 /** The page the next prompt changes: the selected iframe object, and the element of it the user picked. */
 interface Reference extends PageReference {
@@ -116,8 +120,9 @@ export function GenerativeUiInfographic() {
   const [reference, setReferenceState] = useState<Reference | null>(null);
   const [chipPosition, setChipPosition] = useState<ChipPosition | null>(null);
   const [isWorking, setIsWorking] = useState(false);
+  const [weatherWidget] = useState(createWeatherWidget);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Generative UI', objects: [] }),
+    new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Generative UI', objects: [weatherWidget] }),
   ]);
 
   useEffect(() => () => chipObserverRef.current?.disconnect(), []);
@@ -144,6 +149,15 @@ export function GenerativeUiInfographic() {
     chipObserverRef.current.observe(chatBox);
   }
 
+  async function onReady() {
+    observeChatBox();
+    const editor = editorRef.current;
+    const page = await editor?.getObjectById(weatherWidget.id);
+    if (editor && page && isIframe(page)) {
+      await revealPage(editor, page);
+    }
+  }
+
   async function highlightElement(objectId: string, element: KritzelObjectElementInfo) {
     await editorRef.current
       ?.highlightObjectElements(objectId, [{ selector: element.selector, label: element.kritzelId ?? element.tagName }])
@@ -166,7 +180,9 @@ export function GenerativeUiInfographic() {
       await editor?.clearObjectElementHighlights(previous.objectId).catch(() => undefined);
     }
     if (page) {
-      await editor?.setObjectElementPicking(page.id, true).catch(warn('Could not start picking elements.'));
+      await editor
+        ?.setObjectElementPicking(page.id, true, { selector: PICKABLE_SELECTOR })
+        .catch(warn('Could not start picking elements.'));
     }
   }
 
@@ -260,7 +276,7 @@ export function GenerativeUiInfographic() {
         isChatBoxLoading={isWorking}
         isWorkspaceManagerVisible={false}
         style={{ display: 'block', height: '100%' }}
-        onIsReady={observeChatBox}
+        onIsReady={() => void onReady()}
         onObjectsSelectionChange={event => void onSelectionChange(event.detail)}
         onObjectElementPick={event => void onElementPick(event.detail)}
         onChatSubmit={event => void onChatSubmit(event.detail)}

@@ -53,7 +53,7 @@ const ADD_PAGE_TOOL: Anthropic.Beta.BetaTool = {
   input_schema: {
     type: 'object',
     properties: {
-      title: { type: 'string', description: 'Short title for the titlebar, e.g. "Pricing page".' },
+      title: { type: 'string', description: 'Short title for the titlebar, e.g. "Weather widget".' },
       width: { type: 'number', description: `Width in CSS pixels, ${MIN_SIZE} to ${MAX_SIZE}.` },
       height: { type: 'number', description: `Height in CSS pixels, ${MIN_SIZE} to ${MAX_SIZE}.` },
       html: { type: 'string' },
@@ -93,7 +93,8 @@ const EDIT_PAGE_TOOL: Anthropic.Beta.BetaTool = {
 
 type PagePart = keyof KritzelIframeContent;
 
-interface PageInput extends KritzelIframeContent {
+/** A page as Claude writes it with add_page. */
+export interface PageInput extends KritzelIframeContent {
   title: string;
   width: number;
   height: number;
@@ -103,6 +104,33 @@ interface PageInput extends KritzelIframeContent {
 export interface PageReference {
   objectId: string;
   element?: KritzelObjectElementInfo;
+}
+
+/** A page object at the given position in world units, with the look every page on the canvas shares. */
+export function createPageObject({ title, width, height, html, css, script }: PageInput, x: number, y: number): KritzelIframeObject {
+  return new KritzelIframeObject({
+    name: title,
+    title,
+    content: { html, css, script },
+    translateX: x,
+    translateY: y,
+    width,
+    height,
+    borderRadius: 12,
+    boxShadow: '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.18)',
+  });
+}
+
+/** Centers a page in the viewport, zooming out when it does not fit but never zooming in past 100 %. */
+export async function revealPage(editor: HTMLKritzelEditorElement, page: KritzelIframeObject): Promise<void> {
+  const box = page.boundingBox;
+  const viewport = await editor.getViewport();
+  const scale = Math.min(
+    viewport.width / (box.width * REVEAL_PADDING),
+    viewport.height / (box.height * REVEAL_PADDING),
+    1,
+  );
+  await editor.setViewport(box.x + box.width / 2, box.y + box.height / 2, scale);
 }
 
 /** Thrown for invalid tool input; its message goes back to Claude as an error result. */
@@ -298,34 +326,15 @@ export class GenerativeUiAgent {
   }
 
   /** Adds the page to the right of the existing ones and moves the viewport to it. */
-  private async addPage({ title, width, height, html, css, script }: PageInput): Promise<KritzelIframeObject> {
+  private async addPage(input: PageInput): Promise<KritzelIframeObject> {
     const boxes = (await this.editor.getAllObjects()).filter(isIframe).map(object => object.boundingBox);
-    const page = await this.editor.addObject(
-      new KritzelIframeObject({
-        name: title,
-        title,
-        content: { html, css, script },
-        translateX: boxes.length ? Math.max(...boxes.map(box => box.x + box.width)) + GAP : 0,
-        translateY: boxes.length ? Math.min(...boxes.map(box => box.y)) : 0,
-        width,
-        height,
-        borderRadius: 12,
-        boxShadow: '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.18)',
-      }),
-    );
+    const x = boxes.length ? Math.max(...boxes.map(box => box.x + box.width)) + GAP : 0;
+    const y = boxes.length ? Math.min(...boxes.map(box => box.y)) : 0;
+    const page = await this.editor.addObject(createPageObject(input, x, y));
     if (!page) {
-      throw new Error(`"${title}" could not be added to the canvas.`);
+      throw new Error(`"${input.title}" could not be added to the canvas.`);
     }
-
-    // Centers the page, zooming out when it does not fit but never zooming in past 100 %.
-    const box = page.boundingBox;
-    const viewport = await this.editor.getViewport();
-    const scale = Math.min(
-      viewport.width / (box.width * REVEAL_PADDING),
-      viewport.height / (box.height * REVEAL_PADDING),
-      1,
-    );
-    await this.editor.setViewport(box.x + box.width / 2, box.y + box.height / 2, scale);
+    await revealPage(this.editor, page);
     return page;
   }
 }

@@ -40,9 +40,10 @@ The key is used straight from the browser, so only run this locally.
 
 ## Generative UI
 
-`src/infographics/generative-ui/` uses the same chat box and API key. Without a selection, a prompt adds a new page
-(`add_page`). Select a page and it starts picking elements: hovering highlights the element under the pointer and a
-click picks it. A chip above the chat box shows what the next prompt changes, the whole page or the picked element, and
+`src/infographics/generative-ui/` uses the same chat box and API key. The canvas starts with a weather widget
+(`weather-widget.ts`), so there is something to pick before the first prompt. Without a selection, a prompt adds a new
+page (`add_page`). Select a page and it starts picking elements: hovering highlights the element under the pointer and a
+click picks it, a whole inline SVG icon rather than one of its paths. A chip above the chat box shows what the next prompt changes, the whole page or the picked element, and
 its close button removes the element, then the page. Claude gets the page's current source with the request and changes
 it with find-and-replace edits (`edit_page`), so small changes are quick. Prompts don't share a conversation; the pages
 on the canvas are the state (`generative-ui-agent.ts`).
