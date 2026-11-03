@@ -11,7 +11,7 @@ import {
 } from '@kritzel/react-editor';
 import { isIframe } from '../agentic-canvas/canvas-agent';
 import { GenerativeUiAgent, revealPage, type PageReference } from './generative-ui-agent';
-import { createWeatherWidget } from './weather-widget';
+import { createMusicPlayer } from './music-player';
 
 const WORKSPACE_ID = 'generative-ui';
 
@@ -20,8 +20,11 @@ const CHIP_GAP = 8;
 
 const MAX_TEXT_LENGTH = 32;
 
-/** Pointing into an inline SVG icon picks the whole icon instead of one of its paths. */
-const PICKABLE_SELECTOR = ':not(svg *)';
+/**
+ * Pointing into an inline SVG icon picks the whole icon instead of one of its paths, and an icon inside a button or
+ * link picks the button or link.
+ */
+const PICKABLE_SELECTOR = ':not(svg *):not(button svg):not(a svg)';
 
 /** The page the next prompt changes: the selected iframe object, and the element of it the user picked. */
 interface Reference extends PageReference {
@@ -120,9 +123,9 @@ export function GenerativeUiInfographic() {
   const [reference, setReferenceState] = useState<Reference | null>(null);
   const [chipPosition, setChipPosition] = useState<ChipPosition | null>(null);
   const [isWorking, setIsWorking] = useState(false);
-  const [weatherWidget] = useState(createWeatherWidget);
+  const [musicPlayer] = useState(createMusicPlayer);
   const [workspaces] = useState(() => [
-    new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Generative UI', objects: [weatherWidget] }),
+    new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Generative UI', objects: [musicPlayer] }),
   ]);
 
   useEffect(() => () => chipObserverRef.current?.disconnect(), []);
@@ -152,7 +155,7 @@ export function GenerativeUiInfographic() {
   async function onReady() {
     observeChatBox();
     const editor = editorRef.current;
-    const page = await editor?.getObjectById(weatherWidget.id);
+    const page = await editor?.getObjectById(musicPlayer.id);
     if (editor && page && isIframe(page)) {
       await revealPage(editor, page);
     }

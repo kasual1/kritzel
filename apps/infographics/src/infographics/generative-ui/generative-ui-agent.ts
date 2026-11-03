@@ -53,7 +53,7 @@ const ADD_PAGE_TOOL: Anthropic.Beta.BetaTool = {
   input_schema: {
     type: 'object',
     properties: {
-      title: { type: 'string', description: 'Short title for the titlebar, e.g. "Weather widget".' },
+      title: { type: 'string', description: 'Short title for the titlebar, e.g. "Music player".' },
       width: { type: 'number', description: `Width in CSS pixels, ${MIN_SIZE} to ${MAX_SIZE}.` },
       height: { type: 'number', description: `Height in CSS pixels, ${MIN_SIZE} to ${MAX_SIZE}.` },
       html: { type: 'string' },
