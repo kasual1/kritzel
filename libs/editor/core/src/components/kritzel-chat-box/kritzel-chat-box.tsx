@@ -9,6 +9,9 @@ export type KritzelChatBoxMode = 'collapsed' | 'expanded';
   shadow: true,
 })
 export class KritzelChatBox {
+  /** Time in ms after the last caret movement before the caret starts blinking again. */
+  private static readonly CARET_IDLE_DELAY = 600;
+
   /** Current text value of the chat box. */
   @Prop({ mutable: true }) value: string = '';
 
@@ -47,6 +50,8 @@ export class KritzelChatBox {
   private caretMirror?: HTMLDivElement;
 
   private caretFrame?: number;
+
+  private caretIdleTimer?: ReturnType<typeof setTimeout>;
 
   private resizeObserver?: ResizeObserver;
 
@@ -152,6 +157,7 @@ export class KritzelChatBox {
       cancelAnimationFrame(this.caretFrame);
       this.caretFrame = undefined;
     }
+    clearTimeout(this.caretIdleTimer);
     this.caretMirror?.remove();
   }
 
@@ -180,7 +186,8 @@ export class KritzelChatBox {
     const isFocused = this.host.shadowRoot?.activeElement === textarea;
     if (!isFocused || this.disabled || textarea.selectionStart !== textarea.selectionEnd) {
       this.shouldRevealCaret = false;
-      caret.classList.remove('visible');
+      clearTimeout(this.caretIdleTimer);
+      caret.classList.remove('visible', 'typing');
       return;
     }
 
@@ -214,10 +221,10 @@ export class KritzelChatBox {
     caret.style.transform = `translate(${left}px, ${top}px)`;
     caret.classList.add('visible');
 
-    // Restart the blink so the caret stays solid while the user types or moves it.
-    caret.style.animation = 'none';
-    void caret.offsetWidth;
-    caret.style.animation = '';
+    // Keep the caret solid while the user types or moves it; blinking resumes once they pause.
+    caret.classList.add('typing');
+    clearTimeout(this.caretIdleTimer);
+    this.caretIdleTimer = setTimeout(() => caret.classList.remove('typing'), KritzelChatBox.CARET_IDLE_DELAY);
   }
 
   private getTextMirror(textarea: HTMLTextAreaElement): HTMLDivElement {
