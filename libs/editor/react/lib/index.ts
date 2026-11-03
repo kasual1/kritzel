@@ -119,6 +119,7 @@ export type {
     KritzelObjectElementHoverEvent,
     KritzelObjectElementClickEvent,
     KritzelObjectElementPickEvent,
+    KritzelChatBoxChip,
     KritzelTitlebarElement,
     KritzelTitlebarTitle,
     KritzelTitlebarText,

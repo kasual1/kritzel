@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useRef, useState, type CSSProperties } from 'react';
 import {
   KritzelEditor,
   KritzelWorkspace,
   type HTMLKritzelEditorElement,
   type KritzelBaseObject,
+  type KritzelChatBoxChip,
   type KritzelObjectConfig,
   type KritzelObjectElementInfo,
   type KritzelObjectElementPickEvent,
@@ -14,9 +15,6 @@ import { GenerativeUiAgent, revealPage, type PageReference } from './generative-
 import { createMusicPlayer } from './music-player';
 
 const WORKSPACE_ID = 'generative-ui';
-
-/** Room in pixels between the reference chip and the chat box below it. */
-const CHIP_GAP = 8;
 
 /**
  * Pointing into an inline SVG icon picks the whole icon instead of one of its paths, and an icon inside a button or
@@ -29,12 +27,6 @@ interface Reference extends PageReference {
   title: string;
 }
 
-interface ChipPosition {
-  left: number;
-  bottom: number;
-  width: number;
-}
-
 const hostStyle = {
   position: 'relative',
   display: 'block',
@@ -42,47 +34,6 @@ const hostStyle = {
   // Pages resize from their corners like frames in a design tool, without the white corner squares.
   '--kritzel-selection-resize-handle-visibility': 'hidden',
 } as CSSProperties;
-
-const chipStyle: CSSProperties = {
-  position: 'absolute',
-  zIndex: 3,
-  display: 'flex',
-  alignItems: 'center',
-  gap: 6,
-  boxSizing: 'border-box',
-  maxWidth: '100%',
-  height: 32,
-  padding: '0 4px 0 10px',
-  border: '1px solid #e4e4e7',
-  borderRadius: 999,
-  background: '#ffffff',
-  boxShadow: '0 4px 12px -6px rgba(20, 18, 31, 0.18)',
-  color: '#0a0a0a',
-  fontFamily: 'system-ui, sans-serif',
-  fontSize: 13,
-  whiteSpace: 'nowrap',
-};
-
-// Long page titles and the hint shrink with an ellipsis when the chip runs out of room; element names stay whole.
-const chipTextStyle: CSSProperties = { minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' };
-const chipTitleStyle: CSSProperties = { ...chipTextStyle, fontWeight: 600 };
-const chipMutedStyle: CSSProperties = { ...chipTextStyle, color: '#71717a' };
-const chipElementStyle: CSSProperties = { flexShrink: 0 };
-
-const chipButtonStyle: CSSProperties = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  flexShrink: 0,
-  width: 24,
-  height: 24,
-  padding: 0,
-  border: 0,
-  borderRadius: 999,
-  background: 'transparent',
-  color: '#71717a',
-  cursor: 'pointer',
-};
 
 /** The pages Claude adds get a titlebar and keep their orientation. */
 const objectConfig: KritzelObjectConfig = {
@@ -95,7 +46,7 @@ const objectTitlebar: KritzelObjectTitlebarConfig = {
   left: [{ id: 'title', type: 'title', isEditable: true }],
 };
 
-/** Name of a picked element for the chip and its highlight, e.g. `play-button`. Its text is left out. */
+/** Name of a picked element for the chat box chip and its highlight, e.g. `play-button`. Its text is left out. */
 function getElementName(element: KritzelObjectElementInfo): string {
   return element.kritzelId ?? element.tagName;
 }
@@ -114,41 +65,19 @@ export function GenerativeUiInfographic() {
   const abortRef = useRef<AbortController | null>(null);
   // Mirrors `reference` for the event handlers, which can run before React renders again.
   const referenceRef = useRef<Reference | null>(null);
-  const chipObserverRef = useRef<ResizeObserver | null>(null);
   const [reference, setReferenceState] = useState<Reference | null>(null);
-  const [chipPosition, setChipPosition] = useState<ChipPosition | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [musicPlayer] = useState(createMusicPlayer);
   const [workspaces] = useState(() => [
     new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Generative UI', objects: [musicPlayer] }),
   ]);
 
-  useEffect(() => () => chipObserverRef.current?.disconnect(), []);
-
   function setReference(next: Reference | null) {
     referenceRef.current = next;
     setReferenceState(next);
   }
 
-  /** Keeps the reference chip right above the chat box, which grows with its text. */
-  function observeChatBox() {
-    const editor = editorRef.current;
-    const chatBox = editor?.querySelector('kritzel-chat-box');
-    if (!editor || !chatBox || chipObserverRef.current) {
-      return;
-    }
-    const update = () => {
-      const host = editor.getBoundingClientRect();
-      const box = chatBox.getBoundingClientRect();
-      setChipPosition({ left: box.left - host.left, bottom: host.bottom - box.top + CHIP_GAP, width: box.width });
-    };
-    chipObserverRef.current = new ResizeObserver(update);
-    chipObserverRef.current.observe(editor);
-    chipObserverRef.current.observe(chatBox);
-  }
-
   async function onReady() {
-    observeChatBox();
     const editor = editorRef.current;
     const page = await editor?.getObjectById(musicPlayer.id);
     if (editor && page && isIframe(page)) {
@@ -193,7 +122,7 @@ export function GenerativeUiInfographic() {
     await highlightElement(objectId, element);
   }
 
-  /** The chip's close button drops the picked element first, then the page. */
+  /** The chat box chip's remove button drops the picked element first, then the page. */
   async function onClearReference() {
     const current = referenceRef.current;
     const editor = editorRef.current;
@@ -261,6 +190,19 @@ export function GenerativeUiInfographic() {
     }
   }
 
+  /** The chip above the chat box names what the next prompt changes: the selected page, or the element picked in it. */
+  const chatBoxChips: KritzelChatBoxChip[] = reference
+    ? [
+        {
+          id: reference.objectId,
+          label: reference.title,
+          icon: 'cursor',
+          detail: reference.element ? getElementName(reference.element) : undefined,
+          hint: reference.element ? undefined : 'Hover over the page and click to pick an element',
+        },
+      ]
+    : [];
+
   return (
     <div style={hostStyle}>
       <KritzelEditor
@@ -272,6 +214,7 @@ export function GenerativeUiInfographic() {
         objectTitlebar={objectTitlebar}
         isChatBoxVisible
         isChatBoxLoading={isWorking}
+        chatBoxChips={chatBoxChips}
         isWorkspaceManagerVisible={false}
         style={{ display: 'block', height: '100%' }}
         onIsReady={() => void onReady()}
@@ -279,38 +222,8 @@ export function GenerativeUiInfographic() {
         onObjectElementPick={event => void onElementPick(event.detail)}
         onChatSubmit={event => void onChatSubmit(event.detail)}
         onChatStop={() => abortRef.current?.abort()}
+        onChatChipRemove={() => void onClearReference()}
       />
-      {reference && chipPosition && (
-        <div
-          role="status"
-          aria-label="Prompt reference"
-          style={{ ...chipStyle, left: chipPosition.left, bottom: chipPosition.bottom, maxWidth: chipPosition.width }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4a7dff" strokeWidth="2.2" aria-hidden="true">
-            <path d="M4 4l6.5 16 2.4-6.6L19.5 11z" strokeLinejoin="round" />
-          </svg>
-          <span style={chipTitleStyle}>{reference.title}</span>
-          {reference.element ? (
-            <>
-              <span style={{ ...chipElementStyle, color: '#71717a' }} aria-hidden="true">›</span>
-              <span style={chipElementStyle}>{getElementName(reference.element)}</span>
-            </>
-          ) : (
-            <span style={chipMutedStyle}>Hover over the page and click to pick an element</span>
-          )}
-          <button
-            type="button"
-            aria-label={reference.element ? 'Remove the picked element' : 'Deselect the page'}
-            title={reference.element ? 'Remove the picked element' : 'Deselect the page'}
-            style={chipButtonStyle}
-            onClick={() => void onClearReference()}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden="true">
-              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-            </svg>
-          </button>
-        </div>
-      )}
     </div>
   );
 }

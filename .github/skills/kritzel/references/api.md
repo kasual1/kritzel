@@ -177,6 +177,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | activeUsers | IKritzelUser[] |  |  |
 | activeWorkspaceId | string |  | Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. |
 | assetStorageConfig | KritzelAssetStorageConfig |  |  |
+| chatBoxChips | KritzelChatBoxChip[] |  | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Pass a new array to change them. The editor never removes chips itself: update the array when \`chatChipRemove\` fires. |
 | chatBoxMode | "collapsed" \| "expanded" |  | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
 | cursorTarget | HTMLElement |  | The element to use as the target for the cursor. Defaults to the editor container if not set. |
 | customFonts | { [x: string]: KritzelFontRegistration; } |  | Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts. |
@@ -333,6 +334,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | activeWorkspaceChange | ActiveWorkspaceChangeEvent |  |
 | agenticCursorDetached | KritzelAgenticCursorDetachedEvent | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. |
 | awarenessChange | Map<number, Record<string, any>> |  |
+| chatChipRemove | KritzelChatBoxChip | Emitted with the chat box chip whose remove button the user activated. The chip stays until \`chatBoxChips\` no longer contains it. |
 | chatStop | void | Emitted when the user stops the current chat response. |
 | chatSubmit | string | Emitted with the chat box text when the user submits it. |
 | isPublicChange | IKritzelIsPublicChangeEvent |  |

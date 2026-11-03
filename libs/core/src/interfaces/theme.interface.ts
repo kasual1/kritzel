@@ -117,6 +117,8 @@ export interface KritzelTheme {
     buttonHoverBackgroundColor?: string;
     caretColor?: string;
     caretWidth?: string;
+    chipBoxShadow?: string;
+    chipMutedTextColor?: string;
     fontSize?: string;
     inputBackgroundColor?: string;
     inputBorderRadius?: string;

@@ -107,6 +107,7 @@ import { resolveTextToolAvailableFonts } from "@kritzel/core";
 import { KritzelContextMenuState } from "@kritzel/core";
 import { KritzelObjectExportFormat } from "@kritzel/core";
 import { KritzelSvgIconMap } from "@kritzel/core";
+import { KritzelChatBoxChip } from "@kritzel/core";
 import { KritzelChatBoxMode } from "../kritzel-chat-box/kritzel-chat-box";
 
 @Component({
@@ -471,6 +472,11 @@ export class KritzelEditor {
   @Prop() chatBoxMode: KritzelChatBoxMode = "collapsed";
   /** Whether the chat box shows its progress ring and turns its send button into a stop button. */
   @Prop() isChatBoxLoading: boolean = false;
+  /**
+   * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to.
+   * Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
+   */
+  @Prop() chatBoxChips: KritzelChatBoxChip[] = [];
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
@@ -515,6 +521,8 @@ export class KritzelEditor {
   @Event() chatSubmit!: EventEmitter<string>;
   /** Emitted when the user stops the current chat response. */
   @Event() chatStop!: EventEmitter<void>;
+  /** Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it. */
+  @Event() chatChipRemove!: EventEmitter<KritzelChatBoxChip>;
   /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
   @Event()
   agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
@@ -1712,6 +1720,11 @@ export class KritzelEditor {
     this.objectElementPick.emit(event.detail);
   }
 
+  handleChatChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
+    event.stopPropagation();
+    this.chatChipRemove.emit(event.detail);
+  }
+
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
     event.stopPropagation();
     this.clearNotificationDismissAnimationTimer();
@@ -2282,6 +2295,7 @@ export class KritzelEditor {
               mode={this.chatBoxMode}
               loading={this.isChatBoxLoading}
               terms={this.resolvedTerms}
+              chips={this.chatBoxChips}
               onChatSubmit={(event) => {
                 event.stopPropagation();
                 this.chatSubmit.emit(event.detail);
@@ -2290,6 +2304,7 @@ export class KritzelEditor {
                 event.stopPropagation();
                 this.chatStop.emit();
               }}
+              onChatChipRemove={(event) => this.handleChatChipRemove(event)}
             ></kritzel-chat-box>
           )}
 

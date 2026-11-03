@@ -100,6 +100,7 @@ export const DE_LOCALE: KritzelLocale = {
     'chatBox.placeholder': 'Frag die KI...',
     'chatBox.submit': 'Senden',
     'chatBox.stop': 'Stoppen',
+    'chatBox.removeChip': 'Entfernen',
 
     // Utility panel
     'utility.undo': 'Rückgängig',

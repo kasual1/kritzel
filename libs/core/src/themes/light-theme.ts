@@ -377,6 +377,8 @@ export const lightTheme: KritzelTheme = {
     buttonHoverBackgroundColor: '#3A6AE8',
     caretColor: '#4A7DFF',
     caretWidth: '2px',
+    chipBoxShadow: '0 4px 12px -6px rgba(20, 18, 31, 0.18)',
+    chipMutedTextColor: '#71717a',
     selectionBackgroundColor: '#4A7DFF',
     selectionColor: '#ffffff',
     scrollbarThumbColor: '#d4d4d4',

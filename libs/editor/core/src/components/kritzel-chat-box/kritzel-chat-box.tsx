@@ -1,5 +1,5 @@
 import { Component, Element, Event, EventEmitter, h, Host, Listen, Prop, State, Watch } from '@stencil/core';
-import { KritzelTermKey } from '@kritzel/core';
+import { KritzelChatBoxChip, KritzelTermKey } from '@kritzel/core';
 
 export type KritzelChatBoxMode = 'collapsed' | 'expanded';
 
@@ -34,6 +34,13 @@ export class KritzelChatBox {
   /** Resolved localized strings keyed by term key, supplied by the editor. */
   @Prop() terms: Partial<Record<KritzelTermKey, string>> = {};
 
+  /**
+   * Chips shown above the box, e.g. the object or element the next prompt refers to.
+   * The box never changes this array: pass a new array to add, change or remove chips.
+   * Each chip's remove button emits `chatChipRemove`.
+   */
+  @Prop() chips: KritzelChatBoxChip[] = [];
+
   /** Emitted with the current text when the user submits the chat box. */
   @Event() chatSubmit!: EventEmitter<string>;
 
@@ -42,6 +49,9 @@ export class KritzelChatBox {
 
   /** Emitted when the mode changes, including automatic expansion. */
   @Event() modeChange!: EventEmitter<KritzelChatBoxMode>;
+
+  /** Emitted with the chip whose remove button the user activated. The chip stays until `chips` no longer contains it. */
+  @Event() chatChipRemove!: EventEmitter<KritzelChatBoxChip>;
 
   private textareaRef?: HTMLTextAreaElement;
 
@@ -399,6 +409,57 @@ export class KritzelChatBox {
     this.value = '';
   };
 
+  /** Pressing a chip must not move focus out of the input, which would collapse an auto-expanded box. */
+  private preventFocusChange = (event: MouseEvent): void => {
+    event.preventDefault();
+  };
+
+  private removeChip(chip: KritzelChatBoxChip, event: MouseEvent): void {
+    // Only keyboard activation leaves focus on the button (mousedown is prevented), and the button may disappear with its chip.
+    if (this.host?.shadowRoot?.activeElement === event.currentTarget) {
+      this.textareaRef?.focus();
+    }
+    this.chatChipRemove.emit(chip);
+  }
+
+  private renderChips() {
+    const removeLabel = this.terms['chatBox.removeChip'] ?? 'Remove';
+    // Always rendered, so screen readers announce chips as they appear and change.
+    return (
+      <div class="chat-chips" aria-live="polite">
+        {(this.chips ?? []).map(chip => (
+          <div
+            key={chip.id}
+            class="chat-chip"
+            role="group"
+            aria-label={chip.detail ? `${chip.label}, ${chip.detail}` : chip.label}
+            onMouseDown={this.preventFocusChange}
+          >
+            {chip.icon && <kritzel-icon class="chat-chip-icon" name={chip.icon} size={14} aria-hidden="true"></kritzel-icon>}
+            <span class="chat-chip-label">{chip.label}</span>
+            {chip.detail && (
+              <span class="chat-chip-separator" aria-hidden="true">
+                ›
+              </span>
+            )}
+            {chip.detail && <span class="chat-chip-detail">{chip.detail}</span>}
+            {chip.hint && <span class="chat-chip-hint">{chip.hint}</span>}
+            <button
+              class="chat-chip-remove"
+              type="button"
+              aria-label={removeLabel}
+              title={removeLabel}
+              disabled={this.disabled}
+              onClick={event => this.removeChip(chip, event)}
+            >
+              <kritzel-icon name="x" size={14} aria-hidden="true"></kritzel-icon>
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   private handleButtonClick = (): void => {
     if (this.loading) {
       this.chatStop.emit();
@@ -417,6 +478,7 @@ export class KritzelChatBox {
 
     return (
       <Host>
+        {this.renderChips()}
         <div class="chat-box" aria-busy={this.loading ? 'true' : 'false'}>
           {this.loading && (
             <svg class="chat-progress" aria-hidden="true">

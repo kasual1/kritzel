@@ -101,6 +101,7 @@ export const EN_LOCALE: KritzelLocale = {
     'chatBox.placeholder': 'Ask the AI...',
     'chatBox.submit': 'Send',
     'chatBox.stop': 'Stop',
+    'chatBox.removeChip': 'Remove',
 
     // Utility panel
     'utility.undo': 'Undo',

@@ -120,6 +120,21 @@ describe('KritzelEditor', () => {
     });
   });
 
+  describe('Chat Box', () => {
+    it('re-emits chat chip removals once, stopping the chat box event', () => {
+      const emit = jest.fn();
+      (component as any).chatChipRemove = { emit };
+      const detail = { id: 'a', label: 'Page' };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleChatChipRemove(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith(detail);
+    });
+  });
+
   describe('Object Titlebar', () => {
     it('re-emits titlebar actions once, stopping the engine event', () => {
       const emit = jest.fn();

@@ -15,21 +15,22 @@ import { defineCustomElement as defineKritzelSplitButton } from '@kritzel/editor
 import { defineCustomElement as defineKritzelStrokeSize } from '@kritzel/editor/dist/components/kritzel-stroke-size.js';
 @ProxyCmp({
   defineCustomElementFn: defineKritzelChatBox,
-  inputs: ['disabled', 'loading', 'mode', 'placeholder', 'terms', 'value']
+  inputs: ['chips', 'disabled', 'loading', 'mode', 'placeholder', 'terms', 'value']
 })
 @Component({
   selector: 'kritzel-chat-box',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['disabled', 'loading', 'mode', 'placeholder', 'terms', 'value'],
-  outputs: ['chatSubmit', 'chatStop', 'modeChange'],
+  inputs: ['chips', 'disabled', 'loading', 'mode', 'placeholder', 'terms', 'value'],
+  outputs: ['chatSubmit', 'chatStop', 'modeChange', 'chatChipRemove'],
 })
 export class KritzelChatBox {
   protected el: HTMLKritzelChatBoxElement;
   @Output() chatSubmit = new EventEmitter<KritzelChatBoxCustomEvent<string>>();
   @Output() chatStop = new EventEmitter<KritzelChatBoxCustomEvent<void>>();
   @Output() modeChange = new EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxMode>>();
+  @Output() chatChipRemove = new EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxChip>>();
   constructor(c: ChangeDetectorRef, r: ElementRef, protected z: NgZone) {
     c.detach();
     this.el = r.nativeElement;
@@ -39,6 +40,7 @@ export class KritzelChatBox {
 
 import type { KritzelChatBoxCustomEvent } from '@kritzel/editor/dist/components';
 import type { KritzelChatBoxMode as IKritzelChatBoxKritzelChatBoxMode } from '@kritzel/editor/dist/components';
+import type { KritzelChatBoxChip as IKritzelChatBoxKritzelChatBoxChip } from '@kritzel/editor/dist/components';
 
 export declare interface KritzelChatBox extends Components.KritzelChatBox {
   /**
@@ -53,12 +55,16 @@ export declare interface KritzelChatBox extends Components.KritzelChatBox {
    * Emitted when the mode changes, including automatic expansion.
    */
   modeChange: EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxMode>>;
+  /**
+   * Emitted with the chip whose remove button the user activated. The chip stays until `chips` no longer contains it.
+   */
+  chatChipRemove: EventEmitter<KritzelChatBoxCustomEvent<IKritzelChatBoxKritzelChatBoxChip>>;
 }
 
 
 @ProxyCmp({
   defineCustomElementFn: defineKritzelEditor,
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxLoading', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxChips', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxLoading', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
   methods: ['getObjectById', 'addObject', 'addObjects', 'updateObject', 'removeObject', 'removeObjects', 'getSelectedObjects', 'selectObjects', 'selectAllObjectsInViewport', 'clearSelection', 'centerObjectInViewport', 'panToObject', 'backToContent', 'centerAllObjects', 'centerObjects', 'setViewport', 'panTo', 'zoomTo', 'zoomIn', 'zoomOut', 'getViewport', 'screenToWorld', 'worldToScreen', 'setActiveWorkspace', 'createWorkspace', 'updateWorkspace', 'deleteWorkspace', 'getWorkspaces', 'getActiveWorkspace', 'loadSharedWorkspace', 'reinitSync', 'registerTool', 'setActiveTool', 'disable', 'enable', 'copy', 'cut', 'paste', 'delete', 'bringForward', 'sendBackward', 'bringToFront', 'sendToBack', 'alignObjects', 'group', 'ungroup', 'undo', 'redo', 'getScreenshot', 'exportViewportAsPng', 'exportViewportAsSvg', 'getSelectedObjectSupportedExportFormats', 'canExportSelectedObjectAs', 'exportSelectedObject', 'exportAsJson', 'importFromJson', 'downloadAsJson', 'importFromFile', 'loadObjectsFromJson', 'getObjectsTotalCount', 'getAllObjects', 'findObjects', 'getObjectsInViewport', 'addAgenticCursor', 'updateAgenticCursor', 'moveAgenticCursor', 'detachAgenticCursor', 'removeAgenticCursor', 'clearAgenticCursors', 'getAgenticCursor', 'getAgenticCursors', 'setObjectElementPicking', 'highlightObjectElements', 'clearObjectElementHighlights', 'queryObjectElements', 'hideContextMenu', 'openContextMenu', 'openWorkspaceManagerMenu', 'closeWorkspaceManagerMenu', 'openMoreMenu', 'closeMoreMenu', 'openUserDialog', 'closeUserDialog', 'openExportDialog', 'closeExportDialog', 'openImportDialog', 'closeImportDialog', 'openSettingsDialog', 'closeSettingsDialog', 'openShareDialog', 'closeShareDialog', 'triggerSelectionChange', 'beginSceneBootstrap', 'endSceneBootstrap', 'getDisplayableShortcuts', 'openLoginDialog', 'closeLoginDialog', 'setLoginLoading', 'setLocale', 'getLocale', 'getAvailableLocales', 'registerLocales', 'registerFonts', 't', 'triggerNotification']
 })
 @Component({
@@ -66,8 +72,8 @@ export declare interface KritzelChatBox extends Components.KritzelChatBox {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: '<ng-content></ng-content>',
   // eslint-disable-next-line @angular-eslint/no-inputs-metadata-property
-  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxLoading', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
-  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit', 'chatStop', 'agenticCursorDetached', 'objectTitlebarAction', 'objectElementHover', 'objectElementClick', 'objectElementPick'],
+  inputs: ['activeUsers', 'activeWorkspaceId', 'assetStorageConfig', 'chatBoxChips', 'chatBoxMode', 'cursorTarget', 'customFonts', 'customSvgIcons', 'debugInfo', 'editorId', 'fallbackLocale', 'globalContextMenuItems', 'isChatBoxLoading', 'isChatBoxVisible', 'isMoreMenuVisible', 'isPanningEnabled', 'isToolbarVisible', 'isUtilityPanelVisible', 'isWatermarkVisible', 'isWorkspaceManagerVisible', 'isZoomPanelVisible', 'isZoomingEnabled', 'locale', 'locales', 'lockDrawingScale', 'loginConfig', 'moreMenuItems', 'objectConfig', 'objectContextMenuItems', 'objectTitlebar', 'scaleMax', 'scaleMin', 'syncConfig', 'theme', 'themes', 'toolbarItems', 'user', 'viewportBoundaryBottom', 'viewportBoundaryLeft', 'viewportBoundaryRight', 'viewportBoundaryTop', 'workspaces'],
+  outputs: ['isReady', 'activeWorkspaceChange', 'objectsChange', 'objectsAdded', 'objectsRemoved', 'objectsUpdated', 'objectsSelectionChange', 'undoStateChange', 'themeChange', 'localeChange', 'viewportChange', 'logout', 'login', 'isPublicChange', 'awarenessChange', 'chatSubmit', 'chatStop', 'chatChipRemove', 'agenticCursorDetached', 'objectTitlebarAction', 'objectElementHover', 'objectElementClick', 'objectElementPick'],
 })
 export class KritzelEditor {
   protected el: HTMLKritzelEditorElement;
@@ -88,6 +94,7 @@ export class KritzelEditor {
   @Output() awarenessChange = new EventEmitter<KritzelEditorCustomEvent<Map<number, Record<string, any>>>>();
   @Output() chatSubmit = new EventEmitter<KritzelEditorCustomEvent<string>>();
   @Output() chatStop = new EventEmitter<KritzelEditorCustomEvent<void>>();
+  @Output() chatChipRemove = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelChatBoxChip>>();
   @Output() agenticCursorDetached = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelAgenticCursorDetachedEvent>>();
   @Output() objectTitlebarAction = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectTitlebarActionEvent>>();
   @Output() objectElementHover = new EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelObjectElementHoverEvent>>();
@@ -113,6 +120,7 @@ import type { LocaleCode as IKritzelEditorLocaleCode } from '@kritzel/editor/dis
 import type { KritzelViewportState as IKritzelEditorKritzelViewportState } from '@kritzel/editor/dist/components';
 import type { LoginEvent as IKritzelEditorLoginEvent } from '@kritzel/editor/dist/components';
 import type { IKritzelIsPublicChangeEvent as IKritzelEditorIKritzelIsPublicChangeEvent } from '@kritzel/editor/dist/components';
+import type { KritzelChatBoxChip as IKritzelEditorKritzelChatBoxChip } from '@kritzel/editor/dist/components';
 import type { KritzelAgenticCursorDetachedEvent as IKritzelEditorKritzelAgenticCursorDetachedEvent } from '@kritzel/editor/dist/components';
 import type { KritzelObjectTitlebarActionEvent as IKritzelEditorKritzelObjectTitlebarActionEvent } from '@kritzel/editor/dist/components';
 import type { KritzelObjectElementHoverEvent as IKritzelEditorKritzelObjectElementHoverEvent } from '@kritzel/editor/dist/components';
@@ -158,6 +166,10 @@ export declare interface KritzelEditor extends Components.KritzelEditor {
    * Emitted when the user stops the current chat response.
    */
   chatStop: EventEmitter<KritzelEditorCustomEvent<void>>;
+  /**
+   * Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it.
+   */
+  chatChipRemove: EventEmitter<KritzelEditorCustomEvent<IKritzelEditorKritzelChatBoxChip>>;
   /**
    * Emitted when an agentic cursor is detached from an object, either manually or because the object was removed.
    */

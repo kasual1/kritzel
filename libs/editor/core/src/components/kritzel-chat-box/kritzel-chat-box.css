@@ -1,8 +1,10 @@
+/* Only the card and the chips take pointer input, so the canvas stays usable around the chips. */
 :host {
   display: block;
   box-sizing: border-box;
   width: var(--kritzel-chat-box-width, 480px);
   max-width: 100%;
+  pointer-events: none;
 }
 
 .chat-box {
@@ -13,6 +15,100 @@
   border-radius: var(--kritzel-chat-box-border-radius, 20px);
   background-color: var(--kritzel-chat-box-background-color, #ffffff);
   box-shadow: var(--kritzel-chat-box-box-shadow, 0 4px 8px rgba(20, 18, 31, 0.04), 0 18px 36px -14px rgba(20, 18, 31, 0.2));
+  pointer-events: auto;
+}
+
+/* Chips sit above the card. The editor anchors the host at the bottom, so more rows grow upward. */
+.chat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chat-chips:not(:empty) {
+  margin-bottom: 8px;
+}
+
+.chat-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  height: 32px;
+  padding: 0 4px 0 10px;
+  border: var(--kritzel-chat-box-border, 1px solid #e4e4e7);
+  border-radius: 999px;
+  background-color: var(--kritzel-chat-box-background-color, #ffffff);
+  box-shadow: var(--kritzel-chat-box-chip-box-shadow, 0 4px 12px -6px rgba(20, 18, 31, 0.18));
+  color: var(--kritzel-chat-box-text-color, #0a0a0a);
+  font-family: var(--kritzel-global-font-family, sans-serif);
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.chat-chip-icon,
+.chat-chip-separator,
+.chat-chip-remove {
+  flex-shrink: 0;
+}
+
+.chat-chip-icon {
+  color: var(--kritzel-chat-box-button-background-color, #4A7DFF);
+}
+
+.chat-chip-label,
+.chat-chip-detail,
+.chat-chip-hint {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* The label and hint give way first; the detail shortens only once they are used up. */
+.chat-chip-label,
+.chat-chip-hint {
+  flex-shrink: 1000;
+}
+
+.chat-chip-label {
+  font-weight: 600;
+}
+
+.chat-chip-separator,
+.chat-chip-hint,
+.chat-chip-remove {
+  color: var(--kritzel-chat-box-chip-muted-text-color, #71717a);
+}
+
+.chat-chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: var(--kritzel-global-pointer-cursor, pointer);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.chat-chip-remove:hover:not(:disabled) {
+  color: var(--kritzel-chat-box-text-color, #0a0a0a);
+}
+
+.chat-chip-remove:focus-visible {
+  outline: 2px solid var(--kritzel-chat-box-button-background-color, #4A7DFF);
+  outline-offset: 1px;
+}
+
+.chat-chip-remove:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .chat-progress {

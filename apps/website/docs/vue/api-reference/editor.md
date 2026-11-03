@@ -77,9 +77,13 @@ endSceneBootstrap(): Promise<void>
 
 | Property | Type | Description |
 |----------|------|-------------|
+| chatBoxChips | KritzelChatBoxChip[] | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. The editor never changes them: pass a new array, for example when `chatChipRemove` fires. |
+| chatBoxMode | 'collapsed' \| 'expanded' | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
 | cursorTarget | HTMLElement | Element used as cursor target. Defaults to the editor container if omitted. |
 | customSvgIcons | KritzelSvgIconMap | Custom SVG icon definitions. |
 | globalContextMenuItems | ContextMenuItem[] | Context menu items shown on the canvas background. |
+| isChatBoxLoading | boolean | Shows the chat box progress ring and turns its send button into a stop button. |
+| isChatBoxVisible | boolean | Shows the chat box instead of the toolbar. |
 | isMoreMenuVisible | boolean | Controls visibility of the More menu. |
 | isToolbarVisible | boolean | Controls toolbar visibility. |
 | isUtilityPanelVisible | boolean | Controls utility panel visibility. |
@@ -91,7 +95,21 @@ endSceneBootstrap(): Promise<void>
 
 ### Events
 
-No UI-specific events.
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| chatChipRemove | KritzelChatBoxChip | Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it. |
+| chatStop | void | Emitted when the user stops the current chat response. |
+| chatSubmit | string | Emitted with the chat box text when the user submits it. |
+
+`KritzelChatBoxChip` describes one chip. Its texts are shown verbatim, they are not translated:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| id | string | Unique, stable identifier, e.g. the id of the referenced object. |
+| label | string | Main text, shown bold, e.g. the referenced object's name. |
+| detail | string (optional) | A narrower part of the label, shown after `›`, e.g. the element picked inside the object. |
+| hint | string (optional) | Muted text after the label and detail, e.g. what the user can do next. |
+| icon | KritzelIconName (optional) | Registered icon shown before the label, e.g. `'cursor'`. |
 
 ### Methods
 

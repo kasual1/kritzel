@@ -77,6 +77,7 @@ export * from './interfaces/anchor.interface';
 export * from './interfaces/viewport-state.interface';
 export * from './interfaces/agentic-cursor.interface';
 export * from './interfaces/object-element.interface';
+export * from './interfaces/chat-box.interface';
 export * from './interfaces/easing.interface';
 export * from './interfaces/point.interface';
 export * from './interfaces/context-menu-state.interface';
