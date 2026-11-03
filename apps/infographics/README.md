@@ -22,6 +22,7 @@ npm run infographics
 | `#/welcome` | The animated "Welcome" path from `apps/app`.   |
 | `#/open-source` | The animated outline of the open source logo. |
 | `#/agentic-canvas` | An agentic canvas: Claude adds interactive iframe objects from the chat box. |
+| `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
 ## Agentic canvas
 
@@ -36,6 +37,15 @@ VITE_ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 The key is used straight from the browser, so only run this locally.
+
+## Generative UI
+
+`src/infographics/generative-ui/` uses the same chat box and API key. Without a selection, a prompt adds a new page
+(`add_page`). Select a page and it starts picking elements: hovering highlights the element under the pointer and a
+click picks it. A chip above the chat box shows what the next prompt changes, the whole page or the picked element, and
+its close button removes the element, then the page. Claude gets the page's current source with the request and changes
+it with find-and-replace edits (`edit_page`), so small changes are quick. Prompts don't share a conversation; the pages
+on the canvas are the state (`generative-ui-agent.ts`).
 
 ## Record
 
