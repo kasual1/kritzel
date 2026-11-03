@@ -19,8 +19,8 @@ const MODEL = 'claude-opus-5-5';
 const SYSTEM_PROMPT = `You design web pages on an infinite canvas. The user writes to you in a chat box.
 
 When no page is selected, add a new page with add_page. When the user selected a page, its current source comes with \
-the request: change that page with edit_page and keep everything the request does not touch. When they also picked an \
-element of the page, the request is about that element.
+the request: change that page with edit_page and keep everything the request does not touch. When they also picked \
+elements of the page, the request is about those elements.
 
 Pages are self-contained: no external scripts, stylesheets or images, except Google Fonts. Use inline SVG for icons and \
 illustrations. Design modern, polished pages and size them so the content fits. Give every meaningful element a short, \
@@ -100,10 +100,10 @@ export interface PageInput extends KritzelIframeContent {
   height: number;
 }
 
-/** The page a prompt is about, and optionally the element of it the user picked. */
+/** The page a prompt is about, and the elements of it the user picked, if any. */
 export interface PageReference {
   objectId: string;
-  element?: KritzelObjectElementInfo;
+  elements: KritzelObjectElementInfo[];
 }
 
 /** A page object at the given position in world units, with the look every page on the canvas shares. */
@@ -191,8 +191,8 @@ function applyEdits(content: KritzelIframeContent, input: unknown): KritzelIfram
   return next;
 }
 
-/** The user's request with the source of the page it is about and the element they picked. */
-function createEditRequest(prompt: string, page: KritzelIframeObject, element?: KritzelObjectElementInfo): string {
+/** The user's request with the source of the page it is about and the elements they picked. */
+function createEditRequest(prompt: string, page: KritzelIframeObject, elements: KritzelObjectElementInfo[]): string {
   const { html, css, script } = page.content;
   const lines = [
     `<selected_page title=${JSON.stringify(page.name || page.title)}>`,
@@ -201,7 +201,7 @@ function createEditRequest(prompt: string, page: KritzelIframeObject, element?: 
     `<script>\n${script}\n</script>`,
     '</selected_page>',
   ];
-  if (element) {
+  for (const element of elements) {
     lines.push(
       `<picked_element selector=${JSON.stringify(element.selector)} tag=${JSON.stringify(element.tagName)}>` +
         `${element.text ?? ''}</picked_element>`,
@@ -229,7 +229,7 @@ export class GenerativeUiAgent {
     }
 
     const messages: Anthropic.Beta.BetaMessageParam[] = [
-      { role: 'user', content: page ? createEditRequest(prompt, page, reference?.element) : prompt },
+      { role: 'user', content: page ? createEditRequest(prompt, page, reference?.elements ?? []) : prompt },
     ];
     let jsonRetries = 0;
 

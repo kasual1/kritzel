@@ -22,7 +22,7 @@ const WORKSPACE_ID = 'generative-ui';
  */
 const PICKABLE_SELECTOR = ':not(svg *):not(button svg):not(a svg)';
 
-/** The page the next prompt changes: the selected iframe object, and the element of it the user picked. */
+/** The page the next prompt changes: the selected iframe object, and the elements of it the user picked. */
 interface Reference extends PageReference {
   title: string;
 }
@@ -45,6 +45,9 @@ const objectConfig: KritzelObjectConfig = {
 const objectTitlebar: KritzelObjectTitlebarConfig = {
   left: [{ id: 'title', type: 'title', isEditable: true }],
 };
+
+/** Chips of picked elements get this id prefix, so they can't be confused with the page chip. */
+const ELEMENT_CHIP_PREFIX = 'element:';
 
 /** Name of a picked element for the chat box chip and its highlight, e.g. `play-button`. Its text is left out. */
 function getElementName(element: KritzelObjectElementInfo): string {
@@ -85,10 +88,16 @@ export function GenerativeUiInfographic() {
     }
   }
 
-  async function highlightElement(objectId: string, element: KritzelObjectElementInfo) {
-    await editorRef.current
-      ?.highlightObjectElements(objectId, [{ selector: element.selector, label: getElementName(element) }])
-      .catch(warn('Could not highlight the picked element.'));
+  /** Highlights every picked element; each call replaces the page's previous highlights. */
+  async function highlightElements(objectId: string, elements: KritzelObjectElementInfo[]) {
+    const editor = editorRef.current;
+    if (!elements.length) {
+      await editor?.clearObjectElementHighlights(objectId).catch(() => undefined);
+      return;
+    }
+    await editor
+      ?.highlightObjectElements(objectId, elements.map(element => ({ selector: element.selector, label: getElementName(element) })))
+      .catch(warn('Could not highlight the picked elements.'));
   }
 
   /** A selected page becomes the reference, and hovering over it highlights the element a click would pick. */
@@ -99,7 +108,7 @@ export function GenerativeUiInfographic() {
       return;
     }
 
-    setReference(page ? { objectId: page.id, title: page.name || page.title } : null);
+    setReference(page ? { objectId: page.id, title: page.name || page.title, elements: [] } : null);
     const editor = editorRef.current;
     if (previous) {
       // Rejects when the page was deleted, which removed its picking and highlights anyway.
@@ -113,46 +122,58 @@ export function GenerativeUiInfographic() {
     }
   }
 
-  async function onElementPick({ objectId, element }: KritzelObjectElementPickEvent) {
+  /** A plain pick replaces the picked elements; with Cmd, Ctrl or Shift held, it adds the element or removes it again. */
+  async function onElementPick({ objectId, element, metaKey, ctrlKey, shiftKey }: KritzelObjectElementPickEvent) {
     const current = referenceRef.current;
     if (current?.objectId !== objectId) {
       return;
     }
-    setReference({ ...current, element });
-    await highlightElement(objectId, element);
+    const isPicked = current.elements.some(picked => picked.selector === element.selector);
+    let elements = [element];
+    if (metaKey || ctrlKey || shiftKey) {
+      elements = isPicked
+        ? current.elements.filter(picked => picked.selector !== element.selector)
+        : [...current.elements, element];
+    }
+    setReference({ ...current, elements });
+    await highlightElements(objectId, elements);
   }
 
-  /** The chat box chip's remove button drops the picked element first, then the page. */
-  async function onClearReference() {
+  /** An element chip's remove button drops that element; the page chip's deselects the page. */
+  async function onChipRemove(chip: KritzelChatBoxChip) {
     const current = referenceRef.current;
     const editor = editorRef.current;
     if (!current || !editor) {
       return;
     }
-    if (current.element) {
-      setReference({ ...current, element: undefined });
-      await editor.clearObjectElementHighlights(current.objectId).catch(warn('Could not clear the highlight.'));
-    } else {
+    if (!chip.id.startsWith(ELEMENT_CHIP_PREFIX)) {
       await editor.clearSelection();
-    }
-  }
-
-  /** Looks the picked element up again after an edit, so the user can keep refining it, or drops it when it is gone. */
-  async function refreshElement(objectId: string, selector: string) {
-    const current = referenceRef.current;
-    if (current?.objectId !== objectId || current.element?.selector !== selector) {
       return;
     }
-    const [element] = (await editorRef.current?.queryObjectElements(objectId, selector, 1).catch(() => [])) ?? [];
+    const selector = chip.id.slice(ELEMENT_CHIP_PREFIX.length);
+    const elements = current.elements.filter(element => element.selector !== selector);
+    setReference({ ...current, elements });
+    await highlightElements(current.objectId, elements);
+  }
+
+  /** Looks the picked elements up again after an edit, so the user can keep refining them, and drops those that are gone. */
+  async function refreshElements(objectId: string, picked: KritzelObjectElementInfo[]) {
+    const current = referenceRef.current;
+    if (current?.objectId !== objectId || current.elements !== picked) {
+      return;
+    }
+    const found = await Promise.all(
+      picked.map(async element => {
+        const [match] = (await editorRef.current?.queryObjectElements(objectId, element.selector, 1).catch(() => [])) ?? [];
+        return match;
+      }),
+    );
     if (referenceRef.current !== current) {
       return;
     }
-    setReference({ ...current, element });
-    if (element) {
-      await highlightElement(objectId, element);
-    } else {
-      await editorRef.current?.clearObjectElementHighlights(objectId).catch(() => undefined);
-    }
+    const elements = found.filter((element): element is KritzelObjectElementInfo => !!element);
+    setReference({ ...current, elements });
+    await highlightElements(objectId, elements);
   }
 
   async function onChatSubmit(prompt: string) {
@@ -175,9 +196,9 @@ export function GenerativeUiInfographic() {
     setIsWorking(true);
 
     try {
-      await agentRef.current.send(prompt, current && { objectId: current.objectId, element: current.element }, abort.signal);
-      if (current?.element) {
-        await refreshElement(current.objectId, current.element.selector);
+      await agentRef.current.send(prompt, current && { objectId: current.objectId, elements: current.elements }, abort.signal);
+      if (current?.elements.length) {
+        await refreshElements(current.objectId, current.elements);
       }
     } catch (error) {
       if (!abort.signal.aborted) {
@@ -190,18 +211,25 @@ export function GenerativeUiInfographic() {
     }
   }
 
-  /** The chip above the chat box names what the next prompt changes: the selected page, or the element picked in it. */
-  const chatBoxChips: KritzelChatBoxChip[] = reference
-    ? [
-        {
-          id: reference.objectId,
-          label: reference.title,
-          icon: 'cursor',
-          detail: reference.element ? getElementName(reference.element) : undefined,
-          hint: reference.element ? undefined : 'Hover over the page and click to pick an element',
-        },
-      ]
-    : [];
+  /** The chips above the chat box name what the next prompt changes: the selected page, or each element picked in it. */
+  let chatBoxChips: KritzelChatBoxChip[] = [];
+  if (reference && reference.elements.length) {
+    chatBoxChips = reference.elements.map(element => ({
+      id: ELEMENT_CHIP_PREFIX + element.selector,
+      label: reference.title,
+      icon: 'cursor',
+      detail: getElementName(element),
+    }));
+  } else if (reference) {
+    chatBoxChips = [
+      {
+        id: reference.objectId,
+        label: reference.title,
+        icon: 'cursor',
+        hint: 'Click an element to pick it, Shift-click for more',
+      },
+    ];
+  }
 
   return (
     <div style={hostStyle}>
@@ -222,7 +250,7 @@ export function GenerativeUiInfographic() {
         onObjectElementPick={event => void onElementPick(event.detail)}
         onChatSubmit={event => void onChatSubmit(event.detail)}
         onChatStop={() => abortRef.current?.abort()}
-        onChatChipRemove={() => void onClearReference()}
+        onChatChipRemove={event => void onChipRemove(event.detail)}
       />
     </div>
   );
