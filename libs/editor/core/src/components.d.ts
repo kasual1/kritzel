@@ -108,7 +108,7 @@ export namespace Components {
     }
     interface KritzelChatBox {
         /**
-          * Chips shown above the box, e.g. the object or element the next prompt refers to. The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
+          * Chips shown above the box, e.g. the object or element the next prompt refers to. The first three share one row as wide as the box; the rest are summarized as "+N more". The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
           * @default []
          */
         "chips": KritzelChatBoxChip[];
@@ -301,7 +301,7 @@ export namespace Components {
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
-          * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
+          * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
           * @default []
          */
         "chatBoxChips": KritzelChatBoxChip[];
@@ -2189,7 +2189,7 @@ declare namespace LocalJSX {
     }
     interface KritzelChatBox {
         /**
-          * Chips shown above the box, e.g. the object or element the next prompt refers to. The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
+          * Chips shown above the box, e.g. the object or element the next prompt refers to. The first three share one row as wide as the box; the rest are summarized as "+N more". The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
           * @default []
          */
         "chips"?: KritzelChatBoxChip[];
@@ -2392,7 +2392,7 @@ declare namespace LocalJSX {
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         /**
-          * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
+          * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
           * @default []
          */
         "chatBoxChips"?: KritzelChatBoxChip[];

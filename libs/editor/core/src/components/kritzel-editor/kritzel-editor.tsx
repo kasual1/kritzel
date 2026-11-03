@@ -474,6 +474,7 @@ export class KritzelEditor {
   @Prop() isChatBoxLoading: boolean = false;
   /**
    * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to.
+   * Up to three share one row as wide as the box; the rest are summarized as "+N more".
    * Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
    */
   @Prop() chatBoxChips: KritzelChatBoxChip[] = [];

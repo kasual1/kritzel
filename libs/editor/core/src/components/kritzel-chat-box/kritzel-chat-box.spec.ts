@@ -193,6 +193,30 @@ describe('kritzel-chat-box', () => {
       expect(button.props.title).toBe('Entfernen');
     });
 
+    it('shows at most three chips and summarizes the rest', () => {
+      const component = new KritzelChatBox();
+      component.chips = ['a', 'b', 'c', 'd', 'e'].map(id => ({ id, label: id }));
+      const findAll = (node: any, out: any[] = []): any[] => {
+        if (!node || typeof node !== 'object') return out;
+        if (Array.isArray(node)) { node.forEach(child => findAll(child, out)); return out; }
+        if (node.props?.class === 'chat-chip') out.push(node);
+        findAll(node.children, out);
+        return out;
+      };
+
+      let tree = component.render();
+      expect(findAll(tree).map(chip => chip.props.key)).toEqual(['a', 'b', 'c']);
+      expect(findNode(tree, byClass('chat-chips-more')).children.join('')).toBe('+2 more');
+
+      component.terms = { 'chatBox.moreChips': 'weitere' };
+      expect(findNode(component.render(), byClass('chat-chips-more')).children.join('')).toBe('+2 weitere');
+
+      component.chips = component.chips.slice(0, 3);
+      tree = component.render();
+      expect(findAll(tree)).toHaveLength(3);
+      expect(findNode(tree, byClass('chat-chips-more'))).toBeNull();
+    });
+
     it('disables remove buttons only while the chat box is disabled', () => {
       const component = new KritzelChatBox();
       component.chips = [pageChip];

@@ -9,6 +9,9 @@ export type KritzelChatBoxMode = 'collapsed' | 'expanded';
   shadow: true,
 })
 export class KritzelChatBox {
+  /** Chips shown at most; the rest are summarized as "+N more". */
+  private static readonly MAX_VISIBLE_CHIPS = 3;
+
   /** Time in ms after the last caret movement before the caret starts blinking again. */
   private static readonly CARET_IDLE_DELAY = 150;
 
@@ -36,6 +39,7 @@ export class KritzelChatBox {
 
   /**
    * Chips shown above the box, e.g. the object or element the next prompt refers to.
+   * The first three share one row as wide as the box; the rest are summarized as "+N more".
    * The box never changes this array: pass a new array to add, change or remove chips.
    * Each chip's remove button emits `chatChipRemove`.
    */
@@ -424,10 +428,13 @@ export class KritzelChatBox {
 
   private renderChips() {
     const removeLabel = this.terms['chatBox.removeChip'] ?? 'Remove';
+    const chips = this.chips ?? [];
+    const visibleChips = chips.slice(0, KritzelChatBox.MAX_VISIBLE_CHIPS);
+    const hiddenCount = chips.length - visibleChips.length;
     // Always rendered, so screen readers announce chips as they appear and change.
     return (
       <div class="chat-chips" aria-live="polite">
-        {(this.chips ?? []).map(chip => (
+        {visibleChips.map(chip => (
           <div
             key={chip.id}
             class="chat-chip"
@@ -456,6 +463,11 @@ export class KritzelChatBox {
             </button>
           </div>
         ))}
+        {hiddenCount > 0 && (
+          <span class="chat-chips-more">
+            +{hiddenCount} {this.terms['chatBox.moreChips'] ?? 'more'}
+          </span>
+        )}
       </div>
     );
   }

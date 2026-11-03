@@ -54,7 +54,7 @@ endSceneBootstrap(): Promise<void>
 
 | Property | Type | Description |
 |----------|------|-------------|
-| chatBoxChips | KritzelChatBoxChip[] | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. The editor never changes them: pass a new array, for example when `chatChipRemove` fires. |
+| chatBoxChips | KritzelChatBoxChip[] | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row, the rest show as "+N more". The editor never changes them: pass a new array, for example when `chatChipRemove` fires. |
 | chatBoxMode | 'collapsed' \| 'expanded' | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
 | cursorTarget | HTMLElement | Element used as cursor target. Defaults to editor container if omitted. |
 | customSvgIcons | string | Custom SVG icon definitions. |

@@ -159,6 +159,7 @@ export function Editor() {
 | chatBox.submit | Send |
 | chatBox.stop | Stop |
 | chatBox.removeChip | Remove |
+| chatBox.moreChips | more |
 
 ### Utility panel
 

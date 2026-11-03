@@ -177,7 +177,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | activeUsers | IKritzelUser[] |  |  |
 | activeWorkspaceId | string |  | Optional workspace ID to set as active. If provided, the editor will automatically activate the workspace with this ID. |
 | assetStorageConfig | KritzelAssetStorageConfig |  |  |
-| chatBoxChips | KritzelChatBoxChip[] |  | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Pass a new array to change them. The editor never removes chips itself: update the array when \`chatChipRemove\` fires. |
+| chatBoxChips | KritzelChatBoxChip[] |  | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when \`chatChipRemove\` fires. |
 | chatBoxMode | "collapsed" \| "expanded" |  | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
 | cursorTarget | HTMLElement |  | The element to use as the target for the cursor. Defaults to the editor container if not set. |
 | customFonts | { [x: string]: KritzelFontRegistration; } |  | Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts. |

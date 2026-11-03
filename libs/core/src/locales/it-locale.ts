@@ -101,6 +101,7 @@ export const IT_LOCALE: KritzelLocale = {
     'chatBox.submit': 'Invia',
     'chatBox.stop': 'Interrompi',
     'chatBox.removeChip': 'Rimuovi',
+    'chatBox.moreChips': 'altri',
 
     // Utility panel
     'utility.undo': 'Annulla',

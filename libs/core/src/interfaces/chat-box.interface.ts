@@ -11,7 +11,7 @@ import { KritzelIconName } from '../classes/registries/icon-registry.class';
 export interface KritzelChatBoxChip {
   /** Unique, stable identifier, e.g. the id of the referenced object. Used as render key. */
   id: string;
-  /** Main text, shown bold, e.g. the referenced object's name. Shortened with an ellipsis first when space runs out. */
+  /** Main text, shown bold, e.g. the referenced object's name. Shortened with an ellipsis first when space runs out, keeping its first letters. */
   label: string;
   /** A narrower part of the label, shown after `›`, e.g. the element picked inside the object. */
   detail?: string;

@@ -108,6 +108,7 @@ export interface KritzelTerms {
   'chatBox.submit': string;
   'chatBox.stop': string;
   'chatBox.removeChip': string;
+  'chatBox.moreChips': string;
 
   // Utility panel
   'utility.undo': string;

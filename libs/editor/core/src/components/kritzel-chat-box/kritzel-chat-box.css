@@ -18,11 +18,12 @@
   pointer-events: auto;
 }
 
-/* Chips sit above the card. The editor anchors the host at the bottom, so more rows grow upward. */
+/* Chips share one row above the card, no wider than the box; long chips shorten first. */
 .chat-chips {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
+  min-width: 0;
 }
 
 .chat-chips:not(:empty) {
@@ -34,6 +35,7 @@
   align-items: center;
   gap: 6px;
   box-sizing: border-box;
+  flex: 0 1 auto;
   min-width: 0;
   max-width: 100%;
   height: 32px;
@@ -51,8 +53,18 @@
 
 .chat-chip-icon,
 .chat-chip-separator,
-.chat-chip-remove {
+.chat-chip-remove,
+.chat-chips-more {
   flex-shrink: 0;
+}
+
+.chat-chips-more {
+  padding: 0 4px;
+  color: var(--kritzel-chat-box-chip-muted-text-color, #71717a);
+  font-family: var(--kritzel-global-font-family, sans-serif);
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: auto;
 }
 
 .chat-chip-icon {
@@ -67,10 +79,17 @@
   text-overflow: ellipsis;
 }
 
-/* The label and hint give way first; the detail shortens only once they are used up. */
+/*
+ * The label and hint give way first, but the label keeps its first letters; the detail, which tells chips of the
+ * same object apart, shortens only once the label is down to them.
+ */
 .chat-chip-label,
 .chat-chip-hint {
   flex-shrink: 1000;
+}
+
+.chat-chip-label {
+  min-width: 2.5em;
 }
 
 .chat-chip-label {
