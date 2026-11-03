@@ -8,22 +8,24 @@ export const MUSIC_PLAYER: PageInput = {
   height: 520,
   html: `<main class="player" data-kritzel-id="player">
   <svg class="cover" data-kritzel-id="album-cover" viewBox="0 0 100 100" role="img" aria-label="Album cover of Full Control">
-    <rect width="100" height="100" fill="#1c1917" />
-    <circle cx="62" cy="38" r="27" fill="#e8a33d" />
-    <circle cx="20" cy="24" r="6" fill="#d9572b" />
-    <g stroke="#f5ecd7" stroke-linecap="round" fill="none">
-      <path d="M44 18v32a11 11 0 0 0 22 0v-6" stroke-width="6" />
-      <path d="M44 18l-7-7" stroke-width="3.5" />
+    <rect width="100" height="100" fill="#d9572b" />
+    <circle cx="62" cy="40" r="30" fill="#e8a33d" />
+    <g transform="translate(58 39) rotate(-20) scale(1.4) translate(-52 -36)">
+      <path d="M44 21C44 14 40 10.5 34 9.5" fill="none" stroke="#f5ecd7" stroke-width="3.2" stroke-linecap="round" />
+      <path d="M34.5 9.6L28.5 8.6" stroke="#1c1917" stroke-width="3.6" stroke-linecap="round" />
+      <path d="M44 20V52A11 11 0 0 0 66 52V42" fill="none" stroke="#f5ecd7" stroke-width="6.5" />
+      <path d="M62.6 43C62 38.5 59 34.5 56 31H76C73 34.5 70 38.5 69.4 43Z" fill="#f5ecd7" />
+      <ellipse cx="66" cy="31" rx="10" ry="1.8" fill="#f5ecd7" />
+      <ellipse cx="66" cy="31" rx="7.5" ry="1" fill="#1c1917" />
+      <g fill="#1c1917">
+        <circle cx="44" cy="28" r="1.6" />
+        <circle cx="44" cy="35" r="1.6" />
+        <circle cx="44" cy="42" r="1.6" />
+      </g>
     </g>
-    <path d="M60 37h12l-2.5 8h-7z" fill="#f5ecd7" />
-    <g fill="#1c1917">
-      <circle cx="44" cy="27" r="1.4" />
-      <circle cx="44" cy="35" r="1.4" />
-      <circle cx="44" cy="43" r="1.4" />
-    </g>
-    <text x="8" y="82" textLength="68" lengthAdjust="spacingAndGlyphs" fill="#f5ecd7"
+    <text x="8" y="87" textLength="68" lengthAdjust="spacingAndGlyphs" fill="#1c1917"
       font-family="system-ui, sans-serif" font-size="9" font-weight="800">FULL CONTROL</text>
-    <text x="8" y="91" textLength="42" lengthAdjust="spacingAndGlyphs" fill="#e8a33d"
+    <text x="8" y="95" textLength="42" lengthAdjust="spacingAndGlyphs" fill="#f5ecd7"
       font-family="system-ui, sans-serif" font-size="4.5" font-weight="600">LUCA MOULINBEAU</text>
   </svg>
 
@@ -63,7 +65,7 @@ body {
   height: auto;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 12px 28px -10px rgba(28, 25, 23, 0.5);
+  box-shadow: 0 12px 28px -10px rgba(153, 52, 20, 0.45);
 }
 .track-info h1 { margin: 0; font-size: 21px; font-weight: 700; }
 .track-info p { margin: 4px 0 0; font-size: 15px; color: #78716c; }
