@@ -25,13 +25,13 @@ export const MUSIC_PLAYER: PageInput = {
     </g>
     <text x="8" y="87" textLength="68" lengthAdjust="spacingAndGlyphs" fill="#1c1917"
       font-family="system-ui, sans-serif" font-size="9" font-weight="800">FULL CONTROL</text>
-    <text x="8" y="95" textLength="42" lengthAdjust="spacingAndGlyphs" fill="#f5ecd7"
-      font-family="system-ui, sans-serif" font-size="4.5" font-weight="600">LUCA MOULINBEAU</text>
+    <text x="8" y="95" textLength="44" lengthAdjust="spacingAndGlyphs" fill="#f5ecd7"
+      font-family="system-ui, sans-serif" font-size="4.5" font-weight="600">LUCA MOULIN BEAU</text>
   </svg>
 
   <header class="track-info" data-kritzel-id="track-info">
     <h1 data-kritzel-id="track-title">Full Control</h1>
-    <p data-kritzel-id="artist">Luca Moulinbeau</p>
+    <p data-kritzel-id="artist">Luca Moulin Beau</p>
   </header>
 
   <div class="progress" data-kritzel-id="progress">

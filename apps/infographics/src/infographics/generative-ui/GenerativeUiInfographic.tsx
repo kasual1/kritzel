@@ -18,8 +18,6 @@ const WORKSPACE_ID = 'generative-ui';
 /** Room in pixels between the reference chip and the chat box below it. */
 const CHIP_GAP = 8;
 
-const MAX_TEXT_LENGTH = 32;
-
 /**
  * Pointing into an inline SVG icon picks the whole icon instead of one of its paths, and an icon inside a button or
  * link picks the button or link.
@@ -65,9 +63,11 @@ const chipStyle: CSSProperties = {
   whiteSpace: 'nowrap',
 };
 
-const chipTextStyle: CSSProperties = { overflow: 'hidden', textOverflow: 'ellipsis' };
-const chipTitleStyle: CSSProperties = { ...chipTextStyle, flexShrink: 0, maxWidth: '45%', fontWeight: 600 };
+// Long page titles and the hint shrink with an ellipsis when the chip runs out of room; element names stay whole.
+const chipTextStyle: CSSProperties = { minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' };
+const chipTitleStyle: CSSProperties = { ...chipTextStyle, fontWeight: 600 };
 const chipMutedStyle: CSSProperties = { ...chipTextStyle, color: '#71717a' };
+const chipElementStyle: CSSProperties = { flexShrink: 0 };
 
 const chipButtonStyle: CSSProperties = {
   display: 'inline-flex',
@@ -95,14 +95,9 @@ const objectTitlebar: KritzelObjectTitlebarConfig = {
   left: [{ id: 'title', type: 'title', isEditable: true }],
 };
 
-/** Short, readable name of a picked element, e.g. `start-button "Start"`. */
-function describe(element: KritzelObjectElementInfo): string {
-  const name = element.kritzelId ?? element.tagName;
-  if (!element.text) {
-    return name;
-  }
-  const text = element.text.length > MAX_TEXT_LENGTH ? `${element.text.slice(0, MAX_TEXT_LENGTH - 1)}…` : element.text;
-  return `${name} "${text}"`;
+/** Name of a picked element for the chip and its highlight, e.g. `play-button`. Its text is left out. */
+function getElementName(element: KritzelObjectElementInfo): string {
+  return element.kritzelId ?? element.tagName;
 }
 
 function warn(message: string) {
@@ -163,7 +158,7 @@ export function GenerativeUiInfographic() {
 
   async function highlightElement(objectId: string, element: KritzelObjectElementInfo) {
     await editorRef.current
-      ?.highlightObjectElements(objectId, [{ selector: element.selector, label: element.kritzelId ?? element.tagName }])
+      ?.highlightObjectElements(objectId, [{ selector: element.selector, label: getElementName(element) }])
       .catch(warn('Could not highlight the picked element.'));
   }
 
@@ -297,8 +292,8 @@ export function GenerativeUiInfographic() {
           <span style={chipTitleStyle}>{reference.title}</span>
           {reference.element ? (
             <>
-              <span style={chipMutedStyle} aria-hidden="true">›</span>
-              <span style={chipTextStyle}>{describe(reference.element)}</span>
+              <span style={{ ...chipElementStyle, color: '#71717a' }} aria-hidden="true">›</span>
+              <span style={chipElementStyle}>{getElementName(reference.element)}</span>
             </>
           ) : (
             <span style={chipMutedStyle}>Hover over the page and click to pick an element</span>
