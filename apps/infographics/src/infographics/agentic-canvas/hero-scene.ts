@@ -114,7 +114,7 @@ const RECORDER: KritzelIframeContent = {
   </header>
   <div class="take">
     <button type="button" aria-label="Record"><span></span></button>
-    <div class="wave">${WAVE_LEVELS.map((level, i) => `<b style="height:${Math.round(level * 100)}%;animation-duration:${(0.7 + (i % 5) * 0.13).toFixed(2)}s;animation-delay:-${((i * 0.37) % 1).toFixed(2)}s"></b>`).join('')}</div>
+    <div class="wave">${WAVE_LEVELS.map((level, i) => `<b style="--level:${Math.round(level * 100)}%;animation-duration:${(0.7 + (i % 5) * 0.13).toFixed(2)}s;animation-delay:-${((i * 0.37) % 1).toFixed(2)}s"></b>`).join('')}</div>
   </div>
 </main>`,
   css: `html, body { height: 100%; margin: 0; }
@@ -135,9 +135,10 @@ button span { width: 14px; height: 14px; border-radius: 50%; background: #ef4444
   transition: border-radius 0.25s ease, width 0.25s ease, height 0.25s ease; }
 .live button span { width: 12px; height: 12px; border-radius: 3px; }
 .wave { display: flex; align-items: center; justify-content: space-between; flex: 1; height: 36px; }
-.wave b { width: 2px; border-radius: 1px; background: #a1a1aa; transform-origin: center;
-  animation: level ease-in-out infinite alternate; animation-play-state: paused; opacity: 0.45; }
-.live .wave b { animation-play-state: running; opacity: 1; }
+/* Flat while nothing is recorded; each bar rises to its level when recording starts and settles again when it stops. */
+.wave b { width: 2px; height: 2px; border-radius: 1px; background: #a1a1aa; transform-origin: center;
+  transition: height 0.45s ease; animation: level ease-in-out infinite alternate; animation-play-state: paused; }
+.live .wave b { height: var(--level); animation-play-state: running; }
 .clock { font-style: normal; }
 button.pressed { animation: press 0.22s ease-out; }
 @keyframes press { 40% { transform: scale(0.92); } }
