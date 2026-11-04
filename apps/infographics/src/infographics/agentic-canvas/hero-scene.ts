@@ -463,12 +463,9 @@ async function recordTakes(
     await editor.moveAgenticCursor(STUDIO_AGENT.id, star(BUTTON_PRESS_OFFSET), { duration: 550, easing: 'ease-in-out' });
     await wait(90, signal);
     favorite.setContent(takeContent(TAKES[FAVORITE_TAKE], true));
-    await wait(160, signal);
-    await editor.moveAgenticCursor(STUDIO_AGENT.id, star(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
   }
 
-  // Done: Studio leaves through the bottom left.
-  await wait(200, signal);
+  // Done: Studio leaves through the bottom left, straight from the star.
   await exit(editor, STUDIO_AGENT, { x: STUDIO_BOX.x - 700, y: STUDIO_BOX.y + 900 }, 0, signal);
 }
 
