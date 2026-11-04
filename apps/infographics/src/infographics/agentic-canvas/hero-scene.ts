@@ -97,7 +97,7 @@ header { display: flex; align-items: center; gap: 10px; }
 header div:last-child { display: flex; flex-direction: column; font-size: 14px; }
 header span { color: #78716c; font-size: 12px; }
 .avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #4A7DFF;
-  color: #ffffff; font-size: 14px; font-weight: 700; }
+  color: #ffffff; font-size: 14px; font-weight: 400; }
 p { margin: 0; font-size: 14px; line-height: 1.45; }
 /* Takes the height left in the card and stays square, like the cover did as an SVG. */
 .cover { display: block; flex: 1 1 0; min-height: 0; align-self: center; aspect-ratio: 1; max-width: 100%; border-radius: 12px; }
@@ -139,6 +139,7 @@ header { display: flex; align-items: center; justify-content: space-between; }
 header div { display: flex; align-items: baseline; gap: 8px; }
 strong { font-size: 15px; font-weight: 600; }
 header span { color: #71717a; font-size: 12px; }
+header div span { color: #4A7DFF; }
 .time { display: flex; align-items: center; gap: 6px; color: #18181b !important; font-variant-numeric: tabular-nums; }
 .time i { width: 6px; height: 6px; border-radius: 50%; background: #d4d4d8; }
 .live .time i { background: #ef4444; animation: blink 1.2s ease-in-out infinite; }
