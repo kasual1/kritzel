@@ -20,7 +20,7 @@ A Chromium window opens at the given size. Interact with the page, then close th
 | `--name`      | timestamp                   | Output file name (without extension).                              |
 | `--out`       | `tools/recorder/recordings` | Output directory.                                                  |
 | `--no-cursor` |                             | Don't draw the recorded cursor and click ripples.                  |
-| `--no-watermark` |                          | Don't draw the "Powered by Kritzel" badge in the bottom right.    |
+| `--no-watermark` |                          | Don't draw the "kritzel.io" badge in the bottom right.            |
 | `--fresh`     |                             | Use a throwaway browser profile instead of `tools/recorder/.profile`. |
 | `--headless`  |                             | Run without a window (only useful for testing the tool itself).    |
 
@@ -31,7 +31,7 @@ A Chromium window opens at the given size. Interact with the page, then close th
 - Screen recordings don't capture the OS cursor, so the tool draws the Kritzel engine's default cursor
   (the `mousePointer` icon, read from `libs/core/src/classes/registries/icon-registry.class.ts`)
   and a click ripple into the page. The real cursor is hidden inside the page so you see exactly what gets recorded.
-- By default the tool draws a small "Powered by Kritzel" badge in the bottom right corner of the page.
+- By default the tool draws a small "kritzel.io" badge in the bottom right corner of the page.
   A Kritzel editor shows its own badge there too, unless its `isWatermarkVisible` property is `false`, so
   hide one of the two when recording the editor.
 - Only the first tab is recorded.
