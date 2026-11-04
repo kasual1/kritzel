@@ -406,7 +406,8 @@ async function generatePage(
     boxShadow: SHADOW,
   });
   const added = await editor.addObject(page);
-  await editor.moveAgenticCursor(agent.id, { x: box.x + box.width - 24, y: box.y + box.height - 24 }, { duration: writingTime });
+  // The agent stays at the page's top-left corner while it writes the page.
+  await wait(writingTime, signal);
   added?.setLoading(false);
   await wait(150, signal);
   return added;
