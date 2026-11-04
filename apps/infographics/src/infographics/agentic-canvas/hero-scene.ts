@@ -346,14 +346,16 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
 
 /**
  * Moves the camera smoothly so the box fills the view above the chat box, with some room around it, never zooming
- * in past `maxScale`.
+ * in past 100%. The box is centered in the area above the chat box, or in the whole view when `isCentered` is set,
+ * which suits the final overview: it fits above the chat box either way.
  */
-async function frame(editor: HTMLKritzelEditorElement, box: Box, duration: number, signal: AbortSignal, maxScale = 1) {
+async function frame(editor: HTMLKritzelEditorElement, box: Box, duration: number, signal: AbortSignal, isCentered = false) {
   const view = await editor.getViewport();
   const visibleHeight = view.height - CHAT_BOX_SPACE;
-  const scale = Math.min(view.width / (box.width * 1.2), visibleHeight / (box.height * 1.2), maxScale);
-  // The box is centered in the area above the chat box, so the view's center sits a bit below the box's center.
-  const target = { x: box.x + box.width / 2, y: box.y + box.height / 2 + CHAT_BOX_SPACE / 2 / scale, scale };
+  const scale = Math.min(view.width / (box.width * 1.2), visibleHeight / (box.height * 1.2), 1);
+  // Centered above the chat box, the view's center sits a bit below the box's center.
+  const lift = isCentered ? 0 : CHAT_BOX_SPACE / 2 / scale;
+  const target = { x: box.x + box.width / 2, y: box.y + box.height / 2 + lift, scale };
   const from = { x: (view.width / 2 - view.translateX) / view.scale, y: (view.height / 2 - view.translateY) / view.scale, scale: view.scale };
 
   // setViewport animates for 150 ms and cancels the previous animation, so the path is walked in steps of that length.
@@ -488,10 +490,10 @@ async function recordTakes(
 }
 
 /** How long the finished scene rests in full view before Studio heads to the star, and how long it glides there. */
-const STAR_SETTLE = 500;
-const STAR_APPROACH = 1000;
+const STAR_SETTLE = 400;
+const STAR_APPROACH = 650;
 /** Studio hovers over the star for a moment before it clicks, as a person would. */
-const STAR_HOVER = 160;
+const STAR_HOVER = 90;
 
 /**
  * Studio's last act: it glides to its favorite take, clicks the star and leaves through the bottom left right away.
@@ -575,7 +577,7 @@ export async function playHeroScene(
   const socialGone = exit(editor, SOCIAL_AGENT, { x: SOCIAL_BOX.x + SOCIAL_BOX.width + 700, y: SOCIAL_BOX.y + SOCIAL_BOX.height + 700 }, 150, signal);
   await covers;
   const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
-  await frame(editor, union(covered), CAMERA_PULL_BACK, signal);
+  await frame(editor, union(covered), CAMERA_PULL_BACK, signal, true);
 
   // Studio stars its favorite take only once the camera has come to rest on the whole scene and the last take is saved.
   const saved = await takes;
