@@ -41,7 +41,7 @@ const COVERS_ORIGIN = -(COVER_COLUMNS * COVER_SIZE + (COVER_COLUMNS - 1) * COVER
 
 /** The post sits left of the covers and the widget right of them, both vertically centered on the square. */
 const SOCIAL_BOX = { x: -620, y: -215, width: 300, height: 430 };
-const STUDIO_BOX = { x: 320, y: -110, width: 360, height: 220 };
+const STUDIO_BOX = { x: 320, y: -58, width: 360, height: 116 };
 
 const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
 
@@ -87,6 +87,18 @@ footer { display: flex; gap: 18px; color: #78716c; font-size: 13px; }`,
   script: '',
 };
 
+/**
+ * Bar heights of the recorded take, from 0 to 1: a few overlapping phrases with some grain, so it reads like a real
+ * recording rather than a regular pattern. Deterministic, so every recording of the scene is the same.
+ */
+const WAVE_LEVELS = Array.from({ length: 64 }, (_, i) => {
+  const t = i / 63;
+  const phrases = 0.55 + 0.45 * Math.sin(t * Math.PI * 3.2 + 0.4) * Math.sin(t * Math.PI * 1.3 + 0.9);
+  const grain = 0.5 + 0.5 * Math.sin(i * 2.71 + Math.sin(i * 1.37) * 3);
+  const fade = Math.min(1, t * 6, (1 - t) * 8);
+  return Math.max(0.08, Math.min(1, (0.25 + 0.75 * phrases * (0.55 + 0.45 * grain)) * fade));
+});
+
 const RECORDER: KritzelIframeContent = {
   html: `<main>
   <header>
@@ -96,26 +108,29 @@ const RECORDER: KritzelIframeContent = {
     </div>
     <span class="time"><i></i>00:12</span>
   </header>
-  <div class="wave">${Array.from({ length: 32 }, (_, i) => `<b style="animation-delay:-${(i * 0.09).toFixed(2)}s"></b>`).join('')}</div>
-  <button type="button" aria-label="Stop recording"><span></span></button>
+  <div class="take">
+    <button type="button" aria-label="Stop recording"><span></span></button>
+    <div class="wave">${WAVE_LEVELS.map((level, i) => `<b style="height:${Math.round(level * 100)}%;animation-duration:${(0.7 + (i % 5) * 0.13).toFixed(2)}s;animation-delay:-${((i * 0.37) % 1).toFixed(2)}s"></b>`).join('')}</div>
+  </div>
 </main>`,
   css: `html, body { height: 100%; margin: 0; }
 body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #18181b; background: #f4f4f5; }
-main { display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding: 20px 22px;
+main { display: flex; flex-direction: column; justify-content: center; gap: 12px; height: 100%; padding: 14px 18px;
   box-sizing: border-box; }
-header { display: flex; align-items: flex-start; justify-content: space-between; }
-header div { display: flex; flex-direction: column; gap: 2px; }
-strong { font-size: 16px; font-weight: 600; }
-header span { color: #71717a; font-size: 13px; }
+header { display: flex; align-items: center; justify-content: space-between; }
+header div { display: flex; align-items: baseline; gap: 8px; }
+strong { font-size: 15px; font-weight: 600; }
+header span { color: #71717a; font-size: 12px; }
 .time { display: flex; align-items: center; gap: 6px; color: #18181b !important; font-variant-numeric: tabular-nums; }
-.time i { width: 7px; height: 7px; border-radius: 50%; background: #ef4444; animation: blink 1.2s ease-in-out infinite; }
-.wave { display: flex; align-items: center; gap: 3px; height: 40px; }
-.wave b { flex: 1; height: 100%; border-radius: 2px; background: #a1a1aa; transform-origin: center;
-  animation: level 1s ease-in-out infinite alternate; }
-button { align-self: center; display: grid; place-items: center; width: 44px; height: 44px; border: 0;
-  border-radius: 50%; background: #ffffff; box-shadow: 0 1px 3px rgba(24, 24, 27, 0.12); }
-button span { width: 14px; height: 14px; border-radius: 3px; background: #ef4444; }
-@keyframes level { from { transform: scaleY(0.15); } to { transform: scaleY(0.9); } }
+.time i { width: 6px; height: 6px; border-radius: 50%; background: #ef4444; animation: blink 1.2s ease-in-out infinite; }
+.take { display: flex; align-items: center; gap: 14px; }
+button { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 38px; border: 0; border-radius: 50%;
+  background: #ffffff; box-shadow: 0 1px 3px rgba(24, 24, 27, 0.12); }
+button span { width: 12px; height: 12px; border-radius: 3px; background: #ef4444; }
+.wave { display: flex; align-items: center; justify-content: space-between; flex: 1; height: 36px; }
+.wave b { width: 2px; border-radius: 1px; background: #a1a1aa; transform-origin: center;
+  animation: level ease-in-out infinite alternate; }
+@keyframes level { from { transform: scaleY(0.75); } to { transform: scaleY(1); } }
 @keyframes blink { 50% { opacity: 0.3; } }`,
   script: '',
 };
