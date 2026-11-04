@@ -131,15 +131,16 @@ header span { color: #71717a; font-size: 12px; }
 .take { display: flex; align-items: center; gap: 14px; }
 button { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 38px; border: 0; border-radius: 50%;
   background: #ffffff; box-shadow: 0 1px 3px rgba(24, 24, 27, 0.12); }
-button span { width: 14px; height: 14px; border-radius: 50%; background: #ef4444; transition: border-radius 0.2s, width 0.2s, height 0.2s; }
+button span { width: 14px; height: 14px; border-radius: 50%; background: #ef4444;
+  transition: border-radius 0.25s ease, width 0.25s ease, height 0.25s ease; }
 .live button span { width: 12px; height: 12px; border-radius: 3px; }
 .wave { display: flex; align-items: center; justify-content: space-between; flex: 1; height: 36px; }
 .wave b { width: 2px; border-radius: 1px; background: #a1a1aa; transform-origin: center;
   animation: level ease-in-out infinite alternate; animation-play-state: paused; opacity: 0.45; }
 .live .wave b { animation-play-state: running; opacity: 1; }
 .clock { font-style: normal; }
-button.pressed { animation: press 0.4s ease-out; }
-@keyframes press { 40% { transform: scale(0.82); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.18); } }
+button.pressed { animation: press 0.22s ease-out; }
+@keyframes press { 40% { transform: scale(0.92); } }
 @keyframes level { from { transform: scaleY(0.75); } to { transform: scaleY(1); } }
 @keyframes blink { 50% { opacity: 0.3; } }`,
   // Idle until the host sets { recording: true }; the timer then counts the take, and { recording: false } stops it.
@@ -169,13 +170,12 @@ const TAKES_GAP = 12;
 const TAKE_GAP = 8;
 const TAKE_HEIGHT = 48;
 
-/** The takes Studio saves below the widget; it stars the best one at the end. */
+/** The takes Studio saves below the widget. */
 const TAKES = [
   { name: 'Take 1', duration: '0:42' },
   { name: 'Take 2', duration: '0:39' },
   { name: 'Take 3', duration: '0:44' },
 ];
-const BEST_TAKE = 2;
 
 function takeBox(index: number): Box {
   return {
@@ -186,13 +186,12 @@ function takeBox(index: number): Box {
   };
 }
 
-function takeContent(take: (typeof TAKES)[number], isBest: boolean): KritzelIframeContent {
+function takeContent(take: (typeof TAKES)[number]): KritzelIframeContent {
   return {
     html: `<main>
   <span class="play" aria-hidden="true"></span>
   <strong>${take.name}</strong>
   <span class="duration">${take.duration}</span>
-  <span class="star${isBest ? ' best' : ''}" aria-label="${isBest ? 'Best take' : ''}">★</span>
 </main>`,
     css: `html, body { height: 100%; margin: 0; }
 body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #18181b; background: #f4f4f5; }
@@ -202,9 +201,7 @@ main { display: flex; align-items: center; gap: 12px; height: 100%; padding: 0 1
 .play::after { content: ''; margin-left: 2px; border-left: 8px solid #18181b; border-top: 5px solid transparent;
   border-bottom: 5px solid transparent; }
 strong { flex: 1; font-size: 14px; font-weight: 600; }
-.duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }
-.star { color: #d4d4d8; font-size: 16px; }
-.star.best { color: #f59e0b; }`,
+.duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }`,
     script: '',
   };
 }
@@ -323,13 +320,18 @@ function coverBox(index: number): Box {
 const TAKE_RECORDING_TIME = 3200;
 const TAKE_PAUSE = 900;
 
+/** Where Studio's cursor tip sits relative to the button's center: on it while pressing, beside it while waiting. */
+const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
+const BUTTON_REST_OFFSET = { x: 30, y: 24 };
+
 /** Pause between Studio starting the first take and the camera moving on to the covers. */
 const CAMERA_DELAY_AFTER_RECORD = 800;
 
 /**
  * Studio keeps working after the widget: it records three takes with the widget's record button. Each take is started
  * with one press and stopped with the next, and stopping saves the take to the list below the widget. The first press
- * waits for `start`, and `onFirstPress` runs right after it. Then Studio stars the best take.
+ * waits for `start`, and `onFirstPress` runs right after it. Between presses Studio rests just beside the button, so it
+ * never hides it.
  */
 async function recordTakes(
   editor: HTMLKritzelEditorElement,
@@ -338,42 +340,41 @@ async function recordTakes(
   onFirstPress: () => void,
   signal: AbortSignal,
 ) {
-  const pages: (KritzelIframeObject | null)[] = [];
-  await editor.moveAgenticCursor(STUDIO_AGENT.id, widget ? { objectId: widget.id, selector: 'button' } : STUDIO_BOX, { duration: 500 });
+  const button = (offset: { x: number; y: number }) =>
+    widget ? { objectId: widget.id, selector: 'button', offset } : { x: STUDIO_BOX.x + 40 + offset.x, y: STUDIO_BOX.y + 80 + offset.y };
+  const press = async (state: { recording: boolean; take: number }) => {
+    await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_PRESS_OFFSET), { duration: 260, easing: 'ease-out' });
+    await wait(90, signal);
+    widget?.setState(state);
+    await wait(160, signal);
+    await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
+  };
+
+  await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_REST_OFFSET), { duration: 500 });
   await start;
   for (const [index, take] of TAKES.entries()) {
-    widget?.setState({ recording: true, take: index + 1 });
+    await press({ recording: true, take: index + 1 });
     if (index === 0) {
       onFirstPress();
     }
     await wait(TAKE_RECORDING_TIME, signal);
-    widget?.setState({ recording: false, take: index + 1 });
+    await press({ recording: false, take: index + 1 });
     const box = takeBox(index);
-    pages.push(
-      await editor.addObject(
-        new KritzelIframeObject({
-          title: take.name,
-          content: takeContent(take, false),
-          translateX: box.x,
-          translateY: box.y,
-          width: box.width,
-          height: box.height,
-          borderRadius: 12,
-          boxShadow: SHADOW,
-        }),
-      ),
+    await editor.addObject(
+      new KritzelIframeObject({
+        title: take.name,
+        content: takeContent(take),
+        translateX: box.x,
+        translateY: box.y,
+        width: box.width,
+        height: box.height,
+        borderRadius: 12,
+        boxShadow: SHADOW,
+      }),
     );
     if (index < TAKES.length - 1) {
       await wait(TAKE_PAUSE, signal);
     }
-  }
-  await wait(500, signal);
-  const best = pages[BEST_TAKE];
-  if (best) {
-    // An object anchor, not an element selector: the take is off-screen, and only mounted pages expose their elements.
-    await editor.moveAgenticCursor(STUDIO_AGENT.id, { objectId: best.id, anchor: 'right', offset: { x: -26, y: 0 } }, { duration: 600 });
-    await wait(300, signal);
-    best.setContent(takeContent(TAKES[BEST_TAKE], true));
   }
   await wait(400, signal);
   const last = takeBox(TAKES.length - 1);
