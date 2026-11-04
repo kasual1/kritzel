@@ -42,9 +42,9 @@ const COVERS_ORIGIN = -(COVER_COLUMNS * COVER_SIZE + (COVER_COLUMNS - 1) * COVER
 
 /**
  * The work goes from left to right: the widget left of the covers and the post right of them, both vertically centered
- * on the square.
+ * on the square. For the widget that includes its two takes below it: 116 + 12 + 2 * 48 + 8 = 232 tall.
  */
-const STUDIO_BOX = { x: -640, y: -144, width: 360, height: 116 };
+const STUDIO_BOX = { x: -640, y: -116, width: 360, height: 116 };
 const SOCIAL_BOX = { x: 300, y: -215, width: 300, height: 430 };
 
 const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
@@ -230,7 +230,6 @@ const TAKE_HEIGHT = 48;
 const TAKES = [
   { name: 'Take 1', duration: '0:42' },
   { name: 'Take 2', duration: '0:39' },
-  { name: 'Take 3', duration: '0:44' },
 ];
 
 function takeBox(index: number): Box {
@@ -385,7 +384,7 @@ const BUTTON_REST_OFFSET = { x: 30, y: 24 };
 
 
 /**
- * Studio keeps working after the widget: it records three takes with the widget's record button. Each take is started
+ * Studio keeps working after the widget: it records two takes with the widget's record button. Each take is started
  * with one press and stopped with the next, and stopping saves the take to the list below the widget. Studio presses
  * record right after it built the widget. Between presses it rests just beside the button, so it never hides it.
  */
