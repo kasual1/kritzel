@@ -120,10 +120,7 @@ const WAVE_LEVELS = Array.from({ length: 64 }, (_, i) => {
 const RECORDER: KritzelIframeContent = {
   html: `<main>
   <header>
-    <div>
-      <strong>Full Control</strong>
-      <span>New recording</span>
-    </div>
+    <strong>Full Control</strong>
     <span class="time"><i></i><em class="clock">00:00</em></span>
   </header>
   <div class="take">
@@ -136,10 +133,8 @@ body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #18
 main { display: flex; flex-direction: column; justify-content: center; gap: 12px; height: 100%; padding: 14px 18px;
   box-sizing: border-box; }
 header { display: flex; align-items: center; justify-content: space-between; }
-header div { display: flex; align-items: baseline; gap: 8px; }
 strong { font-size: 15px; font-weight: 600; }
 header span { color: #71717a; font-size: 12px; }
-header div span { color: #4A7DFF; }
 .time { display: flex; align-items: center; gap: 6px; color: #18181b !important; font-variant-numeric: tabular-nums; }
 .time i { width: 6px; height: 6px; border-radius: 50%; background: #d4d4d8; }
 .live .time i { background: #ef4444; animation: blink 1.2s ease-in-out infinite; }
@@ -267,7 +262,7 @@ function takeContent(take: (typeof TAKES)[number]): KritzelIframeContent {
   return {
     html: `<main>
   <span class="play" aria-hidden="true"></span>
-  <strong>${take.name}</strong>
+  <span class="name"><strong>${take.name}</strong><span class="new">New</span></span>
   <span class="duration">${take.duration}</span>
   <span class="star" role="img" aria-label="Not a favorite"><svg viewBox="0 0 16 16" aria-hidden="true">
     <circle class="ring" cx="8" cy="8" r="16"/>
@@ -281,7 +276,10 @@ main { display: flex; align-items: center; gap: 12px; height: 100%; padding: 0 1
   box-shadow: 0 1px 3px rgba(24, 24, 27, 0.12); }
 .play::after { content: ''; margin-left: 2px; border-left: 8px solid #18181b; border-top: 5px solid transparent;
   border-bottom: 5px solid transparent; }
-strong { flex: 1; font-size: 14px; font-weight: 600; }
+strong { font-size: 14px; font-weight: 600; }
+.name { flex: 1; display: flex; align-items: baseline; gap: 8px; }
+.new { color: #4A7DFF; font-size: 12px; }
+.new[hidden] { display: none; }
 .duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }
 /* The star dips under the click, springs up while it turns amber, and a thin ring ripples out from it. */
 .star { display: block; width: 20px; height: 20px; color: #d4d4d8; }
@@ -304,19 +302,19 @@ strong { flex: 1; font-size: 14px; font-weight: 600; }
   100% { transform: scale(1); stroke-width: 0; opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .star.pop path, .star.pop .ring { animation: none; } }`,
-    // A reloaded page shows the favorite without animating it again.
+    // The page renders from its state: `isNew` marks the most recent take, `favorite` the starred one. A reloaded page
+    // shows the favorite without animating it again.
     script: `const star = document.querySelector('.star');
-const render = (favorite, animate) => {
+const label = document.querySelector('.new');
+const render = (state, animate) => {
+  const favorite = Boolean(state && state.favorite);
+  label.hidden = !(state && state.isNew);
+  star.classList.toggle('pop', favorite && animate && !star.classList.contains('favorite'));
   star.classList.toggle('favorite', favorite);
-  star.classList.toggle('pop', favorite && animate);
   star.setAttribute('aria-label', favorite ? 'Favorite' : 'Not a favorite');
 };
-const state = globalThis.kritzel && globalThis.kritzel.state;
-render(Boolean(state && state.favorite), false);
-globalThis.addEventListener('kritzelstatechange', event => {
-  const favorite = Boolean(event.detail && event.detail.favorite);
-  if (favorite !== star.classList.contains('favorite')) render(favorite, true);
-});`,
+render(globalThis.kritzel && globalThis.kritzel.state, false);
+globalThis.addEventListener('kritzelstatechange', event => render(event.detail, true));`,
   };
 }
 
@@ -477,10 +475,13 @@ async function recordTakes(
     await wait(TAKE_RECORDING_TIME, signal);
     await press({ recording: false, take: index + 1 });
     const box = takeBox(index);
+    // Only the most recent take is marked as new.
+    pages.at(-1)?.setState({ isNew: false });
     pages.push(await editor.addObject(
       new KritzelIframeObject({
         title: take.name,
         content: takeContent(take),
+        state: { isNew: true },
         translateX: box.x,
         translateY: box.y,
         width: box.width,
@@ -512,7 +513,7 @@ async function starFavorite(editor: HTMLKritzelEditorElement, take: KritzelIfram
     const star = { objectId: take.id, anchor: 'right' as const, offset: { x: STAR_OFFSET.x + BUTTON_PRESS_OFFSET.x, y: STAR_OFFSET.y + BUTTON_PRESS_OFFSET.y } };
     await editor.moveAgenticCursor(STUDIO_AGENT.id, star, { duration: STAR_APPROACH, easing: 'ease-in-out' });
     await wait(STAR_HOVER, signal);
-    take.setState({ favorite: true });
+    take.setState({ ...take.state, favorite: true });
   }
   await exit(editor, STUDIO_AGENT, { x: STUDIO_BOX.x - 700, y: STUDIO_BOX.y + 900 }, 0, signal);
 }
