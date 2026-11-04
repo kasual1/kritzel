@@ -450,7 +450,7 @@ const TAKE_PAUSE = 600;
 /** Center of the widget's record button, measured from the widget's top-left corner. */
 const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
 
-/** How long Studio takes to slide in from the top right corner of the view to the record button. */
+/** How long Studio takes to slide in from the top left corner of the view to the record button. */
 const STUDIO_ENTRY = 550;
 
 /** Where Studio's cursor tip sits relative to the button's center: on it while pressing, beside it while waiting. */
@@ -483,14 +483,14 @@ async function recordTakes(
     await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
   };
 
-  // Studio slides in from the top right corner of the view for its first press.
+  // Studio slides in from the top left corner of the view for its first press.
   const viewport = await editor.getViewport();
   await editor.addAgenticCursor({
     id: STUDIO_AGENT.id,
     name: STUDIO_AGENT.name,
     color: STUDIO_AGENT.color,
     position: {
-      x: (viewport.width - viewport.translateX) / viewport.scale + 40,
+      x: -viewport.translateX / viewport.scale - 40,
       y: -viewport.translateY / viewport.scale - 40,
     },
   });
