@@ -32,7 +32,7 @@ loads, three prompts are typed into the chat box one after another, and each sta
 recording widget and keeps recording: it starts each take with the record button and stops it with the next press,
 which saves the take to the list below; the best take gets a star. The camera moves on with the first press, Covers draws four jazz covers for "Full Control" in a square in the middle of the canvas, and Social
 writes a social media post about the release. The work runs from left to right: widget, covers, post. The camera follows each agent to its work and finally pulls back to show
-all three results. The scene is scripted in `hero-scene.ts` (covers in `album-covers.ts`), with no model calls, so every
+all three results, while the cursors leave one after another; Studio first stars the best take. The scene is scripted in `hero-scene.ts` (covers in `album-covers.ts`), with no model calls, so every
 recording is the same; reload the page to play it again.
 
 ## Generative UI API key

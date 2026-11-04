@@ -204,7 +204,8 @@ main { display: flex; align-items: center; gap: 12px; height: 100%; padding: 0 1
 strong { flex: 1; font-size: 14px; font-weight: 600; }
 .duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }
 .star { color: #d4d4d8; font-size: 16px; }
-.star.best { color: #f59e0b; }`,
+.star.best { color: #f59e0b; animation: pop 0.4s ease-out; }
+@keyframes pop { 40% { transform: scale(1.5); } }`,
     script: '',
   };
 }
@@ -326,7 +327,7 @@ const TAKE_PAUSE = 900;
 /**
  * Studio keeps working after the widget: it records three takes with the widget's record button. Each take is started
  * with one press and stopped with the next, and stopping saves the take to the list below the widget. The first press
- * waits for `start`, and `onFirstPress` runs right after it. Then Studio stars the best take.
+ * waits for `start`, and `onFirstPress` runs right after it. Studio stars the best take at the very end, see `leave`.
  */
 async function recordTakes(
   editor: HTMLKritzelEditorElement,
@@ -334,7 +335,7 @@ async function recordTakes(
   start: Promise<void>,
   onFirstPress: () => void,
   signal: AbortSignal,
-) {
+): Promise<(KritzelIframeObject | null)[]> {
   const pages: (KritzelIframeObject | null)[] = [];
   await editor.moveAgenticCursor(STUDIO_AGENT.id, widget ? { objectId: widget.id, selector: 'button' } : STUDIO_BOX, { duration: 500 });
   await start;
@@ -364,17 +365,36 @@ async function recordTakes(
       await wait(TAKE_PAUSE, signal);
     }
   }
-  await wait(500, signal);
-  const best = pages[BEST_TAKE];
-  if (best) {
-    // An object anchor, not an element selector: the take is off-screen, and only mounted pages expose their elements.
-    await editor.moveAgenticCursor(STUDIO_AGENT.id, { objectId: best.id, anchor: 'right', offset: { x: -26, y: 0 } }, { duration: 600 });
-    await wait(300, signal);
-    best.setContent(takeContent(TAKES[BEST_TAKE], true));
-  }
-  await wait(400, signal);
-  const last = takeBox(TAKES.length - 1);
-  await editor.moveAgenticCursor(STUDIO_AGENT.id, { x: last.x + last.width - 50, y: last.y + last.height + 20 }, { duration: 500 });
+  return pages;
+}
+
+/** Moves a cursor out of the final view and removes it once it is gone. */
+async function exit(editor: HTMLKritzelEditorElement, agent: Agent, to: { x: number; y: number }, delay: number, signal: AbortSignal) {
+  await wait(delay, signal);
+  await editor.moveAgenticCursor(agent.id, to, { duration: 1100, easing: 'ease-in' });
+  await editor.removeAgenticCursor(agent.id);
+}
+
+/**
+ * The ending, played while the camera pulls back: the cursors leave one after another, Covers up, Social to the
+ * right. Studio first stars the best take, then leaves to the left.
+ */
+async function leave(editor: HTMLKritzelEditorElement, bestTake: KritzelIframeObject | null, signal: AbortSignal) {
+  const studio = async () => {
+    if (bestTake) {
+      // An object anchor, not an element selector: the take can be off-screen, and only mounted pages expose elements.
+      await editor.moveAgenticCursor(STUDIO_AGENT.id, { objectId: bestTake.id, anchor: 'right', offset: { x: -26, y: 0 } }, { duration: 900 });
+      await wait(350, signal);
+      bestTake.setContent(takeContent(TAKES[BEST_TAKE], true));
+      await wait(500, signal);
+    }
+    await exit(editor, STUDIO_AGENT, { x: STUDIO_BOX.x - 900, y: STUDIO_BOX.y + 200 }, 0, signal);
+  };
+  await Promise.all([
+    exit(editor, COVER_AGENT, { x: 60, y: -900 }, 300, signal),
+    exit(editor, SOCIAL_AGENT, { x: SOCIAL_BOX.x + SOCIAL_BOX.width + 900, y: SOCIAL_BOX.y + 120 }, 750, signal),
+    studio(),
+  ]);
 }
 
 async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
@@ -442,9 +462,9 @@ export async function playHeroScene(
   await typePrompt(editor, PROMPTS.social, signal);
   await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
 
-  await Promise.all([covers, takes]);
+  const [, takePages] = await Promise.all([covers, takes]);
   await wait(600, signal);
   setWorking(false);
   const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
-  await frame(editor, union(covered), 1600, signal);
+  await Promise.all([frame(editor, union(covered), 1600, signal), leave(editor, takePages[BEST_TAKE] ?? null, signal)]);
 }
