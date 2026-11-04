@@ -28,11 +28,8 @@ const PROMPTS = {
 /** Pause between typed prompt characters, in milliseconds. */
 const TYPING_DELAY = 16;
 
-/** How long the prefilled first prompt shows before it is sent. */
+/** How long the scene waits before the first prompt is typed. */
 const OPENING_PAUSE = 1200;
-
-/** Pause between clearing the canvas and typing the first prompt again at the end. */
-const LOOP_PAUSE = 400;
 
 /** How long the camera takes to zoom out to the next agent's work. */
 const CAMERA_MOVE = 700;
@@ -380,45 +377,21 @@ async function frame(editor: HTMLKritzelEditorElement, box: Box, duration: numbe
   }
 }
 
-function getChatBox(editor: HTMLKritzelEditorElement) {
+/** Types a prompt into the chat box as a person would, then sends it. */
+async function typePrompt(editor: HTMLKritzelEditorElement, prompt: string, signal: AbortSignal) {
   const chatBox = editor.querySelector('kritzel-chat-box');
   const textarea = chatBox?.shadowRoot?.querySelector('textarea');
-  return chatBox && textarea ? { chatBox, textarea } : null;
-}
-
-/** Types a prompt into the chat box as a person would, then sends it unless `send` is false. */
-async function typePrompt(editor: HTMLKritzelEditorElement, prompt: string, signal: AbortSignal, send = true) {
-  const parts = getChatBox(editor);
-  if (!parts) {
+  if (!chatBox || !textarea) {
     return;
   }
-  parts.textarea.focus();
+  textarea.focus();
   for (let length = 1; length <= prompt.length; length++) {
-    parts.chatBox.value = prompt.slice(0, length);
+    chatBox.value = prompt.slice(0, length);
     await wait(TYPING_DELAY, signal);
   }
-  if (send) {
-    await wait(300, signal);
-    sendPrompt(editor);
-  }
-}
-
-/** Puts a prompt into the chat box at once, as if it had just been typed. */
-function prefillPrompt(editor: HTMLKritzelEditorElement, prompt: string) {
-  const parts = getChatBox(editor);
-  if (parts) {
-    parts.textarea.focus();
-    parts.chatBox.value = prompt;
-  }
-}
-
-/** Sends the prompt in the chat box, which empties it. */
-function sendPrompt(editor: HTMLKritzelEditorElement) {
-  const parts = getChatBox(editor);
-  if (parts) {
-    parts.chatBox.value = '';
-    parts.textarea.blur();
-  }
+  await wait(300, signal);
+  chatBox.value = '';
+  textarea.blur();
 }
 
 /** Adds a page that shows the glare placeholder first and its content once the agent is "done writing" it. */
@@ -600,11 +573,10 @@ export async function playHeroScene(
 ): Promise<void> {
   await editor.clearAgenticCursors();
   await frame(editor, STUDIO_BOX, 0, signal);
-  // The scene starts where it ends: the first prompt is already written into the chat box, so the recorded video
-  // loops seamlessly. It shows for a moment before it is sent.
-  prefillPrompt(editor, PROMPTS.studio);
+  // The empty canvas shows for a moment before the first prompt is typed.
   await wait(OPENING_PAUSE, signal);
-  sendPrompt(editor);
+
+  await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
   const widget = await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal);
   // Studio starts recording right away and keeps recording takes; the cover prompt is typed while the first take
@@ -638,8 +610,4 @@ export async function playHeroScene(
   // The finished scene stays for a moment after Studio has left, then the canvas is cleared.
   await wait(CLEAR_DELAY, signal);
   await editor.removeObjects(await editor.getAllObjects());
-
-  // The first prompt is typed again but not sent, which leads back into the start of the scene when the video loops.
-  await wait(LOOP_PAUSE, signal);
-  await typePrompt(editor, PROMPTS.studio, signal, false);
 }
