@@ -113,7 +113,7 @@ const RECORDER: KritzelIframeContent = {
     <span class="time"><i></i><em class="clock">00:00</em></span>
   </header>
   <div class="take">
-    <button type="button" aria-label="Stop recording"><span></span></button>
+    <button type="button" aria-label="Record"><span></span></button>
     <div class="wave">${WAVE_LEVELS.map((level, i) => `<b style="height:${Math.round(level * 100)}%;animation-duration:${(0.7 + (i % 5) * 0.13).toFixed(2)}s;animation-delay:-${((i * 0.37) % 1).toFixed(2)}s"></b>`).join('')}</div>
   </div>
 </main>`,
@@ -126,32 +126,40 @@ header div { display: flex; align-items: baseline; gap: 8px; }
 strong { font-size: 15px; font-weight: 600; }
 header span { color: #71717a; font-size: 12px; }
 .time { display: flex; align-items: center; gap: 6px; color: #18181b !important; font-variant-numeric: tabular-nums; }
-.time i { width: 6px; height: 6px; border-radius: 50%; background: #ef4444; animation: blink 1.2s ease-in-out infinite; }
+.time i { width: 6px; height: 6px; border-radius: 50%; background: #d4d4d8; }
+.live .time i { background: #ef4444; animation: blink 1.2s ease-in-out infinite; }
 .take { display: flex; align-items: center; gap: 14px; }
 button { display: grid; place-items: center; flex-shrink: 0; width: 38px; height: 38px; border: 0; border-radius: 50%;
   background: #ffffff; box-shadow: 0 1px 3px rgba(24, 24, 27, 0.12); }
-button span { width: 12px; height: 12px; border-radius: 3px; background: #ef4444; }
+button span { width: 14px; height: 14px; border-radius: 50%; background: #ef4444; transition: border-radius 0.2s, width 0.2s, height 0.2s; }
+.live button span { width: 12px; height: 12px; border-radius: 3px; }
 .wave { display: flex; align-items: center; justify-content: space-between; flex: 1; height: 36px; }
 .wave b { width: 2px; border-radius: 1px; background: #a1a1aa; transform-origin: center;
-  animation: level ease-in-out infinite alternate; }
+  animation: level ease-in-out infinite alternate; animation-play-state: paused; opacity: 0.45; }
+.live .wave b { animation-play-state: running; opacity: 1; }
 .clock { font-style: normal; }
 button.pressed { animation: press 0.4s ease-out; }
 @keyframes press { 40% { transform: scale(0.82); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.18); } }
 @keyframes level { from { transform: scaleY(0.75); } to { transform: scaleY(1); } }
 @keyframes blink { 50% { opacity: 0.3; } }`,
-  // The timer counts the current take; pressing stop (a state change from the host) restarts it.
-  script: `const clock = document.querySelector('.clock');
+  // Idle until the host sets { recording: true }; the timer then counts the take, and { recording: false } stops it.
+  script: `const main = document.querySelector('main');
+const clock = document.querySelector('.clock');
 const button = document.querySelector('button');
-let start = performance.now();
+let start = null;
 setInterval(() => {
+  if (start === null) return;
   const seconds = Math.floor((performance.now() - start) / 1000);
   clock.textContent = '00:' + String(seconds).padStart(2, '0');
 }, 200);
-addEventListener('kritzelstatechange', () => {
+addEventListener('kritzelstatechange', event => {
+  const recording = event.detail.recording === true;
   button.classList.remove('pressed');
   void button.offsetWidth;
   button.classList.add('pressed');
-  start = performance.now();
+  main.classList.toggle('live', recording);
+  button.setAttribute('aria-label', recording ? 'Stop recording' : 'Record');
+  start = recording ? performance.now() : null;
   clock.textContent = '00:00';
 });`,
 };
@@ -311,19 +319,32 @@ function coverBox(index: number): Box {
   };
 }
 
-/** How long Studio records each take before pressing stop. */
-const TAKE_RECORDING_TIME = 1400;
+/** How long Studio records each take before pressing stop, and how long it waits before starting the next one. */
+const TAKE_RECORDING_TIME = 3200;
+const TAKE_PAUSE = 900;
 
 /**
- * Studio keeps working after the widget: it records three takes by pressing the widget's stop button, and every press
- * saves the take to the list below the widget. Then it stars the best take.
+ * Studio keeps working after the widget: it records three takes with the widget's record button. Each take is started
+ * with one press and stopped with the next, and stopping saves the take to the list below the widget. The first press
+ * waits for `start`, and `onFirstPress` runs right after it. Then Studio stars the best take.
  */
-async function recordTakes(editor: HTMLKritzelEditorElement, widget: KritzelIframeObject | null, signal: AbortSignal) {
+async function recordTakes(
+  editor: HTMLKritzelEditorElement,
+  widget: KritzelIframeObject | null,
+  start: Promise<void>,
+  onFirstPress: () => void,
+  signal: AbortSignal,
+) {
   const pages: (KritzelIframeObject | null)[] = [];
   await editor.moveAgenticCursor(STUDIO_AGENT.id, widget ? { objectId: widget.id, selector: 'button' } : STUDIO_BOX, { duration: 500 });
+  await start;
   for (const [index, take] of TAKES.entries()) {
+    widget?.setState({ recording: true, take: index + 1 });
+    if (index === 0) {
+      onFirstPress();
+    }
     await wait(TAKE_RECORDING_TIME, signal);
-    widget?.setState({ takes: index + 1 });
+    widget?.setState({ recording: false, take: index + 1 });
     const box = takeBox(index);
     pages.push(
       await editor.addObject(
@@ -339,11 +360,15 @@ async function recordTakes(editor: HTMLKritzelEditorElement, widget: KritzelIfra
         }),
       ),
     );
+    if (index < TAKES.length - 1) {
+      await wait(TAKE_PAUSE, signal);
+    }
   }
   await wait(500, signal);
   const best = pages[BEST_TAKE];
   if (best) {
-    await editor.moveAgenticCursor(STUDIO_AGENT.id, { objectId: best.id, selector: '.star' }, { duration: 600 });
+    // An object anchor, not an element selector: the take is off-screen, and only mounted pages expose their elements.
+    await editor.moveAgenticCursor(STUDIO_AGENT.id, { objectId: best.id, anchor: 'right', offset: { x: -26, y: 0 } }, { duration: 600 });
     await wait(300, signal);
     best.setContent(takeContent(TAKES[BEST_TAKE], true));
   }
@@ -397,16 +422,23 @@ export async function playHeroScene(
   await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
   const widget = await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal, false);
-  // Studio keeps recording takes while the camera moves on to the covers and the post.
-  const takes = recordTakes(editor, widget ?? null, signal);
+  // Studio waits on the record button while the next prompt is typed, then starts the first take as Covers sets off.
+  // The camera follows Covers right away, and Studio keeps recording takes off-screen.
+  let startRecording = () => {};
+  const recordingStarted = new Promise<void>(resolve => (startRecording = resolve));
+  let firstPress = () => {};
+  const firstPressed = new Promise<void>(resolve => (firstPress = resolve));
+  const takes = recordTakes(editor, widget ?? null, recordingStarted, firstPress, signal);
 
   await wait(500, signal);
   await typePrompt(editor, PROMPTS.covers, signal);
-  await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 1100, signal);
   const covers = createCovers(editor, signal);
+  startRecording();
+  await firstPressed;
+  await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 1100, signal);
 
   // The next prompt is written while the covers are still being drawn.
-  await wait(2600, signal);
+  await wait(1500, signal);
   await typePrompt(editor, PROMPTS.social, signal);
   await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
 
