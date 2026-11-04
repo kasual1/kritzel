@@ -44,7 +44,7 @@ const COVERS_ORIGIN = -(COVER_COLUMNS * COVER_SIZE + (COVER_COLUMNS - 1) * COVER
  * The work goes from left to right: the widget left of the covers and the post right of them, both vertically centered
  * on the square.
  */
-const STUDIO_BOX = { x: -640, y: -58, width: 360, height: 116 };
+const STUDIO_BOX = { x: -640, y: -144, width: 360, height: 116 };
 const SOCIAL_BOX = { x: 300, y: -215, width: 300, height: 430 };
 
 const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
@@ -138,6 +138,51 @@ button span { width: 12px; height: 12px; border-radius: 3px; background: #ef4444
 @keyframes blink { 50% { opacity: 0.3; } }`,
   script: '',
 };
+
+/** Room between the widget and the saved takes below it, and between the takes. */
+const TAKES_GAP = 12;
+const TAKE_GAP = 8;
+const TAKE_HEIGHT = 48;
+
+/** The takes Studio saves below the widget; it stars the best one at the end. */
+const TAKES = [
+  { name: 'Take 1', duration: '0:42' },
+  { name: 'Take 2', duration: '0:39' },
+  { name: 'Take 3', duration: '0:44' },
+];
+const BEST_TAKE = 2;
+
+function takeBox(index: number): Box {
+  return {
+    x: STUDIO_BOX.x,
+    y: STUDIO_BOX.y + STUDIO_BOX.height + TAKES_GAP + index * (TAKE_HEIGHT + TAKE_GAP),
+    width: STUDIO_BOX.width,
+    height: TAKE_HEIGHT,
+  };
+}
+
+function takeContent(take: (typeof TAKES)[number], isBest: boolean): KritzelIframeContent {
+  return {
+    html: `<main>
+  <span class="play" aria-hidden="true"></span>
+  <strong>${take.name}</strong>
+  <span class="duration">${take.duration}</span>
+  <span class="star${isBest ? ' best' : ''}" aria-label="${isBest ? 'Best take' : ''}">★</span>
+</main>`,
+    css: `html, body { height: 100%; margin: 0; }
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #18181b; background: #f4f4f5; }
+main { display: flex; align-items: center; gap: 12px; height: 100%; padding: 0 18px; box-sizing: border-box; }
+.play { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: #ffffff;
+  box-shadow: 0 1px 3px rgba(24, 24, 27, 0.12); }
+.play::after { content: ''; margin-left: 2px; border-left: 8px solid #18181b; border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent; }
+strong { flex: 1; font-size: 14px; font-weight: 600; }
+.duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }
+.star { color: #d4d4d8; font-size: 16px; }
+.star.best { color: #f59e0b; }`,
+    script: '',
+  };
+}
 
 function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -235,6 +280,7 @@ async function generatePage(
   await editor.moveAgenticCursor(agent.id, { x: box.x + box.width - 24, y: box.y + box.height - 24 }, { duration: writingTime });
   added?.setLoading(false);
   await wait(250, signal);
+  return added;
 }
 
 function coverBox(index: number): Box {
@@ -248,13 +294,28 @@ function coverBox(index: number): Box {
   };
 }
 
+/** Studio keeps working after the widget: it saves three takes below it, then stars the best one. */
+async function saveTakes(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
+  const pages = [];
+  for (const [index, take] of TAKES.entries()) {
+    pages.push(await generatePage(editor, STUDIO_AGENT, takeBox(index), takeContent(take, false), 1000, signal, 12));
+  }
+  const best = takeBox(BEST_TAKE);
+  await editor.moveAgenticCursor(STUDIO_AGENT.id, { x: best.x + best.width - 22, y: best.y + best.height / 2 }, { duration: 500 });
+  await wait(300, signal);
+  pages[BEST_TAKE]?.setContent(takeContent(TAKES[BEST_TAKE], true));
+  await wait(400, signal);
+  const last = takeBox(TAKES.length - 1);
+  await editor.moveAgenticCursor(STUDIO_AGENT.id, { x: last.x + last.width - 50, y: last.y + last.height + 20 }, { duration: 500 });
+}
+
 async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
   await editor.addAgenticCursor({ id: COVER_AGENT.id, name: COVER_AGENT.name, color: COVER_AGENT.color, position: { x: -520, y: 420 } });
   for (const [index, cover] of ALBUM_COVERS.entries()) {
     await generatePage(editor, COVER_AGENT, coverBox(index), coverContent(cover.svg), 900, signal, 12);
   }
   const last = coverBox(ALBUM_COVERS.length - 1);
-  await editor.moveAgenticCursor(COVER_AGENT.id, { x: last.x + last.width + 40, y: last.y + last.height / 2 }, { duration: 600 });
+  await editor.moveAgenticCursor(COVER_AGENT.id, { x: last.x + last.width - 50, y: last.y + last.height + 20 }, { duration: 600 });
 }
 
 /** Moves the camera to an agent's work area, then lets the agent fly in from the left edge of the view and build it. */
@@ -289,6 +350,8 @@ export async function playHeroScene(
   await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
   await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal);
+  // Studio keeps saving takes while the camera moves on to the covers and the post.
+  const takes = saveTakes(editor, signal);
 
   await wait(500, signal);
   await typePrompt(editor, PROMPTS.covers, signal);
@@ -300,9 +363,9 @@ export async function playHeroScene(
   await typePrompt(editor, PROMPTS.social, signal);
   await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
 
-  await covers;
+  await Promise.all([covers, takes]);
   await wait(600, signal);
   setWorking(false);
-  const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX];
+  const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
   await frame(editor, union(covered), 1600, signal);
 }
