@@ -262,7 +262,10 @@ function takeContent(take: (typeof TAKES)[number]): KritzelIframeContent {
   <span class="play" aria-hidden="true"></span>
   <strong>${take.name}</strong>
   <span class="duration">${take.duration}</span>
-  <span class="star" aria-label="Not a favorite">★</span>
+  <span class="star" role="img" aria-label="Not a favorite"><svg viewBox="0 0 16 16" aria-hidden="true">
+    <circle class="ring" cx="8" cy="8" r="16"/>
+    <path d="M8.35 1.64L9.76 5.41Q9.9 5.78 10.3 5.8L14.32 5.98Q15.32 6.02 14.54 6.64L11.39 9.15Q11.08 9.4 11.18 9.78L12.26 13.67Q12.53 14.63 11.69 14.08L8.33 11.85Q8 11.63 7.67 11.85L4.31 14.08Q3.47 14.63 3.74 13.67L4.82 9.78Q4.92 9.4 4.61 9.15L1.46 6.64Q0.68 6.02 1.68 5.98L5.7 5.8Q6.1 5.78 6.24 5.41L7.65 1.64Q8 0.7 8.35 1.64Z"/>
+  </svg></span>
 </main>`,
     css: `html, body { height: 100%; margin: 0; }
 body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #18181b; background: #f4f4f5; }
@@ -273,13 +276,40 @@ main { display: flex; align-items: center; gap: 12px; height: 100%; padding: 0 1
   border-bottom: 5px solid transparent; }
 strong { flex: 1; font-size: 14px; font-weight: 600; }
 .duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }
-.star { color: #d4d4d8; font-size: 21px; line-height: 1; }
-.star.favorite { color: #f59e0b; animation: pop 0.35s ease-out; }
-@keyframes pop { 45% { transform: scale(1.45); } }`,
+/* The star dips under the click, springs up while it turns amber, and a thin ring ripples out from it. */
+.star { display: block; width: 20px; height: 20px; color: #d4d4d8; }
+.star.favorite { color: #f59e0b; }
+.star svg { display: block; width: 20px; height: 20px; overflow: visible; }
+.star path { fill: currentColor; transform-origin: 8px 8.3px; }
+.star .ring { fill: none; stroke: #f59e0b; stroke-width: 0; opacity: 0; transform-origin: 8px 8px; }
+.star.pop path { animation: star-pop 520ms; }
+.star.pop .ring { animation: star-ring 560ms cubic-bezier(0.25, 0.6, 0.35, 1) 40ms; }
+@keyframes star-pop {
+  0% { transform: scale(1); fill: #d4d4d8; animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1); }
+  14% { transform: scale(0.84); fill: #f59e0b; animation-timing-function: cubic-bezier(0.2, 0.6, 0.35, 1); }
+  42% { transform: scale(1.14); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  68% { transform: scale(0.97); animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1); }
+  100% { transform: scale(1); fill: #f59e0b; }
+}
+@keyframes star-ring {
+  0% { transform: scale(0.5); stroke-width: 3.2; opacity: 0; }
+  12% { opacity: 0.32; }
+  100% { transform: scale(1); stroke-width: 0; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .star.pop path, .star.pop .ring { animation: none; } }`,
+    // A reloaded page shows the favorite without animating it again.
     script: `const star = document.querySelector('.star');
-const setFavorite = () => { star.classList.add('favorite'); star.setAttribute('aria-label', 'Favorite'); };
-globalThis.addEventListener('kritzelstatechange', event => { if (event.detail.favorite) setFavorite(); });
-if (globalThis.kritzel && globalThis.kritzel.state && globalThis.kritzel.state.favorite) setFavorite();`,
+const render = (favorite, animate) => {
+  star.classList.toggle('favorite', favorite);
+  star.classList.toggle('pop', favorite && animate);
+  star.setAttribute('aria-label', favorite ? 'Favorite' : 'Not a favorite');
+};
+const state = globalThis.kritzel && globalThis.kritzel.state;
+render(Boolean(state && state.favorite), false);
+globalThis.addEventListener('kritzelstatechange', event => {
+  const favorite = Boolean(event.detail && event.detail.favorite);
+  if (favorite !== star.classList.contains('favorite')) render(favorite, true);
+});`,
   };
 }
 
