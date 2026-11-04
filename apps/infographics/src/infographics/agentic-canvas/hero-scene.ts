@@ -89,28 +89,34 @@ footer { display: flex; gap: 18px; color: #78716c; font-size: 13px; }`,
 
 const RECORDER: KritzelIframeContent = {
   html: `<main>
-  <button type="button" aria-label="Record"><span></span></button>
-  <div class="info">
-    <strong>Recording · Full Control</strong>
-    <div class="wave">${Array.from({ length: 18 }, (_, i) => `<i style="animation-delay:-${(i * 0.13).toFixed(2)}s"></i>`).join('')}</div>
-    <span class="time">00:12</span>
-  </div>
+  <header>
+    <div>
+      <strong>Full Control</strong>
+      <span>New recording</span>
+    </div>
+    <span class="time"><i></i>00:12</span>
+  </header>
+  <div class="wave">${Array.from({ length: 32 }, (_, i) => `<b style="animation-delay:-${(i * 0.09).toFixed(2)}s"></b>`).join('')}</div>
+  <button type="button" aria-label="Stop recording"><span></span></button>
 </main>`,
   css: `html, body { height: 100%; margin: 0; }
-body { display: grid; place-items: center; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  color: #f5ecd7; background: #1c1917; }
-main { display: flex; align-items: center; gap: 22px; padding: 0 26px; width: 100%; box-sizing: border-box; }
-button { display: grid; place-items: center; flex-shrink: 0; width: 78px; height: 78px; border: 3px solid #f5ecd7;
-  border-radius: 50%; background: transparent; }
-button span { width: 46px; height: 46px; border-radius: 50%; background: #e11d48; animation: pulse 1.2s ease-in-out infinite; }
-.info { display: flex; flex-direction: column; gap: 10px; flex: 1; }
-strong { font-size: 15px; }
-.wave { display: flex; align-items: center; gap: 4px; height: 44px; }
-.wave i { flex: 1; height: 100%; border-radius: 3px; background: #e8a33d; transform-origin: center;
-  animation: level 0.9s ease-in-out infinite alternate; }
-.time { color: #a8a29e; font-size: 13px; font-variant-numeric: tabular-nums; }
-@keyframes level { from { transform: scaleY(0.2); } to { transform: scaleY(1); } }
-@keyframes pulse { 50% { transform: scale(0.85); } }`,
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #18181b; background: #f4f4f5; }
+main { display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding: 20px 22px;
+  box-sizing: border-box; }
+header { display: flex; align-items: flex-start; justify-content: space-between; }
+header div { display: flex; flex-direction: column; gap: 2px; }
+strong { font-size: 16px; font-weight: 600; }
+header span { color: #71717a; font-size: 13px; }
+.time { display: flex; align-items: center; gap: 6px; color: #18181b !important; font-variant-numeric: tabular-nums; }
+.time i { width: 7px; height: 7px; border-radius: 50%; background: #ef4444; animation: blink 1.2s ease-in-out infinite; }
+.wave { display: flex; align-items: center; gap: 3px; height: 40px; }
+.wave b { flex: 1; height: 100%; border-radius: 2px; background: #a1a1aa; transform-origin: center;
+  animation: level 1s ease-in-out infinite alternate; }
+button { align-self: center; display: grid; place-items: center; width: 44px; height: 44px; border: 0;
+  border-radius: 50%; background: #ffffff; box-shadow: 0 1px 3px rgba(24, 24, 27, 0.12); }
+button span { width: 14px; height: 14px; border-radius: 3px; background: #ef4444; }
+@keyframes level { from { transform: scaleY(0.15); } to { transform: scaleY(0.9); } }
+@keyframes blink { 50% { opacity: 0.3; } }`,
   script: '',
 };
 
