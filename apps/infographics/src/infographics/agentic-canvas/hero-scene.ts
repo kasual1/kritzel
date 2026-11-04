@@ -550,7 +550,8 @@ async function exit(editor: HTMLKritzelEditorElement, agent: Agent, to: { x: num
 }
 
 /**
- * Plays the scene once. `setWorking` drives the chat box's loading ring, which stays on while any agent works.
+ * Plays the scene once. `setWorking` drives the chat box's loading ring, which runs from the first prompt until the
+ * social media post, the last of the three results, has been added.
  */
 export async function playHeroScene(
   editor: HTMLKritzelEditorElement,
@@ -577,6 +578,7 @@ export async function playHeroScene(
   await wait(800, signal);
   await typePrompt(editor, PROMPTS.social, signal);
   await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
+  setWorking(false);
 
   // Social leaves through the bottom right while the camera already pulls back, so Studio's last takes and its exit
   // happen in view.
@@ -590,7 +592,6 @@ export async function playHeroScene(
   await wait(STAR_SETTLE, signal);
   await starFavorite(editor, saved[FAVORITE_TAKE] ?? null, signal);
   await socialGone;
-  setWorking(false);
 
   // The finished scene stays for a moment after Studio has left, then the canvas is cleared.
   await wait(CLEAR_DELAY, signal);
