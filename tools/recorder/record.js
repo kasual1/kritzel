@@ -13,7 +13,7 @@ const PROFILE_DIR = path.join(__dirname, '.profile');
 const ICON_REGISTRY = path.join(__dirname, '../../libs/core/src/classes/registries/icon-registry.class.ts');
 // Same hotspot KritzelCursorHelper.getCursor() uses for the default cursor.
 const CURSOR_HOTSPOT = { x: 4, y: 4 };
-const WATERMARK_TEXT = 'kritzel.io';
+const WATERMARK_TEXT = 'Powered by kritzel.io';
 
 function getArgValue(name) {
 	const prefix = `--${name}=`;
