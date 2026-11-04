@@ -31,9 +31,8 @@ const TYPING_DELAY = 16;
 /** How long the scene waits before the first prompt is typed. */
 const OPENING_PAUSE = 1200;
 
-/** How long the camera takes to move from one agent's work to the next one, and to pull back at the end. */
+/** How long the camera takes to zoom out to the next agent's work. */
 const CAMERA_MOVE = 700;
-const CAMERA_PULL_BACK = 1000;
 
 /** How long a cursor takes to leave the view once its agent is done. */
 const EXIT_DURATION = 800;
@@ -260,6 +259,9 @@ function takeBox(index: number): Box {
   };
 }
 
+/** The widget with its saved takes below it. */
+const STUDIO_WORK = [STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
+
 /** A saved take. Its star turns on through the page's state (`{ favorite: true }`), so it animates in place. */
 function takeContent(take: (typeof TAKES)[number]): KritzelIframeContent {
   return {
@@ -434,6 +436,8 @@ function coverBox(index: number): Box {
   };
 }
 
+const COVER_BOXES = ALBUM_COVERS.map((_, index) => coverBox(index));
+
 /** How long Studio records each take before pressing stop, and how long it waits before starting the next one. */
 const TAKE_RECORDING_TIME = 2600;
 const TAKE_PAUSE = 600;
@@ -531,7 +535,8 @@ async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSigna
 }
 
 /**
- * Moves the camera to an agent's work area, then lets the agent fly in from the left edge of the view and build it.
+ * Moves the camera to `view`, the work so far plus the agent's own area, then lets the agent fly in from the view's
+ * left or right edge and build its page.
  */
 async function runFollowedAgent(
   editor: HTMLKritzelEditorElement,
@@ -539,11 +544,14 @@ async function runFollowedAgent(
   box: Box,
   content: KritzelIframeContent,
   signal: AbortSignal,
+  view: Box = box,
+  side: 'left' | 'right' = 'left',
 ) {
-  await frame(editor, box, CAMERA_MOVE, signal);
-  const view = await editor.getViewport();
-  const left = -view.translateX / view.scale;
-  await editor.addAgenticCursor({ id: agent.id, name: agent.name, color: agent.color, position: { x: left - 40, y: box.y + box.height / 2 } });
+  await frame(editor, view, CAMERA_MOVE, signal, view !== box);
+  const viewport = await editor.getViewport();
+  const left = -viewport.translateX / viewport.scale;
+  const x = side === 'left' ? left - 40 : left + viewport.width / viewport.scale + 40;
+  await editor.addAgenticCursor({ id: agent.id, name: agent.name, color: agent.color, position: { x, y: box.y + box.height / 2 } });
   return generatePage(editor, agent, box, content, 1100, signal);
 }
 
@@ -578,22 +586,22 @@ export async function playHeroScene(
   await wait(250, signal);
   await typePrompt(editor, PROMPTS.covers, signal);
   const covers = createCovers(editor, signal);
-  await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), CAMERA_MOVE, signal);
+  // The camera zooms out just enough to keep the widget and the covers centered together.
+  await frame(editor, union([...STUDIO_WORK, ...COVER_BOXES]), CAMERA_MOVE, signal, true);
 
   // The next prompt is written while the covers are still being drawn.
   await wait(800, signal);
   await typePrompt(editor, PROMPTS.social, signal);
-  await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
+  // Zooming out once more keeps all three results centered: that is already the final view. Social comes in from the
+  // right, next to its post.
+  await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal, union([...STUDIO_WORK, ...COVER_BOXES, SOCIAL_BOX]), 'right');
   setWorking(false);
 
-  // Social leaves through the bottom right while the camera already pulls back, so Studio's last takes and its exit
-  // happen in view.
+  // Social leaves through the bottom right.
   const socialGone = exit(editor, SOCIAL_AGENT, { x: SOCIAL_BOX.x + SOCIAL_BOX.width + 700, y: SOCIAL_BOX.y + SOCIAL_BOX.height + 700 }, 150, signal);
   await covers;
-  const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
-  await frame(editor, union(covered), CAMERA_PULL_BACK, signal, true);
 
-  // Studio stars its favorite take only once the camera has come to rest on the whole scene and the last take is saved.
+  // Studio stars its favorite take once the last take is saved, with the camera at rest on the whole scene.
   const saved = await takes;
   await wait(STAR_SETTLE, signal);
   await starFavorite(editor, saved[FAVORITE_TAKE] ?? null, signal);
