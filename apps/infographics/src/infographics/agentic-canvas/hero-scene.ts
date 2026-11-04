@@ -383,20 +383,15 @@ const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
 const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
 const BUTTON_REST_OFFSET = { x: 30, y: 24 };
 
-/** Pause between Studio starting the first take and the camera moving on to the covers. */
-const CAMERA_DELAY_AFTER_RECORD = 800;
 
 /**
  * Studio keeps working after the widget: it records three takes with the widget's record button. Each take is started
- * with one press and stopped with the next, and stopping saves the take to the list below the widget. The first press
- * waits for `start`, and `onFirstPress` runs right after it. Between presses Studio rests just beside the button, so it
- * never hides it.
+ * with one press and stopped with the next, and stopping saves the take to the list below the widget. Studio presses
+ * record right after it built the widget. Between presses it rests just beside the button, so it never hides it.
  */
 async function recordTakes(
   editor: HTMLKritzelEditorElement,
   widget: KritzelIframeObject | null,
-  start: Promise<void>,
-  onFirstPress: () => void,
   signal: AbortSignal,
 ) {
   // An object anchor, not an element selector: Studio also presses while the widget is off-screen, and only mounted
@@ -406,21 +401,17 @@ async function recordTakes(
     const y = RECORD_BUTTON_CENTER.y + offset.y;
     return widget ? { objectId: widget.id, anchor: 'top-left' as const, offset: { x, y } } : { x: STUDIO_BOX.x + x, y: STUDIO_BOX.y + y };
   };
-  const press = async (state: { recording: boolean; take: number }) => {
-    await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_PRESS_OFFSET), { duration: 260, easing: 'ease-out' });
+  const press = async (state: { recording: boolean; take: number }, approach = 260) => {
+    await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_PRESS_OFFSET), { duration: approach, easing: 'ease-out' });
     await wait(90, signal);
     widget?.setState(state);
     await wait(160, signal);
     await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
   };
 
-  await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_REST_OFFSET), { duration: 500 });
-  await start;
   for (const [index, take] of TAKES.entries()) {
-    await press({ recording: true, take: index + 1 });
-    if (index === 0) {
-      onFirstPress();
-    }
+    // The first press comes straight from the widget's corner, so that approach takes a little longer.
+    await press({ recording: true, take: index + 1 }, index === 0 ? 450 : 260);
     await wait(TAKE_RECORDING_TIME, signal);
     await press({ recording: false, take: index + 1 });
     const box = takeBox(index);
@@ -499,21 +490,13 @@ export async function playHeroScene(
   await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
   const widget = await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal);
-  // Studio waits on the record button while the next prompt is typed, then starts the first take as Covers sets off.
-  // The camera follows Covers right away, and Studio keeps recording takes off-screen.
-  let startRecording = () => {};
-  const recordingStarted = new Promise<void>(resolve => (startRecording = resolve));
-  let firstPress = () => {};
-  const firstPressed = new Promise<void>(resolve => (firstPress = resolve));
-  const takes = recordTakes(editor, widget ?? null, recordingStarted, firstPress, signal);
+  // Studio starts recording right away and keeps recording takes; the cover prompt is typed while the first take
+  // records, and the camera follows Covers as soon as it sets off.
+  const takes = recordTakes(editor, widget ?? null, signal);
 
   await wait(500, signal);
   await typePrompt(editor, PROMPTS.covers, signal);
   const covers = createCovers(editor, signal);
-  startRecording();
-  await firstPressed;
-  // Lets the first take visibly start before the camera moves on to the covers.
-  await wait(CAMERA_DELAY_AFTER_RECORD, signal);
   await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 1100, signal);
 
   // The next prompt is written while the covers are still being drawn.
