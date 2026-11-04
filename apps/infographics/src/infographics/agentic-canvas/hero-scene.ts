@@ -244,7 +244,7 @@ const TAKES = [
 const FAVORITE_TAKE = 1;
 
 /** Where the star sits on a take, from the take's right edge. */
-const STAR_OFFSET = { x: -26, y: 0 };
+const STAR_OFFSET = { x: -28, y: 0 };
 
 function takeBox(index: number): Box {
   return {
@@ -273,7 +273,7 @@ main { display: flex; align-items: center; gap: 12px; height: 100%; padding: 0 1
   border-bottom: 5px solid transparent; }
 strong { flex: 1; font-size: 14px; font-weight: 600; }
 .duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }
-.star { color: #d4d4d8; font-size: 16px; line-height: 1; }
+.star { color: #d4d4d8; font-size: 21px; line-height: 1; }
 .star.favorite { color: #f59e0b; animation: pop 0.35s ease-out; }
 @keyframes pop { 45% { transform: scale(1.45); } }`,
     script: `const star = document.querySelector('.star');
