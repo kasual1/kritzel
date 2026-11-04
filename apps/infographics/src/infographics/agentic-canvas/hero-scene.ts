@@ -26,7 +26,14 @@ const PROMPTS = {
 };
 
 /** Pause between typed prompt characters, in milliseconds. */
-const TYPING_DELAY = 22;
+const TYPING_DELAY = 16;
+
+/** How long the camera takes to move from one agent's work to the next one, and to pull back at the end. */
+const CAMERA_MOVE = 700;
+const CAMERA_PULL_BACK = 1000;
+
+/** How long a cursor takes to leave the view once its agent is done. */
+const EXIT_DURATION = 800;
 
 /** Screen pixels kept free at the bottom of the view for the chat box, so the camera never frames work behind it. */
 const CHAT_BOX_SPACE = 150;
@@ -326,7 +333,7 @@ async function typePrompt(editor: HTMLKritzelEditorElement, prompt: string, sign
     chatBox.value = prompt.slice(0, length);
     await wait(TYPING_DELAY, signal);
   }
-  await wait(450, signal);
+  await wait(300, signal);
   chatBox.value = '';
   textarea.blur();
 }
@@ -341,7 +348,7 @@ async function generatePage(
   signal: AbortSignal,
   borderRadius = 14,
 ) {
-  await editor.moveAgenticCursor(agent.id, { x: box.x + 16, y: box.y + 16 }, { duration: 650 });
+  await editor.moveAgenticCursor(agent.id, { x: box.x + 16, y: box.y + 16 }, { duration: 450 });
   const page = new KritzelIframeObject({
     title: agent.name,
     content,
@@ -357,7 +364,7 @@ async function generatePage(
   const added = await editor.addObject(page);
   await editor.moveAgenticCursor(agent.id, { x: box.x + box.width - 24, y: box.y + box.height - 24 }, { duration: writingTime });
   added?.setLoading(false);
-  await wait(250, signal);
+  await wait(150, signal);
   return added;
 }
 
@@ -373,8 +380,8 @@ function coverBox(index: number): Box {
 }
 
 /** How long Studio records each take before pressing stop, and how long it waits before starting the next one. */
-const TAKE_RECORDING_TIME = 3200;
-const TAKE_PAUSE = 900;
+const TAKE_RECORDING_TIME = 2600;
+const TAKE_PAUSE = 600;
 
 /** Center of the widget's record button, measured from the widget's top-left corner. */
 const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
@@ -432,22 +439,21 @@ async function recordTakes(
     }
   }
   // Done: Studio leaves through the bottom left.
-  await wait(400, signal);
+  await wait(200, signal);
   await exit(editor, STUDIO_AGENT, { x: STUDIO_BOX.x - 700, y: STUDIO_BOX.y + 900 }, 0, signal);
 }
 
 async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
   await editor.addAgenticCursor({ id: COVER_AGENT.id, name: COVER_AGENT.name, color: COVER_AGENT.color, position: { x: -520, y: 420 } });
   for (const [index, cover] of ALBUM_COVERS.entries()) {
-    await generatePage(editor, COVER_AGENT, coverBox(index), coverContent(cover.image), 900, signal, 12);
+    await generatePage(editor, COVER_AGENT, coverBox(index), coverContent(cover.image), 700, signal, 12);
   }
   // Done: Covers leaves through the bottom.
-  await exit(editor, COVER_AGENT, { x: 0, y: 1000 }, 300, signal);
+  await exit(editor, COVER_AGENT, { x: 0, y: 1000 }, 150, signal);
 }
 
 /**
  * Moves the camera to an agent's work area, then lets the agent fly in from the left edge of the view and build it.
- * When `exitTo` is set, the agent leaves towards it right after; otherwise it stays for more work.
  */
 async function runFollowedAgent(
   editor: HTMLKritzelEditorElement,
@@ -455,23 +461,18 @@ async function runFollowedAgent(
   box: Box,
   content: KritzelIframeContent,
   signal: AbortSignal,
-  exitTo?: { x: number; y: number },
 ) {
-  await frame(editor, box, 1100, signal);
+  await frame(editor, box, CAMERA_MOVE, signal);
   const view = await editor.getViewport();
   const left = -view.translateX / view.scale;
   await editor.addAgenticCursor({ id: agent.id, name: agent.name, color: agent.color, position: { x: left - 40, y: box.y + box.height / 2 } });
-  const page = await generatePage(editor, agent, box, content, 1500, signal);
-  if (exitTo) {
-    await exit(editor, agent, exitTo, 300, signal);
-  }
-  return page;
+  return generatePage(editor, agent, box, content, 1100, signal);
 }
 
 /** Moves a cursor out of view, after `delay` ms, and removes it once it is gone. Agents leave as soon as they finish. */
 async function exit(editor: HTMLKritzelEditorElement, agent: Agent, to: { x: number; y: number }, delay: number, signal: AbortSignal) {
   await wait(delay, signal);
-  await editor.moveAgenticCursor(agent.id, to, { duration: 1100, easing: 'ease-in' });
+  await editor.moveAgenticCursor(agent.id, to, { duration: EXIT_DURATION, easing: 'ease-in' });
   await editor.removeAgenticCursor(agent.id);
 }
 
@@ -485,7 +486,7 @@ export async function playHeroScene(
 ): Promise<void> {
   await editor.clearAgenticCursors();
   await frame(editor, STUDIO_BOX, 0, signal);
-  await wait(700, signal);
+  await wait(400, signal);
 
   await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
@@ -494,25 +495,22 @@ export async function playHeroScene(
   // records, and the camera follows Covers as soon as it sets off.
   const takes = recordTakes(editor, widget ?? null, signal);
 
-  await wait(500, signal);
+  await wait(250, signal);
   await typePrompt(editor, PROMPTS.covers, signal);
   const covers = createCovers(editor, signal);
-  await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 1100, signal);
+  await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), CAMERA_MOVE, signal);
 
   // The next prompt is written while the covers are still being drawn.
-  await wait(1500, signal);
+  await wait(800, signal);
   await typePrompt(editor, PROMPTS.social, signal);
-  // Done: Social leaves through the bottom right.
-  await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal, {
-    x: SOCIAL_BOX.x + SOCIAL_BOX.width + 700,
-    y: SOCIAL_BOX.y + SOCIAL_BOX.height + 700,
-  });
+  await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
 
-  // The camera pulls back as soon as Social is done, so Studio's last takes and its exit happen in view.
+  // Social leaves through the bottom right while the camera already pulls back, so Studio's last takes and its exit
+  // happen in view.
+  const socialGone = exit(editor, SOCIAL_AGENT, { x: SOCIAL_BOX.x + SOCIAL_BOX.width + 700, y: SOCIAL_BOX.y + SOCIAL_BOX.height + 700 }, 150, signal);
   await covers;
-  await wait(400, signal);
   const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
-  await frame(editor, union(covered), 1600, signal);
-  await takes;
+  await frame(editor, union(covered), CAMERA_PULL_BACK, signal);
+  await Promise.all([takes, socialGone]);
   setWorking(false);
 }
