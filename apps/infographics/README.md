@@ -28,8 +28,8 @@ npm run infographics
 
 `src/infographics/agentic-canvas/` is the hero of the "What is an agentic canvas?" blog post, and uses the same jazz
 record as the generative UI and agentic cursor posts. The editor shows its chat box instead of the toolbar. When the page
-loads, three prompts are typed into the chat box one after another, and each starts an agent: Covers draws five versions
-of the "Full Control" album cover in the middle of the canvas, Social writes a social media post about the release, and
+loads, three prompts are typed into the chat box one after another, and each starts an agent: Covers draws four jazz
+covers for "Full Control" in a square in the middle of the canvas, Social writes a social media post about the release, and
 Studio adds a small recording widget. The camera follows Social and Studio to their work and finally pulls back to show
 all three results. The scene is scripted in `hero-scene.ts` (covers in `album-covers.ts`), with no model calls, so every
 recording is the same; reload the page to play it again.

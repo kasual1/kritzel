@@ -3,7 +3,7 @@ import { ALBUM_COVERS } from './album-covers';
 
 /**
  * The hero of the "What is an agentic canvas?" post. A musician asks three agents for help with the release of their
- * jazz song "Full Control": one draws five album covers, one writes a social media post, one builds a recording widget.
+ * jazz song "Full Control": one draws four album covers, one writes a social media post, one builds a recording widget.
  * Each prompt is typed into the chat box, and the camera follows the agent that starts working.
  * Everything is scripted, so every recording is the same. Coordinates are world units around the origin.
  */
@@ -33,13 +33,15 @@ const CHAT_BOX_SPACE = 150;
 /** Length of one animated `setViewport` call, see `frame`. */
 const VIEWPORT_STEP = 150;
 
-const COVER_SIZE = 180;
-const COVER_GAP = 28;
-const COVERS_TOP = -90;
-const COVERS_LEFT = -(ALBUM_COVERS.length * COVER_SIZE + (ALBUM_COVERS.length - 1) * COVER_GAP) / 2;
+/** The covers form a square of two rows and two columns in the middle of the canvas. */
+const COVER_SIZE = 200;
+const COVER_GAP = 24;
+const COVER_COLUMNS = 2;
+const COVERS_ORIGIN = -(COVER_COLUMNS * COVER_SIZE + (COVER_COLUMNS - 1) * COVER_GAP) / 2;
 
-const SOCIAL_BOX = { x: -520, y: 190, width: 300, height: 430 };
-const STUDIO_BOX = { x: 160, y: 250, width: 360, height: 220 };
+/** The post sits left of the covers and the widget right of them, both vertically centered on the square. */
+const SOCIAL_BOX = { x: -620, y: -215, width: 300, height: 430 };
+const STUDIO_BOX = { x: 320, y: -110, width: 360, height: 220 };
 
 const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
 
@@ -68,7 +70,7 @@ const SOCIAL_POST: KritzelIframeContent = {
     <div><strong>Luca Moulin Beau</strong><span>@lucamoulinbeau · now</span></div>
   </header>
   <p>My new single <b>Full Control</b> is out this Friday. Late nights, a tenor sax and a lot of heart. Pre-save it now!</p>
-  <svg class="cover" viewBox="0 0 100 100">${ALBUM_COVERS[3].svg}</svg>
+  <svg class="cover" viewBox="0 0 100 100">${ALBUM_COVERS[0].svg}</svg>
   <footer><span>♥ 1.2k</span><span>↻ 318</span><span>💬 64</span></footer>
 </article>`,
   css: `html, body { height: 100%; margin: 0; }
@@ -211,11 +213,18 @@ async function generatePage(
 }
 
 function coverBox(index: number): Box {
-  return { x: COVERS_LEFT + index * (COVER_SIZE + COVER_GAP), y: COVERS_TOP, width: COVER_SIZE, height: COVER_SIZE };
+  const column = index % COVER_COLUMNS;
+  const row = Math.floor(index / COVER_COLUMNS);
+  return {
+    x: COVERS_ORIGIN + column * (COVER_SIZE + COVER_GAP),
+    y: COVERS_ORIGIN + row * (COVER_SIZE + COVER_GAP),
+    width: COVER_SIZE,
+    height: COVER_SIZE,
+  };
 }
 
 async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
-  await editor.addAgenticCursor({ id: COVER_AGENT.id, name: COVER_AGENT.name, color: COVER_AGENT.color, position: { x: -760, y: 260 } });
+  await editor.addAgenticCursor({ id: COVER_AGENT.id, name: COVER_AGENT.name, color: COVER_AGENT.color, position: { x: -520, y: 420 } });
   for (const [index, cover] of ALBUM_COVERS.entries()) {
     await generatePage(editor, COVER_AGENT, coverBox(index), coverContent(cover.svg), 900, signal, 12);
   }
