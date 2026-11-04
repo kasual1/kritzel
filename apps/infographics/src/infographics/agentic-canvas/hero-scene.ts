@@ -255,13 +255,14 @@ function takeBox(index: number): Box {
   };
 }
 
-function takeContent(take: (typeof TAKES)[number], isFavorite = false): KritzelIframeContent {
+/** A saved take. Its star turns on through the page's state (`{ favorite: true }`), so it animates in place. */
+function takeContent(take: (typeof TAKES)[number]): KritzelIframeContent {
   return {
     html: `<main>
   <span class="play" aria-hidden="true"></span>
   <strong>${take.name}</strong>
   <span class="duration">${take.duration}</span>
-  <span class="star${isFavorite ? ' favorite' : ''}" aria-label="${isFavorite ? 'Favorite' : 'Not a favorite'}">★</span>
+  <span class="star" aria-label="Not a favorite">★</span>
 </main>`,
     css: `html, body { height: 100%; margin: 0; }
 body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #18181b; background: #f4f4f5; }
@@ -275,7 +276,10 @@ strong { flex: 1; font-size: 14px; font-weight: 600; }
 .star { color: #d4d4d8; font-size: 16px; line-height: 1; }
 .star.favorite { color: #f59e0b; animation: pop 0.35s ease-out; }
 @keyframes pop { 45% { transform: scale(1.45); } }`,
-    script: '',
+    script: `const star = document.querySelector('.star');
+const setFavorite = () => { star.classList.add('favorite'); star.setAttribute('aria-label', 'Favorite'); };
+globalThis.addEventListener('kritzelstatechange', event => { if (event.detail.favorite) setFavorite(); });
+if (globalThis.kritzel && globalThis.kritzel.state && globalThis.kritzel.state.favorite) setFavorite();`,
   };
 }
 
@@ -449,23 +453,27 @@ async function recordTakes(
       await wait(TAKE_PAUSE, signal);
     }
   }
+  return pages;
+}
 
-  // Studio stars its favorite take with a click, like it presses the record button, before it leaves.
-  // An object anchor again: the take may still be off-screen while Studio heads there.
-  const favorite = pages[FAVORITE_TAKE];
-  if (favorite) {
-    const star = (offset: { x: number; y: number }) => ({
-      objectId: favorite.id,
-      anchor: 'right' as const,
-      offset: { x: STAR_OFFSET.x + offset.x, y: STAR_OFFSET.y + offset.y },
-    });
-    await wait(300, signal);
-    await editor.moveAgenticCursor(STUDIO_AGENT.id, star(BUTTON_PRESS_OFFSET), { duration: 550, easing: 'ease-in-out' });
-    await wait(90, signal);
-    favorite.setContent(takeContent(TAKES[FAVORITE_TAKE], true));
+/** How long the finished scene rests in full view before Studio heads to the star, and how long it glides there. */
+const STAR_SETTLE = 500;
+const STAR_APPROACH = 1000;
+/** Studio hovers over the star for a moment before it clicks, as a person would. */
+const STAR_HOVER = 160;
+
+/**
+ * Studio's last act: it glides to its favorite take, clicks the star and leaves through the bottom left right away.
+ * The star turns on through the take's state, so the page animates it in place instead of being rebuilt.
+ */
+async function starFavorite(editor: HTMLKritzelEditorElement, take: KritzelIframeObject | null, signal: AbortSignal) {
+  if (take) {
+    // An object anchor, like the record button: it works whether or not the take's page is mounted.
+    const star = { objectId: take.id, anchor: 'right' as const, offset: { x: STAR_OFFSET.x + BUTTON_PRESS_OFFSET.x, y: STAR_OFFSET.y + BUTTON_PRESS_OFFSET.y } };
+    await editor.moveAgenticCursor(STUDIO_AGENT.id, star, { duration: STAR_APPROACH, easing: 'ease-in-out' });
+    await wait(STAR_HOVER, signal);
+    take.setState({ favorite: true });
   }
-
-  // Done: Studio leaves through the bottom left, straight from the star.
   await exit(editor, STUDIO_AGENT, { x: STUDIO_BOX.x - 700, y: STUDIO_BOX.y + 900 }, 0, signal);
 }
 
@@ -537,6 +545,11 @@ export async function playHeroScene(
   await covers;
   const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
   await frame(editor, union(covered), CAMERA_PULL_BACK, signal);
-  await Promise.all([takes, socialGone]);
+
+  // Studio stars its favorite take only once the camera has come to rest on the whole scene and the last take is saved.
+  const saved = await takes;
+  await wait(STAR_SETTLE, signal);
+  await starFavorite(editor, saved[FAVORITE_TAKE] ?? null, signal);
+  await socialGone;
   setWorking(false);
 }
