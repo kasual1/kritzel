@@ -21,16 +21,21 @@ npm run infographics
 | ----------- | ----------------------------------------------- |
 | `#/welcome` | The animated "Welcome" path from `apps/app`.   |
 | `#/open-source` | The animated outline of the open source logo. |
-| `#/agentic-canvas` | An agentic canvas: Claude adds interactive iframe objects from the chat box. |
+| `#/agentic-canvas` | Hero of the agentic canvas post: four agents build a launch board side by side. |
 | `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
 ## Agentic canvas
 
-`src/infographics/agentic-canvas/` is the showcase for the "infinite agentic canvas" blog series. The editor shows its chat
-box instead of the toolbar. Every prompt runs Claude in a tool-use loop (`canvas-agent.ts`) with a single `add_iframe`
-tool, which adds a `KritzelIframeObject` with a titlebar that renders the page Claude wrote.
+`src/infographics/agentic-canvas/` is the hero of the "What is an agentic canvas?" blog post. The editor shows its chat
+box instead of the toolbar. When the page loads, a prompt is typed into the chat box and four agentic cursors (Research,
+Flow, Copy and Design) build a small product launch board at the same time: sticky notes, a flow of steps with arrows, a
+headline and a landing page card. The camera then pulls back to show the board. The scene is scripted in
+`hero-scene.ts`, with no model calls, so every recording is the same; reload the page to play it again.
 
-To try it, copy `.env.example` at the repository root to `.env` and set your Anthropic API key:
+## Generative UI API key
+
+The generative UI page calls the Claude API. To try it, copy `.env.example` at the repository root to `.env` and set your
+Anthropic API key:
 
 ```bash
 ANTHROPIC_API_KEY=sk-ant-...
@@ -41,7 +46,7 @@ the page, so `vite.config.ts` lets `ANTHROPIC_API_KEY` through as well. A `vite 
 
 ## Generative UI
 
-`src/infographics/generative-ui/` uses the same chat box and API key. The canvas starts with a music player
+`src/infographics/generative-ui/` uses the chat box and the API key above. The canvas starts with a music player
 (`music-player.ts`), so there is something to pick before the first prompt. Without a selection, a prompt adds a new
 page (`add_page`). Select a page and it starts picking elements: hovering highlights the element under the pointer and a
 click picks it. Cmd-, Ctrl- or Shift-click adds an element to the picked ones or removes it again, while a plain click

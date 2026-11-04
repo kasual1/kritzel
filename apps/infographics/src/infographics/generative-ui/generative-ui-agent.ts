@@ -2,10 +2,10 @@ import Anthropic from '@anthropic-ai/sdk';
 import {
   KritzelIframeObject,
   type HTMLKritzelEditorElement,
+  type KritzelBaseObject,
   type KritzelIframeContent,
   type KritzelObjectElementInfo,
 } from '@kritzel/react-editor';
-import { isIframe } from '../agentic-canvas/canvas-agent';
 
 /**
  * `ANTHROPIC_API_KEY` from the `.env` file at the repository root (see `.env.example`); `vite.config.ts` exposes it.
@@ -92,6 +92,11 @@ const EDIT_PAGE_TOOL: Anthropic.Beta.BetaTool = {
 };
 
 type PagePart = keyof KritzelIframeContent;
+
+/** Pages are iframe objects. */
+export function isIframe(object: KritzelBaseObject): object is KritzelIframeObject {
+  return object.__class__ === 'KritzelIframeObject';
+}
 
 /** A page as Claude writes it with add_page. */
 export interface PageInput extends KritzelIframeContent {

@@ -10,8 +10,7 @@ import {
   type KritzelObjectElementPickEvent,
   type KritzelObjectTitlebarConfig,
 } from '@kritzel/react-editor';
-import { isIframe } from '../agentic-canvas/canvas-agent';
-import { GenerativeUiAgent, revealPage, type PageReference } from './generative-ui-agent';
+import { GenerativeUiAgent, isIframe, revealPage, type PageReference } from './generative-ui-agent';
 import { createMusicPlayer } from './music-player';
 
 const WORKSPACE_ID = 'generative-ui';
