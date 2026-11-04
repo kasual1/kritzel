@@ -28,6 +28,9 @@ const PROMPTS = {
 /** Pause between typed prompt characters, in milliseconds. */
 const TYPING_DELAY = 16;
 
+/** How long the scene waits before the first prompt is typed. */
+const OPENING_PAUSE = 1200;
+
 /** How long the camera takes to move from one agent's work to the next one, and to pull back at the end. */
 const CAMERA_MOVE = 700;
 const CAMERA_PULL_BACK = 1000;
@@ -562,7 +565,8 @@ export async function playHeroScene(
 ): Promise<void> {
   await editor.clearAgenticCursors();
   await frame(editor, STUDIO_BOX, 0, signal);
-  await wait(400, signal);
+  // The empty canvas shows for a moment before the first prompt is typed.
+  await wait(OPENING_PAUSE, signal);
 
   await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
