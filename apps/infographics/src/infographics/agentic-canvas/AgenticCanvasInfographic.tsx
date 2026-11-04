@@ -10,7 +10,7 @@ const hostStyle: CSSProperties = {
 };
 
 /**
- * Hero of the "What is an agentic canvas?" blog post: four agents build a launch board side by side.
+ * Hero of the "What is an agentic canvas?" blog post: three agents help a musician release the jazz song "Full Control".
  * The scene plays once when the editor is ready; reload the page to play it again.
  */
 export function AgenticCanvasInfographic() {

@@ -1,15 +1,10 @@
-import {
-  KritzelIframeObject,
-  KritzelLine,
-  KritzelShape,
-  KritzelText,
-  ShapeType,
-  type HTMLKritzelEditorElement,
-  type KritzelBaseObject,
-} from '@kritzel/react-editor';
+import { KritzelIframeObject, type HTMLKritzelEditorElement, type KritzelIframeContent } from '@kritzel/react-editor';
+import { ALBUM_COVERS } from './album-covers';
 
 /**
- * The hero of the "What is an agentic canvas?" post: four agents build a small product launch board at the same time.
+ * The hero of the "What is an agentic canvas?" post. A musician asks three agents for help with the release of their
+ * jazz song "Full Control": one draws five album covers, one writes a social media post, one builds a recording widget.
+ * Each prompt is typed into the chat box, and the camera follows the agent that starts working.
  * Everything is scripted, so every recording is the same. Coordinates are world units around the origin.
  */
 
@@ -17,32 +12,112 @@ interface Agent {
   id: string;
   name: string;
   color: string;
-  /** Where the cursor flies in from, outside the first view. */
-  start: { x: number; y: number };
 }
 
-const RESEARCH: Agent = { id: 'research', name: 'Research', color: '#E11D48', start: { x: -760, y: -460 } };
-const FLOW: Agent = { id: 'flow', name: 'Flow', color: '#7C3AED', start: { x: 760, y: -460 } };
-const COPY: Agent = { id: 'copy', name: 'Copy', color: '#0891B2', start: { x: -760, y: 420 } };
-const DESIGN: Agent = { id: 'design', name: 'Design', color: '#EA580C', start: { x: 760, y: 420 } };
-const AGENTS = [RESEARCH, FLOW, COPY, DESIGN];
+const COVER_AGENT: Agent = { id: 'covers', name: 'Covers', color: '#D9572B' };
+const SOCIAL_AGENT: Agent = { id: 'social', name: 'Social', color: '#7C3AED' };
+const STUDIO_AGENT: Agent = { id: 'studio', name: 'Studio', color: '#0891B2' };
 
-const PROMPT = 'Plan our product launch';
+const PROMPTS = {
+  covers: 'Help me create a new cover album for my jazz song called "Full Control"',
+  social: 'Please craft a featured post for social media, that talks about the release of the new song',
+  studio: 'Please add a small widget that allows me to record the song',
+};
 
 /** Pause between typed prompt characters, in milliseconds. */
-const TYPING_DELAY = 45;
+const TYPING_DELAY = 22;
 
-/** How long a cursor takes to reach the spot where it places the next object. */
-const MOVE = { duration: 700, easing: 'ease-in-out' as const };
+/** Screen pixels kept free at the bottom of the view for the chat box, so the camera never frames work behind it. */
+const CHAT_BOX_SPACE = 150;
 
-const INK = { light: '#1c1917', dark: '#f5f5f4' };
+/** Length of one animated `setViewport` call, see `frame`. */
+const VIEWPORT_STEP = 150;
 
-function paragraph(text: string) {
-  return { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text }] }] };
+const COVER_SIZE = 180;
+const COVER_GAP = 28;
+const COVERS_TOP = -90;
+const COVERS_LEFT = -(ALBUM_COVERS.length * COVER_SIZE + (ALBUM_COVERS.length - 1) * COVER_GAP) / 2;
+
+const SOCIAL_BOX = { x: -520, y: 190, width: 300, height: 430 };
+const STUDIO_BOX = { x: 160, y: 250, width: 360, height: 220 };
+
+const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
+
+/** A grey surface with a soft glare sweeping across it, shown while an agent writes a page. */
+const SKELETON: KritzelIframeContent = {
+  html: '<div class="skeleton" aria-busy="true"></div>',
+  css: `html, body { height: 100%; margin: 0; }
+.skeleton { height: 100%; background: linear-gradient(100deg, #ececec 30%, #f7f7f7 50%, #ececec 70%) #ececec;
+  background-size: 300% 100%; animation: glare 1.4s ease-in-out infinite; }
+@keyframes glare { from { background-position: 100% 0; } to { background-position: 0 0; } }`,
+  script: '',
+};
+
+function coverContent(svg: string): KritzelIframeContent {
+  return {
+    html: `<svg viewBox="0 0 100 100" role="img" aria-label="Album cover of Full Control">${svg}</svg>`,
+    css: 'html, body { height: 100%; margin: 0; overflow: hidden; } svg { display: block; width: 100%; height: 100%; }',
+    script: '',
+  };
 }
+
+const SOCIAL_POST: KritzelIframeContent = {
+  html: `<article>
+  <header>
+    <div class="avatar">LM</div>
+    <div><strong>Luca Moulin Beau</strong><span>@lucamoulinbeau · now</span></div>
+  </header>
+  <p>My new single <b>Full Control</b> is out this Friday. Late nights, a tenor sax and a lot of heart. Pre-save it now!</p>
+  <svg class="cover" viewBox="0 0 100 100">${ALBUM_COVERS[3].svg}</svg>
+  <footer><span>♥ 1.2k</span><span>↻ 318</span><span>💬 64</span></footer>
+</article>`,
+  css: `html, body { height: 100%; margin: 0; }
+body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #1c1917; background: #ffffff; }
+article { display: flex; flex-direction: column; gap: 12px; height: 100%; padding: 18px; box-sizing: border-box; }
+header { display: flex; align-items: center; gap: 10px; }
+header div:last-child { display: flex; flex-direction: column; font-size: 14px; }
+header span { color: #78716c; font-size: 12px; }
+.avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #1c1917;
+  color: #f5ecd7; font-size: 14px; font-weight: 700; }
+p { margin: 0; font-size: 14px; line-height: 1.45; }
+.cover { display: block; width: 100%; height: auto; border-radius: 12px; }
+footer { display: flex; gap: 18px; color: #78716c; font-size: 13px; }`,
+  script: '',
+};
+
+const RECORDER: KritzelIframeContent = {
+  html: `<main>
+  <button type="button" aria-label="Record"><span></span></button>
+  <div class="info">
+    <strong>Recording · Full Control</strong>
+    <div class="wave">${Array.from({ length: 18 }, (_, i) => `<i style="animation-delay:-${(i * 0.13).toFixed(2)}s"></i>`).join('')}</div>
+    <span class="time">00:12</span>
+  </div>
+</main>`,
+  css: `html, body { height: 100%; margin: 0; }
+body { display: grid; place-items: center; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: #f5ecd7; background: #1c1917; }
+main { display: flex; align-items: center; gap: 22px; padding: 0 26px; width: 100%; box-sizing: border-box; }
+button { display: grid; place-items: center; flex-shrink: 0; width: 78px; height: 78px; border: 3px solid #f5ecd7;
+  border-radius: 50%; background: transparent; }
+button span { width: 46px; height: 46px; border-radius: 50%; background: #e11d48; animation: pulse 1.2s ease-in-out infinite; }
+.info { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+strong { font-size: 15px; }
+.wave { display: flex; align-items: center; gap: 4px; height: 44px; }
+.wave i { flex: 1; height: 100%; border-radius: 3px; background: #e8a33d; transform-origin: center;
+  animation: level 0.9s ease-in-out infinite alternate; }
+.time { color: #a8a29e; font-size: 13px; font-variant-numeric: tabular-nums; }
+@keyframes level { from { transform: scaleY(0.2); } to { transform: scaleY(1); } }
+@keyframes pulse { 50% { transform: scale(0.85); } }`,
+  script: '',
+};
 
 function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
+    if (signal.aborted) {
+      reject(signal.reason);
+      return;
+    }
     const timer = setTimeout(resolve, ms);
     signal.addEventListener('abort', () => {
       clearTimeout(timer);
@@ -51,146 +126,121 @@ function wait(ms: number, signal: AbortSignal): Promise<void> {
   });
 }
 
-function stickyNote(text: string, x: number, y: number, rotation: number): KritzelShape {
-  const note = new KritzelShape({
-    translateX: x,
-    translateY: y,
-    width: 150,
-    height: 110,
-    rotation,
-    shapeType: ShapeType.Rectangle,
-    fillColor: { light: '#FDE68A', dark: '#A16207' },
-    strokeColor: { light: '#FDE68A', dark: '#A16207' },
-    strokeWidth: 0,
-    fontSize: 17,
-    fontColor: INK,
-  });
-  note.setContent(paragraph(text));
-  return note;
+interface Box {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 
-function flowStep(text: string, x: number, y: number): KritzelShape {
-  const step = new KritzelShape({
-    translateX: x,
-    translateY: y,
-    width: 130,
-    height: 60,
-    shapeType: ShapeType.Rectangle,
-    fillColor: { light: '#EDE9FE', dark: '#4C1D95' },
-    strokeColor: { light: '#7C3AED', dark: '#C4B5FD' },
-    strokeWidth: 3,
-    fontSize: 16,
-    fontColor: INK,
-  });
-  step.setContent(paragraph(text));
-  return step;
+function union(boxes: Box[]): Box {
+  const left = Math.min(...boxes.map(box => box.x));
+  const top = Math.min(...boxes.map(box => box.y));
+  const right = Math.max(...boxes.map(box => box.x + box.width));
+  const bottom = Math.max(...boxes.map(box => box.y + box.height));
+  return { x: left, y: top, width: right - left, height: bottom - top };
 }
 
-function arrow(from: KritzelShape, to: KritzelShape): KritzelLine {
-  return new KritzelLine({
-    startX: from.translateX + from.width,
-    startY: from.translateY + from.height / 2,
-    endX: to.translateX,
-    endY: to.translateY + to.height / 2,
-    startAnchor: { objectId: from.id },
-    endAnchor: { objectId: to.id },
-    stroke: { light: '#7C3AED', dark: '#C4B5FD' },
-    strokeWidth: 3,
-    arrows: { end: { enabled: true } },
-  });
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+
+/**
+ * Moves the camera smoothly so the box fills the view above the chat box, with some room around it, never zooming
+ * in past `maxScale`.
+ */
+async function frame(editor: HTMLKritzelEditorElement, box: Box, duration: number, signal: AbortSignal, maxScale = 1) {
+  const view = await editor.getViewport();
+  const visibleHeight = view.height - CHAT_BOX_SPACE;
+  const scale = Math.min(view.width / (box.width * 1.2), visibleHeight / (box.height * 1.2), maxScale);
+  // The box is centered in the area above the chat box, so the view's center sits a bit below the box's center.
+  const target = { x: box.x + box.width / 2, y: box.y + box.height / 2 + CHAT_BOX_SPACE / 2 / scale, scale };
+  const from = { x: (view.width / 2 - view.translateX) / view.scale, y: (view.height / 2 - view.translateY) / view.scale, scale: view.scale };
+
+  // setViewport animates for 150 ms and cancels the previous animation, so the path is walked in steps of that length.
+  const steps = Math.max(1, Math.round(duration / VIEWPORT_STEP));
+  for (let step = 1; step <= steps; step++) {
+    const k = easeInOut(step / steps);
+    await editor.setViewport(from.x + (target.x - from.x) * k, from.y + (target.y - from.y) * k, from.scale + (target.scale - from.scale) * k);
+    await wait(VIEWPORT_STEP, signal);
+  }
 }
 
-const LANDING_CARD = {
-  html: `<main>
-  <div class="logo"></div>
-  <h1>Draw together.</h1>
-  <p>One canvas for your whole team.</p>
-  <button type="button">Get started</button>
-</main>`,
-  css: `html, body { height: 100%; margin: 0; }
-body { display: grid; place-items: center; font-family: system-ui, sans-serif; background: #FFF7ED; color: #1c1917; }
-main { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
-.logo { width: 36px; height: 36px; border-radius: 10px; background: #EA580C; }
-h1 { margin: 4px 0 0; font-size: 26px; }
-p { margin: 0; color: #78716c; font-size: 14px; }
-button { margin-top: 6px; padding: 9px 18px; border: 0; border-radius: 999px; background: #1c1917; color: #fff; font: 600 14px system-ui, sans-serif; }`,
-  script: '',
-};
-
-/** Places an object a moment after its agent's cursor has arrived, so it looks as if the cursor put it there. */
-async function place(editor: HTMLKritzelEditorElement, agent: Agent, object: KritzelBaseObject, signal: AbortSignal) {
-  await editor.moveAgenticCursor(agent.id, { x: object.translateX + 12, y: object.translateY + 12 }, MOVE);
-  await wait(180, signal);
-  await editor.addObject(object);
-  await wait(320, signal);
-}
-
-async function runResearch(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
-  await wait(200, signal);
-  await place(editor, RESEARCH, stickyNote('Faster setup', -560, -330, -3), signal);
-  await place(editor, RESEARCH, stickyNote('Dark mode', -390, -310, 2), signal);
-  await place(editor, RESEARCH, stickyNote('More templates', -480, -180, -1), signal);
-  await editor.moveAgenticCursor(RESEARCH.id, { x: -300, y: -120 }, MOVE);
-}
-
-async function runFlow(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
-  await wait(500, signal);
-  const signUp = flowStep('Sign up', 130, -310);
-  const template = flowStep('Pick a template', 310, -310);
-  const share = flowStep('Share', 490, -310);
-  await place(editor, FLOW, signUp, signal);
-  await place(editor, FLOW, template, signal);
-  await editor.addObject(arrow(signUp, template));
-  await place(editor, FLOW, share, signal);
-  await editor.addObject(arrow(template, share));
-  await editor.moveAgenticCursor(FLOW.id, { x: 600, y: -220 }, MOVE);
-}
-
-async function runCopy(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
-  await wait(900, signal);
-  await place(editor, COPY, new KritzelText({ text: 'Draw together.', translateX: -560, translateY: 20, fontSize: 44, fontColor: INK }), signal);
-  await place(
-    editor,
-    COPY,
-    new KritzelText({ text: 'One canvas for your whole team.', translateX: -560, translateY: 96, fontSize: 20, fontColor: { light: '#57534e', dark: '#d6d3d1' } }),
-    signal,
-  );
-  await editor.moveAgenticCursor(COPY.id, { x: -150, y: 40 }, MOVE);
-}
-
-async function runDesign(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
-  await wait(1300, signal);
-  const card = new KritzelIframeObject({
-    title: 'Landing page',
-    content: LANDING_CARD,
-    translateX: 180,
-    translateY: -150,
-    width: 340,
-    height: 220,
-    borderRadius: 14,
-    boxShadow: '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)',
-  });
-  await place(editor, DESIGN, card, signal);
-  await editor.moveAgenticCursor(DESIGN.id, { objectId: card.id, anchor: 'bottom-right', offset: { x: -30, y: -30 } }, MOVE);
-}
-
-/** Types the prompt into the chat box as if a person wrote it. */
-async function typePrompt(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
+/** Types a prompt into the chat box as a person would, then sends it. */
+async function typePrompt(editor: HTMLKritzelEditorElement, prompt: string, signal: AbortSignal) {
   const chatBox = editor.querySelector('kritzel-chat-box');
-  if (!chatBox) {
+  const textarea = chatBox?.shadowRoot?.querySelector('textarea');
+  if (!chatBox || !textarea) {
     return;
   }
-  for (let length = 1; length <= PROMPT.length; length++) {
-    chatBox.value = PROMPT.slice(0, length);
+  textarea.focus();
+  for (let length = 1; length <= prompt.length; length++) {
+    chatBox.value = prompt.slice(0, length);
     await wait(TYPING_DELAY, signal);
   }
-  await wait(400, signal);
+  await wait(450, signal);
   chatBox.value = '';
+  textarea.blur();
+}
+
+/** Adds a page that shows the glare placeholder first and its content once the agent is "done writing" it. */
+async function generatePage(
+  editor: HTMLKritzelEditorElement,
+  agent: Agent,
+  box: Box,
+  content: KritzelIframeContent,
+  writingTime: number,
+  signal: AbortSignal,
+  borderRadius = 14,
+) {
+  await editor.moveAgenticCursor(agent.id, { x: box.x + 16, y: box.y + 16 }, { duration: 650 });
+  const page = new KritzelIframeObject({
+    title: agent.name,
+    content,
+    loadingContent: SKELETON,
+    isLoading: true,
+    translateX: box.x,
+    translateY: box.y,
+    width: box.width,
+    height: box.height,
+    borderRadius,
+    boxShadow: SHADOW,
+  });
+  const added = await editor.addObject(page);
+  await editor.moveAgenticCursor(agent.id, { x: box.x + box.width - 24, y: box.y + box.height - 24 }, { duration: writingTime });
+  added?.setLoading(false);
+  await wait(250, signal);
+}
+
+function coverBox(index: number): Box {
+  return { x: COVERS_LEFT + index * (COVER_SIZE + COVER_GAP), y: COVERS_TOP, width: COVER_SIZE, height: COVER_SIZE };
+}
+
+async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
+  await editor.addAgenticCursor({ id: COVER_AGENT.id, name: COVER_AGENT.name, color: COVER_AGENT.color, position: { x: -760, y: 260 } });
+  for (const [index, cover] of ALBUM_COVERS.entries()) {
+    await generatePage(editor, COVER_AGENT, coverBox(index), coverContent(cover.svg), 900, signal, 12);
+  }
+  const last = coverBox(ALBUM_COVERS.length - 1);
+  await editor.moveAgenticCursor(COVER_AGENT.id, { x: last.x + last.width + 40, y: last.y + last.height / 2 }, { duration: 600 });
+}
+
+/** Moves the camera to an agent's work area, then lets the agent fly in from the left edge of the view and build it. */
+async function runFollowedAgent(
+  editor: HTMLKritzelEditorElement,
+  agent: Agent,
+  box: Box,
+  content: KritzelIframeContent,
+  signal: AbortSignal,
+) {
+  await frame(editor, box, 1100, signal);
+  const view = await editor.getViewport();
+  const left = -view.translateX / view.scale;
+  await editor.addAgenticCursor({ id: agent.id, name: agent.name, color: agent.color, position: { x: left - 40, y: box.y + box.height / 2 } });
+  await generatePage(editor, agent, box, content, 1500, signal);
+  await editor.moveAgenticCursor(agent.id, { x: box.x + box.width + 30, y: box.y + box.height - 10 }, { duration: 500 });
 }
 
 /**
- * Plays the scene once: the prompt is typed, the four agents build their parts of the board in parallel, and the
- * camera pulls back to show the result. `setWorking` drives the chat box's loading ring.
+ * Plays the scene once. `setWorking` drives the chat box's loading ring, which stays on while any agent works.
  */
 export async function playHeroScene(
   editor: HTMLKritzelEditorElement,
@@ -198,24 +248,25 @@ export async function playHeroScene(
   signal: AbortSignal,
 ): Promise<void> {
   await editor.clearAgenticCursors();
-  // Opens on the area the board will cover, slightly zoomed in, so the final pull back stays small.
-  await editor.setViewport(20, -90, 1.05);
-  await wait(600, signal);
+  await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 0, signal);
+  await wait(700, signal);
 
-  await typePrompt(editor, signal);
+  await typePrompt(editor, PROMPTS.covers, signal);
   setWorking(true);
+  const covers = createCovers(editor, signal);
 
-  for (const agent of AGENTS) {
-    await editor.addAgenticCursor({ id: agent.id, name: agent.name, color: agent.color, position: agent.start });
-  }
-  await Promise.all([
-    runResearch(editor, signal),
-    runFlow(editor, signal),
-    runCopy(editor, signal),
-    runDesign(editor, signal),
-  ]);
+  // The next prompt is written while the covers are still being drawn.
+  await wait(2600, signal);
+  await typePrompt(editor, PROMPTS.social, signal);
+  await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
 
+  await wait(500, signal);
+  await typePrompt(editor, PROMPTS.studio, signal);
+  await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal);
+
+  await covers;
+  await wait(600, signal);
   setWorking(false);
-  await wait(300, signal);
-  await editor.centerAllObjects(true);
+  const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX];
+  await frame(editor, union(covered), 1600, signal);
 }

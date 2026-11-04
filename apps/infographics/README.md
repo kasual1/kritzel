@@ -21,16 +21,18 @@ npm run infographics
 | ----------- | ----------------------------------------------- |
 | `#/welcome` | The animated "Welcome" path from `apps/app`.   |
 | `#/open-source` | The animated outline of the open source logo. |
-| `#/agentic-canvas` | Hero of the agentic canvas post: four agents build a launch board side by side. |
+| `#/agentic-canvas` | Hero of the agentic canvas post: three agents help release the jazz song "Full Control". |
 | `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
 ## Agentic canvas
 
-`src/infographics/agentic-canvas/` is the hero of the "What is an agentic canvas?" blog post. The editor shows its chat
-box instead of the toolbar. When the page loads, a prompt is typed into the chat box and four agentic cursors (Research,
-Flow, Copy and Design) build a small product launch board at the same time: sticky notes, a flow of steps with arrows, a
-headline and a landing page card. The camera then pulls back to show the board. The scene is scripted in
-`hero-scene.ts`, with no model calls, so every recording is the same; reload the page to play it again.
+`src/infographics/agentic-canvas/` is the hero of the "What is an agentic canvas?" blog post, and uses the same jazz
+record as the generative UI and agentic cursor posts. The editor shows its chat box instead of the toolbar. When the page
+loads, three prompts are typed into the chat box one after another, and each starts an agent: Covers draws five versions
+of the "Full Control" album cover in the middle of the canvas, Social writes a social media post about the release, and
+Studio adds a small recording widget. The camera follows Social and Studio to their work and finally pulls back to show
+all three results. The scene is scripted in `hero-scene.ts` (covers in `album-covers.ts`), with no model calls, so every
+recording is the same; reload the page to play it again.
 
 ## Generative UI API key
 
