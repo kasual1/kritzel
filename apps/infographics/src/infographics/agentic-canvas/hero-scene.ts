@@ -450,29 +450,8 @@ const TAKE_PAUSE = 600;
 /** Center of the widget's record button, measured from the widget's top-left corner. */
 const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
 
-/**
- * How long Studio waits after the prompt is sent before it slides in, and how long it takes to glide from the left
- * edge of the view to its resting place beside the record button. It arrives as the widget is done.
- */
-const STUDIO_ENTRY_DELAY = 150;
-const STUDIO_ENTRY = 1000;
-
-/** Studio slides in from the left edge of the view, at the button's height, while its widget is being built. */
-async function enterStudio(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
-  await wait(STUDIO_ENTRY_DELAY, signal);
-  const viewport = await editor.getViewport();
-  const rest = {
-    x: STUDIO_BOX.x + RECORD_BUTTON_CENTER.x + BUTTON_REST_OFFSET.x,
-    y: STUDIO_BOX.y + RECORD_BUTTON_CENTER.y + BUTTON_REST_OFFSET.y,
-  };
-  await editor.addAgenticCursor({
-    id: STUDIO_AGENT.id,
-    name: STUDIO_AGENT.name,
-    color: STUDIO_AGENT.color,
-    position: { x: -viewport.translateX / viewport.scale - 40, y: rest.y },
-  });
-  await editor.moveAgenticCursor(STUDIO_AGENT.id, rest, { duration: STUDIO_ENTRY, easing: 'ease-out' });
-}
+/** How long Studio takes to slide in from the edge of the view to the record button. */
+const STUDIO_ENTRY = 750;
 
 /** Where Studio's cursor tip sits relative to the button's center: on it while pressing, beside it while waiting. */
 const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
@@ -504,9 +483,21 @@ async function recordTakes(
     await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
   };
 
+  // Studio slides in from the left edge of the view, at the button's height, for its first press.
+  const viewport = await editor.getViewport();
+  const entry = button(BUTTON_PRESS_OFFSET);
+  const entryY = 'objectId' in entry ? STUDIO_BOX.y + entry.offset.y : entry.y;
+  await editor.addAgenticCursor({
+    id: STUDIO_AGENT.id,
+    name: STUDIO_AGENT.name,
+    color: STUDIO_AGENT.color,
+    position: { x: -viewport.translateX / viewport.scale - 40, y: entryY },
+  });
+
   const pages: (KritzelIframeObject | null)[] = [];
   for (const [index, take] of TAKES.entries()) {
-    await press({ recording: true, take: index + 1 });
+    // The first press comes all the way from the edge of the view, so that approach takes longer.
+    await press({ recording: true, take: index + 1 }, index === 0 ? STUDIO_ENTRY : 260);
     await wait(TAKE_RECORDING_TIME, signal);
     await press({ recording: false, take: index + 1 });
     const box = takeBox(index);
@@ -606,10 +597,8 @@ export async function playHeroScene(
 
   await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
-  // The widget is built right after the prompt is sent, while Studio slides in to press record once it is done.
-  const studioArrived = enterStudio(editor, signal);
+  // The widget is built right after the prompt is sent, without a cursor: Studio only slides in to press record.
   const widget = await generatePage(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, 1100, signal, 14, false);
-  await studioArrived;
   // Studio starts recording right away and keeps recording takes; the cover prompt is typed while the first take
   // records, and the camera follows Covers as soon as it sets off.
   const takes = recordTakes(editor, widget ?? null, signal);
