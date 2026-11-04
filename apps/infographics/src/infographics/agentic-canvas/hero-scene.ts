@@ -321,6 +321,9 @@ function coverBox(index: number): Box {
 const TAKE_RECORDING_TIME = 3200;
 const TAKE_PAUSE = 900;
 
+/** Center of the widget's record button, measured from the widget's top-left corner. */
+const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
+
 /** Where Studio's cursor tip sits relative to the button's center: on it while pressing, beside it while waiting. */
 const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
 const BUTTON_REST_OFFSET = { x: 30, y: 24 };
@@ -341,8 +344,13 @@ async function recordTakes(
   onFirstPress: () => void,
   signal: AbortSignal,
 ) {
-  const button = (offset: { x: number; y: number }) =>
-    widget ? { objectId: widget.id, selector: 'button', offset } : { x: STUDIO_BOX.x + 40 + offset.x, y: STUDIO_BOX.y + 80 + offset.y };
+  // An object anchor, not an element selector: Studio also presses while the widget is off-screen, and only mounted
+  // pages expose their elements.
+  const button = (offset: { x: number; y: number }) => {
+    const x = RECORD_BUTTON_CENTER.x + offset.x;
+    const y = RECORD_BUTTON_CENTER.y + offset.y;
+    return widget ? { objectId: widget.id, anchor: 'top-left' as const, offset: { x, y } } : { x: STUDIO_BOX.x + x, y: STUDIO_BOX.y + y };
+  };
   const press = async (state: { recording: boolean; take: number }) => {
     await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_PRESS_OFFSET), { duration: 260, easing: 'ease-out' });
     await wait(90, signal);
@@ -377,9 +385,9 @@ async function recordTakes(
       await wait(TAKE_PAUSE, signal);
     }
   }
+  // Done: Studio leaves through the bottom left.
   await wait(400, signal);
-  const last = takeBox(TAKES.length - 1);
-  await editor.moveAgenticCursor(STUDIO_AGENT.id, { x: last.x + last.width - 50, y: last.y + last.height + 20 }, { duration: 500 });
+  await exit(editor, STUDIO_AGENT, { x: STUDIO_BOX.x - 700, y: STUDIO_BOX.y + 900 }, 0, signal);
 }
 
 async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
@@ -387,32 +395,34 @@ async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSigna
   for (const [index, cover] of ALBUM_COVERS.entries()) {
     await generatePage(editor, COVER_AGENT, coverBox(index), coverContent(cover.svg), 900, signal, 12);
   }
-  const last = coverBox(ALBUM_COVERS.length - 1);
-  await editor.moveAgenticCursor(COVER_AGENT.id, { x: last.x + last.width - 50, y: last.y + last.height + 20 }, { duration: 600 });
+  // Done: Covers leaves through the bottom.
+  await exit(editor, COVER_AGENT, { x: 0, y: 1000 }, 300, signal);
 }
 
-/** Moves the camera to an agent's work area, then lets the agent fly in from the left edge of the view and build it. */
+/**
+ * Moves the camera to an agent's work area, then lets the agent fly in from the left edge of the view and build it.
+ * When `exitTo` is set, the agent leaves towards it right after; otherwise it stays for more work.
+ */
 async function runFollowedAgent(
   editor: HTMLKritzelEditorElement,
   agent: Agent,
   box: Box,
   content: KritzelIframeContent,
   signal: AbortSignal,
-  park = true,
+  exitTo?: { x: number; y: number },
 ) {
   await frame(editor, box, 1100, signal);
   const view = await editor.getViewport();
   const left = -view.translateX / view.scale;
   await editor.addAgenticCursor({ id: agent.id, name: agent.name, color: agent.color, position: { x: left - 40, y: box.y + box.height / 2 } });
   const page = await generatePage(editor, agent, box, content, 1500, signal);
-  if (park) {
-    // Parks below the result's right edge, inside the final view.
-    await editor.moveAgenticCursor(agent.id, { x: box.x + box.width - 50, y: box.y + box.height + 20 }, { duration: 500 });
+  if (exitTo) {
+    await exit(editor, agent, exitTo, 300, signal);
   }
   return page;
 }
 
-/** Moves a cursor out of the final view, after `delay` ms, and removes it once it is gone. */
+/** Moves a cursor out of view, after `delay` ms, and removes it once it is gone. Agents leave as soon as they finish. */
 async function exit(editor: HTMLKritzelEditorElement, agent: Agent, to: { x: number; y: number }, delay: number, signal: AbortSignal) {
   await wait(delay, signal);
   await editor.moveAgenticCursor(agent.id, to, { duration: 1100, easing: 'ease-in' });
@@ -433,7 +443,7 @@ export async function playHeroScene(
 
   await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
-  const widget = await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal, false);
+  const widget = await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal);
   // Studio waits on the record button while the next prompt is typed, then starts the first take as Covers sets off.
   // The camera follows Covers right away, and Studio keeps recording takes off-screen.
   let startRecording = () => {};
@@ -454,16 +464,17 @@ export async function playHeroScene(
   // The next prompt is written while the covers are still being drawn.
   await wait(1500, signal);
   await typePrompt(editor, PROMPTS.social, signal);
-  await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
+  // Done: Social leaves through the bottom right.
+  await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal, {
+    x: SOCIAL_BOX.x + SOCIAL_BOX.width + 700,
+    y: SOCIAL_BOX.y + SOCIAL_BOX.height + 700,
+  });
 
-  await Promise.all([covers, takes]);
-  await wait(600, signal);
-  setWorking(false);
+  // The camera pulls back as soon as Social is done, so Studio's last takes and its exit happen in view.
+  await covers;
+  await wait(400, signal);
   const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
-  // While the camera pulls back, Covers leaves through the bottom and Social, a moment later, through the bottom right.
-  await Promise.all([
-    frame(editor, union(covered), 1600, signal),
-    exit(editor, COVER_AGENT, { x: 0, y: 1000 }, 300, signal),
-    exit(editor, SOCIAL_AGENT, { x: SOCIAL_BOX.x + SOCIAL_BOX.width + 700, y: SOCIAL_BOX.y + SOCIAL_BOX.height + 700 }, 700, signal),
-  ]);
+  await frame(editor, union(covered), 1600, signal);
+  await takes;
+  setWorking(false);
 }
