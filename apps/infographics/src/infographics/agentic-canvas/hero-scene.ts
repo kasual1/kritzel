@@ -323,6 +323,9 @@ function coverBox(index: number): Box {
 const TAKE_RECORDING_TIME = 3200;
 const TAKE_PAUSE = 900;
 
+/** Pause between Studio starting the first take and the camera moving on to the covers. */
+const CAMERA_DELAY_AFTER_RECORD = 800;
+
 /**
  * Studio keeps working after the widget: it records three takes with the widget's record button. Each take is started
  * with one press and stopped with the next, and stopping saves the take to the list below the widget. The first press
@@ -435,6 +438,8 @@ export async function playHeroScene(
   const covers = createCovers(editor, signal);
   startRecording();
   await firstPressed;
+  // Lets the first take visibly start before the camera moves on to the covers.
+  await wait(CAMERA_DELAY_AFTER_RECORD, signal);
   await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 1100, signal);
 
   // The next prompt is written while the covers are still being drawn.
