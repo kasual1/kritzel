@@ -35,6 +35,9 @@ const CAMERA_PULL_BACK = 1000;
 /** How long a cursor takes to leave the view once its agent is done. */
 const EXIT_DURATION = 800;
 
+/** How long the finished scene stays after the last cursor has left, before every object is removed. */
+const CLEAR_DELAY = 1500;
+
 /** Screen pixels kept free at the bottom of the view for the chat box, so the camera never frames work behind it. */
 const CHAT_BOX_SPACE = 150;
 
@@ -588,4 +591,8 @@ export async function playHeroScene(
   await starFavorite(editor, saved[FAVORITE_TAKE] ?? null, signal);
   await socialGone;
   setWorking(false);
+
+  // The finished scene stays for a moment after Studio has left, then the canvas is cleared.
+  await wait(CLEAR_DELAY, signal);
+  await editor.removeObjects(await editor.getAllObjects());
 }
