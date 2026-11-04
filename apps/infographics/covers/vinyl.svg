@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" fill="#e8a33d" />
+  <circle cx="64" cy="46" r="34" fill="#1c1917" /><circle cx="64" cy="46" r="31" fill="none" stroke="#3a3430" stroke-width="0.6" /><circle cx="64" cy="46" r="28" fill="none" stroke="#3a3430" stroke-width="0.6" /><circle cx="64" cy="46" r="25" fill="none" stroke="#3a3430" stroke-width="0.6" /><circle cx="64" cy="46" r="22" fill="none" stroke="#3a3430" stroke-width="0.6" /><circle cx="64" cy="46" r="19" fill="none" stroke="#3a3430" stroke-width="0.6" /><circle cx="64" cy="46" r="16" fill="none" stroke="#3a3430" stroke-width="0.6" />
+  <circle cx="64" cy="46" r="11" fill="#d9572b" /><circle cx="64" cy="46" r="1.4" fill="#e8a33d" />
+  <rect x="8" y="12" width="48" height="68" fill="#f5ecd7" />
+  <text x="14" y="34" textLength="30" lengthAdjust="spacingAndGlyphs" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#1c1917">FULL</text>
+  <text x="14" y="47" textLength="36" lengthAdjust="spacingAndGlyphs" font-family="system-ui, sans-serif" font-size="9" font-weight="800" fill="#1c1917">CONTROL</text>
+  <rect x="14" y="52" width="10" height="1.4" fill="#d9572b" />
+  <text x="14" y="72" textLength="36" lengthAdjust="spacingAndGlyphs" font-family="system-ui, sans-serif" font-size="3.6" font-weight="600" fill="#d9572b">LUCA MOULIN BEAU</text>
+</svg>

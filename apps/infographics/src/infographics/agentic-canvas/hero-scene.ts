@@ -59,10 +59,10 @@ const SKELETON: KritzelIframeContent = {
   script: '',
 };
 
-function coverContent(svg: string): KritzelIframeContent {
+function coverContent(image: string): KritzelIframeContent {
   return {
-    html: `<svg viewBox="0 0 100 100" role="img" aria-label="Album cover of Full Control">${svg}</svg>`,
-    css: 'html, body { height: 100%; margin: 0; overflow: hidden; } svg { display: block; width: 100%; height: 100%; }',
+    html: `<img src="${image}" alt="Album cover of Full Control">`,
+    css: 'html, body { height: 100%; margin: 0; overflow: hidden; } img { display: block; width: 100%; height: 100%; object-fit: cover; }',
     script: '',
   };
 }
@@ -74,7 +74,7 @@ const SOCIAL_POST: KritzelIframeContent = {
     <div><strong>Luca Moulin Beau</strong><span>@lucamoulinbeau · now</span></div>
   </header>
   <p>My new single <b>Full Control</b> is out this Friday. Late nights, a tenor sax and a lot of heart. Pre-save it now!</p>
-  <svg class="cover" viewBox="0 0 100 100">${ALBUM_COVERS[0].svg}</svg>
+  <img class="cover" src="${ALBUM_COVERS[0].image}" alt="Album cover of Full Control">
   <footer><span>♥ 1.2k</span><span>↻ 318</span><span>💬 64</span></footer>
 </article>`,
   css: `html, body { height: 100%; margin: 0; }
@@ -86,7 +86,8 @@ header span { color: #78716c; font-size: 12px; }
 .avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #4A7DFF;
   color: #ffffff; font-size: 14px; font-weight: 700; }
 p { margin: 0; font-size: 14px; line-height: 1.45; }
-.cover { display: block; width: 100%; height: auto; border-radius: 12px; }
+/* Takes the height left in the card and stays square, like the cover did as an SVG. */
+.cover { display: block; flex: 1 1 0; min-height: 0; align-self: center; aspect-ratio: 1; max-width: 100%; border-radius: 12px; }
 footer { display: flex; gap: 18px; color: #78716c; font-size: 13px; }`,
   script: '',
 };
@@ -438,7 +439,7 @@ async function recordTakes(
 async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
   await editor.addAgenticCursor({ id: COVER_AGENT.id, name: COVER_AGENT.name, color: COVER_AGENT.color, position: { x: -520, y: 420 } });
   for (const [index, cover] of ALBUM_COVERS.entries()) {
-    await generatePage(editor, COVER_AGENT, coverBox(index), coverContent(cover.svg), 900, signal, 12);
+    await generatePage(editor, COVER_AGENT, coverBox(index), coverContent(cover.image), 900, signal, 12);
   }
   // Done: Covers leaves through the bottom.
   await exit(editor, COVER_AGENT, { x: 0, y: 1000 }, 300, signal);
