@@ -54,6 +54,9 @@ const COVERS_ORIGIN = -(COVER_COLUMNS * COVER_SIZE + (COVER_COLUMNS - 1) * COVER
 const STUDIO_BOX = { x: -640, y: -116, width: 360, height: 116 };
 const SOCIAL_BOX = { x: 300, y: -215, width: 300, height: 430 };
 
+/** The covers' square is centered between the widget and the post, so the gaps on both sides are the same. */
+const COVERS_SHIFT_X = (STUDIO_BOX.x + STUDIO_BOX.width + SOCIAL_BOX.x) / 2;
+
 const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
 
 /** A grey surface with a soft glare sweeping across it, shown while an agent writes a page. */
@@ -419,7 +422,7 @@ function coverBox(index: number): Box {
   const column = index % COVER_COLUMNS;
   const row = Math.floor(index / COVER_COLUMNS);
   return {
-    x: COVERS_ORIGIN + column * (COVER_SIZE + COVER_GAP),
+    x: COVERS_ORIGIN + COVERS_SHIFT_X + column * (COVER_SIZE + COVER_GAP),
     y: COVERS_ORIGIN + row * (COVER_SIZE + COVER_GAP),
     width: COVER_SIZE,
     height: COVER_SIZE,
