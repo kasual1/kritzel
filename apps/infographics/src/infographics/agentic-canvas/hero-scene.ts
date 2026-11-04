@@ -236,9 +236,15 @@ const TAKE_HEIGHT = 48;
 
 /** The takes Studio saves below the widget. */
 const TAKES = [
-  { name: 'Take 1', duration: '0:42' },
-  { name: 'Take 2', duration: '0:39' },
+  { name: 'Take 1', duration: '0:39' },
+  { name: 'Take 2', duration: '0:42' },
 ];
+
+/** The take Studio stars as its favorite before it leaves. */
+const FAVORITE_TAKE = 1;
+
+/** Where the star sits on a take, from the take's right edge. */
+const STAR_OFFSET = { x: -26, y: 0 };
 
 function takeBox(index: number): Box {
   return {
@@ -249,12 +255,13 @@ function takeBox(index: number): Box {
   };
 }
 
-function takeContent(take: (typeof TAKES)[number]): KritzelIframeContent {
+function takeContent(take: (typeof TAKES)[number], isFavorite = false): KritzelIframeContent {
   return {
     html: `<main>
   <span class="play" aria-hidden="true"></span>
   <strong>${take.name}</strong>
   <span class="duration">${take.duration}</span>
+  <span class="star${isFavorite ? ' favorite' : ''}" aria-label="${isFavorite ? 'Favorite' : 'Not a favorite'}">★</span>
 </main>`,
     css: `html, body { height: 100%; margin: 0; }
 body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; color: #18181b; background: #f4f4f5; }
@@ -264,7 +271,10 @@ main { display: flex; align-items: center; gap: 12px; height: 100%; padding: 0 1
 .play::after { content: ''; margin-left: 2px; border-left: 8px solid #18181b; border-top: 5px solid transparent;
   border-bottom: 5px solid transparent; }
 strong { flex: 1; font-size: 14px; font-weight: 600; }
-.duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }`,
+.duration { color: #71717a; font-size: 13px; font-variant-numeric: tabular-nums; }
+.star { color: #d4d4d8; font-size: 16px; line-height: 1; }
+.star.favorite { color: #f59e0b; animation: pop 0.35s ease-out; }
+@keyframes pop { 45% { transform: scale(1.45); } }`,
     script: '',
   };
 }
@@ -416,13 +426,14 @@ async function recordTakes(
     await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
   };
 
+  const pages: (KritzelIframeObject | null)[] = [];
   for (const [index, take] of TAKES.entries()) {
     // The first press comes straight from the widget's corner, so that approach takes a little longer.
     await press({ recording: true, take: index + 1 }, index === 0 ? 450 : 260);
     await wait(TAKE_RECORDING_TIME, signal);
     await press({ recording: false, take: index + 1 });
     const box = takeBox(index);
-    await editor.addObject(
+    pages.push(await editor.addObject(
       new KritzelIframeObject({
         title: take.name,
         content: takeContent(take),
@@ -433,11 +444,29 @@ async function recordTakes(
         borderRadius: 12,
         boxShadow: SHADOW,
       }),
-    );
+    ));
     if (index < TAKES.length - 1) {
       await wait(TAKE_PAUSE, signal);
     }
   }
+
+  // Studio stars its favorite take with a click, like it presses the record button, before it leaves.
+  // An object anchor again: the take may still be off-screen while Studio heads there.
+  const favorite = pages[FAVORITE_TAKE];
+  if (favorite) {
+    const star = (offset: { x: number; y: number }) => ({
+      objectId: favorite.id,
+      anchor: 'right' as const,
+      offset: { x: STAR_OFFSET.x + offset.x, y: STAR_OFFSET.y + offset.y },
+    });
+    await wait(300, signal);
+    await editor.moveAgenticCursor(STUDIO_AGENT.id, star(BUTTON_PRESS_OFFSET), { duration: 550, easing: 'ease-in-out' });
+    await wait(90, signal);
+    favorite.setContent(takeContent(TAKES[FAVORITE_TAKE], true));
+    await wait(160, signal);
+    await editor.moveAgenticCursor(STUDIO_AGENT.id, star(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
+  }
+
   // Done: Studio leaves through the bottom left.
   await wait(200, signal);
   await exit(editor, STUDIO_AGENT, { x: STUDIO_BOX.x - 700, y: STUDIO_BOX.y + 900 }, 0, signal);
