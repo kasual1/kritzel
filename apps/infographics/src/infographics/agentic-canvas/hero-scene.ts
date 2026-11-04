@@ -332,8 +332,8 @@ function coverBox(index: number): Box {
 }
 
 /** How long Studio records each take before pressing stop, and how long it waits before starting the next one. */
-const TAKE_RECORDING_TIME = 3200;
-const TAKE_PAUSE = 900;
+const TAKE_RECORDING_TIME = 2400;
+const TAKE_PAUSE = 600;
 
 /** Center of the widget's record button, measured from the widget's top-left corner. */
 const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
@@ -348,14 +348,15 @@ const CAMERA_DELAY_AFTER_RECORD = 800;
 /**
  * Studio keeps working after the widget: it records three takes with the widget's record button. Each take is started
  * with one press and stopped with the next, and stopping saves the take to the list below the widget. The first press
- * waits for `start`, and `onFirstPress` runs right after it. Between presses Studio rests just beside the button, so it
- * never hides it.
+ * waits for `start`, and `onFirstPress` runs right after it; `onLastTake` runs when the last take starts. Between
+ * presses Studio rests just beside the button, so it never hides it.
  */
 async function recordTakes(
   editor: HTMLKritzelEditorElement,
   widget: KritzelIframeObject | null,
   start: Promise<void>,
   onFirstPress: () => void,
+  onLastTake: () => void,
   signal: AbortSignal,
 ) {
   // An object anchor, not an element selector: Studio also presses while the widget is off-screen, and only mounted
@@ -380,6 +381,9 @@ async function recordTakes(
     if (index === 0) {
       onFirstPress();
     }
+    if (index === TAKES.length - 1) {
+      onLastTake();
+    }
     await wait(TAKE_RECORDING_TIME, signal);
     await press({ recording: false, take: index + 1 });
     const box = takeBox(index);
@@ -400,7 +404,7 @@ async function recordTakes(
     }
   }
   // Done: Studio leaves through the bottom left.
-  await wait(400, signal);
+  await wait(200, signal);
   await exit(editor, STUDIO_AGENT, { x: STUDIO_BOX.x - 700, y: STUDIO_BOX.y + 900 }, 0, signal);
 }
 
@@ -464,7 +468,9 @@ export async function playHeroScene(
   const recordingStarted = new Promise<void>(resolve => (startRecording = resolve));
   let firstPress = () => {};
   const firstPressed = new Promise<void>(resolve => (firstPress = resolve));
-  const takes = recordTakes(editor, widget ?? null, recordingStarted, firstPress, signal);
+  let lastTake = () => {};
+  const lastTakeStarted = new Promise<void>(resolve => (lastTake = resolve));
+  const takes = recordTakes(editor, widget ?? null, recordingStarted, firstPress, lastTake, signal);
 
   await wait(500, signal);
   await typePrompt(editor, PROMPTS.covers, signal);
@@ -475,8 +481,9 @@ export async function playHeroScene(
   await wait(CAMERA_DELAY_AFTER_RECORD, signal);
   await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 1100, signal);
 
-  // The next prompt is written while the covers are still being drawn.
-  await wait(1500, signal);
+  // The next prompt is written while the covers are still being drawn, once Studio is on its last take: what is left of
+  // that take is shorter than Social's work, so Studio is done before the post is.
+  await Promise.all([wait(1500, signal), lastTakeStarted]);
   await typePrompt(editor, PROMPTS.social, signal);
   // Done: Social leaves through the bottom right.
   await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal, {
