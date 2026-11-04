@@ -114,7 +114,7 @@ const RECORDER: KritzelIframeContent = {
   </header>
   <div class="take">
     <button type="button" aria-label="Record"><span></span></button>
-    <div class="wave">${'<b></b>'.repeat(WAVE_LEVELS.length)}</div>
+    <div class="wave"><div class="strip"></div></div>
   </div>
 </main>`,
   css: `html, body { height: 100%; margin: 0; }
@@ -134,50 +134,91 @@ button { display: grid; place-items: center; flex-shrink: 0; width: 38px; height
 button span { width: 14px; height: 14px; border-radius: 50%; background: #ef4444;
   transition: border-radius 0.25s ease, width 0.25s ease, height 0.25s ease; }
 .live button span { width: 12px; height: 12px; border-radius: 3px; }
-.wave { display: flex; align-items: center; justify-content: space-between; flex: 1; height: 36px; }
-/* Flat while nothing is recorded; the script fills the bars in from the right while recording. */
-.wave b { width: 2px; height: 2px; min-height: 2px; border-radius: 1px; background: #a1a1aa; }
+.wave { position: relative; flex: 1; height: 36px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 14%); mask-image: linear-gradient(to right, transparent, #000 14%); }
+/* A strip anchored at the right edge: the script appends one bar per sample and slides the strip left smoothly. */
+.strip { position: absolute; top: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 2px; will-change: transform; }
+.strip b { flex: none; width: 2px; height: 2px; border-radius: 1px; background: #a1a1aa; transform-origin: center;
+  transition: height 0.35s ease, transform 0.14s ease-out; }
+.strip b.new { transform: scaleY(0.2); }
 .clock { font-style: normal; }
 button.pressed { animation: press 0.22s ease-out; }
 @keyframes press { 40% { transform: scale(0.92); } }
 @keyframes blink { 50% { opacity: 0.3; } }`,
   // Idle until the host sets { recording: true }; the timer then counts the take, and { recording: false } stops it.
-  // While recording, a new bar enters at the right every tick and the older ones scroll left, like a voice memo app.
-  script: `const LEVELS = ${JSON.stringify(WAVE_LEVELS.map(level => Math.round(level * 100)))};
+  // While recording, the strip scrolls left at a steady speed, synced to the display, and every 4 px a new bar with a
+  // fixed height grows in at the right edge, like in a voice memo app. Stopping lets the bars settle to a flat line.
+  script: `const LEVELS = ${JSON.stringify(WAVE_LEVELS.map(level => Math.round(level * 100) / 100))};
+const PITCH = 4;
+const SPEED = 80;
 const main = document.querySelector('main');
 const clock = document.querySelector('.clock');
 const button = document.querySelector('button');
-const bars = Array.from(document.querySelectorAll('.wave b'));
-let heights = bars.map(() => 0);
-let start = null;
+const wave = document.querySelector('.wave');
+const strip = document.querySelector('.strip');
+const capacity = Math.ceil(wave.clientWidth / PITCH) + 2;
+const bar = height => {
+  const element = document.createElement('b');
+  element.style.height = height + 'px';
+  return element;
+};
+for (let i = 0; i < capacity; i++) strip.appendChild(bar(2));
+
+let recording = false;
+let started = 0;
+let offset = 0;
 let sample = 0;
-const draw = () => bars.forEach((bar, i) => { bar.style.height = heights[i] + '%'; });
-setInterval(() => {
-  if (start === null) return;
-  const seconds = Math.floor((performance.now() - start) / 1000);
-  clock.textContent = '00:' + String(seconds).padStart(2, '0');
-}, 200);
-setInterval(() => {
-  if (start === null) return;
-  const level = LEVELS[sample % LEVELS.length] * (0.8 + 0.2 * Math.sin(sample * 1.7));
+let last = null;
+
+const addSample = () => {
+  const level = LEVELS[Math.min(sample, LEVELS.length - 1)] * (0.82 + 0.18 * Math.sin(sample * 1.9));
   sample++;
-  heights = [...heights.slice(1), Math.round(level)];
-  draw();
-}, 70);
+  const element = bar(Math.max(2, Math.round(level * wave.clientHeight)));
+  element.classList.add('new');
+  strip.appendChild(element);
+  requestAnimationFrame(() => element.classList.remove('new'));
+  while (strip.children.length > capacity) strip.firstElementChild.remove();
+};
+
+const tick = now => {
+  const elapsed = last === null ? 0 : Math.min(now - last, 100);
+  last = now;
+  if (recording) {
+    offset += SPEED * elapsed / 1000;
+    while (offset >= PITCH) {
+      offset -= PITCH;
+      addSample();
+    }
+    strip.style.transform = 'translateX(' + (-offset).toFixed(2) + 'px)';
+    const seconds = Math.floor((now - started) / 1000);
+    clock.textContent = '00:' + String(seconds).padStart(2, '0');
+  }
+  requestAnimationFrame(tick);
+};
+requestAnimationFrame(tick);
+
+const setRecording = next => {
+  main.classList.toggle('live', next);
+  button.setAttribute('aria-label', next ? 'Stop recording' : 'Record');
+  clock.textContent = '00:00';
+  if (next && !recording) {
+    started = performance.now();
+    sample = 0;
+  }
+  if (!next) {
+    for (const element of strip.children) element.style.height = '2px';
+  }
+  recording = next;
+};
+
 addEventListener('kritzelstatechange', event => {
-  const recording = event.detail.recording === true;
   button.classList.remove('pressed');
   void button.offsetWidth;
   button.classList.add('pressed');
-  main.classList.toggle('live', recording);
-  button.setAttribute('aria-label', recording ? 'Stop recording' : 'Record');
-  start = recording ? performance.now() : null;
-  clock.textContent = '00:00';
-  // Every take starts from silence, and stopping leaves the wave flat again.
-  heights = bars.map(() => 0);
-  sample = 0;
-  draw();
-});`,
+  setRecording(event.detail.recording === true);
+});
+// A reloaded page picks up where the host is, e.g. when the widget comes back into view.
+if (globalThis.kritzel && globalThis.kritzel.state && globalThis.kritzel.state.recording) setRecording(true);`,
 };
 
 /** Room between the widget and the saved takes below it, and between the takes. */
