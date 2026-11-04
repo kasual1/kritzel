@@ -410,6 +410,13 @@ async function runFollowedAgent(
   return page;
 }
 
+/** Moves a cursor out of the final view, after `delay` ms, and removes it once it is gone. */
+async function exit(editor: HTMLKritzelEditorElement, agent: Agent, to: { x: number; y: number }, delay: number, signal: AbortSignal) {
+  await wait(delay, signal);
+  await editor.moveAgenticCursor(agent.id, to, { duration: 1100, easing: 'ease-in' });
+  await editor.removeAgenticCursor(agent.id);
+}
+
 /**
  * Plays the scene once. `setWorking` drives the chat box's loading ring, which stays on while any agent works.
  */
@@ -451,5 +458,10 @@ export async function playHeroScene(
   await wait(600, signal);
   setWorking(false);
   const covered = [...ALBUM_COVERS.map((_, index) => coverBox(index)), SOCIAL_BOX, STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
-  await frame(editor, union(covered), 1600, signal);
+  // While the camera pulls back, Covers leaves through the bottom and Social, a moment later, through the bottom right.
+  await Promise.all([
+    frame(editor, union(covered), 1600, signal),
+    exit(editor, COVER_AGENT, { x: 0, y: 1000 }, 300, signal),
+    exit(editor, SOCIAL_AGENT, { x: SOCIAL_BOX.x + SOCIAL_BOX.width + 700, y: SOCIAL_BOX.y + SOCIAL_BOX.height + 700 }, 700, signal),
+  ]);
 }
