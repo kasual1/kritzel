@@ -40,9 +40,12 @@ const COVER_GAP = 24;
 const COVER_COLUMNS = 2;
 const COVERS_ORIGIN = -(COVER_COLUMNS * COVER_SIZE + (COVER_COLUMNS - 1) * COVER_GAP) / 2;
 
-/** The post sits left of the covers and the widget right of them, both vertically centered on the square. */
-const SOCIAL_BOX = { x: -620, y: -215, width: 300, height: 430 };
-const STUDIO_BOX = { x: 320, y: -58, width: 360, height: 116 };
+/**
+ * The work goes from left to right: the widget left of the covers and the post right of them, both vertically centered
+ * on the square.
+ */
+const STUDIO_BOX = { x: -640, y: -58, width: 360, height: 116 };
+const SOCIAL_BOX = { x: 300, y: -215, width: 300, height: 430 };
 
 const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
 
