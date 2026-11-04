@@ -450,8 +450,8 @@ const TAKE_PAUSE = 600;
 /** Center of the widget's record button, measured from the widget's top-left corner. */
 const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
 
-/** How long Studio takes to slide in from the edge of the view to the record button. */
-const STUDIO_ENTRY = 750;
+/** How long Studio takes to slide in from the top right corner of the view to the record button. */
+const STUDIO_ENTRY = 550;
 
 /** Where Studio's cursor tip sits relative to the button's center: on it while pressing, beside it while waiting. */
 const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
@@ -483,20 +483,21 @@ async function recordTakes(
     await editor.moveAgenticCursor(STUDIO_AGENT.id, button(BUTTON_REST_OFFSET), { duration: 380, easing: 'ease-in-out' });
   };
 
-  // Studio slides in from the left edge of the view, at the button's height, for its first press.
+  // Studio slides in from the top right corner of the view for its first press.
   const viewport = await editor.getViewport();
-  const entry = button(BUTTON_PRESS_OFFSET);
-  const entryY = 'objectId' in entry ? STUDIO_BOX.y + entry.offset.y : entry.y;
   await editor.addAgenticCursor({
     id: STUDIO_AGENT.id,
     name: STUDIO_AGENT.name,
     color: STUDIO_AGENT.color,
-    position: { x: -viewport.translateX / viewport.scale - 40, y: entryY },
+    position: {
+      x: (viewport.width - viewport.translateX) / viewport.scale + 40,
+      y: -viewport.translateY / viewport.scale - 40,
+    },
   });
 
   const pages: (KritzelIframeObject | null)[] = [];
   for (const [index, take] of TAKES.entries()) {
-    // The first press comes all the way from the edge of the view, so that approach takes longer.
+    // The first press comes all the way from the corner of the view, so that approach takes longer.
     await press({ recording: true, take: index + 1 }, index === 0 ? STUDIO_ENTRY : 260);
     await wait(TAKE_RECORDING_TIME, signal);
     await press({ recording: false, take: index + 1 });
