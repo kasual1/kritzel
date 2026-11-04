@@ -3,7 +3,7 @@ import { ALBUM_COVERS } from './album-covers';
 
 /**
  * The hero of the "What is an agentic canvas?" post. A musician asks three agents for help with the release of their
- * jazz song "Full Control": one draws four album covers, one writes a social media post, one builds a recording widget.
+ * jazz song "Full Control": one builds a recording widget, one draws four album covers, one writes a social media post.
  * Each prompt is typed into the chat box, and the camera follows the agent that starts working.
  * Everything is scripted, so every recording is the same. Coordinates are world units around the origin.
  */
@@ -18,10 +18,11 @@ const COVER_AGENT: Agent = { id: 'covers', name: 'Covers', color: '#D9572B' };
 const SOCIAL_AGENT: Agent = { id: 'social', name: 'Social', color: '#7C3AED' };
 const STUDIO_AGENT: Agent = { id: 'studio', name: 'Studio', color: '#0891B2' };
 
+/** In the order they are typed: the recording widget first, then the covers, then the social media post. */
 const PROMPTS = {
-  covers: 'Help me create a new cover album for my jazz song called "Full Control"',
+  studio: 'Please add a small widget that allows me to record my jazz song "Full Control"',
+  covers: 'Help me create a new cover album for the song',
   social: 'Please craft a featured post for social media, that talks about the release of the new song',
-  studio: 'Please add a small widget that allows me to record the song',
 };
 
 /** Pause between typed prompt characters, in milliseconds. */
@@ -266,7 +267,8 @@ async function runFollowedAgent(
   const left = -view.translateX / view.scale;
   await editor.addAgenticCursor({ id: agent.id, name: agent.name, color: agent.color, position: { x: left - 40, y: box.y + box.height / 2 } });
   await generatePage(editor, agent, box, content, 1500, signal);
-  await editor.moveAgenticCursor(agent.id, { x: box.x + box.width + 30, y: box.y + box.height - 10 }, { duration: 500 });
+  // Parks below the result's right edge, inside the final view.
+  await editor.moveAgenticCursor(agent.id, { x: box.x + box.width - 50, y: box.y + box.height + 20 }, { duration: 500 });
 }
 
 /**
@@ -278,21 +280,22 @@ export async function playHeroScene(
   signal: AbortSignal,
 ): Promise<void> {
   await editor.clearAgenticCursors();
-  await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 0, signal);
+  await frame(editor, STUDIO_BOX, 0, signal);
   await wait(700, signal);
 
-  await typePrompt(editor, PROMPTS.covers, signal);
+  await typePrompt(editor, PROMPTS.studio, signal);
   setWorking(true);
+  await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal);
+
+  await wait(500, signal);
+  await typePrompt(editor, PROMPTS.covers, signal);
+  await frame(editor, union(ALBUM_COVERS.map((_, index) => coverBox(index))), 1100, signal);
   const covers = createCovers(editor, signal);
 
   // The next prompt is written while the covers are still being drawn.
   await wait(2600, signal);
   await typePrompt(editor, PROMPTS.social, signal);
   await runFollowedAgent(editor, SOCIAL_AGENT, SOCIAL_BOX, SOCIAL_POST, signal);
-
-  await wait(500, signal);
-  await typePrompt(editor, PROMPTS.studio, signal);
-  await runFollowedAgent(editor, STUDIO_AGENT, STUDIO_BOX, RECORDER, signal);
 
   await covers;
   await wait(600, signal);
