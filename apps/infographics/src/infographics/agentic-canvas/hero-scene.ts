@@ -83,8 +83,8 @@ article { display: flex; flex-direction: column; gap: 12px; height: 100%; paddin
 header { display: flex; align-items: center; gap: 10px; }
 header div:last-child { display: flex; flex-direction: column; font-size: 14px; }
 header span { color: #78716c; font-size: 12px; }
-.avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #1c1917;
-  color: #f5ecd7; font-size: 14px; font-weight: 700; }
+.avatar { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #4A7DFF;
+  color: #ffffff; font-size: 14px; font-weight: 700; }
 p { margin: 0; font-size: 14px; line-height: 1.45; }
 .cover { display: block; width: 100%; height: auto; border-radius: 12px; }
 footer { display: flex; gap: 18px; color: #78716c; font-size: 13px; }`,
