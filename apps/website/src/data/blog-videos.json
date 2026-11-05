@@ -1,7 +1,8 @@
 {
   "/videos/2026_10_10_Kritzel_Welcome.mp4": {
     "poster": "/videos/2026_10_10_Kritzel_Welcome.jpg",
-    "posterTime": 3.45,
+    "thumbnail": "/videos/2026_10_10_Kritzel_Welcome.thumbnail.jpg",
+    "thumbnailTime": 3.45,
     "width": 1280,
     "height": 720,
     "duration": 5.53,
@@ -9,7 +10,8 @@
   },
   "/videos/2026_10_22_Kritzel_Open_Source.mp4": {
     "poster": "/videos/2026_10_22_Kritzel_Open_Source.jpg",
-    "posterTime": 2.98,
+    "thumbnail": "/videos/2026_10_22_Kritzel_Open_Source.thumbnail.jpg",
+    "thumbnailTime": 2.98,
     "width": 1280,
     "height": 720,
     "duration": 4.23,
@@ -17,7 +19,8 @@
   },
   "/videos/2026_11_04_Agentic_Canvas.mp4": {
     "poster": "/videos/2026_11_04_Agentic_Canvas.jpg",
-    "posterTime": 13.46,
+    "thumbnail": "/videos/2026_11_04_Agentic_Canvas.thumbnail.jpg",
+    "thumbnailTime": 17,
     "width": 1280,
     "height": 720,
     "duration": 19.1,
