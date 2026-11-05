@@ -29,7 +29,6 @@ const PROMPT = 'Please favoritize track 2';
 const TRACKS = [
   { name: 'Track 1', duration: '0:39' },
   { name: 'Track 2', duration: '0:42' },
-  { name: 'Track 3', duration: '0:36' },
 ];
 
 /** The track whose star Studio clicks. */
