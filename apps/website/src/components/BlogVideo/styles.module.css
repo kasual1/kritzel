@@ -1,0 +1,9 @@
+.video {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(32, 33, 36, 0.14);
+  margin: 1rem 0 1.75rem;
+}

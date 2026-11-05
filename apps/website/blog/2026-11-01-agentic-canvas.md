@@ -7,6 +7,8 @@ thumbnailSeed: "e5315435"
 image: /img/blog/what-is-an-agentic-canvas.png
 ---
 
+import BlogVideo from '@site/src/components/BlogVideo';
+
 Post 1 (overview): “What Is an Agentic Canvas? And How to Build One”
 
 Main keyword: agentic canvas (concept and overview)
@@ -41,10 +43,13 @@ Building one with Kritzel.
 
 In the following section we are going to use the Kritzel library to quickly setup an agentic canvas. This is intended to only give a rough overview and both parts of the setup are covered in more detail in separate blog posts.
 
+### Generative UI
 
+<BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Generative_UI.mp4" label="An agent generating UI on the Kritzel canvas" />
 
+### Agentic Cursors
 
-
+<BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Cursors.mp4" label="Agentic cursors working on the Kritzel canvas" />
 
 One short paragraph per part with a small snippet. Generative UI and agentic cursors each end with “→ deep dive” links to posts 2 and 3.
 
