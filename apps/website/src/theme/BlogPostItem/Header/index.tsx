@@ -11,7 +11,10 @@ import styles from './styles.module.css';
 
 /** What `npm run videos:optimize` records about each blog video, keyed by its URL (see tools/blog-videos). */
 interface BlogVideo {
+  /** The first frame: shown until the video plays, so playback starts without a jump. */
   poster: string;
+  /** The most telling frame, for search engines. Never shown on the page. */
+  thumbnail: string;
   width: number;
   height: number;
   duration: number;
@@ -31,7 +34,7 @@ function isoDuration(seconds: number): string {
 function BlogPostVideoHead({ video, src }: { video: BlogVideo; src: string }): ReactNode {
   const { metadata } = useBlogPost();
   const contentUrl = useBaseUrl(src, { absolute: true });
-  const thumbnailUrl = useBaseUrl(video.poster, { absolute: true });
+  const thumbnailUrl = useBaseUrl(video.thumbnail, { absolute: true });
   const posterPath = useBaseUrl(video.poster);
   const structuredData = {
     '@context': 'https://schema.org',

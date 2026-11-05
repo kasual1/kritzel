@@ -79,7 +79,11 @@ describe('built blog videos', () => {
     }
     expect(String(data.contentUrl)).toMatch(/^https?:\/\//);
     expect(String(data.contentUrl).endsWith(src)).toBe(true);
-    expect(String(data.thumbnailUrl).endsWith(video.attr('poster') ?? '')).toBe(true);
+    // The page shows the first frame as poster; search engines get the separate, more telling thumbnail.
+    const poster = video.attr('poster') ?? '';
+    expect(poster).toMatch(/\.jpg$/);
+    expect(poster).not.toMatch(/\.thumbnail\.jpg$/);
+    expect(String(data.thumbnailUrl)).toBe(String(data.contentUrl).replace(/\.mp4$/, '.thumbnail.jpg'));
     expect(String(data.duration)).toMatch(/^PT\d+(\.\d+)?S$/);
 
     expect($('meta[property="og:video"]').attr('content')).toBe(data.contentUrl);

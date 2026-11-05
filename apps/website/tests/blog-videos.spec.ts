@@ -9,7 +9,8 @@ import { MANIFEST_FILE, VIDEO_DIR, WEBSITE_DIR, findIssues, sha256, videoUrl } f
 
 interface ManifestEntry {
   poster: string;
-  posterTime: number;
+  thumbnail: string;
+  thumbnailTime: number;
   width: number;
   height: number;
   duration: number;
@@ -17,8 +18,8 @@ interface ManifestEntry {
 }
 
 const FIX = 'Run `npm run videos:optimize` at the repository root.';
-/** Posters are JPEG frames at the video's size; a 1280×720 screen recording frame stays well below this. */
-const MAX_POSTER_BYTES = 200 * 1024;
+/** Posters and thumbnails are JPEG frames at the video's size; a 1280×720 screen recording frame stays well below this. */
+const MAX_FRAME_BYTES = 200 * 1024;
 
 const BLOG_DIR = path.join(WEBSITE_DIR, 'blog');
 const STATIC_DIR = path.join(WEBSITE_DIR, 'static');
@@ -97,14 +98,24 @@ describe('blog videos', () => {
       expect(entry.duration).toBeCloseTo(info.duration, 1);
     });
 
-    test('has a JPEG poster at the video size', () => {
+    // The poster is the first frame, so the page doesn't jump when the video starts; the thumbnail is for search.
+    test.each([
+      ['poster', '.jpg'],
+      ['thumbnail', '.thumbnail.jpg'],
+    ] as const)('has a JPEG %s at the video size', (key, suffix) => {
       expect(entry, FIX).toBeDefined();
-      expect(entry.poster).toBe(videoUrl(name.replace(/\.mp4$/, '.jpg')));
-      const poster = path.join(STATIC_DIR, entry.poster);
-      expect(fs.existsSync(poster), `${entry.poster} is missing. ${FIX}`).toBe(true);
-      const buffer = fs.readFileSync(poster);
+      expect(entry[key]).toBe(videoUrl(name.replace(/\.mp4$/, suffix)));
+      const image = path.join(STATIC_DIR, entry[key]);
+      expect(fs.existsSync(image), `${entry[key]} is missing. ${FIX}`).toBe(true);
+      const buffer = fs.readFileSync(image);
       expect(jpegSize(buffer)).toEqual({ width: entry.width, height: entry.height });
-      expect(buffer.length).toBeLessThanOrEqual(MAX_POSTER_BYTES);
+      expect(buffer.length).toBeLessThanOrEqual(MAX_FRAME_BYTES);
+    });
+
+    test('takes its thumbnail from within the video', () => {
+      expect(entry, FIX).toBeDefined();
+      expect(entry.thumbnailTime).toBeGreaterThanOrEqual(0);
+      expect(entry.thumbnailTime).toBeLessThan(entry.duration);
     });
   });
 

@@ -4,12 +4,12 @@ Makes the videos in `apps/website/static/videos` web-ready, and keeps the data t
 search engines in `apps/website/src/data/blog-videos.json`.
 
 ```bash
-npm run videos:optimize                                 # fix every video, write posters and the manifest
+npm run videos:optimize                                 # fix every video, write posters, thumbnails and the manifest
 npm run videos:check                                    # change nothing; exit 1 if anything needs fixing
-npm run videos:optimize -- --poster-at Name.mp4=12.5    # use the frame at 12.5 s as that video's poster
+npm run videos:optimize -- --thumbnail-at Name.mp4=12.5 # use the frame at 12.5 s as that video's thumbnail
 ```
 
-Run `npm run videos:optimize` after adding or replacing a video, and commit the video, its poster and the manifest.
+Run `npm run videos:optimize` after adding or replacing a video, and commit the video, its poster, its thumbnail and the manifest.
 It needs `ffmpeg` and `ffprobe` on the `PATH`; `--check` doesn't.
 
 ## What it does
@@ -21,9 +21,16 @@ For each MP4 that breaks one of the rules below it:
 - otherwise only **remuxes** it, which drops the audio and moves the `moov` box to the front without touching the
   picture.
 
-Then it writes a **poster** `<name>.jpg` next to the video: the most detailed of a dozen frames sampled across the
-video, so it skips empty or fading frames. Pin a frame with `--poster-at`; a pinned frame is kept until the video
-changes. Finally it records poster, size, duration and a SHA-256 of the video in the manifest.
+Then it saves two frames next to the video:
+
+- the **poster** `<name>.jpg`, always the first frame. The page shows it until the video plays, so playback
+  continues from exactly that picture instead of jumping;
+- the **thumbnail** `<name>.thumbnail.jpg`, the frame search engines show for the video (VideoObject
+  `thumbnailUrl`). It's never shown on the page, so it can be the most telling moment: by default the most detailed
+  of a dozen frames sampled across the video, which skips empty or fading frames. Pick one with `--thumbnail-at`; a
+  picked frame is kept until the video changes.
+
+Finally it records poster, thumbnail, size, duration and a SHA-256 of the video in the manifest.
 
 A video that already follows the rules and matches its manifest entry is left alone, so the script is cheap to run
 again and in CI. The deploy workflow runs it before the build, so the deployed site is web-ready even when a video
@@ -32,7 +39,7 @@ was committed without it.
 ## The rules
 
 They live in `rules.mjs`, and the website tests (`apps/website/tests/blog-videos.spec.ts`) enforce them on every pull
-request, together with an up-to-date manifest entry and poster:
+request, together with an up-to-date manifest entry, poster and thumbnail:
 
 | Rule | Why |
 | --- | --- |
@@ -50,7 +57,8 @@ request, together with an up-to-date manifest entry and poster:
 `apps/website/src/theme/BlogPostItem/Header` reads the manifest for every post with a `thumbnail` video:
 
 - the `<video>` gets the poster and its real size, so the page paints the poster at once and the layout doesn't shift;
-- the post page adds `VideoObject` structured data, `og:video` tags and a high-priority preload of the poster;
+- the post page adds `VideoObject` structured data (with the thumbnail), `og:video` tags and a high-priority preload
+  of the poster;
 - the blog list loads no video until it scrolls into view (`preload="none"`) and pauses videos that leave the view.
 
 `apps/website/tests/blog-video-output.spec.ts` checks the built pages for all of this
