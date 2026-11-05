@@ -57,7 +57,7 @@ function readTrackSize(buffer, tkhd) {
 /**
  * Inspects an MP4 file or buffer.
  * @returns {{
- *   size: number, duration: number, bitrate: number, faststart: boolean, topLevel: string[],
+ *   size: number, duration: number, bitrate: number, faststart: boolean, fragmented: boolean, topLevel: string[],
  *   tracks: { handler: string, codec: string | null, width: number, height: number }[],
  *   video: { codec: string | null, width: number, height: number } | null, hasAudio: boolean,
  * }}
@@ -93,6 +93,8 @@ export function inspectMp4(fileOrBuffer) {
     bitrate: duration > 0 ? (buffer.length * 8) / duration : 0,
     // The browser needs `moov` before it can show the first frame, so it must come before the media data.
     faststart: !mdat || moov.start < mdat.start,
+    // Fragmented files (OBS, MediaRecorder) keep their samples in `moof` boxes and report no duration in `mvhd`.
+    fragmented: types.includes('moof'),
     topLevel: types,
     tracks,
     video: videoTrack ? { codec: videoTrack.codec, width: videoTrack.width, height: videoTrack.height } : null,

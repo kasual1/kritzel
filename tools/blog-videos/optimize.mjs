@@ -79,16 +79,18 @@ function needsReencode(info) {
 }
 
 function remux(input, output) {
-  ffmpeg(['-i', input, '-map', '0:v:0', '-c', 'copy', '-an', '-map_metadata', '-1', '-movflags', '+faststart', output]);
+  ffmpeg(['-i', input, '-map', '0:v:0', '-c', 'copy', '-an', '-map_metadata', '-1', '-movflags', '+faststart', '-f', 'mp4', output]);
 }
 
 function reencode(input, output, crf) {
   ffmpeg([
     '-i', input,
     '-map', '0:v:0', '-an', '-map_metadata', '-1',
-    '-vf', `scale='min(${LIMITS.maxWidth},iw)':-2:flags=lanczos,format=yuv420p`,
+    // H.264 in 4:2:0 needs even dimensions, so the width is rounded down to an even number too; square pixels keep
+    // the display size (what the MP4 header reports) equal to the frame size.
+    '-vf', `scale='trunc(min(${LIMITS.maxWidth},iw)/2)*2':-2:flags=lanczos,setsar=1,format=yuv420p`,
     '-c:v', 'libx264', '-preset', 'slow', '-crf', String(crf), '-profile:v', 'high',
-    '-movflags', '+faststart',
+    '-movflags', '+faststart', '-f', 'mp4',
     output,
   ]);
 }
@@ -97,18 +99,26 @@ function formatBytes(bytes) {
   return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
 }
 
+/**
+ * Where a video is written while it's being fixed: next to it, so the final rename stays on one file system, but
+ * hidden and without the .mp4 extension, so a run that crashed never leaves something that looks like a blog video.
+ */
+function tempFile(file) {
+  return path.join(path.dirname(file), `.${path.basename(file)}.optimizing`);
+}
+
 /** Fixes one video in place. Returns a description of what was done. */
 function fixVideo(file) {
   const before = inspectMp4(file);
-  const temp = `${file}.tmp.mp4`;
+  const temp = tempFile(file);
   try {
     if (!needsReencode(before)) {
       remux(file, temp);
-      if (findIssues(inspectMp4(temp)).length) {
-        throw new Error(`${path.basename(file)} still has issues after remuxing: ${findIssues(inspectMp4(temp)).join('; ')}`);
+      if (!findIssues(inspectMp4(temp)).length) {
+        fs.renameSync(temp, file);
+        return 'remuxed (audio dropped, +faststart)';
       }
-      fs.renameSync(temp, file);
-      return 'remuxed (audio dropped, +faststart)';
+      // e.g. a fragmented file whose real bitrate only shows once it is remuxed: re-encode it after all
     }
     for (const crf of CRF_STEPS) {
       reencode(file, temp, crf);
@@ -138,12 +148,17 @@ function pickPosterTime(file, duration) {
 }
 
 function writePoster(file, poster, time) {
-  ffmpeg(['-ss', time.toFixed(3), '-i', file, '-frames:v', '1', '-q:v', '3', '-map_metadata', '-1', '-fflags', '+bitexact', poster]);
+  // ffmpeg exits successfully without writing anything when there is no frame at that time, so check the result.
+  fs.rmSync(poster, { force: true });
+  ffmpeg(['-ss', time.toFixed(3), '-i', file, '-frames:v', '1', '-q:v', '3', '-map_metadata', '-1', '-fflags', '+bitexact', '-f', 'image2', '-c:v', 'mjpeg', poster]);
+  if (!fs.existsSync(poster) || fs.statSync(poster).size === 0) {
+    throw new Error(`Could not write a poster for ${path.basename(file)} at ${time} s.`);
+  }
 }
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const files = fs.existsSync(VIDEO_DIR) ? fs.readdirSync(VIDEO_DIR).filter((name) => name.endsWith('.mp4')).sort() : [];
+  const files = fs.existsSync(VIDEO_DIR) ? fs.readdirSync(VIDEO_DIR).filter((name) => name.endsWith('.mp4') && !name.startsWith('.')).sort() : [];
   for (const name of args.posterAt.keys()) {
     if (!files.includes(name)) {
       throw new Error(`--poster-at names "${name}", which is not in ${VIDEO_DIR}.`);
@@ -172,6 +187,9 @@ function main() {
     const posterFile = path.join(VIDEO_DIR, posterName);
     const previous = manifest[url];
     const requestedTime = args.posterAt.get(name);
+    if (requestedTime !== undefined && requestedTime >= info.duration) {
+      throw new Error(`--poster-at ${name}=${requestedTime} is past the end of the video (${info.duration.toFixed(2)} s).`);
+    }
     const upToDate = previous?.sha256 === hash && fs.existsSync(posterFile) && requestedTime === undefined;
 
     if (upToDate) {

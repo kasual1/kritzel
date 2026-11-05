@@ -22,7 +22,7 @@ const MAX_POSTER_BYTES = 200 * 1024;
 
 const BLOG_DIR = path.join(WEBSITE_DIR, 'blog');
 const STATIC_DIR = path.join(WEBSITE_DIR, 'static');
-const videos = fs.existsSync(VIDEO_DIR) ? fs.readdirSync(VIDEO_DIR).filter((name) => name.endsWith('.mp4')).sort() : [];
+const videos = fs.existsSync(VIDEO_DIR) ? fs.readdirSync(VIDEO_DIR).filter((name) => name.endsWith('.mp4') && !name.startsWith('.')).sort() : [];
 const manifest: Record<string, ManifestEntry> = fs.existsSync(MANIFEST_FILE) ? JSON.parse(fs.readFileSync(MANIFEST_FILE, 'utf8')) : {};
 
 /** Top-level `key: value` pairs of a Markdown file's front matter, or null without one. */

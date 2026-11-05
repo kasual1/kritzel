@@ -39,6 +39,11 @@ export function findIssues(info) {
     issues.push('has no video track');
     return issues;
   }
+  if (info.fragmented) {
+    issues.push('is a fragmented MP4, which reports no duration and plays less reliably (needs a remux)');
+  } else if (!(info.duration > 0)) {
+    issues.push('reports no duration');
+  }
   if (info.video.codec !== LIMITS.codec) {
     issues.push(`uses the "${info.video.codec}" codec instead of H.264 ("${LIMITS.codec}")`);
   }

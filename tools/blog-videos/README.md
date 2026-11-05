@@ -17,7 +17,7 @@ It needs `ffmpeg` and `ffprobe` on the `PATH`; `--check` doesn't.
 For each MP4 that breaks one of the rules below it:
 
 - **re-encodes** it when it's wider than 1280 px, too big or not H.264: H.264 (`libx264`, `-preset slow`) at most
-  1280 px wide, trying CRF 24, 26, … 32 until it fits the size budget;
+  1280 px wide with even dimensions and square pixels, trying CRF 24, 26, … 32 until it fits the size budget;
 - otherwise only **remuxes** it, which drops the audio and moves the `moov` box to the front without touching the
   picture.
 
@@ -38,6 +38,7 @@ request, together with an up-to-date manifest entry and poster:
 | --- | --- |
 | H.264 video (`avc1`) | Plays in every browser, also Safari and older phones. |
 | `moov` box before the media data (`+faststart`) | The browser can show the first frame without loading the end of the file first. |
+| Not fragmented, with a duration | Fragmented files (OBS, MediaRecorder) report no duration, which hides their real bitrate. |
 | No audio track | Blog videos always play muted; audio only adds bytes. |
 | At most 1280 px wide | The blog shows videos at most 640 CSS px wide, so 1280 px stays sharp on 2x screens. |
 | At most 2 Mbit/s and 5 MB | Keeps the page fast; screen recordings at 720p need far less. |
