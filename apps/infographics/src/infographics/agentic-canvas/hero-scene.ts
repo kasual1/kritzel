@@ -16,7 +16,7 @@ interface Agent {
 
 const COVER_AGENT: Agent = { id: 'covers', name: 'Covers', color: '#D9572B' };
 const SOCIAL_AGENT: Agent = { id: 'social', name: 'Social', color: '#7C3AED' };
-const STUDIO_AGENT: Agent = { id: 'studio', name: 'Studio', color: '#0891B2' };
+export const STUDIO_AGENT: Agent = { id: 'studio', name: 'Studio', color: '#0891B2' };
 
 /** In the order they are typed: the recording widget first, then the covers, then the social media post. */
 const PROMPTS = {
@@ -35,7 +35,7 @@ const OPENING_PAUSE = 1200;
 const CAMERA_MOVE = 700;
 
 /** How long a cursor takes to leave the view once its agent is done. */
-const EXIT_DURATION = 800;
+export const EXIT_DURATION = 800;
 
 /** How long the finished scene stays after the last cursor has left, before every object is removed. */
 const CLEAR_DELAY = 1500;
@@ -119,7 +119,7 @@ const WAVE_LEVELS = Array.from({ length: 64 }, (_, i) => {
   return Math.max(0.08, Math.min(1, (0.25 + 0.75 * phrases * (0.55 + 0.45 * grain)) * fade));
 });
 
-const RECORDER: KritzelIframeContent = {
+export const RECORDER: KritzelIframeContent = {
   html: `<main>
   <header>
     <strong>Full Control</strong>
@@ -234,9 +234,9 @@ if (globalThis.kritzel && globalThis.kritzel.state && globalThis.kritzel.state.r
 };
 
 /** Room between the widget and the saved takes below it, and between the takes. */
-const TAKES_GAP = 12;
-const TAKE_GAP = 8;
-const TAKE_HEIGHT = 48;
+export const TAKES_GAP = 12;
+export const TAKE_GAP = 8;
+export const TAKE_HEIGHT = 48;
 
 /** The takes Studio saves below the widget. */
 const TAKES = [
@@ -248,7 +248,7 @@ const TAKES = [
 const FAVORITE_TAKE = 1;
 
 /** Where the star sits on a take, from the take's right edge. */
-const STAR_OFFSET = { x: -28, y: 0 };
+export const STAR_OFFSET = { x: -28, y: 0 };
 
 function takeBox(index: number): Box {
   return {
@@ -263,7 +263,7 @@ function takeBox(index: number): Box {
 const STUDIO_WORK = [STUDIO_BOX, ...TAKES.map((_, index) => takeBox(index))];
 
 /** A saved take. Its star turns on through the page's state (`{ favorite: true }`), so it animates in place. */
-function takeContent(take: (typeof TAKES)[number]): KritzelIframeContent {
+export function takeContent(take: { name: string; duration: string }): KritzelIframeContent {
   return {
     html: `<main>
   <span class="play" aria-hidden="true"></span>
@@ -344,7 +344,7 @@ export interface Box {
   height: number;
 }
 
-function union(boxes: Box[]): Box {
+export function union(boxes: Box[]): Box {
   const left = Math.min(...boxes.map(box => box.x));
   const top = Math.min(...boxes.map(box => box.y));
   const right = Math.max(...boxes.map(box => box.x + box.width));
@@ -454,7 +454,7 @@ const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
 const STUDIO_ENTRY = 550;
 
 /** Where Studio's cursor tip sits relative to the button's center: on it while pressing, beside it while waiting. */
-const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
+export const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
 const BUTTON_REST_OFFSET = { x: 30, y: 24 };
 
 

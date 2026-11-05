@@ -23,6 +23,7 @@ npm run infographics
 | `#/open-source` | The animated outline of the open source logo. |
 | `#/agentic-canvas` | Hero of the agentic canvas post: three agents help release the jazz song "Full Control". |
 | `#/agentic-canvas-generative-ui` | Generative UI on the agentic canvas: one prompt adds a new album cover. |
+| `#/agentic-cursors` | Agentic cursors: Studio stars track 2 of the recorder widget after the prompt "Please favoritize track 2". |
 | `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
 ## Agentic canvas
@@ -45,6 +46,14 @@ The album covers are PNG images in `public/covers/`, listed in `album-covers.ts`
 the chat box and no agentic cursors. "Please generate a new album cover" is typed into the chat box, and a cover is
 added in the middle of the canvas: it shows the glare placeholder first and then the image. 1.5 seconds later every
 object is removed. It is scripted in `album-cover-scene.ts` and reuses the covers and helpers of the agentic canvas page.
+
+## Agentic cursors
+
+`src/infographics/agentic-cursors/` shows an agentic cursor working on a generative UI page, with the chat box. The
+canvas starts with the recorder widget of the agentic canvas page centered in the view, with its three tracks below
+it. "Please favoritize track 2" is typed into the chat box, Studio's cursor glides to the star of track 2 and clicks it,
+and the cursor leaves the view. 1.5 seconds later every object is removed. It is scripted in `favorite-track-scene.ts`
+and reuses the widget, the tracks and the helpers of the agentic canvas page.
 
 ## Generative UI API key
 

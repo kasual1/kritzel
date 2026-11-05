@@ -1,6 +1,7 @@
 import type { ComponentType } from "react";
 import { AgenticCanvasInfographic } from "./infographics/agentic-canvas/AgenticCanvasInfographic";
 import { AgenticCanvasGenerativeUiInfographic } from "./infographics/agentic-canvas-generative-ui/AgenticCanvasGenerativeUiInfographic";
+import { AgenticCursorsInfographic } from "./infographics/agentic-cursors/AgenticCursorsInfographic";
 import { GenerativeUiInfographic } from "./infographics/generative-ui/GenerativeUiInfographic";
 import { OpenSourceInfographic } from "./infographics/open-source/OpenSourceInfographic";
 import { WelcomeInfographic } from "./infographics/welcome/WelcomeInfographic";
@@ -20,5 +21,6 @@ export const infographicRoutes: InfographicRoute[] = [
     title: "Agentic Canvas Generative UI",
     component: AgenticCanvasGenerativeUiInfographic,
   },
+  { path: "/agentic-cursors", title: "Agentic Cursors", component: AgenticCursorsInfographic },
   { path: "/generative-ui", title: "Generative UI", component: GenerativeUiInfographic },
 ];
