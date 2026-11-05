@@ -1,5 +1,6 @@
 import { KritzelIframeObject, type HTMLKritzelEditorElement, type KritzelIframeContent } from '@kritzel/react-editor';
 import { ALBUM_COVERS } from './album-covers';
+import { addHidden, fadeIn, withReveal } from './appear';
 
 /**
  * The hero of the "What is an agentic canvas?" post. A musician asks three agents for help with the release of their
@@ -395,8 +396,9 @@ export async function typePrompt(editor: HTMLKritzelEditorElement, prompt: strin
 }
 
 /**
- * Adds a page that shows the glare placeholder first and its content once the agent is "done writing" it. The agent's
- * cursor moves to the page's top-left corner first and stays there while it writes, unless `withCursor` is false.
+ * Adds a page that shows the glare placeholder first and its content once the agent is "done writing" it. The page
+ * fades in while it rises into place, and its content fades in over the placeholder. The agent's cursor moves to the
+ * page's top-left corner first and stays there while it writes, unless `withCursor` is false.
  */
 async function generatePage(
   editor: HTMLKritzelEditorElement,
@@ -413,7 +415,7 @@ async function generatePage(
   }
   const page = new KritzelIframeObject({
     title: agent.name,
-    content,
+    content: withReveal(content),
     loadingContent: SKELETON,
     isLoading: true,
     translateX: box.x,
@@ -423,8 +425,9 @@ async function generatePage(
     borderRadius,
     boxShadow: SHADOW,
   });
-  const added = await editor.addObject(page);
-  await wait(writingTime, signal);
+  // The placeholder renders at once, so the page starts fading in almost right away, while the agent writes.
+  const [added] = await addHidden(editor, [page]);
+  await Promise.all([wait(writingTime, signal), fadeIn(editor, [added], signal, { load: 120 })]);
   added?.setLoading(false);
   await wait(150, signal);
   return added;
@@ -504,7 +507,8 @@ async function recordTakes(
     const box = takeBox(index);
     // Only the most recent take is marked as new.
     pages.at(-1)?.setState({ isNew: false });
-    pages.push(await editor.addObject(
+    // The take fades in below the widget while Studio carries on, so the recording keeps its pace.
+    const [page] = await addHidden(editor, [
       new KritzelIframeObject({
         title: take.name,
         content: takeContent(take),
@@ -516,7 +520,9 @@ async function recordTakes(
         borderRadius: 12,
         boxShadow: SHADOW,
       }),
-    ));
+    ]);
+    pages.push(page);
+    fadeIn(editor, [page], signal).catch(() => undefined);
     if (index < TAKES.length - 1) {
       await wait(TAKE_PAUSE, signal);
     }

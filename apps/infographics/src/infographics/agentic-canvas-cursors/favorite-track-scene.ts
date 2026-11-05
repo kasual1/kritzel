@@ -16,11 +16,13 @@ import {
   wait,
   type Box,
 } from '../agentic-canvas/hero-scene';
+import { APPEAR_LOAD, appear } from '../agentic-canvas/appear';
 
 /**
  * Agentic cursors on a generative UI page: the canvas starts empty, then the recorder widget of the agentic canvas post
- * appears in the middle of it with its tracks below it. The user asks for track 2 to be a favorite, and Studio's cursor glides to the star
- * of track 2, clicks it and leaves the view. Scripted, with no model calls, so every recording is the same.
+ * appears in the middle of it with its tracks below it. The user asks for track 2 to be a favorite, and Studio's
+ * cursor glides to the star of track 2, clicks it and leaves the view. Scripted, with no model calls, so every
+ * recording is the same.
  */
 
 const PROMPT = 'Please favoritize track 2';
@@ -54,14 +56,6 @@ const SCENE_BOX = union([WIDGET_BOX, ...TRACK_BOXES]);
 
 /** How long the empty editor shows before the recorder appears. */
 const EMPTY_PAUSE = 1500;
-/**
- * The recorder fades in and rises into place, the widget first and each track a moment later. The pages are added
- * invisible and get `APPEAR_LOAD` ms to render their content, so nothing blank flashes in.
- */
-const APPEAR_LOAD = 400;
-const APPEAR_DURATION = 600;
-const APPEAR_STAGGER = 110;
-const APPEAR_RISE = 14;
 /** How long the recorder shows before the prompt is typed. */
 const OPENING_PAUSE = 1200;
 /** How long Studio takes to glide from the edge of the view to the star, and how long it hovers before the click. */
@@ -100,36 +94,6 @@ function createRecorderObjects(): KritzelIframeObject[] {
   return [widget, ...tracks];
 }
 
-const easeOut = (t: number) => 1 - (1 - t) ** 3;
-
-/** Adds the pages invisible, lets them load, then fades each one in while it rises into place, one after another. */
-async function appear(editor: HTMLKritzelEditorElement, objects: KritzelIframeObject[], signal: AbortSignal) {
-  const targets = objects.map(object => object.translateY);
-  for (const object of objects) {
-    object.opacity = 0;
-    object.translateY += APPEAR_RISE;
-  }
-  const added = (await editor.addObjects(objects)) ?? objects;
-  await wait(APPEAR_LOAD, signal);
-
-  const total = APPEAR_DURATION + APPEAR_STAGGER * (added.length - 1);
-  const start = performance.now();
-  for (;;) {
-    const elapsed = performance.now() - start;
-    await Promise.all(added.map((object, index) => {
-      const t = easeOut(Math.min(1, Math.max(0, (elapsed - index * APPEAR_STAGGER) / APPEAR_DURATION)));
-      return editor.updateObject(object, { opacity: t, translateY: targets[index] + APPEAR_RISE * (1 - t) });
-    }));
-    if (elapsed >= total) {
-      return added;
-    }
-    await new Promise(requestAnimationFrame);
-    if (signal.aborted) {
-      throw signal.reason;
-    }
-  }
-}
-
 /**
  * Plays the scene once, starting from an empty canvas. `setWorking` drives the chat box's loading ring, which runs
  * from the sent prompt until Studio has clicked the star.
@@ -144,6 +108,7 @@ export async function playAgenticCanvasCursorsScene(
   // Only the editor with its chat box shows at first; then the recorder and its tracks appear.
   // The pages are added while the canvas is still empty, so they start to show after `EMPTY_PAUSE`.
   await wait(EMPTY_PAUSE - APPEAR_LOAD, signal);
+  // The widget and its tracks fade in and rise into place one after another, see appear.ts.
   const added = await appear(editor, createRecorderObjects(), signal);
   const trackIds = added.slice(1).map(object => object.id);
   await wait(OPENING_PAUSE, signal);

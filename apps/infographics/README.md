@@ -37,6 +37,10 @@ writes a social media post about the release. The work runs from left to right: 
 all three results. Every agent's cursor leaves the view as soon as that agent is done. The scene is scripted in `hero-scene.ts`, with no model calls, so every
 recording is the same; reload the page to play it again.
 
+Every page the agents add comes in smoothly: it fades in while it rises into place, and when it was showing the glare
+placeholder, its content fades in over the placeholder's grey. The agentic canvas generative UI and agentic canvas
+cursors pages use the same effect, from `appear.ts`.
+
 The album covers are PNG images in `public/covers/`, listed in `album-covers.ts`. Their sources are the SVG files in
 `covers/`; after changing one, render the PNGs again with `npm run covers -w apps/infographics`.
 

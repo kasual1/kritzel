@@ -1,5 +1,6 @@
 import { KritzelIframeObject, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
 import { coverImage } from '../agentic-canvas/album-covers';
+import { addHidden, fadeIn, withReveal } from '../agentic-canvas/appear';
 import { SHADOW, SKELETON, coverContent, frame, typePrompt, wait, type Box } from '../agentic-canvas/hero-scene';
 
 /**
@@ -39,10 +40,11 @@ export async function playAlbumCoverScene(
 
   await typePrompt(editor, PROMPT, signal);
   setWorking(true);
-  const cover = await editor.addObject(
+  // The cover fades in while it rises into place, and the image fades in over the placeholder once it is done.
+  const [cover] = await addHidden(editor, [
     new KritzelIframeObject({
       title: 'Album cover',
-      content: coverContent(NEW_COVER),
+      content: withReveal(coverContent(NEW_COVER)),
       loadingContent: SKELETON,
       isLoading: true,
       translateX: COVER_BOX.x,
@@ -52,8 +54,8 @@ export async function playAlbumCoverScene(
       borderRadius: 12,
       boxShadow: SHADOW,
     }),
-  );
-  await wait(WRITING_TIME, signal);
+  ]);
+  await Promise.all([wait(WRITING_TIME, signal), fadeIn(editor, [cover], signal, { load: 120 })]);
   cover?.setLoading(false);
   setWorking(false);
 
