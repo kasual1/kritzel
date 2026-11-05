@@ -62,10 +62,10 @@ const SOCIAL_BOX = { x: 300, y: -215, width: 300, height: 430 };
 /** The covers' square is centered between the widget and the post, so the gaps on both sides are the same. */
 const COVERS_SHIFT_X = (STUDIO_BOX.x + STUDIO_BOX.width + SOCIAL_BOX.x) / 2;
 
-const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
+export const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
 
 /** A grey surface with a soft glare sweeping across it, shown while an agent writes a page. */
-const SKELETON: KritzelIframeContent = {
+export const SKELETON: KritzelIframeContent = {
   html: '<div class="skeleton" aria-busy="true"></div>',
   css: `html, body { height: 100%; margin: 0; }
 .skeleton { height: 100%; background: linear-gradient(100deg, #ececec 30%, #f7f7f7 50%, #ececec 70%) #ececec;
@@ -74,7 +74,7 @@ const SKELETON: KritzelIframeContent = {
   script: '',
 };
 
-function coverContent(image: string): KritzelIframeContent {
+export function coverContent(image: string): KritzelIframeContent {
   return {
     html: `<img src="${image}" alt="Album cover of Full Control">`,
     css: 'html, body { height: 100%; margin: 0; overflow: hidden; } img { display: block; width: 100%; height: 100%; object-fit: cover; }',
@@ -323,7 +323,7 @@ globalThis.addEventListener('kritzelstatechange', event => render(event.detail, 
   };
 }
 
-function wait(ms: number, signal: AbortSignal): Promise<void> {
+export function wait(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal.aborted) {
       reject(signal.reason);
@@ -337,7 +337,7 @@ function wait(ms: number, signal: AbortSignal): Promise<void> {
   });
 }
 
-interface Box {
+export interface Box {
   x: number;
   y: number;
   width: number;
@@ -359,7 +359,7 @@ const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 
  * in past 100%. The box is centered in the area above the chat box, or in the whole view when `isCentered` is set,
  * which suits the final overview: it fits above the chat box either way.
  */
-async function frame(editor: HTMLKritzelEditorElement, box: Box, duration: number, signal: AbortSignal, isCentered = false) {
+export async function frame(editor: HTMLKritzelEditorElement, box: Box, duration: number, signal: AbortSignal, isCentered = false) {
   const view = await editor.getViewport();
   const visibleHeight = view.height - CHAT_BOX_SPACE;
   const scale = Math.min(view.width / (box.width * 1.2), visibleHeight / (box.height * 1.2), 1);
@@ -378,7 +378,7 @@ async function frame(editor: HTMLKritzelEditorElement, box: Box, duration: numbe
 }
 
 /** Types a prompt into the chat box as a person would, then sends it. */
-async function typePrompt(editor: HTMLKritzelEditorElement, prompt: string, signal: AbortSignal) {
+export async function typePrompt(editor: HTMLKritzelEditorElement, prompt: string, signal: AbortSignal) {
   const chatBox = editor.querySelector('kritzel-chat-box');
   const textarea = chatBox?.shadowRoot?.querySelector('textarea');
   if (!chatBox || !textarea) {

@@ -22,6 +22,7 @@ npm run infographics
 | `#/welcome` | The animated "Welcome" path from `apps/app`.   |
 | `#/open-source` | The animated outline of the open source logo. |
 | `#/agentic-canvas` | Hero of the agentic canvas post: three agents help release the jazz song "Full Control". |
+| `#/agentic-canvas-generative-ui` | Generative UI on the agentic canvas: one prompt adds a new album cover. |
 | `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
 ## Agentic canvas
@@ -37,6 +38,13 @@ recording is the same; reload the page to play it again.
 
 The album covers are PNG images in `public/covers/`, listed in `album-covers.ts`. Their sources are the SVG files in
 `covers/`; after changing one, render the PNGs again with `npm run covers -w apps/infographics`.
+
+## Agentic canvas generative UI
+
+`src/infographics/agentic-canvas-generative-ui/` shows generative UI on the same canvas as the agentic canvas page, with
+the chat box and no agentic cursors. "Please generate a new album cover" is typed into the chat box, and a cover is
+added in the middle of the canvas: it shows the glare placeholder first and then the image. 1.5 seconds later every
+object is removed. It is scripted in `album-cover-scene.ts` and reuses the covers and helpers of the agentic canvas page.
 
 ## Generative UI API key
 
