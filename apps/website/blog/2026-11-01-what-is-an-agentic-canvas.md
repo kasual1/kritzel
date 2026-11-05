@@ -3,6 +3,8 @@ title: "What Is an Agentic Canvas? And How to Build One"
 description: "Agentic canvases let AI agents work alongside people on an infinite canvas. Learn what they are, who builds them, and how to create your own with Kritzel."
 date: 2026-11-01
 thumbnail: /videos/2026_11_04_Agentic_Canvas.mp4
+thumbnailSeed: "e5315435"
+image: /img/blog/what-is-an-agentic-canvas.png
 ---
 
 Post 1 (overview): “What Is an Agentic Canvas? And How to Build One”

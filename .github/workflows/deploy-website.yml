@@ -23,6 +23,13 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
+      - name: Install ffmpeg
+        run: command -v ffmpeg >/dev/null || (sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg)
+
+      # Fixes any blog video that was committed without being optimized, so the deployed site is always web-ready.
+      - name: Optimize blog videos
+        run: npm run videos:optimize
+
       - name: Build Docusaurus documentation
         run: npm run build -w apps/website
         env:
@@ -30,6 +37,11 @@ jobs:
 
       - name: Validate generated LLM documentation
         run: npm run test:llms -w apps/website
+        env:
+          Docusaurus_BASE_URL: /
+
+      - name: Validate blog video output
+        run: npm run test:videos-output -w apps/website
         env:
           Docusaurus_BASE_URL: /
 
