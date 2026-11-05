@@ -18,8 +18,8 @@ import {
 } from '../agentic-canvas/hero-scene';
 
 /**
- * Agentic cursors on a generative UI page: the recorder widget of the agentic canvas post sits in the middle of the
- * canvas with its tracks below it. The user asks for track 2 to be a favorite, and Studio's cursor glides to the star
+ * Agentic cursors on a generative UI page: the canvas starts empty, then the recorder widget of the agentic canvas post
+ * appears in the middle of it with its tracks below it. The user asks for track 2 to be a favorite, and Studio's cursor glides to the star
  * of track 2, clicks it and leaves the view. Scripted, with no model calls, so every recording is the same.
  */
 
@@ -52,7 +52,9 @@ function trackBox(index: number): Box {
 const TRACK_BOXES = TRACKS.map((_, index) => trackBox(index));
 const SCENE_BOX = union([WIDGET_BOX, ...TRACK_BOXES]);
 
-/** How long the canvas shows before the prompt is typed. */
+/** How long the empty editor shows before the recorder appears. */
+const EMPTY_PAUSE = 1500;
+/** How long the recorder shows before the prompt is typed. */
 const OPENING_PAUSE = 1200;
 /** How long Studio takes to glide from the edge of the view to the star, and how long it hovers before the click. */
 const STAR_APPROACH = 900;
@@ -62,8 +64,8 @@ const AFTER_CLICK = 250;
 /** How long the result stays after the cursor has left, before every object is removed. */
 const CLEAR_DELAY = 1500;
 
-/** The recorder widget and its tracks, as the canvas shows them when the page loads. */
-export function createRecorderObjects(): KritzelIframeObject[] {
+/** The recorder widget and its tracks, added to the canvas once the empty editor has shown for a moment. */
+function createRecorderObjects(): KritzelIframeObject[] {
   const widget = new KritzelIframeObject({
     title: STUDIO_AGENT.name,
     content: RECORDER,
@@ -91,17 +93,25 @@ export function createRecorderObjects(): KritzelIframeObject[] {
 }
 
 /**
- * Plays the scene once. `trackIds` are the ids of the track objects, in order. `setWorking` drives the chat box's
- * loading ring, which runs from the sent prompt until Studio has clicked the star.
+ * Plays the scene once, starting from an empty canvas. `setWorking` drives the chat box's loading ring, which runs
+ * from the sent prompt until Studio has clicked the star.
  */
 export async function playAgenticCanvasCursorsScene(
   editor: HTMLKritzelEditorElement,
-  trackIds: string[],
   setWorking: (isWorking: boolean) => void,
   signal: AbortSignal,
 ): Promise<void> {
   await editor.clearAgenticCursors();
   await frame(editor, SCENE_BOX, 0, signal);
+  // Only the editor with its chat box shows at first; then the recorder and its tracks appear.
+  await wait(EMPTY_PAUSE, signal);
+  const [widget, ...tracks] = createRecorderObjects();
+  await editor.addObject(widget);
+  const trackIds: string[] = [];
+  for (const track of tracks) {
+    const added = await editor.addObject(track);
+    trackIds.push(added?.id ?? track.id);
+  }
   await wait(OPENING_PAUSE, signal);
 
   await typePrompt(editor, PROMPT, signal);

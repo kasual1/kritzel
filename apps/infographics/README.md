@@ -51,8 +51,8 @@ object is removed. It is scripted in `album-cover-scene.ts` and reuses the helpe
 ## Agentic canvas cursors
 
 `src/infographics/agentic-canvas-cursors/` shows an agentic cursor working on a generative UI page, with the chat box. The
-canvas starts with the recorder widget of the agentic canvas page centered in the view, with its two tracks below
-it. "Please favoritize track 2" is typed into the chat box, Studio's cursor glides to the star of track 2 and clicks it,
+canvas starts empty; after 1.5 seconds the recorder widget of the agentic canvas page appears centered in the view, with
+its two tracks below it. Then "Please favoritize track 2" is typed into the chat box, Studio's cursor glides to the star of track 2 and clicks it,
 and the cursor leaves the view. 1.5 seconds later every object is removed. It is scripted in `favorite-track-scene.ts`
 and reuses the widget, the tracks and the helpers of the agentic canvas page.
 
