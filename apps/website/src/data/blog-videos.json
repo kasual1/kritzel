@@ -20,10 +20,10 @@
   "/videos/2026_11_04_Agentic_Canvas.mp4": {
     "poster": "/videos/2026_11_04_Agentic_Canvas.jpg",
     "thumbnail": "/videos/2026_11_04_Agentic_Canvas.thumbnail.jpg",
-    "thumbnailTime": 17,
+    "thumbnailTime": 11.11,
     "width": 1280,
     "height": 720,
-    "duration": 19.1,
-    "sha256": "e81794e100953d89af74c94953786bef405485e1e3b7a7204a2071a48b5e80a8"
+    "duration": 17.83,
+    "sha256": "a87cb9868b98fe8e4c2ce818ae9693c20bdb7483afccc6df0f57a0b6b597aa3a"
   }
 }
