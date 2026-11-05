@@ -12,7 +12,7 @@ export interface AlbumCover {
   image: string;
 }
 
-function coverImage(file: string): string {
+export function coverImage(file: string): string {
   return new URL(`${import.meta.env.BASE_URL}covers/${file}`, window.location.href).href;
 }
 

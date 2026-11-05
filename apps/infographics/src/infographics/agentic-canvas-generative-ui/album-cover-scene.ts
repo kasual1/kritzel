@@ -1,11 +1,17 @@
 import { KritzelIframeObject, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
-import { ALBUM_COVERS } from '../agentic-canvas/album-covers';
+import { coverImage } from '../agentic-canvas/album-covers';
 import { SHADOW, SKELETON, coverContent, frame, typePrompt, wait, type Box } from '../agentic-canvas/hero-scene';
 
 /**
  * Generative UI on the agentic canvas, in its shortest form: one prompt in the chat box adds a new album cover in the
  * middle of the canvas. No agentic cursors. Everything is scripted, so every recording is the same.
  */
+
+/**
+ * A cover of its own, not one of the four from the agentic canvas page: a night skyline under the moon, crossed by a
+ * sound wave. Its source is covers/midnight-skyline.svg.
+ */
+const NEW_COVER = coverImage('midnight-skyline.png');
 
 const PROMPT = 'Please generate a new album cover';
 
@@ -36,7 +42,7 @@ export async function playAlbumCoverScene(
   const cover = await editor.addObject(
     new KritzelIframeObject({
       title: 'Album cover',
-      content: coverContent(ALBUM_COVERS[0].image),
+      content: coverContent(NEW_COVER),
       loadingContent: SKELETON,
       isLoading: true,
       translateX: COVER_BOX.x,

@@ -45,7 +45,8 @@ The album covers are PNG images in `public/covers/`, listed in `album-covers.ts`
 `src/infographics/agentic-canvas-generative-ui/` shows generative UI on the same canvas as the agentic canvas page, with
 the chat box and no agentic cursors. "Please generate a new album cover" is typed into the chat box, and a cover is
 added in the middle of the canvas: it shows the glare placeholder first and then the image. 1.5 seconds later every
-object is removed. It is scripted in `album-cover-scene.ts` and reuses the covers and helpers of the agentic canvas page.
+object is removed. It is scripted in `album-cover-scene.ts` and reuses the helpers of the agentic canvas page. The cover is its own,
+`covers/midnight-skyline.svg`, not one of the four the agentic canvas page shows.
 
 ## Agentic cursors
 
