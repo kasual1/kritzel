@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { KritzelEditor, KritzelWorkspace, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
-import { createRecorderObjects, playAgenticCursorsScene } from './favorite-track-scene';
+import { createRecorderObjects, playAgenticCanvasCursorsScene } from './favorite-track-scene';
 
-const WORKSPACE_ID = 'agentic-cursors';
+const WORKSPACE_ID = 'agentic-canvas-cursors';
 
 const hostStyle: CSSProperties = {
   display: 'block',
@@ -14,7 +14,7 @@ const hostStyle: CSSProperties = {
  * for track 2 to be a favorite, and Studio's cursor clicks its star. The scene plays once when the editor is ready;
  * reload the page to play it again.
  */
-export function AgenticCursorsInfographic() {
+export function AgenticCanvasCursorsInfographic() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [isWorking, setIsWorking] = useState(false);
@@ -33,7 +33,7 @@ export function AgenticCursorsInfographic() {
     const abort = new AbortController();
     abortRef.current = abort;
     const trackIds = objects.slice(1).map(object => object.id);
-    playAgenticCursorsScene(editor, trackIds, setIsWorking, abort.signal).catch(error => {
+    playAgenticCanvasCursorsScene(editor, trackIds, setIsWorking, abort.signal).catch(error => {
       if (!abort.signal.aborted) {
         console.error(error);
       }
@@ -44,7 +44,7 @@ export function AgenticCursorsInfographic() {
     <div style={hostStyle}>
       <KritzelEditor
         ref={editorRef}
-        editorId="infographic-agentic-cursors"
+        editorId="infographic-agentic-canvas-cursors"
         workspaces={workspaces}
         activeWorkspaceId={WORKSPACE_ID}
         isChatBoxVisible

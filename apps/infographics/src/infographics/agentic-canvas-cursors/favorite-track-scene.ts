@@ -94,7 +94,7 @@ export function createRecorderObjects(): KritzelIframeObject[] {
  * Plays the scene once. `trackIds` are the ids of the track objects, in order. `setWorking` drives the chat box's
  * loading ring, which runs from the sent prompt until Studio has clicked the star.
  */
-export async function playAgenticCursorsScene(
+export async function playAgenticCanvasCursorsScene(
   editor: HTMLKritzelEditorElement,
   trackIds: string[],
   setWorking: (isWorking: boolean) => void,
