@@ -17,6 +17,24 @@
     "duration": 4.23,
     "sha256": "fa39b954c5924cccabde7e0e2931c89e63477c8989230bbe5d4b14051e30db42"
   },
+  "/videos/2026_11_04_Agentic_Canvas_Cursors.mp4": {
+    "poster": "/videos/2026_11_04_Agentic_Canvas_Cursors.jpg",
+    "thumbnail": "/videos/2026_11_04_Agentic_Canvas_Cursors.thumbnail.jpg",
+    "thumbnailTime": 4,
+    "width": 1280,
+    "height": 720,
+    "duration": 7.4,
+    "sha256": "421e0ababd37ed8e4e5ed49c341df951f0e4b0dcd6ff674b7f911ca886a6eada"
+  },
+  "/videos/2026_11_04_Agentic_Canvas_Generative_UI.mp4": {
+    "poster": "/videos/2026_11_04_Agentic_Canvas_Generative_UI.jpg",
+    "thumbnail": "/videos/2026_11_04_Agentic_Canvas_Generative_UI.thumbnail.jpg",
+    "thumbnailTime": 2.98,
+    "width": 1280,
+    "height": 720,
+    "duration": 4.23,
+    "sha256": "4a0c0219b6c268fb5fe89d06802acd9a8100cee92a1f62455566dd5bc5427223"
+  },
   "/videos/2026_11_04_Agentic_Canvas.mp4": {
     "poster": "/videos/2026_11_04_Agentic_Canvas.jpg",
     "thumbnail": "/videos/2026_11_04_Agentic_Canvas.thumbnail.jpg",
