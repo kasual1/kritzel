@@ -166,6 +166,10 @@ describe('KritzelEngine', () => {
       onDetached: jest.fn(),
       cleanup: jest.fn(),
     },
+    agenticActionManager: {
+      perform: jest.fn().mockResolvedValue({ completed: true, objectIds: [] }),
+      cleanup: jest.fn(),
+    },
     themeManager: {
       setTargetElement: jest.fn(),
       setTheme: jest.fn(),
@@ -708,6 +712,16 @@ describe('KritzelEngine', () => {
       titlebarLayer.classList.add('object-titlebar-layer');
       expect(filter(titlebarLayer)).toBe(false);
       expect(filter(document.createElement('div'))).toBe(true);
+    });
+
+    it('excludes agentic cursors and their selections from screenshots', async () => {
+      const { toPng } = jest.requireMock('html-to-image');
+      (toPng as jest.Mock).mockClear();
+
+      await engine.getScreenshot('png');
+
+      const { filter } = (toPng as jest.Mock).mock.calls[0][1];
+      expect(filter({ tagName: 'KRITZEL-AGENTIC-CURSORS' })).toBe(false);
     });
 
     it('lifts the rotation handle above the titlebar of a group whose nested child is selected', () => {
@@ -2122,6 +2136,18 @@ describe('KritzelEngine', () => {
       expect((engine as any).objectsUpdated.emit).toHaveBeenCalledWith({ objects });
     });
 
+    it('includes the source of agentic changes in object events', () => {
+      const source = { type: 'agentic-cursor' as const, cursorId: 'agent', actionType: 'moveObject' as const };
+      const objects: any[] = [{ id: 'a' }];
+      engine.emitObjectsAdded(objects, source);
+      engine.emitObjectsRemoved(objects, source);
+      engine.emitObjectsUpdated([{ object: objects[0], changedProperties: [] }], source);
+
+      expect((engine as any).objectsAdded.emit).toHaveBeenCalledWith({ objects, source });
+      expect((engine as any).objectsRemoved.emit).toHaveBeenCalledWith({ objects, source });
+      expect((engine as any).objectsUpdated.emit).toHaveBeenCalledWith({ objects: [{ object: objects[0], changedProperties: [] }], source });
+    });
+
     it('emitAwarenessChange emits the awareness state map', () => {
       const states = new Map<number, Record<string, any>>([[1, { user: { id: 'u1' } }]]);
       engine.emitAwarenessChange(states);
@@ -2920,6 +2946,25 @@ describe('KritzelEngine', () => {
       await engine.addObjects([group, plain]);
 
       expect(Object.fromEntries(stored)).toEqual({ existing: 4, a: 5, b: 6, group: 6, plain: 7 });
+    });
+  });
+
+  describe('agentic actions', () => {
+    it('delegates performAgenticAction to the action manager', async () => {
+      const signal = new AbortController().signal;
+      const action = { type: 'moveObject' as const, objectId: 'a', to: { x: 1, y: 2 } };
+
+      await expect(engine.performAgenticAction('agent', action, { instant: true, signal })).resolves.toEqual({ completed: true, objectIds: [] });
+      expect(core.agenticActionManager.perform).toHaveBeenCalledWith('agent', action, { instant: true, signal });
+    });
+
+    it('stops agentic actions before tearing down objects on disconnect', () => {
+      core.store.objects.destroy = core.store.objects.destroy ?? jest.fn();
+      engine.disconnectedCallback();
+
+      const cleanupOrder = (core.agenticActionManager.cleanup as jest.Mock).mock.invocationCallOrder[0];
+      const destroyOrder = (core.store.objects.destroy as jest.Mock).mock.invocationCallOrder[0];
+      expect(cleanupOrder).toBeLessThan(destroyOrder);
     });
   });
 });

@@ -9,11 +9,12 @@ interface RenderedPosition {
 }
 
 /**
- * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
+ * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
+ * the objects each cursor has selected. Both are local only.
  *
- * Structural changes (added/removed cursors, name, color, status) re-render through
- * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
- * the cursor element, so animations and object tracking don't lag a frame behind.
+ * Structural changes (added/removed cursors, name, color, status, selections) re-render through
+ * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
+ * the elements, so animations and object tracking don't lag a frame behind.
  */
 @Component({
   tag: 'kritzel-agentic-cursors',
@@ -29,6 +30,9 @@ export class KritzelAgenticCursors {
 
   private readonly cursorElements = new Map<string, HTMLElement>();
   private readonly renderedPositions = new Map<string, RenderedPosition>();
+  private readonly selectionElements = new Map<string, SVGPolygonElement>();
+  private readonly renderedSelectionPoints = new Map<string, string>();
+  private renderedSelectionKeys = '';
   private removeChangeListener: (() => void) | undefined;
   private removeFrameListener: (() => void) | undefined;
 
@@ -52,8 +56,26 @@ export class KritzelAgenticCursors {
   private handleFrame() {
     const state = this.core.store.state;
     let needsRender = false;
+    const cursorsList = this.core.agenticCursorManager.getAll();
 
-    for (const cursor of this.core.agenticCursorManager.getAll()) {
+    // Selection outlines follow their objects (drags, remote changes, pan and zoom).
+    const selections = this.collectSelections(cursorsList);
+    if (selections.map(selection => selection.key).join('|') !== this.renderedSelectionKeys) {
+      needsRender = true;
+    } else {
+      for (const selection of selections) {
+        if (this.renderedSelectionPoints.get(selection.key) === selection.points) continue;
+        const element = this.selectionElements.get(selection.key);
+        if (element) {
+          element.setAttribute('points', selection.points);
+          this.renderedSelectionPoints.set(selection.key, selection.points);
+        } else {
+          needsRender = true;
+        }
+      }
+    }
+
+    for (const cursor of cursorsList) {
       if (!cursor.visible) continue;
 
       const screen = KritzelViewportOverlayHelper.worldToScreen(state, cursor.position.x, cursor.position.y);
@@ -86,8 +108,28 @@ export class KritzelAgenticCursors {
       if (!renderedIds.has(id)) this.renderedPositions.delete(id);
     }
 
+    const selections = this.collectSelections(cursors);
+    this.renderedSelectionKeys = selections.map(selection => selection.key).join('|');
+    this.renderedSelectionPoints.clear();
+    selections.forEach(selection => this.renderedSelectionPoints.set(selection.key, selection.points));
+
     return (
       <Host>
+        {selections.length > 0 && (
+          <svg class="agentic-selections" aria-hidden="true">
+            {selections.map(selection => (
+              <polygon
+                key={`agentic-selection-${selection.key}`}
+                class="agentic-selection"
+                data-cursor-id={selection.cursorId}
+                data-object-id={selection.objectId}
+                points={selection.points}
+                style={{ '--agentic-cursor-color': selection.color }}
+                ref={el => this.setSelectionElement(selection.key, el as SVGPolygonElement | undefined)}
+              />
+            ))}
+          </svg>
+        )}
         {cursors.map(cursor => {
           const screen = KritzelViewportOverlayHelper.worldToScreen(state, cursor.position.x, cursor.position.y);
           const inViewport = KritzelViewportOverlayHelper.isInViewport(state, screen.x, screen.y);
@@ -109,11 +151,13 @@ export class KritzelAgenticCursors {
     return (
       <div
         key={`agentic-cursor-${cursor.id}`}
-        class={{ 'agentic-cursor': true, 'is-moving': cursor.isMoving, 'is-attached': !!cursor.attachedTo }}
+        class={{ 'agentic-cursor': true, 'is-moving': cursor.isMoving, 'is-attached': !!cursor.attachedTo, 'is-pressed': cursor.isPressed }}
         data-cursor-id={cursor.id}
         style={{ transform: `translate(${screenX}px, ${screenY}px)`, '--agentic-cursor-color': cursor.color }}
         ref={el => this.setCursorElement(cursor.id, el)}
       >
+        {/* Re-keyed on every press so the ripple animation restarts. */}
+        {cursor.pressCount > 0 && <span key={`agentic-cursor-ripple-${cursor.pressCount}`} class="agentic-cursor-ripple"></span>}
         <CursorArrow color={cursor.color} />
         {(cursor.name || cursor.status) && (
           <div class="agentic-cursor-labels">
@@ -153,4 +197,45 @@ export class KritzelAgenticCursors {
       this.cursorElements.delete(id);
     }
   }
+
+  private setSelectionElement(key: string, element: SVGPolygonElement | undefined) {
+    if (element) {
+      this.selectionElements.set(key, element);
+    } else {
+      this.selectionElements.delete(key);
+    }
+  }
+
+  /** Outlines of the objects visible cursors have selected, in screen coordinates. */
+  private collectSelections(cursors: KritzelAgenticCursor[]): RenderedSelection[] {
+    const state = this.core.store.state;
+    const objects = this.core.store.objects;
+    const selections: RenderedSelection[] = [];
+    if (!objects) return selections;
+
+    for (const cursor of cursors) {
+      if (!cursor.visible || cursor.selectedObjectIds.length === 0) continue;
+      for (const objectId of cursor.selectedObjectIds) {
+        const object = objects.findById(objectId);
+        if (!object) continue;
+        const polygon = object.rotatedPolygon;
+        const points = [polygon.topLeft, polygon.topRight, polygon.bottomRight, polygon.bottomLeft]
+          .map(corner => {
+            const screen = KritzelViewportOverlayHelper.worldToScreen(state, corner.x, corner.y);
+            return `${Math.round(screen.x * 100) / 100},${Math.round(screen.y * 100) / 100}`;
+          })
+          .join(' ');
+        selections.push({ key: `${cursor.id}:${objectId}`, cursorId: cursor.id, objectId, color: cursor.color, points });
+      }
+    }
+    return selections;
+  }
+}
+
+interface RenderedSelection {
+  key: string;
+  cursorId: string;
+  objectId: string;
+  color: string;
+  points: string;
 }

@@ -5,18 +5,19 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ContextMenuItem, IKritzelUser, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+import { ContextMenuItem, IKritzelUser, KritzelAgenticAction, KritzelAgenticActionOptions, KritzelAgenticActionResult, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
 import { Element, Event } from "@stencil/core";
 import { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
-export { ContextMenuItem, IKritzelUser, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+export { ContextMenuItem, IKritzelUser, KritzelAgenticAction, KritzelAgenticActionOptions, KritzelAgenticActionResult, KritzelAgenticCursor, KritzelAgenticCursorDetachedEvent, KritzelAgenticCursorMoveOptions, KritzelAgenticCursorMoveResult, KritzelAgenticCursorOptions, KritzelAgenticCursorPatch, KritzelAgenticCursorTarget, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
 export { Element, Event } from "@stencil/core";
 export { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export namespace Components {
     /**
-     * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
-     * Structural changes (added/removed cursors, name, color, status) re-render through
-     * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
-     * the cursor element, so animations and object tracking don't lag a frame behind.
+     * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
+     * the objects each cursor has selected. Both are local only.
+     * Structural changes (added/removed cursors, name, color, status, selections) re-render through
+     * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
+     * the elements, so animations and object tracking don't lag a frame behind.
      */
     interface KritzelAgenticCursors {
         "core": KritzelCore;
@@ -424,6 +425,14 @@ export namespace Components {
          */
         "paste": (x: number, y: number) => Promise<void>;
         /**
+          * Lets an agentic cursor perform an action: it flies to the target, presses and animates the change. Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`); the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel. Objects the user or a collaborator has selected are never changed.
+          * @param cursorId - The cursor ID.
+          * @param action - The action, e.g. `{ type: 'moveObject', objectId, to: { x, y } }`.
+          * @param options - Speed, easing, `instant` and an `AbortSignal`.
+          * @returns Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped. Rejects for an unknown cursor or an invalid action.
+         */
+        "performAgenticAction": (cursorId: string, action: KritzelAgenticAction, options?: KritzelAgenticActionOptions) => Promise<KritzelAgenticActionResult>;
+        /**
           * Redoes the last undone action.
          */
         "redo": () => Promise<void>;
@@ -700,10 +709,11 @@ export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
 }
 declare global {
     /**
-     * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
-     * Structural changes (added/removed cursors, name, color, status) re-render through
-     * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
-     * the cursor element, so animations and object tracking don't lag a frame behind.
+     * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
+     * the objects each cursor has selected. Both are local only.
+     * Structural changes (added/removed cursors, name, color, status, selections) re-render through
+     * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
+     * the elements, so animations and object tracking don't lag a frame behind.
      */
     interface HTMLKritzelAgenticCursorsElement extends Components.KritzelAgenticCursors, HTMLStencilElement {
     }
@@ -802,10 +812,11 @@ declare global {
 }
 declare namespace LocalJSX {
     /**
-     * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
-     * Structural changes (added/removed cursors, name, color, status) re-render through
-     * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
-     * the cursor element, so animations and object tracking don't lag a frame behind.
+     * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
+     * the objects each cursor has selected. Both are local only.
+     * Structural changes (added/removed cursors, name, color, status, selections) re-render through
+     * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
+     * the elements, so animations and object tracking don't lag a frame behind.
      */
     interface KritzelAgenticCursors {
         "core": KritzelCore;
@@ -948,7 +959,7 @@ declare namespace LocalJSX {
          */
         "onObjectTitlebarMenuStateChange"?: (event: KritzelEngineCustomEvent<KritzelObjectTitlebarMenuState>) => void;
         /**
-          * Emitted when one or more objects are added to the canvas.
+          * Emitted when one or more objects are added to the canvas. `source` is set when an agentic cursor made the change.
          */
         "onObjectsAdded"?: (event: KritzelEngineCustomEvent<ObjectsAddedEvent>) => void;
         /**
@@ -960,7 +971,7 @@ declare namespace LocalJSX {
          */
         "onObjectsInViewportChange"?: (event: KritzelEngineCustomEvent<ObjectsInViewportChangeEvent>) => void;
         /**
-          * Emitted when one or more objects are removed from the canvas.
+          * Emitted when one or more objects are removed from the canvas. `source` is set when an agentic cursor made the change.
          */
         "onObjectsRemoved"?: (event: KritzelEngineCustomEvent<ObjectsRemovedEvent>) => void;
         /**
@@ -968,7 +979,7 @@ declare namespace LocalJSX {
          */
         "onObjectsSelectionChange"?: (event: KritzelEngineCustomEvent<KritzelBaseObject[]>) => void;
         /**
-          * Emitted when one or more objects are updated on the canvas.
+          * Emitted when one or more objects are updated on the canvas. `source` is set when an agentic cursor made the change.
          */
         "onObjectsUpdated"?: (event: KritzelEngineCustomEvent<ObjectsUpdatedEvent>) => void;
         /**
@@ -1144,10 +1155,11 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             /**
-             * Renders agentic cursors managed by `KritzelAgenticCursorManager`.
-             * Structural changes (added/removed cursors, name, color, status) re-render through
-             * Stencil. Per-frame movement of on-screen cursors writes the transform directly to
-             * the cursor element, so animations and object tracking don't lag a frame behind.
+             * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
+             * the objects each cursor has selected. Both are local only.
+             * Structural changes (added/removed cursors, name, color, status, selections) re-render through
+             * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
+             * the elements, so animations and object tracking don't lag a frame behind.
              */
             "kritzel-agentic-cursors": LocalJSX.IntrinsicElements["kritzel-agentic-cursors"] & JSXBase.HTMLAttributes<HTMLKritzelAgenticCursorsElement>;
             "kritzel-awareness-cursors": LocalJSX.IntrinsicElements["kritzel-awareness-cursors"] & JSXBase.HTMLAttributes<HTMLKritzelAwarenessCursorsElement>;

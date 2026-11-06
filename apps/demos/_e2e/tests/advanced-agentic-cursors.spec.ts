@@ -10,9 +10,12 @@ type AgenticCursorSnapshot = {
 type EditorElement = HTMLElement & {
   getAgenticCursors(): Promise<AgenticCursorSnapshot[]>;
   getAgenticCursor(id: string): Promise<AgenticCursorSnapshot | null>;
-  findObjects(predicate: (obj: { __class__: string }) => boolean): Promise<Array<{ id: string; boundingBox: { x: number; y: number; width: number; height: number } }>>;
+  findObjects(predicate: (obj: { __class__: string }) => boolean): Promise<Array<{ id: string; translateX: number; translateY: number; boundingBox: { x: number; y: number; width: number; height: number } }>>;
   moveAgenticCursor(id: string, target: unknown, options?: unknown): Promise<{ completed: boolean }>;
   removeObject(object: unknown): Promise<unknown>;
+  updateObject(object: unknown, properties: Record<string, unknown>): Promise<unknown>;
+  undo(): Promise<void>;
+  performAgenticAction(cursorId: string, action: unknown, options?: unknown): Promise<{ completed: boolean; reason?: string; objectIds?: string[] }>;
 };
 
 test.describe('Agentic Cursors', () => {
@@ -57,5 +60,87 @@ test.describe('Agentic Cursors', () => {
     expect(result.detail.reason).toBe('object-removed');
     expect(result.afterRemoval?.attachedTo).toBeNull();
     expect(result.afterRemoval?.position).toEqual(result.attached?.position);
+  });
+
+  test('moves an object through performAgenticAction with its own undo history', async ({ editorPage }) => {
+    const moved = await editorPage.page.evaluate(async () => {
+      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const [rectangle, ellipse] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      // Agent changes keep object instances, so read the starting position before the action.
+      const before = rectangle.translateX;
+      const sources: unknown[] = [];
+      editor.addEventListener('objectsUpdated', event => sources.push((event as CustomEvent).detail.source), { once: true });
+
+      const result = await editor.performAgenticAction(
+        'writer',
+        { type: 'moveObject', objectId: rectangle.id, to: { x: rectangle.boundingBox.x + 200, y: rectangle.boundingBox.y }, align: 'top-left' },
+        { instant: true },
+      );
+      const [after] = await editor.findObjects(obj => (obj as unknown as { id: string }).id === rectangle.id);
+      return { result, rectangleId: rectangle.id, ellipseId: ellipse.id, before, after: after.translateX, source: sources[0] };
+    });
+
+    expect(moved.result).toEqual({ completed: true, objectIds: [moved.rectangleId] });
+    expect(moved.after).toBeCloseTo(moved.before + 200, 5);
+    expect(moved.source).toEqual({ type: 'agentic-cursor', cursorId: 'writer', actionType: 'moveObject' });
+
+    // A user edit to another object, then the user's undo: only the user's edit is reverted.
+    await editorPage.waitForUndoCapture();
+    const ellipseBefore = await editorPage.page.evaluate(async (ellipseId) => {
+      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const [ellipse] = await editor.findObjects(obj => (obj as unknown as { id: string }).id === ellipseId);
+      const x = ellipse.translateX;
+      await editor.updateObject(ellipse, { translateX: x + 50 });
+      return x;
+    }, moved.ellipseId);
+    await editorPage.waitForUndoCapture();
+
+    const afterUserUndo = await editorPage.page.evaluate(async ({ rectangleId, ellipseId }) => {
+      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      await editor.undo();
+      const [rectangle] = await editor.findObjects(obj => (obj as unknown as { id: string }).id === rectangleId);
+      const [ellipse] = await editor.findObjects(obj => (obj as unknown as { id: string }).id === ellipseId);
+      return { rectangle: rectangle.translateX, ellipse: ellipse.translateX };
+    }, { rectangleId: moved.rectangleId, ellipseId: moved.ellipseId });
+    expect(afterUserUndo.ellipse).toBeCloseTo(ellipseBefore, 5);
+    expect(afterUserUndo.rectangle).toBeCloseTo(moved.after, 5);
+
+    // The agent's own undo reverts the move.
+    const afterAgentUndo = await editorPage.page.evaluate(async (rectangleId) => {
+      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const result = await editor.performAgenticAction('writer', { type: 'undo' }, { instant: true });
+      const [rectangle] = await editor.findObjects(obj => (obj as unknown as { id: string }).id === rectangleId);
+      return { result, rectangle: rectangle.translateX };
+    }, moved.rectangleId);
+    expect(afterAgentUndo.result.completed).toBe(true);
+    expect(afterAgentUndo.rectangle).toBeCloseTo(moved.before, 5);
+  });
+  test('animates an agentic move and outlines the target only while running', async ({ editorPage }) => {
+    const host = editorPage.page.locator('kritzel-agentic-cursors');
+    await expect(host.locator('.agentic-selection')).toHaveCount(0);
+
+    const ids = await editorPage.page.evaluate(async () => {
+      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const [rectangle] = await editor.findObjects(obj => obj.__class__ === 'KritzelShape');
+      const start = rectangle.translateX;
+      (window as unknown as { agenticMove: Promise<unknown> }).agenticMove = editor.performAgenticAction(
+        'planner',
+        { type: 'moveObject', objectId: rectangle.id, to: { x: rectangle.boundingBox.x + 300, y: rectangle.boundingBox.y }, align: 'top-left' },
+        { speed: 600 },
+      );
+      return { id: rectangle.id, start };
+    });
+
+    await expect(host.locator(`.agentic-selection[data-cursor-id="planner"][data-object-id="${ids.id}"]`)).toHaveCount(1);
+    const result = await editorPage.page.evaluate(async () => (window as unknown as { agenticMove: Promise<unknown> }).agenticMove);
+    expect(result).toEqual({ completed: true, objectIds: [ids.id] });
+    await expect(host.locator('.agentic-selection')).toHaveCount(0);
+
+    const end = await editorPage.page.evaluate(async (id) => {
+      const editor = document.querySelector('kritzel-editor') as EditorElement;
+      const [rectangle] = await editor.findObjects(obj => (obj as unknown as { id: string }).id === id);
+      return rectangle.translateX;
+    }, ids.id);
+    expect(end).toBeCloseTo(ids.start + 300, 5);
   });
 });

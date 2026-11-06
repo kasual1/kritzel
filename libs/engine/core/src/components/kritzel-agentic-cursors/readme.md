@@ -7,11 +7,12 @@
 
 ## Overview
 
-Renders agentic cursors managed by `KritzelAgenticCursorManager`.
+Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
+the objects each cursor has selected. Both are local only.
 
-Structural changes (added/removed cursors, name, color, status) re-render through
-Stencil. Per-frame movement of on-screen cursors writes the transform directly to
-the cursor element, so animations and object tracking don't lag a frame behind.
+Structural changes (added/removed cursors, name, color, status, selections) re-render through
+Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
+the elements, so animations and object tracking don't lag a frame behind.
 
 ## Properties
 

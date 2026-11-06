@@ -106,6 +106,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | panTo | panTo(x: number, y: number) => Promise<void> | Pans the viewport to center on the given world coordinates without changing the scale. |
 | panToObject | panToObject(object: KritzelBaseObject) => Promise<void> | Pans the viewport to center on the given object without changing the zoom level. Unlike \`centerObjectInViewport\`, this moves the camera — not the object. |
 | paste | paste(x: number, y: number) => Promise<void> | Pastes previously copied objects at the specified world coordinates. |
+| performAgenticAction | performAgenticAction(cursorId: string, action: KritzelAgenticAction, options?: KritzelAgenticActionOptions) => Promise<KritzelAgenticActionResult> | Lets an agentic cursor perform an action: it flies to the target, presses and animates the change. Changes are saved and synced like user edits but go to the cursor's own history (\`{ type: 'undo' }\`); the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel. Objects the user or a collaborator has selected are never changed. |
 | redo | redo() => Promise<void> | Redoes the last undone action. |
 | registerLocales | registerLocales(locales: KritzelLocale[]) => Promise<void> | Registers additional locale definitions (with optional partial term overrides). |
 | registerTool | registerTool(toolName: string, toolClass: any, toolConfig?: KritzelTextToolConfig \| KritzelBrushToolConfig \| KritzelLineToolConfig \| KritzelShapeToolConfig) => Promise<KritzelBaseTool \| null> | Registers a new drawing tool with the engine. |
@@ -149,12 +150,12 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | isLoadingChange | boolean | Emitted while the selected workspace's objects are being initialized and synchronized. |
 | longpress | PointerEvent | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile. |
 | notificationsChange | KritzelNotification | Emitted when notifications change. |
-| objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. |
+| objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. \`source\` is set when an agentic cursor made the change. |
 | objectsChange | KritzelBaseObject<HTMLElement \| SVGElement>[] | Emitted when objects on the canvas are added, removed, or modified. |
 | objectsInViewportChange | KritzelBaseObject<Element>[] | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom). |
-| objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. |
+| objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. \`source\` is set when an agentic cursor made the change. |
 | objectsSelectionChange | KritzelBaseObject<HTMLElement \| SVGElement>[] | Emitted when the set of selected objects changes. |
-| objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. |
+| objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. \`source\` is set when an agentic cursor made the change. |
 | objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button or a menu item in an object titlebar is clicked. |
 | objectTitlebarMenuStateChange | KritzelObjectTitlebarMenuState | Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render \`items\` anchored to \`anchor\` and report selections through \`selectObjectTitlebarMenuItem\`. |
 | undoStateChange | KritzelUndoState | Emitted when the undo/redo state changes, providing current undo availability. |
@@ -284,6 +285,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | panTo | panTo(x: number, y: number) => Promise<void> |  |
 | panToObject | panToObject(object: KritzelBaseObject) => Promise<void> |  |
 | paste | paste(x: number, y: number) => Promise<void> |  |
+| performAgenticAction | performAgenticAction(cursorId: string, action: KritzelAgenticAction, options?: KritzelAgenticActionOptions) => Promise<KritzelAgenticActionResult> | Lets an agentic cursor perform an action: it flies to the target, presses and animates the change. Changes are saved and synced like user edits but go to the cursor's own history (\`{ type: 'undo' }\`); the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel. Objects the user or a collaborator has selected are never changed. |
 | redo | redo() => Promise<void> |  |
 | registerFonts | registerFonts(fonts: KritzelFontMap) => Promise<void> | Registers custom fonts for the editor runtime. |
 | registerLocales | registerLocales(locales: KritzelLocale[]) => Promise<void> | Registers additional locale definitions (with optional partial term overrides). |
@@ -329,11 +331,11 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | localeChange | "de" \| "en" \| "fr" \| string & {} |  |
 | login | LoginEvent |  |
 | logout | void |  |
-| objectsAdded | ObjectsAddedEvent |  |
+| objectsAdded | ObjectsAddedEvent | Emitted when objects are added. \`source\` is set when an agentic cursor made the change. |
 | objectsChange | KritzelBaseObject<HTMLElement \| SVGElement>[] |  |
-| objectsRemoved | ObjectsRemovedEvent |  |
+| objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed. \`source\` is set when an agentic cursor made the change. |
 | objectsSelectionChange | KritzelBaseObject<HTMLElement \| SVGElement>[] |  |
-| objectsUpdated | ObjectsUpdatedEvent |  |
+| objectsUpdated | ObjectsUpdatedEvent | Emitted when objects are updated. \`source\` is set when an agentic cursor made the change. |
 | objectTitlebarAction | KritzelObjectTitlebarActionEvent | Emitted when a button or a menu item in an object titlebar is clicked. |
 | themeChange | "dark" \| "light" \| string & {} |  |
 | undoStateChange | KritzelUndoState |  |

@@ -16,6 +16,9 @@ import {
 // type. Stencil removes this import from the output; classes come from @kritzel/core.
 import "@kritzel/engine";
 import {
+  KritzelAgenticAction,
+  KritzelAgenticActionOptions,
+  KritzelAgenticActionResult,
   KritzelAgenticCursor,
   KritzelAgenticCursorDetachedEvent,
   KritzelAgenticCursorMoveOptions,
@@ -493,8 +496,11 @@ export class KritzelEditor {
   @Event() isReady!: EventEmitter<EditorIsReadyEvent>;
   @Event() activeWorkspaceChange!: EventEmitter<ActiveWorkspaceChangeEvent>;
   @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
+  /** Emitted when objects are added. `source` is set when an agentic cursor made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
+  /** Emitted when objects are removed. `source` is set when an agentic cursor made the change. */
   @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
+  /** Emitted when objects are updated. `source` is set when an agentic cursor made the change. */
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
   @Event() objectsSelectionChange!: EventEmitter<KritzelBaseObject[]>;
   @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
@@ -1129,6 +1135,22 @@ export class KritzelEditor {
   @Method()
   async getAgenticCursors(): Promise<KritzelAgenticCursor[]> {
     return this.engineRef.getAgenticCursors();
+  }
+
+  /**
+   * Lets an agentic cursor perform an action: it flies to the target, presses and animates the change.
+   * Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`);
+   * the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel.
+   * Objects the user or a collaborator has selected are never changed.
+   * @param cursorId - The cursor ID.
+   * @param action - The action, e.g. `{ type: 'moveObject', objectId, to: { x, y } }`.
+   * @param options - Speed, easing, `instant` and an `AbortSignal`.
+   * @returns Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped.
+   *   Rejects for an unknown cursor or an invalid action.
+   */
+  @Method()
+  async performAgenticAction(cursorId: string, action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.engineRef.performAgenticAction(cursorId, action, options);
   }
 
   @Method()

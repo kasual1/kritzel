@@ -64,11 +64,11 @@
 | `localeChange`           |                                                                                                               | `CustomEvent<"de" \| "en" \| "fr" \| string & {}>`            |
 | `login`                  |                                                                                                               | `CustomEvent<LoginEvent>`                                     |
 | `logout`                 |                                                                                                               | `CustomEvent<void>`                                           |
-| `objectsAdded`           |                                                                                                               | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsAdded`           | Emitted when objects are added. `source` is set when an agentic cursor made the change.                       | `CustomEvent<ObjectsAddedEvent>`                              |
 | `objectsChange`          |                                                                                                               | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsRemoved`         |                                                                                                               | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsRemoved`         | Emitted when objects are removed. `source` is set when an agentic cursor made the change.                     | `CustomEvent<ObjectsRemovedEvent>`                            |
 | `objectsSelectionChange` |                                                                                                               | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsUpdated`         |                                                                                                               | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `objectsUpdated`         | Emitted when objects are updated. `source` is set when an agentic cursor made the change.                     | `CustomEvent<ObjectsUpdatedEvent>`                            |
 | `objectTitlebarAction`   | Emitted when a button or a menu item in an object titlebar is clicked.                                        | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
 | `themeChange`            |                                                                                                               | `CustomEvent<"dark" \| "light" \| string & {}>`               |
 | `undoStateChange`        |                                                                                                               | `CustomEvent<KritzelUndoState>`                               |
@@ -960,6 +960,28 @@ Type: `Promise<void>`
 Type: `Promise<void>`
 
 
+
+### `performAgenticAction(cursorId: string, action: KritzelAgenticAction, options?: KritzelAgenticActionOptions) => Promise<KritzelAgenticActionResult>`
+
+Lets an agentic cursor perform an action: it flies to the target, presses and animates the change.
+Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`);
+the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel.
+Objects the user or a collaborator has selected are never changed.
+
+#### Parameters
+
+| Name       | Type                                                                                                                                                                                                                           | Description                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `cursorId` | `string`                                                                                                                                                                                                                       | - The cursor ID.                                                     |
+| `action`   | `KritzelAgenticClickAction \| KritzelAgenticSelectAction \| KritzelAgenticClearSelectionAction \| KritzelAgenticMoveObjectAction \| KritzelAgenticDeleteObjectsAction \| KritzelAgenticUndoAction \| KritzelAgenticRedoAction` | - The action, e.g. `{ type: 'moveObject', objectId, to: { x, y } }`. |
+| `options`  | `KritzelAgenticActionOptions`                                                                                                                                                                                                  | - Speed, easing, `instant` and an `AbortSignal`.                     |
+
+#### Returns
+
+Type: `Promise<KritzelAgenticActionResult>`
+
+Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped.
+Rejects for an unknown cursor or an invalid action.
 
 ### `redo() => Promise<void>`
 

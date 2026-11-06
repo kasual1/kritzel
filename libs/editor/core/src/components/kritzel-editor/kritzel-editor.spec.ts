@@ -101,9 +101,18 @@ describe('KritzelEditor', () => {
       getResolvedTerms: jest.fn().mockResolvedValue({}),
       getAvailableLocaleOptions: jest.fn().mockResolvedValue([{ code: 'en', label: 'English' }]),
       saveSettings: jest.fn().mockResolvedValue(undefined),
+      performAgenticAction: jest.fn().mockResolvedValue({ completed: true, objectIds: ['a'] }),
     };
-    
+
     component.engineRef = mockEngine as any;
+  });
+
+  describe('Agentic actions', () => {
+    it('forwards performAgenticAction to the engine', async () => {
+      const action = { type: 'select' as const, objectIds: ['a'] };
+      await expect(component.performAgenticAction('agent', action, { instant: true })).resolves.toEqual({ completed: true, objectIds: ['a'] });
+      expect(mockEngine.performAgenticAction).toHaveBeenCalledWith('agent', action, { instant: true });
+    });
   });
 
   describe('Component Initialization', () => {

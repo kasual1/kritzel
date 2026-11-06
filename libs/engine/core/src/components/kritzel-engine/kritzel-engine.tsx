@@ -61,6 +61,10 @@ import {
   KritzelAgenticCursorOptions,
   KritzelAgenticCursorPatch,
   KritzelAgenticCursorTarget,
+  KritzelAgenticAction,
+  KritzelAgenticActionOptions,
+  KritzelAgenticActionResult,
+  KritzelObjectChangeSource,
   ObjectHelper,
   KritzelWheelHelper,
   ObjectsAddedEvent,
@@ -398,13 +402,13 @@ export class KritzelEngine implements KritzelEngineHost {
   /** Emitted when objects on the canvas are added, removed, or modified. */
   @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
 
-  /** Emitted when one or more objects are added to the canvas. */
+  /** Emitted when one or more objects are added to the canvas. `source` is set when an agentic cursor made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
 
-  /** Emitted when one or more objects are removed from the canvas. */
+  /** Emitted when one or more objects are removed from the canvas. `source` is set when an agentic cursor made the change. */
   @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
 
-  /** Emitted when one or more objects are updated on the canvas. */
+  /** Emitted when one or more objects are updated on the canvas. `source` is set when an agentic cursor made the change. */
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
 
   /** Emitted when the set of selected objects changes. */
@@ -1716,6 +1720,22 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /**
+   * Lets an agentic cursor perform an action: it flies to the target, presses and animates the change.
+   * Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`);
+   * the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel.
+   * Objects the user or a collaborator has selected are never changed.
+   * @param cursorId - The cursor ID.
+   * @param action - The action, e.g. `{ type: 'moveObject', objectId, to: { x, y } }`.
+   * @param options - Speed, easing, `instant` and an `AbortSignal`.
+   * @returns Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped.
+   *   Rejects for an unknown cursor or an invalid action.
+   */
+  @Method()
+  async performAgenticAction(cursorId: string, action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.core.agenticActionManager.perform(cursorId, action, options);
+  }
+
+  /**
    * Captures a screenshot of the current viewport as a data URL.
    * @param format - The image format: `'png'` (default) or `'svg'`.
    * @returns A data URL string of the captured image.
@@ -1743,6 +1763,10 @@ export class KritzelEngine implements KritzelEngineHost {
           return false;
         }
         if (node.tagName === 'KRITZEL-AWARENESS-CURSORS') {
+          return false;
+        }
+        // Agentic cursors and their selections are local UI, not content
+        if (node.tagName === 'KRITZEL-AGENTIC-CURSORS') {
           return false;
         }
         if (node.classList && node.classList.contains('debug-panel')) {
@@ -2791,6 +2815,8 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   disconnectedCallback() {
+    // Stop agentic actions first, while their objects and workspace still exist.
+    this.core.agenticActionManager.cleanup();
     this.throttledPointerMoveMulti.cancel();
     window.visualViewport?.removeEventListener('resize', this.handleVisualViewportResize);
     this._revealedImageKeys.clear();
@@ -3253,16 +3279,16 @@ export class KritzelEngine implements KritzelEngineHost {
     }
   }
 
-  emitObjectsAdded(objects: KritzelBaseObject<any>[]) {
-    this.objectsAdded.emit({ objects });
+  emitObjectsAdded(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource) {
+    this.objectsAdded.emit(source ? { objects, source } : { objects });
   }
 
-  emitObjectsRemoved(objects: KritzelBaseObject<any>[]) {
-    this.objectsRemoved.emit({ objects });
+  emitObjectsRemoved(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource) {
+    this.objectsRemoved.emit(source ? { objects, source } : { objects });
   }
 
-  emitObjectsUpdated(objects: { object: KritzelBaseObject<any>; changedProperties: string[] }[]) {
-    this.objectsUpdated.emit({ objects });
+  emitObjectsUpdated(objects: { object: KritzelBaseObject<any>; changedProperties: string[] }[], source?: KritzelObjectChangeSource) {
+    this.objectsUpdated.emit(source ? { objects, source } : { objects });
   }
 
   emitAwarenessChange(states: Map<number, Record<string, any>>) {

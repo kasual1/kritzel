@@ -52,12 +52,12 @@
 | `isLoadingChange`               | Emitted while the selected workspace's objects are being initialized and synchronized.                                                                                                   | `CustomEvent<boolean>`                                        |
 | `longpress`                     | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                                                                                                    | `CustomEvent<PointerEvent>`                                   |
 | `notificationsChange`           | Emitted when notifications change.                                                                                                                                                       | `CustomEvent<KritzelNotification>`                            |
-| `objectsAdded`                  | Emitted when one or more objects are added to the canvas.                                                                                                                                | `CustomEvent<ObjectsAddedEvent>`                              |
+| `objectsAdded`                  | Emitted when one or more objects are added to the canvas. `source` is set when an agentic cursor made the change.                                                                        | `CustomEvent<ObjectsAddedEvent>`                              |
 | `objectsChange`                 | Emitted when objects on the canvas are added, removed, or modified.                                                                                                                      | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
 | `objectsInViewportChange`       | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).                                                                                       | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
-| `objectsRemoved`                | Emitted when one or more objects are removed from the canvas.                                                                                                                            | `CustomEvent<ObjectsRemovedEvent>`                            |
+| `objectsRemoved`                | Emitted when one or more objects are removed from the canvas. `source` is set when an agentic cursor made the change.                                                                    | `CustomEvent<ObjectsRemovedEvent>`                            |
 | `objectsSelectionChange`        | Emitted when the set of selected objects changes.                                                                                                                                        | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
-| `objectsUpdated`                | Emitted when one or more objects are updated on the canvas.                                                                                                                              | `CustomEvent<ObjectsUpdatedEvent>`                            |
+| `objectsUpdated`                | Emitted when one or more objects are updated on the canvas. `source` is set when an agentic cursor made the change.                                                                      | `CustomEvent<ObjectsUpdatedEvent>`                            |
 | `objectTitlebarAction`          | Emitted when a button or a menu item in an object titlebar is clicked.                                                                                                                   | `CustomEvent<KritzelObjectTitlebarActionEvent>`               |
 | `objectTitlebarMenuStateChange` | Emitted when a titlebar menu opens or closes. The engine renders no menu itself; hosts render `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`. | `CustomEvent<KritzelObjectTitlebarMenuState>`                 |
 | `undoStateChange`               | Emitted when the undo/redo state changes, providing current undo availability.                                                                                                           | `CustomEvent<KritzelUndoState>`                               |
@@ -919,6 +919,28 @@ Pastes previously copied objects at the specified world coordinates.
 Type: `Promise<void>`
 
 
+
+### `performAgenticAction(cursorId: string, action: KritzelAgenticAction, options?: KritzelAgenticActionOptions) => Promise<KritzelAgenticActionResult>`
+
+Lets an agentic cursor perform an action: it flies to the target, presses and animates the change.
+Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`);
+the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel.
+Objects the user or a collaborator has selected are never changed.
+
+#### Parameters
+
+| Name       | Type                                                                                                                                                                                                                           | Description                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| `cursorId` | `string`                                                                                                                                                                                                                       | - The cursor ID.                                                     |
+| `action`   | `KritzelAgenticClickAction \| KritzelAgenticSelectAction \| KritzelAgenticClearSelectionAction \| KritzelAgenticMoveObjectAction \| KritzelAgenticDeleteObjectsAction \| KritzelAgenticUndoAction \| KritzelAgenticRedoAction` | - The action, e.g. `{ type: 'moveObject', objectId, to: { x, y } }`. |
+| `options`  | `KritzelAgenticActionOptions`                                                                                                                                                                                                  | - Speed, easing, `instant` and an `AbortSignal`.                     |
+
+#### Returns
+
+Type: `Promise<KritzelAgenticActionResult>`
+
+Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped.
+Rejects for an unknown cursor or an invalid action.
 
 ### `redo() => Promise<void>`
 
