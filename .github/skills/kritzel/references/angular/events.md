@@ -47,7 +47,7 @@ Engine emits the same object/viewport/undo/awareness events plus:
 | `activeWorkspaceChange` | `KritzelWorkspace` | Active workspace switches (full object, unlike editor) |
 | `objectsInViewportChange` | `ObjectsInViewportChangeEvent` | Set of visible objects changes |
 | `longpress` | `PointerEvent` | Touch/pen long-press — custom mobile context menus |
-| `objectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState`, `KritzelAgenticChangeSource`, the `KritzelAgenticAction*` types (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
+| `objectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState` (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
 
 ## Canonical pattern: events → signals (OnPush)
 
