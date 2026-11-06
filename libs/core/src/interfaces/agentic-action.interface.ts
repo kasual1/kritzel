@@ -52,7 +52,10 @@ export interface KritzelAgenticClickAction {
   count?: 1 | 2;
 }
 
-/** Selects top-level objects for this agent. Agent selections are local only and never change the user's selection. */
+/**
+ * Selects top-level objects for this agent. Agent selections are never synced as objects (collaborators see them only as
+ * presence) and never change the user's selection.
+ */
 export interface KritzelAgenticSelectAction {
   type: 'select';
   /** Non-empty list of IDs of top-level objects (not inside a group, not selections). */

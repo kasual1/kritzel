@@ -95,7 +95,10 @@ export interface KritzelAgenticCursor {
   attachedTo: KritzelAgenticAttachment | null;
   /** Whether the cursor is currently animating. */
   isMoving: boolean;
-  /** Objects this cursor shows as selected: its `select` selection plus the targets of its running action. Local only. */
+  /**
+   * Objects this cursor shows as selected: its `select` selection plus the targets of its running action. Never synced
+   * as objects; shared with collaborators only as presence when the agent broadcasts.
+   */
   selectedObjectIds: string[];
   /** Whether the cursor is pressed (during clicks and drags). */
   isPressed: boolean;

@@ -32,7 +32,7 @@ export async function flyToObjects(run: KritzelAgenticActionRun, ids: string[]):
   await run.fly(center);
 }
 
-/** `select`: clicks the objects and makes them this agent's selection. Local only. */
+/** `select`: clicks the objects and makes them this agent's selection. Shared with collaborators only as presence. */
 export const selectExecutor: KritzelAgenticActionExecutor<KritzelAgenticSelectAction> = {
   mutates: false,
 
