@@ -1,7 +1,7 @@
 /**
- * Yjs transaction origin for changes made by one agentic cursor.
+ * Yjs transaction origin for changes made by one agent.
  *
- * Every agentic cursor gets its own instance per object map. Its UndoManager tracks
+ * Every agent gets its own instance per object map. Its UndoManager tracks
  * exactly this instance, so agent changes never land in the user's undo stack or in
  * another agent's history. While recording, the origin remembers which object keys the
  * running action changed and which objects were only updated locally (not yet written
@@ -14,7 +14,7 @@ export class KritzelAgentOrigin {
   /** Objects changed in local-only mode during the running action. */
   private readonly _localOnly = new Set<string>();
 
-  constructor(readonly cursorId: string) {}
+  constructor(readonly agentId: string) {}
 
   /** Starts recording changes for a new action. */
   startRecording(): void {

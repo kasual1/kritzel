@@ -101,7 +101,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | loadObjectsFromJson | loadObjectsFromJson(json: string) => Promise<number> | Loads objects from a workspace JSON string into the current workspace. Unlike importFromJson, this does not create a new workspace - it adds objects to the existing one. Useful for initializing a workspace with pre-existing content after the editor is ready. |
 | loadSettings | loadSettings() => Promise<Partial<KritzelSettingsConfig> \| null> | Loads the persisted settings object from localStorage. |
 | loadSharedWorkspace | loadSharedWorkspace(token: string) => Promise<void> | Loads a shared workspace by token. If the workspace exists locally, it switches to it. If it doesn't exist, it adds it to the local workspaces list and then switches to it. |
-| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult> | Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards. |
+| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticTarget, options?: KritzelAgenticMoveOptions) => Promise<KritzelAgenticMoveResult> | Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards. |
 | openContextMenu | openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void> | Programmatically opens the context menu at a specified world-coordinate position. If \`objectId\` is provided and found, the object context menu is shown for that object. If no \`objectId\` is provided but a selection group already exists, the object context menu is shown. Otherwise, the global context menu is shown. |
 | panTo | panTo(x: number, y: number) => Promise<void> | Pans the viewport to center on the given world coordinates without changing the scale. |
 | panToObject | panToObject(object: KritzelBaseObject) => Promise<void> | Pans the viewport to center on the given object without changing the zoom level. Unlike \`centerObjectInViewport\`, this moves the camera — not the object. |
@@ -272,7 +272,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | importFromJson | importFromJson(json: string) => Promise<void> |  |
 | loadObjectsFromJson | loadObjectsFromJson(json: string) => Promise<number> |  |
 | loadSharedWorkspace | loadSharedWorkspace(token: string) => Promise<void> |  |
-| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult> | Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards. |
+| moveAgenticCursor | moveAgenticCursor(id: string, target: KritzelAgenticTarget, options?: KritzelAgenticMoveOptions) => Promise<KritzelAgenticMoveResult> | Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default, so it follows the object afterwards. |
 | openContextMenu | openContextMenu(options: { x: number; y: number; objectId?: string; }) => Promise<void> |  |
 | openExportDialog | openExportDialog() => Promise<void> |  |
 | openImportDialog | openImportDialog() => Promise<void> |  |

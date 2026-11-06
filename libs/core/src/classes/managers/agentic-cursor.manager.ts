@@ -1,14 +1,14 @@
 import { KritzelCore } from '../core/core.class';
 import {
   KritzelAgenticCursor,
-  KritzelAgenticCursorAttachment,
+  KritzelAgenticAttachment,
   KritzelAgenticCursorDetachedEvent,
-  KritzelAgenticCursorMoveOptions,
-  KritzelAgenticCursorMoveResult,
-  KritzelAgenticCursorObjectTarget,
+  KritzelAgenticMoveOptions,
+  KritzelAgenticMoveResult,
+  KritzelAgenticObjectTarget,
   KritzelAgenticCursorOptions,
   KritzelAgenticCursorPatch,
-  KritzelAgenticCursorTarget,
+  KritzelAgenticTarget,
 } from '../../interfaces/agentic-cursor.interface';
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import { KritzelPoint } from '../../interfaces/point.interface';
@@ -23,12 +23,12 @@ const DEFAULT_COLOR = '#6B7280';
 
 interface AgenticCursorAnimation {
   from: KritzelPoint;
-  target: KritzelAgenticCursorTarget;
+  target: KritzelAgenticTarget;
   startTime: number;
   duration: number;
   easing: (t: number) => number;
   attach: boolean;
-  resolve: (result: KritzelAgenticCursorMoveResult) => void;
+  resolve: (result: KritzelAgenticMoveResult) => void;
 }
 
 interface AgenticCursorEntry {
@@ -38,7 +38,7 @@ interface AgenticCursorEntry {
   status?: string;
   visible: boolean;
   position: KritzelPoint;
-  attachedTo: KritzelAgenticCursorAttachment | null;
+  attachedTo: KritzelAgenticAttachment | null;
   animation: AgenticCursorAnimation | null;
   isPressed: boolean;
   pressCount: number;
@@ -88,7 +88,7 @@ export class KritzelAgenticCursorManager {
     }
 
     let position = this.getViewportCenter();
-    let attachedTo: KritzelAgenticCursorAttachment | null = null;
+    let attachedTo: KritzelAgenticAttachment | null = null;
     if (options.position) {
       position = this.resolveTargetOrThrow(options.position);
       if (this.isObjectTarget(options.position)) {
@@ -135,7 +135,7 @@ export class KritzelAgenticCursorManager {
    * Resolves when the animation ends. An interrupted move resolves with `completed: false`.
    * A move also interrupts an agentic action running on this cursor.
    */
-  move(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
+  move(id: string, target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
     const entry = this.getEntryOrThrow(id);
     const destination = this.resolveTargetOrThrow(target);
     entry.hostMoveGeneration++;
@@ -147,7 +147,7 @@ export class KritzelAgenticCursorManager {
    * not count as a host move, so the action does not interrupt itself.
    * @internal
    */
-  fly(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
+  fly(id: string, target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
     const entry = this.getEntryOrThrow(id);
     const destination = this.resolveTargetOrThrow(target);
     return this.startMove(entry, target, destination, options);
@@ -179,7 +179,7 @@ export class KritzelAgenticCursorManager {
   }
 
   /** Attaches a cursor to an object anchor and moves it there immediately. @internal */
-  attach(id: string, target: KritzelAgenticCursorObjectTarget): void {
+  attach(id: string, target: KritzelAgenticObjectTarget): void {
     const entry = this._cursors.get(id);
     if (!entry) return;
     const point = this.resolveTarget(target);
@@ -320,7 +320,7 @@ export class KritzelAgenticCursorManager {
           entry.animation = null;
           animation.resolve({ completed: false });
           structuralChange = true;
-          this.emitDetached({ id: entry.id, objectId: (animation.target as KritzelAgenticCursorObjectTarget).objectId, reason: 'object-removed' });
+          this.emitDetached({ id: entry.id, objectId: (animation.target as KritzelAgenticObjectTarget).objectId, reason: 'object-removed' });
           return;
         }
 
@@ -361,7 +361,7 @@ export class KritzelAgenticCursorManager {
   }
 
   /** Resolves a target to a world point, or `null` if the target object doesn't exist. */
-  resolveTarget(target: KritzelAgenticCursorTarget): KritzelPoint | null {
+  resolveTarget(target: KritzelAgenticTarget): KritzelPoint | null {
     if (!this.isObjectTarget(target)) {
       return { x: target.x, y: target.y };
     }
@@ -380,16 +380,16 @@ export class KritzelAgenticCursorManager {
 
   private startMove(
     entry: AgenticCursorEntry,
-    target: KritzelAgenticCursorTarget,
+    target: KritzelAgenticTarget,
     destination: KritzelPoint,
-    options: KritzelAgenticCursorMoveOptions,
-  ): Promise<KritzelAgenticCursorMoveResult> {
+    options: KritzelAgenticMoveOptions,
+  ): Promise<KritzelAgenticMoveResult> {
     this.finishAnimation(entry, false);
     entry.attachedTo = null;
 
     const duration = options.duration ?? this.computeDuration(entry.position, destination, options.speed);
 
-    return new Promise<KritzelAgenticCursorMoveResult>(resolve => {
+    return new Promise<KritzelAgenticMoveResult>(resolve => {
       entry.animation = {
         from: { ...entry.position },
         target,
@@ -428,11 +428,11 @@ export class KritzelAgenticCursorManager {
     };
   }
 
-  private isObjectTarget(target: KritzelAgenticCursorTarget): target is KritzelAgenticCursorObjectTarget {
-    return typeof (target as KritzelAgenticCursorObjectTarget).objectId === 'string';
+  private isObjectTarget(target: KritzelAgenticTarget): target is KritzelAgenticObjectTarget {
+    return typeof (target as KritzelAgenticObjectTarget).objectId === 'string';
   }
 
-  private toAttachment(target: KritzelAgenticCursorObjectTarget): KritzelAgenticCursorAttachment {
+  private toAttachment(target: KritzelAgenticObjectTarget): KritzelAgenticAttachment {
     return {
       objectId: target.objectId,
       anchor: target.anchor ?? 'center',
@@ -440,13 +440,13 @@ export class KritzelAgenticCursorManager {
     };
   }
 
-  private resolveTargetOrThrow(target: KritzelAgenticCursorTarget): KritzelPoint {
+  private resolveTargetOrThrow(target: KritzelAgenticTarget): KritzelPoint {
     if (!target || (!this.isObjectTarget(target) && (typeof target.x !== 'number' || typeof target.y !== 'number'))) {
       throw new Error('Invalid agentic cursor target. Expected { x, y } or { objectId }.');
     }
     const point = this.resolveTarget(target);
     if (!point) {
-      throw new Error(`Object "${(target as KritzelAgenticCursorObjectTarget).objectId}" not found.`);
+      throw new Error(`Object "${(target as KritzelAgenticObjectTarget).objectId}" not found.`);
     }
     return point;
   }

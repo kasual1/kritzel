@@ -1,5 +1,5 @@
 import type { KritzelAgenticRotateObjectAction } from '../../../interfaces/agentic-action.interface';
-import type { KritzelAgenticCursorObjectTarget } from '../../../interfaces/agentic-cursor.interface';
+import type { KritzelAgenticObjectTarget } from '../../../interfaces/agentic-cursor.interface';
 import { AGENTIC_ACTION_ROTATE_SPEED, AGENTIC_ACTION_ROTATION_HANDLE_PX, type KritzelAgenticActionExecutor } from './agentic-action.types';
 import { prepareTopLevelTargets } from './select.executor';
 import { assertObjectId } from './agentic-validation.helper';
@@ -47,7 +47,7 @@ export const rotateObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticRo
 
     // The rotation handle sits above the top edge and turns with the object.
     // (Approximate when a titlebar is shown: the engine moves the handle above it.)
-    const handleTarget = (): KritzelAgenticCursorObjectTarget => ({
+    const handleTarget = (): KritzelAgenticObjectTarget => ({
       objectId: id,
       anchor: 'top',
       offset: { x: 0, y: -AGENTIC_ACTION_ROTATION_HANDLE_PX / (core.store.state.scale || 1) },

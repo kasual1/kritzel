@@ -9,7 +9,7 @@ import type {
   KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
 } from '../../../interfaces/agentic-action.interface';
-import type { KritzelAgenticCursorObjectTarget, KritzelAgenticCursorTarget } from '../../../interfaces/agentic-cursor.interface';
+import type { KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../../interfaces/agentic-cursor.interface';
 import { KritzelEasingHelper } from '../../../helpers/easing.helper';
 import {
   AGENTIC_ACTION_DEFAULT_SPEED,
@@ -111,7 +111,7 @@ export class KritzelAgenticActionRun {
   /** Changed properties per object, for `objectsUpdated`. */
   readonly changedProperties = new Map<string, string[]>();
   /** Where the cursor attaches when the action completes. */
-  finalAttachment: KritzelAgenticCursorObjectTarget | null = null;
+  finalAttachment: KritzelAgenticObjectTarget | null = null;
 
   /** The promise returned to the caller. */
   readonly promise: Promise<KritzelAgenticActionResult>;
@@ -264,14 +264,14 @@ export class KritzelAgenticActionRun {
   }
 
   /** Flies the cursor to a target, like `moveAgenticCursor`. Instant runs jump. */
-  async fly(target: KritzelAgenticCursorTarget, attach = false): Promise<void> {
+  async fly(target: KritzelAgenticTarget, attach = false): Promise<void> {
     this.assertActive();
     const cursors = this.cursorManager;
-    const isObjectTarget = typeof (target as KritzelAgenticCursorObjectTarget).objectId === 'string';
+    const isObjectTarget = typeof (target as KritzelAgenticObjectTarget).objectId === 'string';
 
     if (this.instant) {
       if (attach && isObjectTarget) {
-        cursors.attach(this.cursorId, target as KritzelAgenticCursorObjectTarget);
+        cursors.attach(this.cursorId, target as KritzelAgenticObjectTarget);
         return;
       }
       const point = cursors.resolveTarget(target);
@@ -297,12 +297,12 @@ export class KritzelAgenticActionRun {
     this.assertActive();
     if (!completed) {
       if (!cursors.get(this.cursorId)) {
-        this.stop('cursor-removed');
+        this.stop('agent-removed');
       }
       if (!cursors.resolveTarget(target)) {
         this.stop('object-removed');
       }
-      this.stop('interrupted');
+      this.stop('agent-moved');
     }
   }
 

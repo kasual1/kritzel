@@ -1,5 +1,5 @@
 import type { KritzelEasing } from './easing.interface';
-import type { KritzelAgenticCursorAnchor, KritzelAgenticCursorTarget } from './agentic-cursor.interface';
+import type { KritzelAgenticAnchor, KritzelAgenticTarget } from './agentic-cursor.interface';
 import type { KritzelPoint } from './point.interface';
 import type { LineArrowConfig } from './arrow-head.interface';
 import type { ThemeAwareColor } from '../constants/color-palette.constants';
@@ -46,7 +46,7 @@ export interface KritzelAgenticLineStyle extends KritzelAgenticStrokeStyle {
 export interface KritzelAgenticClickAction {
   type: 'click';
   /** World point, or an anchor on an object (the anchor rotates with the object). */
-  target: KritzelAgenticCursorTarget;
+  target: KritzelAgenticTarget;
   /** `2` plays a double press. Defaults to `1`. */
   count?: 1 | 2;
 }
@@ -71,9 +71,9 @@ export interface KritzelAgenticMoveObjectAction {
   /** ID of a top-level object. */
   objectId: string;
   /** World point, or an anchor (with an optional offset in world units) on another object. Resolved once when the drag starts. */
-  to: KritzelAgenticCursorTarget;
+  to: KritzelAgenticTarget;
   /** Point of the moved object that lands on `to`. Defaults to `'center'`. */
-  align?: KritzelAgenticCursorAnchor;
+  align?: KritzelAgenticAnchor;
 }
 
 /** Deletes top-level objects. Children of a group are deleted with their group. */
@@ -215,10 +215,10 @@ export interface KritzelAgenticActionOptions {
 export type KritzelAgenticActionFailureReason =
   /** `options.signal` was aborted. */
   | 'aborted'
-  /** `moveAgenticCursor` was called for this cursor while the action was running. */
-  | 'interrupted'
-  /** The cursor was removed while the action was queued or running. */
-  | 'cursor-removed'
+  /** `agent.moveTo()` was called while the action was running. */
+  | 'agent-moved'
+  /** The agent was removed while the action was queued or running. */
+  | 'agent-removed'
   /** A target existed when the action started but was deleted. */
   | 'object-removed'
   /** The local user has a target selected. Changes made before the user selected it are kept. */
@@ -227,7 +227,7 @@ export type KritzelAgenticActionFailureReason =
   | 'user-interaction'
   /** A collaborator has a target selected or is editing it. */
   | 'collaborator-editing'
-  /** Another agentic cursor's running action or selection covers a target. */
+  /** Another agent's running action or selection covers a target. */
   | 'claimed-by-agent'
   /** The workspace was switched, reloaded or deleted. */
   | 'workspace-changed'

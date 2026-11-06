@@ -82,7 +82,7 @@ test.describe('Agentic Cursors', () => {
 
     expect(moved.result).toEqual({ completed: true, objectIds: [moved.rectangleId] });
     expect(moved.after).toBeCloseTo(moved.before + 200, 5);
-    expect(moved.source).toEqual({ type: 'agentic-cursor', cursorId: 'writer', actionType: 'moveObject' });
+    expect(moved.source).toEqual({ type: 'agent', agentId: 'writer', actionType: 'moveObject' });
 
     // A user edit to another object, then the user's undo: only the user's edit is reverted.
     await editorPage.waitForUndoCapture();

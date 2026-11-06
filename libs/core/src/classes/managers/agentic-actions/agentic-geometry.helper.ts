@@ -1,9 +1,9 @@
-import type { KritzelAgenticCursorAnchor } from '../../../interfaces/agentic-cursor.interface';
+import type { KritzelAgenticAnchor } from '../../../interfaces/agentic-cursor.interface';
 import type { KritzelPoint } from '../../../interfaces/point.interface';
 import type { KritzelBoundingBox } from '../../../interfaces/bounding-box.interface';
 
 /** Relative position of each anchor within an object's unrotated box. */
-export const AGENTIC_ANCHOR_FACTORS: Record<KritzelAgenticCursorAnchor, [number, number]> = {
+export const AGENTIC_ANCHOR_FACTORS: Record<KritzelAgenticAnchor, [number, number]> = {
   'center': [0.5, 0.5],
   'top-left': [0, 0],
   'top': [0.5, 0],
@@ -27,7 +27,7 @@ export interface KritzelAnchorableGeometry {
  */
 export function resolveObjectAnchor(
   object: KritzelAnchorableGeometry,
-  anchor: KritzelAgenticCursorAnchor = 'center',
+  anchor: KritzelAgenticAnchor = 'center',
   offset?: KritzelPoint,
 ): KritzelPoint {
   const box = object.boundingBox;

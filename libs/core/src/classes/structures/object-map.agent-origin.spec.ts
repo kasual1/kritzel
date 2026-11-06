@@ -282,7 +282,7 @@ describe('KritzelObjectMap agent origins (real Yjs)', () => {
     expect(map.undoAgent('agent')).toEqual({ status: 'done', objectIds: ['a'] });
     expect(core.engine.emitObjectsUpdated).toHaveBeenLastCalledWith(
       [{ object: expect.objectContaining({ id: 'a', x: 0 }), changedProperties: [] }],
-      { type: 'agentic-cursor', cursorId: 'agent', actionType: 'undo' },
+      { type: 'agent', agentId: 'agent', actionType: 'undo' },
     );
     expect(map.peekAgentObjectIds('agent', 'redo')).toEqual(['a']);
 
@@ -290,7 +290,7 @@ describe('KritzelObjectMap agent origins (real Yjs)', () => {
     expect(xOf(map, 'a')).toBe(10);
     expect(core.engine.emitObjectsUpdated).toHaveBeenLastCalledWith(
       [{ object: expect.objectContaining({ id: 'a' }), changedProperties: [] }],
-      { type: 'agentic-cursor', cursorId: 'agent', actionType: 'redo' },
+      { type: 'agent', agentId: 'agent', actionType: 'redo' },
     );
   });
 

@@ -184,7 +184,7 @@ export class AgenticCursorsActionsComponent {
 
   private onChange(source: KritzelObjectChangeSource | undefined, kind: string): void {
     if (source) {
-      this.lastChange.set(`${kind} by ${source.cursorId} (${source.actionType})`);
+      this.lastChange.set(`${kind} by ${source.agentId} (${source.actionType})`);
     }
   }
 

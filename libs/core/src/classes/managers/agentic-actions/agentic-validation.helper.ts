@@ -1,4 +1,4 @@
-import type { KritzelAgenticCursorAnchor, KritzelAgenticCursorTarget } from '../../../interfaces/agentic-cursor.interface';
+import type { KritzelAgenticAnchor, KritzelAgenticTarget } from '../../../interfaces/agentic-cursor.interface';
 import { AGENTIC_ANCHOR_FACTORS } from './agentic-geometry.helper';
 
 /** Throws a `TypeError` unless `ids` is a non-empty array of non-empty strings. */
@@ -16,14 +16,14 @@ export function assertObjectId(id: unknown, field: string): asserts id is string
 }
 
 /** Throws a `TypeError` unless `anchor` is undefined or a known anchor. */
-export function assertAnchor(anchor: unknown, field: string): asserts anchor is KritzelAgenticCursorAnchor | undefined {
+export function assertAnchor(anchor: unknown, field: string): asserts anchor is KritzelAgenticAnchor | undefined {
   if (anchor !== undefined && !(typeof anchor === 'string' && anchor in AGENTIC_ANCHOR_FACTORS)) {
     throw new TypeError(`"${field}" must be an anchor such as 'center' or 'top-left'.`);
   }
 }
 
 /** Throws a `TypeError` unless `target` is `{ x, y }` or `{ objectId, anchor?, offset? }`. */
-export function assertTarget(target: unknown, field: string): asserts target is KritzelAgenticCursorTarget {
+export function assertTarget(target: unknown, field: string): asserts target is KritzelAgenticTarget {
   if (!target || typeof target !== 'object') {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
   }
@@ -42,7 +42,7 @@ export function assertTarget(target: unknown, field: string): asserts target is 
 }
 
 /** Whether a target refers to an object. */
-export function isObjectTarget(target: KritzelAgenticCursorTarget): target is Extract<KritzelAgenticCursorTarget, { objectId: string }> {
+export function isObjectTarget(target: KritzelAgenticTarget): target is Extract<KritzelAgenticTarget, { objectId: string }> {
   return typeof (target as { objectId?: unknown }).objectId === 'string';
 }
 

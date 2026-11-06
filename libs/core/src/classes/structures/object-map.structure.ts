@@ -782,7 +782,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     const agent = this.findAgentByUndoManager(origin);
     const suppressEvents = !!agent?.suppressEvents;
     const source: KritzelObjectChangeSource | undefined = agent?.historyAction
-      ? { type: 'agentic-cursor', cursorId: agent.origin.cursorId, actionType: agent.historyAction }
+      ? { type: 'agent', agentId: agent.origin.agentId, actionType: agent.historyAction }
       : undefined;
 
     // Rebuild the anchor index if any line anchor connections may have changed, so that

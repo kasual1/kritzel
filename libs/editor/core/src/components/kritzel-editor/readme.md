@@ -796,22 +796,22 @@ Type: `Promise<void>`
 
 
 
-### `moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions) => Promise<KritzelAgenticCursorMoveResult>`
+### `moveAgenticCursor(id: string, target: KritzelAgenticTarget, options?: KritzelAgenticMoveOptions) => Promise<KritzelAgenticMoveResult>`
 
 Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
 Object targets attach the cursor by default, so it follows the object afterwards.
 
 #### Parameters
 
-| Name      | Type                                                                  | Description                                                            |
-| --------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| `id`      | `string`                                                              | - The cursor ID.                                                       |
-| `target`  | `KritzelAgenticCursorPointTarget \| KritzelAgenticCursorObjectTarget` | - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`. |
-| `options` | `KritzelAgenticCursorMoveOptions`                                     | - Duration, easing, speed and whether to attach to an object target.   |
+| Name      | Type                                                      | Description                                                            |
+| --------- | --------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `id`      | `string`                                                  | - The cursor ID.                                                       |
+| `target`  | `KritzelAgenticPointTarget \| KritzelAgenticObjectTarget` | - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`. |
+| `options` | `KritzelAgenticMoveOptions`                               | - Duration, easing, speed and whether to attach to an object target.   |
 
 #### Returns
 
-Type: `Promise<KritzelAgenticCursorMoveResult>`
+Type: `Promise<KritzelAgenticMoveResult>`
 
 Resolves when the animation ends; `completed` is `false` if the move was interrupted.
 

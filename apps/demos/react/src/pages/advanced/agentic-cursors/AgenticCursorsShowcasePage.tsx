@@ -279,7 +279,7 @@ export function AgenticCursorsShowcasePage() {
 
   function onChange(source: KritzelObjectChangeSource | undefined, kind: string) {
     if (source) {
-      setLastChange(`${kind} by ${source.cursorId} (${source.actionType})`);
+      setLastChange(`${kind} by ${source.agentId} (${source.actionType})`);
     }
   }
 

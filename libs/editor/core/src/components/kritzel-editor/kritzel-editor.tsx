@@ -21,11 +21,11 @@ import {
   KritzelAgenticActionResult,
   KritzelAgenticCursor,
   KritzelAgenticCursorDetachedEvent,
-  KritzelAgenticCursorMoveOptions,
-  KritzelAgenticCursorMoveResult,
+  KritzelAgenticMoveOptions,
+  KritzelAgenticMoveResult,
   KritzelAgenticCursorOptions,
   KritzelAgenticCursorPatch,
-  KritzelAgenticCursorTarget,
+  KritzelAgenticTarget,
   KritzelIconRegistry,
 } from "@kritzel/core";
 import { KritzelToolbarItem } from "@kritzel/core";
@@ -1090,9 +1090,9 @@ export class KritzelEditor {
   @Method()
   async moveAgenticCursor(
     id: string,
-    target: KritzelAgenticCursorTarget,
-    options: KritzelAgenticCursorMoveOptions = {},
-  ): Promise<KritzelAgenticCursorMoveResult> {
+    target: KritzelAgenticTarget,
+    options: KritzelAgenticMoveOptions = {},
+  ): Promise<KritzelAgenticMoveResult> {
     return this.engineRef.moveAgenticCursor(id, target, options);
   }
 

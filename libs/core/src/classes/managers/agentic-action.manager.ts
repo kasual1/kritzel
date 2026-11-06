@@ -275,7 +275,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 
   private emitEvents(run: KritzelAgenticActionRun, events: { added: AnyObject[]; removed: AnyObject[]; updated: { object: AnyObject; changedProperties: string[] }[] }): void {
     const engine = this._core.engine;
-    const source: KritzelObjectChangeSource = { type: 'agentic-cursor', cursorId: run.cursorId, actionType: run.action.type };
+    const source: KritzelObjectChangeSource = { type: 'agent', agentId: run.cursorId, actionType: run.action.type };
     try {
       if (events.added.length > 0) engine.emitObjectsAdded(events.added, source);
       if (events.removed.length > 0) engine.emitObjectsRemoved(events.removed, source);
@@ -322,7 +322,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       run.started = true;
       const cursors = this._core.agenticCursorManager;
       if (!cursors.get(run.cursorId)) {
-        run.abort('cursor-removed');
+        run.abort('agent-removed');
         return;
       }
       const map = this._core.store.objects as ObjectMap | undefined;
@@ -514,13 +514,13 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       return 'aborted';
     }
     if (!cursors.get(run.cursorId)) {
-      return 'cursor-removed';
+      return 'agent-removed';
     }
     if (!run.map || this._core.store.objects !== run.map || !run.map.isReady) {
       return 'workspace-changed';
     }
     if (cursors.getHostMoveGeneration(run.cursorId) !== run.hostMoveGeneration) {
-      return 'interrupted';
+      return 'agent-moved';
     }
     return null;
   }
@@ -607,10 +607,10 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   }
 
   private handleCursorRemoved(cursorId: string): void {
-    this._running.get(cursorId)?.abort('cursor-removed');
+    this._running.get(cursorId)?.abort('agent-removed');
     const queue = this._queues.get(cursorId);
     if (queue) {
-      queue.splice(0).forEach(run => this.settleQueued(run, 'cursor-removed'));
+      queue.splice(0).forEach(run => this.settleQueued(run, 'agent-removed'));
       this._queues.delete(cursorId);
     }
     this._selections.delete(cursorId);

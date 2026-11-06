@@ -2150,7 +2150,7 @@ describe('KritzelEngine', () => {
     });
 
     it('includes the source of agentic changes in object events', () => {
-      const source = { type: 'agentic-cursor' as const, cursorId: 'agent', actionType: 'moveObject' as const };
+      const source = { type: 'agent' as const, agentId: 'agent', actionType: 'moveObject' as const };
       const objects: any[] = [{ id: 'a' }];
       engine.emitObjectsAdded(objects, source);
       engine.emitObjectsRemoved(objects, source);

@@ -165,7 +165,7 @@ describe('agentic create and transform actions', () => {
       expect(shape.shapeType).toBe('ellipse');
       expect(shape.strokeWidth).toBe(7);
       expect(shape.strokeColor).toEqual({ light: '#ff0000', dark: '#ff0000' });
-      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith([shape], { type: 'agentic-cursor', cursorId: 'agent', actionType: 'createShape' });
+      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith([shape], { type: 'agent', agentId: 'agent', actionType: 'createShape' });
     });
 
     it('matches what the shape tool creates for the same rectangle at another zoom', async () => {
@@ -234,7 +234,7 @@ describe('agentic create and transform actions', () => {
       expect(KritzelRichTextHelper.getText((map.findById(id) as KritzelText).editor!)).toBe('Fresh');
       expect(core.engine.emitObjectsUpdated).toHaveBeenLastCalledWith(
         [{ object: map.findById(id), changedProperties: ['content', 'width', 'height'] }],
-        { type: 'agentic-cursor', cursorId: 'agent', actionType: 'typeText' },
+        { type: 'agent', agentId: 'agent', actionType: 'typeText' },
       );
     });
 

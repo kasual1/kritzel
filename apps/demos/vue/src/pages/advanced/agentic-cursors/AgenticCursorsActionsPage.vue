@@ -138,7 +138,7 @@ function abort() {
 
 function onChange(source: KritzelObjectChangeSource | undefined, kind: string) {
   if (source) {
-    lastChange.value = `${kind} by ${source.cursorId} (${source.actionType})`
+    lastChange.value = `${kind} by ${source.agentId} (${source.actionType})`
   }
 }
 

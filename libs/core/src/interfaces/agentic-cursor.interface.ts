@@ -3,7 +3,7 @@ import { KritzelPoint } from './point.interface';
 import type { KritzelAgenticActionType } from './agentic-action.interface';
 
 /** Where on an object an attached agentic cursor sits. The anchor rotates with the object. */
-export type KritzelAgenticCursorAnchor =
+export type KritzelAgenticAnchor =
   | 'center'
   | 'top-left'
   | 'top'
@@ -15,22 +15,22 @@ export type KritzelAgenticCursorAnchor =
   | 'left';
 
 /** A free position on the canvas, in world coordinates. */
-export interface KritzelAgenticCursorPointTarget {
+export interface KritzelAgenticPointTarget {
   x: number;
   y: number;
 }
 
 /** A canvas object to move to (and, by default, stick to). */
-export interface KritzelAgenticCursorObjectTarget {
+export interface KritzelAgenticObjectTarget {
   /** ID of the canvas object. */
   objectId: string;
   /** Anchor point on the object. Defaults to `'center'`. */
-  anchor?: KritzelAgenticCursorAnchor;
+  anchor?: KritzelAgenticAnchor;
   /** Offset from the anchor in world units, in the object's local (unrotated) space. */
   offset?: KritzelPoint;
 }
 
-export type KritzelAgenticCursorTarget = KritzelAgenticCursorPointTarget | KritzelAgenticCursorObjectTarget;
+export type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
 
 /** Options for creating an agentic cursor. */
 export interface KritzelAgenticCursorOptions {
@@ -45,7 +45,7 @@ export interface KritzelAgenticCursorOptions {
   /** Whether the cursor is visible. Defaults to `true`. */
   visible?: boolean;
   /** Initial position. Defaults to the center of the viewport. An object target attaches the cursor immediately. */
-  position?: KritzelAgenticCursorTarget;
+  position?: KritzelAgenticTarget;
 }
 
 /** Properties of an agentic cursor that can be changed after creation. */
@@ -58,7 +58,7 @@ export interface KritzelAgenticCursorPatch {
 }
 
 /** Options for moving an agentic cursor. */
-export interface KritzelAgenticCursorMoveOptions {
+export interface KritzelAgenticMoveOptions {
   /** Fixed animation duration in milliseconds. When omitted, the duration is derived from the distance and `speed`. */
   duration?: number;
   /** Easing curve. Defaults to `'ease-in-out'`. */
@@ -70,15 +70,15 @@ export interface KritzelAgenticCursorMoveOptions {
 }
 
 /** Result of a move. */
-export interface KritzelAgenticCursorMoveResult {
+export interface KritzelAgenticMoveResult {
   /** `false` when the move was interrupted (by another move, removal, or the target object being deleted). */
   completed: boolean;
 }
 
 /** The object an agentic cursor is attached to. */
-export interface KritzelAgenticCursorAttachment {
+export interface KritzelAgenticAttachment {
   objectId: string;
-  anchor: KritzelAgenticCursorAnchor;
+  anchor: KritzelAgenticAnchor;
   offset: KritzelPoint;
 }
 
@@ -92,7 +92,7 @@ export interface KritzelAgenticCursor {
   /** Current position in world coordinates. */
   position: KritzelPoint;
   /** The object the cursor sticks to, or `null` when it is free. */
-  attachedTo: KritzelAgenticCursorAttachment | null;
+  attachedTo: KritzelAgenticAttachment | null;
   /** Whether the cursor is currently animating. */
   isMoving: boolean;
   /** Objects this cursor shows as selected: its `select` selection plus the targets of its running action. Local only. */

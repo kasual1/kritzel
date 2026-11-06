@@ -55,11 +55,11 @@ import {
   KritzelViewportState,
   KritzelAgenticCursor,
   KritzelAgenticCursorDetachedEvent,
-  KritzelAgenticCursorMoveOptions,
-  KritzelAgenticCursorMoveResult,
+  KritzelAgenticMoveOptions,
+  KritzelAgenticMoveResult,
   KritzelAgenticCursorOptions,
   KritzelAgenticCursorPatch,
-  KritzelAgenticCursorTarget,
+  KritzelAgenticTarget,
   KritzelAgenticAction,
   KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
@@ -1531,7 +1531,7 @@ export class KritzelEngine implements KritzelEngineHost {
    * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
    */
   @Method()
-  async moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
+  async moveAgenticCursor(id: string, target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
     return this.core.agenticCursorManager.move(id, target, options);
   }
 

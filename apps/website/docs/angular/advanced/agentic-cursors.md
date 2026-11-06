@@ -60,7 +60,7 @@ export class AgentBoardComponent {
 | color | string | Any CSS color. Derived from the name when omitted. |
 | status | string | Optional status message shown below the label. |
 | visible | boolean | Whether the cursor is visible. Defaults to `true`. |
-| position | KritzelAgenticCursorTarget | Initial position. Defaults to the center of the viewport. An object target attaches the cursor right away. |
+| position | KritzelAgenticTarget | Initial position. Defaults to the center of the viewport. An object target attaches the cursor right away. |
 
 ## Moving a Cursor
 
@@ -186,7 +186,7 @@ Agents never take an object away from a person:
 - An object that a collaborator has selected is refused with `'collaborator-editing'`.
 - An object that another cursor is working on or has selected is refused with `'claimed-by-agent'`.
 
-The other reasons are `'aborted'`, `'interrupted'` (`moveAgenticCursor()` was called for the cursor), `'cursor-removed'`, `'object-removed'`, `'workspace-changed'`, `'not-allowed'` (the object configuration forbids resizing or rotating), `'invalid-target'`, `'conflict'`, `'nothing-to-undo'`, `'nothing-to-redo'`, and `'engine-disconnected'`. Apart from a takeover by the user, a stopped action is rolled back:
+The other reasons are `'aborted'`, `'interrupted'` (`moveAgenticCursor()` was called for the cursor), `'agent-removed'`, `'object-removed'`, `'workspace-changed'`, `'not-allowed'` (the object configuration forbids resizing or rotating), `'invalid-target'`, `'conflict'`, `'nothing-to-undo'`, `'nothing-to-redo'`, and `'engine-disconnected'`. Apart from a takeover by the user, a stopped action is rolled back:
 
 ```ts
 const controller = new AbortController();
@@ -219,7 +219,7 @@ if (cursor?.canUndo) {
 onObjectsUpdated(event: CustomEvent<ObjectsUpdatedEvent>) {
   const source = event.detail.source;
   if (source) {
-    console.log(`${source.cursorId} ran ${source.actionType}`);
+    console.log(`${source.agentId} ran ${source.actionType}`);
   }
 }
 ```

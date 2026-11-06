@@ -259,7 +259,7 @@ describe('KritzelAgenticActionManager', () => {
       expect(map.getAgentUndoStackLength('agent')).toBe(1);
       expect(core.engine.emitObjectsUpdated).toHaveBeenCalledWith(
         [{ object: obj('a'), changedProperties: ['translateX', 'translateY'] }],
-        { type: 'agentic-cursor', cursorId: 'agent', actionType: 'moveObject' },
+        { type: 'agent', agentId: 'agent', actionType: 'moveObject' },
       );
       expect(cursors.get('agent')).toMatchObject({ attachedTo: { objectId: 'a', anchor: 'center' }, activeAction: null, canUndo: true });
     });
@@ -342,7 +342,7 @@ describe('KritzelAgenticActionManager', () => {
       const promise = actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 650, y: 25 } });
       for (let i = 0; i < 60 && obj('a')!.translateX === 0; i++) await step();
       void cursors.move('agent', { x: 0, y: 500 });
-      await expect(settle(promise)).resolves.toEqual({ completed: false, reason: 'interrupted' });
+      await expect(settle(promise)).resolves.toEqual({ completed: false, reason: 'agent-moved' });
       expect(obj('a')!.translateX).toBe(0);
     });
 
@@ -360,8 +360,8 @@ describe('KritzelAgenticActionManager', () => {
       const queued = actions.perform('agent', { type: 'clearSelection' });
       for (let i = 0; i < 60 && obj('a')!.translateX === 0; i++) await step();
       cursors.remove('agent');
-      await expect(settle(running)).resolves.toEqual({ completed: false, reason: 'cursor-removed' });
-      await expect(queued).resolves.toEqual({ completed: false, reason: 'cursor-removed' });
+      await expect(settle(running)).resolves.toEqual({ completed: false, reason: 'agent-removed' });
+      await expect(queued).resolves.toEqual({ completed: false, reason: 'agent-removed' });
       expect(obj('a')!.translateX).toBe(0);
       expect(map.getAgentUndoStackLength('agent')).toBe(0);
     });
@@ -405,7 +405,7 @@ describe('KritzelAgenticActionManager', () => {
       expect(partial).toBeGreaterThan(0);
       expect(partial).toBeLessThan(600);
       expect(map.getAgentUndoStackLength('agent')).toBe(1);
-      expect(core.engine.emitObjectsUpdated).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({ cursorId: 'agent' }));
+      expect(core.engine.emitObjectsUpdated).toHaveBeenCalledWith(expect.any(Array), expect.objectContaining({ agentId: 'agent' }));
     });
 
     it('reports user-interaction when the user starts a gesture on the object', async () => {
@@ -605,13 +605,13 @@ describe('KritzelAgenticActionManager', () => {
       expect(cursors.get('agent')!.selectedObjectIds).toEqual([]);
       expect(core.engine.emitObjectsRemoved).toHaveBeenCalledWith(
         [expect.objectContaining({ id: 'a', translateX: 10 })],
-        { type: 'agentic-cursor', cursorId: 'agent', actionType: 'deleteObjects' },
+        { type: 'agent', agentId: 'agent', actionType: 'deleteObjects' },
       );
 
       const undo = await settle(actions.perform('agent', { type: 'undo' }, { instant: true }));
       expect(undo).toEqual({ completed: true, objectIds: ['a'] });
       expect(obj('a')).toMatchObject({ translateX: 10, translateY: 20 });
-      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith(expect.any(Array), { type: 'agentic-cursor', cursorId: 'agent', actionType: 'undo' });
+      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith(expect.any(Array), { type: 'agent', agentId: 'agent', actionType: 'undo' });
     });
   });
 
