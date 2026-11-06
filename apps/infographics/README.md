@@ -37,7 +37,8 @@ To try it, copy `.env.example` at the repository root to `.env` and set your Ant
 ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-The key is used straight from the browser, so only run this locally.
+The key is used straight from the browser, so only run this locally. It is read from that `.env` file only, never from
+your shell environment, so a key you export for other tools is not bundled by accident.
 
 ## Record
 
