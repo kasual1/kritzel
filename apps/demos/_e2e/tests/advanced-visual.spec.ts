@@ -59,10 +59,14 @@ test.describe('Advanced Pages Visual Regression', () => {
   test('should match screenshot for advanced-agents-basic', async ({ editorPage }) => {
     await editorPage.goto('/advanced/agents/basic');
     await waitForAdvancedPage(editorPage);
-    await editorPage.page.waitForFunction(async () => {
-      const editor = document.querySelector('kritzel-editor') as HTMLElement & { getAgenticCursors(): Promise<unknown[]> };
-      return (await editor.getAgenticCursors()).length === 2;
-    });
+    await expect
+      .poll(() =>
+        editorPage.page.evaluate(async () => {
+          const editor = document.querySelector('kritzel-editor') as HTMLElement & { getAgents(): Promise<unknown[]> };
+          return (await editor.getAgents()).length;
+        }),
+      )
+      .toBe(2);
     await editorPage.page.evaluate(
       () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))),
     );
