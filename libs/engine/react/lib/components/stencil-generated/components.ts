@@ -11,7 +11,7 @@ import type { EventName, StencilReactComponent } from '@stencil/react-output-tar
 import { createComponent } from '@stencil/react-output-target/runtime';
 import React from 'react';
 
-import { type KritzelAgenticCursorDetachedEvent, type KritzelBaseObject, type KritzelBaseTool, type KritzelContextMenuState, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelNotification, type KritzelObjectTitlebarActionEvent, type KritzelObjectTitlebarMenuState, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent } from "@kritzel/engine";
+import { type KritzelAgentsChangeEvent, type KritzelBaseObject, type KritzelBaseTool, type KritzelContextMenuState, type KritzelEngineCustomEvent, type KritzelEngineState, type KritzelNotification, type KritzelObjectTitlebarActionEvent, type KritzelObjectTitlebarMenuState, type KritzelUndoState, type KritzelViewportState, type KritzelWorkspace, type ObjectsAddedEvent, type ObjectsInViewportChangeEvent, type ObjectsRemovedEvent, type ObjectsUpdatedEvent } from "@kritzel/engine";
 import type { Components } from "@kritzel/engine/dist/components";
 import { KritzelEngine as KritzelEngineElement, defineCustomElement as defineKritzelEngine } from "@kritzel/engine/dist/components/kritzel-engine.js";
 
@@ -33,7 +33,7 @@ export type KritzelEngineEvents = {
     onNotificationsChange: EventName<KritzelEngineCustomEvent<KritzelNotification>>,
     onContextMenuStateChange: EventName<KritzelEngineCustomEvent<KritzelContextMenuState>>,
     onIsLoadingChange: EventName<KritzelEngineCustomEvent<boolean>>,
-    onAgenticCursorDetached: EventName<KritzelEngineCustomEvent<KritzelAgenticCursorDetachedEvent>>,
+    onAgentsChange: EventName<KritzelEngineCustomEvent<KritzelAgentsChangeEvent>>,
     onObjectTitlebarAction: EventName<KritzelEngineCustomEvent<KritzelObjectTitlebarActionEvent>>,
     onObjectTitlebarMenuStateChange: EventName<KritzelEngineCustomEvent<KritzelObjectTitlebarMenuState>>
 };
@@ -61,7 +61,7 @@ export const KritzelEngine: StencilReactComponent<KritzelEngineElement, KritzelE
         onNotificationsChange: 'notificationsChange',
         onContextMenuStateChange: 'contextMenuStateChange',
         onIsLoadingChange: 'isLoadingChange',
-        onAgenticCursorDetached: 'agenticCursorDetached',
+        onAgentsChange: 'agentsChange',
         onObjectTitlebarAction: 'objectTitlebarAction',
         onObjectTitlebarMenuStateChange: 'objectTitlebarMenuStateChange'
     } as KritzelEngineEvents,

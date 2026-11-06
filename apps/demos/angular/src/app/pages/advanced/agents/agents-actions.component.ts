@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/
 import {
   BroadcastSyncProvider,
   IKritzelUser,
-  KritzelAgenticAction,
+  KritzelAgent,
+  KritzelAgentActionError,
   KritzelEditor,
   KritzelObjectChangeSource,
   KritzelShape,
@@ -78,6 +79,7 @@ function createActionSeeds(): KritzelShape[] {
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
+        (isReady)="addAgent()"
         (objectsAdded)="onAdded($event)"
         (objectsUpdated)="onUpdated($event)"
         (objectsRemoved)="onRemoved($event)"
@@ -120,54 +122,75 @@ export class AgentsActionsComponent {
   message = signal('');
   lastChange = signal('');
 
-  private abortController: AbortController | null = null;
+  private readonly agent = new KritzelAgent({ id: AGENT, name: 'Agent', color: '#7C3AED', position: { x: -400, y: -200 } });
+
+  constructor() {
+    this.agent.on('change', state => {
+      this.canUndo.set(state.canUndo);
+      this.canRedo.set(state.canRedo);
+    });
+  }
+
+  async addAgent(): Promise<void> {
+    await this.editor()?.addAgent(this.agent);
+  }
 
   async runScript(): Promise<void> {
     const editor = this.editor();
     if (!editor || this.isRunning()) return;
     this.isRunning.set(true);
     this.message.set('');
-    this.abortController = new AbortController();
 
+    const agent = this.agent;
     try {
-      await this.ensureAgent();
-      await this.perform({ type: 'select', objectIds: [RECTANGLE_ID] }, 'Selecting');
-      await this.perform({ type: 'moveObject', objectId: RECTANGLE_ID, to: { x: 40, y: -140 }, align: 'top-left' }, 'Moving');
-      await this.perform({ type: 'resizeObject', objectId: RECTANGLE_ID, width: 220 }, 'Resizing');
-      await this.perform({ type: 'rotateObject', objectId: RECTANGLE_ID, angle: 10 }, 'Rotating');
-      const [note] = await this.perform(
-        { type: 'createShape', x: 60, y: 90, width: 180, height: 90, text: 'Agent note', style: { fillColor: '#fff8e1', strokeColor: '#f59e0b' } },
-        'Adding a note',
-      );
-      if (!note) throw new Error('createShape returned no object');
-      await this.perform({ type: 'connect', from: ELLIPSE_ID, to: note }, 'Connecting');
-      await this.perform(
-        { type: 'drawPath', points: [{ x: 60, y: 200 }, { x: 120, y: 215 }, { x: 180, y: 195 }, { x: 240, y: 210 }], style: { strokeColor: '#7C3AED' } },
-        'Underlining',
-      );
-      await this.perform({ type: 'clearSelection' }, 'Done');
+      await this.addAgent();
+      // The first action that does not complete throws out of the task.
+      await agent.task('Selecting', async () => {
+        await agent.select([RECTANGLE_ID]);
+        agent.setStatus('Moving');
+        await agent.moveObject(RECTANGLE_ID, { x: 40, y: -140 }, { align: 'top-left' });
+        agent.setStatus('Resizing');
+        await agent.resizeObject(RECTANGLE_ID, { width: 220 });
+        agent.setStatus('Rotating');
+        await agent.rotateObject(RECTANGLE_ID, 10);
+        agent.setStatus('Adding a note');
+        const { objectIds: [note] = [] } = await agent.createShape({
+          x: 60,
+          y: 90,
+          width: 180,
+          height: 90,
+          text: 'Agent note',
+          style: { fillColor: '#fff8e1', strokeColor: '#f59e0b' },
+        });
+        if (!note) throw new Error('createShape returned no object');
+        agent.setStatus('Connecting');
+        await agent.connect(ELLIPSE_ID, note);
+        agent.setStatus('Underlining');
+        await agent.drawPath([{ x: 60, y: 200 }, { x: 120, y: 215 }, { x: 180, y: 195 }, { x: 240, y: 210 }], { style: { strokeColor: '#7C3AED' } });
+        agent.setStatus('Done');
+        await agent.clearSelection();
+      });
       this.message.set("Script finished. Undo the agent's steps one by one, or open a second tab to watch the changes sync.");
     } catch (error) {
-      this.message.set(error instanceof Error ? error.message : String(error));
+      if (error instanceof KritzelAgentActionError) {
+        this.message.set(`${error.action.type} stopped: ${error.reason}`);
+      } else {
+        this.message.set(error instanceof Error ? error.message : String(error));
+      }
     } finally {
-      await editor.updateAgenticCursor(AGENT, { status: null }).catch(() => undefined);
-      this.abortController = null;
       this.isRunning.set(false);
-      await this.refreshHistory();
     }
   }
 
   async history(type: 'undo' | 'redo'): Promise<void> {
-    const editor = this.editor();
-    if (!editor || this.isRunning()) return;
-    await this.ensureAgent();
-    const result = await editor.performAgenticAction(AGENT, { type });
+    if (!this.editor() || this.isRunning()) return;
+    await this.addAgent();
+    const result = await this.agent[type]();
     this.message.set(result.completed ? `Agent ${type} done.` : `Agent ${type} stopped: ${result.reason}`);
-    await this.refreshHistory();
   }
 
   abort(): void {
-    this.abortController?.abort();
+    this.agent.cancel();
   }
 
   onAdded(event: CustomEvent<ObjectsAddedEvent>): void {
@@ -186,28 +209,5 @@ export class AgentsActionsComponent {
     if (source) {
       this.lastChange.set(`${kind} by ${source.agentId} (${source.actionType})`);
     }
-  }
-
-  private async ensureAgent(): Promise<void> {
-    const editor = this.editor();
-    if (editor && !(await editor.getAgenticCursor(AGENT))) {
-      await editor.addAgenticCursor({ id: AGENT, name: 'Agent', color: '#7C3AED', position: { x: -400, y: -200 } });
-    }
-  }
-
-  private async perform(action: KritzelAgenticAction, status: string): Promise<string[]> {
-    const editor = this.editor()!;
-    await editor.updateAgenticCursor(AGENT, { status });
-    const result = await editor.performAgenticAction(AGENT, action, { signal: this.abortController?.signal });
-    if (!result.completed) {
-      throw new Error(`${action.type} stopped: ${result.reason}`);
-    }
-    return result.objectIds ?? [];
-  }
-
-  private async refreshHistory(): Promise<void> {
-    const cursor = await this.editor()?.getAgenticCursor(AGENT);
-    this.canUndo.set(!!cursor?.canUndo);
-    this.canRedo.set(!!cursor?.canRedo);
   }
 }

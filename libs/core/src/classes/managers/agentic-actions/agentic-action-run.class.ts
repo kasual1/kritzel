@@ -61,7 +61,7 @@ interface Waiter {
 }
 
 /**
- * The context of one `performAgenticAction` call: timing, scoped mutations, tracked objects and outcome.
+ * The context of one agent action (`agent.perform()`): timing, scoped mutations, tracked objects and outcome.
  * Executors drive it; the action manager starts, checks and settles it.
  * @internal
  */

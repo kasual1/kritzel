@@ -176,12 +176,19 @@ describe('KritzelEngine', () => {
       cleanup: jest.fn(),
     },
     agenticCursorManager: {
-      onDetached: jest.fn(),
       cleanup: jest.fn(),
     },
     agenticActionManager: {
-      perform: jest.fn().mockResolvedValue({ completed: true, objectIds: [] }),
       cleanup: jest.fn(),
+    },
+    agentManager: {
+      add: jest.fn((agent: any) => agent),
+      remove: jest.fn().mockReturnValue(true),
+      get: jest.fn().mockReturnValue(null),
+      getAll: jest.fn().mockReturnValue([]),
+      getPresences: jest.fn().mockReturnValue([]),
+      onChange: jest.fn(),
+      setDisposed: jest.fn(),
     },
     themeManager: {
       setTargetElement: jest.fn(),
@@ -280,6 +287,7 @@ describe('KritzelEngine', () => {
       'notificationsChange',
       'contextMenuStateChange',
       'isLoadingChange',
+      'agentsChange',
     ];
     for (const field of emitterFields) {
       (engine as any)[field] = { emit: jest.fn() };
@@ -2954,22 +2962,41 @@ describe('KritzelEngine', () => {
     });
   });
 
-  describe('agentic actions', () => {
-    it('delegates performAgenticAction to the action manager', async () => {
-      const signal = new AbortController().signal;
-      const action = { type: 'moveObject' as const, objectId: 'a', to: { x: 1, y: 2 } };
+  describe('agents', () => {
+    it('delegates addAgent, removeAgent, getAgent and getAgents to the agent manager', async () => {
+      const agent = { id: 'planner' } as any;
+      core.agentManager.get.mockReturnValue(agent);
+      core.agentManager.getAll.mockReturnValue([agent]);
 
-      await expect(engine.performAgenticAction('agent', action, { instant: true, signal })).resolves.toEqual({ completed: true, objectIds: [] });
-      expect(core.agenticActionManager.perform).toHaveBeenCalledWith('agent', action, { instant: true, signal });
+      await expect(engine.addAgent(agent)).resolves.toBe(agent);
+      await expect(engine.removeAgent('planner')).resolves.toBe(true);
+      await expect(engine.getAgent('planner')).resolves.toBe(agent);
+      await expect(engine.getAgents()).resolves.toEqual([agent]);
+      expect(core.agentManager.add).toHaveBeenCalledWith(agent);
+      expect(core.agentManager.remove).toHaveBeenCalledWith('planner');
     });
 
-    it('stops agentic actions before tearing down objects on disconnect', () => {
+    it('emits agentsChange with the presences when the agent manager changes', () => {
+      const presences = [{ id: 'planner', kind: 'agent' }];
+      core.agentManager.getPresences.mockReturnValue(presences);
+      const listener = core.agentManager.onChange.mock.calls[0][0];
+
+      listener();
+
+      expect((engine as any).agentsChange.emit).toHaveBeenCalledWith({ agents: presences });
+    });
+
+    it('stops agent actions before tearing down objects on disconnect, and frees its agents', () => {
       core.store.objects.destroy = core.store.objects.destroy ?? jest.fn();
       engine.disconnectedCallback();
 
       const cleanupOrder = (core.agenticActionManager.cleanup as jest.Mock).mock.invocationCallOrder[0];
       const destroyOrder = (core.store.objects.destroy as jest.Mock).mock.invocationCallOrder[0];
       expect(cleanupOrder).toBeLessThan(destroyOrder);
+      expect(core.agentManager.setDisposed).toHaveBeenLastCalledWith(true);
+
+      engine.connectedCallback();
+      expect(core.agentManager.setDisposed).toHaveBeenLastCalledWith(false);
     });
   });
 });

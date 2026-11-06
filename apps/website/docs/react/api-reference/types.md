@@ -130,19 +130,19 @@ interface KritzelShapeToolConfig {
 ```ts
 interface ObjectsAddedEvent {
   objects: KritzelBaseObject[];
-  /** Set when an agentic cursor made the change. */
+  /** Set when an agent made the change. */
   source?: KritzelAgentChangeSource;
 }
 
 interface ObjectsRemovedEvent {
   objects: KritzelBaseObject[];
-  /** Set when an agentic cursor made the change. */
+  /** Set when an agent made the change. */
   source?: KritzelAgentChangeSource;
 }
 
 interface ObjectsUpdatedEvent {
   objects: { object: KritzelBaseObject; changedProperties: Partial<KritzelBaseObject> }[];
-  /** Set when an agentic cursor made the change. */
+  /** Set when an agent made the change. */
   source?: KritzelAgentChangeSource;
 }
 ```
@@ -263,193 +263,27 @@ enum ShapeType {
 | `ThemeAwareColor` | `{ light: string; dark: string; label?: string }` | Color that adapts to active theme |
 | `ColorPalette` | `readonly ThemeAwareColor[]` | Array of theme-aware colors |
 
-## Agentic Cursor Types
+## Agent Types
 
-Types used by the [agentic cursor methods](./editor.md#agentic-cursors).
+Types used by [`KritzelAgent`](./agent.md) and the [agent methods](./editor.md#agents) of the editor. The [Agent API Reference](./agent.md#related-types) lists their full definitions.
 
-### `KritzelAgenticCursorOptions`
-
-Passed to `addAgenticCursor()`.
-
-```ts
-interface KritzelAgenticCursorOptions {
-  id?: string;
-  name?: string;
-  color?: string;
-  status?: string;
-  visible?: boolean;
-  position?: KritzelAgenticTarget;
-}
-```
-
-### `KritzelAgenticTarget`
-
-Target of `moveAgenticCursor()` and the initial `position` of a cursor. Either world coordinates or an anchor on an object.
-
-```ts
-type KritzelAgenticTarget =
-  | { x: number; y: number }
-  | { objectId: string; anchor?: KritzelAgenticAnchor; offset?: { x: number; y: number } };
-
-type KritzelAgenticAnchor =
-  | 'center' | 'top-left' | 'top' | 'top-right' | 'right'
-  | 'bottom-right' | 'bottom' | 'bottom-left' | 'left';
-```
-
-### `KritzelAgenticMoveOptions`
-
-Passed to `moveAgenticCursor()`.
-
-```ts
-interface KritzelAgenticMoveOptions {
-  duration?: number;
-  easing?: KritzelEasing;
-  speed?: number;
-  attach?: boolean;
-}
-
-type KritzelEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | ((t: number) => number);
-
-interface KritzelAgenticMoveResult {
-  completed: boolean;
-}
-```
-
-### `KritzelAgenticCursorPatch`
-
-Passed to `updateAgenticCursor()`.
-
-```ts
-interface KritzelAgenticCursorPatch {
-  name?: string;
-  color?: string;
-  status?: string | null;
-  visible?: boolean;
-}
-```
-
-### `KritzelAgenticCursor`
-
-Snapshot returned by `addAgenticCursor()`, `updateAgenticCursor()`, `getAgenticCursor()` and `getAgenticCursors()`.
-
-```ts
-interface KritzelAgenticCursor {
-  id: string;
-  name?: string;
-  color: string;
-  status?: string;
-  visible: boolean;
-  position: { x: number; y: number };
-  attachedTo: { objectId: string; anchor: KritzelAgenticAnchor; offset: { x: number; y: number } } | null;
-  isMoving: boolean;
-  selectedObjectIds: string[];
-  isPressed: boolean;
-  pressCount: number;
-  activeAction: KritzelAgenticAction['type'] | null;
-  queueLength: number;
-  canUndo: boolean;
-  canRedo: boolean;
-}
-```
-
-### `KritzelAgenticCursorDetachedEvent`
-
-Emitted by the `agenticCursorDetached` event.
-
-```ts
-interface KritzelAgenticCursorDetachedEvent {
-  id: string;
-  objectId: string;
-  reason: 'object-removed' | 'manual';
-}
-```
-
-### `KritzelAgenticAction`
-
-Passed to `performAgenticAction()`. Coordinates and sizes are in world units, angles in degrees.
-
-```ts
-type KritzelAgenticAction =
-  | { type: 'click'; target: KritzelAgenticTarget; count?: 1 | 2 }
-  | { type: 'select'; objectIds: string[]; additive?: boolean }
-  | { type: 'clearSelection' }
-  | { type: 'moveObject'; objectId: string; to: KritzelAgenticTarget; align?: KritzelAgenticAnchor }
-  | { type: 'resizeObject'; objectId: string; width?: number; height?: number; keepAspectRatio?: boolean; handle?: KritzelAgenticResizeHandle }
-  | { type: 'rotateObject'; objectId: string; angle: number; relative?: boolean }
-  | { type: 'createShape'; x: number; y: number; width: number; height: number; shapeType?: ShapeType; text?: string; style?: KritzelAgenticShapeStyle }
-  | { type: 'createText'; x: number; y: number; text: string; style?: KritzelAgenticTextStyle }
-  | { type: 'typeText'; objectId: string; text: string; mode?: 'append' | 'replace' }
-  | { type: 'drawPath'; points: { x: number; y: number }[]; style?: KritzelAgenticStrokeStyle }
-  | { type: 'connect'; from: string; to: string; style?: KritzelAgenticLineStyle }
-  | { type: 'deleteObjects'; objectIds: string[] }
-  | { type: 'undo' }
-  | { type: 'redo' };
-
-type KritzelAgenticResizeHandle = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
-type KritzelAgenticColor = string | ThemeAwareColor;
-
-interface KritzelAgenticShapeStyle {
-  fillColor?: KritzelAgenticColor;
-  strokeColor?: KritzelAgenticColor;
-  strokeWidth?: number;
-  opacity?: number;
-  fontSize?: number;
-  fontFamily?: string;
-  fontColor?: KritzelAgenticColor;
-}
-
-interface KritzelAgenticTextStyle {
-  fontSize?: number;
-  fontFamily?: string;
-  fontColor?: KritzelAgenticColor;
-  opacity?: number;
-}
-
-interface KritzelAgenticStrokeStyle {
-  strokeColor?: KritzelAgenticColor;
-  strokeWidth?: number;
-  opacity?: number;
-}
-
-interface KritzelAgenticLineStyle extends KritzelAgenticStrokeStyle {
-  arrows?: LineArrowConfig;
-}
-```
-
-### `KritzelAgenticActionOptions`
-
-Passed to `performAgenticAction()`.
-
-```ts
-interface KritzelAgenticActionOptions {
-  speed?: number;
-  instant?: boolean;
-  signal?: AbortSignal;
-  easing?: KritzelEasing;
-}
-```
-
-### `KritzelAgenticActionResult`
-
-Returned by `performAgenticAction()`.
-
-```ts
-interface KritzelAgenticActionResult {
-  completed: boolean;
-  reason?: KritzelAgenticActionFailureReason;
-  objectIds?: string[];
-}
-
-type KritzelAgenticActionFailureReason =
-  | 'aborted' | 'interrupted' | 'agent-removed' | 'object-removed'
-  | 'user-selected' | 'user-interaction' | 'collaborator-editing' | 'claimed-by-agent'
-  | 'workspace-changed' | 'not-allowed' | 'nothing-to-undo' | 'nothing-to-redo'
-  | 'conflict' | 'invalid-target' | 'engine-disconnected';
-```
+| Type | Description |
+|------|-------------|
+| [`KritzelAgentOptions`](./agent.md#kritzelagentoptions) | Options of `new KritzelAgent()`: `name` (required), `id`, `color`, `avatarUrl`, `speed`, `status`, `visible`, and `position`. |
+| [`KritzelAgentState`](./agent.md#kritzelagentstate) | Snapshot returned by `agent.state`: position, attachment, status, visibility, selection, activity, and `canUndo` / `canRedo`. |
+| [`KritzelAgentPresence`](./agent.md#kritzelagentpresence) | An agent as reported by `agentsChange` and `agent.toPresence()`. |
+| [`KritzelAgentsChangeEvent`](./agent.md#kritzelagentschangeevent) | Detail of the `agentsChange` event: `{ agents: KritzelAgentPresence[] }`. |
+| [`KritzelAgentEventMap`](./agent.md#kritzelagenteventmap) | Events of `agent.on()`, with `KritzelAgentDetachedEvent` and `KritzelAgentInterruptedEvent`. |
+| [`KritzelAgenticTarget`](./agent.md#kritzelagentictarget) | A point in world coordinates or an anchor (`KritzelAgenticAnchor`) on an object. |
+| [`KritzelAgenticMoveOptions`](./agent.md#kritzelagenticmoveoptions) | Options of `agent.moveTo()`, which resolves with `KritzelAgenticMoveResult`. |
+| [`KritzelAgenticAction`](./agent.md#kritzelagenticaction) | The actions of `agent.perform()`, from `click` to `setStyle`, `addObject`, `undo`, and `redo`. |
+| [`KritzelAgenticActionOptions`](./agent.md#kritzelagenticactionoptions) | `speed`, `instant`, `signal`, and `easing` of an action. |
+| [`KritzelAgenticActionResult`](./agent.md#kritzelagenticactionresult) | Result of an action, with a `KritzelAgenticActionFailureReason` when it did not complete. |
+| [`KritzelAgentActionError`](./agent.md#kritzelagentactionerror) | Thrown inside `agent.task()` when an action does not complete. |
 
 ### `KritzelAgentChangeSource`
 
-The `source` of `objectsAdded`, `objectsUpdated`, and `objectsRemoved` when an agentic cursor made the change.
+The `source` of `objectsAdded`, `objectsUpdated`, and `objectsRemoved` when an agent made the change. `actionType` is `'undo'` or `'redo'` for changes from the agent's own history.
 
 ```ts
 interface KritzelAgentChangeSource {

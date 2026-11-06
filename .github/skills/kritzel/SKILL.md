@@ -29,6 +29,7 @@ Use these demo areas as good examples for the corresponding task:
 | Start an editor and seed objects | [Getting started](../../../apps/demos/angular/src/app/pages/getting-started/) | [Getting started](../../../apps/demos/react/src/pages/getting-started/) | [Getting started](../../../apps/demos/vue/src/pages/getting-started/) |
 | Controls, objects, tools, viewport, workspaces and persistence | [Fundamentals](../../../apps/demos/angular/src/app/pages/fundamentals/) | [Fundamentals](../../../apps/demos/react/src/pages/fundamentals/) | [Fundamentals](../../../apps/demos/vue/src/pages/fundamentals/) |
 | Collaboration, dynamic objects, import/export and user management | [Advanced](../../../apps/demos/angular/src/app/pages/advanced/) | [Advanced](../../../apps/demos/react/src/pages/advanced/) | [Advanced](../../../apps/demos/vue/src/pages/advanced/) |
+| Agents driven by code (`KritzelAgent`: cursor, animated actions, own undo history) | [Agents](../../../apps/demos/angular/src/app/pages/advanced/agents/) | [Agents](../../../apps/demos/react/src/pages/advanced/agents/) | [Agents](../../../apps/demos/vue/src/pages/advanced/agents/) |
 | Themes, fonts, icons, localization and object titlebars | [Customization](../../../apps/demos/angular/src/app/pages/customization/) | [Customization](../../../apps/demos/react/src/pages/customization/) | [Customization](../../../apps/demos/vue/src/pages/customization/) |
 | Complete product-style integrations | [Examples](../../../apps/demos/angular/src/app/pages/examples/) | [Examples](../../../apps/demos/react/src/pages/examples/) | [Examples](../../../apps/demos/vue/src/pages/examples/) |
 
@@ -54,7 +55,7 @@ After choosing a framework, open the corresponding file under `./references/<fra
 | Add, update, select, group or query objects; configure object behavior (`objectConfig`: titlebars, rotating, resizing) | `objects.md` |
 | Pan, zoom, coordinates or boundaries | `viewport.md` |
 | Tools and toolbar | `tools-and-toolbar.md` |
-| Ready, change and titlebar action events | `events.md` |
+| Ready, change and titlebar action events; agent events (`agentsChange`, `agent.on(...)`) | `events.md` |
 | Workspaces, persistence and collaboration | `workspaces-and-persistence.md` |
 | Themes, context menus and object titlebar content (`objectTitlebar`) | `theming-and-context-menus.md` |
 | End-to-end examples | `recipes.md` |

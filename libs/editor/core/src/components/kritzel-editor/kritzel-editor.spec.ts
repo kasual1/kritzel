@@ -101,17 +101,39 @@ describe('KritzelEditor', () => {
       getResolvedTerms: jest.fn().mockResolvedValue({}),
       getAvailableLocaleOptions: jest.fn().mockResolvedValue([{ code: 'en', label: 'English' }]),
       saveSettings: jest.fn().mockResolvedValue(undefined),
-      performAgenticAction: jest.fn().mockResolvedValue({ completed: true, objectIds: ['a'] }),
+      addAgent: jest.fn((agent: any) => Promise.resolve(agent)),
+      removeAgent: jest.fn().mockResolvedValue(true),
+      getAgent: jest.fn().mockResolvedValue(null),
+      getAgents: jest.fn().mockResolvedValue([]),
     };
 
     component.engineRef = mockEngine as any;
   });
 
-  describe('Agentic actions', () => {
-    it('forwards performAgenticAction to the engine', async () => {
-      const action = { type: 'select' as const, objectIds: ['a'] };
-      await expect(component.performAgenticAction('agent', action, { instant: true })).resolves.toEqual({ completed: true, objectIds: ['a'] });
-      expect(mockEngine.performAgenticAction).toHaveBeenCalledWith('agent', action, { instant: true });
+  describe('Agents', () => {
+    it('forwards the agent methods to the engine', async () => {
+      const agent = { id: 'planner' } as any;
+
+      await expect(component.addAgent(agent)).resolves.toBe(agent);
+      await expect(component.removeAgent('planner')).resolves.toBe(true);
+      await component.getAgent('planner');
+      await component.getAgents();
+
+      expect(mockEngine.addAgent).toHaveBeenCalledWith(agent);
+      expect(mockEngine.removeAgent).toHaveBeenCalledWith('planner');
+      expect(mockEngine.getAgent).toHaveBeenCalledWith('planner');
+      expect(mockEngine.getAgents).toHaveBeenCalled();
+    });
+
+    it('re-emits agentsChange from the engine without letting it bubble', () => {
+      component.agentsChange = { emit: jest.fn() } as any;
+      const detail = { agents: [] };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleAgentsChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(component.agentsChange.emit).toHaveBeenCalledWith(detail);
     });
   });
 

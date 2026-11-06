@@ -91,7 +91,7 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Api Reference',
       collapsed: true,
-      items: ['api-reference/editor', 'api-reference/engine', 'api-reference/objects', 'api-reference/tools', 'api-reference/providers', 'api-reference/theming', 'api-reference/icons', 'api-reference/localization-terms'],
+      items: ['api-reference/editor', 'api-reference/engine', 'api-reference/agent', 'api-reference/objects', 'api-reference/tools', 'api-reference/providers', 'api-reference/theming', 'api-reference/icons', 'api-reference/localization-terms'],
     }
   ],
 };

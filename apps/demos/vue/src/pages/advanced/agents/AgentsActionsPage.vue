@@ -2,19 +2,21 @@
 import {
   BroadcastSyncProvider,
   getEditorRef,
+  KritzelAgent,
+  KritzelAgentActionError,
   KritzelEditor,
   KritzelShape,
   KritzelWorkspace,
   ShapeType,
   type IKritzelUser,
-  type KritzelAgenticAction,
+  type KritzelAgentState,
   type KritzelObjectChangeSource,
   type KritzelSyncConfig,
   type ObjectsAddedEvent,
   type ObjectsRemovedEvent,
   type ObjectsUpdatedEvent,
 } from '@kritzel/vue-editor'
-import { ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import { vueThemeDark } from '../../../const/vue-theme-dark'
 import { vueThemeLight } from '../../../const/vue-theme-light'
 import { hostStyle, editorStyle } from '../../shared/demo-shared'
@@ -59,33 +61,24 @@ const tabId = Math.random().toString(36).slice(2, 8)
 const user: IKritzelUser = { id: `tab-${tabId}`, displayName: `Tab ${tabId}` }
 const workspaces = [new KritzelWorkspace({ id: 'agentic-actions-demo', name: 'Agentic Actions', objects: createActionSeeds() })]
 
+const agent = new KritzelAgent({ id: AGENT, name: 'Agent', color: '#7C3AED', position: { x: -400, y: -200 } })
+
 const isRunning = ref(false)
 const canUndo = ref(false)
 const canRedo = ref(false)
 const message = ref('')
 const lastChange = ref('')
-let abortController: AbortController | null = null
 
-async function ensureAgent() {
-  if (editor.value && !(await editor.value.getAgenticCursor(AGENT))) {
-    await editor.value.addAgenticCursor({ id: AGENT, name: 'Agent', color: '#7C3AED', position: { x: -400, y: -200 } })
-  }
+function syncHistory(state: KritzelAgentState) {
+  canUndo.value = state.canUndo
+  canRedo.value = state.canRedo
 }
+syncHistory(agent.state)
+const offChange = agent.on('change', syncHistory)
+onBeforeUnmount(offChange)
 
-async function refreshHistory() {
-  const cursor = await editor.value?.getAgenticCursor(AGENT)
-  canUndo.value = !!cursor?.canUndo
-  canRedo.value = !!cursor?.canRedo
-}
-
-async function perform(action: KritzelAgenticAction, status: string) {
-  const current = editor.value!
-  await current.updateAgenticCursor(AGENT, { status })
-  const result = await current.performAgenticAction(AGENT, action, { signal: abortController?.signal })
-  if (!result.completed) {
-    throw new Error(`${action.type} stopped: ${result.reason}`)
-  }
-  return result.objectIds ?? []
+async function addAgent() {
+  await editor.value?.addAgent(agent)
 }
 
 async function runScript() {
@@ -93,47 +86,56 @@ async function runScript() {
   if (!current || isRunning.value) return
   isRunning.value = true
   message.value = ''
-  abortController = new AbortController()
 
   try {
-    await ensureAgent()
-    await perform({ type: 'select', objectIds: [RECTANGLE_ID] }, 'Selecting')
-    await perform({ type: 'moveObject', objectId: RECTANGLE_ID, to: { x: 40, y: -140 }, align: 'top-left' }, 'Moving')
-    await perform({ type: 'resizeObject', objectId: RECTANGLE_ID, width: 220 }, 'Resizing')
-    await perform({ type: 'rotateObject', objectId: RECTANGLE_ID, angle: 10 }, 'Rotating')
-    const [note] = await perform(
-      { type: 'createShape', x: 60, y: 90, width: 180, height: 90, text: 'Agent note', style: { fillColor: '#fff8e1', strokeColor: '#f59e0b' } },
-      'Adding a note',
-    )
-    if (!note) throw new Error('createShape returned no object')
-    await perform({ type: 'connect', from: ELLIPSE_ID, to: note }, 'Connecting')
-    await perform(
-      { type: 'drawPath', points: [{ x: 60, y: 200 }, { x: 120, y: 215 }, { x: 180, y: 195 }, { x: 240, y: 210 }], style: { strokeColor: '#7C3AED' } },
-      'Underlining',
-    )
-    await perform({ type: 'clearSelection' }, 'Done')
+    await addAgent()
+    // The first action that does not complete throws out of the task.
+    await agent.task('Selecting', async () => {
+      await agent.select([RECTANGLE_ID])
+      agent.setStatus('Moving')
+      await agent.moveObject(RECTANGLE_ID, { x: 40, y: -140 }, { align: 'top-left' })
+      agent.setStatus('Resizing')
+      await agent.resizeObject(RECTANGLE_ID, { width: 220 })
+      agent.setStatus('Rotating')
+      await agent.rotateObject(RECTANGLE_ID, 10)
+      agent.setStatus('Adding a note')
+      const { objectIds: [note] = [] } = await agent.createShape({
+        x: 60,
+        y: 90,
+        width: 180,
+        height: 90,
+        text: 'Agent note',
+        style: { fillColor: '#fff8e1', strokeColor: '#f59e0b' },
+      })
+      if (!note) throw new Error('createShape returned no object')
+      agent.setStatus('Connecting')
+      await agent.connect(ELLIPSE_ID, note)
+      agent.setStatus('Underlining')
+      await agent.drawPath([{ x: 60, y: 200 }, { x: 120, y: 215 }, { x: 180, y: 195 }, { x: 240, y: 210 }], { style: { strokeColor: '#7C3AED' } })
+      agent.setStatus('Done')
+      await agent.clearSelection()
+    })
     message.value = "Script finished. Undo the agent's steps one by one, or open a second tab to watch the changes sync."
   } catch (error) {
-    message.value = error instanceof Error ? error.message : String(error)
+    if (error instanceof KritzelAgentActionError) {
+      message.value = `${error.action.type} stopped: ${error.reason}`
+    } else {
+      message.value = error instanceof Error ? error.message : String(error)
+    }
   } finally {
-    await current.updateAgenticCursor(AGENT, { status: null }).catch(() => undefined)
-    abortController = null
     isRunning.value = false
-    await refreshHistory()
   }
 }
 
 async function history(type: 'undo' | 'redo') {
-  const current = editor.value
-  if (!current || isRunning.value) return
-  await ensureAgent()
-  const result = await current.performAgenticAction(AGENT, { type })
+  if (!editor.value || isRunning.value) return
+  await addAgent()
+  const result = await agent[type]()
   message.value = result.completed ? `Agent ${type} done.` : `Agent ${type} stopped: ${result.reason}`
-  await refreshHistory()
 }
 
 function abort() {
-  abortController?.abort()
+  agent.cancel()
 }
 
 function onChange(source: KritzelObjectChangeSource | undefined, kind: string) {
@@ -171,6 +173,7 @@ const onRemoved = (event: CustomEvent<ObjectsRemovedEvent>) => onChange(event.de
       :isMoreMenuVisible="false"
       :isWorkspaceManagerVisible="false"
       :style="editorStyle"
+      @isReady="addAgent"
       @objectsAdded="onAdded"
       @objectsUpdated="onUpdated"
       @objectsRemoved="onRemoved"

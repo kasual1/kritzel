@@ -1,12 +1,12 @@
 import { useMemo, useRef, useState } from "react";
 import {
+  KritzelAgent,
   KritzelEditor,
   KritzelShape,
   KritzelWorkspace,
   ShapeType,
   type HTMLKritzelEditorElement,
   type KritzelAgenticAction,
-  type KritzelAgenticActionResult,
   type KritzelObjectChangeSource,
 } from "@kritzel/react-editor";
 import { reactThemeLight } from "../../../const/react-theme-light";
@@ -72,6 +72,17 @@ const SCENARIOS: { id: ScenarioId; label: string; hint: string }[] = [
   { id: "together", label: "Agents + human", hint: "Two agents work at once; then you can take a note from Agent A." },
 ];
 
+/** One agent per persona; a scenario adds the ones it needs, Reset removes them again. */
+function createAgents() {
+  return {
+    organizer: new KritzelAgent({ id: "organizer", name: "Organizer", color: "#7C3AED", speed: SPEED, position: { x: 0, y: 0 } }),
+    architect: new KritzelAgent({ id: "architect", name: "Architect", color: "#0EA5E9", speed: SPEED, position: { x: -520, y: -200 } }),
+    reviewer: new KritzelAgent({ id: "reviewer", name: "Reviewer", color: "#DB2777", speed: SPEED, position: { x: -400, y: 150 } }),
+    agentA: new KritzelAgent({ id: "agent-a", name: "Agent A", color: "#7C3AED", speed: SPEED, position: { x: -560, y: -300 } }),
+    agentB: new KritzelAgent({ id: "agent-b", name: "Agent B", color: "#F59E0B", speed: SPEED, position: { x: -300, y: -300 } }),
+  };
+}
+
 export function AgentsShowcasePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [state, setState] = useState<ScenarioState>("idle");
@@ -82,17 +93,18 @@ export function AgentsShowcasePage() {
   const [greenId, setGreenId] = useState("");
   const [phase, setPhase] = useState("");
   const workspaces = useMemo(() => [new KritzelWorkspace({ id: "agentic-showcase", name: "Agentic Showcase" })], []);
+  const [agents] = useState(createAgents);
 
   const editor = () => editorRef.current!;
 
   /** Runs an action and throws when it does not complete, so a script stops at the first problem. */
-  async function act(cursorId: string, action: KritzelAgenticAction, status?: string, speed = SPEED): Promise<string[]> {
+  async function act(agent: KritzelAgent, action: KritzelAgenticAction, status?: string): Promise<string[]> {
     if (status) {
-      await editor().updateAgenticCursor(cursorId, { status });
+      agent.setStatus(status);
     }
-    const result = await editor().performAgenticAction(cursorId, action, { speed });
+    const result = await agent.perform(action);
     if (!result.completed) {
-      throw new Error(`${cursorId}: ${action.type} stopped (${result.reason})`);
+      throw new Error(`${agent.id}: ${action.type} stopped (${result.reason})`);
     }
     return result.objectIds ?? [];
   }
@@ -100,7 +112,11 @@ export function AgentsShowcasePage() {
   async function resetBoard() {
     const current = editor();
     await current.clearSelection();
-    await current.clearAgenticCursors();
+    for (const agent of await current.getAgents()) {
+      await current.removeAgent(agent);
+    }
+    // A removed agent keeps its status; start the next scenario without one.
+    Object.values(agents).forEach(agent => agent.setStatus(null));
     const objects = (await current.getAllObjects()).filter(
       object => object.__class__ !== "KritzelSelectionGroup" && object.__class__ !== "KritzelSelectionBox",
     );
@@ -122,28 +138,30 @@ export function AgentsShowcasePage() {
       note({ x: 400, y: 40, width: 140, height: 110, text: "Ideas", rotation: -10, ...PINK }),
     ];
     await editor().addObjects(notes);
-    await editor().addAgenticCursor({ id: "organizer", name: "Organizer", color: "#7C3AED", position: { x: 0, y: 0 } });
+    const { organizer } = agents;
+    await editor().addAgent(organizer);
 
     // A 3 x 2 grid of 160 x 100 cells.
     const cells = [-270, -80, 110].flatMap(x => [-140, 0].map(y => ({ x, y })));
     cells.sort((a, b) => a.y - b.y || a.x - b.x);
     for (const [index, item] of notes.entries()) {
       const cell = cells[index];
-      await act("organizer", { type: "select", objectIds: [item.id] }, `Note ${index + 1} of ${notes.length}`);
-      await act("organizer", { type: "rotateObject", objectId: item.id, angle: 0 });
-      await act("organizer", { type: "moveObject", objectId: item.id, to: cell, align: "top-left" });
-      await act("organizer", { type: "resizeObject", objectId: item.id, width: 160, height: 100, keepAspectRatio: false });
+      await act(organizer, { type: "select", objectIds: [item.id] }, `Note ${index + 1} of ${notes.length}`);
+      await act(organizer, { type: "rotateObject", objectId: item.id, angle: 0 });
+      await act(organizer, { type: "moveObject", objectId: item.id, to: cell, align: "top-left" });
+      await act(organizer, { type: "resizeObject", objectId: item.id, width: 160, height: 100, keepAspectRatio: false });
     }
-    await act("organizer", { type: "clearSelection" }, "All tidy");
+    await act(organizer, { type: "clearSelection" }, "All tidy");
   }
 
   // ─── Use case 2: build a flowchart ────────────────────────────────────────
 
   async function flowchart() {
-    await editor().addAgenticCursor({ id: "architect", name: "Architect", color: "#0EA5E9", position: { x: -520, y: -200 } });
+    const { architect } = agents;
+    await editor().addAgent(architect);
     const step = (x: number, y: number, text: string, shapeType: ShapeType, fill: string, stroke: string, status: string) =>
       act(
-        "architect",
+        architect,
         { type: "createShape", shapeType, x, y, width: 150, height: 80, text, style: { fillColor: fill, strokeColor: stroke, strokeWidth: 2 } },
         status,
       ).then(([id]) => id!);
@@ -156,14 +174,14 @@ export function AgentsShowcasePage() {
     const done = await step(340, -60, "Done", ShapeType.Ellipse, "#dcfce7", "#16a34a", "Adding the end");
 
     const lineStyle = { strokeColor: "#475569", strokeWidth: 3 };
-    await act("architect", { type: "connect", from: start, to: load, style: lineStyle }, "Connecting the steps");
-    await act("architect", { type: "connect", from: load, to: valid, style: lineStyle });
-    await act("architect", { type: "connect", from: valid, to: save, style: lineStyle });
-    await act("architect", { type: "connect", from: save, to: done, style: lineStyle });
-    await act("architect", { type: "connect", from: valid, to: retry, style: lineStyle }, "Connecting the error path");
-    await act("architect", { type: "connect", from: retry, to: load, style: lineStyle });
-    await act("architect", { type: "typeText", objectId: save, text: " ✓" }, "Marking the happy path");
-    await editor().updateAgenticCursor("architect", { status: "Flowchart ready" });
+    await act(architect, { type: "connect", from: start, to: load, style: lineStyle }, "Connecting the steps");
+    await act(architect, { type: "connect", from: load, to: valid, style: lineStyle });
+    await act(architect, { type: "connect", from: valid, to: save, style: lineStyle });
+    await act(architect, { type: "connect", from: save, to: done, style: lineStyle });
+    await act(architect, { type: "connect", from: valid, to: retry, style: lineStyle }, "Connecting the error path");
+    await act(architect, { type: "connect", from: retry, to: load, style: lineStyle });
+    await act(architect, { type: "typeText", objectId: save, text: " ✓" }, "Marking the happy path");
+    architect.setStatus("Flowchart ready");
   }
 
   // ─── Use case 3: review and annotate ──────────────────────────────────────
@@ -175,7 +193,8 @@ export function AgentsShowcasePage() {
       note({ x: -150, y: -60, width: 200, height: 60, text: "Buy now", fill: "#e2e8f0", stroke: "#cbd5e1", fontColor: "#cbd5e1" }),
       card,
     ]);
-    await editor().addAgenticCursor({ id: "reviewer", name: "Reviewer", color: "#DB2777", position: { x: -400, y: 150 } });
+    const { reviewer } = agents;
+    await editor().addAgent(reviewer);
 
     // A loose, slightly uneven loop around the button.
     const loop = Array.from({ length: 40 }, (_, i) => {
@@ -183,15 +202,15 @@ export function AgentsShowcasePage() {
       const wobble = 1 + 0.05 * Math.sin(i * 1.7);
       return { x: -50 + Math.cos(angle) * 150 * wobble, y: -30 + Math.sin(angle) * 65 * wobble };
     });
-    await act("reviewer", { type: "drawPath", points: loop, style: { strokeColor: "#DB2777", strokeWidth: 4 } }, "Spotted a problem");
+    await act(reviewer, { type: "drawPath", points: loop, style: { strokeColor: "#DB2777", strokeWidth: 4 } }, "Spotted a problem");
     const [comment] = await act(
-      "reviewer",
+      reviewer,
       { type: "createText", x: -440, y: 90, text: "Contrast is too low here.", style: { fontColor: "#DB2777", fontSize: 18 } },
       "Writing a comment",
     );
-    await act("reviewer", { type: "rotateObject", objectId: card.id, angle: 0 }, "Straightening the card");
-    await act("reviewer", { type: "typeText", objectId: comment!, text: "\nTry #1e293b on white." }, "Suggesting a fix");
-    await editor().updateAgenticCursor("reviewer", { status: "Review done" });
+    await act(reviewer, { type: "rotateObject", objectId: card.id, angle: 0 }, "Straightening the card");
+    await act(reviewer, { type: "typeText", objectId: comment!, text: "\nTry #1e293b on white." }, "Suggesting a fix");
+    reviewer.setStatus("Review done");
   }
 
   // ─── Use case 4: agents and a human together ──────────────────────────────
@@ -203,44 +222,37 @@ export function AgentsShowcasePage() {
     const green = note({ x: -540, y: 120, width: 150, height: 80, text: "Grab me!", ...GREEN });
     await editor().addObjects([intro, outline, feedback, green]);
     setGreenId(green.id);
-    await editor().addAgenticCursor({ id: "agent-a", name: "Agent A", color: "#7C3AED", position: { x: -560, y: -300 } });
-    await editor().addAgenticCursor({ id: "agent-b", name: "Agent B", color: "#F59E0B", position: { x: -300, y: -300 } });
+    const { agentA, agentB } = agents;
+    await editor().addAgent(agentA);
+    await editor().addAgent(agentB);
 
     // Both agents work at the same time; each runs its own queue.
     await Promise.all([
       (async () => {
-        await act("agent-a", { type: "moveObject", objectId: intro.id, to: { x: 150, y: -240 }, align: "top-left" }, "Moving drafts");
-        await act("agent-a", { type: "moveObject", objectId: outline.id, to: { x: 150, y: -130 }, align: "top-left" });
+        await act(agentA, { type: "moveObject", objectId: intro.id, to: { x: 150, y: -240 }, align: "top-left" }, "Moving drafts");
+        await act(agentA, { type: "moveObject", objectId: outline.id, to: { x: 150, y: -130 }, align: "top-left" });
       })(),
       (async () => {
         const [summary] = await act(
-          "agent-b",
+          agentB,
           { type: "createShape", x: -320, y: -60, width: 170, height: 80, text: "Summary", style: { fillColor: "#ede9fe", strokeColor: "#7c3aed" } },
           "Summarizing feedback",
         );
-        await act("agent-b", { type: "connect", from: feedback.id, to: summary!, style: { strokeColor: "#475569", strokeWidth: 3 } });
+        await act(agentB, { type: "connect", from: feedback.id, to: summary!, style: { strokeColor: "#475569", strokeWidth: 3 } });
       })(),
     ]);
 
     // A slow move the user can interrupt by grabbing the note.
-    await editor().updateAgenticCursor("agent-a", { status: "Moving the green note" });
+    agentA.setStatus("Moving the green note");
     setPhase("grab");
     setMessage("Now grab the green note: Agent A is moving it.");
-    const grab: KritzelAgenticActionResult = await editor().performAgenticAction(
-      "agent-a",
-      { type: "moveObject", objectId: green.id, to: { x: 300, y: 140 }, align: "top-left" },
-      { speed: 300 },
-    );
+    const grab = await agentA.moveObject(green.id, { x: 300, y: 140 }, { align: "top-left", speed: 300 });
     setPhase("");
-    if (grab.completed) {
-      await editor().updateAgenticCursor("agent-a", { status: "Moved the note" });
-    } else {
-      await editor().updateAgenticCursor("agent-a", { status: `Backed off (${grab.reason})` });
-    }
+    agentA.setStatus(grab.completed ? "Moved the note" : `Backed off (${grab.reason})`);
 
     // Each agent has its own history: Agent B takes back its connector.
-    await act("agent-b", { type: "undo" }, "Undoing my connector");
-    await editor().updateAgenticCursor("agent-b", { status: "Undid my last step" });
+    await act(agentB, { type: "undo" }, "Undoing my connector");
+    agentB.setStatus("Undid my last step");
     setMessage(
       grab.completed
         ? "Agent A moved the green note. Agent B undid its connector."

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, signal, viewChild } from '@angular/core';
 import {
-  KritzelAgenticCursorDetachedEvent,
+  KritzelAgent,
+  KritzelAgentOptions,
   KritzelEditor,
   KritzelWorkspace,
 } from '@kritzel/angular-editor';
@@ -21,7 +22,7 @@ const WRITER = 'writer';
       <span class="label">Agentic Cursors</span>
       <button [disabled]="isRunning()" (click)="runAgent()">Run Agent</button>
       <button (click)="attachToSelection()">Attach to Selection</button>
-      <button (click)="addCursors()">Reset</button>
+      <button (click)="addAgents()">Reset</button>
       @if (message()) {
         <span class="label">{{ message() }}</span>
       }
@@ -36,8 +37,7 @@ const WRITER = 'writer';
         [isZoomingEnabled]="false"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
-        (isReady)="addCursors()"
-        (agenticCursorDetached)="onDetached($event)"
+        (isReady)="addAgents()"
       ></kritzel-editor>
     </div>
   `,
@@ -67,25 +67,33 @@ export class AgentsBasicComponent {
 
   message = signal('');
 
-  async addCursors(): Promise<void> {
+  private planner: KritzelAgent | null = null;
+
+  private writer: KritzelAgent | null = null;
+
+  async addAgents(): Promise<void> {
     const editor = this.editor();
     if (!editor) return;
 
     const [rectangleId] = await this.getShapeIds();
-    await editor.clearAgenticCursors();
-    await editor.addAgenticCursor({
+    for (const agent of await editor.getAgents()) {
+      await editor.removeAgent(agent);
+    }
+    this.planner = this.createAgent({
       id: PLANNER,
       name: 'Planner',
       color: '#7C3AED',
       position: rectangleId ? { objectId: rectangleId, anchor: 'top-right' } : { x: 0, y: 0 },
     });
-    await editor.addAgenticCursor({
+    this.writer = this.createAgent({
       id: WRITER,
       name: 'Writer',
       color: '#0EA5E9',
       status: 'Waiting…',
       position: { x: -220, y: 60 },
     });
+    await editor.addAgent(this.planner);
+    await editor.addAgent(this.writer);
   }
 
   async runAgent(): Promise<void> {
@@ -97,23 +105,21 @@ export class AgentsBasicComponent {
     try {
       const [rectangleId, ellipseId] = await this.getShapeIds();
       if (!rectangleId || !ellipseId) return;
-      if (!(await editor.getAgenticCursor(PLANNER))) {
-        await this.addCursors();
-      }
+      const { planner, writer } = await this.ensureAgents();
 
-      await editor.updateAgenticCursor(PLANNER, { status: 'Thinking…' });
-      await editor.updateAgenticCursor(WRITER, { status: 'Waiting…' });
-      await editor.moveAgenticCursor(PLANNER, { x: -40, y: -20 });
+      planner.setStatus('Thinking…');
+      writer.setStatus('Waiting…');
+      await planner.moveTo({ x: -40, y: -20 });
 
-      await editor.updateAgenticCursor(PLANNER, { status: 'Reviewing shapes' });
-      await editor.updateAgenticCursor(WRITER, { status: 'Writing notes' });
+      planner.setStatus('Reviewing shapes');
+      writer.setStatus('Writing notes');
       await Promise.all([
-        editor.moveAgenticCursor(PLANNER, { objectId: ellipseId, anchor: 'top-left' }),
-        editor.moveAgenticCursor(WRITER, { objectId: rectangleId, anchor: 'bottom-right' }, { duration: 900, easing: 'ease-out' }),
+        planner.moveTo({ objectId: ellipseId, anchor: 'top-left' }),
+        writer.moveTo({ objectId: rectangleId, anchor: 'bottom-right' }, { duration: 900, easing: 'ease-out' }),
       ]);
 
-      await editor.updateAgenticCursor(PLANNER, { status: 'Done' });
-      await editor.updateAgenticCursor(WRITER, { status: null });
+      planner.setStatus('Done');
+      writer.setStatus(null);
     } finally {
       this.isRunning.set(false);
     }
@@ -127,16 +133,23 @@ export class AgentsBasicComponent {
       this.message.set('Select an object first.');
       return;
     }
-    if (!(await editor.getAgenticCursor(PLANNER))) {
-      await this.addCursors();
-    }
-    await editor.updateAgenticCursor(PLANNER, { status: 'Following selection' });
-    await editor.moveAgenticCursor(PLANNER, { objectId: selected.id, anchor: 'center' });
+    const { planner } = await this.ensureAgents();
+    planner.setStatus('Following selection');
+    await planner.moveTo({ objectId: selected.id, anchor: 'center' });
     this.message.set('Drag the object - the Planner cursor follows it.');
   }
 
-  onDetached(event: CustomEvent<KritzelAgenticCursorDetachedEvent>): void {
-    this.message.set(`"${event.detail.id}" detached (${event.detail.reason}).`);
+  private createAgent(options: KritzelAgentOptions): KritzelAgent {
+    const agent = new KritzelAgent(options);
+    agent.on('detached', ({ reason }) => this.message.set(`"${agent.id}" detached (${reason}).`));
+    return agent;
+  }
+
+  private async ensureAgents(): Promise<{ planner: KritzelAgent; writer: KritzelAgent }> {
+    if (!this.planner?.isAdded || !this.writer?.isAdded) {
+      await this.addAgents();
+    }
+    return { planner: this.planner!, writer: this.writer! };
   }
 
   private async getShapeIds(): Promise<string[]> {

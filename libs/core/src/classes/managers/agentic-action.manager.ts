@@ -50,7 +50,7 @@ const KEEP_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new Set(['u
 const SILENT_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new Set(['workspace-changed', 'engine-disconnected']);
 
 /**
- * Runs `performAgenticAction` calls: one FIFO queue per agentic cursor, cursors in parallel.
+ * Runs agent actions (`agent.perform()`): one FIFO queue per agent, agents in parallel.
  *
  * Each action is cursor choreography (driven by the cursor manager's frame loop) plus changes
  * through core APIs under the cursor's own transaction origin, so agent changes sync like user

@@ -16,16 +16,8 @@ import {
 // type. Stencil removes this import from the output; classes come from @kritzel/core.
 import "@kritzel/engine";
 import {
-  KritzelAgenticAction,
-  KritzelAgenticActionOptions,
-  KritzelAgenticActionResult,
-  KritzelAgenticCursor,
-  KritzelAgenticCursorDetachedEvent,
-  KritzelAgenticMoveOptions,
-  KritzelAgenticMoveResult,
-  KritzelAgenticCursorOptions,
-  KritzelAgenticCursorPatch,
-  KritzelAgenticTarget,
+  KritzelAgent,
+  KritzelAgentsChangeEvent,
   KritzelIconRegistry,
 } from "@kritzel/core";
 import { KritzelToolbarItem } from "@kritzel/core";
@@ -496,11 +488,11 @@ export class KritzelEditor {
   @Event() isReady!: EventEmitter<EditorIsReadyEvent>;
   @Event() activeWorkspaceChange!: EventEmitter<ActiveWorkspaceChangeEvent>;
   @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
-  /** Emitted when objects are added. `source` is set when an agentic cursor made the change. */
+  /** Emitted when objects are added. `source` is set when an agent made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
-  /** Emitted when objects are removed. `source` is set when an agentic cursor made the change. */
+  /** Emitted when objects are removed. `source` is set when an agent made the change. */
   @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
-  /** Emitted when objects are updated. `source` is set when an agentic cursor made the change. */
+  /** Emitted when objects are updated. `source` is set when an agent made the change. */
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
   @Event() objectsSelectionChange!: EventEmitter<KritzelBaseObject[]>;
   @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
@@ -515,9 +507,11 @@ export class KritzelEditor {
   @Event() chatSubmit!: EventEmitter<string>;
   /** Emitted when the user stops the current chat response. */
   @Event() chatStop!: EventEmitter<void>;
-  /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
-  @Event()
-  agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
+  /**
+   * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
+   * (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
+   */
+  @Event() agentsChange!: EventEmitter<KritzelAgentsChangeEvent>;
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event()
   objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
@@ -1054,103 +1048,41 @@ export class KritzelEditor {
   }
 
   /**
-   * Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
-   * @param options - Name, color, status, visibility and initial position (defaults to the viewport center).
-   * @returns A snapshot of the created cursor.
+   * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to
+   * one editor at a time; an agent of an editor that was removed from the page moves here.
+   * Call it after the editor emitted `isReady`.
+   * @param agent - A `new KritzelAgent({ name })`.
+   * @returns The same agent.
    */
   @Method()
-  async addAgenticCursor(
-    options: KritzelAgenticCursorOptions = {},
-  ): Promise<KritzelAgenticCursor> {
-    return this.engineRef.addAgenticCursor(options);
+  async addAgent(agent: KritzelAgent): Promise<KritzelAgent> {
+    return this.engineRef.addAgent(agent);
   }
 
   /**
-   * Updates the name, color, status or visibility of an agentic cursor.
-   * @param id - The cursor ID.
-   * @param patch - The properties to change. Pass `status: null` to clear the status.
-   * @returns A snapshot of the updated cursor.
+   * Removes an agent: its running action is rolled back, its queued actions resolve with
+   * `'agent-removed'`, and its cursor and history are dropped. The agent can be added again.
+   * @param agent - The agent or its ID.
+   * @returns `false` if the agent was not added.
    */
   @Method()
-  async updateAgenticCursor(
-    id: string,
-    patch: KritzelAgenticCursorPatch,
-  ): Promise<KritzelAgenticCursor> {
-    return this.engineRef.updateAgenticCursor(id, patch);
+  async removeAgent(agent: KritzelAgent | string): Promise<boolean> {
+    return this.engineRef.removeAgent(agent);
   }
 
   /**
-   * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
-   * Object targets attach the cursor by default, so it follows the object afterwards.
-   * @param id - The cursor ID.
-   * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
-   * @param options - Duration, easing, speed and whether to attach to an object target.
-   * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+   * Returns an added agent by its ID.
+   * @param id - The agent's ID.
    */
   @Method()
-  async moveAgenticCursor(
-    id: string,
-    target: KritzelAgenticTarget,
-    options: KritzelAgenticMoveOptions = {},
-  ): Promise<KritzelAgenticMoveResult> {
-    return this.engineRef.moveAgenticCursor(id, target, options);
+  async getAgent(id: string): Promise<KritzelAgent | null> {
+    return this.engineRef.getAgent(id);
   }
 
-  /**
-   * Detaches an agentic cursor from its object. The cursor stays at its current position.
-   * @param id - The cursor ID.
-   */
+  /** Returns the added agents. */
   @Method()
-  async detachAgenticCursor(id: string): Promise<void> {
-    return this.engineRef.detachAgenticCursor(id);
-  }
-
-  /**
-   * Removes an agentic cursor. A running move resolves with `completed: false`.
-   * @param id - The cursor ID.
-   * @returns `true` if the cursor existed.
-   */
-  @Method()
-  async removeAgenticCursor(id: string): Promise<boolean> {
-    return this.engineRef.removeAgenticCursor(id);
-  }
-
-  /** Removes all agentic cursors. */
-  @Method()
-  async clearAgenticCursors(): Promise<void> {
-    return this.engineRef.clearAgenticCursors();
-  }
-
-  /**
-   * Returns a snapshot of an agentic cursor.
-   * @param id - The cursor ID.
-   * @returns The cursor, or `null` if it doesn't exist.
-   */
-  @Method()
-  async getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null> {
-    return this.engineRef.getAgenticCursor(id);
-  }
-
-  /** Returns snapshots of all agentic cursors. */
-  @Method()
-  async getAgenticCursors(): Promise<KritzelAgenticCursor[]> {
-    return this.engineRef.getAgenticCursors();
-  }
-
-  /**
-   * Lets an agentic cursor perform an action: it flies to the target, presses and animates the change.
-   * Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`);
-   * the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel.
-   * Objects the user or a collaborator has selected are never changed.
-   * @param cursorId - The cursor ID.
-   * @param action - The action, e.g. `{ type: 'moveObject', objectId, to: { x, y } }`.
-   * @param options - Speed, easing, `instant` and an `AbortSignal`.
-   * @returns Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped.
-   *   Rejects for an unknown cursor or an invalid action.
-   */
-  @Method()
-  async performAgenticAction(cursorId: string, action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
-    return this.engineRef.performAgenticAction(cursorId, action, options);
+  async getAgents(): Promise<KritzelAgent[]> {
+    return this.engineRef.getAgents();
   }
 
   @Method()
@@ -1629,11 +1561,9 @@ export class KritzelEditor {
     this.awarenessChange.emit(event.detail);
   }
 
-  handleAgenticCursorDetached(
-    event: CustomEvent<KritzelAgenticCursorDetachedEvent>,
-  ) {
+  handleAgentsChange(event: CustomEvent<KritzelAgentsChangeEvent>) {
     event.stopPropagation();
-    this.agenticCursorDetached.emit(event.detail);
+    this.agentsChange.emit(event.detail);
   }
 
   handleObjectTitlebarAction(
@@ -2190,9 +2120,7 @@ export class KritzelEditor {
             onContextMenuStateChange={(event) =>
               this.handleContextMenuStateChange(event)
             }
-            onAgenticCursorDetached={(event) =>
-              this.handleAgenticCursorDetached(event)
-            }
+            onAgentsChange={(event) => this.handleAgentsChange(event)}
             onObjectTitlebarAction={(event) =>
               this.handleObjectTitlebarAction(event)
             }

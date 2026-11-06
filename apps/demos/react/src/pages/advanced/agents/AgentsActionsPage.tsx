@@ -1,13 +1,15 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   BroadcastSyncProvider,
+  KritzelAgent,
+  KritzelAgentActionError,
   KritzelEditor,
   KritzelShape,
   KritzelWorkspace,
   ShapeType,
   type HTMLKritzelEditorElement,
   type IKritzelUser,
-  type KritzelAgenticAction,
+  type KritzelAgentState,
   type KritzelObjectChangeSource,
   type KritzelSyncConfig,
 } from "@kritzel/react-editor";
@@ -48,7 +50,7 @@ function createActionSeeds() {
 
 export function AgentsActionsPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
+  const [agent] = useState(() => new KritzelAgent({ id: AGENT, name: "Agent", color: "#7C3AED", position: { x: -400, y: -200 } }));
   const [isRunning, setIsRunning] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -66,26 +68,17 @@ export function AgentsActionsPage() {
     [],
   );
 
-  async function ensureAgent(editor: HTMLKritzelEditorElement) {
-    if (!(await editor.getAgenticCursor(AGENT))) {
-      await editor.addAgenticCursor({ id: AGENT, name: "Agent", color: "#7C3AED", position: { x: -400, y: -200 } });
-    }
-  }
+  useEffect(() => {
+    const syncHistory = (state: KritzelAgentState) => {
+      setCanUndo(state.canUndo);
+      setCanRedo(state.canRedo);
+    };
+    syncHistory(agent.state);
+    return agent.on("change", syncHistory);
+  }, [agent]);
 
-  async function refreshHistory() {
-    const cursor = await editorRef.current?.getAgenticCursor(AGENT);
-    setCanUndo(!!cursor?.canUndo);
-    setCanRedo(!!cursor?.canRedo);
-  }
-
-  async function perform(action: KritzelAgenticAction, status: string) {
-    const editor = editorRef.current!;
-    await editor.updateAgenticCursor(AGENT, { status });
-    const result = await editor.performAgenticAction(AGENT, action, { signal: abortRef.current?.signal });
-    if (!result.completed) {
-      throw new Error(`${action.type} stopped: ${result.reason}`);
-    }
-    return result.objectIds ?? [];
+  async function addAgent() {
+    await editorRef.current?.addAgent(agent);
   }
 
   async function runScript() {
@@ -93,43 +86,52 @@ export function AgentsActionsPage() {
     if (!editor || isRunning) return;
     setIsRunning(true);
     setMessage("");
-    abortRef.current = new AbortController();
 
     try {
-      await ensureAgent(editor);
-      await perform({ type: "select", objectIds: [RECTANGLE_ID] }, "Selecting");
-      await perform({ type: "moveObject", objectId: RECTANGLE_ID, to: { x: 40, y: -140 }, align: "top-left" }, "Moving");
-      await perform({ type: "resizeObject", objectId: RECTANGLE_ID, width: 220 }, "Resizing");
-      await perform({ type: "rotateObject", objectId: RECTANGLE_ID, angle: 10 }, "Rotating");
-      const [note] = await perform(
-        { type: "createShape", x: 60, y: 90, width: 180, height: 90, text: "Agent note", style: { fillColor: "#fff8e1", strokeColor: "#f59e0b" } },
-        "Adding a note",
-      );
-      if (!note) throw new Error("createShape returned no object");
-      await perform({ type: "connect", from: ELLIPSE_ID, to: note }, "Connecting");
-      await perform(
-        { type: "drawPath", points: [{ x: 60, y: 200 }, { x: 120, y: 215 }, { x: 180, y: 195 }, { x: 240, y: 210 }], style: { strokeColor: "#7C3AED" } },
-        "Underlining",
-      );
-      await perform({ type: "clearSelection" }, "Done");
+      await addAgent();
+      // The first action that does not complete throws out of the task.
+      await agent.task("Selecting", async () => {
+        await agent.select([RECTANGLE_ID]);
+        agent.setStatus("Moving");
+        await agent.moveObject(RECTANGLE_ID, { x: 40, y: -140 }, { align: "top-left" });
+        agent.setStatus("Resizing");
+        await agent.resizeObject(RECTANGLE_ID, { width: 220 });
+        agent.setStatus("Rotating");
+        await agent.rotateObject(RECTANGLE_ID, 10);
+        agent.setStatus("Adding a note");
+        const { objectIds: [note] = [] } = await agent.createShape({
+          x: 60,
+          y: 90,
+          width: 180,
+          height: 90,
+          text: "Agent note",
+          style: { fillColor: "#fff8e1", strokeColor: "#f59e0b" },
+        });
+        if (!note) throw new Error("createShape returned no object");
+        agent.setStatus("Connecting");
+        await agent.connect(ELLIPSE_ID, note);
+        agent.setStatus("Underlining");
+        await agent.drawPath([{ x: 60, y: 200 }, { x: 120, y: 215 }, { x: 180, y: 195 }, { x: 240, y: 210 }], { style: { strokeColor: "#7C3AED" } });
+        agent.setStatus("Done");
+        await agent.clearSelection();
+      });
       setMessage("Script finished. Undo the agent's steps one by one, or open a second tab to watch the changes sync.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : String(error));
+      if (error instanceof KritzelAgentActionError) {
+        setMessage(`${error.action.type} stopped: ${error.reason}`);
+      } else {
+        setMessage(error instanceof Error ? error.message : String(error));
+      }
     } finally {
-      await editor.updateAgenticCursor(AGENT, { status: null }).catch(() => undefined);
-      abortRef.current = null;
       setIsRunning(false);
-      await refreshHistory();
     }
   }
 
   async function history(type: "undo" | "redo") {
-    const editor = editorRef.current;
-    if (!editor || isRunning) return;
-    await ensureAgent(editor);
-    const result = await editor.performAgenticAction(AGENT, { type });
+    if (!editorRef.current || isRunning) return;
+    await addAgent();
+    const result = await agent[type]();
     setMessage(result.completed ? `Agent ${type} done.` : `Agent ${type} stopped: ${result.reason}`);
-    await refreshHistory();
   }
 
   function onChange(source: KritzelObjectChangeSource | undefined, kind: string) {
@@ -145,7 +147,7 @@ export function AgentsActionsPage() {
         <button disabled={isRunning} onClick={() => void runScript()}>Run Script</button>
         <button disabled={isRunning || !canUndo} onClick={() => void history("undo")}>Undo Agent</button>
         <button disabled={isRunning || !canRedo} onClick={() => void history("redo")}>Redo Agent</button>
-        <button disabled={!isRunning} onClick={() => abortRef.current?.abort()}>Abort</button>
+        <button disabled={!isRunning} onClick={() => agent.cancel()}>Abort</button>
         {message && <span className="label">{message}</span>}
         {lastChange && <span className="status">{lastChange}</span>}
       </Toolbar>
@@ -162,6 +164,7 @@ export function AgentsActionsPage() {
         isZoomingEnabled={false}
         isMoreMenuVisible={false}
         isWorkspaceManagerVisible={false}
+        onIsReady={() => void addAgent()}
         onObjectsAdded={event => onChange(event.detail.source, "Added")}
         onObjectsUpdated={event => onChange(event.detail.source, "Updated")}
         onObjectsRemoved={event => onChange(event.detail.source, "Removed")}

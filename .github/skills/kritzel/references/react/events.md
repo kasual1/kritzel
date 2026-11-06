@@ -29,6 +29,7 @@ Handlers are typed as receiving `KritzelEditorCustomEvent<T>` (a `CustomEvent` s
 | `onAwarenessChange` | `Map<number, Record<string, any>>` | Remote collaborator presence/cursors update |
 | `onLogin` / `onLogout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
 | `onObjectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`elementId`, `menuItemId?`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked or a titlebar menu item is selected (also on the engine) — in addition to the button's or menu item's own `action` |
+| `onAgentsChange` | `KritzelAgentsChangeEvent` (`agents`: `KritzelAgentPresence[]` with `id`, `name`, `color`, `status`, `visible`, `activeAction`, `queueLength`) | Agents are added/removed (`addAgent` / `removeAgent`) or their name, color, avatar, status, visibility or activity changes (also on the engine). Never fires for plain cursor motion |
 
 ## `<KritzelEngine>` event props
 
@@ -109,11 +110,24 @@ async function onTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
 />
 ```
 
+## Agent events
+
+A `KritzelAgent` (`new KritzelAgent({ name })`, added with `editor.addAgent(agent)` after the ready event) is a plain object, not an element, so its own events go through `agent.on(event, listener)`, which returns an unsubscribe function: `change` (`KritzelAgentState`: `status`, `visible`, `selection`, `activeAction`, `queueLength`, `canUndo`, `canRedo`, …; not emitted for plain cursor motion), `detached` (`{ objectId, reason: 'object-removed' | 'manual' }`), `interrupted` (`{ action, reason, objectIds, keptChanges }` — the user or a collaborator took over the objects of a running action) and `removed`. `agent.state` returns the current snapshot. Use the editor's `agentsChange` for a list of all agents.
+
+```tsx
+const [planner] = useState(() => new KritzelAgent({ id: 'planner', name: 'Planner', color: '#7C3AED' }));
+const [plannerState, setPlannerState] = useState(() => planner.state);
+
+useEffect(() => planner.on('change', setPlannerState), [planner]);
+```
+
+Create agents once (lazy `useState` or `useRef`) and add them in `onIsReady`; re-adding the same instance is a no-op, so StrictMode double calls are harmless.
+
 ## Import sources for event payload types
 
-`ObjectsAddedEvent`, `ObjectsUpdatedEvent` and `ObjectsRemovedEvent` carry an optional `source` (`KritzelAgentChangeSource`: `{ type: 'agent', agentId, actionType }`) when an agentic cursor made the change through `performAgenticAction`; it is absent for user, collaborator and sync changes.
+`ObjectsAddedEvent`, `ObjectsUpdatedEvent` and `ObjectsRemovedEvent` carry an optional `source` (`KritzelAgentChangeSource`: `{ type: 'agent', agentId, actionType }`) when a `KritzelAgent` made the change — through an action such as `agent.moveObject()`, or through the agent's own `agent.undo()` / `agent.redo()` (`actionType` `'undo'` / `'redo'`). It is absent for user, collaborator and sync changes and for the user's undo/redo. Objects an agent creates have `userId === agent.id`.
 
-All common payload types are re-exported by `@kritzel/react-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/react-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/react-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, `KritzelAgentsChangeEvent`, `KritzelAgentPresence`, `KritzelAgentState`, `KritzelAgentChangeSource`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. The `KritzelAgent` class and `KritzelAgentActionError` come from the same package. Import them from `@kritzel/react-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

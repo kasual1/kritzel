@@ -23,10 +23,10 @@ The `<KritzelEngine>` is the low-level headless canvas primitive. It handles ren
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. `source` is set when an agentic cursor made the change. |
+| objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change. |
 | objectsChange | KritzelBaseObject[] | Emitted when objects on the canvas are added, removed, or modified. |
-| objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. `source` is set when an agentic cursor made the change. |
-| objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. `source` is set when an agentic cursor made the change. |
+| objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change. |
+| objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change. |
 
 ### Methods
 
@@ -862,90 +862,52 @@ beginSceneBootstrap(): Promise<void>
 endSceneBootstrap(): Promise<void>
 ```
 
-## Agentic Cursors
+## Agents
+
+Agents are participants on the canvas that are driven by code, for example an AI assistant. Each agent is a [`KritzelAgent`](./agent.md) with its own cursor, actions, and undo history. See [Agents](../advanced/agents.md) for a guide.
 
 ### Props
 
-No agentic-cursor-specific props.
+No agent-specific props.
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| agenticCursorDetached | KritzelAgenticCursorDetachedEvent | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. |
+| agentsChange | KritzelAgentsChangeEvent | Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes. Never emitted for plain cursor motion. |
 
 ### Methods
 
-#### addAgenticCursor
+#### addAgent
 
-Adds a programmatically controlled cursor. Agentic cursors are rendered locally only.
+Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here. Call it after the engine emitted `isEngineReady`. Rejects for a value that is not a `KritzelAgent`, for a second agent with the same ID, and for an agent of another editor.
 
 ```ts
-addAgenticCursor(options?: KritzelAgenticCursorOptions): Promise<KritzelAgenticCursor>
+addAgent(agent: KritzelAgent): Promise<KritzelAgent>
 ```
 
-#### updateAgenticCursor
+#### removeAgent
 
-Updates the name, color, status or visibility of an agentic cursor. Pass `status: null` to clear the status.
+Removes an agent, given the agent or its ID: its running action is rolled back, its queued actions resolve with `'agent-removed'`, and its cursor and history are dropped. The agent can be added again. Resolves with `false` if the agent was not added.
 
 ```ts
-updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch): Promise<KritzelAgenticCursor>
+removeAgent(agent: KritzelAgent | string): Promise<boolean>
 ```
 
-#### moveAgenticCursor
+#### getAgent
 
-Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default. Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+Returns an added agent by its ID, or `null` if there is none.
 
 ```ts
-moveAgenticCursor(id: string, target: KritzelAgenticTarget, options?: KritzelAgenticMoveOptions): Promise<KritzelAgenticMoveResult>
+getAgent(id: string): Promise<KritzelAgent | null>
 ```
 
-#### detachAgenticCursor
+#### getAgents
 
-Detaches an agentic cursor from its object. The cursor stays at its current position.
-
-```ts
-detachAgenticCursor(id: string): Promise<void>
-```
-
-#### removeAgenticCursor
-
-Removes an agentic cursor. A running move resolves with `completed: false`.
+Returns the added agents.
 
 ```ts
-removeAgenticCursor(id: string): Promise<boolean>
-```
-
-#### clearAgenticCursors
-
-Removes all agentic cursors.
-
-```ts
-clearAgenticCursors(): Promise<void>
-```
-
-#### getAgenticCursor
-
-Returns a snapshot of an agentic cursor, or `null` if it doesn't exist.
-
-```ts
-getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null>
-```
-
-#### getAgenticCursors
-
-Returns snapshots of all agentic cursors.
-
-```ts
-getAgenticCursors(): Promise<KritzelAgenticCursor[]>
-```
-
-#### performAgenticAction
-
-Lets an agentic cursor perform an action: it flies to the target, presses, and animates the change. Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`); the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel. Objects the user or a collaborator has selected are never changed. Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped. Rejects for an unknown cursor or an invalid action.
-
-```ts
-performAgenticAction(cursorId: string, action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+getAgents(): Promise<KritzelAgent[]>
 ```
 
 ---

@@ -1,21 +1,23 @@
 ---
-sidebar_label: Agentic Cursors
+sidebar_label: Agents
 displayed_sidebar: tutorialSidebar
-title: "Agentic Cursors | Kritzel for React"
-description: "Add cursors you control from code, move them smoothly across the canvas, and stick them to objects - for example to visualize an AI agent working on the board."
+title: "Agents | Kritzel for React"
+description: "Add agents that work on the canvas next to people: a cursor you control from code, animated actions that edit objects, and an undo history of their own - for example for an AI assistant."
 ---
 
 import LiveDemo from '@site/src/components/LiveDemo';
 
-# Agentic Cursors
+# Agents
 
 ## Overview
 
-Agentic cursors are cursors that you control from code instead of a pointer device. Use them to make automated work visible on the canvas, for example an AI agent that reviews, arranges, or annotates objects.
+An agent is a participant on the canvas that you drive from code instead of a pointer device, for example an AI assistant that reviews, arranges, or annotates the board. Each agent is a `KritzelAgent` with:
 
-Each agentic cursor has its own color, an optional name label, and an optional status message. You can place a cursor anywhere on the canvas, animate it smoothly to a new position, or stick it to an object so it follows that object while it is moved, resized, or rotated. When a cursor leaves the visible area, an indicator at the edge of the viewport points to it.
+- **A cursor** with a name label, a color, and an optional status message. It flies smoothly to its targets and can stick to an object, so it follows that object while it is moved, resized, or rotated. When the cursor leaves the visible area, an indicator at the edge of the viewport points to it.
+- **Actions** that change the canvas the way a person would: the cursor flies to the target, presses, and animates the change, for example dragging an object, drawing a stroke, or typing text.
+- **Its own selection and undo history.** The user's undo never reverts an agent's work, and an agent's undo never reverts the user's.
 
-Agentic cursors are rendered locally only. They are not synchronized to collaborators, so every client decides which cursors it shows.
+Agents work next to people and never take an object away from them. An action on an object that the user or a collaborator is working on is refused or stops, and its result tells you why.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
@@ -23,57 +25,77 @@ Agentic cursors are rendered locally only. They are not synchronized to collabor
   repoFiles={['src/pages/advanced/agents/AgentsBasicPage.tsx']}
 />
 
-## Adding a Cursor
+## Adding an Agent
 
-Get a reference to the editor with `useRef` and add cursors once the editor emits `onIsReady`:
+Create each agent once with `new KritzelAgent()`, for example in a lazy `useState` initializer, so that re-renders keep the same instance. Get a reference to the editor with `useRef` and add the agents with `addAgent()` once the editor emits `onIsReady`:
 
 ```tsx
-import { useRef } from 'react';
-import { KritzelEditor, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { useRef, useState } from 'react';
+import { KritzelAgent, KritzelEditor, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
 
 export function AgentBoard() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
+  const [planner] = useState(() => new KritzelAgent({ id: 'planner', name: 'Planner', color: '#7C3AED' }));
 
   async function onReady() {
-    await editorRef.current?.addAgenticCursor({
-      id: 'planner',
-      name: 'Planner',
-      color: '#7C3AED',
-      status: 'Thinking…',
-      position: { x: 0, y: 0 },
-    });
+    await editorRef.current?.addAgent(planner);
+    await planner.createShape({ x: 0, y: 0, width: 160, height: 80, text: 'Idea' });
   }
 
   return <KritzelEditor ref={editorRef} onIsReady={() => void onReady()} />;
 }
 ```
 
-`addAgenticCursor()` accepts the following options and returns a snapshot of the created cursor:
+The constructor accepts the following options. Only `name` is required:
 
 | Option | Type | Description |
 |--------|------|-------------|
-| id | string | Unique ID. Generated when omitted. |
+| id | string | Unique ID. Generated (`agent-…`) when omitted. Objects that the agent creates get it as their `userId`. |
 | name | string | Name shown in the cursor label. |
 | color | string | Any CSS color. Derived from the name when omitted. |
-| status | string | Optional status message shown below the label. |
+| avatarUrl | string | URL of an avatar image, reported in `agentsChange`. |
+| speed | number | Default speed of moves and actions in screen pixels per second. Defaults to `1200`. |
+| status | string | Status message shown below the label. |
 | visible | boolean | Whether the cursor is visible. Defaults to `true`. |
-| position | KritzelAgenticTarget | Initial position. Defaults to the center of the viewport. An object target attaches the cursor right away. |
+| position | KritzelAgenticTarget | Where the cursor appears. Defaults to the center of the viewport. An object target sticks the cursor to that object right away. |
 
-## Moving a Cursor
+`addAgent()` resolves with the same agent. Adding the same instance again does nothing, so it is safe to call on every `onIsReady`, also under React StrictMode. Adding a different agent with an ID that is already in use throws.
 
-Call `moveAgenticCursor()` with either world coordinates or an object. The cursor animates to its target, and the returned promise resolves when it arrives, so you can `await` each step of an agent run:
+An agent belongs to one editor at a time. To move it to another editor, remove it first. When an editor is removed from the page, its agents stop working and can be added to another editor right away.
+
+`removeAgent()` takes the agent or its ID. It rolls back the running action, resolves the queued actions with `'agent-removed'`, and drops the cursor, the selection, and the history of the agent. The agent itself stays usable and can be added again. `getAgent(id)` returns the live `KritzelAgent`, and `getAgents()` returns all agents of the editor:
 
 ```ts
 const editor = editorRef.current;
 
+const planner = await editor?.getAgent('planner');
+await editor?.removeAgent('planner');
+```
+
+## Presence
+
+The presence methods change what the cursor shows. They take effect at once and never wait for running actions:
+
+```ts
+planner.setStatus('Reviewing shapes'); // shown below the label
+planner.setStatus(null); // hides the status message
+planner.name = 'Reviewer';
+planner.color = '#16A34A';
+planner.hide(); // the agent keeps working without a visible cursor
+planner.show();
+```
+
+`moveTo()` animates the cursor to world coordinates or to an anchor on an object. The returned promise resolves when the cursor arrives, so you can `await` each step:
+
+```ts
 // Move to a point in world coordinates
-await editor?.moveAgenticCursor('planner', { x: 200, y: 120 });
+await planner.moveTo({ x: 200, y: 120 });
 
 // Move to the top-right corner of an object
-await editor?.moveAgenticCursor('planner', { objectId: shape.id, anchor: 'top-right' });
+await planner.moveTo({ objectId: shape.id, anchor: 'top-right' });
 
 // Override the timing of a single move
-await editor?.moveAgenticCursor('planner', { x: 0, y: 0 }, { duration: 800, easing: 'ease-out' });
+await planner.moveTo({ x: 0, y: 0 }, { duration: 800, easing: 'ease-out' });
 ```
 
 By default the duration depends on the distance, so short moves are quick and long moves never take more than about a second. Use the move options to change this:
@@ -82,48 +104,34 @@ By default the duration depends on the distance, so short moves are quick and lo
 |--------|------|-------------|
 | duration | number | Fixed duration in milliseconds. Overrides the distance-based duration. |
 | easing | KritzelEasing | `'linear'`, `'ease-in'`, `'ease-out'`, `'ease-in-out'` (default), or a custom `(t: number) => number` function. |
-| speed | number | Speed in screen pixels per second for the distance-based duration. Defaults to `1200`. |
+| speed | number | Speed in screen pixels per second for the distance-based duration. Defaults to the agent's `speed`. |
 | attach | boolean | Whether the cursor sticks to an object target after arriving. Defaults to `true`. |
 
 Object targets accept an `anchor` (`'center'`, `'top-left'`, `'top'`, `'top-right'`, `'right'`, `'bottom-right'`, `'bottom'`, `'bottom-left'`, or `'left'`) and an optional `offset` in world units. Anchors rotate with the object.
 
-If you start a new move while a cursor is still moving, the cursor continues from its current position and the previous promise resolves with `{ completed: false }`. Moving to an object that does not exist rejects the promise.
+If you call `moveTo()` while the cursor is still moving, the cursor continues from its current position and the previous promise resolves with `{ completed: false }`. A running action of the agent stops with `'agent-moved'`. Moving to an object that does not exist rejects the promise.
 
-## Attaching to Objects
-
-When a cursor moves to an object, it sticks to that object once it arrives. It then stays on the chosen anchor while the object is dragged, resized, or rotated. Moving the cursor somewhere else releases it, and `detachAgenticCursor()` releases it in place:
+Once the cursor arrives at an object, it sticks to it and stays on the chosen anchor while the object is dragged, resized, or rotated. After an action, the cursor rests on the object it worked on. Moving the cursor somewhere else releases it, and `detach()` releases it in place. If the object is deleted, the cursor stays where the object was. The agent emits `detached` after `detach()` and when the object is deleted:
 
 ```ts
-await editorRef.current?.detachAgenticCursor('planner');
+const off = planner.on('detached', ({ objectId, reason }) => {
+  console.log(objectId, reason); // reason is 'object-removed' or 'manual'
+});
+
+off(); // unsubscribes
 ```
 
-If an object with an attached cursor is deleted, the cursor stays where the object was and the editor emits `agenticCursorDetached` with `reason: 'object-removed'`. A manual detach emits the same event with `reason: 'manual'`:
+To show the agents in your own UI, for example as a list of who is working, listen to `agentsChange`. It is emitted when agents are added or removed, and when their name, color, avatar, status, visibility, or activity changes, but never for plain cursor motion:
 
 ```tsx
-<KritzelEditor
-  ref={editorRef}
-  onAgenticCursorDetached={event => {
-    console.log(event.detail.id, event.detail.objectId, event.detail.reason);
-  }}
-/>
+const [agents, setAgents] = useState<KritzelAgentPresence[]>([]);
+
+return <KritzelEditor ref={editorRef} onAgentsChange={event => setAgents(event.detail.agents)} />;
 ```
-
-## Status Messages
-
-Use `updateAgenticCursor()` to show what an agent is doing. The same method changes the name, color, or visibility of a cursor. Pass `null` as the status to hide the status message:
-
-```ts
-const editor = editorRef.current;
-
-await editor?.updateAgenticCursor('planner', { status: 'Reviewing shapes' });
-await editor?.updateAgenticCursor('planner', { status: null, color: '#16A34A' });
-```
-
-Call `removeAgenticCursor()` to remove a single cursor, or `clearAgenticCursors()` to remove all of them. `getAgenticCursor()` and `getAgenticCursors()` return snapshots that include the current position, the attached object, and whether the cursor is moving.
 
 ## Performing Actions
 
-A cursor can also work on the canvas itself. `performAgenticAction()` lets it fly to the target, press, and animate the change, for example dragging an object or drawing a stroke. The changes are saved and synced like the user's edits, but they are recorded in the cursor's own history, so the user's undo never reverts them. The cursor and the objects it selects stay local.
+Actions let an agent work on the canvas itself. The cursor flies to the target, presses, and animates the change. The changes are saved and synced like the user's edits, but they are recorded in the agent's own history. Objects that an agent selects are outlined in its color and never change the user's selection.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
@@ -131,97 +139,194 @@ A cursor can also work on the canvas itself. `performAgenticAction()` lets it fl
   repoFiles={['src/pages/advanced/agents/AgentsActionsPage.tsx']}
 />
 
+Every action is a method of the agent and resolves with a result when it ends:
+
 ```ts
-const editor = editorRef.current;
+const result = await planner.moveObject(shape.id, { x: 400, y: 120 });
 
-const result = await editor?.performAgenticAction('planner', {
-  type: 'moveObject',
-  objectId: shape.id,
-  to: { x: 400, y: 120 },
-});
-
-if (!result?.completed) {
-  console.log('Stopped:', result?.reason);
+if (!result.completed) {
+  console.log('Stopped:', result.reason);
 }
 ```
 
-The second argument describes the action. Coordinates and sizes are in world units:
+Coordinates and sizes are in world units:
 
-| Action | Description |
+| Method | Description |
 |--------|-------------|
-| `{ type: 'click', target }` | Presses at a point or an object anchor. Nothing changes; `objectIds` contains the object under the cursor. |
-| `{ type: 'select', objectIds, additive? }` | Selects objects for the cursor. Agent selections are outlined in the cursor color and never change the user's selection. |
-| `{ type: 'clearSelection' }` | Clears the cursor's selection. |
-| `{ type: 'moveObject', objectId, to, align? }` | Drags an object so that its `align` point (default `'center'`) lands on `to`, a point or an object anchor. |
-| `{ type: 'resizeObject', objectId, width?, height?, keepAspectRatio?, handle? }` | Drags a corner handle until the object has the new size. The opposite corner stays in place. |
-| `{ type: 'rotateObject', objectId, angle, relative? }` | Turns the object with the rotation handle. `angle` is in degrees, clockwise. |
-| `{ type: 'createShape', x, y, width, height, shapeType?, text?, style? }` | Drags out a new shape and optionally types text into it. |
-| `{ type: 'createText', x, y, text, style? }` | Creates a text object and types into it. |
-| `{ type: 'typeText', objectId, text, mode? }` | Types into a text or shape. `mode: 'replace'` clears it first. |
-| `{ type: 'drawPath', points, style? }` | Draws a freehand stroke through the points. |
-| `{ type: 'connect', from, to, style? }` | Draws a line between two objects and anchors both ends, so the line follows them. |
-| `{ type: 'deleteObjects', objectIds }` | Deletes objects. |
-| `{ type: 'undo' }`, `{ type: 'redo' }` | Undoes or redoes the cursor's last action. |
+| `click(target, { count? })` | Presses at a point or an object anchor. Nothing changes; `objectIds` contains the object under the cursor. `count: 2` plays a double press. |
+| `select(objectIds, { additive? })` | Selects objects for the agent. `additive: true` adds them to the agent's selection. |
+| `clearSelection()` | Clears the agent's selection. |
+| `moveObject(objectId, to, { align? })` | Drags an object so that its `align` point (default `'center'`) lands on `to`, a point or an object anchor. |
+| `resizeObject(objectId, { width?, height?, keepAspectRatio?, handle? })` | Drags a corner handle until the object has the new size. The opposite corner stays in place. |
+| `rotateObject(objectId, angle, { relative? })` | Turns the object with the rotation handle. `angle` is in degrees, clockwise. |
+| `createShape({ x, y, width, height, shapeType?, text?, style? })` | Drags out a new shape and optionally types text into it. |
+| `createText({ x, y, text, style? })` | Creates a text object and types into it. |
+| `typeText(objectId, text, { mode? })` | Types into a text or shape. `mode: 'replace'` clears it first. |
+| `drawPath(points, { style? })` | Draws a freehand stroke through the points. |
+| `connect(fromId, toId, { style? })` | Draws a line between two objects and anchors both ends, so the line follows them. |
+| `setStyle(objectIds, style)` | Changes fill, stroke, opacity, font, or arrows. Fields that don't apply to an object are ignored, and groups style their children. |
+| `addObject(object)` | Places an object that your app built, for example a `KritzelIframeObject`. |
+| `deleteObjects(objectIds)` | Deletes objects. |
+| `undo()`, `redo()` | Undoes or redoes the agent's last action. |
 
-Objects that an action creates use the current settings of the matching tool unless you pass a `style`. Actions of one cursor run one after another, in the order you call them, while different cursors work at the same time. Use the third argument to change the pace:
+Actions work on top-level objects. Objects that an action creates use the current settings of the matching tool unless you pass a `style`. Colors are any CSS color or a theme-aware `{ light, dark }` color:
+
+```ts
+await planner.setStyle([shape.id], { fillColor: '#DCFCE7', strokeColor: '#16A34A', strokeWidth: 4 });
+await planner.drawPath(points, { style: { strokeColor: '#7C3AED', strokeWidth: 6 } });
+```
+
+`addObject()` places objects that have no action of their own, such as images, iframes, or dynamic objects. The cursor hops to the object and it appears as the agent's change. The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched:
+
+```ts
+const result = await planner.addObject(
+  new KritzelIframeObject({ translateX: 0, translateY: 0, width: 400, height: 300, html: '<h1>Summary</h1>' }),
+);
+
+const iframeId = result.objectIds?.[0];
+```
+
+`perform()` runs the same actions from an action object, which is useful when the steps come from data:
+
+```ts
+await planner.perform({ type: 'moveObject', objectId: shape.id, to: { x: 400, y: 120 } });
+```
+
+Actions of one agent run one after another, in the order you call them, while different agents work at the same time:
+
+```ts
+await Promise.all([
+  planner.moveObject(rectangle.id, { x: 300, y: 0 }),
+  writer.createText({ x: -200, y: 160, text: 'Moved the rectangle' }),
+]);
+```
+
+Every action accepts options as its last argument:
 
 | Option | Type | Description |
 |--------|------|-------------|
-| speed | number | Speed in screen pixels per second. Defaults to `1200`. Also scales presses, drags, drawing, and typing. |
+| speed | number | Speed in screen pixels per second. Defaults to the agent's `speed`. Also scales presses, drags, drawing, and typing. |
 | instant | boolean | Skips all animation and applies the change at once. Defaults to `false`. |
-| signal | AbortSignal | Stops the action, also while it waits for earlier actions of the cursor. Its changes are rolled back. |
+| signal | AbortSignal | Stops the action, also while it waits for earlier actions of the agent. Its changes are rolled back. |
 | easing | KritzelEasing | Easing of the cursor flight and of drags. Defaults to `'ease-in-out'`. |
 
-### Results and Conflicts
+## Tasks and Cancelling
 
-The returned promise resolves when the action ends. `completed` is `false` when the action was refused or stopped, and `reason` says why. An unknown cursor or an invalid action rejects the promise instead.
+A script of several actions usually has to stop at the first step that does not complete. `task()` does this for you: it shows its label as the status while it runs, and the first action that does not complete throws a `KritzelAgentActionError` out of the task. The previous status comes back when the task ends:
+
+```ts
+import { KritzelAgentActionError } from '@kritzel/react-editor';
+
+try {
+  await planner.task('Linking ideas', async () => {
+    const created = await planner.createShape({ x: 0, y: 0, width: 160, height: 80, text: 'Plan' });
+    await planner.connect(created.objectIds![0], target.id);
+    await planner.setStyle([target.id], { strokeColor: '#7C3AED' });
+  });
+} catch (error) {
+  if (error instanceof KritzelAgentActionError) {
+    console.log(`${error.action.type} stopped: ${error.reason}`, error.objectIds);
+  } else {
+    throw error;
+  }
+}
+```
+
+An agent runs one task at a time. Calling `task()` while another task of the agent is running throws.
+
+`cancel()` stops everything the agent is doing: the running action is rolled back and the queued actions resolve with `'aborted'`. Inside a task, every later action resolves as aborted, and therefore throws, until the task returns:
+
+```tsx
+<button onClick={() => planner.cancel()}>Stop</button>
+```
+
+To stop a single action, pass an `AbortSignal`:
+
+```ts
+const controller = new AbortController();
+const stroke = planner.drawPath(points, { signal: controller.signal });
+
+controller.abort(); // the stroke is removed again and resolves with reason 'aborted'
+```
+
+## Results and Conflicts
+
+Every action resolves with `{ completed, reason?, objectIds? }`. `completed` is `false` when the action was refused or stopped, and `reason` says why. On success, `objectIds` contains the created or added object, the new selection of the agent, the changed or deleted objects, the object under a click, or the objects changed by undo or redo. On failure, it contains the objects that caused it, when known. An invalid action, or an agent that is not added to an editor, rejects the promise instead.
 
 Agents never take an object away from a person:
 
 - An object that the user has selected is refused with `'user-selected'`. If the user selects or grabs an object while an agent is working on it, the agent stops with `'user-selected'` or `'user-interaction'` and keeps what it has done so far as one step of its history.
-- An object that a collaborator has selected is refused with `'collaborator-editing'`.
-- An object that another cursor is working on or has selected is refused with `'claimed-by-agent'`.
+- An object that a collaborator has selected or is editing is refused with `'collaborator-editing'`. If this happens while the agent is working on it, the agent stops and rolls its change back.
+- An object that another agent is working on or has selected is refused with `'claimed-by-agent'`.
 
-The other reasons are `'aborted'`, `'interrupted'` (`moveAgenticCursor()` was called for the cursor), `'agent-removed'`, `'object-removed'`, `'workspace-changed'`, `'not-allowed'` (the object configuration forbids resizing or rotating), `'invalid-target'`, `'conflict'`, `'nothing-to-undo'`, `'nothing-to-redo'`, and `'engine-disconnected'`. Apart from a takeover by the user, a stopped action is rolled back:
+| Reason | Description |
+|--------|-------------|
+| `'aborted'` | The `signal` was aborted or `cancel()` was called. |
+| `'agent-moved'` | `moveTo()` was called while the action was running. |
+| `'agent-removed'` | The agent was removed while the action was queued or running. |
+| `'object-removed'` | A target was deleted while the action was running. |
+| `'user-selected'` | The user has a target selected. |
+| `'user-interaction'` | The user is dragging, resizing, rotating, drawing on, editing, or erasing a target. |
+| `'collaborator-editing'` | A collaborator has a target selected or is editing it. |
+| `'claimed-by-agent'` | Another agent's running action or selection covers a target. |
+| `'workspace-changed'` | The workspace was switched, reloaded, or deleted. |
+| `'not-allowed'` | The object configuration forbids the change, for example resizing or rotating. |
+| `'invalid-target'` | An ID is unknown, belongs to an object inside a group, or has the wrong type. |
+| `'conflict'` | A target was changed elsewhere during the action, or the history step of the agent is outdated. |
+| `'nothing-to-undo'`, `'nothing-to-redo'` | The agent has no step to undo or redo. |
+| `'engine-disconnected'` | No workspace is ready, for example while the editor is loading or after it was removed from the page. |
+
+Apart from a takeover by the user, a stopped action is rolled back.
+
+When someone takes over the objects of a running action, the agent emits `interrupted`. `keptChanges` tells you whether the partial change was kept:
 
 ```ts
-const controller = new AbortController();
-const run = editor?.performAgenticAction('planner', { type: 'drawPath', points }, { signal: controller.signal });
-
-controller.abort(); // the stroke is removed again
+planner.on('interrupted', ({ action, reason, objectIds, keptChanges }) => {
+  console.log(`${action.type} interrupted (${reason})`, objectIds, keptChanges);
+});
 ```
 
-### Agent History
+## Agent History
 
-Each cursor has its own undo history. `{ type: 'undo' }` reverts the cursor's last action and `{ type: 'redo' }` applies it again; the user's undo and redo never touch agent changes. `getAgenticCursor()` reports `canUndo` and `canRedo`, as well as `activeAction`, `queueLength`, and `selectedObjectIds`:
+Each agent has its own undo history. `undo()` reverts the agent's last action and `redo()` applies it again. They never touch the changes of the user or of other agents, and the user's undo and redo never touch agent changes. Like any other action, an undo is refused when someone is working on its objects.
 
-```ts
-const cursor = await editor?.getAgenticCursor('planner');
+`agent.state` is a snapshot of the agent, including `canUndo` and `canRedo`. To render it, mirror it into React state with the `change` event, which is emitted when the state changes, but not for plain cursor motion. `on()` returns the function that unsubscribes:
 
-if (cursor?.canUndo) {
-  await editor?.performAgenticAction('planner', { type: 'undo' });
-}
+```tsx
+const [plannerState, setPlannerState] = useState(() => planner.state);
+
+useEffect(() => planner.on('change', setPlannerState), [planner]);
+
+return (
+  <button disabled={!plannerState.canUndo} onClick={() => void planner.undo()}>
+    Undo agent
+  </button>
+);
 ```
 
-### Telling Agent Changes Apart
+The history belongs to the open workspace. It is lost when the agent is removed or the workspace is switched. When the user takes over an action with `'user-selected'` or `'user-interaction'`, the partial change becomes one step of the history. When a collaborator takes over with `'collaborator-editing'`, the change is rolled back and leaves no step.
 
-`objectsAdded`, `objectsUpdated`, and `objectsRemoved` carry a `source` when an agentic cursor made the change. It names the cursor and the action:
+## Telling Agent Changes Apart
+
+Objects that an agent creates have the agent's ID as their `userId`. `objectsAdded`, `objectsUpdated`, and `objectsRemoved` carry a `source` when an agent made the change. It names the agent and the action, which is `'undo'` or `'redo'` for the agent's own history:
 
 ```tsx
 <KritzelEditor
   ref={editorRef}
   onObjectsUpdated={event => {
     const source = event.detail.source;
-    if (source) {
+    if (source?.type === 'agent') {
       console.log(`${source.agentId} ran ${source.actionType}`);
     }
   }}
 />
 ```
 
+Changes by the user, by collaborators, and by the user's undo and redo have no `source`.
+
 ## API Details
 
 For the full list of related APIs, see the following reference sections.
 
-- [Agentic Cursors](../api-reference/editor.md#agentic-cursors)
-- [Agentic Cursor Types](../api-reference/types.md#agentic-cursor-types)
+- [Agent](../api-reference/agent.md)
+- [Editor: Agents](../api-reference/editor.md#agents)

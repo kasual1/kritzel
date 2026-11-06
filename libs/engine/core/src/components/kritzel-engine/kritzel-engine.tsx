@@ -53,16 +53,8 @@ import {
   KritzelShortcut,
   KritzelAlignment,
   KritzelViewportState,
-  KritzelAgenticCursor,
-  KritzelAgenticCursorDetachedEvent,
-  KritzelAgenticMoveOptions,
-  KritzelAgenticMoveResult,
-  KritzelAgenticCursorOptions,
-  KritzelAgenticCursorPatch,
-  KritzelAgenticTarget,
-  KritzelAgenticAction,
-  KritzelAgenticActionOptions,
-  KritzelAgenticActionResult,
+  KritzelAgent,
+  KritzelAgentsChangeEvent,
   KritzelObjectChangeSource,
   ObjectHelper,
   KritzelWheelHelper,
@@ -401,13 +393,13 @@ export class KritzelEngine implements KritzelEngineHost {
   /** Emitted when objects on the canvas are added, removed, or modified. */
   @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
 
-  /** Emitted when one or more objects are added to the canvas. `source` is set when an agentic cursor made the change. */
+  /** Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
 
-  /** Emitted when one or more objects are removed from the canvas. `source` is set when an agentic cursor made the change. */
+  /** Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change. */
   @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
 
-  /** Emitted when one or more objects are updated on the canvas. `source` is set when an agentic cursor made the change. */
+  /** Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change. */
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
 
   /** Emitted when the set of selected objects changes. */
@@ -434,8 +426,11 @@ export class KritzelEngine implements KritzelEngineHost {
   /** Emitted while the selected workspace's objects are being initialized and synchronized. */
   @Event() isLoadingChange!: EventEmitter<boolean>;
 
-  /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
-  @Event() agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
+  /**
+   * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
+   * (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
+   */
+  @Event() agentsChange!: EventEmitter<KritzelAgentsChangeEvent>;
 
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event() objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
@@ -1502,94 +1497,40 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /**
-   * Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
-   * @param options - Name, color, status, visibility and initial position (defaults to the viewport center).
-   * @returns A snapshot of the created cursor.
+   * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to
+   * one editor at a time; an agent of an editor that was removed from the page moves here.
+   * @param agent - A `new KritzelAgent({ name })`.
+   * @returns The same agent.
    */
   @Method()
-  async addAgenticCursor(options: KritzelAgenticCursorOptions = {}): Promise<KritzelAgenticCursor> {
-    return this.core.agenticCursorManager.add(options);
+  async addAgent(agent: KritzelAgent): Promise<KritzelAgent> {
+    return this.core.agentManager.add(agent);
   }
 
   /**
-   * Updates the name, color, status or visibility of an agentic cursor.
-   * @param id - The cursor ID.
-   * @param patch - The properties to change. Pass `status: null` to clear the status.
-   * @returns A snapshot of the updated cursor.
+   * Removes an agent: its running action is rolled back, its queued actions resolve with
+   * `'agent-removed'`, and its cursor and history are dropped. The agent can be added again.
+   * @param agent - The agent or its ID.
+   * @returns `false` if the agent was not added.
    */
   @Method()
-  async updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch): Promise<KritzelAgenticCursor> {
-    return this.core.agenticCursorManager.update(id, patch);
+  async removeAgent(agent: KritzelAgent | string): Promise<boolean> {
+    return this.core.agentManager.remove(agent);
   }
 
   /**
-   * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
-   * Object targets attach the cursor by default, so it follows the object afterwards.
-   * @param id - The cursor ID.
-   * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
-   * @param options - Duration, easing, speed and whether to attach to an object target.
-   * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+   * Returns an added agent by its ID.
+   * @param id - The agent's ID.
    */
   @Method()
-  async moveAgenticCursor(id: string, target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
-    return this.core.agenticCursorManager.move(id, target, options);
+  async getAgent(id: string): Promise<KritzelAgent | null> {
+    return this.core.agentManager.get(id);
   }
 
-  /**
-   * Detaches an agentic cursor from its object. The cursor stays at its current position.
-   * @param id - The cursor ID.
-   */
+  /** Returns the added agents. */
   @Method()
-  async detachAgenticCursor(id: string): Promise<void> {
-    this.core.agenticCursorManager.detach(id);
-  }
-
-  /**
-   * Removes an agentic cursor. A running move resolves with `completed: false`.
-   * @param id - The cursor ID.
-   * @returns `true` if the cursor existed.
-   */
-  @Method()
-  async removeAgenticCursor(id: string): Promise<boolean> {
-    return this.core.agenticCursorManager.remove(id);
-  }
-
-  /** Removes all agentic cursors. */
-  @Method()
-  async clearAgenticCursors(): Promise<void> {
-    this.core.agenticCursorManager.clear();
-  }
-
-  /**
-   * Returns a snapshot of an agentic cursor.
-   * @param id - The cursor ID.
-   * @returns The cursor, or `null` if it doesn't exist.
-   */
-  @Method()
-  async getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null> {
-    return this.core.agenticCursorManager.get(id);
-  }
-
-  /** Returns snapshots of all agentic cursors. */
-  @Method()
-  async getAgenticCursors(): Promise<KritzelAgenticCursor[]> {
-    return this.core.agenticCursorManager.getAll();
-  }
-
-  /**
-   * Lets an agentic cursor perform an action: it flies to the target, presses and animates the change.
-   * Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`);
-   * the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel.
-   * Objects the user or a collaborator has selected are never changed.
-   * @param cursorId - The cursor ID.
-   * @param action - The action, e.g. `{ type: 'moveObject', objectId, to: { x, y } }`.
-   * @param options - Speed, easing, `instant` and an `AbortSignal`.
-   * @returns Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped.
-   *   Rejects for an unknown cursor or an invalid action.
-   */
-  @Method()
-  async performAgenticAction(cursorId: string, action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
-    return this.core.agenticActionManager.perform(cursorId, action, options);
+  async getAgents(): Promise<KritzelAgent[]> {
+    return this.core.agentManager.getAll();
   }
 
   /**
@@ -1622,7 +1563,7 @@ export class KritzelEngine implements KritzelEngineHost {
         if (node.tagName === 'KRITZEL-AWARENESS-CURSORS') {
           return false;
         }
-        // Agentic cursors and their selections are local UI, not content
+        // Agent cursors and their selections are UI, not content
         if (node.tagName === 'KRITZEL-AGENTIC-CURSORS') {
           return false;
         }
@@ -2668,10 +2609,16 @@ export class KritzelEngine implements KritzelEngineHost {
 
   constructor() {
     this.core = new KritzelCore(this);
-    this.core.agenticCursorManager.onDetached(event => this.agenticCursorDetached?.emit(event));
+    this.core.agentManager.onChange(() => this.agentsChange?.emit({ agents: this.core.agentManager.getPresences() }));
+  }
+
+  connectedCallback() {
+    this.core.agentManager.setDisposed(false);
   }
 
   disconnectedCallback() {
+    // From now on, the agents of this engine can be added to another editor.
+    this.core.agentManager.setDisposed(true);
     // Stop agentic actions first, while their objects and workspace still exist.
     this.core.agenticActionManager.cleanup();
     this.throttledPointerMoveMulti.cancel();
