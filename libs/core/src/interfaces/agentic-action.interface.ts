@@ -172,7 +172,8 @@ export interface KritzelAgenticConnectAction {
 /**
  * Style applied by `setStyle`. Fields apply where they make sense and are ignored elsewhere:
  * `fillColor` to shapes; `strokeColor` and `strokeWidth` to shapes, pen strokes and lines;
- * `fontSize`, `fontFamily` and `fontColor` to shapes and texts; `arrows` to lines; `opacity` to all.
+ * `fontSize`, `fontFamily` and `fontColor` to shapes and texts; `arrows` to lines (per end: an end left out
+ * keeps its arrow head); `opacity` to all.
  */
 export interface KritzelAgenticObjectStyle {
   fillColor?: KritzelAgenticColor;

@@ -36,7 +36,13 @@ export function stylePatchFor(object: AnyObject, style: KritzelAgenticObjectStyl
   } else if (object instanceof KritzelLine) {
     if (style.strokeColor !== undefined) patch.stroke = toThemeColor(style.strokeColor);
     if (style.strokeWidth !== undefined) patch.strokeWidth = style.strokeWidth;
-    if (style.arrows !== undefined) patch.arrows = style.arrows;
+    if (style.arrows !== undefined) {
+      // Per end: an end the style leaves out keeps its arrow head. Copies, so the line shares nothing with the action.
+      const arrows = { ...(object.arrows ?? {}) };
+      if (style.arrows.start !== undefined) arrows.start = { ...style.arrows.start };
+      if (style.arrows.end !== undefined) arrows.end = { ...style.arrows.end };
+      patch.arrows = arrows;
+    }
   }
   return patch;
 }

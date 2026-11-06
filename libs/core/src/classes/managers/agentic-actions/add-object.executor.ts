@@ -1,5 +1,6 @@
 import type { KritzelAgenticAddObjectAction } from '../../../interfaces/agentic-action.interface';
 import { KritzelBaseObject } from '../../objects/base-object.class';
+import { KritzelGroup } from '../../objects/group.class';
 import { KritzelImage } from '../../objects/image.class';
 import { KritzelText } from '../../objects/text.class';
 import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES, type KritzelAgenticActionExecutor } from './agentic-action.types';
@@ -24,8 +25,15 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
   },
 
   prepare(run, action) {
-    // The same instance can't be inserted twice.
-    if (run.map!.findById(action.object.id) === action.object) {
+    const map = run.map!;
+    // The same instance can't be inserted twice, neither as the object nor as a child of a new group: the
+    // insert gives it a new ID, which would leave the canvas object under two IDs.
+    const live = [action.object, ...pendingDescendants(action.object)].filter(object => map.findById(object.id) === object);
+    if (live.length > 0) {
+      return { reason: 'invalid-target', objectIds: live.map(object => object.id) };
+    }
+    // A group whose children were inserted before (and removed again) has none left to insert.
+    if (action.object instanceof KritzelGroup && action.object._pendingChildren.length === 0 && action.object.childIds.length > 0) {
       return { reason: 'invalid-target', objectIds: [action.object.id] };
     }
     return { targetIds: [], referenceIds: [] };
@@ -44,15 +52,20 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
       run.assertActive();
     }
 
-    const descendants = core.prepareObjectForInsert(object);
-    const all = [...descendants, object];
-    const center = unionCenter(descendants.length > 0 ? descendants : [object]);
+    // The cursor only needs the geometry: IDs, z-index and group children are assigned at the insert, so an
+    // action that stops before it leaves the app's object as it was, and the z-index is the current one.
+    const leaves = pendingDescendants(object).filter(child => !(child instanceof KritzelGroup));
+    leaves.forEach(child => (child.scale = child.scale ?? core.store.state.scale));
+    const center = unionCenter(leaves.length > 0 ? leaves : [object]);
     if (center) {
       await run.fly(center);
     }
     await run.press();
 
+    let all: KritzelBaseObject<any>[] = [];
     run.mutate(() => {
+      const descendants = core.prepareObjectForInsert(object);
+      all = [...descendants, object];
       all.forEach(item => run.own(item));
       core.insertPreparedObject(object, descendants);
     });
@@ -80,3 +93,11 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
     return [object.id];
   },
 };
+
+/** The children a group will insert with it, at all nesting levels. */
+function pendingDescendants(object: KritzelBaseObject<any>): KritzelBaseObject<any>[] {
+  if (!(object instanceof KritzelGroup)) {
+    return [];
+  }
+  return object._pendingChildren.flatMap(child => [child, ...pendingDescendants(child)]);
+}

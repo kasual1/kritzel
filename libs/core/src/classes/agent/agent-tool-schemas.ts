@@ -145,7 +145,7 @@ const objectStyle = object<KritzelAgenticObjectStyle>(
     fontSize: opt(positive('Font size of shapes and texts.')),
     fontFamily: opt(str('Font family of shapes and texts.')),
     fontColor: opt(color('Text color of shapes and texts.')),
-    arrows: opt(arrows),
+    arrows: opt(object<LineArrowConfig>({ start: opt(arrowHead), end: opt(arrowHead) }, 'Arrow heads of lines to change; an end left out keeps its head.')),
   },
   'At least one field. Fields that do not apply to an object are ignored.',
 );

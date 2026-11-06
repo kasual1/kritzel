@@ -25,13 +25,19 @@ export interface KritzelAnchorableGeometry {
  * Resolves an anchor (plus an offset in the object's local, unrotated space) to a world point.
  * The anchor rotates with the object around its center.
  */
+/** Whether `value` is one of the anchors (an own key of the anchor table, never an inherited one). */
+export function isAgenticAnchor(value: unknown): value is KritzelAgenticAnchor {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(AGENTIC_ANCHOR_FACTORS, value);
+}
+
 export function resolveObjectAnchor(
   object: KritzelAnchorableGeometry,
   anchor: KritzelAgenticAnchor = 'center',
   offset?: KritzelPoint,
 ): KritzelPoint {
   const box = object.boundingBox;
-  const [ax, ay] = AGENTIC_ANCHOR_FACTORS[anchor] ?? AGENTIC_ANCHOR_FACTORS.center;
+  // Own keys only: an anchor from untrusted input such as "toString" must not reach Object.prototype.
+  const [ax, ay] = isAgenticAnchor(anchor) ? AGENTIC_ANCHOR_FACTORS[anchor] : AGENTIC_ANCHOR_FACTORS.center;
   const localX = box.x + ax * box.width + (offset?.x ?? 0);
   const localY = box.y + ay * box.height + (offset?.y ?? 0);
 

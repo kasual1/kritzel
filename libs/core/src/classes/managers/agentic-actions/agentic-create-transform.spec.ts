@@ -488,6 +488,21 @@ describe('agentic create and transform actions', () => {
       expect((map.findById(lineId) as KritzelLine).arrows).toEqual(arrows);
     });
 
+    it('changes only the arrow ends it is given and keeps the other one', async () => {
+      const a = addShape(0, 0, 100, 50);
+      const b = addShape(300, 0, 100, 50);
+      const [lineId] = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds!;
+      await perform({ type: 'setStyle', objectIds: [lineId], style: { arrows: { start: { enabled: true, style: 'open' } } } });
+
+      const end = { enabled: true, style: 'triangle' as const };
+      await perform({ type: 'setStyle', objectIds: [lineId], style: { arrows: { end } } });
+
+      const line = map.findById(lineId) as KritzelLine;
+      expect(line.arrows!.start).toEqual({ enabled: true, style: 'open' });
+      expect(line.arrows!.end).toEqual(end);
+      expect(line.arrows!.end).not.toBe(end);
+    });
+
     it('refuses when no field applies to any target', async () => {
       const shape = addShape(0, 0, 100, 50);
 
@@ -556,6 +571,53 @@ describe('agentic create and transform actions', () => {
 
       await perform({ type: 'undo' });
       expect([a, b, group].map(object => map.findById(object.id))).toEqual([undefined, undefined, undefined]);
+    });
+
+    it('refuses a group whose child is already on the canvas and leaves that object alone', async () => {
+      const live = addShape(0, 0, 50, 50);
+      const liveId = live.id;
+      const group = new KritzelGroup();
+      group.addChild(new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 }));
+      group.addChild(live);
+
+      await expect(perform({ type: 'addObject', object: group })).resolves.toEqual({ completed: false, reason: 'invalid-target', objectIds: [liveId] });
+      expect(live.id).toBe(liveId);
+      expect(map.allObjects()).toEqual([live]);
+    });
+
+    it('changes nothing of the object until the insert, which takes the z-index of that moment', async () => {
+      const group = new KritzelGroup();
+      const a = new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
+      const b = new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
+      group.addChild(a);
+      group.addChild(b);
+      const ids = [group.id, a.id, b.id];
+
+      // Stopped while the cursor flies: the group is untouched and can be added later.
+      const controller = new AbortController();
+      const stopped = actions.perform('agent', { type: 'addObject', object: group }, { signal: controller.signal });
+      now += 16;
+      cursors.tick(now);
+      await flushMicrotasks();
+      controller.abort();
+      await expect(settle(stopped)).resolves.toMatchObject({ completed: false, reason: 'aborted' });
+      expect([group.id, a.id, b.id]).toEqual(ids);
+      expect(group._pendingChildren).toEqual([a, b]);
+
+      // Something lands on the canvas while the cursor flies: the group stacks above it.
+      const added = actions.perform('agent', { type: 'addObject', object: group }, {});
+      now += 16;
+      cursors.tick(now);
+      await flushMicrotasks();
+      const other = KritzelShape.create(core, { x: 500, y: 500, translateX: 0, translateY: 0, width: 50, height: 50, scale: 1 });
+      other.zIndex = core.store.currentZIndex;
+      map.insert(other);
+      map.stopUndoCapturing();
+      await expect(settle(added)).resolves.toMatchObject({ completed: true });
+
+      expect(map.findById(a.id)).toBe(a);
+      expect(map.findById(b.id)).toBe(b);
+      expect(Math.min(a.zIndex, b.zIndex, group.zIndex)).toBeGreaterThan(other.zIndex);
     });
 
     it('refuses an object that is already on the canvas and anything that is not an object', async () => {

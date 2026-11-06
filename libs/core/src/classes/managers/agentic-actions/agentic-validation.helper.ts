@@ -2,7 +2,7 @@ import type { KritzelAgenticAnchor, KritzelAgenticTarget } from '../../../interf
 import type { KritzelAgenticResizeHandle } from '../../../interfaces/agentic-action.interface';
 import type { ArrowHeadStyle } from '../../../interfaces/arrow-head.interface';
 import { ShapeType } from '../../../enums/shape-type.enum';
-import { AGENTIC_ANCHOR_FACTORS } from './agentic-geometry.helper';
+import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from './agentic-geometry.helper';
 
 /** Every anchor on an object. */
 export const AGENTIC_ANCHORS = Object.keys(AGENTIC_ANCHOR_FACTORS) as KritzelAgenticAnchor[];
@@ -38,7 +38,7 @@ export function assertObjectId(id: unknown, field: string): asserts id is string
 
 /** Throws a `TypeError` unless `anchor` is undefined or a known anchor. */
 export function assertAnchor(anchor: unknown, field: string): asserts anchor is KritzelAgenticAnchor | undefined {
-  if (anchor !== undefined && !(typeof anchor === 'string' && anchor in AGENTIC_ANCHOR_FACTORS)) {
+  if (anchor !== undefined && !isAgenticAnchor(anchor)) {
     throw new TypeError(`"${field}" must be one of ${AGENTIC_ANCHORS.join(', ')}.`);
   }
 }
