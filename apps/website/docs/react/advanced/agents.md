@@ -60,7 +60,7 @@ The constructor accepts the following options. Only `name` is required:
 | broadcast | boolean | Whether collaborators see the agent. Defaults to `true`. See [Collaboration](#collaboration). |
 | status | string | Status message shown below the label. |
 | visible | boolean | Whether the cursor is visible. Defaults to `true`. |
-| position | KritzelAgenticTarget | Where the cursor appears. Defaults to the center of the viewport. An object target sticks the cursor to that object right away. |
+| position | KritzelAgenticTarget | Where the cursor starts. Defaults to the center of the viewport. An object target sticks the cursor to that object right away. If the object does not exist when the agent is added, for example because it was deleted or the editor shows another document, the cursor starts at the center of the viewport. |
 
 `addAgent()` resolves with the same agent. Adding the same instance again does nothing, so it is safe to call on every `onIsReady`, also under React StrictMode. Adding a different agent with an ID that is already in use throws.
 
@@ -129,7 +129,7 @@ The editor shows the agents in its avatar stack, after the `activeUsers`. Each a
 To show the agents in your own UI, for example as a list of who is working, listen to `agentsChange`. It is emitted when agents are added or removed, and when their name, color, avatar, status, visibility, or activity changes, but never for plain cursor motion. It lists the agents of this editor first, then the agents of collaborators:
 
 ```tsx
-const [agents, setAgents] = useState<KritzelAgentPresence[]>([]);
+const [agents, setAgents] = useState<KritzelAgentsChangeEvent['agents']>([]);
 
 return <KritzelEditor ref={editorRef} onAgentsChange={event => setAgents(event.detail.agents)} />;
 ```
@@ -169,7 +169,7 @@ Coordinates and sizes are in world units:
 | `typeText(objectId, text, { mode? })` | Types into a text or shape. `mode: 'replace'` clears it first. |
 | `drawPath(points, { style? })` | Draws a freehand stroke through the points. |
 | `connect(fromId, toId, { style? })` | Draws a line between two objects and anchors both ends, so the line follows them. |
-| `setStyle(objectIds, style)` | Changes fill, stroke, opacity, font, or arrows. Fields that don't apply to an object are ignored, and groups style their children. |
+| `setStyle(objectIds, style)` | Changes fill, stroke, opacity, font, or arrows. Fields that don't apply to an object are ignored, and groups style their children. An arrow end that `arrows` leaves out keeps its arrow head. |
 | `addObject(object)` | Places an object that your app built, for example a `KritzelIframeObject`. |
 | `deleteObjects(objectIds)` | Deletes objects. |
 | `undo()`, `redo()` | Undoes or redoes the agent's last action. |
@@ -190,6 +190,8 @@ const result = await planner.addObject(
 
 const iframeId = result.objectIds?.[0];
 ```
+
+The object is not changed until it is inserted: it and the children of a group get their new IDs and their z-index only then, so the object lands on top of what is on the canvas at that moment. An action that stops earlier leaves the object as it was, so you can add it later. An object that is already on the canvas is refused with `'invalid-target'`, and so is a group with a child that is already on the canvas, or a group whose children were inserted before.
 
 `perform()` runs the same actions from an action object, which is useful when the steps come from data:
 
@@ -239,7 +241,9 @@ try {
 
 An agent runs one task at a time. Calling `task()` while another task of the agent is running throws.
 
-`cancel()` stops everything the agent is doing: the running action is rolled back and the queued actions resolve with `'aborted'`. Inside a task, every later action resolves as aborted, and therefore throws, until the task returns:
+An action belongs to the task that runs when the action starts. Every action of the agent that starts while the task runs belongs to it, also one that starts outside the task function, for example from a button in your UI. If such an action does not complete, it rejects with a `KritzelAgentActionError` as well. An action that started before the task, or that starts after the task has ended, resolves with its result and never throws.
+
+`cancel()` stops everything the agent is doing: the running action is rolled back and the queued actions resolve with `'aborted'`. While a task runs, every action that starts later resolves as aborted, and therefore throws, until the task returns:
 
 ```tsx
 <button onClick={() => planner.cancel()}>Stop</button>
@@ -295,7 +299,7 @@ planner.on('interrupted', ({ action, reason, objectIds, keptChanges }) => {
 
 Each agent has its own undo history. `undo()` reverts the agent's last action and `redo()` applies it again. They never touch the changes of the user or of other agents, and the user's undo and redo never touch agent changes. Like any other action, an undo is refused when someone is working on its objects.
 
-`agent.state` is a snapshot of the agent, including `canUndo` and `canRedo`. To render it, mirror it into React state with the `change` event, which is emitted when the state changes, but not for plain cursor motion. `on()` returns the function that unsubscribes:
+`agent.state` is a snapshot of the agent, including `canUndo` and `canRedo`. To render it, mirror it into React state with the `change` event, which is emitted when the state changes, also when the agent is added or removed, but not for plain cursor motion. `on()` returns the function that unsubscribes:
 
 ```tsx
 const [plannerState, setPlannerState] = useState(() => planner.state);
@@ -309,7 +313,7 @@ return (
 );
 ```
 
-The history belongs to the open workspace. It is lost when the agent is removed or the workspace is switched. When the user takes over an action with `'user-selected'` or `'user-interaction'`, the partial change becomes one step of the history. When a collaborator takes over with `'collaborator-editing'`, the change is rolled back and leaves no step.
+The history belongs to the open workspace. It is lost when the agent is removed or the workspace is switched, and `change` then reports `canUndo` and `canRedo` as `false`. When the user takes over an action with `'user-selected'` or `'user-interaction'`, the partial change becomes one step of the history. When a collaborator takes over with `'collaborator-editing'`, the change is rolled back and leaves no step.
 
 ## Telling Agent Changes Apart
 
@@ -343,7 +347,7 @@ return <KritzelEditor ref={editorRef} syncConfig={syncConfig} onIsReady={() => v
 
 The [actions demo](#performing-actions) uses this configuration. Open it in two tabs, and each tab shows the agent of the other tab.
 
-An agent shares its name, color, avatar, status, visibility, activity, cursor position and attachment, presses, selection, and the objects of its running action. Updates are sent only when something changed, so an idle agent sends nothing: cursor motion at most every 100 ms, other changes at once. The status is cut to 200 characters, and the selection and the objects of the running action to 50 IDs each. In the editors of collaborators, the cursor glides between updates, a cursor that sticks to an object stays on it while the object moves, and the outlines are dashed. Avatar URLs from collaborators are only used when they are `http:`, `https:`, `data:image/`, or relative URLs.
+An agent shares its name, color, avatar, status, visibility, activity, cursor position and attachment, presses, selection, and the objects of its running action. Updates are sent only when something changed, so an idle agent sends nothing. Adding or removing an agent, renaming, recoloring, changing the avatar, hiding or showing it, and turning `broadcast` on or off are sent at once. The status, activity, selection, and cursor motion are sent at most every 100 ms. The status is cut to 200 characters, and the selection and the objects of the running action to 50 IDs each. In the editors of collaborators, the cursor glides between updates, a cursor that sticks to an object stays on it while the object moves, and the outlines are dashed. Avatar URLs from collaborators are only used when they are `http:`, `https:`, `data:image/`, or relative URLs.
 
 To keep an agent in your editor only, create it with `broadcast: false`. Changing `broadcast` later takes effect at once:
 
@@ -353,7 +357,7 @@ const [helper] = useState(() => new KritzelAgent({ name: 'Helper', broadcast: fa
 planner.broadcast = false; // collaborators no longer see the planner
 ```
 
-The agents of collaborators are not `KritzelAgent` objects in your editor, so `getAgent()` and `getAgents()` never return them. The editor's `getRemoteAgents()` returns them as `KritzelRemoteAgentPresence` objects, and `agentsChange` lists them after the agents of your editor. They have `isRemote: true`, the `clientId` of the collaborator's connection, and the `hostUser` whose editor runs them, when it is known:
+The agents of collaborators are not `KritzelAgent` objects in your editor, so `getAgent()` and `getAgents()` never return them. The editor's `getRemoteAgents()` returns them as `KritzelRemoteAgentPresence` objects, and `agentsChange` lists them after the agents of your editor. They have `isRemote: true`, the `clientId` of the collaborator's connection, and the `hostUser` whose editor runs them, when it is known. The agents of your editor have `isRemote: false`, so `if (agent.isRemote)` narrows an entry of `agentsChange` to a `KritzelRemoteAgentPresence`:
 
 ```tsx
 const [remoteAgents, setRemoteAgents] = useState<KritzelRemoteAgentPresence[]>([]);
@@ -497,7 +501,9 @@ export function AskClaude({ agent }: { agent: KritzelAgent }) {
 
 ### Other Providers
 
-The schemas use only the JSON Schema keywords that the major LLM providers accept. For OpenAI's Chat Completions API, pass the schema as `parameters`. OpenAI sends the input of a tool call as a JSON string, which `run()` accepts as it is:
+The schemas use only the JSON Schema keywords that the major LLM providers accept. They are made for standard tool use and do not meet the rules of strict modes: OpenAI's strict function calling requires every property in `required`, with optional fields as nullable, and Anthropic's `strict: true` limits optional parameters and `minItems`. Send the tools without strict mode. With Anthropic, leave `strict` off. With OpenAI's Chat Completions API, omit `strict`. With OpenAI's Responses API and the Agents SDK, which use strict mode by default, set `strict: false`.
+
+For OpenAI's Chat Completions API, pass the schema as `parameters`. OpenAI sends the input of a tool call as a JSON string, which `run()` accepts as it is:
 
 ```ts
 const tools = planner.tools();

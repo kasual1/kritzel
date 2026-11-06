@@ -39,7 +39,7 @@ Throws a `TypeError` when `name` is missing or empty.
 | broadcast | boolean | `true` | Whether collaborators see the agent. See [Collaboration](#collaboration). |
 | status | string | — | Status message shown below the cursor label. |
 | visible | boolean | `true` | Whether the cursor is visible. |
-| position | KritzelAgenticTarget | Center of the viewport | Where the cursor appears when the agent is added. An object target sticks the cursor to that object. |
+| position | KritzelAgenticTarget | Center of the viewport | Where the cursor starts when the agent is added. An object target sticks the cursor to that object. If the object does not exist then, for example because it was deleted or the editor shows another document, the cursor starts at the center of the viewport. |
 
 `isKritzelAgent(value)` returns whether a value is a `KritzelAgent`, also when it comes from another copy of the package.
 
@@ -143,7 +143,7 @@ toPresence(): KritzelAgentPresence
 
 In an action, the cursor flies to the target, presses, and animates the change. Changes are saved and synced like the user's edits, but they are recorded in the agent's own history. Actions of one agent run one after another, in the order they are called, while different agents work at the same time.
 
-Every action resolves with a [`KritzelAgenticActionResult`](#kritzelagenticactionresult) when it ends. `completed` is `false` with a `reason` when the action was refused or stopped. The promise rejects for an invalid action (`TypeError`) and when the agent is not added to an editor. Inside [`task()`](#task), an action that does not complete throws a [`KritzelAgentActionError`](#kritzelagentactionerror) instead.
+Every action resolves with a [`KritzelAgenticActionResult`](#kritzelagenticactionresult) when it ends. `completed` is `false` with a `reason` when the action was refused or stopped. The promise rejects for an invalid action (`TypeError`) and when the agent is not added to an editor. An action that starts while a [`task()`](#task) runs belongs to that task: if it does not complete and the task is still running when it ends, it rejects with a [`KritzelAgentActionError`](#kritzelagentactionerror) instead.
 
 Object IDs must belong to top-level objects. Every action takes [`KritzelAgenticActionOptions`](#kritzelagenticactionoptions) as its last argument.
 
@@ -255,7 +255,7 @@ connect(from: string, to: string, options?: { style?: KritzelAgenticLineStyle } 
 
 ### setStyle
 
-Restyles objects; groups style their children. `style` needs at least one field. Fields apply where they make sense and are ignored elsewhere: `fillColor` to shapes; `strokeColor` and `strokeWidth` to shapes, strokes, and lines; `fontSize`, `fontFamily`, and `fontColor` to shapes and texts; `arrows` to lines; `opacity` to all objects.
+Restyles objects; groups style their children. `style` needs at least one field. Fields apply where they make sense and are ignored elsewhere: `fillColor` to shapes; `strokeColor` and `strokeWidth` to shapes, strokes, and lines; `fontSize`, `fontFamily`, and `fontColor` to shapes and texts; `arrows` to lines, where an end that `arrows` leaves out keeps its arrow head; `opacity` to all objects.
 
 ```ts
 setStyle(objectIds: string[], style: KritzelAgenticObjectStyle, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
@@ -264,6 +264,8 @@ setStyle(objectIds: string[], style: KritzelAgenticObjectStyle, options?: Kritze
 ### addObject
 
 Places an object that the app built, for example a `KritzelIframeObject`, as the agent's change: the cursor hops to the object and it appears. The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
+
+The object is not changed until the insert: the object and the children of a group get their new IDs and their z-index only then, on top of the objects on the canvas at that moment. An action that stops before the insert leaves the object as it was, so it can be added later. Resolves with `'invalid-target'` for an object that is already on the canvas, for a group with a child that is already on the canvas, and for a group whose children were inserted before.
 
 ```ts
 addObject(object: KritzelBaseObject, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
@@ -299,7 +301,7 @@ redo(options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 
 ### cancel
 
-Stops the running action, rolling its changes back, and drops the queued actions. They resolve with `reason: 'aborted'`. Inside `task()`, every later action resolves as aborted, and therefore throws, until the task returns.
+Stops the running action, rolling its changes back, and drops the queued actions. They resolve with `reason: 'aborted'`. While a `task()` runs, every action that starts later resolves as aborted, and therefore throws, until the task returns.
 
 ```ts
 cancel(): void
@@ -308,6 +310,8 @@ cancel(): void
 ### task
 
 Runs a script of actions as one task. `label` is shown as the status while the task runs, and the previous status comes back when it ends. The first action that does not complete throws a `KritzelAgentActionError` out of `fn`. An agent runs one task at a time; calling `task()` while another task of the agent is running rejects.
+
+An action belongs to the task that runs when the action starts. Every action of the agent that starts while the task runs belongs to it, also one started outside `fn`, for example from a button. When it does not complete, its promise rejects with a `KritzelAgentActionError`. An action that started before the task, or that starts after the task has ended, resolves with its result and never throws.
 
 ```ts
 task<T>(label: string, fn: () => Promise<T> | T): Promise<T>
@@ -417,7 +421,7 @@ const json = formatAgentToolResult(result.reason ? { ...result, hint: AGENT_TOOL
 When the editor shares presence with collaborators, it shares every agent whose [`broadcast`](#properties) is `true`, the default. See [Collaboration](../advanced/agents.md#collaboration) for a guide.
 
 - **What is shared:** the name, color, avatar URL, status, visibility, running action and queue length, cursor position and attachment, presses, the agent's selection, and the objects of its running action. The agent's history and the agent object itself are not shared.
-- **When:** only when something changed. Cursor motion is sent at most every 100 ms. Other changes, such as adding, removing, renaming, or hiding the agent, or turning off `broadcast`, are sent at once. Each workspace has its own presence, so the agents are shared in the open workspace.
+- **When:** only when something changed. Adding or removing the agent, renaming, recoloring, changing the avatar, hiding or showing it, and turning `broadcast` on or off are sent at once. The status, activity, selection, and cursor motion are sent at most every 100 ms. Each workspace has its own presence, so the agents are shared in the open workspace.
 - **Limits:** the status is cut to 200 characters, and the selection and the objects of the running action to 50 IDs each.
 - **Requirement:** a sync provider with awareness, such as the WebSocket and Hocuspocus providers, or `BroadcastSyncProvider.with({ awareness: true })` between tabs. Without one, nothing is shared. See [Providers](./providers.md).
 
@@ -437,7 +441,7 @@ on<K extends keyof KritzelAgentEventMap>(event: K, listener: (payload: KritzelAg
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| change | KritzelAgentState | The state changed: status, visibility, name, color, avatar, activity, selection, history, or attachment. Not emitted for plain cursor motion. |
+| change | KritzelAgentState | The state changed: the agent was added or removed (`isAdded`), or its status, visibility, name, color, avatar, `broadcast`, activity, selection, history, or attachment changed. Also emitted for these changes while the agent is not added, and when a workspace switch drops the history (`canUndo` and `canRedo`). Not emitted for plain cursor motion. |
 | detached | KritzelAgentDetachedEvent | The cursor stopped sticking to an object, because the object was deleted (`'object-removed'`) or after `detach()` (`'manual'`). |
 | interrupted | KritzelAgentInterruptedEvent | Someone took over the objects of a running action: the user selected or grabbed them, a collaborator started editing them, or they were changed elsewhere. |
 | removed | void | The agent was removed from its editor. |
@@ -450,7 +454,7 @@ The editor emits `agentsChange` with a [`KritzelAgentsChangeEvent`](#kritzelagen
 
 ### KritzelAgentActionError
 
-Thrown inside `task()` when an action of the agent does not complete, for example because the user has the target selected.
+Thrown when an action that belongs to a running [`task()`](#task) does not complete, for example because the user has the target selected. An action belongs to the task when it starts while the task runs.
 
 ```ts
 class KritzelAgentActionError extends Error {
@@ -539,7 +543,7 @@ interface KritzelAgentState {
 
 ### KritzelAgentPresence
 
-An agent as reported by `toPresence()` and `agentsChange`. `displayName` and `profileImageUrl` repeat `name` and `avatarUrl` for components that render `IKritzelUser` objects. `isRemote` is `false` for agents added to this editor and `true` for agents of collaborators, which are [`KritzelRemoteAgentPresence`](#kritzelremoteagentpresence) objects.
+An agent as reported by `toPresence()` and `agentsChange`. `displayName` and `profileImageUrl` repeat `name` and `avatarUrl` for components that render `IKritzelUser` objects. `isRemote` is always `false`. Agents of collaborators are [`KritzelRemoteAgentPresence`](#kritzelremoteagentpresence) objects with `isRemote: true`.
 
 ```ts
 interface KritzelAgentPresence {
@@ -554,26 +558,26 @@ interface KritzelAgentPresence {
   visible: boolean;
   activeAction: KritzelAgenticActionType | null;
   queueLength: number;
-  isRemote: boolean;
+  isRemote: false;
 }
 ```
 
 ### KritzelAgentsChangeEvent
 
-Detail of the editor's `agentsChange` event. Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Never emitted for plain cursor motion. Lists the agents of this editor first, then the agents of collaborators.
+Detail of the editor's `agentsChange` event. Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Never emitted for plain cursor motion. Lists the agents of this editor first, then the agents of collaborators. `isRemote` tells them apart: `if (agent.isRemote)` narrows an entry to a `KritzelRemoteAgentPresence`.
 
 ```ts
 interface KritzelAgentsChangeEvent {
-  agents: KritzelAgentPresence[];
+  agents: (KritzelAgentPresence | KritzelRemoteAgentPresence)[];
 }
 ```
 
 ### KritzelRemoteAgentPresence
 
-An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange` after the agents of the editor. The same agent ID can appear for several collaborators; `clientId` and `id` together are unique. Because `agentsChange` is typed with `KritzelAgentPresence`, narrow it with a type guard such as `(agent): agent is KritzelRemoteAgentPresence => agent.isRemote`.
+An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange` after the agents of the editor. The same agent ID can appear for several collaborators; `clientId` and `id` together are unique. In `agentsChange`, `if (agent.isRemote)` narrows an entry to this type. To filter the list, use a type predicate such as `(agent): agent is KritzelRemoteAgentPresence => agent.isRemote`.
 
 ```ts
-interface KritzelRemoteAgentPresence extends KritzelAgentPresence {
+interface KritzelRemoteAgentPresence extends Omit<KritzelAgentPresence, 'isRemote'> {
   isRemote: true;
   /** Awareness client ID of the collaborator's connection. */
   clientId: number;
@@ -735,6 +739,7 @@ interface KritzelAgenticObjectStyle {
   fontSize?: number;
   fontFamily?: string;
   fontColor?: KritzelAgenticColor;
+  /** Per end: an end left out keeps its arrow head. */
   arrows?: LineArrowConfig;
 }
 ```
@@ -831,7 +836,7 @@ interface KritzelAgentToolContext {
 
 ### KritzelAgentToolSchema
 
-The JSON Schema of a tool's input. It uses only keywords that the major LLM providers accept: no `anyOf`, `const`, `$ref`, or minimum and maximum values. It is a type alias, not an interface, so that it fits SDK types that index schemas by string.
+The JSON Schema of a tool's input. It uses only keywords that the major LLM providers accept: no `anyOf`, `const`, `$ref`, or minimum and maximum values. It is a type alias, not an interface, so that it fits SDK types that index schemas by string. The schemas are made for standard tool use, not for strict modes, so send the tools without strict mode: leave `strict` off with Anthropic and in OpenAI's Chat Completions API, and set `strict: false` in OpenAI's Responses API and Agents SDK. See [Other Providers](../advanced/agents.md#other-providers).
 
 ```ts
 type KritzelAgentToolSchema = {

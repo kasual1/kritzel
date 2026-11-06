@@ -271,8 +271,8 @@ Types used by [`KritzelAgent`](./agent.md) and the [agent methods](./editor.md#a
 |------|-------------|
 | [`KritzelAgentOptions`](./agent.md#kritzelagentoptions) | Options of `new KritzelAgent()`: `name` (required), `id`, `color`, `avatarUrl`, `speed`, `broadcast`, `status`, `visible`, and `position`. |
 | [`KritzelAgentState`](./agent.md#kritzelagentstate) | Snapshot returned by `agent.state`: position, attachment, status, visibility, selection, activity, and `canUndo` / `canRedo`. |
-| [`KritzelAgentPresence`](./agent.md#kritzelagentpresence) | An agent as reported by `agentsChange` and `agent.toPresence()`. |
-| [`KritzelAgentsChangeEvent`](./agent.md#kritzelagentschangeevent) | Detail of the `agentsChange` event: `{ agents: KritzelAgentPresence[] }`, the agents of the editor first, then those of collaborators. |
+| [`KritzelAgentPresence`](./agent.md#kritzelagentpresence) | An agent of this editor as reported by `agentsChange` and `agent.toPresence()`, with `isRemote: false`. |
+| [`KritzelAgentsChangeEvent`](./agent.md#kritzelagentschangeevent) | Detail of the `agentsChange` event: `{ agents: (KritzelAgentPresence \| KritzelRemoteAgentPresence)[] }`, the agents of the editor first, then those of collaborators. `isRemote` tells them apart. |
 | [`KritzelRemoteAgentPresence`](./agent.md#kritzelremoteagentpresence) | An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange`: `isRemote: true`, `clientId`, and `hostUser`. |
 | [`KritzelAgentEventMap`](./agent.md#kritzelagenteventmap) | Events of `agent.on()`, with `KritzelAgentDetachedEvent` and `KritzelAgentInterruptedEvent`. |
 | [`KritzelAgenticTarget`](./agent.md#kritzelagentictarget) | A point in world coordinates or an anchor (`KritzelAgenticAnchor`) on an object. |
@@ -280,7 +280,7 @@ Types used by [`KritzelAgent`](./agent.md) and the [agent methods](./editor.md#a
 | [`KritzelAgenticAction`](./agent.md#kritzelagenticaction) | The actions of `agent.perform()`, from `click` to `setStyle`, `addObject`, `undo`, and `redo`. |
 | [`KritzelAgenticActionOptions`](./agent.md#kritzelagenticactionoptions) | `speed`, `instant`, `signal`, and `easing` of an action. |
 | [`KritzelAgenticActionResult`](./agent.md#kritzelagenticactionresult) | Result of an action, with a `KritzelAgenticActionFailureReason` when it did not complete. |
-| [`KritzelAgentActionError`](./agent.md#kritzelagentactionerror) | Thrown inside `agent.task()` when an action does not complete. |
+| [`KritzelAgentActionError`](./agent.md#kritzelagentactionerror) | Thrown when an action that belongs to a running `agent.task()` does not complete. |
 | [`KritzelAgentTool`](./agent.md#kritzelagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, and `run(input, context?)` with a `KritzelAgentToolContext` (`signal`). |
 | [`KritzelAgentToolSchema`](./agent.md#kritzelagenttoolschema) | The JSON Schema of a tool's input. |
 | [`KritzelAgentToolsOptions`](./agent.md#kritzelagenttoolsoptions) | `only`, `prefix`, and `maxTextLength` of `agent.tools()`. |

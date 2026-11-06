@@ -189,7 +189,7 @@ The channel name is the `docName`, so the same document is shared across tabs au
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| awareness | boolean | `false` | Shares presence between the tabs. A tab that is closed takes its presence with it. |
+| awareness | boolean | `false` | Shares presence between the tabs. A tab that is closed takes its presence with it, and a tab in the back/forward cache takes it away until the tab is shown again. |
 | quiet | boolean | `false` | Suppresses console output |
 
 ### Properties
