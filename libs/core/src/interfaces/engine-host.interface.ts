@@ -2,6 +2,7 @@ import type { KritzelBaseObject } from '../classes/objects/base-object.class';
 import type { KritzelViewport } from '../classes/core/viewport.class';
 import type { KritzelObjectConfig } from './object-config.interface';
 import type { KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState } from './object-titlebar.interface';
+import type { KritzelObjectChangeSource } from './object-change-event.interface';
 
 /**
  * The part of the `<kritzel-engine>` component that {@link KritzelCore} and its managers use.
@@ -24,9 +25,9 @@ export interface KritzelEngineHost {
   addObject<T extends KritzelBaseObject>(object: T): Promise<T | null>;
 
   emitObjectsChange(): void;
-  emitObjectsAdded(objects: KritzelBaseObject<any>[]): void;
-  emitObjectsRemoved(objects: KritzelBaseObject<any>[]): void;
-  emitObjectsUpdated(objects: { object: KritzelBaseObject<any>; changedProperties: string[] }[]): void;
+  emitObjectsAdded(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource): void;
+  emitObjectsRemoved(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource): void;
+  emitObjectsUpdated(objects: { object: KritzelBaseObject<any>; changedProperties: string[] }[], source?: KritzelObjectChangeSource): void;
   emitAwarenessChange(states: Map<number, Record<string, any>>): void;
   emitObjectTitlebarAction(detail: KritzelObjectTitlebarActionEvent): void;
   emitObjectTitlebarMenuStateChange(detail: KritzelObjectTitlebarMenuState): void;
