@@ -111,7 +111,8 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   /** Sets the explicit selection of a cursor. */
   setSelection(cursorId: string, objectIds: string[]): void {
     const map = this._core.store.objects as ObjectMap | undefined;
-    if (objectIds.length === 0 || !map) {
+    // A removed cursor must never keep a selection: it would claim the objects forever.
+    if (objectIds.length === 0 || !map || !this._core.agenticCursorManager.get(cursorId)) {
       this._selections.delete(cursorId);
     } else {
       this._selections.set(cursorId, { ids: [...objectIds], expanded: expandWithRelatives(map, objectIds) });
@@ -159,6 +160,12 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 
   finishRun(run: KritzelAgenticActionRun, outcome: KritzelAgenticRunOutcome, options?: { sync?: boolean }): void {
     if (run.settled) {
+      return;
+    }
+    if (run.applyingHistory && outcome.kind === 'abort') {
+      // An undo/redo step is being applied and its events are already out: it can't be rolled back.
+      // The executor decides once the step returns (the abort stands only if nothing was applied).
+      run.heldAbort ??= { reason: outcome.reason, objectIds: outcome.objectIds };
       return;
     }
     run.settled = true;
@@ -210,8 +217,14 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       } else {
         run.origin?.takeRecording();
       }
+      if (run.suspendedRedo && map && map.isReady) {
+        // A kept change invalidates the earlier redo steps; a rolled-back (or empty) action leaves them as they were.
+        map.resumeAgentRedo(run.cursorId, run.suspendedRedo, !(run.hasMutated && keep));
+      }
     } catch (error) {
       console.error('[Kritzel] Failed to finish an agentic action:', error);
+    } finally {
+      run.suspendedRedo = null;
     }
 
     run.runSettleHooks();
@@ -348,6 +361,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
         run.origin = origin;
         map.stopAgentCapturing(run.cursorId);
         run.undoLengthAtStart = map.getAgentUndoStackLength(run.cursorId);
+        run.suspendedRedo = map.suspendAgentRedo(run.cursorId);
         origin.startRecording();
       }
 
@@ -613,6 +627,20 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     }
     this._boundMaps.add(map);
     map.onBeforeDestroy(() => this.cancelAll(this._disposing ? 'engine-disconnected' : 'workspace-changed', map));
+    // The user (or host code) wrote an object an agent is working on, e.g. a z-order change
+    // or engine.updateObject: the user has taken it over, so the agent stops and keeps its progress.
+    map.onLocalObjectsChange(keys => {
+      for (const run of Array.from(this._running.values())) {
+        if (run.settled || !run.executing || run.map !== map) {
+          continue;
+        }
+        const checked = run.checkedIds();
+        const hit = Array.from(keys).filter(id => checked.has(id));
+        if (hit.length > 0) {
+          run.abort('user-interaction', hit);
+        }
+      }
+    });
   }
 
   /** Cancels running and queued actions; with a map, only runs bound to it are rolled back. */

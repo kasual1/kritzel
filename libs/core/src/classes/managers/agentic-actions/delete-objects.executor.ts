@@ -44,6 +44,8 @@ export const deleteObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgenticD
         }
       }
     });
+    // A listener may have stopped the run during the deletion; then its rollback restores the objects.
+    run.assertActive();
 
     const remaining = run.host.getSelection(run.cursorId).filter(id => !deleted.has(id));
     run.host.setSelection(run.cursorId, remaining);

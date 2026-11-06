@@ -51,6 +51,8 @@ export const selectExecutor: KritzelAgenticActionExecutor<KritzelAgenticSelectAc
     const ids = uniqueIds(action.objectIds);
     await flyToObjects(run, ids);
     await run.click();
+    // The run may have been stopped (e.g. cursor removed) while the click finished.
+    run.assertActive();
     const next = action.additive ? uniqueIds([...run.host.getSelection(run.cursorId), ...ids]) : ids;
     run.host.setSelection(run.cursorId, next);
     return next;

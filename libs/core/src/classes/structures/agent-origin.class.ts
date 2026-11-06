@@ -42,6 +42,13 @@ export class KritzelAgentOrigin {
     }
   }
 
+  /** Forgets pending local-only changes of objects someone else has just written. */
+  forgetLocalOnly(ids: Iterable<string>): void {
+    for (const id of ids) {
+      this._localOnly.delete(id);
+    }
+  }
+
   /** Returns and forgets the objects updated in local-only mode. */
   takeLocalOnly(): string[] {
     const ids = Array.from(this._localOnly);

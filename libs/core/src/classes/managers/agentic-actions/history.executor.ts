@@ -1,6 +1,7 @@
 import type { KritzelAgenticRedoAction, KritzelAgenticUndoAction } from '../../../interfaces/agentic-action.interface';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
 import type { KritzelAgenticActionRun } from './agentic-action-run.class';
+import type { KritzelAgentHistoryResult } from '../../structures/object-map.structure';
 import { flyToObjects } from './select.executor';
 
 type HistoryAction = KritzelAgenticUndoAction | KritzelAgenticRedoAction;
@@ -38,7 +39,19 @@ function createHistoryExecutor(direction: 'undo' | 'redo'): KritzelAgenticAction
 
       // The step replaces the instances of its objects; stop checking them as "changed elsewhere".
       run.untrack([...run.targetIds]);
-      const result = direction === 'undo' ? map.undoAgent(run.cursorId) : map.redoAgent(run.cursorId);
+      run.applyingHistory = true;
+      let result: KritzelAgentHistoryResult;
+      try {
+        result = direction === 'undo' ? map.undoAgent(run.cursorId) : map.redoAgent(run.cursorId);
+      } finally {
+        run.applyingHistory = false;
+      }
+      // An abort during the step (e.g. from a listener of its events) only stands if nothing was applied.
+      const held = run.heldAbort;
+      run.heldAbort = null;
+      if (held && result.status !== 'done') {
+        run.stop(held.reason, held.objectIds);
+      }
       if (result.status === 'empty') {
         run.stop(emptyReason);
       }

@@ -74,6 +74,12 @@ export class KritzelAgenticActionRun {
   hostMoveGeneration = 0;
   /** Length of the agent's undo stack when the action started. */
   undoLengthAtStart = 0;
+  /** Redo steps set aside while a mutating action runs, so a rollback can restore them. */
+  suspendedRedo: unknown[] | null = null;
+  /** Set while an agent undo/redo step is applied; aborts arriving then are held until it returns. */
+  applyingHistory = false;
+  /** An abort that arrived while `applyingHistory` was set. */
+  heldAbort: { reason: KritzelAgenticActionFailureReason; objectIds?: string[] } | null = null;
   /** Whether the action changed anything. */
   hasMutated = false;
   /** Whether the outcome is decided. */
@@ -171,7 +177,8 @@ export class KritzelAgenticActionRun {
   /** All objects checked every frame: targets, anchored lines (when enabled) and tracked objects. */
   checkedIds(): Set<string> {
     const ids = new Set<string>(this.targetIds);
-    if (this.includeAnchoredLines && this.executing) {
+    // Also before the action starts: the pre-start check must cover everything the action claims.
+    if (this.includeAnchoredLines) {
       collectAnchoredLines(this.core, this.targetIds).forEach(id => ids.add(id));
     }
     this.trackedIds.forEach(id => ids.add(id));

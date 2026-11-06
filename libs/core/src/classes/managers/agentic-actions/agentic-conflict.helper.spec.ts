@@ -1,5 +1,6 @@
 import { KritzelSelectionGroup } from '../../objects/selection-group.class';
-import { buildFrameCache, classifySelectionGroup, detectObjectConflict } from './agentic-conflict.helper';
+import { KritzelGroup } from '../../objects/group.class';
+import { buildFrameCache, buildParentIndex, classifySelectionGroup, detectObjectConflict, expandWithRelatives, findParentGroup } from './agentic-conflict.helper';
 
 const createGroup = (fields: Record<string, unknown>) => {
   const group = Object.create(KritzelSelectionGroup.prototype);
@@ -43,12 +44,57 @@ describe('agentic conflict helpers', () => {
       expect(classifySelectionGroup(map as any, createCore() as any, createGroup({ clientId: 2 }))).toBe('collaborator');
     });
 
+    it("treats the store's selection with an old client ID (restored after a reload) as the user's", () => {
+      const restored = createGroup({ clientId: 111, userId: 'me' });
+      const withoutAwareness = createMap([], { docClientId: 222 });
+      const core = { ...createCore({}, { id: 'me' }), store: { ...createCore().store, selectionGroup: restored } };
+      expect(classifySelectionGroup(withoutAwareness as any, core as any, restored)).toBe('human');
+
+      const withAwareness = createMap([], { docClientId: 222, awareness: new Map([[222, {}]]) });
+      expect(classifySelectionGroup(withAwareness as any, core as any, restored)).toBe('human');
+
+      // A live peer with the same group (another device of the same account) stays a collaborator.
+      const peer = createMap([], { docClientId: 222, awareness: new Map([[222, {}], [111, {}]]) });
+      expect(classifySelectionGroup(peer as any, core as any, restored)).toBe('collaborator');
+    });
+
     it('falls back to the user ID for legacy groups without a client ID', () => {
       const map = createMap([], { docClientId: 1 });
       const core = createCore({}, { id: 'me' });
       expect(classifySelectionGroup(map as any, core as any, createGroup({ userId: 'me' }))).toBe('human');
       expect(classifySelectionGroup(map as any, core as any, createGroup({ userId: 'you' }))).toBe('collaborator');
       expect(classifySelectionGroup(map as any, createCore() as any, createGroup({ userId: undefined }))).toBe('human');
+    });
+  });
+
+  describe('group relatives', () => {
+    const createGroupObject = (id: string, childIds: string[]) => {
+      const group = Object.create(KritzelGroup.prototype);
+      Object.defineProperty(group, 'id', { value: id });
+      Object.defineProperty(group, 'childIds', { value: childIds });
+      Object.defineProperty(group, 'children', { get: () => childIds.map(childId => objects.find(o => o.id === childId)) });
+      return group;
+    };
+    let objects: any[];
+
+    beforeEach(() => {
+      objects = [{ id: 'a' }, { id: 'b' }];
+      objects.push(createGroupObject('inner', ['a']));
+      objects.push(createGroupObject('outer', ['inner', 'b']));
+    });
+
+    it('indexes parents once and finds the same parents as a scan', () => {
+      const map = createMap(objects);
+      const parents = buildParentIndex(map as any);
+      for (const id of ['a', 'b', 'inner', 'outer']) {
+        expect(findParentGroup(map as any, id, parents)?.id).toBe(findParentGroup(map as any, id)?.id);
+      }
+    });
+
+    it('expands ids with ancestors and descendants', () => {
+      const map = createMap(objects);
+      expect(Array.from(expandWithRelatives(map as any, ['a'])).sort()).toEqual(['a', 'inner', 'outer']);
+      expect(Array.from(expandWithRelatives(map as any, ['outer'])).sort()).toEqual(['a', 'b', 'inner', 'outer']);
     });
   });
 

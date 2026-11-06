@@ -57,6 +57,8 @@ export const moveObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticMove
       run.mutate(() => {
         if (line.startAnchor) core.anchorManager.removeAnchor(id, 'start');
         if (line.endAnchor) core.anchorManager.removeAnchor(id, 'end');
+        // Persist the detach so it is recorded (and rolled back on abort) like every other agent change.
+        map.update(line);
       });
     }
 

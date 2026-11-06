@@ -477,6 +477,99 @@ describe('KritzelAgenticActionManager', () => {
     });
   });
 
+  describe('review regressions', () => {
+    it('refuses a newcomer whose anchored line is already claimed instead of killing the running action', async () => {
+      add('p', 0, 0);
+      add('q', 0, 300);
+      add('L', 0, 150, 10, 10);
+      core.anchorManager.getLinesAnchoredTo.mockImplementation((id: string) => (id === 'p' || id === 'q' ? [{ lineId: 'L', endpoint: id === 'p' ? 'start' : 'end' }] : []));
+      cursors.add({ id: 'other', position: { x: 0, y: 0 } });
+
+      const running = actions.perform('other', { type: 'moveObject', objectId: 'q', to: { x: 650, y: 325 } });
+      for (let i = 0; i < 60 && obj('q')!.translateX === 0; i++) await step();
+      const newcomer = await settle(actions.perform('agent', { type: 'moveObject', objectId: 'p', to: { x: 300, y: 25 } }));
+
+      expect(newcomer).toEqual({ completed: false, reason: 'claimed-by-agent', objectIds: ['L'] });
+      await expect(settle(running)).resolves.toMatchObject({ completed: true });
+      expect(obj('q')!.translateX).toBeCloseTo(600);
+      expect(obj('p')!.translateX).toBe(0);
+    });
+
+    it('never keeps a selection for a removed cursor', async () => {
+      add('a', 0, 0);
+      cursors.remove('agent');
+      actions.setSelection('agent', ['a']);
+      expect(actions.getSelection('agent')).toEqual([]);
+      cursors.add({ id: 'other' });
+      await expect(settle(actions.perform('other', { type: 'select', objectIds: ['a'] }, { instant: true }))).resolves.toMatchObject({ completed: true });
+    });
+
+    it('reports an undo as completed when its own change event aborts it', async () => {
+      add('a', 0, 0);
+      await settle(actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } }, { instant: true }));
+      const controller = new AbortController();
+      core.engine.emitObjectsUpdated.mockImplementationOnce(() => controller.abort());
+
+      await expect(settle(actions.perform('agent', { type: 'undo' }, { instant: true, signal: controller.signal }))).resolves.toEqual({ completed: true, objectIds: ['a'] });
+      expect(obj('a')!.translateX).toBe(0);
+      expect(cursors.get('agent')).toMatchObject({ canRedo: true });
+    });
+
+    it('stops with user-interaction when the user writes the target mid-action, without overwriting that write', async () => {
+      add('a', 0, 0);
+      const userStack = map.undoManager!.undoStack.length;
+      const promise = actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 650, y: 25 } });
+      for (let i = 0; i < 60 && obj('a')!.translateX === 0; i++) await step();
+
+      // e.g. a z-order change by the user that renumbers the target
+      const target = obj('a')!;
+      target.zIndex = 7;
+      map.update(target as any);
+
+      await expect(settle(promise)).resolves.toMatchObject({ completed: false, reason: 'user-interaction', objectIds: ['a'] });
+      expect(map.undoManager!.undoStack.length).toBe(userStack + 1);
+      expect(obj('a')!.zIndex).toBe(7);
+    });
+
+    it('keeps earlier redo steps when an action is rolled back', async () => {
+      add('a', 0, 0);
+      add('b', 0, 200);
+      await settle(actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } }, { instant: true }));
+      await settle(actions.perform('agent', { type: 'undo' }, { instant: true }));
+      expect(cursors.get('agent')!.canRedo).toBe(true);
+
+      const controller = new AbortController();
+      const aborted = actions.perform('agent', { type: 'moveObject', objectId: 'b', to: { x: 650, y: 225 } }, { signal: controller.signal });
+      for (let i = 0; i < 60 && obj('b')!.translateX === 0; i++) await step();
+      controller.abort();
+      await expect(settle(aborted)).resolves.toMatchObject({ reason: 'aborted' });
+
+      expect(cursors.get('agent')!.canRedo).toBe(true);
+      await expect(settle(actions.perform('agent', { type: 'redo' }, { instant: true }))).resolves.toMatchObject({ completed: true });
+      expect(obj('a')!.translateX).toBe(100);
+      expect(obj('b')!.translateX).toBe(0);
+    });
+
+    it('discards earlier redo steps once a new change is kept', async () => {
+      add('a', 0, 0);
+      add('b', 0, 200);
+      await settle(actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } }, { instant: true }));
+      await settle(actions.perform('agent', { type: 'undo' }, { instant: true }));
+      await settle(actions.perform('agent', { type: 'moveObject', objectId: 'b', to: { x: 150, y: 225 } }, { instant: true }));
+      expect(cursors.get('agent')!.canRedo).toBe(false);
+    });
+
+    it('reports user-selected for an idle selection even after a handle was used', async () => {
+      add('a', 0, 0);
+      addSelection(['a']);
+      state.isResizeHandleSelected = true;
+      state.pointers = new Map();
+      await expect(settle(actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 300, y: 0 } }))).resolves.toMatchObject({ reason: 'user-selected' });
+      state.pointers.set(1, {});
+      await expect(settle(actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 300, y: 0 } }))).resolves.toMatchObject({ reason: 'user-interaction' });
+    });
+  });
+
   describe('select, click and delete', () => {
     it('keeps agent selections local and never touches the user selection flags', async () => {
       add('a', 0, 0);

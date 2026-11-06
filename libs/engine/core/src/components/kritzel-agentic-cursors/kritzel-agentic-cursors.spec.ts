@@ -140,6 +140,21 @@ describe('KritzelAgenticCursors', () => {
     expect(ripple[0].$key$).toBe('agentic-cursor-ripple-3');
   });
 
+  it('does not replay a ripple that has played, or one from before the cursor was first rendered', () => {
+    cursors = [createCursor({ pressCount: 2 })];
+    expect(byClass(component.render() as unknown as VNode, 'agentic-cursor-ripple')).toHaveLength(0);
+
+    cursors = [createCursor({ pressCount: 3, isPressed: true })];
+    const ripple = byClass(component.render() as unknown as VNode, 'agentic-cursor-ripple');
+    expect(ripple).toHaveLength(1);
+
+    // Released; the ripple keeps playing until its animation ends, then is never rendered again.
+    cursors = [createCursor({ pressCount: 3 })];
+    expect(byClass(component.render() as unknown as VNode, 'agentic-cursor-ripple')).toHaveLength(1);
+    (ripple[0].$attrs$!.onAnimationEnd as () => void)();
+    expect(byClass(component.render() as unknown as VNode, 'agentic-cursor-ripple')).toHaveLength(0);
+  });
+
   it('moves outlines with their objects on each frame without re-rendering', () => {
     objects.set('a', createObject('a', 0, 0, 10, 5));
     cursors = [createCursor({ selectedObjectIds: ['a'] })];

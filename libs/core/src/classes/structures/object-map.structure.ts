@@ -70,6 +70,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _awarenessChangeHandler: ((change: { added: number[]; updated: number[]; removed: number[] }, origin: string) => void) | null = null;
   private _awarenessChangeCallbacks: ((states: Map<number, Record<string, any>>) => void)[] = [];
   private _objectsChangeCallbacks: (() => void)[] = [];
+  private _localObjectsChangeCallbacks: ((keys: Set<string>) => void)[] = [];
   private _lastAwarenessEmitTime: number = 0;
   private _awarenessEmitTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly AWARENESS_THROTTLE_INTERVAL = 100; // milliseconds
@@ -329,6 +330,18 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     return () => {
       this._awarenessChangeCallbacks = this._awarenessChangeCallbacks.filter(existingCallback => existingCallback !== callback);
+    };
+  }
+
+  /**
+   * Registers a callback for object changes written with the user's (`'local'`/`'temporary'`)
+   * origin, with the changed object IDs. Agent writes and remote changes are not included.
+   * Used to stop agentic actions when the user or host code changes one of their objects.
+   */
+  onLocalObjectsChange(callback: (keys: Set<string>) => void): () => void {
+    this._localObjectsChangeCallbacks.push(callback);
+    return () => {
+      this._localObjectsChangeCallbacks = this._localObjectsChangeCallbacks.filter(existing => existing !== callback);
     };
   }
 
@@ -619,6 +632,19 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // Skip Map updates for local changes (already done), but still trigger re-render
     // 'temporary' is also a local change that shouldn't be re-deserialized
     if (origin === 'local' || origin === 'temporary') {
+      if (this._agents.size > 0 || this._localObjectsChangeCallbacks.length > 0) {
+        const keys = new Set<string>(event.keysChanged);
+        // A local write saved the whole instance, including any pending agent changes:
+        // agents must not write these objects again when they commit.
+        this._agents.forEach(agent => agent.origin.forgetLocalOnly(keys));
+        for (const callback of this._localObjectsChangeCallbacks) {
+          try {
+            callback(keys);
+          } catch (error) {
+            console.error('[Kritzel] Local objects change callback failed:', error);
+          }
+        }
+      }
       this.requestRerender();
       return;
     }
@@ -1339,6 +1365,33 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     return true;
   }
 
+  /**
+   * Takes an agent's redo steps aside while an action runs. Yjs would otherwise clear (and release)
+   * them on the action's first write, so a rolled-back action could not leave the history as it was.
+   * @returns The steps to pass to `resumeAgentRedo`
+   */
+  suspendAgentRedo(cursorId: string): unknown[] {
+    const undoManager = this._agents.get(cursorId)?.undoManager;
+    return undoManager ? undoManager.redoStack.splice(0) : [];
+  }
+
+  /**
+   * Ends `suspendAgentRedo`. With `restore`, the steps become redoable again (after a rollback);
+   * otherwise they are discarded properly, as a new change does.
+   */
+  resumeAgentRedo(cursorId: string, steps: unknown[], restore: boolean): void {
+    const undoManager = this._agents.get(cursorId)?.undoManager;
+    if (!undoManager || steps.length === 0) {
+      return;
+    }
+    if (restore) {
+      undoManager.redoStack.unshift(...(steps as typeof undoManager.redoStack));
+      return;
+    }
+    undoManager.redoStack.unshift(...(steps as typeof undoManager.redoStack));
+    undoManager.clear(false, true);
+  }
+
   /** Destroys the history of an agentic cursor. */
   disposeAgent(cursorId: string): void {
     const agent = this._agents.get(cursorId);
@@ -1566,6 +1619,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
     this._awareness = null;
     this._awarenessChangeCallbacks = [];
+    this._localObjectsChangeCallbacks = [];
 
     // Destroy providers (destroy handles disconnection internally)
     this._providers.forEach(p => {

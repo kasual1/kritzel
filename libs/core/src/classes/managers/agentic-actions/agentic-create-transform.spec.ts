@@ -370,6 +370,30 @@ describe('agentic create and transform actions', () => {
       await expect(perform({ type: 'connect', from: a.id, to: line.id })).resolves.toMatchObject({ reason: 'invalid-target' });
     });
 
+    it('restores the anchors of a dragged line when the move is aborted', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const connected = await perform({ type: 'connect', from: a.id, to: b.id });
+      const lineId = connected.objectIds![0];
+
+      const controller = new AbortController();
+      const promise = actions.perform('agent', { type: 'moveObject', objectId: lineId, to: { x: 500, y: 500 } }, { signal: controller.signal });
+      await flushMicrotasks();
+      for (let i = 0; i < 80 && (map.findById(lineId) as KritzelLine).startAnchor; i++) {
+        now += 16;
+        cursors.tick(now);
+        await flushMicrotasks();
+      }
+      expect((map.findById(lineId) as KritzelLine).startAnchor).toBeUndefined();
+      controller.abort();
+      await expect(settle(promise)).resolves.toMatchObject({ reason: 'aborted' });
+
+      const line = map.findById(lineId) as KritzelLine;
+      expect(line.startAnchor).toEqual({ objectId: a.id });
+      expect(line.endAnchor).toEqual({ objectId: b.id });
+      expect(core.anchorManager.getLinesAnchoredTo(a.id)).toEqual([{ lineId, endpoint: 'start' }]);
+    });
+
     it('rolls the line back when an end is deleted mid-drag', async () => {
       const a = addShape(0, 0, 50, 50);
       const b = addShape(900, 0, 50, 50);

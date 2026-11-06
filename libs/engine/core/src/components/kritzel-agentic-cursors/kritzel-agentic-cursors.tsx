@@ -31,6 +31,8 @@ export class KritzelAgenticCursors {
   private readonly cursorElements = new Map<string, HTMLElement>();
   private readonly renderedPositions = new Map<string, RenderedPosition>();
   private readonly selectionElements = new Map<string, SVGPolygonElement>();
+  /** Press count whose ripple has played per cursor, so re-created cursor elements don't replay it. */
+  private readonly playedPressCounts = new Map<string, number>();
   private readonly renderedSelectionPoints = new Map<string, string>();
   private renderedSelectionKeys = '';
   private removeChangeListener: (() => void) | undefined;
@@ -108,6 +110,19 @@ export class KritzelAgenticCursors {
       if (!renderedIds.has(id)) this.renderedPositions.delete(id);
     }
 
+    // Presses made before a cursor was first seen (or while it was hidden) don't ripple later.
+    const existingIds = new Set(this.core.agenticCursorManager.getAll().map(cursor => cursor.id));
+    for (const id of Array.from(this.playedPressCounts.keys())) {
+      if (!existingIds.has(id)) this.playedPressCounts.delete(id);
+    }
+    for (const cursor of this.core.agenticCursorManager.getAll()) {
+      if (!this.playedPressCounts.has(cursor.id)) {
+        this.playedPressCounts.set(cursor.id, cursor.isPressed ? cursor.pressCount - 1 : cursor.pressCount);
+      } else if (!cursor.visible) {
+        this.playedPressCounts.set(cursor.id, cursor.pressCount);
+      }
+    }
+
     const selections = this.collectSelections(cursors);
     this.renderedSelectionKeys = selections.map(selection => selection.key).join('|');
     this.renderedSelectionPoints.clear();
@@ -156,8 +171,14 @@ export class KritzelAgenticCursors {
         style={{ transform: `translate(${screenX}px, ${screenY}px)`, '--agentic-cursor-color': cursor.color }}
         ref={el => this.setCursorElement(cursor.id, el)}
       >
-        {/* Re-keyed on every press so the ripple animation restarts. */}
-        {cursor.pressCount > 0 && <span key={`agentic-cursor-ripple-${cursor.pressCount}`} class="agentic-cursor-ripple"></span>}
+        {/* Re-keyed on every press so the ripple animation restarts; a played ripple is not rendered again. */}
+        {cursor.pressCount > 0 && (cursor.isPressed || cursor.pressCount > (this.playedPressCounts.get(cursor.id) ?? 0)) && (
+          <span
+            key={`agentic-cursor-ripple-${cursor.pressCount}`}
+            class="agentic-cursor-ripple"
+            onAnimationEnd={() => this.playedPressCounts.set(cursor.id, cursor.pressCount)}
+          ></span>
+        )}
         <CursorArrow color={cursor.color} />
         {(cursor.name || cursor.status) && (
           <div class="agentic-cursor-labels">

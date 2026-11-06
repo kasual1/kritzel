@@ -16,7 +16,7 @@ export type KritzelSelectionGroupOwner = 'human' | 'collaborator' | 'stale';
 export interface KritzelAgenticFrameCache {
   /** Objects (with relatives) in the local user's selection. */
   humanSelectedIds: Set<string>;
-  /** Whether the local user is dragging, resizing, rotating or holding a handle. */
+  /** Whether the local user is dragging, resizing, rotating or pressing a handle right now. */
   humanGestureActive: boolean;
   /** Objects (with relatives) a collaborator has selected or is drawing. */
   collaboratorIds: Set<string>;
@@ -29,8 +29,29 @@ export function isSelectionObject(object: unknown): boolean {
   return object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox;
 }
 
+/** Child ID -> the group directly containing it. */
+export type KritzelParentIndex = Map<string, KritzelGroup>;
+
+/** Builds the child-to-parent index of all groups with one scan of the map. */
+export function buildParentIndex(map: ObjectMap): KritzelParentIndex {
+  const index: KritzelParentIndex = new Map();
+  const groups = map.filter(o => o instanceof KritzelGroup) as unknown as KritzelGroup[];
+  for (const group of groups) {
+    for (const childId of group.childIds) {
+      // First group wins, like a linear search.
+      if (!index.has(childId)) {
+        index.set(childId, group);
+      }
+    }
+  }
+  return index;
+}
+
 /** The group directly containing an object, if any. */
-export function findParentGroup(map: ObjectMap, objectId: string): KritzelGroup | null {
+export function findParentGroup(map: ObjectMap, objectId: string, parents?: KritzelParentIndex): KritzelGroup | null {
+  if (parents) {
+    return parents.get(objectId) ?? null;
+  }
   const groups = map.filter(o => o instanceof KritzelGroup) as unknown as KritzelGroup[];
   for (const group of groups) {
     if (group.childIds.includes(objectId)) {
@@ -46,7 +67,7 @@ export function isTopLevel(map: ObjectMap, objectId: string): boolean {
 }
 
 /** The IDs plus all group descendants and ancestors. */
-export function expandWithRelatives(map: ObjectMap, ids: Iterable<string>): Set<string> {
+export function expandWithRelatives(map: ObjectMap, ids: Iterable<string>, parents: KritzelParentIndex = buildParentIndex(map)): Set<string> {
   const result = new Set<string>();
   for (const id of ids) {
     result.add(id);
@@ -54,12 +75,12 @@ export function expandWithRelatives(map: ObjectMap, ids: Iterable<string>): Set<
     if (object instanceof KritzelGroup) {
       KritzelGroup.collectDescendantIds(object, result);
     }
-    let parent = findParentGroup(map, id);
+    let parent = parents.get(id) ?? null;
     const seen = new Set<string>();
     while (parent && !seen.has(parent.id)) {
       seen.add(parent.id);
       result.add(parent.id);
-      parent = findParentGroup(map, parent.id);
+      parent = parents.get(parent.id) ?? null;
     }
   }
   return result;
@@ -99,10 +120,16 @@ export function classifySelectionGroup(map: ObjectMap, core: KritzelCore, group:
       return 'human';
     }
     const awareness = map.awareness;
-    if (awareness) {
-      return awareness.getStates().has(group.clientId) ? 'collaborator' : 'stale';
+    // A live peer (another person, or another device of the same account) is a collaborator.
+    if (awareness?.getStates().has(group.clientId)) {
+      return 'collaborator';
     }
-    return 'collaborator';
+    // Not a live peer: the group the user's tools treat as the local selection is the user's,
+    // e.g. a selection restored after a reload that still carries the previous session's client ID.
+    if (core.store.selectionGroup === group) {
+      return 'human';
+    }
+    return awareness ? 'stale' : 'collaborator';
   }
   // Groups saved before client IDs were stamped without awareness.
   const localUserId = core.user?.id;
@@ -144,18 +171,19 @@ export function buildFrameCache(core: KritzelCore, map: ObjectMap): KritzelAgent
     });
   }
 
+  // The handle-selected flags stay set after a gesture ends, so they only count while a pointer is down.
+  const pointerDown = (state.pointers?.size ?? 0) > 0;
+  const parents = buildParentIndex(map);
   return {
-    humanSelectedIds: expandWithRelatives(map, humanSelected),
+    humanSelectedIds: expandWithRelatives(map, humanSelected, parents),
     humanGestureActive: !!(
       state.isDragging ||
       state.isResizing ||
       state.isRotating ||
       state.isLineHandleDragging ||
-      state.isResizeHandleSelected ||
-      state.isRotationHandleSelected ||
-      state.isLineHandleSelected
+      (pointerDown && (state.isResizeHandleSelected || state.isRotationHandleSelected || state.isLineHandleSelected))
     ),
-    collaboratorIds: expandWithRelatives(map, collaborator),
+    collaboratorIds: expandWithRelatives(map, collaborator, parents),
     hasRemotePeers,
   };
 }
