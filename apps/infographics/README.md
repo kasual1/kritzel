@@ -26,13 +26,15 @@ npm run infographics
 ## Agentic canvas
 
 `src/infographics/agentic-canvas/` is the showcase for the "infinite agentic canvas" blog series. The editor shows its chat
-box instead of the toolbar. Every prompt runs Claude in a tool-use loop (`canvas-agent.ts`) with a single `add_iframe`
-tool, which adds a `KritzelIframeObject` with a titlebar that renders the page Claude wrote.
+box instead of the toolbar. Every prompt runs Claude in a tool-use loop (`canvas-agent.ts`). Claude is a `KritzelAgent` with
+its own cursor and history: its `add_iframe` tool places a `KritzelIframeObject` with a titlebar that renders the page
+Claude wrote (through `agent.addObject()`), and `agent.tools()` adds `observe_canvas`, `move_object`, `resize_object` and
+`delete_objects` so Claude can see and arrange its pages.
 
 To try it, copy `.env.example` at the repository root to `.env` and set your Anthropic API key:
 
 ```bash
-VITE_ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 The key is used straight from the browser, so only run this locally.

@@ -1,5 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { KritzelIframeObject, type HTMLKritzelEditorElement, type KritzelBaseObject } from '@kritzel/react-editor';
+import {
+  KritzelIframeObject,
+  type HTMLKritzelEditorElement,
+  type KritzelAgent,
+  type KritzelAgentTool,
+  type KritzelBaseObject,
+} from '@kritzel/react-editor';
 
 /**
  * `ANTHROPIC_API_KEY` from the `.env` file at the repository root (see `.env.example`).
@@ -16,6 +22,8 @@ iframe, with a titlebar above it.
 
 Pages are self-contained: no external scripts, stylesheets or images, except Google Fonts. Use inline SVG for icons and \
 illustrations. Design modern, polished pages, and size the object so the whole page fits, because it does not scroll.
+
+You can also look at the canvas with observe_canvas and move, resize or delete the pages you added.
 
 Keep chat replies to one short sentence; the canvas shows the result.`;
 
@@ -64,6 +72,14 @@ interface IframeInput {
   script: string;
 }
 
+/** The Kritzel tools Claude may use next to add_iframe: look at the canvas and arrange the pages. */
+const KRITZEL_TOOLS = ['observe_canvas', 'move_object', 'resize_object', 'delete_objects'];
+
+/** Kritzel tools are provider-neutral; Anthropic calls the schema `input_schema`. */
+function toAnthropicTool(tool: KritzelAgentTool): Anthropic.Beta.BetaTool {
+  return { name: tool.name, description: tool.description, input_schema: tool.inputSchema, eager_input_streaming: true };
+}
+
 /** Thrown for invalid tool input; its message goes back to Claude as an error result. */
 class ToolInputError extends Error {}
 
@@ -87,8 +103,9 @@ export function isIframe(object: KritzelBaseObject): object is KritzelIframeObje
 }
 
 /**
- * A chat with Claude about the canvas. Each prompt runs a tool-use loop in which Claude adds iframe objects until it is done.
- * The conversation is kept between prompts, so follow-ups like "now a dark version of it" work.
+ * A chat with Claude about the canvas. Each prompt runs a tool-use loop in which Claude, as a KritzelAgent with its own
+ * cursor and history, adds iframe objects until it is done. The conversation is kept between prompts, so follow-ups
+ * like "now a dark version of it" work.
  */
 export class CanvasAgent {
   static readonly hasApiKey = API_KEY.length > 0;
@@ -96,11 +113,19 @@ export class CanvasAgent {
   private readonly client = new Anthropic({ apiKey: API_KEY, dangerouslyAllowBrowser: true });
   private readonly messages: Anthropic.Beta.BetaMessageParam[] = [];
 
-  constructor(private readonly editor: HTMLKritzelEditorElement) {}
+  private readonly kritzelTools: KritzelAgentTool[];
+
+  constructor(
+    private readonly editor: HTMLKritzelEditorElement,
+    private readonly agent: KritzelAgent,
+  ) {
+    this.kritzelTools = agent.tools({ only: KRITZEL_TOOLS });
+  }
 
   async send(prompt: string, signal: AbortSignal): Promise<void> {
     const historyLength = this.messages.length;
     this.messages.push({ role: 'user', content: prompt });
+    this.agent.setStatus('Thinking…');
 
     try {
       await this.runLoop(signal);
@@ -108,6 +133,8 @@ export class CanvasAgent {
       // Drop the unfinished exchange: a tool call without its result would make every later request fail.
       this.messages.length = historyLength;
       throw error;
+    } finally {
+      this.agent.setStatus(null);
     }
   }
 
@@ -123,7 +150,7 @@ export class CanvasAgent {
               model: MODEL,
               max_tokens: 64000,
               system: SYSTEM_PROMPT,
-              tools: [ADD_IFRAME_TOOL],
+              tools: [ADD_IFRAME_TOOL, ...this.kritzelTools.map(toAnthropicTool)],
               messages: this.messages,
               output_config: { effort: 'medium' },
               cache_control: { type: 'ephemeral' },
@@ -159,18 +186,25 @@ export class CanvasAgent {
 
       const results: Anthropic.Beta.BetaToolResultBlockParam[] = [];
       for (const toolUse of toolUses) {
-        results.push(await this.runTool(toolUse));
+        results.push(await this.runTool(toolUse, signal));
       }
       this.messages.push({ role: 'user', content: results });
     }
   }
 
-  private async runTool(toolUse: Anthropic.Beta.BetaToolUseBlock): Promise<Anthropic.Beta.BetaToolResultBlockParam> {
+  private async runTool(toolUse: Anthropic.Beta.BetaToolUseBlock, signal: AbortSignal): Promise<Anthropic.Beta.BetaToolResultBlockParam> {
+    const kritzelTool = this.kritzelTools.find(tool => tool.name === toolUse.name);
+    if (kritzelTool) {
+      // Refusals (e.g. the user has the page selected) are ordinary results; only rejected input is an error.
+      const content = await kritzelTool.run(toolUse.input, { signal });
+      const isError = (JSON.parse(content) as { reason?: string }).reason === 'invalid-input';
+      return { type: 'tool_result', tool_use_id: toolUse.id, content, ...(isError ? { is_error: true } : {}) };
+    }
     try {
       if (toolUse.name !== ADD_IFRAME_TOOL.name) {
         throw new ToolInputError(`Unknown tool "${toolUse.name}".`);
       }
-      const object = await this.addIframe(readInput(toolUse.input));
+      const object = await this.addIframe(readInput(toolUse.input), signal);
       return { type: 'tool_result', tool_use_id: toolUse.id, content: `Added "${object.name}" to the canvas.` };
     } catch (error) {
       if (!(error instanceof ToolInputError)) {
@@ -180,10 +214,14 @@ export class CanvasAgent {
     }
   }
 
-  /** Adds the object to the right of the existing ones and moves the viewport to it. */
-  private async addIframe({ title, width, height, html, css, script }: IframeInput): Promise<KritzelIframeObject> {
+  /**
+   * Places the object to the right of the existing ones as the agent's change (its cursor hops there, and the user's
+   * selection and undo history stay untouched), then moves the viewport to it.
+   */
+  private async addIframe({ title, width, height, html, css, script }: IframeInput, signal: AbortSignal): Promise<KritzelIframeObject> {
     const boxes = (await this.editor.getAllObjects()).filter(isIframe).map(object => object.boundingBox);
-    const object = await this.editor.addObject(
+    this.agent.setStatus(`Placing "${title}"`);
+    const result = await this.agent.addObject(
       new KritzelIframeObject({
         name: title,
         title,
@@ -195,9 +233,11 @@ export class CanvasAgent {
         borderRadius: 12,
         boxShadow: '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.18)',
       }),
+      { signal },
     );
+    const object = result.completed ? await this.editor.getObjectById<KritzelIframeObject>(result.objectIds![0]) : null;
     if (!object) {
-      throw new Error(`"${title}" could not be added to the canvas.`);
+      throw new ToolInputError(`"${title}" could not be added to the canvas (${result.reason ?? 'unknown reason'}).`);
     }
 
     // Centers the object, zooming out when it does not fit but never zooming in past 100 %.

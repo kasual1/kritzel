@@ -45,6 +45,8 @@ export {
     KritzelAgentActionError,
     isKritzelAgent,
     KritzelIframeObject,
+    formatAgentToolResult,
+    AGENT_TOOL_REASON_HINTS,
 } from '@kritzel/engine';
 
 export type {
@@ -69,6 +71,14 @@ export type {
     KritzelSyncConfig,
     KritzelTheme,
     KritzelViewportState,
+    KritzelAgentTool,
+    KritzelAgentToolSchema,
+    KritzelAgentToolContext,
+    KritzelAgentToolsOptions,
+    KritzelAgentToolResult,
+    KritzelCanvasObject,
+    KritzelCanvasSnapshot,
+    KritzelObserveOptions,
     KritzelAgentOptions,
     KritzelAgentState,
     KritzelAgentDetachedEvent,

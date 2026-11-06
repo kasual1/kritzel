@@ -58,6 +58,7 @@ export * from './classes/managers/agent.manager';
 
 export * from './classes/agent/agent.class';
 export * from './classes/agent/agent-action-error.class';
+export { formatAgentToolResult, AGENT_TOOL_REASON_HINTS } from './classes/agent/agent-tools';
 
 export * from './classes/registries/dynamic-object-renderer.registry';
 export * from './classes/registries/font-registry.class';

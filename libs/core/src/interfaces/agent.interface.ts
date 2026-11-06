@@ -107,3 +107,123 @@ export interface KritzelAgentPresence {
 export interface KritzelAgentsChangeEvent {
   agents: KritzelAgentPresence[];
 }
+
+// ─── LLM tools ────────────────────────────────────────────────────────────────
+
+/**
+ * A JSON Schema of an agent tool's input, limited to keywords every LLM provider accepts. A type alias, not an
+ * interface, so that it fits SDK types that index schemas by string (`input_schema`, `parameters`).
+ */
+export type KritzelAgentToolSchema = {
+  type: 'object';
+  description?: string;
+  properties: Record<string, object>;
+  required?: string[];
+  additionalProperties?: false;
+};
+
+/** Context passed by tool runners; the signal aborts the action like `options.signal`. */
+export interface KritzelAgentToolContext {
+  signal?: AbortSignal | null;
+}
+
+/**
+ * A provider-neutral tool definition for LLMs: hand `name`, `description` and `inputSchema` to the model
+ * (Anthropic calls the schema `input_schema`, OpenAI `parameters`) and call `run` with the model's input.
+ * `run` never throws for mistakes of the model; it returns a JSON `KritzelAgentToolResult`.
+ */
+export interface KritzelAgentTool {
+  name: string;
+  description: string;
+  inputSchema: KritzelAgentToolSchema;
+  run: (input: unknown, context?: KritzelAgentToolContext) => Promise<string>;
+}
+
+/** Options of `agent.tools()`. */
+export interface KritzelAgentToolsOptions {
+  /** Only these tools (names without prefix), e.g. `['observe_canvas', 'create_shape']`. */
+  only?: string[];
+  /** Prefix for every tool name, e.g. `'kritzel_'`, to avoid clashes with other tools. */
+  prefix?: string;
+  /** Longest text an action may type. Defaults to 2000 characters. */
+  maxTextLength?: number;
+}
+
+/** What a tool's `run` returns, as JSON. */
+export interface KritzelAgentToolResult {
+  completed: boolean;
+  /** Why the action did not complete; `'invalid-input'` when the input was rejected. */
+  reason?: KritzelAgenticActionFailureReason | 'invalid-input';
+  objectIds?: string[];
+  /** What was wrong with the input. */
+  message?: string;
+  /** What to do about the failure. */
+  hint?: string;
+  /** Snapshots of the objects the action created or changed. */
+  objects?: KritzelCanvasObject[];
+}
+
+// ─── Canvas snapshot ──────────────────────────────────────────────────────────
+
+/** Options of `agent.observe()`. */
+export interface KritzelObserveOptions {
+  /** `'all'` (default) or only objects in the viewport. */
+  scope?: 'all' | 'viewport';
+  /** Only these objects (and their group children). */
+  objectIds?: string[];
+  /** At most this many objects (default 100); selected and visible objects are kept first. */
+  maxObjects?: number;
+  /** Longer texts are cut with "…" (default 300 characters). */
+  maxTextLength?: number;
+}
+
+/** One object of a canvas snapshot. Coordinates are world units; boxes are unrotated. */
+export interface KritzelCanvasObject {
+  id: string;
+  type: 'shape' | 'text' | 'path' | 'line' | 'image' | 'iframe' | 'group' | 'custom' | 'object';
+  shapeType?: string;
+  name?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Degrees clockwise around the center; omitted when 0. */
+  rotation?: number;
+  text?: string;
+  /** Set for children of a group: such objects are not top-level. */
+  parentId?: string;
+  childIds?: string[];
+  /** For lines: the objects the ends are connected to. */
+  from?: string;
+  to?: string;
+  style?: {
+    fillColor?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    fontSize?: number;
+    fontFamily?: string;
+    fontColor?: string;
+    opacity?: number;
+    arrows?: { start?: string; end?: string };
+  };
+  /** Someone else is working on the object; actions on it will be refused. */
+  busy?: 'user' | 'collaborator' | 'agent';
+  /** Who created it: an agent ID, a user ID, or omitted. */
+  createdBy?: string;
+}
+
+/** What an agent sees of the canvas (`agent.observe()`). */
+export interface KritzelCanvasSnapshot {
+  /** The visible part of the canvas in world coordinates. */
+  viewport: { x: number; y: number; width: number; height: number; scale: number };
+  theme: string;
+  /** Objects the user has selected. */
+  userSelection: string[];
+  agent: { id: string; position: KritzelPoint | null; selection: string[] };
+  /** Back to front. */
+  objects: KritzelCanvasObject[];
+  totalObjects: number;
+  /** `true` when objects were left out because of `maxObjects`. */
+  truncated?: true;
+}
+

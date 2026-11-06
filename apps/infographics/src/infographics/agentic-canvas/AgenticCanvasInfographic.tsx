@@ -1,5 +1,6 @@
 import { useRef, useState, type CSSProperties } from 'react';
 import {
+  KritzelAgent,
   KritzelEditor,
   KritzelWorkspace,
   type HTMLKritzelEditorElement,
@@ -31,6 +32,8 @@ export function AgenticCanvasInfographic() {
   const agentRef = useRef<CanvasAgent | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [isWorking, setIsWorking] = useState(false);
+  // Claude works on the canvas as an agent: its own cursor, status and undo history.
+  const [claude] = useState(() => new KritzelAgent({ id: 'claude', name: 'Claude', color: '#D97757' }));
   const [workspaces] = useState(() => [
     new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [] }),
   ]);
@@ -41,11 +44,11 @@ export function AgenticCanvasInfographic() {
       return;
     }
     if (!CanvasAgent.hasApiKey) {
-      console.warn('Add VITE_ANTHROPIC_API_KEY to the .env file at the repository root and restart the dev server.');
+      console.warn('Add ANTHROPIC_API_KEY to the .env file at the repository root and restart the dev server.');
       return;
     }
 
-    agentRef.current ??= new CanvasAgent(editor);
+    agentRef.current ??= new CanvasAgent(editor, claude);
     const abort = new AbortController();
     abortRef.current = abort;
     setIsWorking(true);
@@ -74,6 +77,7 @@ export function AgenticCanvasInfographic() {
         isChatBoxVisible
         isChatBoxLoading={isWorking}
         isWorkspaceManagerVisible={false}
+        onIsReady={() => void editorRef.current?.addAgent(claude)}
         onChatSubmit={event => void onChatSubmit(event.detail)}
         onChatStop={() => abortRef.current?.abort()}
       />

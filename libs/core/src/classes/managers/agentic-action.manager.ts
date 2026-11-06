@@ -73,6 +73,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   private _disposing = false;
   private _lastFrameTime: number | null = null;
   private readonly _settledListeners = new Set<(event: KritzelAgenticActionSettledEvent) => void>();
+  private readonly _idleWaiters = new Map<string, (() => void)[]>();
 
   constructor(core: KritzelCore) {
     this._core = core;
@@ -132,6 +133,23 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     return () => this._settledListeners.delete(listener);
   }
 
+  /** Resolves when the cursor has no running or queued action. */
+  whenIdle(cursorId: string): Promise<void> {
+    if (this.isIdle(cursorId)) {
+      return Promise.resolve();
+    }
+    return new Promise(resolve => {
+      const waiters = this._idleWaiters.get(cursorId) ?? [];
+      waiters.push(resolve);
+      this._idleWaiters.set(cursorId, waiters);
+    });
+  }
+
+  /** Whether another cursor's running action or selection covers the object. */
+  isClaimedByOtherAgent(objectId: string, cursorId: string): boolean {
+    return this.isClaimedByOther(objectId, cursorId, 'target');
+  }
+
   /** The explicit (`select`) selection of a cursor. */
   getSelection(cursorId: string): string[] {
     return [...(this._selections.get(cursorId)?.ids ?? [])];
@@ -175,6 +193,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     this._disposing = true;
     try {
       this.cancelAll('engine-disconnected', null);
+      Array.from(this._idleWaiters.keys()).forEach(cursorId => this.resolveIdleWaiters(cursorId));
       this.drainDeferred(true);
       this._unsubscribers.forEach(unsubscribe => unsubscribe());
       this._unsubscribers = [];
@@ -628,6 +647,23 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     const activeAction = running && !running.settled ? running.action.type : null;
     const queueLength = this._queues.get(cursorId)?.filter(run => !run.settled).length ?? 0;
     this._core.agenticCursorManager.setActivity(cursorId, activeAction, queueLength);
+    if (activeAction === null && queueLength === 0) {
+      this.resolveIdleWaiters(cursorId);
+    }
+  }
+
+  private isIdle(cursorId: string): boolean {
+    const running = this._running.get(cursorId);
+    return (!running || running.settled) && !(this._queues.get(cursorId)?.some(run => !run.settled) ?? false);
+  }
+
+  private resolveIdleWaiters(cursorId: string): void {
+    const waiters = this._idleWaiters.get(cursorId);
+    if (!waiters || !this.isIdle(cursorId)) {
+      return;
+    }
+    this._idleWaiters.delete(cursorId);
+    waiters.forEach(resolve => resolve());
   }
 
   // ─── Lifecycle ──────────────────────────────────────────────────────────────

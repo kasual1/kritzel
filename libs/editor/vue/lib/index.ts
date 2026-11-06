@@ -51,6 +51,8 @@ export {
     KritzelAgent,
     KritzelAgentActionError,
     isKritzelAgent,
+    formatAgentToolResult,
+    AGENT_TOOL_REASON_HINTS,
 } from '@kritzel/engine';
 
 export type { HTMLKritzelEditorElement } from '@kritzel/editor';
@@ -96,6 +98,14 @@ export type {
     KritzelPresignedUpload,
     KritzelTheme,
     KritzelViewportState,
+    KritzelAgentTool,
+    KritzelAgentToolSchema,
+    KritzelAgentToolContext,
+    KritzelAgentToolsOptions,
+    KritzelAgentToolResult,
+    KritzelCanvasObject,
+    KritzelCanvasSnapshot,
+    KritzelObserveOptions,
     KritzelAgentOptions,
     KritzelAgentState,
     KritzelAgentDetachedEvent,

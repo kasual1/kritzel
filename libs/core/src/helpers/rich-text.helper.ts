@@ -42,4 +42,55 @@ export class KritzelRichTextHelper {
   static getText(view: EditorView): string {
     return view.state.doc.textContent;
   }
+
+  /** The plain text of the document with a line break between paragraphs and at hard breaks. */
+  static getPlainText(view: EditorView): string {
+    const { doc } = view.state;
+    return doc.textBetween(0, doc.content.size, '\n', '\n');
+  }
+
+  /**
+   * The plain text of stored ProseMirror JSON (`object.content`), without a schema: text nodes are
+   * joined, text blocks are separated by a line break, `hard_break` nodes become line breaks.
+   */
+  static toPlainText(content: unknown): string {
+    const blocks: string[] = [];
+    let current = '';
+    let hasText = false;
+
+    const walk = (node: unknown): void => {
+      if (!node || typeof node !== 'object') {
+        return;
+      }
+      const { type, text, content: children } = node as { type?: unknown; text?: unknown; content?: unknown };
+      if (type === 'text' && typeof text === 'string') {
+        current += text;
+        hasText = true;
+        return;
+      }
+      if (type === 'hard_break') {
+        current += '\n';
+        return;
+      }
+      const isTextBlock = Array.isArray(children) && children.some(child => (child as { type?: unknown })?.type === 'text' || (child as { type?: unknown })?.type === 'hard_break');
+      const isBlock = type === 'paragraph' || type === 'heading' || isTextBlock;
+      if (isBlock && current) {
+        blocks.push(current);
+        current = '';
+      }
+      if (Array.isArray(children)) {
+        children.forEach(walk);
+      }
+      if (isBlock) {
+        blocks.push(current);
+        current = '';
+      }
+    };
+
+    walk(content);
+    if (current) {
+      blocks.push(current);
+    }
+    return hasText ? blocks.join('\n').replace(/\n+$/, '') : '';
+  }
 }

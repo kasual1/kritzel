@@ -20,10 +20,22 @@ import type {
   KritzelAgenticStrokeStyle,
 } from '../../interfaces/agentic-action.interface';
 import type { KritzelBaseObject } from '../objects/base-object.class';
-import type { KritzelAgentEventMap, KritzelAgentOptions, KritzelAgentPresence, KritzelAgentState } from '../../interfaces/agent.interface';
+import type {
+  KritzelAgentEventMap,
+  KritzelAgentOptions,
+  KritzelAgentPresence,
+  KritzelAgentState,
+  KritzelAgentTool,
+  KritzelAgentToolsOptions,
+  KritzelCanvasObject,
+  KritzelCanvasSnapshot,
+  KritzelObserveOptions,
+} from '../../interfaces/agent.interface';
 import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelAgentActionError } from './agent-action-error.class';
+import { createAgentTools } from './agent-tools';
+import { buildCanvasSnapshot, describeObject } from './agent-snapshot';
 
 /** Brand that identifies agents across copies of `@kritzel/core`. */
 export const KRITZEL_AGENT_BRAND = Symbol.for('kritzel.agent');
@@ -387,6 +399,41 @@ export class KritzelAgent implements IKritzelUser {
       }
       this.setStatus(previousStatus);
     }
+  }
+
+  // ─── LLM tools ──────────────────────────────────────────────────────────────
+
+  /**
+   * Tool definitions for any LLM framework: `observe_canvas` plus one tool per action (`create_shape`,
+   * `move_object`, `connect`, `set_style`, …). Hand `name`, `description` and `inputSchema` to the model and
+   * call `run(input, { signal })` with its input; the result is JSON for the model. `only` limits what the
+   * model may do.
+   */
+  tools(options: KritzelAgentToolsOptions = {}): KritzelAgentTool[] {
+    return createAgentTools(this, options);
+  }
+
+  /**
+   * What the agent sees of the canvas: the viewport, the user's selection, its own cursor and selection, and
+   * the objects with their geometry, text, connections and style. Rejects while the agent is not added.
+   */
+  async observe(options: KritzelObserveOptions = {}): Promise<KritzelCanvasSnapshot> {
+    return buildCanvasSnapshot(this.requireCore(), this.id, options);
+  }
+
+  /** Resolves when the agent has no running or queued action. @internal */
+  _whenIdle(): Promise<void> {
+    return this._core ? this._core.agenticActionManager.whenIdle(this.id) : Promise.resolve();
+  }
+
+  /** Snapshot entries of objects, for tool results. @internal */
+  _describeObjects(objectIds: string[]): KritzelCanvasObject[] {
+    const core = this.requireCore();
+    const theme = core.themeManager?.currentTheme ?? 'light';
+    return objectIds
+      .map(id => core.store.objects.findById(id))
+      .filter((object): object is NonNullable<typeof object> => !!object)
+      .map(object => describeObject(object, theme));
   }
 
   // ─── Events ─────────────────────────────────────────────────────────────────

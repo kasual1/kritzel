@@ -482,4 +482,63 @@ describe('KritzelAgent', () => {
       expect(agent.state.attachedTo).toBeNull();
     });
   });
+  describe('tools and observe', () => {
+    const toolOf = (agent: KritzelAgent, name: string) => agent.tools().find(candidate => candidate.name === name)!;
+    const call = async (agent: KritzelAgent, name: string, input: unknown) => {
+      const promise = toolOf(agent, name).run(input);
+      return JSON.parse(await settle(promise));
+    };
+
+    it('builds a flowchart through tool calls, sees it with observe_canvas and undoes a step', async () => {
+      const agent = add(new KritzelAgent({ id: 'claude', name: 'Claude', speed: 100000 }));
+
+      const start = await call(agent, 'create_shape', { x: 0, y: 0, width: 120, height: 60, text: 'Start', shapeType: 'ellipse' });
+      const end = await call(agent, 'create_shape', { x: 300, y: 0, width: 120, height: 60, text: 'End', style: { fillColor: '#dcfce7' } });
+      const line = await call(agent, 'connect', { from: start.objectIds[0], to: end.objectIds[0], style: { strokeColor: '#475569' } });
+
+      expect(start).toMatchObject({ completed: true, objects: [{ type: 'shape', shapeType: 'ellipse', text: 'Start', createdBy: 'claude' }] });
+      expect(line).toMatchObject({ completed: true, objects: [{ type: 'line', from: start.objectIds[0], to: end.objectIds[0] }] });
+
+      const snapshot = await call(agent, 'observe_canvas', {});
+      expect(snapshot.agent).toMatchObject({ id: 'claude', selection: [] });
+      expect(snapshot.totalObjects).toBe(3);
+      expect(snapshot.objects.map((object: any) => object.type)).toEqual(['shape', 'shape', 'line']);
+      expect(snapshot.objects[1]).toMatchObject({ text: 'End', style: { fillColor: '#dcfce7' } });
+
+      await expect(call(agent, 'undo', {})).resolves.toMatchObject({ completed: true });
+      expect((await agent.observe()).totalObjects).toBe(2);
+    });
+
+    it('reports refusals as results the model can act on', async () => {
+      const shape = addShape(0, 0);
+      selectAsUser([shape.id]);
+      const agent = add(new KritzelAgent({ name: 'Claude' }));
+
+      await expect(call(agent, 'move_object', { objectId: shape.id, to: { x: 400, y: 0 } })).resolves.toMatchObject({
+        completed: false,
+        reason: 'user-selected',
+        objectIds: [shape.id],
+      });
+      const snapshot = await agent.observe();
+      expect(snapshot.userSelection).toEqual([shape.id]);
+      expect(snapshot.objects.find(object => object.id === shape.id)?.busy).toBe('user');
+    });
+
+    it('keeps the objects that matter when the board is too big, children only with their group', async () => {
+      const shapes = Array.from({ length: 6 }, (_, index) => addShape(index * 5000, 0, 50, 50));
+      const agent = add(new KritzelAgent({ name: 'Claude' }));
+      await settle(agent.select([shapes[5].id], { instant: true }));
+
+      const snapshot = await agent.observe({ maxObjects: 2, maxTextLength: 10 });
+
+      expect(snapshot.truncated).toBe(true);
+      expect(snapshot.totalObjects).toBe(6);
+      expect(snapshot.objects.map(object => object.id)).toContain(shapes[5].id);
+      expect(snapshot.objects).toHaveLength(2);
+    });
+
+    it('rejects observe while the agent is not added', async () => {
+      await expect(new KritzelAgent({ name: 'A' }).observe()).rejects.toThrow('not added');
+    });
+  });
 });
