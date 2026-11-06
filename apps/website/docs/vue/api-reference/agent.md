@@ -19,7 +19,7 @@ await editor.addAgent(agent);
 await agent.createShape({ x: 0, y: 0, width: 160, height: 80, text: 'Idea' });
 ```
 
-For a guided introduction, see [Agents](../advanced/agents.md). The editor methods `addAgent`, `removeAgent`, `getAgent`, and `getAgents`, and the `agentsChange` event are listed in the [Editor API Reference](./editor.md#agents).
+For a guided introduction, see [Agents](../advanced/agents.md). The editor methods `addAgent`, `removeAgent`, `getAgent`, `getAgents`, and `getRemoteAgents`, and the `agentsChange` event are listed in the [Editor API Reference](./editor.md#agents). Collaborators see agents through presence, as described in [Collaboration](#collaboration), and [`tools()`](#tools) hands an agent to an LLM.
 
 ## Constructor
 
@@ -34,9 +34,9 @@ Throws a `TypeError` when `name` is missing or empty.
 | id | string | `'agent-…'` | Unique ID. Becomes the `userId` of the objects the agent creates. |
 | name | string | — | Required. Name shown in the cursor label. |
 | color | string | Derived from the name | Any CSS color for the cursor, its label, and the agent's selection. |
-| avatarUrl | string | — | URL of an avatar image, reported in `agentsChange`. |
+| avatarUrl | string | — | URL of an avatar image, shown in the avatar stack and reported in `agentsChange`. Initials of the name are shown when omitted. |
 | speed | number | `1200` | Default speed of moves and actions in screen pixels per second. |
-| broadcast | boolean | `true` | Reserved for sharing the agent's presence. Has no effect yet. |
+| broadcast | boolean | `true` | Whether collaborators see the agent. See [Collaboration](#collaboration). |
 | status | string | — | Status message shown below the cursor label. |
 | visible | boolean | `true` | Whether the cursor is visible. |
 | position | KritzelAgenticTarget | Center of the viewport | Where the cursor appears when the agent is added. An object target sticks the cursor to that object. |
@@ -57,7 +57,7 @@ Throws a `TypeError` when `name` is missing or empty.
 | avatarUrl | string \| undefined | URL of the avatar image. |
 | profileImageUrl | string \| undefined | Read-only. Same as `avatarUrl`. |
 | speed | number \| undefined | Default speed of moves and actions in screen pixels per second. `undefined` uses `1200`. |
-| broadcast | boolean | Reserved for sharing the agent's presence. Has no effect yet. |
+| broadcast | boolean | Whether collaborators see the agent. Setting it takes effect at once: `false` removes the agent from the presence of collaborators, `true` shares it again. Objects that the agent changes sync either way. |
 | isAdded | boolean | Read-only. Whether the agent is added to an editor. |
 | state | KritzelAgentState | Read-only. A snapshot of the agent's state. See [State](#state). |
 
@@ -315,6 +315,116 @@ task<T>(label: string, fn: () => Promise<T> | T): Promise<T>
 
 ---
 
+## LLM Tools
+
+Provider-neutral tool definitions and a canvas snapshot for LLMs. See [Connecting an LLM](../advanced/agents.md#connecting-an-llm) for a complete example with Claude.
+
+### tools
+
+Returns tool definitions for any LLM provider: `observe_canvas` and one tool per action. Hand `name`, `description`, and `inputSchema` to the model, and call `run(input, { signal })` with the model's input. Every call returns new tool objects. A tool keeps working when it is copied, as some tool runners do, and while the agent is not added, `run()` resolves with `reason: 'agent-removed'`.
+
+```ts
+tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| only | string[] | All tools | Only these tools, by name without `prefix`. |
+| prefix | string | `''` | Put in front of every tool name, for example `'kritzel_'`, to avoid clashes with other tools. |
+| maxTextLength | number | `2000` | Longest `text` that `create_shape`, `create_text`, or `type_text` may type. Longer input is rejected with `'invalid-input'`. |
+
+| Tool | Runs | Input |
+|------|------|-------|
+| observe_canvas | [`observe()`](#observe) | `scope?` (`'all'` or `'viewport'`), `objectIds?` |
+| click | [`click()`](#click) | `target`, `count?` |
+| select | [`select()`](#select) | `objectIds`, `additive?` |
+| clear_selection | [`clearSelection()`](#clearselection) | — |
+| move_object | [`moveObject()`](#moveobject) | `objectId`, `to`, `align?` |
+| resize_object | [`resizeObject()`](#resizeobject) | `objectId`, `width?`, `height?`, `keepAspectRatio?`, `handle?` |
+| rotate_object | [`rotateObject()`](#rotateobject) | `objectId`, `angle`, `relative?` |
+| create_shape | [`createShape()`](#createshape) | `x`, `y`, `width`, `height`, `shapeType?`, `text?`, `style?` |
+| create_text | [`createText()`](#createtext) | `x`, `y`, `text`, `style?` |
+| type_text | [`typeText()`](#typetext) | `objectId`, `text`, `mode?` |
+| draw_path | [`drawPath()`](#drawpath) | `points`, `style?` |
+| connect | [`connect()`](#connect) | `from`, `to`, `style?` |
+| set_style | [`setStyle()`](#setstyle) | `objectIds`, `style` |
+| delete_objects | [`deleteObjects()`](#deleteobjects) | `objectIds` |
+| undo | [`undo()`](#undo) | — |
+| redo | [`redo()`](#redo) | — |
+
+`addObject()` has no tool, because it needs an object that the app builds. A target (`target`, `to`) is one object in the schema: a point `{ x, y }` or a point on an object `{ objectId, anchor?, offset? }`, where `objectId` wins. Colors are CSS color strings.
+
+`run()` works as follows:
+
+- It accepts the input as an object or as a JSON string, as some providers send it. `null` counts as a missing field. Unknown fields, missing required fields, and invalid values resolve with `reason: 'invalid-input'` and a `message` that names the field.
+- An action tool runs [`perform()`](#perform) with the `signal` of the context. Calls that run in parallel queue up in call order, and `observe_canvas` waits until the queued actions of the agent are done, so its snapshot shows their result.
+- An action tool resolves with a [`KritzelAgentToolResult`](#kritzelagenttoolresult) as JSON. On success, it has the `objectIds` of the action and, except for `click`, `select`, `clear_selection`, and `delete_objects`, the `objects` that were created or changed (up to 10). On failure, it has the `reason`, the `objectIds` that caused it, and a `hint` from [`AGENT_TOOL_REASON_HINTS`](#agent_tool_reason_hints). Inside [`task()`](#task), refusals are reported the same way instead of being thrown.
+- `observe_canvas` resolves with a [`KritzelCanvasSnapshot`](#kritzelcanvassnapshot) as JSON. It uses the defaults of `observe()`; `maxTextLength` of `tools()` does not change them.
+- It never rejects for mistakes of the model, only for unexpected errors.
+
+### observe
+
+Returns what the agent sees of the canvas: the visible area, the user's selection, the agent's cursor and selection, and the objects, back to front, with their geometry, text, connections, style, and creator. Coordinates are world units, rounded to one decimal. Image data, iframe content, the points of strokes, and hidden objects are left out. Rejects while the agent is not added and while no workspace is loaded.
+
+```ts
+observe(options?: KritzelObserveOptions): Promise<KritzelCanvasSnapshot>
+```
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| scope | `'all'` \| `'viewport'` | `'all'` | `'viewport'` keeps only the objects in the visible area. |
+| objectIds | string[] | — | Only these objects and the children of these groups. |
+| maxObjects | number | `100` | At most this many objects. Selected objects are kept first, then visible ones, then the ones nearest to the center of the viewport, and children only with their group. `truncated` is `true` when objects were left out. |
+| maxTextLength | number | `300` | Longer texts are cut and end with "…". |
+
+`busy` marks the objects whose actions would be refused: `'user'` when the user has the object selected or is editing it, `'collaborator'` when a collaborator is working on it, and `'agent'` when another agent, also one of a collaborator, has it selected or is working on it.
+
+```ts
+const snapshot = await agent.observe({ scope: 'viewport', maxObjects: 50 });
+
+for (const object of snapshot.objects) {
+  console.log(object.id, object.type, object.text ?? '', object.busy ?? 'free');
+}
+```
+
+### formatAgentToolResult
+
+Formats a result as the JSON string that the tools return. Use it in your own tools to answer the same way as the tools of the agent.
+
+```ts
+formatAgentToolResult(result: KritzelAgentToolResult): string
+```
+
+### AGENT_TOOL_REASON_HINTS
+
+What a model should do about each failure reason, as used for the `hint` of tool results.
+
+```ts
+const AGENT_TOOL_REASON_HINTS: Record<KritzelAgenticActionFailureReason | 'invalid-input', string>;
+```
+
+```ts
+import { AGENT_TOOL_REASON_HINTS, formatAgentToolResult } from '@kritzel/vue-editor';
+
+const result = await agent.addObject(page);
+const json = formatAgentToolResult(result.reason ? { ...result, hint: AGENT_TOOL_REASON_HINTS[result.reason] } : result);
+```
+
+---
+
+## Collaboration
+
+When the editor shares presence with collaborators, it shares every agent whose [`broadcast`](#properties) is `true`, the default. See [Collaboration](../advanced/agents.md#collaboration) for a guide.
+
+- **What is shared:** the name, color, avatar URL, status, visibility, running action and queue length, cursor position and attachment, presses, the agent's selection, and the objects of its running action. The agent's history and the agent object itself are not shared.
+- **When:** only when something changed. Cursor motion is sent at most every 100 ms. Other changes, such as adding, removing, renaming, or hiding the agent, or turning off `broadcast`, are sent at once. Each workspace has its own presence, so the agents are shared in the open workspace.
+- **Limits:** the status is cut to 200 characters, and the selection and the objects of the running action to 50 IDs each.
+- **Requirement:** a sync provider with awareness, such as the WebSocket and Hocuspocus providers, or `BroadcastSyncProvider.with({ awareness: true })` between tabs. Without one, nothing is shared. See [Providers](./providers.md).
+
+The editors of collaborators show the agent's cursor, dashed outlines around its selection and the objects of its running action, and its avatar. They list it as a [`KritzelRemoteAgentPresence`](#kritzelremoteagentpresence) in `getRemoteAgents()` and `agentsChange`, but `getAgent()` does not return it there. Their agents refuse objects that it has selected or is working on with `'claimed-by-agent'`. An avatar URL from a collaborator is only used when it is an `http:`, `https:`, `data:image/`, or relative URL.
+
+---
+
 ## Events
 
 ### on
@@ -379,6 +489,7 @@ try {
 | An action with an unknown `type` or invalid fields | Rejects with a `TypeError`. |
 | `moveTo()` with an invalid target or to an object that does not exist | Rejects with an `Error`. |
 | `task()` while another task of the agent is running | Rejects with an `Error`. |
+| `observe()` while the agent is not added or no workspace is loaded | Rejects with an `Error`. |
 | `addAgent()` with a value that is not a `KritzelAgent` | Rejects with a `TypeError`. |
 | `addAgent()` with a second agent that has the same ID, or with an agent of another editor | Rejects with an `Error`. |
 
@@ -428,7 +539,7 @@ interface KritzelAgentState {
 
 ### KritzelAgentPresence
 
-An agent as reported by `toPresence()` and `agentsChange`. `displayName` and `profileImageUrl` repeat `name` and `avatarUrl` for components that render `IKritzelUser` objects. `isRemote` is `false` for agents added to this editor.
+An agent as reported by `toPresence()` and `agentsChange`. `displayName` and `profileImageUrl` repeat `name` and `avatarUrl` for components that render `IKritzelUser` objects. `isRemote` is `false` for agents added to this editor and `true` for agents of collaborators, which are [`KritzelRemoteAgentPresence`](#kritzelremoteagentpresence) objects.
 
 ```ts
 interface KritzelAgentPresence {
@@ -449,11 +560,25 @@ interface KritzelAgentPresence {
 
 ### KritzelAgentsChangeEvent
 
-Detail of the editor's `agentsChange` event. Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes. Never emitted for plain cursor motion.
+Detail of the editor's `agentsChange` event. Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Never emitted for plain cursor motion. Lists the agents of this editor first, then the agents of collaborators.
 
 ```ts
 interface KritzelAgentsChangeEvent {
   agents: KritzelAgentPresence[];
+}
+```
+
+### KritzelRemoteAgentPresence
+
+An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange` after the agents of the editor. The same agent ID can appear for several collaborators; `clientId` and `id` together are unique. Because `agentsChange` is typed with `KritzelAgentPresence`, narrow it with a type guard such as `(agent): agent is KritzelRemoteAgentPresence => agent.isRemote`.
+
+```ts
+interface KritzelRemoteAgentPresence extends KritzelAgentPresence {
+  isRemote: true;
+  /** Awareness client ID of the collaborator's connection. */
+  clientId: number;
+  /** The collaborator whose editor runs the agent, when known. */
+  hostUser?: { id: string; displayName?: string; color?: string };
 }
 ```
 
@@ -682,5 +807,150 @@ interface KritzelAgentChangeSource {
   type: 'agent';
   agentId: string;
   actionType: KritzelAgenticActionType;
+}
+```
+
+### KritzelAgentTool
+
+A tool definition returned by [`tools()`](#tools). Anthropic calls the schema `input_schema`, OpenAI calls it `parameters`.
+
+```ts
+interface KritzelAgentTool {
+  name: string;
+  description: string;
+  inputSchema: KritzelAgentToolSchema;
+  /** Runs the tool with the model's input (an object or a JSON string) and resolves with a JSON result. */
+  run: (input: unknown, context?: KritzelAgentToolContext) => Promise<string>;
+}
+
+interface KritzelAgentToolContext {
+  /** Stops the action like the `signal` of an action. */
+  signal?: AbortSignal | null;
+}
+```
+
+### KritzelAgentToolSchema
+
+The JSON Schema of a tool's input. It uses only keywords that the major LLM providers accept: no `anyOf`, `const`, `$ref`, or minimum and maximum values. It is a type alias, not an interface, so that it fits SDK types that index schemas by string.
+
+```ts
+type KritzelAgentToolSchema = {
+  type: 'object';
+  description?: string;
+  properties: Record<string, object>;
+  required?: string[];
+  additionalProperties?: false;
+};
+```
+
+### KritzelAgentToolsOptions
+
+Options of [`tools()`](#tools).
+
+```ts
+interface KritzelAgentToolsOptions {
+  /** Only these tools (names without prefix), e.g. ['observe_canvas', 'create_shape']. */
+  only?: string[];
+  /** Prefix for every tool name, e.g. 'kritzel_'. */
+  prefix?: string;
+  /** Longest text an action may type. Defaults to 2000 characters. */
+  maxTextLength?: number;
+}
+```
+
+### KritzelAgentToolResult
+
+What the `run()` of an action tool resolves with, as JSON. `formatAgentToolResult()` formats it.
+
+```ts
+interface KritzelAgentToolResult {
+  completed: boolean;
+  /** Why the action did not complete; 'invalid-input' when the input was rejected. */
+  reason?: KritzelAgenticActionFailureReason | 'invalid-input';
+  objectIds?: string[];
+  /** What was wrong with the input. */
+  message?: string;
+  /** What to do about the failure. */
+  hint?: string;
+  /** Snapshots of the objects the action created or changed. */
+  objects?: KritzelCanvasObject[];
+}
+```
+
+### KritzelObserveOptions
+
+Options of [`observe()`](#observe).
+
+```ts
+interface KritzelObserveOptions {
+  /** 'all' (default) or only objects in the viewport. */
+  scope?: 'all' | 'viewport';
+  /** Only these objects (and their group children). */
+  objectIds?: string[];
+  /** At most this many objects (default 100); selected and visible objects are kept first. */
+  maxObjects?: number;
+  /** Longer texts are cut with "…" (default 300 characters). */
+  maxTextLength?: number;
+}
+```
+
+### KritzelCanvasSnapshot
+
+Returned by [`observe()`](#observe) and by the `observe_canvas` tool.
+
+```ts
+interface KritzelCanvasSnapshot {
+  /** The visible part of the canvas in world coordinates. */
+  viewport: { x: number; y: number; width: number; height: number; scale: number };
+  theme: string;
+  /** Objects the user has selected. */
+  userSelection: string[];
+  agent: { id: string; position: KritzelPoint | null; selection: string[] };
+  /** Back to front. */
+  objects: KritzelCanvasObject[];
+  /** Number of objects that matched, before `maxObjects`. */
+  totalObjects: number;
+  /** true when objects were left out because of `maxObjects`. */
+  truncated?: true;
+}
+```
+
+### KritzelCanvasObject
+
+One object of a snapshot. Coordinates are world units, and the box is the box of the unrotated object. Colors are resolved for the current theme.
+
+```ts
+interface KritzelCanvasObject {
+  id: string;
+  type: 'shape' | 'text' | 'path' | 'line' | 'image' | 'iframe' | 'group' | 'custom' | 'object';
+  shapeType?: string;
+  name?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  /** Degrees clockwise around the center; omitted when 0. */
+  rotation?: number;
+  text?: string;
+  /** Set for children of a group: such objects are not top-level. */
+  parentId?: string;
+  childIds?: string[];
+  /** For lines: the objects the ends are connected to. */
+  from?: string;
+  to?: string;
+  style?: {
+    fillColor?: string;
+    strokeColor?: string;
+    strokeWidth?: number;
+    fontSize?: number;
+    fontFamily?: string;
+    fontColor?: string;
+    opacity?: number;
+    arrows?: { start?: string; end?: string };
+  };
+  /** Someone else is working on the object; actions on it will be refused. */
+  busy?: 'user' | 'collaborator' | 'agent';
+  /** Who created it: an agent ID, a user ID, or omitted. */
+  createdBy?: string;
 }
 ```

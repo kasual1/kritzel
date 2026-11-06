@@ -269,10 +269,11 @@ Types used by [`KritzelAgent`](./agent.md) and the [agent methods](./editor.md#a
 
 | Type | Description |
 |------|-------------|
-| [`KritzelAgentOptions`](./agent.md#kritzelagentoptions) | Options of `new KritzelAgent()`: `name` (required), `id`, `color`, `avatarUrl`, `speed`, `status`, `visible`, and `position`. |
+| [`KritzelAgentOptions`](./agent.md#kritzelagentoptions) | Options of `new KritzelAgent()`: `name` (required), `id`, `color`, `avatarUrl`, `speed`, `broadcast`, `status`, `visible`, and `position`. |
 | [`KritzelAgentState`](./agent.md#kritzelagentstate) | Snapshot returned by `agent.state`: position, attachment, status, visibility, selection, activity, and `canUndo` / `canRedo`. |
 | [`KritzelAgentPresence`](./agent.md#kritzelagentpresence) | An agent as reported by `agentsChange` and `agent.toPresence()`. |
-| [`KritzelAgentsChangeEvent`](./agent.md#kritzelagentschangeevent) | Detail of the `agentsChange` event: `{ agents: KritzelAgentPresence[] }`. |
+| [`KritzelAgentsChangeEvent`](./agent.md#kritzelagentschangeevent) | Detail of the `agentsChange` event: `{ agents: KritzelAgentPresence[] }`, the agents of the editor first, then those of collaborators. |
+| [`KritzelRemoteAgentPresence`](./agent.md#kritzelremoteagentpresence) | An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange`: `isRemote: true`, `clientId`, and `hostUser`. |
 | [`KritzelAgentEventMap`](./agent.md#kritzelagenteventmap) | Events of `agent.on()`, with `KritzelAgentDetachedEvent` and `KritzelAgentInterruptedEvent`. |
 | [`KritzelAgenticTarget`](./agent.md#kritzelagentictarget) | A point in world coordinates or an anchor (`KritzelAgenticAnchor`) on an object. |
 | [`KritzelAgenticMoveOptions`](./agent.md#kritzelagenticmoveoptions) | Options of `agent.moveTo()`, which resolves with `KritzelAgenticMoveResult`. |
@@ -280,6 +281,13 @@ Types used by [`KritzelAgent`](./agent.md) and the [agent methods](./editor.md#a
 | [`KritzelAgenticActionOptions`](./agent.md#kritzelagenticactionoptions) | `speed`, `instant`, `signal`, and `easing` of an action. |
 | [`KritzelAgenticActionResult`](./agent.md#kritzelagenticactionresult) | Result of an action, with a `KritzelAgenticActionFailureReason` when it did not complete. |
 | [`KritzelAgentActionError`](./agent.md#kritzelagentactionerror) | Thrown inside `agent.task()` when an action does not complete. |
+| [`KritzelAgentTool`](./agent.md#kritzelagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, and `run(input, context?)` with a `KritzelAgentToolContext` (`signal`). |
+| [`KritzelAgentToolSchema`](./agent.md#kritzelagenttoolschema) | The JSON Schema of a tool's input. |
+| [`KritzelAgentToolsOptions`](./agent.md#kritzelagenttoolsoptions) | `only`, `prefix`, and `maxTextLength` of `agent.tools()`. |
+| [`KritzelAgentToolResult`](./agent.md#kritzelagenttoolresult) | What a tool's `run()` resolves with as JSON: `completed`, `reason`, `objectIds`, `message`, `hint`, and `objects`. |
+| [`KritzelObserveOptions`](./agent.md#kritzelobserveoptions) | `scope`, `objectIds`, `maxObjects`, and `maxTextLength` of `agent.observe()`. |
+| [`KritzelCanvasSnapshot`](./agent.md#kritzelcanvassnapshot) | What `agent.observe()` returns: the viewport, the user's selection, the agent, and the objects. |
+| [`KritzelCanvasObject`](./agent.md#kritzelcanvasobject) | One object of a snapshot: ID, type, box, rotation, text, group and line relations, style, `busy`, and `createdBy`. |
 
 ### `KritzelAgentChangeSource`
 

@@ -15,13 +15,15 @@ Collaboration in Kritzel is built on sync providers, the same mechanism used for
 
 Kritzel comes with the following built-in collaboration providers:
 
-- [BroadcastChannel Provider](../api-reference/providers.md#broadcastchannel-provider)
+- [BroadcastChannel Provider](../api-reference/providers.md#broadcast-provider)
 - [WebSocket Provider](../api-reference/providers.md#websocket-provider)
 - [Hocuspocus Provider](../api-reference/providers.md#hocuspocus-provider)
 
 ## Cross-Tab Sync
 
 Use `BroadcastSyncProvider` to synchronize document updates across browser tabs on the same device through the BroadcastChannel API.
+
+By default, the tabs share only the document. To share presence between the tabs as well, that is the cursors and selections of users and the [agents](./agents.md#collaboration) of each tab, use `BroadcastSyncProvider.with({ awareness: true })`. See [Broadcast Provider](../api-reference/providers.md#broadcast-provider).
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
@@ -32,6 +34,8 @@ Use `BroadcastSyncProvider` to synchronize document updates across browser tabs 
 ## Real-Time Multi-User Sync
 
 To collaborate across devices or users, combine local persistence with a network provider. A common production pattern uses `IndexedDBSyncProvider` for offline resilience together with `HocuspocusSyncProvider` (or `WebSocketSyncProvider`) for real-time sync. The `HocuspocusSyncProvider` also supports connection multiplexing for managing multiple documents efficiently.
+
+Network providers share presence: collaborators see each other's cursors and selections, and the [agents](./agents.md#collaboration) of each editor.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"

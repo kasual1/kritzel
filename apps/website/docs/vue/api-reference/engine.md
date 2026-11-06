@@ -668,7 +668,7 @@ Ends scene bootstrap: `endSceneBootstrap(): Promise<void>`.
 
 ## Agents
 
-Agents are participants on the canvas that are driven by code, for example an AI assistant. Each agent is a [`KritzelAgent`](./agent.md) with its own cursor, actions, and undo history. See [Agents](../advanced/agents.md) for a guide.
+Agents are participants on the canvas that are driven by code, for example an AI assistant. Each agent is a [`KritzelAgent`](./agent.md) with its own cursor, actions, and undo history. See [Agents](../advanced/agents.md) for a guide. When the editor shares presence, collaborators see its agents, and it shows theirs; see [Collaboration](../advanced/agents.md#collaboration).
 
 ### Props
 
@@ -678,7 +678,7 @@ No agent-specific props.
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| agentsChange | KritzelAgentsChangeEvent | Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes. Never emitted for plain cursor motion. |
+| agentsChange | KritzelAgentsChangeEvent | Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Lists the agents of this editor first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion. |
 
 ### Methods
 
@@ -700,7 +700,7 @@ removeAgent(agent: KritzelAgent | string): Promise<boolean>
 
 #### getAgent
 
-Returns an added agent by its ID, or `null` if there is none.
+Returns an agent added to this editor by its ID, or `null` if there is none. Agents of collaborators are never returned; see `getRemoteAgents`.
 
 ```ts
 getAgent(id: string): Promise<KritzelAgent | null>
@@ -708,10 +708,18 @@ getAgent(id: string): Promise<KritzelAgent | null>
 
 #### getAgents
 
-Returns the added agents.
+Returns the agents added to this editor.
 
 ```ts
 getAgents(): Promise<KritzelAgent[]>
+```
+
+#### getRemoteAgents
+
+Returns the agents of collaborators, as they share them through presence. They are descriptions, not `KritzelAgent` objects, and cannot be controlled from here. Empty without a sync provider that shares presence. See [`KritzelRemoteAgentPresence`](./agent.md#kritzelremoteagentpresence).
+
+```ts
+getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]>
 ```
 
 ---

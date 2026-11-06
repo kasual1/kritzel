@@ -912,7 +912,7 @@ const AGENTIC_FAQ_ITEMS = [
   {
     question: "Can people see what an AI agent is doing?",
     answer:
-      "Yes. Add an agentic cursor with a name, color, and status, then move it across the canvas or attach it to an object to show what the agent is working on. Agentic cursors are local to each client and are not synchronized to collaborators.",
+      "Yes. Each agent is a KritzelAgent with its own name, color, status message, and avatar. Its cursor flies to what it works on and animates every change, so people can watch it select, draw, and edit. Collaborators see your agents too: they are shared through presence, with their cursor, selection, and avatar.",
   },
   {
     question: "Can people and agents work on the same canvas?",
