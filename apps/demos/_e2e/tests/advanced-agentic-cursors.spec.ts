@@ -143,4 +143,51 @@ test.describe('Agentic Cursors', () => {
     }, ids.id);
     expect(end).toBeCloseTo(ids.start + 300, 5);
   });
+  test('creates, types, transforms, draws and connects through performAgenticAction', async ({ editorPage }) => {
+    const outcome = await editorPage.page.evaluate(async () => {
+      const editor = document.querySelector('kritzel-editor') as EditorElement & {
+        findObjects(predicate: (obj: any) => boolean): Promise<any[]>;
+      };
+      const run = (action: unknown) => editor.performAgenticAction('writer', action, { instant: true });
+      const byId = async (id: string) => (await editor.findObjects(obj => obj.id === id))[0];
+
+      const shape = await run({ type: 'createShape', x: 100, y: 400, width: 160, height: 90, text: 'Hello' });
+      const text = await run({ type: 'createText', x: 320, y: 420, text: 'Note' });
+      const typed = await run({ type: 'typeText', objectId: text.objectIds![0], text: ' added' });
+      const resized = await run({ type: 'resizeObject', objectId: shape.objectIds![0], width: 240 });
+      const rotated = await run({ type: 'rotateObject', objectId: shape.objectIds![0], angle: 30 });
+      const path = await run({ type: 'drawPath', points: [{ x: 500, y: 400 }, { x: 560, y: 460 }, { x: 620, y: 400 }] });
+      const line = await run({ type: 'connect', from: shape.objectIds![0], to: text.objectIds![0] });
+
+      const shapeObject = await byId(shape.objectIds![0]);
+      const lineObject = await byId(line.objectIds![0]);
+      const pathObject = await byId(path.objectIds![0]);
+      const textObject = await byId(text.objectIds![0]);
+      const undoLine = await run({ type: 'undo' });
+      const lineAfterUndo = await byId(line.objectIds![0]);
+
+      return {
+        results: [shape, text, typed, resized, rotated, path, line].map(result => result.completed),
+        shapeClass: shapeObject.__class__,
+        shapeRotation: shapeObject.rotation,
+        textContent: JSON.stringify(textObject.content),
+        pathClass: pathObject.__class__,
+        pathCompleted: pathObject.isCompleted,
+        lineAnchors: [lineObject.startAnchor?.objectId, lineObject.endAnchor?.objectId],
+        expectedAnchors: [shape.objectIds![0], text.objectIds![0]],
+        undoLine: undoLine.completed,
+        lineAfterUndo: lineAfterUndo ?? null,
+      };
+    });
+
+    expect(outcome.results).toEqual([true, true, true, true, true, true, true]);
+    expect(outcome.shapeClass).toBe('KritzelShape');
+    expect(outcome.shapeRotation).toBeCloseTo(Math.PI / 6, 5);
+    expect(outcome.textContent).toContain('Note added');
+    expect(outcome.pathClass).toBe('KritzelPath');
+    expect(outcome.pathCompleted).toBe(true);
+    expect(outcome.lineAnchors).toEqual(outcome.expectedAnchors);
+    expect(outcome.undoLine).toBe(true);
+    expect(outcome.lineAfterUndo).toBeNull();
+  });
 });
