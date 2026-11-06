@@ -1,0 +1,388 @@
+import { KritzelObjectMap } from '../../structures/object-map.structure';
+import { KritzelAgenticCursorManager } from '../agentic-cursor.manager';
+import { KritzelAgenticActionManager } from '../agentic-action.manager';
+import { KritzelAnchorManager } from '../anchor.manager';
+import { KritzelShape } from '../../objects/shape.class';
+import { KritzelText } from '../../objects/text.class';
+import { KritzelPath } from '../../objects/path.class';
+import { KritzelLine } from '../../objects/line.class';
+import { KritzelGroup } from '../../objects/group.class';
+import { KritzelRichTextHelper } from '../../../helpers/rich-text.helper';
+import type { KritzelCore } from '../../core/core.class';
+
+// Real object classes on a real Yjs object map: these tests check the geometry and history of
+// the create and transform actions end to end, without a rendered canvas.
+
+jest.mock('../../../configs/default-sync.config', () => ({ DEFAULT_SYNC_CONFIG: { providers: [] } }));
+jest.mock('../../../helpers/migration.helper', () => ({ runMigrations: jest.fn() }));
+
+/**
+ * Same-realm deep clone. Jest's structuredClone returns objects from another realm, which Yjs
+ * rejects ("Unexpected content type") because it checks `value.constructor === Object`.
+ */
+const sameRealmClone = (value: any): any => {
+  if (Array.isArray(value)) return value.map(sameRealmClone);
+  if (value && typeof value === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const key of Object.keys(value)) {
+      if (value[key] !== undefined) result[key] = sameRealmClone(value[key]);
+    }
+    return result;
+  }
+  return value;
+};
+
+let originalStructuredClone: typeof structuredClone;
+beforeAll(() => {
+  originalStructuredClone = globalThis.structuredClone;
+  (globalThis as any).structuredClone = sameRealmClone;
+});
+afterAll(() => {
+  (globalThis as any).structuredClone = originalStructuredClone;
+});
+
+const flushMicrotasks = async () => {
+  for (let i = 0; i < 30; i++) {
+    await Promise.resolve();
+  }
+};
+
+describe('agentic create and transform actions', () => {
+  let now: number;
+  let map: KritzelObjectMap<any>;
+  let cursors: KritzelAgenticCursorManager;
+  let actions: KritzelAgenticActionManager;
+  let core: any;
+  let tools: any[];
+
+  const settle = async <T>(promise: Promise<T>, maxFrames = 600): Promise<T> => {
+    let done = false;
+    promise.then(
+      () => (done = true),
+      () => (done = true),
+    );
+    await flushMicrotasks();
+    for (let i = 0; i < maxFrames && !done; i++) {
+      now += 16;
+      cursors.tick(now);
+      await flushMicrotasks();
+    }
+    return promise;
+  };
+
+  const perform = (action: any, options: any = { instant: true }) => settle(actions.perform('agent', action, options));
+
+  const addShape = (x: number, y: number, width: number, height: number) => {
+    const shape = KritzelShape.create(core, { x, y, translateX: 0, translateY: 0, width, height, scale: 1 });
+    map.insert(shape);
+    map.stopUndoCapturing();
+    return shape;
+  };
+
+  beforeEach(async () => {
+    now = 1000;
+    jest.spyOn(performance, 'now').mockImplementation(() => now);
+    tools = [];
+    const state = {
+      scale: 1,
+      translateX: 0,
+      translateY: 0,
+      viewportWidth: 2000,
+      viewportHeight: 2000,
+      lockDrawingScale: true,
+      activeWorkspace: { id: 'ws' },
+      debugInfo: {},
+      isDragging: false,
+      isResizing: false,
+      isRotating: false,
+      isSelecting: false,
+      isDrawing: false,
+      isErasing: false,
+      isLineHandleDragging: false,
+      isResizeHandleSelected: false,
+      isRotationHandleSelected: false,
+      isLineHandleSelected: false,
+    };
+    core = {
+      user: undefined,
+      editorId: undefined,
+      rerender: jest.fn(),
+      store: {
+        state,
+        get objects() {
+          return map;
+        },
+        get currentZIndex() {
+          return map ? map.allObjects().length : 0;
+        },
+        get allObjects() {
+          return map ? map.allObjects() : [];
+        },
+        selectionGroup: null,
+        invalidateSelectionCache: jest.fn(),
+      },
+      objectConfigManager: { isResizable: jest.fn(() => true), isRotatable: jest.fn(() => true) },
+      objectTitlebarManager: { editingTitle: null, isEnabled: false },
+      toolRegistry: { getToolByIndex: (index: number) => tools[index] ?? null },
+      engine: {
+        emitObjectsChange: jest.fn(),
+        emitObjectsAdded: jest.fn(),
+        emitObjectsRemoved: jest.fn(),
+        emitObjectsUpdated: jest.fn(),
+        emitObjectsInViewportChange: jest.fn(),
+      },
+      addObject: (object: any) => map.insert(object),
+      removeObject: (object: any) => map.remove((o: any) => o.id === object.id),
+    };
+    core.anchorManager = new KritzelAnchorManager(core);
+    map = new KritzelObjectMap<any>();
+    await map.initialize(core as unknown as KritzelCore, 'ws', { providers: [] });
+    cursors = new KritzelAgenticCursorManager(core);
+    core.agenticCursorManager = cursors;
+    actions = new KritzelAgenticActionManager(core);
+    cursors.add({ id: 'agent', position: { x: 0, y: 0 } });
+  });
+
+  afterEach(() => {
+    actions.cleanup();
+    cursors.clear();
+    map.destroy();
+    jest.restoreAllMocks();
+  });
+
+  describe('createShape', () => {
+    it('drags out a shape with the world rectangle and the shape tool settings', async () => {
+      tools.push({ toolType: 'shape', shapeType: 'ellipse', strokeWidth: 7, fillColor: { light: '#fff', dark: '#000' } });
+      const result = await perform({ type: 'createShape', x: 100, y: 50, width: 200, height: 80, style: { strokeColor: '#ff0000' } }, {});
+
+      expect(result.completed).toBe(true);
+      const shape = map.findById(result.objectIds![0]) as KritzelShape;
+      expect(shape).toBeInstanceOf(KritzelShape);
+      expect(shape.boundingBox.x).toBeCloseTo(100 - shape.padding);
+      expect(shape.boundingBox.y).toBeCloseTo(50 - shape.padding);
+      expect(shape.width).toBeCloseTo(200);
+      expect(shape.height).toBeCloseTo(80);
+      expect(shape.shapeType).toBe('ellipse');
+      expect(shape.strokeWidth).toBe(7);
+      expect(shape.strokeColor).toEqual({ light: '#ff0000', dark: '#ff0000' });
+      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith([shape], { type: 'agentic-cursor', cursorId: 'agent', actionType: 'createShape' });
+    });
+
+    it('matches what the shape tool creates for the same rectangle at another zoom', async () => {
+      core.store.state.lockDrawingScale = false;
+      core.store.state.scale = 2;
+      const result = await perform({ type: 'createShape', x: 10, y: 20, width: 30, height: 40 });
+      const shape = map.findById(result.objectIds![0]) as KritzelShape;
+      // The shape tool stores screen-like units (world * scale) with scale = viewport scale.
+      expect(shape.scale).toBe(2);
+      expect(shape.translateX).toBeCloseTo(10);
+      expect(shape.translateY).toBeCloseTo(20);
+      expect(shape.width / shape.scale).toBeCloseTo(30);
+      expect(shape.height / shape.scale).toBeCloseTo(40);
+    });
+
+    it('types text into the new shape and undoes everything as one agent step', async () => {
+      const userStack = map.undoManager!.undoStack.length;
+      const result = await perform({ type: 'createShape', x: 0, y: 0, width: 100, height: 60, text: 'Hi\nthere' });
+      const shape = map.findById(result.objectIds![0]) as KritzelShape;
+      expect(KritzelRichTextHelper.getText(shape.editor!)).toBe('Hithere');
+      expect(map.getAgentUndoStackLength('agent')).toBe(1);
+      expect(map.undoManager!.undoStack.length).toBe(userStack);
+
+      await perform({ type: 'undo' });
+      expect(map.findById(shape.id)).toBeUndefined();
+    });
+
+    it('rolls a half-drawn shape back when aborted', async () => {
+      const controller = new AbortController();
+      const promise = actions.perform('agent', { type: 'createShape', x: 0, y: 0, width: 400, height: 400 }, { signal: controller.signal });
+      await flushMicrotasks();
+      for (let i = 0; i < 40 && map.allObjects().length === 0; i++) {
+        now += 16;
+        cursors.tick(now);
+        await flushMicrotasks();
+      }
+      expect(map.allObjects().length).toBe(1);
+      controller.abort();
+      await expect(settle(promise)).resolves.toEqual({ completed: false, reason: 'aborted' });
+      expect(map.allObjects().length).toBe(0);
+    });
+  });
+
+  describe('createText and typeText', () => {
+    it('creates a text at the point with the text tool defaults and types it', async () => {
+      tools.push({ toolType: 'text', defaultFontSize: 24, defaultFontFamily: 'Georgia', fontSize: 99 });
+      const result = await perform({ type: 'createText', x: 40, y: 60, text: 'Hello' }, {});
+      const text = map.findById(result.objectIds![0]) as KritzelText;
+      expect(text).toBeInstanceOf(KritzelText);
+      expect(text.translateX).toBe(40);
+      expect(text.translateY).toBe(60);
+      expect(text.fontSize).toBe(24);
+      expect(text.fontFamily).toBe('Georgia');
+      expect(text.isEditing).toBe(false);
+      expect(KritzelRichTextHelper.getText(text.editor!)).toBe('Hello');
+      expect((map as any)._temporaryItemsCount).toBe(0);
+      expect(map.getAgentUndoStackLength('agent')).toBe(1);
+    });
+
+    it('appends to and replaces existing text', async () => {
+      const created = await perform({ type: 'createText', x: 0, y: 0, text: 'One' });
+      const id = created.objectIds![0];
+      await perform({ type: 'typeText', objectId: id, text: ' two' });
+      expect(KritzelRichTextHelper.getText((map.findById(id) as KritzelText).editor!)).toBe('One two');
+      await perform({ type: 'typeText', objectId: id, text: 'Fresh', mode: 'replace' });
+      expect(KritzelRichTextHelper.getText((map.findById(id) as KritzelText).editor!)).toBe('Fresh');
+      expect(core.engine.emitObjectsUpdated).toHaveBeenLastCalledWith(
+        [{ object: map.findById(id), changedProperties: ['content', 'width', 'height'] }],
+        { type: 'agentic-cursor', cursorId: 'agent', actionType: 'typeText' },
+      );
+    });
+
+    it('refuses to type into objects that are not text or shapes', async () => {
+      const path = KritzelPath.create(core, { points: [[0, 0], [10, 10]] });
+      map.insert(path);
+      await expect(perform({ type: 'typeText', objectId: path.id, text: 'x' })).resolves.toMatchObject({ completed: false, reason: 'invalid-target' });
+    });
+  });
+
+  describe('resizeObject', () => {
+    it('resizes to the world size and keeps the opposite corner in place', async () => {
+      const shape = addShape(100, 100, 200, 100);
+      const before = shape.rotatedPolygon.topLeft;
+      const result = await perform({ type: 'resizeObject', objectId: shape.id, width: 300, height: 50 }, {});
+
+      expect(result).toEqual({ completed: true, objectIds: [shape.id] });
+      expect(shape.boundingBox.width).toBeCloseTo(300 + shape.padding * 2, 0);
+      expect(shape.rotatedPolygon.topLeft.x).toBeCloseTo(before.x, 0);
+      expect(shape.rotatedPolygon.topLeft.y).toBeCloseTo(before.y, 0);
+      expect(cursors.get('agent')!.attachedTo).toMatchObject({ objectId: shape.id, anchor: 'bottom-right' });
+    });
+
+    it('keeps the aspect ratio when only one dimension is given', async () => {
+      const shape = addShape(0, 0, 200, 100);
+      const initial = { w: shape.width, h: shape.height };
+      await perform({ type: 'resizeObject', objectId: shape.id, width: shape.boundingBox.width * 2, handle: 'top-left' });
+      expect(shape.width / shape.height).toBeCloseTo(initial.w / initial.h, 1);
+    });
+
+    it('refuses objects the configuration does not allow to resize', async () => {
+      const shape = addShape(0, 0, 50, 50);
+      core.objectConfigManager.isResizable.mockReturnValue(false);
+      await expect(perform({ type: 'resizeObject', objectId: shape.id, width: 100 })).resolves.toMatchObject({ completed: false, reason: 'not-allowed' });
+      expect(shape.width).toBe(50);
+    });
+
+    it('resizes groups with stable child snapshots and unlocks them afterwards', async () => {
+      const first = addShape(0, 0, 50, 50);
+      const second = addShape(100, 0, 50, 50);
+      const group = KritzelGroup.createFromObjects(core, [first, second]);
+      map.insert(group);
+      map.stopUndoCapturing();
+      const widthBefore = group.boundingBox.width;
+
+      // Without the lock, every resize frame would re-snapshot the children while locked.
+      const groupAny = group as any;
+      const original = groupAny.captureChildSnapshots.bind(group);
+      let capturesWhileLocked = 0;
+      groupAny.captureChildSnapshots = () => {
+        if (KritzelGroup.transformLocks.has(group)) capturesWhileLocked++;
+        original();
+      };
+
+      const result = await perform({ type: 'resizeObject', objectId: group.id, width: widthBefore * 2 }, {});
+
+      expect(result.completed).toBe(true);
+      expect(capturesWhileLocked).toBe(0);
+      expect(KritzelGroup.transformLocks.has(group)).toBe(false);
+      expect(group.boundingBox.width).toBeGreaterThan(widthBefore * 1.5);
+    });
+
+    it('refuses to resize objects inside a group', async () => {
+      const child = addShape(0, 0, 50, 50);
+      const group = KritzelGroup.createFromObjects(core, [child]);
+      map.insert(group);
+      await expect(perform({ type: 'resizeObject', objectId: child.id, width: 100 })).resolves.toMatchObject({ reason: 'invalid-target' });
+    });
+  });
+
+  describe('rotateObject', () => {
+    it('rotates to an absolute angle the short way and orbits the cursor with the handle', async () => {
+      const shape = addShape(0, 0, 100, 100);
+      const result = await perform({ type: 'rotateObject', objectId: shape.id, angle: 90 }, {});
+      expect(result.completed).toBe(true);
+      expect(shape.rotation).toBeCloseTo(Math.PI / 2);
+      expect(cursors.get('agent')!.attachedTo).toMatchObject({ objectId: shape.id, anchor: 'top' });
+
+      await perform({ type: 'rotateObject', objectId: shape.id, angle: -30, relative: true });
+      expect(shape.rotation).toBeCloseTo(Math.PI / 3);
+    });
+
+    it('undoes a rotation through the agent history only', async () => {
+      const shape = addShape(0, 0, 100, 100);
+      await perform({ type: 'rotateObject', objectId: shape.id, angle: 45 });
+      await perform({ type: 'undo' });
+      expect((map.findById(shape.id) as KritzelShape).rotation).toBeCloseTo(0);
+    });
+  });
+
+  describe('drawPath', () => {
+    it('draws a completed path through the world points with the brush settings', async () => {
+      tools.push({ toolType: 'brush', size: 9, color: { light: '#123', dark: '#321' } });
+      const points = [{ x: 0, y: 0 }, { x: 100, y: 0 }, { x: 100, y: 100 }];
+      const result = await perform({ type: 'drawPath', points }, {});
+      const path = map.findById(result.objectIds![0]) as KritzelPath;
+
+      expect(path).toBeInstanceOf(KritzelPath);
+      expect(path.isCompleted).toBe(true);
+      expect(path.strokeWidth).toBe(9);
+      expect(path.fill).toEqual({ light: '#123', dark: '#321' });
+      const world = path.points.map(p => [(p[0] - path.x) / path.scale + path.translateX, (p[1] - path.y) / path.scale + path.translateY]);
+      expect(world[0][0]).toBeCloseTo(0);
+      expect(world[world.length - 1][0]).toBeCloseTo(100);
+      expect(world[world.length - 1][1]).toBeCloseTo(100);
+      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith([path], expect.objectContaining({ actionType: 'drawPath' }));
+      expect(map.getAgentUndoStackLength('agent')).toBe(1);
+    });
+
+    it('rejects fewer than two points', () => {
+      expect(() => actions.perform('agent', { type: 'drawPath', points: [{ x: 0, y: 0 }] })).toThrow(TypeError);
+    });
+  });
+
+  describe('connect', () => {
+    it('draws a line between two objects and anchors both ends', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const result = await perform({ type: 'connect', from: a.id, to: b.id }, {});
+
+      const line = map.findById(result.objectIds![0]) as KritzelLine;
+      expect(line).toBeInstanceOf(KritzelLine);
+      expect(line.startAnchor).toEqual({ objectId: a.id });
+      expect(line.endAnchor).toEqual({ objectId: b.id });
+      expect(core.anchorManager.getLinesAnchoredTo(b.id)).toEqual([{ lineId: line.id, endpoint: 'end' }]);
+    });
+
+    it('refuses self-connections and lines as ends', async () => {
+      const a = addShape(0, 0, 50, 50);
+      await expect(perform({ type: 'connect', from: a.id, to: a.id })).resolves.toMatchObject({ reason: 'invalid-target' });
+      const line = KritzelLine.create(core, { startX: 0, startY: 0, endX: 10, endY: 10 });
+      map.insert(line);
+      await expect(perform({ type: 'connect', from: a.id, to: line.id })).resolves.toMatchObject({ reason: 'invalid-target' });
+    });
+
+    it('rolls the line back when an end is deleted mid-drag', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(900, 0, 50, 50);
+      const promise = actions.perform('agent', { type: 'connect', from: a.id, to: b.id });
+      await flushMicrotasks();
+      for (let i = 0; i < 80 && !map.allObjects().some((o: any) => o instanceof KritzelLine); i++) {
+        now += 16;
+        cursors.tick(now);
+        await flushMicrotasks();
+      }
+      map.remove((o: any) => o.id === b.id);
+      await expect(settle(promise)).resolves.toMatchObject({ completed: false, reason: 'object-removed' });
+      expect(map.allObjects().some((o: any) => o instanceof KritzelLine)).toBe(false);
+    });
+  });
+});

@@ -5,6 +5,13 @@ import { clearSelectionExecutor, selectExecutor } from './select.executor';
 import { moveObjectExecutor } from './move-object.executor';
 import { deleteObjectsExecutor } from './delete-objects.executor';
 import { redoExecutor, undoExecutor } from './history.executor';
+import { resizeObjectExecutor } from './resize-object.executor';
+import { rotateObjectExecutor } from './rotate-object.executor';
+import { createShapeExecutor } from './create-shape.executor';
+import { createTextExecutor } from './create-text.executor';
+import { typeTextExecutor } from './type-text.executor';
+import { drawPathExecutor } from './draw-path.executor';
+import { connectExecutor } from './connect.executor';
 
 /**
  * One executor per action type. The mapped type makes the build fail when an action type
@@ -20,6 +27,13 @@ export const AGENTIC_ACTION_EXECUTORS: {
   deleteObjects: deleteObjectsExecutor,
   undo: undoExecutor,
   redo: redoExecutor,
+  resizeObject: resizeObjectExecutor,
+  rotateObject: rotateObjectExecutor,
+  createShape: createShapeExecutor,
+  createText: createTextExecutor,
+  typeText: typeTextExecutor,
+  drawPath: drawPathExecutor,
+  connect: connectExecutor,
 };
 
 /** The executor for an action type, or `null` for unknown types. */

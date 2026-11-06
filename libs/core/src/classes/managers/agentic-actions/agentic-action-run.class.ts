@@ -243,6 +243,19 @@ export class KritzelAgenticActionRun {
     return this.wait({ kind: 'frame', duration: 0, easing: t => t });
   }
 
+  /** Resolves on the next rendered frame, also for instant runs (e.g. to wait for DOM measurement). */
+  nextRenderedFrame(): Promise<void> {
+    this.assertActive();
+    return this.wait({ kind: 'frame', duration: 0, easing: t => t });
+  }
+
+  /** Duration of a phase given a rate (units per second at default speed) and clamps, scaled by speed. */
+  phaseDuration(amount: number, ratePerSecond: number, minMs: number, maxMs: number): number {
+    const k = this.speedFactor;
+    const duration = (Math.abs(amount) / (ratePerSecond * k)) * 1000;
+    return Math.min(maxMs / k, Math.max(minMs / k, duration));
+  }
+
   /** Flies the cursor to a target, like `moveAgenticCursor`. Instant runs jump. */
   async fly(target: KritzelAgenticCursorTarget, attach = false): Promise<void> {
     this.assertActive();
