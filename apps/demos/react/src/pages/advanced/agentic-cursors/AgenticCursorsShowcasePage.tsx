@@ -155,7 +155,7 @@ export function AgenticCursorsShowcasePage() {
     const retry = await step(-100, 120, "Retry", ShapeType.Rectangle, "#fde2ea", "#d6336c", "Adding the error path");
     const done = await step(340, -60, "Done", ShapeType.Ellipse, "#dcfce7", "#16a34a", "Adding the end");
 
-    const lineStyle = { color: "#475569", strokeWidth: 3 };
+    const lineStyle = { strokeColor: "#475569", strokeWidth: 3 };
     await act("architect", { type: "connect", from: start, to: load, style: lineStyle }, "Connecting the steps");
     await act("architect", { type: "connect", from: load, to: valid, style: lineStyle });
     await act("architect", { type: "connect", from: valid, to: save, style: lineStyle });
@@ -183,7 +183,7 @@ export function AgenticCursorsShowcasePage() {
       const wobble = 1 + 0.05 * Math.sin(i * 1.7);
       return { x: -50 + Math.cos(angle) * 150 * wobble, y: -30 + Math.sin(angle) * 65 * wobble };
     });
-    await act("reviewer", { type: "drawPath", points: loop, style: { color: "#DB2777", strokeWidth: 4 } }, "Spotted a problem");
+    await act("reviewer", { type: "drawPath", points: loop, style: { strokeColor: "#DB2777", strokeWidth: 4 } }, "Spotted a problem");
     const [comment] = await act(
       "reviewer",
       { type: "createText", x: -440, y: 90, text: "Contrast is too low here.", style: { fontColor: "#DB2777", fontSize: 18 } },
@@ -218,7 +218,7 @@ export function AgenticCursorsShowcasePage() {
           { type: "createShape", x: -320, y: -60, width: 170, height: 80, text: "Summary", style: { fillColor: "#ede9fe", strokeColor: "#7c3aed" } },
           "Summarizing feedback",
         );
-        await act("agent-b", { type: "connect", from: feedback.id, to: summary!, style: { color: "#475569", strokeWidth: 3 } });
+        await act("agent-b", { type: "connect", from: feedback.id, to: summary!, style: { strokeColor: "#475569", strokeWidth: 3 } });
       })(),
     ]);
 

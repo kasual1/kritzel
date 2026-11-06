@@ -4,7 +4,7 @@ import { KritzelLine } from '../../objects/line.class';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
 import { isSelectionObject } from './agentic-conflict.helper';
 import { resolveLineStyle } from './agentic-style.helper';
-import { assertObjectId } from './agentic-validation.helper';
+import { AGENTIC_LINE_STYLE_KEYS, assertObjectId, assertStyle } from './agentic-validation.helper';
 
 /** `connect`: drags a line from one object to another and anchors both ends, so it follows them. */
 export const connectExecutor: KritzelAgenticActionExecutor<KritzelAgenticConnectAction> = {
@@ -13,6 +13,7 @@ export const connectExecutor: KritzelAgenticActionExecutor<KritzelAgenticConnect
   validate(action) {
     assertObjectId(action.from, 'from');
     assertObjectId(action.to, 'to');
+    assertStyle(action.style, 'style', AGENTIC_LINE_STYLE_KEYS);
   },
 
   prepare(run, action) {

@@ -99,7 +99,7 @@ export interface KritzelResolvedStrokeStyle {
 export function resolveBrushStyle(core: KritzelCore, style: KritzelAgenticStrokeStyle = {}): KritzelResolvedStrokeStyle {
   const tool = findToolByType(core, 'brush');
   return {
-    color: toThemeColor(style.color) ?? read(tool, 'color', DEFAULT_COLOR_PALETTE[0]),
+    color: toThemeColor(style.strokeColor) ?? read(tool, 'color', DEFAULT_COLOR_PALETTE[0]),
     strokeWidth: style.strokeWidth ?? read(tool, 'size', 6),
     opacity: style.opacity ?? read(tool, 'opacity', 1),
   };
@@ -109,7 +109,7 @@ export function resolveBrushStyle(core: KritzelCore, style: KritzelAgenticStroke
 export function resolveLineStyle(core: KritzelCore, style: KritzelAgenticLineStyle = {}): KritzelResolvedStrokeStyle {
   const tool = findToolByType(core, 'line');
   return {
-    color: toThemeColor(style.color) ?? read(tool, 'color', DEFAULT_COLOR_PALETTE[0]),
+    color: toThemeColor(style.strokeColor) ?? read(tool, 'color', DEFAULT_COLOR_PALETTE[0]),
     strokeWidth: style.strokeWidth ?? read(tool, 'size', 4),
     opacity: style.opacity ?? read(tool, 'opacity', 1),
     arrows: style.arrows ?? read<LineArrowConfig | undefined>(tool, 'arrows', undefined),

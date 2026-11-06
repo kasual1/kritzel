@@ -406,7 +406,7 @@ interface KritzelAgenticTextStyle {
 }
 
 interface KritzelAgenticStrokeStyle {
-  color?: KritzelAgenticColor;
+  strokeColor?: KritzelAgenticColor;
   strokeWidth?: number;
   opacity?: number;
 }

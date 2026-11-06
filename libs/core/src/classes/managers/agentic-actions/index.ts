@@ -12,6 +12,8 @@ import { createTextExecutor } from './create-text.executor';
 import { typeTextExecutor } from './type-text.executor';
 import { drawPathExecutor } from './draw-path.executor';
 import { connectExecutor } from './connect.executor';
+import { setStyleExecutor } from './set-style.executor';
+import { addObjectExecutor } from './add-object.executor';
 
 /**
  * One executor per action type. The mapped type makes the build fail when an action type
@@ -34,6 +36,8 @@ export const AGENTIC_ACTION_EXECUTORS: {
   typeText: typeTextExecutor,
   drawPath: drawPathExecutor,
   connect: connectExecutor,
+  setStyle: setStyleExecutor,
+  addObject: addObjectExecutor,
 };
 
 /** The executor for an action type, or `null` for unknown types. */

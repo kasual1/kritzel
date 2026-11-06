@@ -8,7 +8,8 @@ import { KritzelPath } from '../../objects/path.class';
 import { KritzelLine } from '../../objects/line.class';
 import { KritzelGroup } from '../../objects/group.class';
 import { KritzelRichTextHelper } from '../../../helpers/rich-text.helper';
-import type { KritzelCore } from '../../core/core.class';
+import { KritzelCore } from '../../core/core.class';
+import { KritzelSelectionGroup } from '../../objects/selection-group.class';
 
 // Real object classes on a real Yjs object map: these tests check the geometry and history of
 // the create and transform actions end to end, without a rendered canvas.
@@ -134,6 +135,10 @@ describe('agentic create and transform actions', () => {
       addObject: (object: any) => map.insert(object),
       removeObject: (object: any) => map.remove((o: any) => o.id === object.id),
     };
+    // The real insert preparation, as engine.addObject() and the addObject action use it.
+    core._store = core.store;
+    core.prepareObjectForInsert = KritzelCore.prototype.prepareObjectForInsert;
+    core.insertPreparedObject = KritzelCore.prototype.insertPreparedObject;
     core.anchorManager = new KritzelAnchorManager(core);
     map = new KritzelObjectMap<any>();
     await map.initialize(core as unknown as KritzelCore, 'ws', { providers: [] });
@@ -426,6 +431,138 @@ describe('agentic create and transform actions', () => {
       map.remove((o: any) => o.id === b.id);
       await expect(settle(promise)).resolves.toMatchObject({ completed: false, reason: 'object-removed' });
       expect(map.allObjects().some((o: any) => o instanceof KritzelLine)).toBe(false);
+    });
+  });
+  describe('style validation', () => {
+    it('rejects unknown style fields, naming the allowed ones', () => {
+      expect(() => actions.perform('agent', { type: 'drawPath', points: [{ x: 0, y: 0 }, { x: 1, y: 1 }], style: { color: 'red' } } as any)).toThrow(
+        'Unknown property "style.color". Use strokeColor, strokeWidth, opacity.',
+      );
+    });
+
+    it('rejects values of the wrong type or range', () => {
+      const shape = { type: 'createShape', x: 0, y: 0, width: 10, height: 10 };
+      expect(() => actions.perform('agent', { ...shape, style: { opacity: 2 } } as any)).toThrow('"style.opacity" must be a number from 0 to 1.');
+      expect(() => actions.perform('agent', { ...shape, style: { strokeWidth: -1 } } as any)).toThrow('greater than 0');
+      expect(() => actions.perform('agent', { ...shape, style: { fillColor: 5 } } as any)).toThrow('CSS color');
+      expect(() =>
+        actions.perform('agent', { type: 'connect', from: 'a', to: 'b', style: { arrows: { end: { enabled: true, fill: 'red' } } } } as any),
+      ).toThrow('"style.arrows.end.fill" must be { light, dark }.');
+    });
+  });
+
+  describe('setStyle', () => {
+    it('restyles a shape; an explicit font color wins over the one derived from the fill', async () => {
+      const shape = addShape(0, 0, 100, 50);
+
+      const result = await perform({ type: 'setStyle', objectIds: [shape.id], style: { fillColor: '#000000', fontColor: '#ff0000', strokeWidth: 9 } });
+
+      expect(result).toEqual({ completed: true, objectIds: [shape.id] });
+      const styled = map.findById(shape.id) as KritzelShape;
+      expect(styled.fillColor).toEqual({ light: '#000000', dark: '#000000' });
+      expect(styled.fontColor).toEqual({ light: '#ff0000', dark: '#ff0000' });
+      expect(styled.strokeWidth).toBe(9);
+      expect(core.engine.emitObjectsUpdated).toHaveBeenCalledWith(
+        [{ object: styled, changedProperties: ['fillColor', 'strokeWidth', 'fontColor'] }],
+        { type: 'agent', agentId: 'agent', actionType: 'setStyle' },
+      );
+
+      await perform({ type: 'undo' });
+      expect((map.findById(shape.id) as KritzelShape).strokeWidth).not.toBe(9);
+    });
+
+    it('maps strokeColor to the color property of strokes and lines and styles group children', async () => {
+      const a = addShape(0, 0, 100, 50);
+      const b = addShape(300, 0, 100, 50);
+      const [pathId] = (await perform({ type: 'drawPath', points: [{ x: 0, y: 200 }, { x: 80, y: 220 }] })).objectIds!;
+      const [lineId] = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds!;
+      const group = KritzelGroup.createFromObjects(core, [map.findById(pathId), map.findById(lineId)]);
+      map.insert(group);
+      map.stopUndoCapturing();
+
+      const arrows = { end: { enabled: true, style: 'open' as const } };
+      await perform({ type: 'setStyle', objectIds: [group.id], style: { strokeColor: '#00ff00', arrows } });
+
+      expect((map.findById(pathId) as KritzelPath).fill).toEqual({ light: '#00ff00', dark: '#00ff00' });
+      expect((map.findById(lineId) as KritzelLine).stroke).toEqual({ light: '#00ff00', dark: '#00ff00' });
+      expect((map.findById(lineId) as KritzelLine).arrows).toEqual(arrows);
+    });
+
+    it('refuses when no field applies to any target', async () => {
+      const shape = addShape(0, 0, 100, 50);
+
+      await expect(perform({ type: 'setStyle', objectIds: [shape.id], style: { arrows: { end: { enabled: true } } } })).resolves.toEqual({
+        completed: false,
+        reason: 'invalid-target',
+        objectIds: [shape.id],
+      });
+    });
+
+    it('needs at least one style field', () => {
+      expect(() => actions.perform('agent', { type: 'setStyle', objectIds: ['a'], style: {} })).toThrow('at least one of');
+    });
+  });
+
+  describe('addObject', () => {
+    it('places a pre-built object as the agent, with a fresh ID, and keeps the user selection', async () => {
+      core.user = { id: 'human' };
+      const held = addShape(0, 0, 50, 50);
+      const selection = Object.create(KritzelSelectionGroup.prototype);
+      const fields: Record<string, unknown> = {
+        id: 'sg-user',
+        objectIds: [held.id],
+        clientId: map.docClientId,
+        rotatedBoundingBox: { x: 0, y: 0, z: 1, width: 1, height: 1 },
+        serialize: () => ({ __class__: 'MockSelection', id: 'sg-user' }),
+        invalidateObjectsCache: jest.fn(),
+        refreshObjectDimensions: jest.fn(),
+        captureUnchangedSnapshots: jest.fn(),
+      };
+      for (const [key, value] of Object.entries(fields)) {
+        Object.defineProperty(selection, key, { value, writable: true, configurable: true, enumerable: true });
+      }
+      map.insert(selection);
+      map.stopUndoCapturing();
+      const shape = new KritzelShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
+      const originalId = shape.id;
+
+      const result = await perform({ type: 'addObject', object: shape }, {});
+
+      expect(result.completed).toBe(true);
+      expect(result.objectIds).toEqual([shape.id]);
+      expect(shape.id).not.toBe(originalId);
+      expect(map.findById(shape.id)).toBe(shape);
+      expect(shape.userId).toBe('agent');
+      expect(map.findById('sg-user')).toBe(selection);
+      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith([shape], { type: 'agent', agentId: 'agent', actionType: 'addObject' });
+
+      await perform({ type: 'undo' });
+      expect(map.findById(shape.id)).toBeUndefined();
+    });
+
+    it('adds a group with its children as one step', async () => {
+      const group = new KritzelGroup();
+      const a = new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
+      const b = new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
+      group.addChild(a);
+      group.addChild(b);
+
+      const result = await perform({ type: 'addObject', object: group });
+
+      expect(result.completed).toBe(true);
+      expect(map.findById(a.id)).toBe(a);
+      expect(map.findById(b.id)).toBe(b);
+      expect([a, b, group].map(object => object.userId)).toEqual(['agent', 'agent', 'agent']);
+
+      await perform({ type: 'undo' });
+      expect([a, b, group].map(object => map.findById(object.id))).toEqual([undefined, undefined, undefined]);
+    });
+
+    it('refuses an object that is already on the canvas and anything that is not an object', async () => {
+      const shape = addShape(0, 0, 50, 50);
+
+      await expect(perform({ type: 'addObject', object: shape })).resolves.toMatchObject({ completed: false, reason: 'invalid-target' });
+      expect(() => actions.perform('agent', { type: 'addObject', object: { id: 'x' } } as any)).toThrow('must be a Kritzel object');
     });
   });
 });

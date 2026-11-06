@@ -15,9 +15,11 @@ import type {
   KritzelAgenticCreateShapeAction,
   KritzelAgenticCreateTextAction,
   KritzelAgenticLineStyle,
+  KritzelAgenticObjectStyle,
   KritzelAgenticResizeObjectAction,
   KritzelAgenticStrokeStyle,
 } from '../../interfaces/agentic-action.interface';
+import type { KritzelBaseObject } from '../objects/base-object.class';
 import type { KritzelAgentEventMap, KritzelAgentOptions, KritzelAgentPresence, KritzelAgentState } from '../../interfaces/agent.interface';
 import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -321,6 +323,20 @@ export class KritzelAgent implements IKritzelUser {
   connect(from: string, to: string, options: { style?: KritzelAgenticLineStyle } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
     const { style, ...actionOptions } = options;
     return this.perform({ type: 'connect', from, to, ...(style ? { style } : {}) }, actionOptions);
+  }
+
+  /** Restyles top-level objects; groups style their children. Fields that don't apply to an object are ignored. */
+  setStyle(objectIds: string[], style: KritzelAgenticObjectStyle, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'setStyle', objectIds, style }, options);
+  }
+
+  /**
+   * Places an object the app built, e.g. `new KritzelIframeObject({ ... })`, as the agent's change: the
+   * cursor hops there and the object appears. The object gets a fresh ID (also in `objectIds`).
+   * Unlike `editor.addObject()`, the user's selection and undo history stay untouched.
+   */
+  addObject(object: KritzelBaseObject<any>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'addObject', object }, options);
   }
 
   /** Deletes top-level objects. */

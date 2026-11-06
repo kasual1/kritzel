@@ -1,11 +1,9 @@
 import type { KritzelAgenticCreateShapeAction } from '../../../interfaces/agentic-action.interface';
 import { KritzelShape } from '../../objects/shape.class';
-import { ShapeType } from '../../../enums/shape-type.enum';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
 import { resolveShapeStyle } from './agentic-style.helper';
 import { typeInto } from './type-text.executor';
-
-const SHAPE_TYPES = Object.values(ShapeType) as string[];
+import { AGENTIC_SHAPE_STYLE_KEYS, AGENTIC_SHAPE_TYPES, assertStyle } from './agentic-validation.helper';
 
 function assertFinite(value: unknown, field: string, min = -Infinity): void {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < min) {
@@ -22,12 +20,13 @@ export const createShapeExecutor: KritzelAgenticActionExecutor<KritzelAgenticCre
     assertFinite(action.y, 'y');
     assertFinite(action.width, 'width', 1);
     assertFinite(action.height, 'height', 1);
-    if (action.shapeType !== undefined && !SHAPE_TYPES.includes(action.shapeType)) {
-      throw new TypeError(`"shapeType" must be one of ${SHAPE_TYPES.join(', ')}.`);
+    if (action.shapeType !== undefined && !AGENTIC_SHAPE_TYPES.includes(action.shapeType)) {
+      throw new TypeError(`"shapeType" must be one of ${AGENTIC_SHAPE_TYPES.join(', ')}.`);
     }
     if (action.text !== undefined && typeof action.text !== 'string') {
       throw new TypeError('"text" must be a string.');
     }
+    assertStyle(action.style, 'style', AGENTIC_SHAPE_STYLE_KEYS);
   },
 
   prepare() {

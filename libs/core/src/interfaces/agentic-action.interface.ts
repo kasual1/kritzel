@@ -4,6 +4,7 @@ import type { KritzelPoint } from './point.interface';
 import type { LineArrowConfig } from './arrow-head.interface';
 import type { ThemeAwareColor } from '../constants/color-palette.constants';
 import type { ShapeType } from '../enums/shape-type.enum';
+import type { KritzelBaseObject } from '../classes/objects/base-object.class';
 
 /** Any CSS color (used for light and dark themes) or a theme-aware color. */
 export type KritzelAgenticColor = string | ThemeAwareColor;
@@ -32,7 +33,7 @@ export interface KritzelAgenticTextStyle {
 
 /** Style of freehand paths drawn by agents. Unset fields use the brush tool's current settings. */
 export interface KritzelAgenticStrokeStyle {
-  color?: KritzelAgenticColor;
+  strokeColor?: KritzelAgenticColor;
   strokeWidth?: number;
   opacity?: number;
 }
@@ -165,6 +166,41 @@ export interface KritzelAgenticConnectAction {
   style?: KritzelAgenticLineStyle;
 }
 
+/**
+ * Style applied by `setStyle`. Fields apply where they make sense and are ignored elsewhere:
+ * `fillColor` to shapes; `strokeColor` and `strokeWidth` to shapes, pen strokes and lines;
+ * `fontSize`, `fontFamily` and `fontColor` to shapes and texts; `arrows` to lines; `opacity` to all.
+ */
+export interface KritzelAgenticObjectStyle {
+  fillColor?: KritzelAgenticColor;
+  strokeColor?: KritzelAgenticColor;
+  strokeWidth?: number;
+  opacity?: number;
+  fontSize?: number;
+  fontFamily?: string;
+  fontColor?: KritzelAgenticColor;
+  arrows?: LineArrowConfig;
+}
+
+/** Restyles top-level objects; groups style their children. */
+export interface KritzelAgenticSetStyleAction {
+  type: 'setStyle';
+  /** Non-empty list of IDs of top-level objects. */
+  objectIds: string[];
+  /** At least one field. */
+  style: KritzelAgenticObjectStyle;
+}
+
+/**
+ * Places an object built by the app, e.g. `new KritzelIframeObject(...)`: the cursor hops to it and
+ * the object appears as the agent's change. The object gets a fresh ID, which `objectIds` reports.
+ */
+export interface KritzelAgenticAddObjectAction {
+  type: 'addObject';
+  /** A new object that is not on the canvas yet. Selections can't be added. */
+  object: KritzelBaseObject<any>;
+}
+
 /** Undoes this agent's last completed action. Never touches the user's or other agents' history. */
 export interface KritzelAgenticUndoAction {
   type: 'undo';
@@ -190,7 +226,9 @@ export type KritzelAgenticAction =
   | KritzelAgenticCreateTextAction
   | KritzelAgenticTypeTextAction
   | KritzelAgenticDrawPathAction
-  | KritzelAgenticConnectAction;
+  | KritzelAgenticConnectAction
+  | KritzelAgenticSetStyleAction
+  | KritzelAgenticAddObjectAction;
 
 /** The `type` of an agentic action. */
 export type KritzelAgenticActionType = KritzelAgenticAction['type'];
@@ -251,8 +289,8 @@ export interface KritzelAgenticActionResult {
   /** Set only when `completed` is `false`. */
   reason?: KritzelAgenticActionFailureReason;
   /**
-   * On success: the created object, the new agent selection, the changed or deleted IDs, the object
-   * under a click (empty on a miss), or the objects changed by undo/redo. On failure: the objects that
+   * On success: the created or added object, the new agent selection, the changed or deleted IDs, the
+   * object under a click (empty on a miss), or the objects changed by undo/redo. On failure: the objects that
    * caused it, when known.
    */
   objectIds?: string[];

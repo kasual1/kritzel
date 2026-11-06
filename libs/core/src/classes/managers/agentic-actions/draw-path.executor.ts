@@ -3,6 +3,7 @@ import type { KritzelPoint } from '../../../interfaces/point.interface';
 import { KritzelPath } from '../../objects/path.class';
 import { AGENTIC_ACTION_DRAW_SPEED, type KritzelAgenticActionExecutor } from './agentic-action.types';
 import { resolveBrushStyle } from './agentic-style.helper';
+import { AGENTIC_STROKE_STYLE_KEYS, assertStyle } from './agentic-validation.helper';
 
 /** Same as the brush tool: points closer than this many screen pixels are dropped. */
 const MIN_POINT_DISTANCE_PX = 3;
@@ -60,6 +61,7 @@ export const drawPathExecutor: KritzelAgenticActionExecutor<KritzelAgenticDrawPa
     ) {
       throw new TypeError('"points" must contain at least two { x, y } world points.');
     }
+    assertStyle(action.style, 'style', AGENTIC_STROKE_STYLE_KEYS);
   },
 
   prepare() {

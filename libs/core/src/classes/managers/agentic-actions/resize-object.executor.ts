@@ -1,12 +1,10 @@
-import type { KritzelAgenticResizeHandle, KritzelAgenticResizeObjectAction } from '../../../interfaces/agentic-action.interface';
+import type { KritzelAgenticResizeObjectAction } from '../../../interfaces/agentic-action.interface';
 import { KritzelGroup } from '../../objects/group.class';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
 import { collectWithDescendants } from './agentic-conflict.helper';
 import { prepareTopLevelTargets } from './select.executor';
-import { assertObjectId } from './agentic-validation.helper';
+import { AGENTIC_RESIZE_HANDLES, assertObjectId } from './agentic-validation.helper';
 import { computeAnchoredResize, createTransientSelectionGroup, fixedCorner } from './agentic-transform.helper';
-
-const HANDLES: KritzelAgenticResizeHandle[] = ['top-left', 'top-right', 'bottom-right', 'bottom-left'];
 
 function assertPositiveSize(value: unknown, field: string): void {
   if (value !== undefined && !(typeof value === 'number' && Number.isFinite(value) && value > 0)) {
@@ -28,8 +26,8 @@ export const resizeObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticRe
     if (action.keepAspectRatio !== undefined && typeof action.keepAspectRatio !== 'boolean') {
       throw new TypeError('"keepAspectRatio" must be a boolean.');
     }
-    if (action.handle !== undefined && !HANDLES.includes(action.handle)) {
-      throw new TypeError(`"handle" must be one of ${HANDLES.join(', ')}.`);
+    if (action.handle !== undefined && !AGENTIC_RESIZE_HANDLES.includes(action.handle)) {
+      throw new TypeError(`"handle" must be one of ${AGENTIC_RESIZE_HANDLES.join(', ')}.`);
     }
   },
 

@@ -108,7 +108,7 @@ export function AgenticCursorsActionsPage() {
       if (!note) throw new Error("createShape returned no object");
       await perform({ type: "connect", from: ELLIPSE_ID, to: note }, "Connecting");
       await perform(
-        { type: "drawPath", points: [{ x: 60, y: 200 }, { x: 120, y: 215 }, { x: 180, y: 195 }, { x: 240, y: 210 }], style: { color: "#7C3AED" } },
+        { type: "drawPath", points: [{ x: 60, y: 200 }, { x: 120, y: 215 }, { x: 180, y: 195 }, { x: 240, y: 210 }], style: { strokeColor: "#7C3AED" } },
         "Underlining",
       );
       await perform({ type: "clearSelection" }, "Done");
