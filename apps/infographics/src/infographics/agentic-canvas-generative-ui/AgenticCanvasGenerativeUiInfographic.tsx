@@ -44,7 +44,7 @@ export function AgenticCanvasGenerativeUiInfographic() {
         editorId="infographic-agentic-canvas-generative-ui"
         workspaces={workspaces}
         activeWorkspaceId={WORKSPACE_ID}
-        isChatBoxVisible
+        isChatBoxVisible={true}
         isChatBoxLoading={isWorking}
         isWorkspaceManagerVisible={false}
         isMoreMenuVisible={false}

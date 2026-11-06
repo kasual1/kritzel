@@ -10,6 +10,9 @@
   width: 100%;
   max-width: 640px;
   height: auto;
+  /* see BlogVideo/styles.module.css: keeps a black 1px strip from showing at the edge while scrolling */
+  object-fit: cover;
+  background-color: transparent;
   border-radius: 12px;
   box-shadow: 0 10px 28px rgba(32, 33, 36, 0.14);
   margin-bottom: 1.75rem;
