@@ -58,6 +58,13 @@ describe('agentic conflict helpers', () => {
       expect(classifySelectionGroup(peer as any, core as any, restored)).toBe('collaborator');
     });
 
+    it("does not trust the store's selection without a user (it can be another tab's group)", () => {
+      const otherTab = createGroup({ clientId: 111 });
+      const map = createMap([], { docClientId: 222 });
+      const core = { ...createCore(), store: { ...createCore().store, selectionGroup: otherTab } };
+      expect(classifySelectionGroup(map as any, core as any, otherTab)).toBe('collaborator');
+    });
+
     it('falls back to the user ID for legacy groups without a client ID', () => {
       const map = createMap([], { docClientId: 1 });
       const core = createCore({}, { id: 'me' });

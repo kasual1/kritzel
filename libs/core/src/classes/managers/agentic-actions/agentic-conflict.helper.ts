@@ -126,7 +126,9 @@ export function classifySelectionGroup(map: ObjectMap, core: KritzelCore, group:
     }
     // Not a live peer: the group the user's tools treat as the local selection is the user's,
     // e.g. a selection restored after a reload that still carries the previous session's client ID.
-    if (core.store.selectionGroup === group) {
+    // Only when the user ID proves it: without a user, store.selectionGroup can be another tab's group.
+    const localUserId = core.user?.id;
+    if (localUserId && group.userId === localUserId && core.store.selectionGroup === group) {
       return 'human';
     }
     return awareness ? 'stale' : 'collaborator';
