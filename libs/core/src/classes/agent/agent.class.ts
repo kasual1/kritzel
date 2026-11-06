@@ -120,6 +120,7 @@ export class KritzelAgent implements IKritzelUser {
   set name(name: string) {
     this._name = name;
     this._core?.agenticCursorManager.update(this.id, { name });
+    this.notifyChange();
   }
 
   /** Same as `name` (`IKritzelUser`). */
@@ -217,6 +218,7 @@ export class KritzelAgent implements IKritzelUser {
   setStatus(status: string | null): void {
     this._status = status || null;
     this._core?.agenticCursorManager.update(this.id, { status: this._status });
+    this.notifyChange();
   }
 
   /** Shows the cursor. */
@@ -251,16 +253,19 @@ export class KritzelAgent implements IKritzelUser {
   /**
    * Performs an action: the cursor flies to the target, presses and animates the change. Actions of one
    * agent run one after another, in call order. Resolves when the action ends; `completed: false` with a
-   * `reason` when it was refused or stopped. Inside `task()`, such a result throws `KritzelAgentActionError`.
+   * `reason` when it was refused or stopped. An action started while a `task()` runs belongs to that task:
+   * such a result throws `KritzelAgentActionError` if the task is still running when the action ends.
    * Rejects for invalid actions and when the agent is not added to an editor.
    */
   async perform(action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
     const core = this.requireCore();
-    if (this._task?.cancelled) {
-      return this.settle(action, { completed: false, reason: 'aborted' });
+    // Decided when the action starts: an action started before a task, or by a task that has ended, never throws.
+    const task = this._task;
+    if (task?.cancelled) {
+      return this.settle(action, { completed: false, reason: 'aborted' }, task);
     }
     const result = await core.agenticActionManager.perform(this.id, action, { ...options, speed: options.speed ?? this._speed });
-    return this.settle(action, result);
+    return this.settle(action, result, task);
   }
 
   /** Presses at a point or object anchor. Nothing changes; `objectIds` holds the object under the cursor. */
@@ -368,8 +373,8 @@ export class KritzelAgent implements IKritzelUser {
 
   /**
    * Stops the running action (its changes are rolled back) and drops the queued ones; they resolve
-   * with `reason: 'aborted'`. Inside `task()`, every later action resolves (and throws) as aborted
-   * until the task returns.
+   * with `reason: 'aborted'`. While a `task()` runs, every action started later resolves (and throws) as
+   * aborted until the task returns.
    */
   cancel(): void {
     if (this._task) {
@@ -381,7 +386,8 @@ export class KritzelAgent implements IKritzelUser {
   /**
    * Runs a script of actions as one task: `label` is shown as the status while it runs, and the first
    * action that does not complete throws a `KritzelAgentActionError` out of `fn`. `cancel()` stops the
-   * task. An agent runs one task at a time.
+   * task. Every action of the agent started while the task runs belongs to it, also one started outside `fn`.
+   * An agent runs one task at a time.
    */
   async task<T>(label: string, fn: () => Promise<T> | T): Promise<T> {
     if (this._task) {
@@ -476,13 +482,17 @@ export class KritzelAgent implements IKritzelUser {
 
   /** Creates the cursor in `core` and starts listening. Throws if the cursor can't be created. @internal */
   _attach(core: KritzelCore): void {
+    // The start position may name an object that is gone, or that this editor's document never had (an agent
+    // added again, or moved from a removed editor): the cursor then starts at the viewport center.
+    const position =
+      this._initialPosition && core.agenticCursorManager.resolveTarget(this._initialPosition) ? this._initialPosition : undefined;
     core.agenticCursorManager.add({
       id: this.id,
       name: this._name,
       color: this._color,
       status: this._status ?? undefined,
       visible: this._visible,
-      position: this._initialPosition,
+      position,
     });
     this._core = core;
     this._lastStateKey = null;
@@ -514,6 +524,7 @@ export class KritzelAgent implements IKritzelUser {
         this.notifyChange();
       }),
     ];
+    this.notifyChange();
   }
 
   /** Removes the cursor (its running action is rolled back) and stops listening. @internal */
@@ -532,6 +543,7 @@ export class KritzelAgent implements IKritzelUser {
     core.agenticCursorManager.remove(this.id);
     this._core = null;
     this._lastStateKey = null;
+    this.notifyChange();
     this.emit('removed', undefined);
   }
 
@@ -540,6 +552,7 @@ export class KritzelAgent implements IKritzelUser {
   private setVisible(visible: boolean): void {
     this._visible = visible;
     this._core?.agenticCursorManager.update(this.id, { visible });
+    this.notifyChange();
   }
 
   private requireCore(): KritzelCore {
@@ -549,8 +562,12 @@ export class KritzelAgent implements IKritzelUser {
     return this._core;
   }
 
-  private settle(action: KritzelAgenticAction, result: KritzelAgenticActionResult): KritzelAgenticActionResult {
-    if (this._task && !result.completed) {
+  private settle(
+    action: KritzelAgenticAction,
+    result: KritzelAgenticActionResult,
+    task: { cancelled: boolean } | null,
+  ): KritzelAgenticActionResult {
+    if (task && task === this._task && !result.completed) {
       throw new KritzelAgentActionError(action, result);
     }
     return result;

@@ -89,6 +89,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   /** Per-agent histories, keyed by agentic cursor ID. */
   private _agents = new Map<string, KritzelAgentHistory>();
   private _beforeDestroyCallbacks: (() => void)[] = [];
+  private _historyClearedCallbacks: (() => void)[] = [];
   /** Object the local user is drawing; also tracked without awareness. */
   private _localActiveDrawingObjectId: string | null = null;
   /** Stack item meta key holding the object IDs an agent step touched. */
@@ -1273,6 +1274,24 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this._temporaryItemsCount = 0;
     }
     this._agents.forEach(agent => agent.undoManager.clear());
+    this._historyClearedCallbacks.forEach(callback => {
+      try {
+        callback();
+      } catch (error) {
+        console.error('[Kritzel] onHistoryCleared callback failed:', error);
+      }
+    });
+  }
+
+  /**
+   * Registers a callback that runs after `clearHistory()`, e.g. to update what agents report as undoable.
+   * @returns A function that unregisters the callback
+   */
+  onHistoryCleared(callback: () => void): () => void {
+    this._historyClearedCallbacks.push(callback);
+    return () => {
+      this._historyClearedCallbacks = this._historyClearedCallbacks.filter(existing => existing !== callback);
+    };
   }
 
   // ─── Agent histories ─────────────────────────────────────────────────────────

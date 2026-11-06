@@ -5,6 +5,7 @@ import { KritzelAgentManager } from '../managers/agent.manager';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
+import { KritzelGroup } from '../objects/group.class';
 import { KritzelAgent, isKritzelAgent } from './agent.class';
 import { KritzelAgentActionError } from './agent-action-error.class';
 import type { KritzelCore } from '../core/core.class';
@@ -274,6 +275,25 @@ describe('KritzelAgent', () => {
       expect(agent.isAdded).toBe(true);
     });
 
+    it('starts at the viewport center when its start object is gone, when added again or taken over', async () => {
+      const shape = addShape(0, 0);
+      const agent = add(new KritzelAgent({ name: 'A', position: { objectId: shape.id, anchor: 'top-left' } }));
+      expect(agent.state.attachedTo).toMatchObject({ objectId: shape.id });
+
+      core.agentManager.remove(agent);
+      map.remove((object: any) => object.id === shape.id);
+      core.agentManager.add(agent);
+      expect(agent.isAdded).toBe(true);
+      expect(agent.state).toMatchObject({ attachedTo: null, position: { x: 1000, y: 1000 } });
+
+      // Taken over by an editor whose document never had the object.
+      const other = await createHarness();
+      core.agentManager.setDisposed(true);
+      other.core.agentManager.add(agent);
+      expect(agent._owner).toBe(other.core);
+      expect(core.agentManager.get(agent.id)).toBeNull();
+    });
+
     it('notifies changes once per microtask and lists presences', async () => {
       const listener = jest.fn();
       core.agentManager.onChange(listener);
@@ -398,6 +418,22 @@ describe('KritzelAgent', () => {
       await first;
     });
 
+    it('leaves actions started before the task, or by a task that has ended, alone', async () => {
+      const shape = addShape(0, 0);
+      selectAsUser([shape.id]);
+      const agent = add(new KritzelAgent({ name: 'A' }));
+
+      // Started before the task, ends while it runs: resolves with the result.
+      const before = agent.moveObject(shape.id, { x: 300, y: 0 });
+      let release!: () => void;
+      const task = agent.task('Waiting', () => new Promise<void>(resolve => (release = resolve)));
+      await expect(settle(before)).resolves.toMatchObject({ completed: false, reason: 'user-selected' });
+
+      release();
+      await task;
+      await expect(settle(agent.undo())).resolves.toMatchObject({ completed: false, reason: 'nothing-to-undo' });
+    });
+
     it('stops at the next action after cancel()', async () => {
       const shape = addShape(0, 0);
       const agent = add(new KritzelAgent({ name: 'A', position: { x: 0, y: 0 } }));
@@ -469,6 +505,44 @@ describe('KritzelAgent', () => {
       expect(change.mock.calls.at(-1)![0]).toMatchObject({ isMoving: false });
     });
 
+    it('emits change when added and removed, and for setters before it is added', async () => {
+      const agent = new KritzelAgent({ name: 'A' });
+      const change = jest.fn();
+      agent.on('change', change);
+
+      agent.setStatus('Ready');
+      agent.hide();
+      agent.name = 'B';
+      expect(change.mock.calls.map(([state]) => [state.status, state.visible])).toEqual([
+        ['Ready', true],
+        ['Ready', false],
+        ['Ready', false],
+      ]);
+
+      add(agent);
+      expect(change.mock.calls.at(-1)![0]).toMatchObject({ isAdded: true, status: 'Ready', visible: false });
+
+      core.agentManager.remove(agent);
+      expect(change.mock.calls.at(-1)![0]).toMatchObject({ isAdded: false, canUndo: false });
+    });
+
+    it('reports canUndo again when the history is cleared or the workspace map is destroyed', async () => {
+      const agent = add(new KritzelAgent({ name: 'A' }));
+      const change = jest.fn();
+      agent.on('change', change);
+      await settle(agent.createShape({ x: 0, y: 0, width: 120, height: 60 }, { instant: true }));
+      expect(change.mock.calls.at(-1)![0]).toMatchObject({ canUndo: true });
+
+      map.clearHistory();
+      expect(change.mock.calls.at(-1)![0]).toMatchObject({ canUndo: false });
+
+      await settle(agent.createShape({ x: 200, y: 0, width: 120, height: 60 }, { instant: true }));
+      expect(change.mock.calls.at(-1)![0]).toMatchObject({ canUndo: true });
+      map.destroy();
+      await flushMicrotasks();
+      expect(change.mock.calls.at(-1)![0]).toMatchObject({ canUndo: false });
+    });
+
     it('emits detached after detach()', async () => {
       const shape = addShape(0, 0);
       const agent = add(new KritzelAgent({ name: 'A' }));
@@ -535,6 +609,36 @@ describe('KritzelAgent', () => {
       expect(snapshot.totalObjects).toBe(6);
       expect(snapshot.objects.map(object => object.id)).toContain(shapes[5].id);
       expect(snapshot.objects).toHaveLength(2);
+    });
+
+    it('keeps a visible child with its group even when the child comes up before the group', async () => {
+      // Viewport 0..2000: a is at its center, b (a's sibling) and d are off-screen, c is visible.
+      const a = addShape(950, 975, 50, 50);
+      const b = addShape(2950, 975, 50, 50);
+      const c = addShape(1400, 975, 50, 50);
+      addShape(9000, 9000, 50, 50);
+      const group = KritzelGroup.createFromObjects(core, [a, b]);
+      map.insert(group);
+      map.stopUndoCapturing();
+      const agent = add(new KritzelAgent({ name: 'Claude' }));
+
+      const snapshot = await agent.observe({ maxObjects: 3 });
+
+      expect(snapshot.totalObjects).toBe(5);
+      expect(snapshot.objects.map(object => object.id).sort()).toEqual([a.id, c.id, group.id].sort());
+    });
+
+    it('observe_canvas answers agent-removed when the agent is removed while its actions finish', async () => {
+      const shape = addShape(0, 0);
+      const agent = add(new KritzelAgent({ name: 'Claude', position: { x: 0, y: 0 } }));
+      const move = toolOf(agent, 'move_object').run({ objectId: shape.id, to: { x: 600, y: 0 } });
+      const observe = toolOf(agent, 'observe_canvas').run({});
+      await step();
+
+      core.agentManager.remove(agent);
+
+      expect(JSON.parse(await settle(move))).toMatchObject({ completed: false, reason: 'agent-removed' });
+      expect(JSON.parse(await settle(observe))).toMatchObject({ completed: false, reason: 'agent-removed' });
     });
 
     it('rejects observe while the agent is not added', async () => {

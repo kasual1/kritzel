@@ -85,8 +85,15 @@ function createObserveTool(agent: KritzelAgent, prefix: string): KritzelAgentToo
         const objectIds = Array.isArray(parsed.objectIds) ? (parsed.objectIds as string[]) : undefined;
         // Actions of the same reply are queued; let them finish so the snapshot shows their result.
         await agent._whenIdle();
+        if (!agent.isAdded) {
+          // Removed while its actions finished.
+          return formatAgentToolResult({ completed: false, reason: 'agent-removed', hint: AGENT_TOOL_REASON_HINTS['agent-removed'] });
+        }
         return JSON.stringify(await agent.observe({ scope, objectIds }));
       } catch (error) {
+        if (!agent.isAdded) {
+          return formatAgentToolResult({ completed: false, reason: 'agent-removed', hint: AGENT_TOOL_REASON_HINTS['agent-removed'] });
+        }
         return toErrorResult(error);
       }
     },

@@ -375,6 +375,14 @@ export class KritzelAgenticCursorManager {
     return resolveObjectAnchor(object, target.anchor ?? 'center', target.offset);
   }
 
+  /**
+   * Notifies the change listeners about all cursors, e.g. after a workspace switch dropped the agents'
+   * histories, so that `canUndo` and `canRedo` are read again. @internal
+   */
+  refresh(): void {
+    this.emitChange();
+  }
+
   /** Stops the animation loop and resolves pending moves. Cursors are kept. */
   cleanup(): void {
     this._cursors.forEach(entry => this.finishAnimation(entry, false));

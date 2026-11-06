@@ -209,7 +209,11 @@ function colorOf(color: ThemeAwareColor | string | undefined, theme: string): st
   return (color as Record<string, string>)[theme] ?? color.light;
 }
 
-/** Keeps the selected objects, then the visible ones, then the ones nearest to the viewport center; children only with their group. */
+/**
+ * Keeps the selected objects, then the visible ones, then the ones nearest to the viewport center; children only
+ * with their group. A group counts as relevant as its most relevant descendant, and a child that comes up before
+ * its group is kept as soon as the group is.
+ */
 function keepMostRelevant(
   objects: AnyObject[],
   max: number,
@@ -219,28 +223,69 @@ function keepMostRelevant(
 ): AnyObject[] {
   const cx = viewport.x + viewport.width / 2;
   const cy = viewport.y + viewport.height / 2;
-  const rank = (object: AnyObject): number => {
-    if (selected.has(object.id)) return 0;
-    if (intersects(object.boundingBox, viewport)) return 1;
-    return 2;
+  const present = new Set(objects.map(object => object.id));
+  // A child whose group is not in the list (e.g. not asked for) stands on its own.
+  const parentOf = (object: AnyObject): string | null => {
+    const parent = parents.get(object.id);
+    return parent && present.has(parent.id) ? parent.id : null;
   };
-  const distance = (object: AnyObject): number => {
+  const children = new Map<string, AnyObject[]>();
+  objects.forEach(object => {
+    const parentId = parentOf(object);
+    if (parentId) {
+      children.set(parentId, [...(children.get(parentId) ?? []), object]);
+    }
+  });
+
+  type Score = [rank: number, distance: number];
+  const compare = (a: Score, b: Score): number => a[0] - b[0] || a[1] - b[1];
+  const scores = new Map<string, Score>();
+  const scoreOf = (object: AnyObject): Score => {
+    const cached = scores.get(object.id);
+    if (cached) {
+      return cached;
+    }
     const box = object.boundingBox;
-    return Math.hypot(box.x + box.width / 2 - cx, box.y + box.height / 2 - cy);
+    let score: Score = [
+      selected.has(object.id) ? 0 : intersects(box, viewport) ? 1 : 2,
+      Math.hypot(box.x + box.width / 2 - cx, box.y + box.height / 2 - cy),
+    ];
+    scores.set(object.id, score);
+    for (const child of children.get(object.id) ?? []) {
+      const childScore = scoreOf(child);
+      if (compare(childScore, score) < 0) {
+        score = childScore;
+      }
+    }
+    scores.set(object.id, score);
+    return score;
   };
-  const sorted = [...objects].sort((a, b) => rank(a) - rank(b) || distance(a) - distance(b));
+
+  const sorted = [...objects].sort((a, b) => compare(scoreOf(a), scoreOf(b)));
   const kept = new Set<string>();
+  const waiting = new Map<string, AnyObject[]>();
   const result: AnyObject[] = [];
+  const keep = (object: AnyObject): void => {
+    if (result.length >= max || kept.has(object.id)) {
+      return;
+    }
+    kept.add(object.id);
+    result.push(object);
+    // Children that came up before their group follow it now, most relevant first.
+    const parked = waiting.get(object.id) ?? [];
+    waiting.delete(object.id);
+    parked.forEach(keep);
+  };
   for (const object of sorted) {
     if (result.length >= max) {
       break;
     }
-    const parent = parents.get(object.id);
-    if (parent && !kept.has(parent.id)) {
+    const parentId = parentOf(object);
+    if (parentId && !kept.has(parentId)) {
+      waiting.set(parentId, [...(waiting.get(parentId) ?? []), object]);
       continue;
     }
-    kept.add(object.id);
-    result.push(object);
+    keep(object);
   }
   return result;
 }

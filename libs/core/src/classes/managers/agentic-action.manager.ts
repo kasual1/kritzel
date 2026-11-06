@@ -718,7 +718,12 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       return;
     }
     this._boundMaps.add(map);
-    map.onBeforeDestroy(() => this.cancelAll(this._disposing ? 'engine-disconnected' : 'workspace-changed', map));
+    map.onBeforeDestroy(() => {
+      this.cancelAll(this._disposing ? 'engine-disconnected' : 'workspace-changed', map);
+      // The agents' histories go with the map: once it is destroyed, let them report canUndo/canRedo again.
+      queueMicrotask(() => this._core.agenticCursorManager?.refresh());
+    });
+    map.onHistoryCleared(() => this._core.agenticCursorManager?.refresh());
     // The user (or host code) wrote an object an agent is working on, e.g. a z-order change
     // or engine.updateObject: the user has taken it over, so the agent stops and keeps its progress.
     map.onLocalObjectsChange(keys => {
