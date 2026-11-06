@@ -130,14 +130,20 @@ interface KritzelShapeToolConfig {
 ```ts
 interface ObjectsAddedEvent {
   objects: KritzelBaseObject[];
+  /** Set when an agentic cursor made the change. */
+  source?: KritzelAgenticChangeSource;
 }
 
 interface ObjectsRemovedEvent {
   objects: KritzelBaseObject[];
+  /** Set when an agentic cursor made the change. */
+  source?: KritzelAgenticChangeSource;
 }
 
 interface ObjectsUpdatedEvent {
   objects: { object: KritzelBaseObject; changedProperties: Partial<KritzelBaseObject> }[];
+  /** Set when an agentic cursor made the change. */
+  source?: KritzelAgenticChangeSource;
 }
 ```
 
@@ -336,6 +342,13 @@ interface KritzelAgenticCursor {
   position: { x: number; y: number };
   attachedTo: { objectId: string; anchor: KritzelAgenticCursorAnchor; offset: { x: number; y: number } } | null;
   isMoving: boolean;
+  selectedObjectIds: string[];
+  isPressed: boolean;
+  pressCount: number;
+  activeAction: KritzelAgenticAction['type'] | null;
+  queueLength: number;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 ```
 
@@ -348,6 +361,101 @@ interface KritzelAgenticCursorDetachedEvent {
   id: string;
   objectId: string;
   reason: 'object-removed' | 'manual';
+}
+```
+
+### `KritzelAgenticAction`
+
+Passed to `performAgenticAction()`. Coordinates and sizes are in world units, angles in degrees.
+
+```ts
+type KritzelAgenticAction =
+  | { type: 'click'; target: KritzelAgenticCursorTarget; count?: 1 | 2 }
+  | { type: 'select'; objectIds: string[]; additive?: boolean }
+  | { type: 'clearSelection' }
+  | { type: 'moveObject'; objectId: string; to: KritzelAgenticCursorTarget; align?: KritzelAgenticCursorAnchor }
+  | { type: 'resizeObject'; objectId: string; width?: number; height?: number; keepAspectRatio?: boolean; handle?: KritzelAgenticResizeHandle }
+  | { type: 'rotateObject'; objectId: string; angle: number; relative?: boolean }
+  | { type: 'createShape'; x: number; y: number; width: number; height: number; shapeType?: ShapeType; text?: string; style?: KritzelAgenticShapeStyle }
+  | { type: 'createText'; x: number; y: number; text: string; style?: KritzelAgenticTextStyle }
+  | { type: 'typeText'; objectId: string; text: string; mode?: 'append' | 'replace' }
+  | { type: 'drawPath'; points: { x: number; y: number }[]; style?: KritzelAgenticStrokeStyle }
+  | { type: 'connect'; from: string; to: string; style?: KritzelAgenticLineStyle }
+  | { type: 'deleteObjects'; objectIds: string[] }
+  | { type: 'undo' }
+  | { type: 'redo' };
+
+type KritzelAgenticResizeHandle = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
+type KritzelAgenticColor = string | ThemeAwareColor;
+
+interface KritzelAgenticShapeStyle {
+  fillColor?: KritzelAgenticColor;
+  strokeColor?: KritzelAgenticColor;
+  strokeWidth?: number;
+  opacity?: number;
+  fontSize?: number;
+  fontFamily?: string;
+  fontColor?: KritzelAgenticColor;
+}
+
+interface KritzelAgenticTextStyle {
+  fontSize?: number;
+  fontFamily?: string;
+  fontColor?: KritzelAgenticColor;
+  opacity?: number;
+}
+
+interface KritzelAgenticStrokeStyle {
+  color?: KritzelAgenticColor;
+  strokeWidth?: number;
+  opacity?: number;
+}
+
+interface KritzelAgenticLineStyle extends KritzelAgenticStrokeStyle {
+  arrows?: LineArrowConfig;
+}
+```
+
+### `KritzelAgenticActionOptions`
+
+Passed to `performAgenticAction()`.
+
+```ts
+interface KritzelAgenticActionOptions {
+  speed?: number;
+  instant?: boolean;
+  signal?: AbortSignal;
+  easing?: KritzelEasing;
+}
+```
+
+### `KritzelAgenticActionResult`
+
+Returned by `performAgenticAction()`.
+
+```ts
+interface KritzelAgenticActionResult {
+  completed: boolean;
+  reason?: KritzelAgenticActionFailureReason;
+  objectIds?: string[];
+}
+
+type KritzelAgenticActionFailureReason =
+  | 'aborted' | 'interrupted' | 'cursor-removed' | 'object-removed'
+  | 'user-selected' | 'user-interaction' | 'collaborator-editing' | 'claimed-by-agent'
+  | 'workspace-changed' | 'not-allowed' | 'nothing-to-undo' | 'nothing-to-redo'
+  | 'conflict' | 'invalid-target' | 'engine-disconnected';
+```
+
+### `KritzelAgenticChangeSource`
+
+The `source` of `objectsAdded`, `objectsUpdated`, and `objectsRemoved` when an agentic cursor made the change.
+
+```ts
+interface KritzelAgenticChangeSource {
+  type: 'agentic-cursor';
+  cursorId: string;
+  actionType: KritzelAgenticAction['type'];
 }
 ```
 

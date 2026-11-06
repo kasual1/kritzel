@@ -134,10 +134,10 @@ triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. |
+| objectsAdded | ObjectsAddedEvent | Emitted when one or more objects are added to the canvas. `source` is set when an agentic cursor made the change. |
 | objectsChange | KritzelBaseObject[] | Emitted when objects on the canvas are added, removed, or modified. |
-| objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. |
-| objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. |
+| objectsRemoved | ObjectsRemovedEvent | Emitted when one or more objects are removed from the canvas. `source` is set when an agentic cursor made the change. |
+| objectsUpdated | ObjectsUpdatedEvent | Emitted when one or more objects are updated on the canvas. `source` is set when an agentic cursor made the change. |
 
 ### Methods
 
@@ -1025,6 +1025,14 @@ Returns snapshots of all agentic cursors.
 
 ```ts
 getAgenticCursors(): Promise<KritzelAgenticCursor[]>
+```
+
+#### performAgenticAction
+
+Lets an agentic cursor perform an action: it flies to the target, presses, and animates the change. Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`); the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel. Objects the user or a collaborator has selected are never changed. Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped. Rejects for an unknown cursor or an invalid action.
+
+```ts
+performAgenticAction(cursorId: string, action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
 ---

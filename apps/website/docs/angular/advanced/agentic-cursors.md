@@ -125,6 +125,105 @@ await editor?.updateAgenticCursor('planner', { status: null, color: '#16A34A' })
 
 Call `removeAgenticCursor()` to remove a single cursor, or `clearAgenticCursors()` to remove all of them. `getAgenticCursor()` and `getAgenticCursors()` return snapshots that include the current position, the attached object, and whether the cursor is moving.
 
+## Performing Actions
+
+A cursor can also work on the canvas itself. `performAgenticAction()` lets it fly to the target, press, and animate the change, for example dragging an object or drawing a stroke. The changes are saved and synced like the user's edits, but they are recorded in the cursor's own history, so the user's undo never reverts them. The cursor and the objects it selects stay local.
+
+<LiveDemo
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
+  demoPath="/advanced/agentic-cursors/actions"
+  repoFiles={['src/app/pages/advanced/agentic-cursors/agentic-cursors-actions.component.ts']}
+/>
+
+```ts
+const editor = this.editor();
+
+const result = await editor?.performAgenticAction('planner', {
+  type: 'moveObject',
+  objectId: shape.id,
+  to: { x: 400, y: 120 },
+});
+
+if (!result?.completed) {
+  console.log('Stopped:', result?.reason);
+}
+```
+
+The second argument describes the action. Coordinates and sizes are in world units:
+
+| Action | Description |
+|--------|-------------|
+| `{ type: 'click', target }` | Presses at a point or an object anchor. Nothing changes; `objectIds` contains the object under the cursor. |
+| `{ type: 'select', objectIds, additive? }` | Selects objects for the cursor. Agent selections are outlined in the cursor color and never change the user's selection. |
+| `{ type: 'clearSelection' }` | Clears the cursor's selection. |
+| `{ type: 'moveObject', objectId, to, align? }` | Drags an object so that its `align` point (default `'center'`) lands on `to`, a point or an object anchor. |
+| `{ type: 'resizeObject', objectId, width?, height?, keepAspectRatio?, handle? }` | Drags a corner handle until the object has the new size. The opposite corner stays in place. |
+| `{ type: 'rotateObject', objectId, angle, relative? }` | Turns the object with the rotation handle. `angle` is in degrees, clockwise. |
+| `{ type: 'createShape', x, y, width, height, shapeType?, text?, style? }` | Drags out a new shape and optionally types text into it. |
+| `{ type: 'createText', x, y, text, style? }` | Creates a text object and types into it. |
+| `{ type: 'typeText', objectId, text, mode? }` | Types into a text or shape. `mode: 'replace'` clears it first. |
+| `{ type: 'drawPath', points, style? }` | Draws a freehand stroke through the points. |
+| `{ type: 'connect', from, to, style? }` | Draws a line between two objects and anchors both ends, so the line follows them. |
+| `{ type: 'deleteObjects', objectIds }` | Deletes objects. |
+| `{ type: 'undo' }`, `{ type: 'redo' }` | Undoes or redoes the cursor's last action. |
+
+Objects that an action creates use the current settings of the matching tool unless you pass a `style`. Actions of one cursor run one after another, in the order you call them, while different cursors work at the same time. Use the third argument to change the pace:
+
+| Option | Type | Description |
+|--------|------|-------------|
+| speed | number | Speed in screen pixels per second. Defaults to `1200`. Also scales presses, drags, drawing, and typing. |
+| instant | boolean | Skips all animation and applies the change at once. Defaults to `false`. |
+| signal | AbortSignal | Stops the action, also while it waits for earlier actions of the cursor. Its changes are rolled back. |
+| easing | KritzelEasing | Easing of the cursor flight and of drags. Defaults to `'ease-in-out'`. |
+
+### Results and Conflicts
+
+The returned promise resolves when the action ends. `completed` is `false` when the action was refused or stopped, and `reason` says why. An unknown cursor or an invalid action rejects the promise instead.
+
+Agents never take an object away from a person:
+
+- An object that the user has selected is refused with `'user-selected'`. If the user selects or grabs an object while an agent is working on it, the agent stops with `'user-selected'` or `'user-interaction'` and keeps what it has done so far as one step of its history.
+- An object that a collaborator has selected is refused with `'collaborator-editing'`.
+- An object that another cursor is working on or has selected is refused with `'claimed-by-agent'`.
+
+The other reasons are `'aborted'`, `'interrupted'` (`moveAgenticCursor()` was called for the cursor), `'cursor-removed'`, `'object-removed'`, `'workspace-changed'`, `'not-allowed'` (the object configuration forbids resizing or rotating), `'invalid-target'`, `'conflict'`, `'nothing-to-undo'`, `'nothing-to-redo'`, and `'engine-disconnected'`. Apart from a takeover by the user, a stopped action is rolled back:
+
+```ts
+const controller = new AbortController();
+const run = editor?.performAgenticAction('planner', { type: 'drawPath', points }, { signal: controller.signal });
+
+controller.abort(); // the stroke is removed again
+```
+
+### Agent History
+
+Each cursor has its own undo history. `{ type: 'undo' }` reverts the cursor's last action and `{ type: 'redo' }` applies it again; the user's undo and redo never touch agent changes. `getAgenticCursor()` reports `canUndo` and `canRedo`, as well as `activeAction`, `queueLength`, and `selectedObjectIds`:
+
+```ts
+const cursor = await editor?.getAgenticCursor('planner');
+
+if (cursor?.canUndo) {
+  await editor?.performAgenticAction('planner', { type: 'undo' });
+}
+```
+
+### Telling Agent Changes Apart
+
+`objectsAdded`, `objectsUpdated`, and `objectsRemoved` carry a `source` when an agentic cursor made the change. It names the cursor and the action:
+
+```html
+<kritzel-editor (objectsUpdated)="onObjectsUpdated($event)"></kritzel-editor>
+```
+
+```ts
+onObjectsUpdated(event: CustomEvent<ObjectsUpdatedEvent>) {
+  const source = event.detail.source;
+  if (source) {
+    console.log(`${source.cursorId} ran ${source.actionType}`);
+  }
+}
+```
+
 ## API Details
 
 For the full list of related APIs, see the following reference sections.

@@ -8,6 +8,7 @@ import { ImportExportViewportExportPage } from "./pages/advanced/import-export/I
 import { ImportExportWorkspaceExportPage } from "./pages/advanced/import-export/ImportExportWorkspaceExportPage";
 import { ImportExportWorkspaceImportPage } from "./pages/advanced/import-export/ImportExportWorkspaceImportPage";
 import { AgenticCursorsBasicPage } from "./pages/advanced/agentic-cursors/AgenticCursorsBasicPage";
+import { AgenticCursorsActionsPage } from "./pages/advanced/agentic-cursors/AgenticCursorsActionsPage";
 import { UserManagementLoginPage } from "./pages/advanced/user-management/UserManagementLoginPage";
 import { UserManagementLogoutPage } from "./pages/advanced/user-management/UserManagementLogoutPage";
 import { UserManagementProvidersPage } from "./pages/advanced/user-management/UserManagementProvidersPage";
@@ -142,6 +143,7 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/advanced/import-export/workspace-export", title: "Workspace Export", category: "Advanced", context: "Import / Export", component: ImportExportWorkspaceExportPage },
   { path: "/advanced/import-export/workspace-import", title: "Workspace Import", category: "Advanced", context: "Import / Export", component: ImportExportWorkspaceImportPage },
   { path: "/advanced/agentic-cursors/basic", title: "Agentic Cursors", category: "Advanced", context: "Agentic Cursors", component: AgenticCursorsBasicPage },
+  { path: "/advanced/agentic-cursors/actions", title: "Agentic Actions", category: "Advanced", context: "Agentic Cursors", component: AgenticCursorsActionsPage },
 
   { path: "/customization/theming/apply", title: "Apply Themes", category: "Customization", context: "Theming", component: ThemingApplyPage },
   { path: "/customization/theming/custom", title: "Custom Themes", category: "Customization", context: "Theming", component: ThemingCustomPage },

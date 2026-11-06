@@ -43,7 +43,7 @@ Engine emits the same object/viewport/undo/awareness events plus:
 | `onActiveWorkspaceChange` | `KritzelWorkspace` | Active workspace switches (full object, unlike editor) |
 | `onObjectsInViewportChange` | `ObjectsInViewportChangeEvent` | Set of visible objects changes |
 | `onLongpress` | `PointerEvent` | Touch/pen long-press — custom mobile context menus |
-| `onObjectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState` (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
+| `onObjectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState`, `KritzelAgenticChangeSource`, the `KritzelAgenticAction*` types (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
 
 ## Canonical pattern: events → state
 
@@ -110,6 +110,8 @@ async function onTitlebarAction(detail: KritzelObjectTitlebarActionEvent) {
 ```
 
 ## Import sources for event payload types
+
+`ObjectsAddedEvent`, `ObjectsUpdatedEvent` and `ObjectsRemovedEvent` carry an optional `source` (`KritzelAgenticChangeSource`: `{ type: 'agentic-cursor', cursorId, actionType }`) when an agentic cursor made the change through `performAgenticAction`; it is absent for user, collaborator and sync changes.
 
 All common payload types are re-exported by `@kritzel/react-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/react-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 

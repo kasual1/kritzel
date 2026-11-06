@@ -39,9 +39,9 @@ All methods are async and return Promises. The `<KritzelEditor>` exposes all the
 | activeToolChange | KritzelBaseTool | Emitted when the active tool changes |
 | longpress | PointerEvent | Emitted on long-press (useful for mobile context menus) |
 | objectsChange | KritzelBaseObject[] | Emitted when objects are added, removed, or modified |
-| objectsAdded | ObjectsAddedEvent | Emitted when objects are added |
-| objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed |
-| objectsUpdated | ObjectsUpdatedEvent | Emitted when objects are updated |
+| objectsAdded | ObjectsAddedEvent | Emitted when objects are added. `source` is set when an agentic cursor made the change. |
+| objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed. `source` is set when an agentic cursor made the change. |
+| objectsUpdated | ObjectsUpdatedEvent | Emitted when objects are updated. `source` is set when an agentic cursor made the change. |
 | objectsInViewportChange | KritzelBaseObject[] | Emitted when visible objects change (after pan/zoom) |
 | objectsSelectionChange | void | Emitted when selected objects change |
 | undoStateChange | KritzelUndoState | Emitted when undo/redo availability changes |
@@ -742,6 +742,14 @@ Returns snapshots of all agentic cursors.
 
 ```ts
 getAgenticCursors(): Promise<KritzelAgenticCursor[]>
+```
+
+#### performAgenticAction
+
+Lets an agentic cursor perform an action: it flies to the target, presses, and animates the change. Changes are saved and synced like user edits but go to the cursor's own history (`{ type: 'undo' }`); the cursor and its selection stay local. Actions of one cursor run in order; different cursors run in parallel. Objects the user or a collaborator has selected are never changed. Resolves when the action ends; `completed` is `false` with a `reason` when it was refused or stopped. Rejects for an unknown cursor or an invalid action.
+
+```ts
+performAgenticAction(cursorId: string, action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
 ---

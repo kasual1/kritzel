@@ -47,7 +47,7 @@ Engine emits the same object/viewport/undo/awareness events plus:
 | `activeWorkspaceChange` | `KritzelWorkspace` | Active workspace switches (full object, unlike editor) |
 | `objectsInViewportChange` | `ObjectsInViewportChangeEvent` | Set of visible objects changes |
 | `longpress` | `PointerEvent` | Touch/pen long-press — custom mobile context menus |
-| `objectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState` (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
+| `objectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState`, `KritzelAgenticChangeSource`, the `KritzelAgenticAction*` types (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
 
 ## Canonical pattern: events → signals (OnPush)
 
@@ -122,6 +122,8 @@ async onTitlebarAction(e: CustomEvent<KritzelObjectTitlebarActionEvent>) {
 The output runs inside the Angular zone. A button's `action` callback on the config does not (the proxies set inputs outside `NgZone`), so update state from the output, or wrap work in `action` with `this.ngZone.run(() => …)`.
 
 ## Import sources for event payload types
+
+`ObjectsAddedEvent`, `ObjectsUpdatedEvent` and `ObjectsRemovedEvent` carry an optional `source` (`KritzelAgenticChangeSource`: `{ type: 'agentic-cursor', cursorId, actionType }`) when an agentic cursor made the change through `performAgenticAction`; it is absent for user, collaborator and sync changes.
 
 All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 

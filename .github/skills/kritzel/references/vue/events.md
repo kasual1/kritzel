@@ -48,7 +48,7 @@ Engine emits the same object/viewport/undo events plus:
 | `@workspacesChange` | `KritzelWorkspace[]` | Workspace list created/updated/deleted |
 | `@objectsInViewportChange` | `KritzelBaseObject[]` | Set of visible objects changes (after pan/zoom) |
 | `@longpress` | `PointerEvent` | Touch/pen long-press — custom mobile context menus |
-| `@objectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState` (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
+| `@objectTitlebarMenuStateChange` | `KritzelObjectTitlebarMenuState`, `KritzelAgenticChangeSource`, the `KritzelAgenticAction*` types (`isVisible`, `objectId?`, `elementId?`, `section?`, `items`, `anchor?`, `anchorRect?`) | A titlebar `menu` opens or closes. Only needed without the editor (which renders titlebar menus itself and does not re-emit it): render `items` at `anchor`, then call `selectObjectTitlebarMenuItem(menuItemId)` / `closeObjectTitlebarMenu()` on the engine |
 
 ## Canonical pattern: events → state
 
@@ -153,6 +153,8 @@ async function onTitlebarAction(event: Event) {
 ```
 
 ## Import sources for event payload types
+
+`ObjectsAddedEvent`, `ObjectsUpdatedEvent` and `ObjectsRemovedEvent` carry an optional `source` (`KritzelAgenticChangeSource`: `{ type: 'agentic-cursor', cursorId, actionType }`) when an agentic cursor made the change through `performAgenticAction`; it is absent for user, collaborator and sync changes.
 
 All common payload types are re-exported by `@kritzel/vue-editor`: `EditorIsReadyEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, plus the element types `HTMLKritzelEditorElement` / `HTMLKritzelEngineElement`. Import them from `@kritzel/vue-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
