@@ -55,6 +55,8 @@ export * from './classes/managers/localization.manager';
 export * from './classes/managers/object-titlebar.manager';
 export * from './classes/managers/object-config.manager';
 export * from './classes/managers/agent.manager';
+export * from './classes/managers/agent-broadcast.manager';
+export * from './classes/managers/remote-agent.manager';
 
 export * from './classes/agent/agent.class';
 export * from './classes/agent/agent-action-error.class';

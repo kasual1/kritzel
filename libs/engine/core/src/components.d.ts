@@ -5,16 +5,17 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+import { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
 import { Element, Event } from "@stencil/core";
 import { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
-export { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+export { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
 export { Element, Event } from "@stencil/core";
 export { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export namespace Components {
     /**
-     * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
-     * the objects each cursor has selected. Both are local only.
+     * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
+     * (`KritzelRemoteAgentManager`), and the outlines of the objects each agent has selected. Everything is
+     * keyed by the cursor key, so the same agent ID in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
      * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
      * the elements, so animations and object tracking don't lag a frame behind.
@@ -268,6 +269,10 @@ export namespace Components {
           * Returns the total number of objects on the canvas.
          */
         "getObjectsTotalCount": () => Promise<number>;
+        /**
+          * Returns the agents of collaborators, as shared through presence.
+         */
+        "getRemoteAgents": () => Promise<KritzelRemoteAgentPresence[]>;
         /**
           * Resolves every known term key for the active locale into a flat map. Useful for UI layers that need to localize many strings at once.
          */
@@ -676,8 +681,9 @@ export interface KritzelEngineCustomEvent<T> extends CustomEvent<T> {
 }
 declare global {
     /**
-     * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
-     * the objects each cursor has selected. Both are local only.
+     * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
+     * (`KritzelRemoteAgentManager`), and the outlines of the objects each agent has selected. Everything is
+     * keyed by the cursor key, so the same agent ID in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
      * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
      * the elements, so animations and object tracking don't lag a frame behind.
@@ -779,8 +785,9 @@ declare global {
 }
 declare namespace LocalJSX {
     /**
-     * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
-     * the objects each cursor has selected. Both are local only.
+     * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
+     * (`KritzelRemoteAgentManager`), and the outlines of the objects each agent has selected. Everything is
+     * keyed by the cursor key, so the same agent ID in two tabs never collides.
      * Structural changes (added/removed cursors, name, color, status, selections) re-render through
      * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
      * the elements, so animations and object tracking don't lag a frame behind.
@@ -890,7 +897,7 @@ declare namespace LocalJSX {
          */
         "onActiveWorkspaceChange"?: (event: KritzelEngineCustomEvent<KritzelWorkspace>) => void;
         /**
-          * Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
+          * Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion.
          */
         "onAgentsChange"?: (event: KritzelEngineCustomEvent<KritzelAgentsChangeEvent>) => void;
         /**
@@ -1122,8 +1129,9 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             /**
-             * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
-             * the objects each cursor has selected. Both are local only.
+             * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
+             * (`KritzelRemoteAgentManager`), and the outlines of the objects each agent has selected. Everything is
+             * keyed by the cursor key, so the same agent ID in two tabs never collides.
              * Structural changes (added/removed cursors, name, color, status, selections) re-render through
              * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
              * the elements, so animations and object tracking don't lag a frame behind.

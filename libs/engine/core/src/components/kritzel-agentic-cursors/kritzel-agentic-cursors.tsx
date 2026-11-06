@@ -2,6 +2,9 @@ import { Component, Host, Prop, State, h } from '@stencil/core';
 import { KritzelCore, KritzelAgenticCursor, KritzelViewportOverlayHelper } from '@kritzel/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
+/** A cursor to draw: a local agent (key = its ID) or a collaborator's agent (key = `r:<client>:<id>`). */
+type DrawnCursor = KritzelAgenticCursor & { key: string; isRemote?: boolean };
+
 interface RenderedPosition {
   x: number;
   y: number;
@@ -9,8 +12,9 @@ interface RenderedPosition {
 }
 
 /**
- * Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
- * the objects each cursor has selected. Both are local only.
+ * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
+ * (`KritzelRemoteAgentManager`), and the outlines of the objects each agent has selected. Everything is
+ * keyed by the cursor key, so the same agent ID in two tabs never collides.
  *
  * Structural changes (added/removed cursors, name, color, status, selections) re-render through
  * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
@@ -35,30 +39,38 @@ export class KritzelAgenticCursors {
   private readonly playedPressCounts = new Map<string, number>();
   private readonly renderedSelectionPoints = new Map<string, string>();
   private renderedSelectionKeys = '';
-  private removeChangeListener: (() => void) | undefined;
-  private removeFrameListener: (() => void) | undefined;
+  private unsubscribers: (() => void)[] = [];
 
   connectedCallback() {
-    const manager = this.core.agenticCursorManager;
-    this.removeChangeListener = manager.onChange(() => {
+    const local = this.core.agenticCursorManager;
+    const remote = this.core.remoteAgentManager;
+    const onChange = () => {
       this.version++;
-    });
-    this.removeFrameListener = manager.onFrame(() => {
-      this.handleFrame();
-    });
+    };
+    // Both managers run frame loops. A frame only writes positions that changed, so a second call is cheap.
+    const onFrame = () => this.handleFrame();
+    this.unsubscribers = [local.onChange(onChange), local.onFrame(onFrame)];
+    if (remote) {
+      this.unsubscribers.push(remote.onChange(onChange), remote.onFrame(onFrame));
+    }
   }
 
   disconnectedCallback() {
-    this.removeChangeListener?.();
-    this.removeChangeListener = undefined;
-    this.removeFrameListener?.();
-    this.removeFrameListener = undefined;
+    this.unsubscribers.forEach(unsubscribe => unsubscribe());
+    this.unsubscribers = [];
+  }
+
+  /** Local cursors first, then collaborators' agents. */
+  private getCursors(): DrawnCursor[] {
+    const local: DrawnCursor[] = this.core.agenticCursorManager.getAll().map(cursor => ({ ...cursor, key: cursor.id }));
+    const remote: DrawnCursor[] = this.core.remoteAgentManager?.getAll() ?? [];
+    return [...local, ...remote];
   }
 
   private handleFrame() {
     const state = this.core.store.state;
     let needsRender = false;
-    const cursorsList = this.core.agenticCursorManager.getAll();
+    const cursorsList = this.getCursors();
 
     // Selection outlines follow their objects (drags, remote changes, pan and zoom).
     const selections = this.collectSelections(cursorsList);
@@ -82,14 +94,14 @@ export class KritzelAgenticCursors {
 
       const screen = KritzelViewportOverlayHelper.worldToScreen(state, cursor.position.x, cursor.position.y);
       const inViewport = KritzelViewportOverlayHelper.isInViewport(state, screen.x, screen.y);
-      const previous = this.renderedPositions.get(cursor.id);
+      const previous = this.renderedPositions.get(cursor.key);
 
       if (previous && previous.x === screen.x && previous.y === screen.y) continue;
 
-      const element = this.cursorElements.get(cursor.id);
+      const element = this.cursorElements.get(cursor.key);
       if (inViewport && previous?.inViewport && element) {
         element.style.transform = `translate(${screen.x}px, ${screen.y}px)`;
-        this.renderedPositions.set(cursor.id, { x: screen.x, y: screen.y, inViewport });
+        this.renderedPositions.set(cursor.key, { x: screen.x, y: screen.y, inViewport });
       } else {
         needsRender = true;
       }
@@ -103,23 +115,24 @@ export class KritzelAgenticCursors {
   render() {
     void this.version;
     const state = this.core.store.state;
-    const cursors = this.core.agenticCursorManager.getAll().filter(cursor => cursor.visible);
+    const all = this.getCursors();
+    const cursors = all.filter(cursor => cursor.visible);
 
-    const renderedIds = new Set(cursors.map(cursor => cursor.id));
-    for (const id of Array.from(this.renderedPositions.keys())) {
-      if (!renderedIds.has(id)) this.renderedPositions.delete(id);
+    const renderedKeys = new Set(cursors.map(cursor => cursor.key));
+    for (const key of Array.from(this.renderedPositions.keys())) {
+      if (!renderedKeys.has(key)) this.renderedPositions.delete(key);
     }
 
     // Presses made before a cursor was first seen (or while it was hidden) don't ripple later.
-    const existingIds = new Set(this.core.agenticCursorManager.getAll().map(cursor => cursor.id));
-    for (const id of Array.from(this.playedPressCounts.keys())) {
-      if (!existingIds.has(id)) this.playedPressCounts.delete(id);
+    const existingKeys = new Set(all.map(cursor => cursor.key));
+    for (const key of Array.from(this.playedPressCounts.keys())) {
+      if (!existingKeys.has(key)) this.playedPressCounts.delete(key);
     }
-    for (const cursor of this.core.agenticCursorManager.getAll()) {
-      if (!this.playedPressCounts.has(cursor.id)) {
-        this.playedPressCounts.set(cursor.id, cursor.isPressed ? cursor.pressCount - 1 : cursor.pressCount);
+    for (const cursor of all) {
+      if (!this.playedPressCounts.has(cursor.key)) {
+        this.playedPressCounts.set(cursor.key, cursor.isPressed ? cursor.pressCount - 1 : cursor.pressCount);
       } else if (!cursor.visible) {
-        this.playedPressCounts.set(cursor.id, cursor.pressCount);
+        this.playedPressCounts.set(cursor.key, cursor.pressCount);
       }
     }
 
@@ -135,7 +148,7 @@ export class KritzelAgenticCursors {
             {selections.map(selection => (
               <polygon
                 key={`agentic-selection-${selection.key}`}
-                class="agentic-selection"
+                class={{ 'agentic-selection': true, 'is-remote': selection.isRemote }}
                 data-cursor-id={selection.cursorId}
                 data-object-id={selection.objectId}
                 points={selection.points}
@@ -148,7 +161,7 @@ export class KritzelAgenticCursors {
         {cursors.map(cursor => {
           const screen = KritzelViewportOverlayHelper.worldToScreen(state, cursor.position.x, cursor.position.y);
           const inViewport = KritzelViewportOverlayHelper.isInViewport(state, screen.x, screen.y);
-          this.renderedPositions.set(cursor.id, { x: screen.x, y: screen.y, inViewport });
+          this.renderedPositions.set(cursor.key, { x: screen.x, y: screen.y, inViewport });
 
           if (inViewport) {
             return this.renderCursor(cursor, screen.x, screen.y);
@@ -162,31 +175,38 @@ export class KritzelAgenticCursors {
     );
   }
 
-  private renderCursor(cursor: KritzelAgenticCursor, screenX: number, screenY: number) {
+  private renderCursor(cursor: DrawnCursor, screenX: number, screenY: number) {
     return (
       <div
-        key={`agentic-cursor-${cursor.id}`}
-        class={{ 'agentic-cursor': true, 'is-moving': cursor.isMoving, 'is-attached': !!cursor.attachedTo, 'is-pressed': cursor.isPressed }}
+        key={`agentic-cursor-${cursor.key}`}
+        class={{
+          'agentic-cursor': true,
+          'is-moving': cursor.isMoving,
+          'is-attached': !!cursor.attachedTo,
+          'is-pressed': cursor.isPressed,
+          'is-remote': !!cursor.isRemote,
+        }}
         data-cursor-id={cursor.id}
         style={{ transform: `translate(${screenX}px, ${screenY}px)`, '--agentic-cursor-color': cursor.color }}
-        ref={el => this.setCursorElement(cursor.id, el)}
+        ref={el => this.setCursorElement(cursor.key, el)}
       >
         {/* Re-keyed on every press so the ripple animation restarts; a played ripple is not rendered again. */}
-        {cursor.pressCount > 0 && (cursor.isPressed || cursor.pressCount > (this.playedPressCounts.get(cursor.id) ?? 0)) && (
+        {cursor.pressCount > 0 && (cursor.isPressed || cursor.pressCount > (this.playedPressCounts.get(cursor.key) ?? 0)) && (
           <span
             key={`agentic-cursor-ripple-${cursor.pressCount}`}
             class="agentic-cursor-ripple"
-            onAnimationEnd={() => this.playedPressCounts.set(cursor.id, cursor.pressCount)}
+            onAnimationEnd={() => this.playedPressCounts.set(cursor.key, cursor.pressCount)}
           ></span>
         )}
         <CursorArrow color={cursor.color} />
         {(cursor.name || cursor.status) && (
           <div class="agentic-cursor-labels">
             {cursor.name && <CursorLabel color={cursor.color} text={cursor.name} />}
+            {/* One element for every status: a new text doesn't replay the entry animation. */}
             {cursor.status && (
-              <span key={`status-${cursor.status}`} class="agentic-cursor-status">
+              <span key="status" class="agentic-cursor-status" title={cursor.status}>
                 <span class="agentic-cursor-status-dot"></span>
-                {cursor.status}
+                <span class="agentic-cursor-status-text">{cursor.status}</span>
               </span>
             )}
           </div>
@@ -195,11 +215,11 @@ export class KritzelAgenticCursors {
     );
   }
 
-  private renderEdgeIndicator(cursor: KritzelAgenticCursor, screenX: number, screenY: number) {
+  private renderEdgeIndicator(cursor: DrawnCursor, screenX: number, screenY: number) {
     const clamped = KritzelViewportOverlayHelper.clampToEdge(this.core.store.state, screenX, screenY, this.edgeIndicatorPadding);
     return (
       <EdgeIndicator
-        indicatorKey={`agentic-edge-${cursor.id}`}
+        indicatorKey={`agentic-edge-${cursor.key}`}
         x={clamped.x}
         y={clamped.y}
         angle={clamped.angle}
@@ -228,7 +248,7 @@ export class KritzelAgenticCursors {
   }
 
   /** Outlines of the objects visible cursors have selected, in screen coordinates. */
-  private collectSelections(cursors: KritzelAgenticCursor[]): RenderedSelection[] {
+  private collectSelections(cursors: DrawnCursor[]): RenderedSelection[] {
     const state = this.core.store.state;
     const objects = this.core.store.objects;
     const selections: RenderedSelection[] = [];
@@ -246,7 +266,7 @@ export class KritzelAgenticCursors {
             return `${Math.round(screen.x * 100) / 100},${Math.round(screen.y * 100) / 100}`;
           })
           .join(' ');
-        selections.push({ key: `${cursor.id}:${objectId}`, cursorId: cursor.id, objectId, color: cursor.color, points });
+        selections.push({ key: `${cursor.key}:${objectId}`, cursorId: cursor.id, objectId, color: cursor.color, points, isRemote: !!cursor.isRemote });
       }
     }
     return selections;
@@ -259,4 +279,5 @@ interface RenderedSelection {
   objectId: string;
   color: string;
   points: string;
+  isRemote: boolean;
 }

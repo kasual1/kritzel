@@ -55,7 +55,8 @@ function createActionSeeds() {
 
 const editor = getEditorRef('editor')
 const themes = [vueThemeLight, vueThemeDark]
-const syncConfig: KritzelSyncConfig = { providers: [BroadcastSyncProvider] }
+// Awareness shares presence between the tabs: each tab sees the other tab's agent and cursor.
+const syncConfig: KritzelSyncConfig = { providers: [BroadcastSyncProvider.with({ awareness: true })] }
 // One user per tab, so selections in other tabs count as collaborators.
 const tabId = Math.random().toString(36).slice(2, 8)
 const user: IKritzelUser = { id: `tab-${tabId}`, displayName: `Tab ${tabId}` }

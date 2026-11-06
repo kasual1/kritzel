@@ -106,7 +106,8 @@ export class AgentsActionsComponent {
 
   themes = [angularThemeLight, angularThemeDark];
 
-  syncConfig: KritzelSyncConfig = { providers: [BroadcastSyncProvider] };
+  // Awareness shares presence between the tabs: each tab sees the other tab's agent and cursor.
+  syncConfig: KritzelSyncConfig = { providers: [BroadcastSyncProvider.with({ awareness: true })] };
 
   // One user per tab, so selections in other tabs count as collaborators.
   user: IKritzelUser = (() => {

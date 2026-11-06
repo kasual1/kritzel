@@ -190,6 +190,14 @@ describe('KritzelEngine', () => {
       onChange: jest.fn(),
       setDisposed: jest.fn(),
     },
+    agentBroadcaster: {
+      clear: jest.fn(),
+    },
+    remoteAgentManager: {
+      getPresences: jest.fn().mockReturnValue([]),
+      onChange: jest.fn(),
+      clear: jest.fn(),
+    },
     themeManager: {
       setTargetElement: jest.fn(),
       setTheme: jest.fn(),
@@ -2965,25 +2973,32 @@ describe('KritzelEngine', () => {
   describe('agents', () => {
     it('delegates addAgent, removeAgent, getAgent and getAgents to the agent manager', async () => {
       const agent = { id: 'planner' } as any;
+      const remote = [{ id: 'writer', kind: 'agent', isRemote: true, clientId: 2 }];
       core.agentManager.get.mockReturnValue(agent);
       core.agentManager.getAll.mockReturnValue([agent]);
+      core.remoteAgentManager.getPresences.mockReturnValue(remote);
 
       await expect(engine.addAgent(agent)).resolves.toBe(agent);
       await expect(engine.removeAgent('planner')).resolves.toBe(true);
       await expect(engine.getAgent('planner')).resolves.toBe(agent);
       await expect(engine.getAgents()).resolves.toEqual([agent]);
+      await expect(engine.getRemoteAgents()).resolves.toEqual(remote);
       expect(core.agentManager.add).toHaveBeenCalledWith(agent);
       expect(core.agentManager.remove).toHaveBeenCalledWith('planner');
     });
 
-    it('emits agentsChange with the presences when the agent manager changes', () => {
-      const presences = [{ id: 'planner', kind: 'agent' }];
+    it('emits agentsChange with local agents first, then remote ones, when either manager changes', () => {
+      const presences = [{ id: 'planner', kind: 'agent', isRemote: false }];
+      const remote = [{ id: 'writer', kind: 'agent', isRemote: true, clientId: 2 }];
       core.agentManager.getPresences.mockReturnValue(presences);
-      const listener = core.agentManager.onChange.mock.calls[0][0];
+      core.remoteAgentManager.getPresences.mockReturnValue(remote);
 
-      listener();
+      core.agentManager.onChange.mock.calls[0][0]();
+      core.remoteAgentManager.onChange.mock.calls[0][0]();
 
-      expect((engine as any).agentsChange.emit).toHaveBeenCalledWith({ agents: presences });
+      const emit = (engine as any).agentsChange.emit as jest.Mock;
+      expect(emit).toHaveBeenCalledTimes(2);
+      expect(emit).toHaveBeenLastCalledWith({ agents: [...presences, ...remote] });
     });
 
     it('stops agent actions before tearing down objects on disconnect, and frees its agents', () => {
@@ -2994,6 +3009,9 @@ describe('KritzelEngine', () => {
       const destroyOrder = (core.store.objects.destroy as jest.Mock).mock.invocationCallOrder[0];
       expect(cleanupOrder).toBeLessThan(destroyOrder);
       expect(core.agentManager.setDisposed).toHaveBeenLastCalledWith(true);
+      // Collaborators stop seeing this editor's agents, and its remote agents are forgotten.
+      expect(core.agentBroadcaster.clear).toHaveBeenCalled();
+      expect(core.remoteAgentManager.clear).toHaveBeenCalled();
 
       engine.connectedCallback();
       expect(core.agentManager.setDisposed).toHaveBeenLastCalledWith(false);

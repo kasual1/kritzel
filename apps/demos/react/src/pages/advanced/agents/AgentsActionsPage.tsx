@@ -57,7 +57,8 @@ export function AgentsActionsPage() {
   const [message, setMessage] = useState("");
   const [lastChange, setLastChange] = useState("");
 
-  const syncConfig = useMemo<KritzelSyncConfig>(() => ({ providers: [BroadcastSyncProvider] }), []);
+  // Awareness shares presence between the tabs: each tab sees the other tab's agent and cursor.
+  const syncConfig = useMemo<KritzelSyncConfig>(() => ({ providers: [BroadcastSyncProvider.with({ awareness: true })] }), []);
   // One user per tab, so selections in other tabs count as collaborators.
   const user = useMemo<IKritzelUser>(() => {
     const id = Math.random().toString(36).slice(2, 8);

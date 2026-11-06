@@ -7,8 +7,9 @@
 
 ## Overview
 
-Renders agentic cursors managed by `KritzelAgenticCursorManager`, and the outlines of
-the objects each cursor has selected. Both are local only.
+Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
+(`KritzelRemoteAgentManager`), and the outlines of the objects each agent has selected. Everything is
+keyed by the cursor key, so the same agent ID in two tabs never collides.
 
 Structural changes (added/removed cursors, name, color, status, selections) re-render through
 Stencil. Per-frame movement of on-screen cursors and outlines is written directly to

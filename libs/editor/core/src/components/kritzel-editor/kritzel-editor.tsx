@@ -17,7 +17,9 @@ import {
 import "@kritzel/engine";
 import {
   KritzelAgent,
+  KritzelAgentPresence,
   KritzelAgentsChangeEvent,
+  KritzelRemoteAgentPresence,
   KritzelIconRegistry,
 } from "@kritzel/core";
 import { KritzelToolbarItem } from "@kritzel/core";
@@ -122,6 +124,8 @@ export class KritzelEditor {
   };
   @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
+  /** Whether the avatar stack shows agents (local ones and those of collaborators) after the active users. */
+  @Prop() isAgentAvatarsVisible: boolean = true;
   @Prop() toolbarItems: KritzelToolbarItem[] = [
     {
       name: "selection",
@@ -516,6 +520,7 @@ export class KritzelEditor {
   @Event()
   objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
   @State() isEngineReady: boolean = false;
+  @State() agents: KritzelAgentPresence[] = [];
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
   @State() availableWorkspaces: KritzelWorkspace[] = [];
@@ -1085,6 +1090,12 @@ export class KritzelEditor {
     return this.engineRef.getAgents();
   }
 
+  /** Returns the agents of collaborators, as shared through presence. */
+  @Method()
+  async getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]> {
+    return this.engineRef.getRemoteAgents();
+  }
+
   @Method()
   async hideContextMenu() {
     return this.engineRef.hideContextMenu();
@@ -1563,6 +1574,7 @@ export class KritzelEditor {
 
   handleAgentsChange(event: CustomEvent<KritzelAgentsChangeEvent>) {
     event.stopPropagation();
+    this.agents = event.detail.agents;
     this.agentsChange.emit(event.detail);
   }
 
@@ -2212,6 +2224,7 @@ export class KritzelEditor {
 
             <kritzel-active-users
               users={this.activeUsers}
+              agents={this.isAgentAvatarsVisible ? this.agents : []}
             ></kritzel-active-users>
 
             {shouldShowCurrentUser && (

@@ -42,6 +42,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'debugInfo',
   'user',
   'activeUsers',
+  'isAgentAvatarsVisible',
   'toolbarItems',
   'globalContextMenuItems',
   'objectContextMenuItems',

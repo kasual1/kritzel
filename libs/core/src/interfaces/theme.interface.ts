@@ -20,6 +20,7 @@ export interface KritzelTheme {
     agenticCursorSelectionFillOpacity?: string;
     agenticCursorStatusBackgroundColor?: string;
     agenticCursorStatusFontSize?: string;
+    agenticCursorStatusMaxLines?: string;
     agenticCursorStatusMaxWidth?: string;
     agenticCursorStatusTextColor?: string;
     cursorTrailColor?: string;
@@ -45,6 +46,9 @@ export interface KritzelTheme {
 
   /** Active users variables */
   activeUsers?: {
+    agentBadgeBackground?: string;
+    agentBadgeColor?: string;
+    agentRingWidth?: string;
     avatarBorderColor?: string;
     fontFamily?: string;
     overflowColor?: string;

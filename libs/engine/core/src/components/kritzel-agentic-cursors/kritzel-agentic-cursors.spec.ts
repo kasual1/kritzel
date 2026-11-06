@@ -179,4 +179,27 @@ describe('KritzelAgenticCursors', () => {
     frameListener!();
     expect(component.version).toBe(versionBefore + 1);
   });
+
+  it("draws collaborators' agents next to local ones without mixing up equal IDs", () => {
+    objects.set('a', createObject('a', 0, 0, 10, 5));
+    const remote = { ...createCursor({ selectedObjectIds: ['a'], status: 'Remote work' }), key: 'r:7:agent', clientId: 7, isRemote: true };
+    (component.core as any).remoteAgentManager = { getAll: () => [remote], onChange: () => () => undefined, onFrame: () => () => undefined };
+
+    const root = component.render() as unknown as VNode;
+    const drawn = flatten(root).filter(node => node.$attrs$?.['data-cursor-id'] === 'agent' && node.$key$?.startsWith('agentic-cursor-'));
+
+    expect(drawn.map(node => node.$key$)).toEqual(['agentic-cursor-agent', 'agentic-cursor-r:7:agent']);
+    expect(byClass(root, 'is-remote').length).toBeGreaterThanOrEqual(2); // the cursor and its dashed outline
+    expect(byClass(root, 'agentic-cursor-status-text')[0].$children$?.[0]).toMatchObject({ $text$: 'Remote work' });
+  });
+
+  it('keeps the status element when the status text changes, so it does not animate in again', () => {
+    cursors = [createCursor({ status: 'One' })];
+    const first = byClass(component.render() as unknown as VNode, 'agentic-cursor-status')[0];
+    cursors = [createCursor({ status: 'Two' })];
+    const second = byClass(component.render() as unknown as VNode, 'agentic-cursor-status')[0];
+
+    expect(first.$key$).toBe('status');
+    expect(second.$key$).toBe('status');
+  });
 });

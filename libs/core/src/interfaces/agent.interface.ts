@@ -227,3 +227,34 @@ export interface KritzelCanvasSnapshot {
   truncated?: true;
 }
 
+// ─── Presence ─────────────────────────────────────────────────────────────────
+
+/** One agent in the awareness field `agents` that a client shares with collaborators. @internal */
+export interface KritzelAwarenessAgent {
+  id: string;
+  name: string;
+  color: string;
+  avatarUrl?: string;
+  status: string | null;
+  visible: boolean;
+  activeAction: string | null;
+  queueLength: number;
+  /** World position, rounded to 0.1. */
+  position: KritzelPoint;
+  attachedTo: KritzelAgenticAttachment | null;
+  isPressed: boolean;
+  pressCount: number;
+  /** Objects the agent shows as selected. */
+  selectedObjectIds: string[];
+  /** Objects of the agent's running action. */
+  claimedObjectIds: string[];
+}
+
+/** An agent of a collaborator as shown in avatar stacks and `agentsChange` (`isRemote: true`). */
+export interface KritzelRemoteAgentPresence extends KritzelAgentPresence {
+  isRemote: true;
+  /** Awareness client ID of the collaborator's tab. */
+  clientId: number;
+  /** The collaborator whose tab runs the agent, when known. */
+  hostUser?: { id: string; displayName?: string; color?: string };
+}

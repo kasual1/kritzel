@@ -83,10 +83,10 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  /* As wide as the status on one line, up to the max width; longer statuses wrap or clamp inside. */
+  width: max-content;
   max-width: var(--kritzel-agentic-cursor-status-max-width, var(--kritzel-global-agentic-cursor-status-max-width, 240px));
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
   font-family: var(--_cursor-font-family);
   font-size: var(--kritzel-agentic-cursor-status-font-size, var(--kritzel-global-agentic-cursor-status-font-size, 12px));
   line-height: 1.4;
@@ -161,4 +161,20 @@
     opacity: 0.6;
     transform: scale(0.6);
   }
+}
+
+/* Long statuses wrap up to --kritzel-agentic-cursor-status-max-lines lines (1 by default) and end with an ellipsis. */
+.agentic-cursor-status-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--kritzel-agentic-cursor-status-max-lines, var(--kritzel-global-agentic-cursor-status-max-lines, 1));
+  line-clamp: var(--kritzel-agentic-cursor-status-max-lines, var(--kritzel-global-agentic-cursor-status-max-lines, 1));
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+/* Agents of collaborators: dashed outlines, so local and remote work stand apart. */
+.agentic-selection.is-remote {
+  stroke-dasharray: 6 4;
 }

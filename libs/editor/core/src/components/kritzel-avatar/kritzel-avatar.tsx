@@ -114,6 +114,7 @@ export class KritzelAvatar {
       <Host
         style={containerStyles}
         class={{
+          'is-agent': this.user?.kind === 'agent',
           'has-image': !!showImage,
           'has-initials': !!showInitials,
           'has-default': !!showDefaultIcon,
@@ -146,7 +147,11 @@ export class KritzelAvatar {
         {showDefaultIcon && (
           <span class="avatar-default">
             <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              {this.user?.kind === 'agent' ? (
+                <path d="M12 2a1.5 1.5 0 0 1 1.5 1.5c0 .55-.3 1.03-.75 1.29V6h3.75A3.5 3.5 0 0 1 20 9.5V16a3.5 3.5 0 0 1-3.5 3.5h-9A3.5 3.5 0 0 1 4 16V9.5A3.5 3.5 0 0 1 7.5 6h3.75V4.79A1.5 1.5 0 0 1 12 2zm-3 9a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm6 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z" />
+              ) : (
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+              )}
             </svg>
           </span>
         )}

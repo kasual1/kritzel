@@ -55,6 +55,7 @@ import {
   KritzelViewportState,
   KritzelAgent,
   KritzelAgentsChangeEvent,
+  KritzelRemoteAgentPresence,
   KritzelObjectChangeSource,
   ObjectHelper,
   KritzelWheelHelper,
@@ -428,7 +429,8 @@ export class KritzelEngine implements KritzelEngineHost {
 
   /**
    * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
-   * (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
+   * (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of
+   * collaborators (`isRemote: true`). Never emitted for plain cursor motion.
    */
   @Event() agentsChange!: EventEmitter<KritzelAgentsChangeEvent>;
 
@@ -1533,6 +1535,12 @@ export class KritzelEngine implements KritzelEngineHost {
     return this.core.agentManager.getAll();
   }
 
+  /** Returns the agents of collaborators, as shared through presence. */
+  @Method()
+  async getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]> {
+    return this.core.remoteAgentManager.getPresences();
+  }
+
   /**
    * Captures a screenshot of the current viewport as a data URL.
    * @param format - The image format: `'png'` (default) or `'svg'`.
@@ -2609,7 +2617,10 @@ export class KritzelEngine implements KritzelEngineHost {
 
   constructor() {
     this.core = new KritzelCore(this);
-    this.core.agentManager.onChange(() => this.agentsChange?.emit({ agents: this.core.agentManager.getPresences() }));
+    const emitAgents = () =>
+      this.agentsChange?.emit({ agents: [...this.core.agentManager.getPresences(), ...this.core.remoteAgentManager.getPresences()] });
+    this.core.agentManager.onChange(emitAgents);
+    this.core.remoteAgentManager.onChange(emitAgents);
   }
 
   connectedCallback() {
@@ -2639,8 +2650,10 @@ export class KritzelEngine implements KritzelEngineHost {
       });
     }
 
-    // Clear cursor position in awareness before destroying
+    // Clear cursor position and agents in awareness before destroying
     this.core.store.objects?.clearCursorPosition();
+    this.core.agentBroadcaster.clear();
+    this.core.remoteAgentManager.clear();
 
     // Clean up current workspace's ObjectMap
     if (this.core.store.objects) {

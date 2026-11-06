@@ -20,6 +20,7 @@ import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelAgentOrigin } from './agent-origin.class';
 import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
+import type { KritzelAwarenessAgent } from '../../interfaces/agent.interface';
 
 /** Per-agent history of an agentic cursor. */
 interface KritzelAgentHistory {
@@ -211,6 +212,17 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       displayName,
       color: user.color || KritzelUserColorHelper.generateColorFromName(displayName),
     });
+  }
+
+  /**
+   * Shares the agents of this client with collaborators (awareness field `agents`); `null` or an
+   * empty list removes the field. No-op without awareness and for background maps.
+   */
+  setLocalAgents(agents: KritzelAwarenessAgent[] | null): void {
+    if (!this._awareness || this._headless) {
+      return;
+    }
+    this._awareness.setLocalStateField('agents', agents && agents.length > 0 ? agents : null);
   }
 
   /**
@@ -547,9 +559,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this._networkSyncPromise = networkConnectPromises.length > 0 ? Promise.allSettled(networkConnectPromises).then(() => undefined) : null;
     this._isReady = true;
 
-    // Find the first provider that exposes awareness (network providers)
-    // Awareness is available immediately after provider construction, before connect() resolves
-    for (const provider of networkProviders) {
+    // Find the first provider that exposes awareness: network providers first, then local ones that opt in
+    // (BroadcastSyncProvider.with({ awareness: true })). Awareness exists right after construction.
+    for (const provider of [...networkProviders, ...localProviders]) {
       if (provider.awareness) {
         this._awareness = provider.awareness;
         break;

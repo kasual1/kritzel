@@ -85,6 +85,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | getObjectById | getObjectById<T extends KritzelBaseObject>(id: string) => Promise<T \| null> | Retrieves a canvas object by its unique ID. |
 | getObjectsInViewport | getObjectsInViewport() => Promise<KritzelBaseObject[]> | Returns all objects currently visible within the viewport bounds. |
 | getObjectsTotalCount | getObjectsTotalCount() => Promise<number> | Returns the total number of objects on the canvas. |
+| getRemoteAgents | getRemoteAgents() => Promise<KritzelRemoteAgentPresence[]> | Returns the agents of collaborators, as shared through presence. |
 | getResolvedTerms | getResolvedTerms() => Promise<Partial<Record<KritzelTermKey, string>>> | Resolves every known term key for the active locale into a flat map. Useful for UI layers that need to localize many strings at once. |
 | getScreenshot | getScreenshot(format?: "png" \| "svg") => Promise<string \| null> | Captures a screenshot of the current viewport as a data URL. |
 | getSelectedObjectSupportedExportFormats | getSelectedObjectSupportedExportFormats() => Promise<KritzelObjectExportFormat[]> | Returns export formats supported by the currently selected object. Only returns formats when exactly one object is selected. |
@@ -138,7 +139,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | --- | --- | --- |
 | activeToolChange | KritzelBaseTool | Emitted when the active drawing tool changes. |
 | activeWorkspaceChange | KritzelWorkspace | Emitted when the active workspace changes (e.g., after import). |
-| agentsChange | KritzelAgentsChangeEvent | Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion. |
+| agentsChange | KritzelAgentsChangeEvent | Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of collaborators (\`isRemote: true\`). Never emitted for plain cursor motion. |
 | awarenessChange | Map<number, Record<string, any>> | Emitted when the awareness state changes (remote user cursors, presence). |
 | contextMenuStateChange | KritzelContextMenuState | Emitted when context-menu visibility, items, or position changes. |
 | isEngineReady | KritzelEngineState | Emitted when the engine has fully initialized and is ready for interaction. |
@@ -174,6 +175,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | editorId | string |  | Optional unique identifier for namespacing storage keys across multiple editor instances. |
 | fallbackLocale | "de" \| "en" \| "fr" \| string & {} |  | The locale used to resolve terms missing from the active locale. |
 | globalContextMenuItems | ContextMenuItem[] |  |  |
+| isAgentAvatarsVisible | boolean |  | Whether the avatar stack shows agents (local ones and those of collaborators) after the active users. |
 | isChatBoxLoading | boolean |  | Whether the chat box shows its progress ring and turns its send button into a stop button. |
 | isChatBoxVisible | boolean |  |  |
 | isMoreMenuVisible | boolean |  |  |
@@ -254,6 +256,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | getObjectById | getObjectById<T extends KritzelBaseObject>(id: string) => Promise<T \| null> |  |
 | getObjectsInViewport | getObjectsInViewport() => Promise<KritzelBaseObject[]> |  |
 | getObjectsTotalCount | getObjectsTotalCount() => Promise<number> |  |
+| getRemoteAgents | getRemoteAgents() => Promise<KritzelRemoteAgentPresence[]> | Returns the agents of collaborators, as shared through presence. |
 | getScreenshot | getScreenshot(format?: "png" \| "svg") => Promise<string \| null> |  |
 | getSelectedObjectSupportedExportFormats | getSelectedObjectSupportedExportFormats() => Promise<KritzelObjectExportFormat[]> |  |
 | getSelectedObjects | getSelectedObjects() => Promise<KritzelBaseObject[]> |  |

@@ -24,6 +24,8 @@ import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
 import { KritzelAgenticActionManager } from '../managers/agentic-action.manager';
 import { KritzelAgentManager } from '../managers/agent.manager';
+import { KritzelAgentBroadcaster } from '../managers/agent-broadcast.manager';
+import { KritzelRemoteAgentManager } from '../managers/remote-agent.manager';
 import { KritzelObjectTitlebarManager } from '../managers/object-titlebar.manager';
 import { KritzelObjectConfigManager } from '../managers/object-config.manager';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -82,6 +84,8 @@ export class KritzelCore {
   /** Runs actions performed by agentic cursors */
   private readonly _agenticActionManager: KritzelAgenticActionManager;
   private readonly _agentManager: KritzelAgentManager;
+  private readonly _agentBroadcaster: KritzelAgentBroadcaster;
+  private readonly _remoteAgentManager: KritzelRemoteAgentManager;
   /** Manager for titlebars rendered above objects */
   private readonly _objectTitlebarManager: KritzelObjectTitlebarManager;
   private readonly _objectConfigManager: KritzelObjectConfigManager;
@@ -209,6 +213,16 @@ export class KritzelCore {
     return this._agentManager;
   }
 
+  /** Shares the local agents with collaborators. */
+  get agentBroadcaster(): KritzelAgentBroadcaster {
+    return this._agentBroadcaster;
+  }
+
+  /** The agents of collaborators. */
+  get remoteAgentManager(): KritzelRemoteAgentManager {
+    return this._remoteAgentManager;
+  }
+
   /**
    * Gets the editor ID used for namespacing storage keys.
    * @returns The editor ID or undefined if not set
@@ -269,6 +283,9 @@ export class KritzelCore {
     this._agenticCursorManager = new KritzelAgenticCursorManager(this);
     this._agenticActionManager = new KritzelAgenticActionManager(this);
     this._agentManager = new KritzelAgentManager(this);
+    this._agentBroadcaster = new KritzelAgentBroadcaster(this);
+    this._remoteAgentManager = new KritzelRemoteAgentManager(this);
+    this._agentBroadcaster.start();
     this._objectTitlebarManager = new KritzelObjectTitlebarManager(this);
     this._objectConfigManager = new KritzelObjectConfigManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
@@ -469,8 +486,13 @@ export class KritzelCore {
       objectsMap.setLocalUser(this._user);
     }
 
+    // Each workspace has its own awareness: share the agents there and forget the old workspace's.
+    this._remoteAgentManager.clear();
+    this._agentBroadcaster.reset();
+
     // Forward awareness changes to the engine as events
     objectsMap.onAwarenessChange(states => {
+      this._remoteAgentManager.handleAwarenessStates(states as Map<number, Record<string, unknown>>, objectsMap.localClientId);
       this.engine.emitAwarenessChange(states);
     });
 

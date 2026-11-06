@@ -56,7 +56,8 @@ const SILENT_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new Set([
  * through core APIs under the cursor's own transaction origin, so agent changes sync like user
  * edits but land in a separate per-agent history. Before an action starts and on every frame
  * while it runs, its objects are checked for conflicts with the local user, collaborators and
- * other agents. Agent selections and claims exist only in this manager and are never synced.
+ * other agents. Agent selections and claims are shared with collaborators as presence (awareness), never
+ * synced as objects.
  */
 export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   private readonly _core: KritzelCore;
@@ -145,9 +146,14 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     });
   }
 
-  /** Whether another cursor's running action or selection covers the object. */
+  /** Whether another cursor's running action or selection covers the object, here or in a collaborator's tab. */
   isClaimedByOtherAgent(objectId: string, cursorId: string): boolean {
     return this.isClaimedByOther(objectId, cursorId, 'target');
+  }
+
+  /** The objects the running action of a cursor works on (with group relatives), for presence. */
+  getClaimedObjectIds(cursorId: string): string[] {
+    return Array.from(this._runClaims.get(cursorId) ?? []);
   }
 
   /** The explicit (`select`) selection of a cursor. */
@@ -592,9 +598,13 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 
   /**
    * Whether another cursor claims the object. Targets conflict with other cursors' running actions,
-   * references and selections; references only conflict with other cursors' running actions.
+   * references and selections; references only conflict with other cursors' running actions. Agents of
+   * collaborators count too (people never block on agents: they are checked elsewhere).
    */
   private isClaimedByOther(objectId: string, cursorId: string, kind: 'target' | 'reference'): boolean {
+    if (this._core.remoteAgentManager?.isClaimed(objectId, kind)) {
+      return true;
+    }
     for (const [owner, claims] of this._runClaims) {
       if (owner !== cursorId && claims.has(objectId)) {
         return true;

@@ -107,6 +107,8 @@ export type {
     KritzelCanvasObject,
     KritzelCanvasSnapshot,
     KritzelObserveOptions,
+    KritzelRemoteAgentPresence,
+    BroadcastSyncOptions,
     KritzelAgentOptions,
     KritzelAgentState,
     KritzelAgentDetachedEvent,

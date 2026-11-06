@@ -15,12 +15,14 @@ type Agent = {
   select(objectIds: string[], options?: unknown): Promise<ActionResult>;
   moveObject(objectId: string, to: unknown, options?: unknown): Promise<ActionResult>;
 };
-type AgentConstructor = new (options: { id?: string; name: string; color?: string }) => Agent;
+type AgentConstructor = new (options: { id?: string; name: string; color?: string; broadcast?: boolean }) => Agent;
 
 type EditorElement = HTMLElement & {
   addAgent(agent: Agent): Promise<Agent>;
   getAgent(id: string): Promise<Agent | null>;
   getAgents(): Promise<Agent[]>;
+  removeAgent(id: string): Promise<boolean>;
+  getRemoteAgents(): Promise<{ id: string; isRemote: true }[]>;
   findObjects(predicate: (obj: any) => boolean): Promise<any[]>;
   getAllObjects(): Promise<any[]>;
   selectObjects(objects: unknown[]): Promise<void>;
@@ -96,43 +98,91 @@ test.describe('Agent Actions', () => {
   });
 
   test.describe('in two tabs', () => {
-    test('syncs agent changes but never the agent cursor or its selection', async ({ page }) => {
+    test("shows the other tab's agents as presence, never as objects", async ({ page }) => {
       const pageB = await page.context().newPage();
       await openActionsPage(page);
       await openActionsPage(pageB);
       const agentId = `agent-a-${Date.now()}`;
+      const privateId = `private-${Date.now()}`;
       const before = await translateXOf(page, RECTANGLE_ID);
 
       const result = await page.evaluate(
-        async ({ agentId, id }) => {
+        async ({ agentId, privateId, id }) => {
           const editor = document.querySelector('kritzel-editor') as EditorElement;
           const KritzelAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
+          // broadcast: false keeps an agent in this tab only.
+          await editor.addAgent(new KritzelAgent({ id: privateId, name: 'Private', broadcast: false }));
           const agent = await editor.addAgent(new KritzelAgent({ id: agentId, name: 'Agent A' }));
           await agent.select([id], { instant: true });
           return agent.moveObject(id, { x: 300, y: -60 }, { instant: true });
         },
-        { agentId, id: RECTANGLE_ID },
+        { agentId, privateId, id: RECTANGLE_ID },
       );
       expect(result.completed).toBe(true);
       const after = await translateXOf(page, RECTANGLE_ID);
       expect(after).not.toBeCloseTo(before, 1);
 
-      // Tab B receives the change...
+      // Tab B receives the change, the agent's cursor, its selection outline and its avatar...
       await expect.poll(() => translateXOf(pageB, RECTANGLE_ID)).toBeCloseTo(after, 5);
-      // ...but no cursor, outline or selection group of the agent.
       const overlayB = pageB.locator('kritzel-agentic-cursors');
-      await expect(overlayB.locator(`[data-cursor-id="${agentId}"]`)).toHaveCount(0);
-      await expect(overlayB.locator('.agentic-selection')).toHaveCount(0);
-      const inB = await pageB.evaluate(async id => {
-        const editor = document.querySelector('kritzel-editor') as EditorElement;
-        const groups = (await editor.getAllObjects()).filter(o => o.__class__ === 'KritzelSelectionGroup');
-        const agent = await editor.getAgent(id);
-        return { agent: agent ? agent.state : null, groups: groups.length };
-      }, agentId);
-      expect(inB).toEqual({ agent: null, groups: 0 });
+      await expect(overlayB.locator(`.agentic-cursor.is-remote[data-cursor-id="${agentId}"]`)).toHaveCount(1);
+      await expect(overlayB.locator(`.agentic-selection.is-remote[data-cursor-id="${agentId}"]`)).toHaveCount(1);
+      await expect(pageB.locator(`kritzel-active-users .avatar-wrapper.is-agent.is-remote[data-agent-id="${agentId}"]`)).toHaveCount(1);
+      // ...never the private agent, and nothing as objects: the agent is not added in tab B.
+      await expect(overlayB.locator(`[data-cursor-id="${privateId}"]`)).toHaveCount(0);
+      await expect(pageB.locator(`kritzel-active-users [data-agent-id="${privateId}"]`)).toHaveCount(0);
+      const inB = await pageB.evaluate(
+        async ({ agentId, privateId }) => {
+          const editor = document.querySelector('kritzel-editor') as EditorElement;
+          const groups = (await editor.getAllObjects()).filter(o => o.__class__ === 'KritzelSelectionGroup');
+          const remote = await editor.getRemoteAgents();
+          return {
+            added: (await editor.getAgent(agentId)) !== null,
+            groups: groups.length,
+            remote: remote.filter(agent => agent.id === agentId || agent.id === privateId).map(agent => ({ id: agent.id, isRemote: agent.isRemote })),
+          };
+        },
+        { agentId, privateId },
+      );
+      expect(inB).toEqual({ added: false, groups: 0, remote: [{ id: agentId, isRemote: true }] });
 
-      // Tab A still shows its own agent's selection.
-      await expect(page.locator('kritzel-agentic-cursors').locator(`.agentic-selection[data-cursor-id="${agentId}"]`)).toHaveCount(1);
+      // Removing the agent in tab A removes it from tab B.
+      await page.evaluate(async id => {
+        const editor = document.querySelector('kritzel-editor') as EditorElement;
+        await editor.removeAgent(id);
+      }, agentId);
+      await expect(overlayB.locator(`[data-cursor-id="${agentId}"]`)).toHaveCount(0);
+      await expect(pageB.locator(`kritzel-active-users [data-agent-id="${agentId}"]`)).toHaveCount(0);
+      await pageB.close();
+    });
+
+    test("refuses objects the other tab's agent has selected", async ({ page }) => {
+      const pageB = await page.context().newPage();
+      await openActionsPage(page);
+      await openActionsPage(pageB);
+      const agentId = `agent-b-${Date.now()}`;
+
+      await pageB.evaluate(
+        async ({ agentId, id }) => {
+          const editor = document.querySelector('kritzel-editor') as EditorElement;
+          const KritzelAgent = (await editor.getAgents())[0].constructor as AgentConstructor;
+          const agent = await editor.addAgent(new KritzelAgent({ id: agentId, name: 'Agent B' }));
+          await agent.select([id], { instant: true });
+        },
+        { agentId, id: ELLIPSE_ID },
+      );
+      // Wait until tab A sees tab B's agent selection.
+      await expect(page.locator(`kritzel-agentic-cursors .agentic-selection.is-remote[data-cursor-id="${agentId}"]`)).toHaveCount(1);
+
+      const before = await translateXOf(page, ELLIPSE_ID);
+      const result = await page.evaluate(async id => {
+        const editor = document.querySelector('kritzel-editor') as EditorElement;
+        const agent = (await editor.getAgents())[0];
+        return agent.moveObject(id, { x: 300, y: 300 }, { instant: true });
+      }, ELLIPSE_ID);
+
+      expect(result).toEqual({ completed: false, reason: 'claimed-by-agent', objectIds: [ELLIPSE_ID] });
+      expect(await translateXOf(page, ELLIPSE_ID)).toBeCloseTo(before, 5);
       await pageB.close();
     });
 
