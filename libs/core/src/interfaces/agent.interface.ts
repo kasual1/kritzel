@@ -99,13 +99,13 @@ export interface KritzelAgentPresence {
   visible: boolean;
   activeAction: KritzelAgenticActionType | null;
   queueLength: number;
-  /** `true` for agents of collaborators. */
-  isRemote: boolean;
+  /** `false`: an agent added to this editor. Agents of collaborators are `KritzelRemoteAgentPresence` (`true`). */
+  isRemote: false;
 }
 
-/** Detail of the `agentsChange` event. */
+/** Detail of the `agentsChange` event: the agents of this editor, then those of collaborators. Narrow with `isRemote`. */
 export interface KritzelAgentsChangeEvent {
-  agents: KritzelAgentPresence[];
+  agents: (KritzelAgentPresence | KritzelRemoteAgentPresence)[];
 }
 
 // ─── LLM tools ────────────────────────────────────────────────────────────────
@@ -251,7 +251,7 @@ export interface KritzelAwarenessAgent {
 }
 
 /** An agent of a collaborator as shown in avatar stacks and `agentsChange` (`isRemote: true`). */
-export interface KritzelRemoteAgentPresence extends KritzelAgentPresence {
+export interface KritzelRemoteAgentPresence extends Omit<KritzelAgentPresence, 'isRemote'> {
   isRemote: true;
   /** Awareness client ID of the collaborator's tab. */
   clientId: number;

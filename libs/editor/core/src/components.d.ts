@@ -31,7 +31,7 @@ export namespace Components {
           * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge, a ring while they work and their status in the tooltip.
           * @default []
          */
-        "agents": KritzelAgentPresence[];
+        "agents": (KritzelAgentPresence | KritzelRemoteAgentPresence)[];
         /**
           * Avatar size in pixels
           * @default 40
@@ -2051,7 +2051,7 @@ declare namespace LocalJSX {
           * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge, a ring while they work and their status in the tooltip.
           * @default []
          */
-        "agents"?: KritzelAgentPresence[];
+        "agents"?: (KritzelAgentPresence | KritzelRemoteAgentPresence)[];
         /**
           * Avatar size in pixels
           * @default 40

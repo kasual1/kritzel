@@ -1,7 +1,7 @@
 ﻿import { Component, Host, h, Prop } from '@stencil/core';
-import { IKritzelUser, KritzelAgentPresence } from '@kritzel/core';
+import { IKritzelUser, KritzelAgentPresence, KritzelRemoteAgentPresence } from '@kritzel/core';
 
-type StackEntry = { kind: 'user'; user: IKritzelUser } | { kind: 'agent'; agent: KritzelAgentPresence & { hostUser?: { displayName?: string } } };
+type StackEntry = { kind: 'user'; user: IKritzelUser } | { kind: 'agent'; agent: KritzelAgentPresence | KritzelRemoteAgentPresence };
 
 @Component({
   tag: 'kritzel-active-users',
@@ -18,7 +18,7 @@ export class KritzelActiveUsers {
    * Agents to display after the users: local agents and agents of collaborators. Shown with a bot badge,
    * a ring while they work and their status in the tooltip.
    */
-  @Prop() agents: KritzelAgentPresence[] = [];
+  @Prop() agents: (KritzelAgentPresence | KritzelRemoteAgentPresence)[] = [];
 
   /**
    * Avatar size in pixels
@@ -56,7 +56,10 @@ export class KritzelActiveUsers {
   }
 
   private entryKey(entry: StackEntry): string {
-    return entry.kind === 'user' ? `user-${entry.user.id}` : `agent-${entry.agent.isRemote ? 'remote' : 'local'}-${entry.agent.id}-${(entry.agent as { clientId?: number }).clientId ?? ''}`;
+    if (entry.kind === 'user') {
+      return `user-${entry.user.id}`;
+    }
+    return entry.agent.isRemote ? `agent-remote-${entry.agent.clientId}-${entry.agent.id}` : `agent-local-${entry.agent.id}`;
   }
 
   private renderTooltip(entry: StackEntry) {
@@ -64,7 +67,7 @@ export class KritzelActiveUsers {
       return <span class="avatar-tooltip">{this.getDisplayName(entry.user)}</span>;
     }
     const { agent } = entry;
-    const host = agent.hostUser?.displayName;
+    const host = agent.isRemote ? agent.hostUser?.displayName : undefined;
     return (
       <span class="avatar-tooltip agent-tooltip">
         <span class="agent-tooltip-name">{agent.name}</span>

@@ -132,6 +132,30 @@ describe('agent presence', () => {
       expect(JSON.stringify(sentAgents(map)).length).toBeLessThan(2000);
     });
 
+    it('sends status changes through the throttle, but renames at once', async () => {
+      const { core, map } = createCore();
+      core.agentBroadcaster.start();
+      const agent = core.agentManager.add(new KritzelAgent({ id: 'a', name: 'A' }));
+      await flushMicrotasks();
+      const afterAdd = map.setLocalAgents.mock.calls.length;
+
+      for (let step = 0; step < 20; step++) {
+        now += 5;
+        agent.setStatus(`Step ${step}`);
+        await flushMicrotasks();
+        jest.advanceTimersByTime(5);
+      }
+      now += AGENT_BROADCAST_INTERVAL_MS;
+      jest.advanceTimersByTime(AGENT_BROADCAST_INTERVAL_MS);
+
+      expect(map.setLocalAgents.mock.calls.length - afterAdd).toBeLessThanOrEqual(2);
+      expect(sentAgents(map)[0].status).toBe('Step 19');
+
+      agent.name = 'Renamed';
+      await flushMicrotasks();
+      expect(sentAgents(map)[0].name).toBe('Renamed');
+    });
+
     it('clears the field and sends again after a workspace switch', async () => {
       const { core, map } = createCore();
       core.agentBroadcaster.start();
@@ -228,6 +252,21 @@ describe('agent presence', () => {
       expect(core.remoteAgentManager.isClaimed('sel', 'target')).toBe(true);
       expect(core.remoteAgentManager.isClaimed('sel', 'reference')).toBe(false);
       expect(core.agenticActionManager.isClaimedByOtherAgent('claim', 'local-agent')).toBe(true);
+    });
+
+    it('falls back to the center for anchors it does not know and keeps the other cursors moving', () => {
+      const { core, map } = createCore();
+      map.findById.mockReturnValue({ rotation: 0, boundingBox: { x: 0, y: 0, width: 100, height: 100 } });
+      const frame = jest.fn();
+      core.remoteAgentManager.onFrame(frame);
+      core.remoteAgentManager.handleAwarenessStates(
+        new Map([[2, { agents: [remoteAgent({ attachedTo: { objectId: 'shape', anchor: 'toString', offset: { x: 0, y: 0 } } }), remoteAgent({ id: 'other' })] }]]),
+        1,
+      );
+
+      expect(() => core.remoteAgentManager.tick(now + 1)).not.toThrow();
+      expect(frame).toHaveBeenCalled();
+      expect(core.remoteAgentManager.getAll()[0]).toMatchObject({ attachedTo: { anchor: 'center' }, position: { x: 50, y: 50 } });
     });
 
     it('glides to new positions within one update interval', () => {

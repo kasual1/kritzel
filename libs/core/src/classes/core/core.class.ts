@@ -495,6 +495,11 @@ export class KritzelCore {
       this._remoteAgentManager.handleAwarenessStates(states as Map<number, Record<string, unknown>>, objectsMap.localClientId);
       this.engine.emitAwarenessChange(states);
     });
+    // Collaborators that were there before this workspace loaded only send again when their state changes.
+    const awareness = objectsMap.awareness;
+    if (awareness) {
+      this._remoteAgentManager.handleAwarenessStates(awareness.getStates() as Map<number, Record<string, unknown>>, objectsMap.localClientId);
+    }
 
     // Rebuild anchor index after loading objects
     this._anchorManager.rebuildIndex();

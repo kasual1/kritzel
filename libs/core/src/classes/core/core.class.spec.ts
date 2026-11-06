@@ -2648,6 +2648,23 @@ describe('KritzelCore', () => {
       localStorage.removeItem(STORAGE_KEY);
     });
 
+    it('picks up the agents of collaborators that were there before the workspace loaded', async () => {
+      const ws = createWorkspace('ws-presence', 'Presence', new Date('2025-06-01'));
+      mockObjectsMap.localClientId = 1;
+      mockObjectsMap.awareness = {
+        getStates: () =>
+          new Map<number, Record<string, unknown>>([
+            [1, { agents: [{ id: 'mine', name: 'Mine', color: '#000', position: { x: 0, y: 0 } }] }],
+            [2, { agents: [{ id: 'writer', name: 'Writer', color: '#7C3AED', position: { x: 0, y: 0 } }] }],
+          ]),
+      };
+
+      await core.initializeWorkspace(ws);
+
+      expect(core.remoteAgentManager.getPresences()).toEqual([expect.objectContaining({ id: 'writer', isRemote: true, clientId: 2 })]);
+      core.remoteAgentManager.clear();
+    });
+
     it('should use the provided workspace when one is passed', async () => {
       const ws = createWorkspace('ws-explicit', 'Explicit', new Date('2025-06-01'));
       mockAppStateMap.allWorkspaces.mockReturnValue([]);

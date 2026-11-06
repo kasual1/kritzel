@@ -520,7 +520,7 @@ export class KritzelEditor {
   @Event()
   objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
   @State() isEngineReady: boolean = false;
-  @State() agents: KritzelAgentPresence[] = [];
+  @State() agents: (KritzelAgentPresence | KritzelRemoteAgentPresence)[] = [];
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
   @State() availableWorkspaces: KritzelWorkspace[] = [];

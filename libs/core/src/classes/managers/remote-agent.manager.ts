@@ -4,6 +4,7 @@ import type { KritzelAgenticAttachment, KritzelAgenticCursor } from '../../inter
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import type { KritzelAwarenessAgent, KritzelRemoteAgentPresence } from '../../interfaces/agent.interface';
 import { AGENT_BROADCAST_INTERVAL_MS, AGENT_BROADCAST_MAX_IDS, AGENT_BROADCAST_MAX_STATUS_LENGTH } from './agent-broadcast.manager';
+import { isAgenticAnchor } from './agentic-actions/agentic-geometry.helper';
 
 /** A collaborator's agent as the cursor overlay draws it. */
 export interface KritzelRemoteAgentCursor extends KritzelAgenticCursor {
@@ -169,16 +170,19 @@ export class KritzelRemoteAgentManager {
    */
   tick(now: number = this.now()): void {
     this._entries.forEach(entry => {
-      const attached = entry.agent.attachedTo ? this._core.agenticCursorManager?.resolveTarget(entry.agent.attachedTo) : null;
-      if (attached && !this.isGliding(entry, now)) {
-        entry.rendered = attached;
-        return;
-      }
-      const progress = Math.min(1, Math.max(0, (now - entry.startedAt) / AGENT_BROADCAST_INTERVAL_MS));
-      entry.rendered = {
-        x: entry.from.x + (entry.to.x - entry.from.x) * progress,
-        y: entry.from.y + (entry.to.y - entry.from.y) * progress,
-      };
+      // One entry that fails (it comes from another client) must not stop the others or the frame listeners.
+      this.safeCall(() => {
+        const attached = entry.agent.attachedTo ? this._core.agenticCursorManager?.resolveTarget(entry.agent.attachedTo) : null;
+        if (attached && !this.isGliding(entry, now)) {
+          entry.rendered = attached;
+          return;
+        }
+        const progress = Math.min(1, Math.max(0, (now - entry.startedAt) / AGENT_BROADCAST_INTERVAL_MS));
+        entry.rendered = {
+          x: entry.from.x + (entry.to.x - entry.from.x) * progress,
+          y: entry.from.y + (entry.to.y - entry.from.y) * progress,
+        };
+      });
     });
     this._frameListeners.forEach(listener => this.safeCall(listener));
   }
@@ -300,12 +304,13 @@ function parseAttachment(raw: unknown): KritzelAgenticAttachment | null {
   }
   const value = raw as Record<string, unknown>;
   const offset = value['offset'] as Record<string, unknown> | undefined;
-  if (typeof value['objectId'] !== 'string' || typeof value['anchor'] !== 'string') {
+  if (typeof value['objectId'] !== 'string' || value['objectId'].length === 0 || value['objectId'].length > MAX_NAME_LENGTH) {
     return null;
   }
   return {
     objectId: value['objectId'],
-    anchor: value['anchor'] as KritzelAgenticAttachment['anchor'],
+    // Known anchors only: an inherited key such as "toString" would break the anchor lookup.
+    anchor: isAgenticAnchor(value['anchor']) ? value['anchor'] : 'center',
     offset: { x: isFiniteNumber(offset?.['x']) ? (offset!['x'] as number) : 0, y: isFiniteNumber(offset?.['y']) ? (offset!['y'] as number) : 0 },
   };
 }

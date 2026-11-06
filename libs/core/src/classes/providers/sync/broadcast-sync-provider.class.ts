@@ -32,6 +32,8 @@ export class BroadcastSyncProvider implements ISyncProvider {
   private readonly doc: Y.Doc;
   private readonly channel: BroadcastChannel;
   private _synced: boolean = false;
+  /** The local presence while the page sits in the back/forward cache, restored when it comes back. */
+  private _hiddenState: Record<string, unknown> | null = null;
 
   /**
    * A factory for the sync configuration, e.g. `providers: [BroadcastSyncProvider.with({ awareness: true })]`.
@@ -50,9 +52,10 @@ export class BroadcastSyncProvider implements ISyncProvider {
     this.awareness = _options?.awareness ? new Awareness(doc) : null;
     if (this.awareness) {
       this.awareness.on('update', this.handleAwarenessUpdate);
-      // A tab that closes takes its presence with it.
+      // A tab that closes (or goes into the back/forward cache) takes its presence with it.
       if (typeof window !== 'undefined') {
         window.addEventListener('pagehide', this.handlePageHide);
+        window.addEventListener('pageshow', this.handlePageShow);
       }
     }
 
@@ -98,10 +101,23 @@ export class BroadcastSyncProvider implements ISyncProvider {
     this.postAwareness([...added, ...updated, ...removed]);
   };
 
-  private handlePageHide = () => {
+  private handlePageHide = (event?: { persisted?: boolean }) => {
     if (this.awareness) {
+      // A page that may come back from the back/forward cache keeps its state to restore it then.
+      this._hiddenState = event?.persisted ? this.awareness.getLocalState() : null;
       removeAwarenessStates(this.awareness, [this.doc.clientID], 'pagehide');
     }
+  };
+
+  private handlePageShow = (event?: { persisted?: boolean }) => {
+    if (!this.awareness || !event?.persisted || !this._hiddenState) {
+      return;
+    }
+    const state = this._hiddenState;
+    this._hiddenState = null;
+    // Shown again: share the presence again and ask the other tabs for theirs, which may have changed meanwhile.
+    this.awareness.setLocalState(state);
+    this.post(MESSAGE_AWARENESS_QUERY);
   };
 
   private postAwareness(clients: number[]) {
@@ -202,6 +218,7 @@ export class BroadcastSyncProvider implements ISyncProvider {
       this.awareness.destroy();
       if (typeof window !== 'undefined') {
         window.removeEventListener('pagehide', this.handlePageHide);
+        window.removeEventListener('pageshow', this.handlePageShow);
       }
     }
     this.channel.close();

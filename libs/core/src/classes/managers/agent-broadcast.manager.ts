@@ -13,11 +13,14 @@ export const AGENT_BROADCAST_MAX_IDS = 50;
  * `agents`: identity, status, activity, cursor position and the objects each agent works on.
  *
  * The payload is built at most every 100 ms (leading and trailing) and only sent when it changed, so
- * idle agents send nothing. Removing an agent, hiding it or turning `broadcast` off is sent at once.
+ * idle agents send nothing. Adding or removing an agent, renaming, recoloring or hiding it and turning
+ * `broadcast` on or off are sent at once; status, activity, motion and selections follow the throttle.
  */
 export class KritzelAgentBroadcaster {
   private readonly _core: KritzelCore;
   private _lastSent: string | null = null;
+  /** Which agents were last sent, with what collaborators see of them at once (see `structureOf`). */
+  private _lastStructure: string | null = null;
   private _lastSentAt = -Infinity;
   private _timer: ReturnType<typeof setTimeout> | null = null;
   private _dirty = false;
@@ -33,8 +36,9 @@ export class KritzelAgentBroadcaster {
       return;
     }
     this._unsubscribers = [
-      // Added, removed, renamed, restyled, hidden, broadcast toggled: send at once.
-      this._core.agentManager.onChange(() => this.publish(true)),
+      // Added, removed, renamed, recolored, hidden, broadcast toggled: send at once. Any other change of an
+      // agent (status, activity, selection, history) follows the throttle.
+      this._core.agentManager.onChange(() => (structureOf(this.buildPayload()) !== this._lastStructure ? this.flush() : this.schedule())),
       this._core.agenticCursorManager.onChange(() => this.schedule()),
       this._core.agenticCursorManager.onFrame(() => this.schedule()),
     ];
@@ -55,6 +59,7 @@ export class KritzelAgentBroadcaster {
   /** Sends the agents to a newly loaded workspace (each workspace has its own awareness). @internal */
   reset(): void {
     this._lastSent = null;
+    this._lastStructure = null;
     this.flush();
   }
 
@@ -63,6 +68,7 @@ export class KritzelAgentBroadcaster {
     this.cancelTimer();
     this._dirty = false;
     this._lastSent = null;
+    this._lastStructure = null;
     this.objectMap()?.setLocalAgents(null);
   }
 
@@ -137,6 +143,7 @@ export class KritzelAgentBroadcaster {
       return;
     }
     this._lastSent = serialized;
+    this._lastStructure = structureOf(payload);
     this._lastSentAt = this.now();
     map.setLocalAgents(payload);
   }
@@ -159,6 +166,11 @@ export class KritzelAgentBroadcaster {
   private now(): number {
     return typeof performance !== 'undefined' ? performance.now() : Date.now();
   }
+}
+
+/** The part of a payload that is sent without waiting for the throttle. */
+function structureOf(payload: KritzelAwarenessAgent[]): string {
+  return JSON.stringify(payload.map(agent => [agent.id, agent.name, agent.color, agent.avatarUrl ?? null, agent.visible]));
 }
 
 function round(value: number): number {

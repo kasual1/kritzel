@@ -68,6 +68,19 @@ describe('BroadcastSyncProvider', () => {
     expect(c.awareness!.getStates().get(docA.clientID)).toEqual({ agents: [{ id: 'writer' }] });
   });
 
+  it('takes the presence away while the tab is in the back/forward cache and brings it back', () => {
+    const [docA, docB] = [new Y.Doc(), new Y.Doc()];
+    const a = create(docA, { awareness: true });
+    const b = create(docB, { awareness: true });
+    a.awareness!.setLocalStateField('agents', [{ id: 'writer' }]);
+
+    (a as any).handlePageHide({ persisted: true });
+    expect(b.awareness!.getStates().has(docA.clientID)).toBe(false);
+
+    (a as any).handlePageShow({ persisted: true });
+    expect(b.awareness!.getStates().get(docA.clientID)).toEqual({ agents: [{ id: 'writer' }] });
+  });
+
   it('removes the presence of a tab that is destroyed', () => {
     const [docA, docB] = [new Y.Doc(), new Y.Doc()];
     const a = create(docA, { awareness: true });
