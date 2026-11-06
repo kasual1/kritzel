@@ -402,6 +402,20 @@ export class KritzelAgenticActionRun {
     );
   }
 
+  /** The agent this run belongs to (the cursor ID). */
+  get agentId(): string {
+    return this.cursorId;
+  }
+
+  /**
+   * Marks the agent as the creator of an object it is about to insert (`userId = agentId`),
+   * instead of the local user that `X.create(core)` stamps. Returns the object.
+   */
+  own<T extends AnyObject>(object: T): T {
+    object.userId = this.cursorId;
+    return object;
+  }
+
   /** Tracks an object the action created or replaced: it is checked and claimed from now on. */
   track(object: AnyObject): void {
     this.knownInstances.set(object.id, object);

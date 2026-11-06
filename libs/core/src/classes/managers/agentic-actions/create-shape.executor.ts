@@ -65,6 +65,7 @@ export const createShapeExecutor: KritzelAgenticActionExecutor<KritzelAgenticCre
         fontColor: style.fontColor,
         scale,
       });
+      run.own(created);
       core.addObject(created);
       return created;
     });

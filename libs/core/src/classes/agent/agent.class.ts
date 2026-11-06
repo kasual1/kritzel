@@ -1,0 +1,521 @@
+import type { KritzelCore } from '../core/core.class';
+import type { IKritzelUser } from '../../interfaces/user.interface';
+import type { KritzelPoint } from '../../interfaces/point.interface';
+import type {
+  KritzelAgenticAnchor,
+  KritzelAgenticMoveOptions,
+  KritzelAgenticMoveResult,
+  KritzelAgenticTarget,
+} from '../../interfaces/agentic-cursor.interface';
+import type {
+  KritzelAgenticAction,
+  KritzelAgenticActionFailureReason,
+  KritzelAgenticActionOptions,
+  KritzelAgenticActionResult,
+  KritzelAgenticCreateShapeAction,
+  KritzelAgenticCreateTextAction,
+  KritzelAgenticLineStyle,
+  KritzelAgenticResizeObjectAction,
+  KritzelAgenticStrokeStyle,
+} from '../../interfaces/agentic-action.interface';
+import type { KritzelAgentEventMap, KritzelAgentOptions, KritzelAgentPresence, KritzelAgentState } from '../../interfaces/agent.interface';
+import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
+import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelAgentActionError } from './agent-action-error.class';
+
+/** Brand that identifies agents across copies of `@kritzel/core`. */
+export const KRITZEL_AGENT_BRAND = Symbol.for('kritzel.agent');
+
+/** Reasons that mean someone else took over the objects of a running action. */
+const INTERRUPTING_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new Set([
+  'user-selected',
+  'user-interaction',
+  'collaborator-editing',
+  'conflict',
+]);
+
+type AgentListener<K extends keyof KritzelAgentEventMap> = (payload: KritzelAgentEventMap[K]) => void;
+
+/** Whether a value is a `KritzelAgent`, also when it comes from another copy of `@kritzel/core`. */
+export function isKritzelAgent(value: unknown): value is KritzelAgent {
+  return !!value && typeof value === 'object' && (value as Record<symbol, unknown>)[KRITZEL_AGENT_BRAND] === true;
+}
+
+/**
+ * A participant on the canvas that is driven by code instead of a pointer, for example an AI agent.
+ *
+ * An agent has a cursor that flies to its targets, a name and color like a user, and its own
+ * selection, action queue and undo history. Create it, add it to an editor with
+ * `editor.addAgent(agent)`, then let it act:
+ *
+ * ```ts
+ * const agent = new KritzelAgent({ name: 'Planner', color: '#7C3AED' });
+ * await editor.addAgent(agent);
+ * await agent.createShape({ x: 0, y: 0, width: 160, height: 80, text: 'Idea' });
+ * ```
+ *
+ * Agents never take objects away from people: an action whose objects the user has selected or is
+ * editing is refused or stopped, and the reason is reported in its result.
+ */
+export class KritzelAgent implements IKritzelUser {
+  /** @internal */
+  readonly [KRITZEL_AGENT_BRAND] = true;
+  /** Keeps Vue from wrapping the agent in a reactive proxy. @internal */
+  readonly __v_skip = true;
+  /** Always `'agent'`. */
+  readonly kind = 'agent' as const;
+  /** Unique ID; the `userId` of the objects the agent creates. */
+  readonly id: string;
+
+  private _name: string;
+  private _color: string;
+  private _avatarUrl?: string;
+  private _speed?: number;
+  private _broadcast: boolean;
+  private _status: string | null;
+  private _visible: boolean;
+  private _initialPosition?: KritzelAgenticTarget;
+  private _core: KritzelCore | null = null;
+  private _subscriptions: (() => void)[] = [];
+  private readonly _listeners = new Map<keyof KritzelAgentEventMap, Set<(payload: unknown) => void>>();
+  private _task: { cancelled: boolean } | null = null;
+  private _lastStateKey: string | null = null;
+
+  constructor(options: KritzelAgentOptions) {
+    if (!options || typeof options.name !== 'string' || options.name.trim() === '') {
+      throw new TypeError('A KritzelAgent needs a non-empty "name".');
+    }
+    this.id = options.id ?? `agent-${ObjectHelper.generateUUID(12)}`;
+    this._name = options.name;
+    this._color = options.color || KritzelUserColorHelper.generateColorFromName(options.name);
+    this._avatarUrl = options.avatarUrl;
+    this._speed = options.speed;
+    this._broadcast = options.broadcast ?? true;
+    this._status = options.status || null;
+    this._visible = options.visible ?? true;
+    this._initialPosition = options.position;
+  }
+
+  // ─── Identity ───────────────────────────────────────────────────────────────
+
+  /** Name shown on the cursor label and in the avatar tooltip. */
+  get name(): string {
+    return this._name;
+  }
+
+  set name(name: string) {
+    this._name = name;
+    this._core?.agenticCursorManager.update(this.id, { name });
+  }
+
+  /** Same as `name` (`IKritzelUser`). */
+  get displayName(): string {
+    return this._name;
+  }
+
+  /** Any CSS color. */
+  get color(): string {
+    return this._color;
+  }
+
+  set color(color: string) {
+    this._color = color;
+    this._core?.agenticCursorManager.update(this.id, { color });
+    this.notifyChange();
+  }
+
+  /** URL of the avatar image. */
+  get avatarUrl(): string | undefined {
+    return this._avatarUrl;
+  }
+
+  set avatarUrl(url: string | undefined) {
+    this._avatarUrl = url;
+    this.notifyChange();
+  }
+
+  /** Same as `avatarUrl` (`IKritzelUser`). */
+  get profileImageUrl(): string | undefined {
+    return this._avatarUrl;
+  }
+
+  /** Default speed of moves and actions in screen pixels per second; `undefined` uses 1200. */
+  get speed(): number | undefined {
+    return this._speed;
+  }
+
+  set speed(speed: number | undefined) {
+    this._speed = speed;
+  }
+
+  /** Whether collaborators see the agent. */
+  get broadcast(): boolean {
+    return this._broadcast;
+  }
+
+  set broadcast(broadcast: boolean) {
+    this._broadcast = broadcast;
+    this.notifyChange();
+  }
+
+  /** Whether the agent is added to an editor. */
+  get isAdded(): boolean {
+    return this._core !== null;
+  }
+
+  /** A snapshot of the agent's state. */
+  get state(): KritzelAgentState {
+    const core = this._core;
+    const cursor = core?.agenticCursorManager.get(this.id);
+    if (!core || !cursor) {
+      return {
+        isAdded: false,
+        position: null,
+        attachedTo: null,
+        isMoving: false,
+        status: this._status,
+        visible: this._visible,
+        selection: [],
+        activeAction: null,
+        queueLength: 0,
+        canUndo: false,
+        canRedo: false,
+      };
+    }
+    return {
+      isAdded: true,
+      position: cursor.position,
+      attachedTo: cursor.attachedTo,
+      isMoving: cursor.isMoving,
+      status: cursor.status ?? null,
+      visible: cursor.visible,
+      selection: core.agenticActionManager.getSelection(this.id),
+      activeAction: cursor.activeAction,
+      queueLength: cursor.queueLength,
+      canUndo: cursor.canUndo,
+      canRedo: cursor.canRedo,
+    };
+  }
+
+  // ─── Presence ───────────────────────────────────────────────────────────────
+
+  /** Shows a status message below the cursor label; `null` or `''` hides it. */
+  setStatus(status: string | null): void {
+    this._status = status || null;
+    this._core?.agenticCursorManager.update(this.id, { status: this._status });
+  }
+
+  /** Shows the cursor. */
+  show(): void {
+    this.setVisible(true);
+  }
+
+  /** Hides the cursor. The agent keeps working. */
+  hide(): void {
+    this.setVisible(false);
+  }
+
+  /**
+   * Moves the cursor to a world point or to an anchor on an object, where it sticks by default.
+   * Resolves when it arrives; `completed: false` when another move or the agent's removal interrupted it.
+   * A running action of the agent stops with `'agent-moved'`.
+   */
+  async moveTo(target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
+    const core = this.requireCore();
+    return core.agenticCursorManager.move(this.id, target, { ...options, speed: options.speed ?? this._speed });
+  }
+
+  /** Releases the cursor from the object it sticks to. It stays where it is. */
+  detach(): void {
+    if (this._core?.agenticCursorManager.get(this.id)?.attachedTo) {
+      this._core.agenticCursorManager.detach(this.id);
+    }
+  }
+
+  // ─── Actions ────────────────────────────────────────────────────────────────
+
+  /**
+   * Performs an action: the cursor flies to the target, presses and animates the change. Actions of one
+   * agent run one after another, in call order. Resolves when the action ends; `completed: false` with a
+   * `reason` when it was refused or stopped. Inside `task()`, such a result throws `KritzelAgentActionError`.
+   * Rejects for invalid actions and when the agent is not added to an editor.
+   */
+  async perform(action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    const core = this.requireCore();
+    if (this._task?.cancelled) {
+      return this.settle(action, { completed: false, reason: 'aborted' });
+    }
+    const result = await core.agenticActionManager.perform(this.id, action, { ...options, speed: options.speed ?? this._speed });
+    return this.settle(action, result);
+  }
+
+  /** Presses at a point or object anchor. Nothing changes; `objectIds` holds the object under the cursor. */
+  click(target: KritzelAgenticTarget, options: { count?: 1 | 2 } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    const { count, ...actionOptions } = options;
+    return this.perform({ type: 'click', target, ...(count ? { count } : {}) }, actionOptions);
+  }
+
+  /** Selects top-level objects for the agent. Never changes the user's selection. */
+  select(objectIds: string[], options: { additive?: boolean } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    const { additive, ...actionOptions } = options;
+    return this.perform({ type: 'select', objectIds, ...(additive !== undefined ? { additive } : {}) }, actionOptions);
+  }
+
+  /** Clears the agent's selection. */
+  clearSelection(options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'clearSelection' }, options);
+  }
+
+  /** Drags an object so that its `align` point (default `'center'`) lands on `to`. */
+  moveObject(
+    objectId: string,
+    to: KritzelAgenticTarget,
+    options: { align?: KritzelAgenticAnchor } & KritzelAgenticActionOptions = {},
+  ): Promise<KritzelAgenticActionResult> {
+    const { align, ...actionOptions } = options;
+    return this.perform({ type: 'moveObject', objectId, to, ...(align ? { align } : {}) }, actionOptions);
+  }
+
+  /** Resizes an object by dragging a corner handle. */
+  resizeObject(
+    objectId: string,
+    size: Omit<KritzelAgenticResizeObjectAction, 'type' | 'objectId'>,
+    options: KritzelAgenticActionOptions = {},
+  ): Promise<KritzelAgenticActionResult> {
+    return this.perform({ ...size, type: 'resizeObject', objectId }, options);
+  }
+
+  /** Rotates an object to `angle` degrees clockwise, or by `angle` with `relative: true`. */
+  rotateObject(objectId: string, angle: number, options: { relative?: boolean } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    const { relative, ...actionOptions } = options;
+    return this.perform({ type: 'rotateObject', objectId, angle, ...(relative !== undefined ? { relative } : {}) }, actionOptions);
+  }
+
+  /** Drags out a new shape. `objectIds` holds its ID. */
+  createShape(shape: Omit<KritzelAgenticCreateShapeAction, 'type'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ ...shape, type: 'createShape' }, options);
+  }
+
+  /** Creates a text object and types into it. `objectIds` holds its ID. */
+  createText(text: Omit<KritzelAgenticCreateTextAction, 'type'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ ...text, type: 'createText' }, options);
+  }
+
+  /** Types into a text or shape; `mode: 'replace'` clears it first. */
+  typeText(
+    objectId: string,
+    text: string,
+    options: { mode?: 'append' | 'replace' } & KritzelAgenticActionOptions = {},
+  ): Promise<KritzelAgenticActionResult> {
+    const { mode, ...actionOptions } = options;
+    return this.perform({ type: 'typeText', objectId, text, ...(mode ? { mode } : {}) }, actionOptions);
+  }
+
+  /** Draws a freehand stroke through the world points. */
+  drawPath(points: KritzelPoint[], options: { style?: KritzelAgenticStrokeStyle } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    const { style, ...actionOptions } = options;
+    return this.perform({ type: 'drawPath', points, ...(style ? { style } : {}) }, actionOptions);
+  }
+
+  /** Draws a line from one object to another and anchors both ends, so it follows them. */
+  connect(from: string, to: string, options: { style?: KritzelAgenticLineStyle } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    const { style, ...actionOptions } = options;
+    return this.perform({ type: 'connect', from, to, ...(style ? { style } : {}) }, actionOptions);
+  }
+
+  /** Deletes top-level objects. */
+  deleteObjects(objectIds: string[], options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'deleteObjects', objectIds }, options);
+  }
+
+  /** Undoes the agent's last action. Never touches the user's or other agents' history. */
+  undo(options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'undo' }, options);
+  }
+
+  /** Redoes the agent's last undone action. */
+  redo(options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'redo' }, options);
+  }
+
+  /**
+   * Stops the running action (its changes are rolled back) and drops the queued ones; they resolve
+   * with `reason: 'aborted'`. Inside `task()`, every later action resolves (and throws) as aborted
+   * until the task returns.
+   */
+  cancel(): void {
+    if (this._task) {
+      this._task.cancelled = true;
+    }
+    this._core?.agenticActionManager.cancel(this.id);
+  }
+
+  /**
+   * Runs a script of actions as one task: `label` is shown as the status while it runs, and the first
+   * action that does not complete throws a `KritzelAgentActionError` out of `fn`. `cancel()` stops the
+   * task. An agent runs one task at a time.
+   */
+  async task<T>(label: string, fn: () => Promise<T> | T): Promise<T> {
+    if (this._task) {
+      throw new Error(`Agent "${this.id}" is already running a task.`);
+    }
+    const task = { cancelled: false };
+    this._task = task;
+    const previousStatus = this._status;
+    this.setStatus(label);
+    try {
+      return await fn();
+    } finally {
+      if (this._task === task) {
+        this._task = null;
+      }
+      this.setStatus(previousStatus);
+    }
+  }
+
+  // ─── Events ─────────────────────────────────────────────────────────────────
+
+  /** Subscribes to an event; returns a function that unsubscribes. */
+  on<K extends keyof KritzelAgentEventMap>(event: K, listener: AgentListener<K>): () => void {
+    let listeners = this._listeners.get(event);
+    if (!listeners) {
+      listeners = new Set();
+      this._listeners.set(event, listeners);
+    }
+    listeners.add(listener as (payload: unknown) => void);
+    return () => listeners!.delete(listener as (payload: unknown) => void);
+  }
+
+  /** How the agent is shown in avatar stacks and `agentsChange`. */
+  toPresence(): KritzelAgentPresence {
+    const state = this.state;
+    return {
+      id: this.id,
+      kind: 'agent',
+      name: this._name,
+      displayName: this._name,
+      color: this._color,
+      ...(this._avatarUrl ? { avatarUrl: this._avatarUrl, profileImageUrl: this._avatarUrl } : {}),
+      status: state.status,
+      visible: state.visible,
+      activeAction: state.activeAction,
+      queueLength: state.queueLength,
+      isRemote: false,
+    };
+  }
+
+  // ─── Lifecycle (called by the editor's agent manager) ───────────────────────
+
+  /** The core the agent is added to. @internal */
+  get _owner(): KritzelCore | null {
+    return this._core;
+  }
+
+  /** Creates the cursor in `core` and starts listening. Throws if the cursor can't be created. @internal */
+  _attach(core: KritzelCore): void {
+    core.agenticCursorManager.add({
+      id: this.id,
+      name: this._name,
+      color: this._color,
+      status: this._status ?? undefined,
+      visible: this._visible,
+      position: this._initialPosition,
+    });
+    this._core = core;
+    this._lastStateKey = null;
+    this._subscriptions = [
+      core.agenticCursorManager.onChange(id => {
+        if (id === undefined || id === this.id) {
+          this.notifyChange();
+        }
+      }),
+      core.agenticCursorManager.onDetached(event => {
+        if (event.id === this.id) {
+          this.emit('detached', { objectId: event.objectId, reason: event.reason });
+        }
+      }),
+      core.agenticActionManager.onActionSettled(event => {
+        if (event.cursorId !== this.id) {
+          return;
+        }
+        const reason = event.result.reason;
+        if (event.executing && !event.result.completed && reason && INTERRUPTING_REASONS.has(reason)) {
+          this.emit('interrupted', {
+            action: event.action,
+            reason,
+            objectIds: event.result.objectIds ?? [],
+            keptChanges: event.keptChanges,
+          });
+        }
+        // The agent's history may have changed.
+        this.notifyChange();
+      }),
+    ];
+  }
+
+  /** Removes the cursor (its running action is rolled back) and stops listening. @internal */
+  _detach(): void {
+    const core = this._core;
+    if (!core) {
+      return;
+    }
+    this._subscriptions.forEach(unsubscribe => unsubscribe());
+    this._subscriptions = [];
+    const cursor = core.agenticCursorManager.get(this.id);
+    if (cursor) {
+      this._status = cursor.status ?? null;
+      this._visible = cursor.visible;
+    }
+    core.agenticCursorManager.remove(this.id);
+    this._core = null;
+    this._lastStateKey = null;
+    this.emit('removed', undefined);
+  }
+
+  // ─── Internals ──────────────────────────────────────────────────────────────
+
+  private setVisible(visible: boolean): void {
+    this._visible = visible;
+    this._core?.agenticCursorManager.update(this.id, { visible });
+  }
+
+  private requireCore(): KritzelCore {
+    if (!this._core) {
+      throw new Error(`Agent "${this.id}" is not added to an editor. Call editor.addAgent(agent) first.`);
+    }
+    return this._core;
+  }
+
+  private settle(action: KritzelAgenticAction, result: KritzelAgenticActionResult): KritzelAgenticActionResult {
+    if (this._task && !result.completed) {
+      throw new KritzelAgentActionError(action, result);
+    }
+    return result;
+  }
+
+  /** Emits `change` when the state differs from the last emitted one (plain motion is ignored). */
+  private notifyChange(): void {
+    if (!this._listeners.get('change')?.size) {
+      this._lastStateKey = null;
+      return;
+    }
+    const state = this.state;
+    const { position: _position, ...rest } = state;
+    const key = JSON.stringify([rest, this._name, this._color, this._avatarUrl, this._broadcast]);
+    if (key === this._lastStateKey) {
+      return;
+    }
+    this._lastStateKey = key;
+    this.emit('change', state);
+  }
+
+  private emit<K extends keyof KritzelAgentEventMap>(event: K, payload: KritzelAgentEventMap[K]): void {
+    this._listeners.get(event)?.forEach(listener => {
+      try {
+        listener(payload);
+      } catch (error) {
+        console.error(`[Kritzel] Agent "${event}" listener failed:`, error);
+      }
+    });
+  }
+}

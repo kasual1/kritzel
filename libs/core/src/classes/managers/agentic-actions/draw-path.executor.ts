@@ -91,7 +91,8 @@ export const drawPathExecutor: KritzelAgenticActionExecutor<KritzelAgenticDrawPa
       });
       // Completed from the start, so the user's tools never treat it as their stroke in progress.
       path.isCompleted = true;
-      return path;
+      // Every frame replaces the path, so each instance must name the agent as its creator.
+      return run.own(path);
     };
 
     await run.fly(points[0]);

@@ -175,7 +175,7 @@ export interface KritzelAgenticRedoAction {
   type: 'redo';
 }
 
-/** An action performed by an agentic cursor through `performAgenticAction`. */
+/** An action performed by a `KritzelAgent` (`agent.perform(action)`). */
 export type KritzelAgenticAction =
   | KritzelAgenticClickAction
   | KritzelAgenticSelectAction
@@ -195,11 +195,11 @@ export type KritzelAgenticAction =
 /** The `type` of an agentic action. */
 export type KritzelAgenticActionType = KritzelAgenticAction['type'];
 
-/** Options for `performAgenticAction`. */
+/** Options for `agent.perform()` and the action shortcuts of `KritzelAgent`. */
 export interface KritzelAgenticActionOptions {
   /**
    * Speed in screen pixels per second. Defaults to 1200.
-   * Cursor flights use the same rule as `moveAgenticCursor`; presses, drags, rotation, drawing and typing
+   * Cursor flights use the same rule as `agent.moveTo()`; presses, drags, rotation, drawing and typing
    * scale by `speed / 1200`.
    */
   speed?: number;
@@ -244,7 +244,7 @@ export type KritzelAgenticActionFailureReason =
   /** No workspace is ready (the engine is disconnected, headless or still loading). */
   | 'engine-disconnected';
 
-/** Result of `performAgenticAction`. */
+/** Result of `agent.perform()` and the action shortcuts of `KritzelAgent`. */
 export interface KritzelAgenticActionResult {
   /** `true` when the action ran to the end. */
   completed: boolean;

@@ -28,4 +28,7 @@ export interface IKritzelUser {
 
   /** Whether the user is a guest (not authenticated) */
   isGuest?: boolean;
+
+  /** `'agent'` for a `KritzelAgent`; people leave it unset. */
+  kind?: 'user' | 'agent';
 }

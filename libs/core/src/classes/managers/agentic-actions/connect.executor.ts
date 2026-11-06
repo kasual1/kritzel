@@ -61,7 +61,8 @@ export const connectExecutor: KritzelAgenticActionExecutor<KritzelAgenticConnect
         arrows: style.arrows,
       });
       line.isCompleted = true;
-      return line;
+      // Every frame replaces the line, so each instance must name the agent as its creator.
+      return run.own(line);
     };
 
     const startPoint = centerOf(action.from);

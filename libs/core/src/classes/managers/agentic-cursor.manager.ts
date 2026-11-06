@@ -63,7 +63,7 @@ export type KritzelAgenticCursorHistoryProvider = (cursorId: string) => { canUnd
 export class KritzelAgenticCursorManager {
   private readonly _core: KritzelCore;
   private readonly _cursors = new Map<string, AgenticCursorEntry>();
-  private readonly _changeListeners = new Set<() => void>();
+  private readonly _changeListeners = new Set<(id?: string) => void>();
   private readonly _frameListeners = new Set<() => void>();
   private readonly _beforeFrameListeners = new Set<(now: number) => void>();
   private readonly _removedListeners = new Set<(id: string) => void>();
@@ -114,7 +114,7 @@ export class KritzelAgenticCursorManager {
     };
 
     this._cursors.set(id, entry);
-    this.emitChange();
+    this.emitChange(id);
     this.ensureLoop();
     return this.toSnapshot(entry);
   }
@@ -126,7 +126,7 @@ export class KritzelAgenticCursorManager {
     if (patch.color !== undefined) entry.color = patch.color;
     if (patch.status !== undefined) entry.status = patch.status || undefined;
     if (patch.visible !== undefined) entry.visible = patch.visible;
-    this.emitChange();
+    this.emitChange(id);
     return this.toSnapshot(entry);
   }
 
@@ -163,7 +163,7 @@ export class KritzelAgenticCursorManager {
     const entry = this._cursors.get(id);
     if (!entry?.animation) return;
     this.finishAnimation(entry, false);
-    this.emitChange();
+    this.emitChange(id);
   }
 
   /** Places a cursor at a world point immediately, cancelling any animation and attachment. @internal */
@@ -174,7 +174,7 @@ export class KritzelAgenticCursorManager {
     this.finishAnimation(entry, false);
     entry.position = { x: point.x, y: point.y };
     entry.attachedTo = null;
-    if (wasAnimating) this.emitChange();
+    if (wasAnimating) this.emitChange(id);
     this.ensureLoop();
   }
 
@@ -187,7 +187,7 @@ export class KritzelAgenticCursorManager {
     this.finishAnimation(entry, false);
     entry.position = point;
     entry.attachedTo = this.toAttachment(target);
-    this.emitChange();
+    this.emitChange(id);
   }
 
   /** Sets the pressed state; every press increments `pressCount`. @internal */
@@ -196,7 +196,7 @@ export class KritzelAgenticCursorManager {
     if (!entry || entry.isPressed === pressed) return;
     entry.isPressed = pressed;
     if (pressed) entry.pressCount++;
-    this.emitChange();
+    this.emitChange(id);
   }
 
   /** Sets the objects the cursor shows as selected. @internal */
@@ -207,7 +207,7 @@ export class KritzelAgenticCursorManager {
       return;
     }
     entry.selectedObjectIds = [...objectIds];
-    this.emitChange();
+    this.emitChange(id);
   }
 
   /** Sets the running action type and queue length. @internal */
@@ -216,7 +216,7 @@ export class KritzelAgenticCursorManager {
     if (!entry || (entry.activeAction === activeAction && entry.queueLength === queueLength)) return;
     entry.activeAction = activeAction;
     entry.queueLength = queueLength;
-    this.emitChange();
+    this.emitChange(id);
   }
 
   /** Sets the provider of `canUndo` / `canRedo` for snapshots. @internal */
@@ -230,7 +230,7 @@ export class KritzelAgenticCursorManager {
     if (!entry.attachedTo) return;
     const objectId = entry.attachedTo.objectId;
     entry.attachedTo = null;
-    this.emitChange();
+    this.emitChange(id);
     this.emitDetached({ id, objectId, reason: 'manual' });
   }
 
@@ -240,7 +240,7 @@ export class KritzelAgenticCursorManager {
     if (!entry) return false;
     this.finishAnimation(entry, false);
     this._cursors.delete(id);
-    this.emitChange();
+    this.emitChange(id);
     if (this._cursors.size === 0) this.stopLoop();
     this.emitRemoved(id);
     return true;
@@ -266,8 +266,11 @@ export class KritzelAgenticCursorManager {
     return Array.from(this._cursors.values()).map(entry => this.toSnapshot(entry));
   }
 
-  /** Subscribes to structural changes (added, removed, restyled, attached or detached cursors). */
-  onChange(listener: () => void): () => void {
+  /**
+   * Subscribes to structural changes (added, removed, restyled, attached or detached cursors).
+   * The listener receives the ID of the changed cursor, or nothing when several may have changed.
+   */
+  onChange(listener: (id?: string) => void): () => void {
     this._changeListeners.add(listener);
     return () => this._changeListeners.delete(listener);
   }
@@ -399,7 +402,7 @@ export class KritzelAgenticCursorManager {
         attach: options.attach ?? true,
         resolve,
       };
-      this.emitChange();
+      this.emitChange(entry.id);
       this.ensureLoop();
     });
   }
@@ -488,8 +491,8 @@ export class KritzelAgenticCursorManager {
     return id;
   }
 
-  private emitChange(): void {
-    this._changeListeners.forEach(listener => this.safeCall(listener));
+  private emitChange(id?: string): void {
+    this._changeListeners.forEach(listener => this.safeCall(() => listener(id)));
   }
 
   private emitDetached(event: KritzelAgenticCursorDetachedEvent): void {

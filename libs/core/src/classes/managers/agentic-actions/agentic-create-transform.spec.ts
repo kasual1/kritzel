@@ -325,6 +325,25 @@ describe('agentic create and transform actions', () => {
     });
   });
 
+  describe('creator', () => {
+    it('names the agent, not the local user, as the creator of every object it makes', async () => {
+      core.user = { id: 'human' };
+      const a = addShape(0, 0, 100, 50);
+      const b = addShape(400, 0, 100, 50);
+
+      const shape = await perform({ type: 'createShape', x: 0, y: 200, width: 80, height: 40 });
+      const text = await perform({ type: 'createText', x: 0, y: 300, text: 'Hi' });
+      const path = await perform({ type: 'drawPath', points: [{ x: 0, y: 400 }, { x: 50, y: 420 }, { x: 100, y: 400 }] }, {});
+      const line = await perform({ type: 'connect', from: a.id, to: b.id }, {});
+
+      for (const result of [shape, text, path, line]) {
+        expect(result.completed).toBe(true);
+        expect(map.findById(result.objectIds![0]).userId).toBe('agent');
+      }
+      expect(a.userId).not.toBe('agent');
+    });
+  });
+
   describe('drawPath', () => {
     it('draws a completed path through the world points with the brush settings', async () => {
       tools.push({ toolType: 'brush', size: 9, color: { light: '#123', dark: '#321' } });

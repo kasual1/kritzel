@@ -23,6 +23,7 @@ import { KritzelBrowserPermissionManager } from '../managers/browser-permission.
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
 import { KritzelAgenticActionManager } from '../managers/agentic-action.manager';
+import { KritzelAgentManager } from '../managers/agent.manager';
 import { KritzelObjectTitlebarManager } from '../managers/object-titlebar.manager';
 import { KritzelObjectConfigManager } from '../managers/object-config.manager';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -80,6 +81,7 @@ export class KritzelCore {
   private readonly _agenticCursorManager: KritzelAgenticCursorManager;
   /** Runs actions performed by agentic cursors */
   private readonly _agenticActionManager: KritzelAgenticActionManager;
+  private readonly _agentManager: KritzelAgentManager;
   /** Manager for titlebars rendered above objects */
   private readonly _objectTitlebarManager: KritzelObjectTitlebarManager;
   private readonly _objectConfigManager: KritzelObjectConfigManager;
@@ -202,6 +204,11 @@ export class KritzelCore {
     return this._agenticActionManager;
   }
 
+  /** The agents added to this editor. */
+  get agentManager(): KritzelAgentManager {
+    return this._agentManager;
+  }
+
   /**
    * Gets the editor ID used for namespacing storage keys.
    * @returns The editor ID or undefined if not set
@@ -232,6 +239,11 @@ export class KritzelCore {
    * Sets the current user and propagates to the active object map's awareness.
    */
   setUser(user?: IKritzelUser): void {
+    if (user?.kind === 'agent') {
+      // Agents are added with addAgent(); as the local user they would own the human's selection.
+      console.warn('[Kritzel] An agent cannot be the current user. Add it with addAgent() instead.');
+      return;
+    }
     this._user = user;
     this._store.setLocalUserId(user?.id ?? null);
     this._store.objects?.setLocalUser(user);
@@ -256,6 +268,7 @@ export class KritzelCore {
     this._clipboardManager = new KritzelClipboardManager(this);
     this._agenticCursorManager = new KritzelAgenticCursorManager(this);
     this._agenticActionManager = new KritzelAgenticActionManager(this);
+    this._agentManager = new KritzelAgentManager(this);
     this._objectTitlebarManager = new KritzelObjectTitlebarManager(this);
     this._objectConfigManager = new KritzelObjectConfigManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);

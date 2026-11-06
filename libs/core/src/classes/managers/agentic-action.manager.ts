@@ -28,6 +28,17 @@ interface Conflict {
   objectIds?: string[];
 }
 
+/** How an action ended; emitted to `onActionSettled` listeners. */
+export interface KritzelAgenticActionSettledEvent {
+  cursorId: string;
+  action: KritzelAgenticAction;
+  result: KritzelAgenticActionResult;
+  /** Whether the action had started changing the canvas when it ended (`false` for refusals before it began). */
+  executing: boolean;
+  /** Whether the action's changes were kept. */
+  keptChanges: boolean;
+}
+
 interface DeferredTask {
   map: ObjectMap | null;
   run: () => void;
@@ -61,6 +72,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   private _subscribed = false;
   private _disposing = false;
   private _lastFrameTime: number | null = null;
+  private readonly _settledListeners = new Set<(event: KritzelAgenticActionSettledEvent) => void>();
 
   constructor(core: KritzelCore) {
     this._core = core;
@@ -77,7 +89,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   perform(cursorId: string, action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
     const cursors = this._core.agenticCursorManager;
     if (!cursors.get(cursorId)) {
-      throw new Error(`Agentic cursor "${cursorId}" not found.`);
+      throw new Error(`Agent "${cursorId}" not found.`);
     }
     const executor = getAgenticActionExecutor((action as { type?: unknown } | null)?.type);
     if (!action || typeof action !== 'object' || !executor) {
@@ -101,6 +113,23 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     this.updateActivity(cursorId);
     queueMicrotask(() => this.pump(cursorId));
     return run.promise;
+  }
+
+  /**
+   * Aborts the running action of a cursor (rolling back its changes) and settles its queued actions,
+   * all with `reason`. The cursor, its selection and its history are kept.
+   */
+  cancel(cursorId: string, reason: KritzelAgenticActionFailureReason = 'aborted'): void {
+    const queue = this._queues.get(cursorId);
+    queue?.splice(0).forEach(run => this.settleQueued(run, reason));
+    this._running.get(cursorId)?.abort(reason);
+    this.updateActivity(cursorId);
+  }
+
+  /** Subscribes to finished actions: completed, refused, aborted or failed. */
+  onActionSettled(listener: (event: KritzelAgenticActionSettledEvent) => void): () => void {
+    this._settledListeners.add(listener);
+    return () => this._settledListeners.delete(listener);
   }
 
   /** The explicit (`select`) selection of a cursor. */
@@ -243,10 +272,12 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       this.emitEvents(run, events);
     }
 
+    let result: KritzelAgenticActionResult | null = null;
     if (outcome.kind === 'commit') {
-      run.settleWith({ completed: true, objectIds: outcome.objectIds });
+      result = { completed: true, objectIds: outcome.objectIds };
+      run.settleWith(result);
     } else if (outcome.kind === 'abort') {
-      const result: KritzelAgenticActionResult = { completed: false, reason: outcome.reason };
+      result = { completed: false, reason: outcome.reason };
       if (outcome.objectIds && outcome.objectIds.length > 0) {
         result.objectIds = outcome.objectIds;
       }
@@ -254,6 +285,19 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     } else {
       run.settleWith({ error: outcome.error });
     }
+    if (result) {
+      this.emitSettled({ cursorId: run.cursorId, action: run.action, result, executing: run.executing, keptChanges: keep && run.hasMutated });
+    }
+  }
+
+  private emitSettled(event: KritzelAgenticActionSettledEvent): void {
+    this._settledListeners.forEach(listener => {
+      try {
+        listener(event);
+      } catch (error) {
+        console.error('[Kritzel] Agentic action settled listener failed:', error);
+      }
+    });
   }
 
   private deriveEvents(run: KritzelAgenticActionRun, map: ObjectMap, recording: Map<string, boolean>) {
@@ -412,8 +456,10 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     }
     run.settled = true;
     run.removeAbortListener();
-    run.settleWith({ completed: false, reason });
+    const result: KritzelAgenticActionResult = { completed: false, reason };
+    run.settleWith(result);
     this.updateActivity(run.cursorId);
+    this.emitSettled({ cursorId: run.cursorId, action: run.action, result, executing: false, keptChanges: false });
   }
 
   private getQueue(cursorId: string): KritzelAgenticActionRun[] {

@@ -2,7 +2,7 @@ import { KritzelEasing } from './easing.interface';
 import { KritzelPoint } from './point.interface';
 import type { KritzelAgenticActionType } from './agentic-action.interface';
 
-/** Where on an object an attached agentic cursor sits. The anchor rotates with the object. */
+/** A point on an object, e.g. where an agent's cursor sticks. The anchor rotates with the object. */
 export type KritzelAgenticAnchor =
   | 'center'
   | 'top-left'
@@ -32,7 +32,7 @@ export interface KritzelAgenticObjectTarget {
 
 export type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
 
-/** Options for creating an agentic cursor. */
+/** Options for creating the cursor of an agent. @internal */
 export interface KritzelAgenticCursorOptions {
   /** Unique ID. Generated when omitted. */
   id?: string;
@@ -48,7 +48,7 @@ export interface KritzelAgenticCursorOptions {
   position?: KritzelAgenticTarget;
 }
 
-/** Properties of an agentic cursor that can be changed after creation. */
+/** Properties of an agent's cursor that can be changed after creation. @internal */
 export interface KritzelAgenticCursorPatch {
   name?: string;
   color?: string;
@@ -57,7 +57,7 @@ export interface KritzelAgenticCursorPatch {
   visible?: boolean;
 }
 
-/** Options for moving an agentic cursor. */
+/** Options for `agent.moveTo()`. */
 export interface KritzelAgenticMoveOptions {
   /** Fixed animation duration in milliseconds. When omitted, the duration is derived from the distance and `speed`. */
   duration?: number;
@@ -75,14 +75,14 @@ export interface KritzelAgenticMoveResult {
   completed: boolean;
 }
 
-/** The object an agentic cursor is attached to. */
+/** The object an agent's cursor sticks to. */
 export interface KritzelAgenticAttachment {
   objectId: string;
   anchor: KritzelAgenticAnchor;
   offset: KritzelPoint;
 }
 
-/** Snapshot of an agentic cursor. */
+/** Snapshot of an agent's cursor, used by the cursor overlay. @internal */
 export interface KritzelAgenticCursor {
   id: string;
   name?: string;
@@ -111,7 +111,7 @@ export interface KritzelAgenticCursor {
   canRedo: boolean;
 }
 
-/** Emitted when an agentic cursor is detached from an object. */
+/** Emitted when an agent's cursor is detached from an object. @internal */
 export interface KritzelAgenticCursorDetachedEvent {
   id: string;
   objectId: string;

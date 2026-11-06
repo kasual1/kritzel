@@ -42,6 +42,7 @@ export const createTextExecutor: KritzelAgenticActionExecutor<KritzelAgenticCrea
       created.zIndex = core.store.currentZIndex;
       // Not "newly created" for the user's text tool: a later user save must not emit objectsAdded again.
       created.isNewlyCreated = false;
+      run.own(created);
       core.addObject(created);
       return created;
     });

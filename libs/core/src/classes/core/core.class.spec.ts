@@ -772,6 +772,19 @@ describe('KritzelCore', () => {
     });
   });
 
+  describe('setUser', () => {
+    it('refuses an agent as the local user', () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      core.setUser({ id: 'human' });
+
+      core.setUser({ id: 'agent-1', kind: 'agent' });
+
+      expect(core.user).toEqual({ id: 'human' });
+      expect(mockStore.setLocalUserId).toHaveBeenLastCalledWith('human');
+      expect(warn).toHaveBeenCalled();
+    });
+  });
+
   describe('prepareObjectForInsert / insertPreparedObject', () => {
     it('gives a plain object a fresh ID, the core, the viewport scale, z-index and workspace', () => {
       mockStore.state.scale = 2;
