@@ -160,7 +160,7 @@ const onRemoved = (event: CustomEvent<ObjectsRemovedEvent>) => onChange(event.de
     </Toolbar>
     <KritzelEditor
       ref="editor"
-      editorId="agentic-cursors-actions"
+      editorId="agents-actions"
       :syncConfig="syncConfig"
       :user="user"
       theme="light"

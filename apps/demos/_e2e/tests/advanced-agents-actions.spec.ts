@@ -17,7 +17,7 @@ type EditorElement = HTMLElement & {
 
 const openActionsPage = async (page: Page) => {
   const editorPage = new EditorPage(page);
-  await editorPage.goto('/advanced/agentic-cursors/actions');
+  await editorPage.goto('/advanced/agents/actions');
   await editorPage.waitForReady();
   await page.waitForFunction(async ids => {
     const editor = document.querySelector('kritzel-editor') as EditorElement;

@@ -20,7 +20,7 @@ type EditorElement = HTMLElement & {
 
 test.describe('Agentic Cursors', () => {
   test.beforeEach(async ({ editorPage }) => {
-    await editorPage.goto('/advanced/agentic-cursors/basic');
+    await editorPage.goto('/advanced/agents/basic');
     await editorPage.waitForReady();
     await editorPage.page.waitForFunction(async () => {
       const editor = document.querySelector('kritzel-editor') as EditorElement;

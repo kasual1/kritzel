@@ -17,7 +17,7 @@ test.describe('Agentic Showcase', () => {
   for (const scenario of SCENARIOS) {
     test(`runs the "${scenario.label}" use case to the end`, async ({ editorPage, page }) => {
       test.setTimeout(120_000);
-      await editorPage.goto('/advanced/agentic-cursors/showcase');
+      await editorPage.goto('/advanced/agents/showcase');
       await editorPage.waitForReady();
 
       await page.getByRole('button', { name: scenario.label, exact: true }).click();

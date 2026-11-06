@@ -52,8 +52,8 @@ import { DynamicObjectsIframeComponent } from './pages/advanced/dynamic-objects/
 import { ImportExportViewportExportComponent } from './pages/advanced/import-export/import-export-viewport-export.component';
 import { ImportExportWorkspaceExportComponent } from './pages/advanced/import-export/import-export-workspace-export.component';
 import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-export/import-export-workspace-import.component';
-import { AgenticCursorsBasicComponent } from './pages/advanced/agentic-cursors/agentic-cursors-basic.component';
-import { AgenticCursorsActionsComponent } from './pages/advanced/agentic-cursors/agentic-cursors-actions.component';
+import { AgentsBasicComponent } from './pages/advanced/agents/agents-basic.component';
+import { AgentsActionsComponent } from './pages/advanced/agents/agents-actions.component';
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
 import { ThemingListenComponent } from './pages/customization/theming/theming-listen.component';
@@ -199,10 +199,10 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'agentic-cursors',
+        path: 'agents',
         children: [
-          { path: 'basic', component: AgenticCursorsBasicComponent },
-          { path: 'actions', component: AgenticCursorsActionsComponent },
+          { path: 'basic', component: AgentsBasicComponent },
+          { path: 'actions', component: AgentsActionsComponent },
         ],
       },
     ],

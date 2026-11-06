@@ -404,18 +404,18 @@ export const demoRoutes = [
     component: () => import('./pages/advanced/import-export/ImportExportWorkspaceImportPage.vue'),
   },
   {
-    path: '/advanced/agentic-cursors/basic',
+    path: '/advanced/agents/basic',
     title: 'Agentic Cursors',
     category: 'advanced',
     context: 'Agentic Cursors',
-    component: () => import('./pages/advanced/agentic-cursors/AgenticCursorsBasicPage.vue'),
+    component: () => import('./pages/advanced/agents/AgentsBasicPage.vue'),
   },
   {
-    path: '/advanced/agentic-cursors/actions',
+    path: '/advanced/agents/actions',
     title: 'Agentic Actions',
     category: 'advanced',
     context: 'Agentic Cursors',
-    component: () => import('./pages/advanced/agentic-cursors/AgenticCursorsActionsPage.vue'),
+    component: () => import('./pages/advanced/agents/AgentsActionsPage.vue'),
   },
   {
     path: '/customization/theming/apply',

@@ -8,7 +8,7 @@ import { Toolbar } from "../../../components/Toolbar";
 const PLANNER = "planner";
 const WRITER = "writer";
 
-export function AgenticCursorsBasicPage() {
+export function AgentsBasicPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [message, setMessage] = useState("");
@@ -101,7 +101,7 @@ export function AgenticCursorsBasicPage() {
       </Toolbar>
       <KritzelEditor
         ref={editorRef}
-        editorId="agentic-cursors-basic"
+        editorId="agents-basic"
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}
         workspaces={workspaces}

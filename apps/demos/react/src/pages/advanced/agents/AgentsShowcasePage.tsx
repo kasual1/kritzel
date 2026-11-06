@@ -72,7 +72,7 @@ const SCENARIOS: { id: ScenarioId; label: string; hint: string }[] = [
   { id: "together", label: "Agents + human", hint: "Two agents work at once; then you can take a note from Agent A." },
 ];
 
-export function AgenticCursorsShowcasePage() {
+export function AgentsShowcasePage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [state, setState] = useState<ScenarioState>("idle");
   const [scenario, setScenario] = useState<ScenarioId | null>(null);
@@ -300,7 +300,7 @@ export function AgenticCursorsShowcasePage() {
       </Toolbar>
       <KritzelEditor
         ref={editorRef}
-        editorId="agentic-cursors-showcase"
+        editorId="agents-showcase"
         theme="light"
         themes={[reactThemeLight, reactThemeDark]}
         workspaces={workspaces}

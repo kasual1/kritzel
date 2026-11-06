@@ -1,7 +1,7 @@
 ---
 sidebar_label: Agentic Cursors
 displayed_sidebar: tutorialSidebar
-title: "Agentic Cursors | Kritzel for Vue"
+title: "Agentic Cursors | Kritzel for Angular"
 description: "Add cursors you control from code, move them smoothly across the canvas, and stick them to objects - for example to visualize an AI agent working on the board."
 ---
 
@@ -18,35 +18,37 @@ Each agentic cursor has its own color, an optional name label, and an optional s
 Agentic cursors are rendered locally only. They are not synchronized to collaborators, so every client decides which cursors it shows.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
-  demoPath="/advanced/agentic-cursors/basic"
-  repoFiles={['src/pages/advanced/agentic-cursors/AgenticCursorsBasicPage.vue']}
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
+  demoPath="/advanced/agents/basic"
+  repoFiles={['src/app/pages/advanced/agents/agents-basic.component.ts']}
 />
 
 ## Adding a Cursor
 
-Get a reference to the editor with `getEditorRef` and add cursors once the editor emits `isReady`:
+Get a reference to the editor with `viewChild(KritzelEditor)` and add cursors once the editor emits `isReady`:
 
-```html
-<script setup lang="ts">
-import { getEditorRef, KritzelEditor } from '@kritzel/vue-editor'
+```ts
+import { Component, viewChild } from '@angular/core';
+import { KritzelEditor } from '@kritzel/angular-editor';
 
-const editor = getEditorRef('editor')
+@Component({
+  selector: 'app-agent-board',
+  imports: [KritzelEditor],
+  template: `<kritzel-editor (isReady)="onReady()"></kritzel-editor>`,
+})
+export class AgentBoardComponent {
+  editor = viewChild(KritzelEditor);
 
-async function onReady() {
-  await editor.value?.addAgenticCursor({
-    id: 'planner',
-    name: 'Planner',
-    color: '#7C3AED',
-    status: 'Thinking…',
-    position: { x: 0, y: 0 },
-  })
+  async onReady() {
+    await this.editor()?.addAgenticCursor({
+      id: 'planner',
+      name: 'Planner',
+      color: '#7C3AED',
+      status: 'Thinking…',
+      position: { x: 0, y: 0 },
+    });
+  }
 }
-</script>
-
-<template>
-  <KritzelEditor ref="editor" @isReady="onReady" />
-</template>
 ```
 
 `addAgenticCursor()` accepts the following options and returns a snapshot of the created cursor:
@@ -65,7 +67,7 @@ async function onReady() {
 Call `moveAgenticCursor()` with either world coordinates or an object. The cursor animates to its target, and the returned promise resolves when it arrives, so you can `await` each step of an agent run:
 
 ```ts
-const editor = editor.value;
+const editor = this.editor();
 
 // Move to a point in world coordinates
 await editor?.moveAgenticCursor('planner', { x: 200, y: 120 });
@@ -95,23 +97,19 @@ If you start a new move while a cursor is still moving, the cursor continues fro
 When a cursor moves to an object, it sticks to that object once it arrives. It then stays on the chosen anchor while the object is dragged, resized, or rotated. Moving the cursor somewhere else releases it, and `detachAgenticCursor()` releases it in place:
 
 ```ts
-await editor.value?.detachAgenticCursor('planner');
+await this.editor()?.detachAgenticCursor('planner');
 ```
 
 If an object with an attached cursor is deleted, the cursor stays where the object was and the editor emits `agenticCursorDetached` with `reason: 'object-removed'`. A manual detach emits the same event with `reason: 'manual'`:
 
 ```html
-<script setup lang="ts">
-import type { KritzelAgenticCursorDetachedEvent } from '@kritzel/vue-editor'
+<kritzel-editor (agenticCursorDetached)="onDetached($event)"></kritzel-editor>
+```
 
-function onDetached(event: CustomEvent<KritzelAgenticCursorDetachedEvent>) {
-  console.log(event.detail.id, event.detail.objectId, event.detail.reason)
+```ts
+onDetached(event: CustomEvent<KritzelAgenticCursorDetachedEvent>) {
+  console.log(event.detail.id, event.detail.objectId, event.detail.reason);
 }
-</script>
-
-<template>
-  <KritzelEditor ref="editor" @agenticCursorDetached="onDetached" />
-</template>
 ```
 
 ## Status Messages
@@ -119,7 +117,7 @@ function onDetached(event: CustomEvent<KritzelAgenticCursorDetachedEvent>) {
 Use `updateAgenticCursor()` to show what an agent is doing. The same method changes the name, color, or visibility of a cursor. Pass `null` as the status to hide the status message:
 
 ```ts
-const editor = editor.value;
+const editor = this.editor();
 
 await editor?.updateAgenticCursor('planner', { status: 'Reviewing shapes' });
 await editor?.updateAgenticCursor('planner', { status: null, color: '#16A34A' });
@@ -132,15 +130,15 @@ Call `removeAgenticCursor()` to remove a single cursor, or `clearAgenticCursors(
 A cursor can also work on the canvas itself. `performAgenticAction()` lets it fly to the target, press, and animate the change, for example dragging an object or drawing a stroke. The changes are saved and synced like the user's edits, but they are recorded in the cursor's own history, so the user's undo never reverts them. The cursor and the objects it selects stay local.
 
 <LiveDemo
-  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
-  demoPath="/advanced/agentic-cursors/actions"
-  repoFiles={['src/pages/advanced/agentic-cursors/AgenticCursorsActionsPage.vue']}
+  repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
+  demoPath="/advanced/agents/actions"
+  repoFiles={['src/app/pages/advanced/agents/agents-actions.component.ts']}
 />
 
 ```ts
-const current = editor.value;
+const editor = this.editor();
 
-const result = await current?.performAgenticAction('planner', {
+const result = await editor?.performAgenticAction('planner', {
   type: 'moveObject',
   objectId: shape.id,
   to: { x: 400, y: 120 },
@@ -192,7 +190,7 @@ The other reasons are `'aborted'`, `'interrupted'` (`moveAgenticCursor()` was ca
 
 ```ts
 const controller = new AbortController();
-const run = current?.performAgenticAction('planner', { type: 'drawPath', points }, { signal: controller.signal });
+const run = editor?.performAgenticAction('planner', { type: 'drawPath', points }, { signal: controller.signal });
 
 controller.abort(); // the stroke is removed again
 ```
@@ -202,10 +200,10 @@ controller.abort(); // the stroke is removed again
 Each cursor has its own undo history. `{ type: 'undo' }` reverts the cursor's last action and `{ type: 'redo' }` applies it again; the user's undo and redo never touch agent changes. `getAgenticCursor()` reports `canUndo` and `canRedo`, as well as `activeAction`, `queueLength`, and `selectedObjectIds`:
 
 ```ts
-const cursor = await current?.getAgenticCursor('planner');
+const cursor = await editor?.getAgenticCursor('planner');
 
 if (cursor?.canUndo) {
-  await current?.performAgenticAction('planner', { type: 'undo' });
+  await editor?.performAgenticAction('planner', { type: 'undo' });
 }
 ```
 
@@ -214,20 +212,16 @@ if (cursor?.canUndo) {
 `objectsAdded`, `objectsUpdated`, and `objectsRemoved` carry a `source` when an agentic cursor made the change. It names the cursor and the action:
 
 ```html
-<script setup lang="ts">
-import type { ObjectsUpdatedEvent } from '@kritzel/vue-editor'
+<kritzel-editor (objectsUpdated)="onObjectsUpdated($event)"></kritzel-editor>
+```
 
-function onObjectsUpdated(event: CustomEvent<ObjectsUpdatedEvent>) {
-  const source = event.detail.source
+```ts
+onObjectsUpdated(event: CustomEvent<ObjectsUpdatedEvent>) {
+  const source = event.detail.source;
   if (source) {
-    console.log(`${source.agentId} ran ${source.actionType}`)
+    console.log(`${source.agentId} ran ${source.actionType}`);
   }
 }
-</script>
-
-<template>
-  <KritzelEditor ref="editor" @objectsUpdated="onObjectsUpdated" />
-</template>
 ```
 
 ## API Details
@@ -235,4 +229,3 @@ function onObjectsUpdated(event: CustomEvent<ObjectsUpdatedEvent>) {
 For the full list of related APIs, see the following reference sections.
 
 - [Agentic Cursors](../api-reference/editor.md#agentic-cursors)
-- [Agentic Cursor Types](../api-reference/types.md#agentic-cursor-types)

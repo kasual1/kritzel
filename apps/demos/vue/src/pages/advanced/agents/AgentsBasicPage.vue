@@ -109,7 +109,7 @@ function onDetached(event: CustomEvent<KritzelAgenticCursorDetachedEvent>) {
     </Toolbar>
     <KritzelEditor
       ref="editor"
-      editorId="agentic-cursors-basic"
+      editorId="agents-basic"
       theme="light"
       :themes="themes"
       :workspaces="workspaces"

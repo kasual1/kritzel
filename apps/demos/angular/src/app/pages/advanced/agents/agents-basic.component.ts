@@ -13,7 +13,7 @@ const PLANNER = 'planner';
 const WRITER = 'writer';
 
 @Component({
-  selector: 'app-agentic-cursors-basic',
+  selector: 'app-agents-basic',
   imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -28,7 +28,7 @@ const WRITER = 'writer';
     </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
-        editorId="agentic-cursors-basic"
+        editorId="agents-basic"
         [theme]="'light'"
         [themes]="themes"
         [workspaces]="workspaces()"
@@ -56,7 +56,7 @@ const WRITER = 'writer';
     `,
   ],
 })
-export class AgenticCursorsBasicComponent {
+export class AgentsBasicComponent {
   editor = viewChild(KritzelEditor);
 
   themes = [angularThemeLight, angularThemeDark];

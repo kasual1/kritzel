@@ -49,7 +49,7 @@ function createActionSeeds(): KritzelShape[] {
 }
 
 @Component({
-  selector: 'app-agentic-cursors-actions',
+  selector: 'app-agents-actions',
   imports: [KritzelEditor, ToolbarComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -68,7 +68,7 @@ function createActionSeeds(): KritzelShape[] {
     </app-toolbar>
     <div class="editor-wrap">
       <kritzel-editor
-        editorId="agentic-cursors-actions"
+        editorId="agents-actions"
         [syncConfig]="syncConfig"
         [user]="user"
         [theme]="'light'"
@@ -99,7 +99,7 @@ function createActionSeeds(): KritzelShape[] {
     `,
   ],
 })
-export class AgenticCursorsActionsComponent {
+export class AgentsActionsComponent {
   editor = viewChild(KritzelEditor);
 
   themes = [angularThemeLight, angularThemeDark];

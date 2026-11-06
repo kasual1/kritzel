@@ -46,7 +46,7 @@ function createActionSeeds() {
   return [rectangle, ellipse];
 }
 
-export function AgenticCursorsActionsPage() {
+export function AgentsActionsPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [isRunning, setIsRunning] = useState(false);
@@ -151,7 +151,7 @@ export function AgenticCursorsActionsPage() {
       </Toolbar>
       <KritzelEditor
         ref={editorRef}
-        editorId="agentic-cursors-actions"
+        editorId="agents-actions"
         syncConfig={syncConfig}
         user={user}
         theme="light"

@@ -19,8 +19,8 @@ Agentic cursors are rendered locally only. They are not synchronized to collabor
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
-  demoPath="/advanced/agentic-cursors/basic"
-  repoFiles={['src/pages/advanced/agentic-cursors/AgenticCursorsBasicPage.tsx']}
+  demoPath="/advanced/agents/basic"
+  repoFiles={['src/pages/advanced/agents/AgentsBasicPage.tsx']}
 />
 
 ## Adding a Cursor
@@ -127,8 +127,8 @@ A cursor can also work on the canvas itself. `performAgenticAction()` lets it fl
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"
-  demoPath="/advanced/agentic-cursors/actions"
-  repoFiles={['src/pages/advanced/agentic-cursors/AgenticCursorsActionsPage.tsx']}
+  demoPath="/advanced/agents/actions"
+  repoFiles={['src/pages/advanced/agents/AgentsActionsPage.tsx']}
 />
 
 ```ts
