@@ -15,6 +15,9 @@ export interface KritzelTheme {
     agenticCursorFontFamily?: string;
     agenticCursorLabelFontSize?: string;
     agenticCursorLabelTextColor?: string;
+    agenticCursorRippleSize?: string;
+    agenticCursorSelectionBorderWidth?: string;
+    agenticCursorSelectionFillOpacity?: string;
     agenticCursorStatusBackgroundColor?: string;
     agenticCursorStatusFontSize?: string;
     agenticCursorStatusMaxWidth?: string;

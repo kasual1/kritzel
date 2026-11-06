@@ -22,6 +22,7 @@ import { KritzelLocalizationManager } from '../managers/localization.manager';
 import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
+import { KritzelAgenticActionManager } from '../managers/agentic-action.manager';
 import { KritzelObjectTitlebarManager } from '../managers/object-titlebar.manager';
 import { KritzelObjectConfigManager } from '../managers/object-config.manager';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -77,6 +78,8 @@ export class KritzelCore {
   private readonly _clipboardManager: KritzelClipboardManager;
   /** Manager for programmatically controlled (agentic) cursors */
   private readonly _agenticCursorManager: KritzelAgenticCursorManager;
+  /** Runs actions performed by agentic cursors */
+  private readonly _agenticActionManager: KritzelAgenticActionManager;
   /** Manager for titlebars rendered above objects */
   private readonly _objectTitlebarManager: KritzelObjectTitlebarManager;
   private readonly _objectConfigManager: KritzelObjectConfigManager;
@@ -192,6 +195,14 @@ export class KritzelCore {
   }
 
   /**
+   * Gets the agentic action manager.
+   * @returns The KritzelAgenticActionManager that runs `performAgenticAction` calls
+   */
+  get agenticActionManager(): KritzelAgenticActionManager {
+    return this._agenticActionManager;
+  }
+
+  /**
    * Gets the editor ID used for namespacing storage keys.
    * @returns The editor ID or undefined if not set
    */
@@ -244,6 +255,7 @@ export class KritzelCore {
     this._permissionManager = new KritzelBrowserPermissionManager(this);
     this._clipboardManager = new KritzelClipboardManager(this);
     this._agenticCursorManager = new KritzelAgenticCursorManager(this);
+    this._agenticActionManager = new KritzelAgenticActionManager(this);
     this._objectTitlebarManager = new KritzelObjectTitlebarManager(this);
     this._objectConfigManager = new KritzelObjectConfigManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);

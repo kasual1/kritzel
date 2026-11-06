@@ -1,7 +1,6 @@
 import { KritzelCore } from '../core/core.class';
 import {
   KritzelAgenticCursor,
-  KritzelAgenticCursorAnchor,
   KritzelAgenticCursorAttachment,
   KritzelAgenticCursorDetachedEvent,
   KritzelAgenticCursorMoveOptions,
@@ -11,26 +10,16 @@ import {
   KritzelAgenticCursorPatch,
   KritzelAgenticCursorTarget,
 } from '../../interfaces/agentic-cursor.interface';
+import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelEasingHelper } from '../../helpers/easing.helper';
 import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
+import { resolveObjectAnchor } from './agentic-actions/agentic-geometry.helper';
 
 export const AGENTIC_CURSOR_DEFAULT_SPEED = 1200;
 export const AGENTIC_CURSOR_MIN_DURATION = 250;
 export const AGENTIC_CURSOR_MAX_DURATION = 1200;
 const DEFAULT_COLOR = '#6B7280';
-
-const ANCHOR_FACTORS: Record<KritzelAgenticCursorAnchor, [number, number]> = {
-  'center': [0.5, 0.5],
-  'top-left': [0, 0],
-  'top': [0.5, 0],
-  'top-right': [1, 0],
-  'right': [1, 0.5],
-  'bottom-right': [1, 1],
-  'bottom': [0.5, 1],
-  'bottom-left': [0, 1],
-  'left': [0, 0.5],
-};
 
 interface AgenticCursorAnimation {
   from: KritzelPoint;
@@ -51,7 +40,17 @@ interface AgenticCursorEntry {
   position: KritzelPoint;
   attachedTo: KritzelAgenticCursorAttachment | null;
   animation: AgenticCursorAnimation | null;
+  isPressed: boolean;
+  pressCount: number;
+  selectedObjectIds: string[];
+  activeAction: KritzelAgenticActionType | null;
+  queueLength: number;
+  /** Incremented by every public `move()`, so a running action can tell that the host took over. */
+  hostMoveGeneration: number;
 }
+
+/** Undo availability of a cursor's own history; provided by the agentic action manager. */
+export type KritzelAgenticCursorHistoryProvider = (cursorId: string) => { canUndo: boolean; canRedo: boolean };
 
 /**
  * Manages locally rendered, programmatically controlled ("agentic") cursors.
@@ -66,7 +65,10 @@ export class KritzelAgenticCursorManager {
   private readonly _cursors = new Map<string, AgenticCursorEntry>();
   private readonly _changeListeners = new Set<() => void>();
   private readonly _frameListeners = new Set<() => void>();
+  private readonly _beforeFrameListeners = new Set<(now: number) => void>();
+  private readonly _removedListeners = new Set<(id: string) => void>();
   private readonly _detachedListeners = new Set<(event: KritzelAgenticCursorDetachedEvent) => void>();
+  private _historyProvider: KritzelAgenticCursorHistoryProvider | null = null;
   private _rafId: number | null = null;
   private _idCounter = 0;
 
@@ -103,6 +105,12 @@ export class KritzelAgenticCursorManager {
       position,
       attachedTo,
       animation: null,
+      isPressed: false,
+      pressCount: 0,
+      selectedObjectIds: [],
+      activeAction: null,
+      queueLength: 0,
+      hostMoveGeneration: 0,
     };
 
     this._cursors.set(id, entry);
@@ -125,29 +133,95 @@ export class KritzelAgenticCursorManager {
   /**
    * Animates a cursor to a world point or an object anchor.
    * Resolves when the animation ends. An interrupted move resolves with `completed: false`.
+   * A move also interrupts an agentic action running on this cursor.
    */
   move(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
     const entry = this.getEntryOrThrow(id);
     const destination = this.resolveTargetOrThrow(target);
+    entry.hostMoveGeneration++;
+    return this.startMove(entry, target, destination, options);
+  }
 
+  /**
+   * Animates a cursor like `move()`, on behalf of an agentic action. Unlike `move()`, it does
+   * not count as a host move, so the action does not interrupt itself.
+   * @internal
+   */
+  fly(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
+    const entry = this.getEntryOrThrow(id);
+    const destination = this.resolveTargetOrThrow(target);
+    return this.startMove(entry, target, destination, options);
+  }
+
+  /** Number of host `move()` calls for a cursor so far. @internal */
+  getHostMoveGeneration(id: string): number {
+    return this._cursors.get(id)?.hostMoveGeneration ?? 0;
+  }
+
+  /** Stops a running animation; its promise resolves with `completed: false`. @internal */
+  stopAnimation(id: string): void {
+    const entry = this._cursors.get(id);
+    if (!entry?.animation) return;
     this.finishAnimation(entry, false);
+    this.emitChange();
+  }
+
+  /** Places a cursor at a world point immediately, cancelling any animation and attachment. @internal */
+  setPosition(id: string, point: KritzelPoint): void {
+    const entry = this._cursors.get(id);
+    if (!entry) return;
+    const wasAnimating = entry.animation !== null;
+    this.finishAnimation(entry, false);
+    entry.position = { x: point.x, y: point.y };
     entry.attachedTo = null;
+    if (wasAnimating) this.emitChange();
+    this.ensureLoop();
+  }
 
-    const duration = options.duration ?? this.computeDuration(entry.position, destination, options.speed);
+  /** Attaches a cursor to an object anchor and moves it there immediately. @internal */
+  attach(id: string, target: KritzelAgenticCursorObjectTarget): void {
+    const entry = this._cursors.get(id);
+    if (!entry) return;
+    const point = this.resolveTarget(target);
+    if (!point) return;
+    this.finishAnimation(entry, false);
+    entry.position = point;
+    entry.attachedTo = this.toAttachment(target);
+    this.emitChange();
+  }
 
-    return new Promise<KritzelAgenticCursorMoveResult>(resolve => {
-      entry.animation = {
-        from: { ...entry.position },
-        target,
-        startTime: this.now(),
-        duration: Math.max(0, duration),
-        easing: KritzelEasingHelper.resolve(options.easing),
-        attach: options.attach ?? true,
-        resolve,
-      };
-      this.emitChange();
-      this.ensureLoop();
-    });
+  /** Sets the pressed state; every press increments `pressCount`. @internal */
+  setPressed(id: string, pressed: boolean): void {
+    const entry = this._cursors.get(id);
+    if (!entry || entry.isPressed === pressed) return;
+    entry.isPressed = pressed;
+    if (pressed) entry.pressCount++;
+    this.emitChange();
+  }
+
+  /** Sets the objects the cursor shows as selected. @internal */
+  setSelectedObjectIds(id: string, objectIds: string[]): void {
+    const entry = this._cursors.get(id);
+    if (!entry) return;
+    if (entry.selectedObjectIds.length === objectIds.length && entry.selectedObjectIds.every((value, i) => value === objectIds[i])) {
+      return;
+    }
+    entry.selectedObjectIds = [...objectIds];
+    this.emitChange();
+  }
+
+  /** Sets the running action type and queue length. @internal */
+  setActivity(id: string, activeAction: KritzelAgenticActionType | null, queueLength: number): void {
+    const entry = this._cursors.get(id);
+    if (!entry || (entry.activeAction === activeAction && entry.queueLength === queueLength)) return;
+    entry.activeAction = activeAction;
+    entry.queueLength = queueLength;
+    this.emitChange();
+  }
+
+  /** Sets the provider of `canUndo` / `canRedo` for snapshots. @internal */
+  setHistoryProvider(provider: KritzelAgenticCursorHistoryProvider | null): void {
+    this._historyProvider = provider;
   }
 
   /** Detaches a cursor from its object. The cursor stays at its current position. */
@@ -168,16 +242,19 @@ export class KritzelAgenticCursorManager {
     this._cursors.delete(id);
     this.emitChange();
     if (this._cursors.size === 0) this.stopLoop();
+    this.emitRemoved(id);
     return true;
   }
 
   /** Removes all cursors. */
   clear(): void {
     if (this._cursors.size === 0) return;
+    const ids = Array.from(this._cursors.keys());
     this._cursors.forEach(entry => this.finishAnimation(entry, false));
     this._cursors.clear();
     this.emitChange();
     this.stopLoop();
+    ids.forEach(id => this.emitRemoved(id));
   }
 
   get(id: string): KritzelAgenticCursor | null {
@@ -201,10 +278,27 @@ export class KritzelAgenticCursorManager {
     return () => this._frameListeners.delete(listener);
   }
 
+  /** Subscribes to the start of each frame, before animations and attachments are advanced. @internal */
+  onBeforeFrame(listener: (now: number) => void): () => void {
+    this._beforeFrameListeners.add(listener);
+    return () => this._beforeFrameListeners.delete(listener);
+  }
+
+  /** Subscribes to cursor removal (`remove()` and `clear()`). @internal */
+  onRemoved(listener: (id: string) => void): () => void {
+    this._removedListeners.add(listener);
+    return () => this._removedListeners.delete(listener);
+  }
+
   /** Subscribes to detach events. */
   onDetached(listener: (event: KritzelAgenticCursorDetachedEvent) => void): () => void {
     this._detachedListeners.add(listener);
     return () => this._detachedListeners.delete(listener);
+  }
+
+  /** Makes sure the frame loop runs while cursors exist. @internal */
+  requestFrames(): void {
+    this.ensureLoop();
   }
 
   /**
@@ -212,6 +306,8 @@ export class KritzelAgenticCursorManager {
    * Called by the internal animation loop; public for testing.
    */
   tick(now: number = this.now()): void {
+    this._beforeFrameListeners.forEach(listener => this.safeCall(() => listener(now)));
+
     let structuralChange = false;
 
     this._cursors.forEach(entry => {
@@ -261,7 +357,7 @@ export class KritzelAgenticCursorManager {
     });
 
     if (structuralChange) this.emitChange();
-    this._frameListeners.forEach(listener => listener());
+    this._frameListeners.forEach(listener => this.safeCall(listener));
   }
 
   /** Resolves a target to a world point, or `null` if the target object doesn't exist. */
@@ -273,30 +369,39 @@ export class KritzelAgenticCursorManager {
     const object = this._core.store.objects?.findById(target.objectId);
     if (!object) return null;
 
-    const box = object.boundingBox;
-    const [ax, ay] = ANCHOR_FACTORS[target.anchor ?? 'center'] ?? ANCHOR_FACTORS.center;
-    const localX = box.x + ax * box.width + (target.offset?.x ?? 0);
-    const localY = box.y + ay * box.height + (target.offset?.y ?? 0);
-
-    const rotation = object.rotation ?? 0;
-    if (!rotation) {
-      return { x: localX, y: localY };
-    }
-
-    const cx = box.x + box.width / 2;
-    const cy = box.y + box.height / 2;
-    const cos = Math.cos(rotation);
-    const sin = Math.sin(rotation);
-    return {
-      x: cos * (localX - cx) - sin * (localY - cy) + cx,
-      y: sin * (localX - cx) + cos * (localY - cy) + cy,
-    };
+    return resolveObjectAnchor(object, target.anchor ?? 'center', target.offset);
   }
 
   /** Stops the animation loop and resolves pending moves. Cursors are kept. */
   cleanup(): void {
     this._cursors.forEach(entry => this.finishAnimation(entry, false));
     this.stopLoop();
+  }
+
+  private startMove(
+    entry: AgenticCursorEntry,
+    target: KritzelAgenticCursorTarget,
+    destination: KritzelPoint,
+    options: KritzelAgenticCursorMoveOptions,
+  ): Promise<KritzelAgenticCursorMoveResult> {
+    this.finishAnimation(entry, false);
+    entry.attachedTo = null;
+
+    const duration = options.duration ?? this.computeDuration(entry.position, destination, options.speed);
+
+    return new Promise<KritzelAgenticCursorMoveResult>(resolve => {
+      entry.animation = {
+        from: { ...entry.position },
+        target,
+        startTime: this.now(),
+        duration: Math.max(0, duration),
+        easing: KritzelEasingHelper.resolve(options.easing),
+        attach: options.attach ?? true,
+        resolve,
+      };
+      this.emitChange();
+      this.ensureLoop();
+    });
   }
 
   private computeDuration(from: KritzelPoint, to: KritzelPoint, speed: number = AGENTIC_CURSOR_DEFAULT_SPEED): number {
@@ -355,6 +460,7 @@ export class KritzelAgenticCursorManager {
   }
 
   private toSnapshot(entry: AgenticCursorEntry): KritzelAgenticCursor {
+    const history = this._historyProvider?.(entry.id) ?? { canUndo: false, canRedo: false };
     return {
       id: entry.id,
       name: entry.name,
@@ -364,6 +470,13 @@ export class KritzelAgenticCursorManager {
       position: { ...entry.position },
       attachedTo: entry.attachedTo ? { ...entry.attachedTo, offset: { ...entry.attachedTo.offset } } : null,
       isMoving: entry.animation !== null,
+      selectedObjectIds: [...entry.selectedObjectIds],
+      isPressed: entry.isPressed,
+      pressCount: entry.pressCount,
+      activeAction: entry.activeAction,
+      queueLength: entry.queueLength,
+      canUndo: history.canUndo,
+      canRedo: history.canRedo,
     };
   }
 
@@ -376,11 +489,24 @@ export class KritzelAgenticCursorManager {
   }
 
   private emitChange(): void {
-    this._changeListeners.forEach(listener => listener());
+    this._changeListeners.forEach(listener => this.safeCall(listener));
   }
 
   private emitDetached(event: KritzelAgenticCursorDetachedEvent): void {
-    this._detachedListeners.forEach(listener => listener(event));
+    this._detachedListeners.forEach(listener => this.safeCall(() => listener(event)));
+  }
+
+  private emitRemoved(id: string): void {
+    this._removedListeners.forEach(listener => this.safeCall(() => listener(id)));
+  }
+
+  /** Runs a listener so that one failing listener never stops the others or the frame loop. */
+  private safeCall(fn: () => void): void {
+    try {
+      fn();
+    } catch (error) {
+      console.error('[Kritzel] Agentic cursor listener failed:', error);
+    }
   }
 
   private now(): number {
@@ -391,9 +517,12 @@ export class KritzelAgenticCursorManager {
     if (this._rafId !== null || this._cursors.size === 0 || typeof requestAnimationFrame !== 'function') return;
     const loop = (time: number) => {
       this._rafId = null;
-      this.tick(time);
-      if (this._cursors.size > 0) {
-        this._rafId = requestAnimationFrame(loop);
+      try {
+        this.tick(time);
+      } finally {
+        if (this._cursors.size > 0 && this._rafId === null) {
+          this._rafId = requestAnimationFrame(loop);
+        }
       }
     };
     this._rafId = requestAnimationFrame(loop);

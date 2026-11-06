@@ -1,5 +1,6 @@
 import { KritzelEasing } from './easing.interface';
 import { KritzelPoint } from './point.interface';
+import type { KritzelAgenticActionType } from './agentic-action.interface';
 
 /** Where on an object an attached agentic cursor sits. The anchor rotates with the object. */
 export type KritzelAgenticCursorAnchor =
@@ -94,6 +95,20 @@ export interface KritzelAgenticCursor {
   attachedTo: KritzelAgenticCursorAttachment | null;
   /** Whether the cursor is currently animating. */
   isMoving: boolean;
+  /** Objects this cursor shows as selected: its `select` selection plus the targets of its running action. Local only. */
+  selectedObjectIds: string[];
+  /** Whether the cursor is pressed (during clicks and drags). */
+  isPressed: boolean;
+  /** Increases on every press. */
+  pressCount: number;
+  /** Type of the running action, or `null` when idle. */
+  activeAction: KritzelAgenticActionType | null;
+  /** Number of actions waiting behind the running one. */
+  queueLength: number;
+  /** Whether `{ type: 'undo' }` has a step to undo. */
+  canUndo: boolean;
+  /** Whether `{ type: 'redo' }` has a step to redo. */
+  canRedo: boolean;
 }
 
 /** Emitted when an agentic cursor is detached from an object. */

@@ -212,4 +212,133 @@ describe('KritzelAgenticCursorManager', () => {
       expect(manager.count).toBe(0);
     });
   });
+
+  describe('action support', () => {
+    it('should include the action fields in snapshots', () => {
+      const cursor = manager.add({ id: 'a' });
+      expect(cursor).toMatchObject({
+        selectedObjectIds: [],
+        isPressed: false,
+        pressCount: 0,
+        activeAction: null,
+        queueLength: 0,
+        canUndo: false,
+        canRedo: false,
+      });
+      manager.setHistoryProvider(() => ({ canUndo: true, canRedo: false }));
+      expect(manager.get('a')).toMatchObject({ canUndo: true, canRedo: false });
+    });
+
+    it('should count host moves but not action flights', () => {
+      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      void manager.fly('a', { x: 10, y: 0 });
+      expect(manager.getHostMoveGeneration('a')).toBe(0);
+      void manager.move('a', { x: 20, y: 0 });
+      expect(manager.getHostMoveGeneration('a')).toBe(1);
+    });
+
+    it('should stop an animation and resolve it with completed: false', async () => {
+      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      const promise = manager.fly('a', { x: 100, y: 0 }, { duration: 100 });
+      manager.stopAnimation('a');
+      await expect(promise).resolves.toEqual({ completed: false });
+      expect(manager.get('a')?.isMoving).toBe(false);
+    });
+
+    it('should set the position immediately, cancelling animations and attachments', async () => {
+      objects.set('o', createObject('o', 0, 0, 10, 10));
+      manager.add({ id: 'a', position: { objectId: 'o' } });
+      const promise = manager.fly('a', { x: 100, y: 0 }, { duration: 100 });
+      manager.setPosition('a', { x: 7, y: 8 });
+      await expect(promise).resolves.toEqual({ completed: false });
+      expect(manager.get('a')).toMatchObject({ position: { x: 7, y: 8 }, attachedTo: null });
+    });
+
+    it('should attach to an object anchor immediately', () => {
+      objects.set('o', createObject('o', 0, 0, 100, 50));
+      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      manager.attach('a', { objectId: 'o', anchor: 'right' });
+      expect(manager.get('a')).toMatchObject({ position: { x: 100, y: 25 }, attachedTo: { objectId: 'o', anchor: 'right' } });
+    });
+
+    it('should count presses', () => {
+      manager.add({ id: 'a' });
+      manager.setPressed('a', true);
+      manager.setPressed('a', true);
+      manager.setPressed('a', false);
+      manager.setPressed('a', true);
+      expect(manager.get('a')).toMatchObject({ isPressed: true, pressCount: 2 });
+    });
+
+    it('should only emit changes when selection or activity actually change', () => {
+      manager.add({ id: 'a' });
+      const listener = jest.fn();
+      manager.onChange(listener);
+      manager.setSelectedObjectIds('a', ['x']);
+      manager.setSelectedObjectIds('a', ['x']);
+      manager.setActivity('a', 'moveObject', 2);
+      manager.setActivity('a', 'moveObject', 2);
+      expect(listener).toHaveBeenCalledTimes(2);
+      expect(manager.get('a')).toMatchObject({ selectedObjectIds: ['x'], activeAction: 'moveObject', queueLength: 2 });
+    });
+
+    it('should call before-frame listeners before advancing animations', () => {
+      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      void manager.fly('a', { x: 100, y: 0 }, { duration: 100, easing: 'linear' });
+      const positions: number[] = [];
+      manager.onBeforeFrame(t => positions.push(t, manager.get('a')!.position.x));
+      manager.tick(1050);
+      expect(positions).toEqual([1050, 0]);
+      expect(manager.get('a')!.position.x).toBe(50);
+    });
+
+    it('should notify removal from remove() and clear()', () => {
+      manager.add({ id: 'a' });
+      manager.add({ id: 'b' });
+      manager.add({ id: 'c' });
+      const removed: string[] = [];
+      manager.onRemoved(id => removed.push(id));
+      manager.remove('a');
+      manager.clear();
+      expect(removed).toEqual(['a', 'b', 'c']);
+    });
+
+    it('should isolate listener errors', () => {
+      const error = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      manager.add({ id: 'a' });
+      const good = jest.fn();
+      manager.onFrame(() => {
+        throw new Error('boom');
+      });
+      manager.onFrame(good);
+      manager.onBeforeFrame(() => {
+        throw new Error('boom');
+      });
+      expect(() => manager.tick(1010)).not.toThrow();
+      expect(good).toHaveBeenCalled();
+      expect(error).toHaveBeenCalled();
+    });
+
+    it('should keep the frame loop running when a frame throws', () => {
+      let scheduled: FrameRequestCallback | null = null;
+      const raf = jest.fn((cb: FrameRequestCallback) => {
+        scheduled = cb;
+        return 1;
+      });
+      (globalThis as any).requestAnimationFrame = raf;
+      (globalThis as any).cancelAnimationFrame = jest.fn();
+      try {
+        manager.add({ id: 'a' });
+        jest.spyOn(manager, 'tick').mockImplementationOnce(() => {
+          throw new Error('boom');
+        });
+        expect(() => scheduled!(1016)).toThrow('boom');
+        expect(raf).toHaveBeenCalledTimes(2);
+      } finally {
+        manager.clear();
+        delete (globalThis as any).requestAnimationFrame;
+        delete (globalThis as any).cancelAnimationFrame;
+      }
+    });
+  });
 });
