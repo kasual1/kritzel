@@ -112,6 +112,19 @@ describe('KritzelEngine', () => {
     setSyncConfig: jest.fn(),
     setAssetStorageConfig: jest.fn(),
     addObject: jest.fn(),
+    // Mirrors the real preparation for plain objects; group flushing is covered by the core spec.
+    prepareObjectForInsert: jest.fn(function (this: any, object: any) {
+      object.id = object.generateId();
+      object._core = this;
+      object.scale = object.scale ?? this.store.state.scale;
+      object.zIndex = this.store.currentZIndex;
+      object.workspaceId = this.store.state.activeWorkspace?.id;
+      return [];
+    }),
+    insertPreparedObject: jest.fn(function (this: any, object: any, descendants: any[]) {
+      descendants.forEach((child: any) => this.addObject(child));
+      this.addObject(object);
+    }),
     updateObject: jest.fn(),
     removeObject: jest.fn(),
     delete: jest.fn(),
@@ -2896,10 +2909,7 @@ describe('KritzelEngine', () => {
     });
   });
 
-  describe('addObject / addObjects group zIndex allocation', () => {
-    /** zIndex of every object in the simulated store at the moment it was inserted, keyed by id. */
-    let stored: Map<string, number>;
-
+  describe('addObject / addObjects insertion', () => {
     const makeObject = (id: string): any => ({
       id,
       scale: 1,
@@ -2909,43 +2919,38 @@ describe('KritzelEngine', () => {
       generateId: jest.fn().mockReturnValue(id),
     });
 
-    // KritzelGroup is mocked above, so the engine's `instanceof KritzelGroup` checks compare against MockKritzelGroup.
-    const makeGroup = (id: string, children: any[]): any =>
-      withPrototype(MockKritzelGroup, {
-        ...makeObject(id),
-        __class__: 'KritzelGroup',
-        childIds: children.map(child => child.id),
-        _pendingChildren: children,
-        finalize: jest.fn(),
-      });
-
     beforeEach(() => {
       core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
       jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
-
-      // Like the real store, currentZIndex is one above the highest stored zIndex.
-      stored = new Map([['existing', 4]]);
-      core.addObject.mockImplementation((object: any) => stored.set(object.id, object.zIndex));
-      Object.defineProperty(core.store, 'currentZIndex', { get: () => Math.max(0, ...stored.values()) + 1, configurable: true });
     });
 
-    it('addObject stacks pending children bottom to top in the order they were added', async () => {
-      const inner = makeGroup('inner', [makeObject('r2'), makeObject('r3')]);
-      const group = makeGroup('group', [makeObject('r1'), inner, makeObject('r4')]);
+    it('addObject prepares and inserts the object through the core', async () => {
+      const object = makeObject('a');
 
-      await engine.addObject(group);
+      await engine.addObject(object);
 
-      // Each group takes the value of its top child.
-      expect(Object.fromEntries(stored)).toEqual({ existing: 4, r1: 5, r2: 6, r3: 7, inner: 7, r4: 8, group: 8 });
+      expect(core.prepareObjectForInsert).toHaveBeenCalledWith(object);
+      expect(core.insertPreparedObject).toHaveBeenCalledWith(object, []);
+      expect(core.deselectAllObjects).toHaveBeenCalled();
     });
 
-    it('addObjects places a plain object that follows a group above the group band', async () => {
-      const group = makeGroup('group', [makeObject('a'), makeObject('b')]);
-      const plain = makeObject('plain');
+    it('addObjects prepares and inserts every object inside one transaction', async () => {
+      const a = makeObject('a');
+      const b = makeObject('b');
+      let inTransaction = false;
+      core.store.objects.transaction = jest.fn((callback: () => void) => {
+        inTransaction = true;
+        callback();
+        inTransaction = false;
+      });
+      const insertedInTransaction: boolean[] = [];
+      core.insertPreparedObject.mockImplementation(() => insertedInTransaction.push(inTransaction));
 
-      await engine.addObjects([group, plain]);
+      await engine.addObjects([a, b]);
 
-      expect(Object.fromEntries(stored)).toEqual({ existing: 4, a: 5, b: 6, group: 6, plain: 7 });
+      expect(core.store.objects.transaction).toHaveBeenCalledTimes(1);
+      expect(core.prepareObjectForInsert.mock.calls.map((call: any[]) => call[0])).toEqual([a, b]);
+      expect(insertedInTransaction).toEqual([true, true]);
     });
   });
 

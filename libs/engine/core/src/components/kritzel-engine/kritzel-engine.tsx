@@ -28,7 +28,6 @@ import {
   KritzelContextMenuHandler,
   KritzelBaseObject,
   KritzelEventHelper,
-  KritzelZOrderHelper,
   ABSOLUTE_SCALE_MAX,
   ABSOLUTE_SCALE_MIN,
   KritzelDynamicObject,
@@ -1171,91 +1170,15 @@ export class KritzelEngine implements KritzelEngineHost {
   async addObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    object.id = object.generateId();
     object._core = this.core;
     object.scale = object.scale ?? this.core.store.state.scale;
-    object.zIndex = this.core.store.currentZIndex;
-    object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
     if (object instanceof KritzelImage) {
       await object.prepareForInsert();
     }
 
-    // Handle KritzelText: recreate the editor now that _core is available
-    // The editor's dispatchTransaction callback needs _core for persisting changes
-    if (object instanceof KritzelText) {
-      const pendingContent = object.content;
-      object.editor = object.createEditor();
-      if (pendingContent) {
-        object.setContent(pendingContent);
-      }
-    }
-
-    // Handle KritzelGroup: flush pending children (recursively for nested groups) into the store
-    if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
-      // Build a map of old ID → new ID across all nesting levels so we can
-      // remap anchor references regardless of how deeply nested the line is.
-      const idRemapping = new Map<string, string>();
-      const allFlushedChildren: KritzelBaseObject<any>[] = [];
-
-      // Children stack bottom to top in the order they were added; the group takes its top child's zIndex.
-      KritzelZOrderHelper.allocate(object, this.core.store.currentZIndex, group => group._pendingChildren);
-
-      const flushGroup = (group: KritzelGroup): void => {
-        if (group._pendingChildren.length === 0) {
-          return;
-        }
-
-        const pending = group._pendingChildren;
-        group._pendingChildren = [];
-        group.childIds = [];
-
-        pending.forEach(child => {
-          const oldId = child.id;
-          child.id = child.generateId();
-          child._core = this.core;
-          child.scale = child.scale ?? this.core.store.state.scale;
-          child.workspaceId = this.core.store.state.activeWorkspace!.id;
-
-          idRemapping.set(oldId, child.id);
-          group.childIds.push(child.id);
-          allFlushedChildren.push(child);
-
-          // Recurse into nested groups before inserting so grandchildren get
-          // proper IDs and `childIds` references before the parent is added.
-          if (child instanceof KritzelGroup) {
-            flushGroup(child);
-          }
-        });
-      };
-
-      flushGroup(object);
-
-      // Remap anchor references in lines across all flushed descendants
-      allFlushedChildren.forEach(child => {
-        if (child instanceof KritzelLine) {
-          if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
-            child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
-          }
-          if (child.endAnchor && idRemapping.has(child.endAnchor.objectId)) {
-            child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId)! };
-          }
-        }
-      });
-
-      // Insert all flushed descendants into the store
-      allFlushedChildren.forEach(child => {
-        this.core.addObject(child);
-      });
-
-      // finalize() recurses into nested groups so all bounding boxes/snapshots align
-      object.finalize();
-
-      // Rebuild anchor index so anchored lines are tracked
-      this.core.anchorManager.rebuildIndex();
-    }
-
-    this.core.addObject(object);
+    const descendants = this.core.prepareObjectForInsert(object);
+    this.core.insertPreparedObject(object, descendants);
     this.core.rerender();
 
     // Wait for the object to be fully rendered and mounted before resolving.
@@ -1295,74 +1218,8 @@ export class KritzelEngine implements KritzelEngineHost {
 
     this.core.store.objects.transaction(() => {
       for (const object of objects) {
-        object.id = object.generateId();
-        object._core = this.core;
-        object.scale = object.scale ?? this.core.store.state.scale;
-        object.zIndex = this.core.store.currentZIndex;
-        object.workspaceId = this.core.store.state.activeWorkspace!.id;
-
-        if (object instanceof KritzelText) {
-          const pendingContent = object.content;
-          object.editor = object.createEditor();
-          if (pendingContent) {
-            object.setContent(pendingContent);
-          }
-        }
-
-        if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
-          const idRemapping = new Map<string, string>();
-          const allFlushedChildren: KritzelBaseObject<any>[] = [];
-
-          KritzelZOrderHelper.allocate(object, this.core.store.currentZIndex, group => group._pendingChildren);
-
-          const flushGroup = (group: KritzelGroup): void => {
-            if (group._pendingChildren.length === 0) {
-              return;
-            }
-
-            const pending = group._pendingChildren;
-            group._pendingChildren = [];
-            group.childIds = [];
-
-            pending.forEach(child => {
-              const oldId = child.id;
-              child.id = child.generateId();
-              child._core = this.core;
-              child.scale = child.scale ?? this.core.store.state.scale;
-              child.workspaceId = this.core.store.state.activeWorkspace!.id;
-
-              idRemapping.set(oldId, child.id);
-              group.childIds.push(child.id);
-              allFlushedChildren.push(child);
-
-              if (child instanceof KritzelGroup) {
-                flushGroup(child);
-              }
-            });
-          };
-
-          flushGroup(object);
-
-          allFlushedChildren.forEach(child => {
-            if (child instanceof KritzelLine) {
-              if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
-                child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
-              }
-              if (child.endAnchor && idRemapping.has(child.endAnchor.objectId)) {
-                child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId)! };
-              }
-            }
-          });
-
-          allFlushedChildren.forEach(child => {
-            this.core.addObject(child);
-          });
-
-          object.finalize();
-          this.core.anchorManager.rebuildIndex();
-        }
-
-        this.core.addObject(object);
+        const descendants = this.core.prepareObjectForInsert(object);
+        this.core.insertPreparedObject(object, descendants);
       }
     });
 

@@ -930,6 +930,105 @@ export class KritzelCore {
   }
 
   /**
+   * Prepares an object that was built outside the canvas (e.g. `new KritzelShape(...)`) for the
+   * active workspace: a fresh ID, the core reference, scale, z-index and workspace, a text editor
+   * that can persist, and, for a group, its pending children with new IDs and remapped line anchors.
+   * Nothing is inserted yet; pass the result to {@link insertPreparedObject}.
+   * Async preparation (`KritzelImage.prepareForInsert()`) must run before this call.
+   * @param object - The object to prepare
+   * @returns The group's flushed descendants in insertion order; empty for other objects.
+   */
+  prepareObjectForInsert(object: KritzelBaseObject<any>): KritzelBaseObject<any>[] {
+    const state = this._store.state;
+    object.id = object.generateId();
+    object._core = this;
+    object.scale = object.scale ?? state.scale;
+    object.zIndex = this._store.currentZIndex;
+    object.workspaceId = state.activeWorkspace!.id;
+
+    // The editor's dispatchTransaction callback needs _core to persist changes.
+    if (object instanceof KritzelText) {
+      const pendingContent = object.content;
+      object.editor = object.createEditor();
+      if (pendingContent) {
+        object.setContent(pendingContent);
+      }
+    }
+
+    if (!(object instanceof KritzelGroup) || object._pendingChildren.length === 0) {
+      return [];
+    }
+
+    // Old ID -> new ID across all nesting levels, to remap anchors however deep the line is.
+    const idRemapping = new Map<string, string>();
+    const descendants: KritzelBaseObject<any>[] = [];
+
+    // Children stack bottom to top in the order they were added; the group takes its top child's zIndex.
+    KritzelZOrderHelper.allocate(object, this._store.currentZIndex, group => group._pendingChildren);
+
+    const flushGroup = (group: KritzelGroup): void => {
+      if (group._pendingChildren.length === 0) {
+        return;
+      }
+
+      const pending = group._pendingChildren;
+      group._pendingChildren = [];
+      group.childIds = [];
+
+      pending.forEach(child => {
+        const oldId = child.id;
+        child.id = child.generateId();
+        child._core = this;
+        child.scale = child.scale ?? state.scale;
+        child.workspaceId = state.activeWorkspace!.id;
+
+        idRemapping.set(oldId, child.id);
+        group.childIds.push(child.id);
+        descendants.push(child);
+
+        // Nested groups get their IDs and childIds before their parent is inserted.
+        if (child instanceof KritzelGroup) {
+          flushGroup(child);
+        }
+      });
+    };
+
+    flushGroup(object);
+
+    descendants.forEach(child => {
+      if (child instanceof KritzelLine) {
+        if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
+          child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
+        }
+        if (child.endAnchor && idRemapping.has(child.endAnchor.objectId)) {
+          child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId)! };
+        }
+      }
+    });
+
+    return descendants;
+  }
+
+  /**
+   * Inserts an object prepared by {@link prepareObjectForInsert} together with its flushed
+   * descendants: descendants first, then the group is finalized and the anchor index rebuilt,
+   * then the object itself.
+   * @param object - The prepared object
+   * @param descendants - The descendants returned by prepareObjectForInsert
+   */
+  insertPreparedObject(object: KritzelBaseObject<any>, descendants: KritzelBaseObject<any>[]): void {
+    if (descendants.length > 0) {
+      descendants.forEach(child => this.addObject(child));
+      if (object instanceof KritzelGroup) {
+        // finalize() recurses into nested groups so all bounding boxes and snapshots align.
+        object.finalize();
+      }
+      this.anchorManager.rebuildIndex();
+    }
+    this.addObject(object);
+  }
+
+  /**
    * Removes an object from the workspace.
    * Handles recursive deletion of group children (unless preserved),
    * cleans up line anchors, and removes from the object map.
