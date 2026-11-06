@@ -17,6 +17,7 @@ import { IKritzelUser } from '../../interfaces/user.interface';
 import { runMigrations } from '../../helpers/migration.helper';
 import { WORKSPACE_MIGRATIONS } from '../../migrations/workspace.migrations';
 import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
+import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelAgentOrigin } from './agent-origin.class';
 import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
 
@@ -699,6 +700,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
         // Remote deletion of a selection group must also clear the transient
         // selection flags it had applied to its children locally.
         existingObject.deselectAllChildren?.();
+      }
+
+      // Deletes from collaborators, undo/redo and agent rollbacks never pass through
+      // core.removeObject(), and the viewport sweep can no longer find the object once it
+      // is gone: release iframes and renderers here, or their listeners leak.
+      if (ObjectHelper.isKritzelEmbeddedObject(existingObject)) {
+        existingObject.unmount();
       }
 
       this.quadtree.remove(o => o.id === objectId);

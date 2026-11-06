@@ -990,6 +990,30 @@ describe('KritzelObjectMap', () => {
       expect(child.isSelected).toBe(false);
     });
 
+    it('should unmount an embedded object deleted remotely', () => {
+      const embedded: any = {
+        id: 'frame-1',
+        isInteractive: false,
+        isSelected: false,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        setIsInteractive: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(),
+        serialize: jest.fn().mockReturnValue({ id: 'frame-1', __class__: 'KritzelIframeObject' }),
+      };
+      objectMap.insert(embedded);
+
+      observerCallback({
+        transaction: { origin: null },
+        keysChanged: new Set(['frame-1']),
+        changes: { keys: new Map([['frame-1', { action: 'delete' }]]) },
+      });
+
+      expect(embedded.unmount).toHaveBeenCalledTimes(1);
+      expect(objectMap.findById('frame-1')).toBeFalsy();
+    });
+
     it('should rebuild the anchor index when a remote line is updated', () => {
       const { KritzelLine } = require('../objects/line.class');
       const mockLine: any = {
