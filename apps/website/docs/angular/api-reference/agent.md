@@ -265,7 +265,7 @@ setStyle(objectIds: string[], style: KritzelAgenticObjectStyle, options?: Kritze
 
 Places an object that the app built, for example a `KritzelIframeObject`, as the agent's change: the cursor hops to the object and it appears. The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
 
-The object is not changed until the insert: the object and the children of a group get their new IDs and their z-index only then, on top of the objects on the canvas at that moment. An action that stops before the insert leaves the object as it was, so it can be added later. Resolves with `'invalid-target'` for an object that is already on the canvas, for a group with a child that is already on the canvas, and for a group whose children were inserted before.
+The object is not changed until the insert: the object and the children of a group get their new IDs and their z-index only then, on top of the objects on the canvas at that moment. An action that stops before the insert leaves the object as it was, so it can be added later. Resolves with `'invalid-target'` for an object that is already on the canvas, for a group with a child that is already on the canvas or that holds the same object twice, and for a group without children, either empty or with children that were inserted before.
 
 ```ts
 addObject(object: KritzelBaseObject, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>

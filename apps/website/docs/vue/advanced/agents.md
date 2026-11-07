@@ -201,7 +201,7 @@ const result = await planner.addObject(
 const iframeId = result.objectIds?.[0];
 ```
 
-The object is not changed until it is inserted: it and the children of a group get their new IDs and their z-index only then, so the object lands on top of what is on the canvas at that moment. An action that stops earlier leaves the object as it was, so you can add it later. An object that is already on the canvas is refused with `'invalid-target'`, and so is a group with a child that is already on the canvas, or a group whose children were inserted before.
+The object is not changed until it is inserted: it and the children of a group get their new IDs and their z-index only then, so the object lands on top of what is on the canvas at that moment. An action that stops earlier leaves the object as it was, so you can add it later. An object that is already on the canvas is refused with `'invalid-target'`, and so is a group with a child that is already on the canvas or that holds the same object twice, and a group without children: an empty one, or one whose children were inserted before.
 
 `perform()` runs the same actions from an action object, which is useful when the steps come from data:
 

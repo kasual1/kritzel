@@ -656,6 +656,31 @@ describe('agentic create and transform actions', () => {
       expect(group.childIds).toEqual([a.id, b.id]);
     });
 
+    it('refuses an empty group and keeps the cursor usable', async () => {
+      const empty = new KritzelGroup();
+      await expect(settle(actions.perform('agent', { type: 'addObject', object: empty }, {}))).resolves.toEqual({
+        completed: false,
+        reason: 'invalid-target',
+        objectIds: [empty.id],
+      });
+
+      const shape = new KritzelShape({ translateX: 10, translateY: 10, width: 50, height: 50 });
+      await expect(settle(actions.perform('agent', { type: 'addObject', object: shape }, {}))).resolves.toMatchObject({ completed: true });
+      expect(Number.isFinite(cursors.get('agent')!.position.x)).toBe(true);
+    });
+
+    it('refuses an instance that the group tree holds twice', async () => {
+      const shared = new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
+      const inner = new KritzelGroup();
+      inner.addChild(shared);
+      const outer = new KritzelGroup();
+      outer.addChild(inner);
+      outer.addChild(shared);
+
+      await expect(perform({ type: 'addObject', object: outer })).resolves.toEqual({ completed: false, reason: 'invalid-target', objectIds: [shared.id] });
+      expect(map.allObjects()).toEqual([]);
+    });
+
     it('refuses a nested group whose children were inserted before', async () => {
       const inner = new KritzelGroup();
       inner.addChild(new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 }));

@@ -151,6 +151,10 @@ describe('KritzelAgenticCursorManager', () => {
       const cursor = manager.add();
       expect(() => manager.move('missing', { x: 0, y: 0 })).toThrow();
       expect(() => manager.move(cursor.id, { objectId: 'missing' })).toThrow();
+      // A cursor never goes to NaN, where it would stay.
+      expect(() => manager.move(cursor.id, { x: Number.NaN, y: 0 })).toThrow('finite');
+      manager.setPosition(cursor.id, { x: Number.NaN, y: 0 });
+      expect(Number.isFinite(manager.get(cursor.id)!.position.x)).toBe(true);
     });
   });
 

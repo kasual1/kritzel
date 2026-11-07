@@ -49,7 +49,8 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
     const leaves = pendingDescendants(object).filter(child => !(child instanceof KritzelGroup));
     leaves.forEach(child => (child.scale = child.scale ?? core.store.state.scale));
     const center = unionCenter(leaves.length > 0 ? leaves : [object]);
-    if (center) {
+    // An object without a position presses where the cursor is.
+    if (center && Number.isFinite(center.x) && Number.isFinite(center.y)) {
       await run.fly(center);
     }
     await run.press();
@@ -92,20 +93,30 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
 };
 
 /**
- * IDs of what can't be inserted: an instance that is already on the canvas, as the object or as a pending child
- * (the insert would give it a new ID and leave it under two), and a group, at any level, whose children were
- * inserted before (it has none left to insert).
+ * IDs of what can't be inserted:
+ * - an instance that is already on the canvas, as the object or as a pending child (the insert would give it a
+ *   new ID and leave it under two), or that the group tree holds twice;
+ * - a group, at any level, without pending children: an empty one has no geometry, and one whose children were
+ *   inserted before has none left to insert.
  */
 function findUninsertable(map: { findById(id: string): unknown }, object: KritzelBaseObject<any>): string[] {
-  return [object, ...pendingDescendants(object)]
-    .filter(item => map.findById(item.id) === item || (item instanceof KritzelGroup && item._pendingChildren.length === 0 && item.childIds.length > 0))
-    .map(item => item.id);
+  const seen = new Set<KritzelBaseObject<any>>();
+  const refused: string[] = [];
+  for (const item of [object, ...pendingDescendants(object)]) {
+    const duplicate = seen.has(item);
+    seen.add(item);
+    if (duplicate || map.findById(item.id) === item || (item instanceof KritzelGroup && item._pendingChildren.length === 0)) {
+      refused.push(item.id);
+    }
+  }
+  return Array.from(new Set(refused));
 }
 
-/** The children a group will insert with it, at all nesting levels. */
-function pendingDescendants(object: KritzelBaseObject<any>): KritzelBaseObject<any>[] {
-  if (!(object instanceof KritzelGroup)) {
+/** The children a group will insert with it, at all nesting levels. A group that contains itself is walked once. */
+function pendingDescendants(object: KritzelBaseObject<any>, visited = new Set<KritzelBaseObject<any>>()): KritzelBaseObject<any>[] {
+  if (!(object instanceof KritzelGroup) || visited.has(object)) {
     return [];
   }
-  return object._pendingChildren.flatMap(child => [child, ...pendingDescendants(child)]);
+  visited.add(object);
+  return object._pendingChildren.flatMap(child => [child, ...pendingDescendants(child, visited)]);
 }

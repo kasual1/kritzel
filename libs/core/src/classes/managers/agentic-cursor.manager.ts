@@ -169,7 +169,7 @@ export class KritzelAgenticCursorManager {
   /** Places a cursor at a world point immediately, cancelling any animation and attachment. @internal */
   setPosition(id: string, point: KritzelPoint): void {
     const entry = this._cursors.get(id);
-    if (!entry) return;
+    if (!entry || !Number.isFinite(point.x) || !Number.isFinite(point.y)) return;
     const wasAnimating = entry.animation !== null;
     this.finishAnimation(entry, false);
     entry.position = { x: point.x, y: point.y };
@@ -452,12 +452,16 @@ export class KritzelAgenticCursorManager {
   }
 
   private resolveTargetOrThrow(target: KritzelAgenticTarget): KritzelPoint {
-    if (!target || (!this.isObjectTarget(target) && (typeof target.x !== 'number' || typeof target.y !== 'number'))) {
-      throw new Error('Invalid agentic cursor target. Expected { x, y } or { objectId }.');
+    if (!target || (!this.isObjectTarget(target) && (!Number.isFinite(target.x) || !Number.isFinite(target.y)))) {
+      throw new Error('Invalid agentic cursor target. Expected { x, y } with finite numbers or { objectId }.');
     }
     const point = this.resolveTarget(target);
     if (!point) {
       throw new Error(`Object "${(target as KritzelAgenticObjectTarget).objectId}" not found.`);
+    }
+    // An object without geometry (e.g. an empty group) must not move the cursor to NaN, where it would stay.
+    if (!Number.isFinite(point.x) || !Number.isFinite(point.y)) {
+      throw new Error(`Object "${(target as KritzelAgenticObjectTarget).objectId}" has no position.`);
     }
     return point;
   }
