@@ -286,6 +286,13 @@ describe('KritzelAgent', () => {
       expect(agent.isAdded).toBe(true);
       expect(agent.state).toMatchObject({ attachedTo: null, position: { x: 1000, y: 1000 } });
 
+      // An object without a position (an empty group) is ignored too.
+      const empty = new KritzelGroup();
+      map.insert(empty);
+      map.stopUndoCapturing();
+      const atEmpty = add(new KritzelAgent({ name: 'B', position: { objectId: empty.id } }));
+      expect(atEmpty.state.position).toEqual({ x: 1000, y: 1000 });
+
       // Taken over by an editor whose document never had the object.
       const other = await createHarness();
       core.agentManager.setDisposed(true);

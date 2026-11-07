@@ -482,10 +482,10 @@ export class KritzelAgent implements IKritzelUser {
 
   /** Creates the cursor in `core` and starts listening. Throws if the cursor can't be created. @internal */
   _attach(core: KritzelCore): void {
-    // The start position may name an object that is gone, or that this editor's document never had (an agent
-    // added again, or moved from a removed editor): the cursor then starts at the viewport center.
-    const position =
-      this._initialPosition && core.agenticCursorManager.resolveTarget(this._initialPosition) ? this._initialPosition : undefined;
+    // The start position may name an object that is gone, that this editor's document never had (an agent added
+    // again, or moved from a removed editor), or that has no position: the cursor then starts at the viewport center.
+    const start = this._initialPosition ? core.agenticCursorManager.resolveTarget(this._initialPosition) : null;
+    const position = start && Number.isFinite(start.x) && Number.isFinite(start.y) ? this._initialPosition : undefined;
     core.agenticCursorManager.add({
       id: this.id,
       name: this._name,
