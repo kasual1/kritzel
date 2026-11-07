@@ -131,6 +131,16 @@ export function BrandedEditor() {
 | syncIndicatorSpinnerTrack | rgba(148, 163, 184, 0.35) | rgba(160, 160, 160, 0.3) |
 | syncIndicatorZIndex | 10001 | 10001 |
 
+## Element Highlight
+
+Applies to the highlights and the picking highlight drawn inside the pages of iframe objects, see [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content). The values are applied as the CSS variables `--kritzel-element-highlight-color`, `--kritzel-element-highlight-background-color`, and `--kritzel-element-highlight-label-text-color`. A custom highlight or picking `color` is filled with a light tint of that color instead of `backgroundColor`.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| backgroundColor | rgba(0, 122, 255, 0.12) | rgba(10, 132, 255, 0.18) |
+| color | #007AFF | #0A84FF |
+| labelTextColor | #ffffff | #ffffff |
+
 ## Engine
 
 | Property | Light default | Dark default |

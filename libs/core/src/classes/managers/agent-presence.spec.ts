@@ -156,6 +156,32 @@ describe('agent presence', () => {
       expect(sentAgents(map)[0].name).toBe('Renamed');
     });
 
+    it('shares a cursor that sticks to an element inside an object by its position', async () => {
+      const { core, map } = createCore();
+      const tracked = new Set<string>();
+      map.findById.mockReturnValue({
+        id: 'frame',
+        rotation: 0,
+        boundingBox: { x: 100, y: 100, width: 200, height: 100 },
+        isElementPicking: false,
+        setElementPicking: jest.fn(),
+        setElementHighlights: jest.fn(),
+        getElementHighlights: jest.fn(() => []),
+        refreshElementTheme: jest.fn(),
+        queryElements: jest.fn(async () => []),
+        trackElement: (selector: string) => tracked.add(selector),
+        untrackElement: (selector: string) => tracked.delete(selector),
+        getTrackedElementRect: (selector: string) => (tracked.has(selector) ? { x: 10, y: 20, width: 20, height: 10 } : null),
+        contentToObjectLocal: (point: { x: number; y: number }) => point,
+      });
+      core.agentBroadcaster.start();
+      const agent = core.agentManager.add(new KritzelAgent({ id: 'player', name: 'Player', position: { objectId: 'frame', selector: '#play' } }));
+      await flushMicrotasks();
+
+      expect(agent.state.attachedTo).toEqual({ objectId: 'frame', selector: '#play', anchor: 'center', offset: { x: 0, y: 0 } });
+      expect(sentAgents(map)[0]).toMatchObject({ id: 'player', attachedTo: null, position: { x: 120, y: 125 } });
+    });
+
     it('clears the field and sends again after a workspace switch', async () => {
       const { core, map } = createCore();
       core.agentBroadcaster.start();
@@ -267,6 +293,19 @@ describe('agent presence', () => {
       expect(() => core.remoteAgentManager.tick(now + 1)).not.toThrow();
       expect(frame).toHaveBeenCalled();
       expect(core.remoteAgentManager.getAll()[0]).toMatchObject({ attachedTo: { anchor: 'center' }, position: { x: 50, y: 50 } });
+    });
+
+    it('follows the position of a cursor that sticks to an element instead of the anchor of its object', () => {
+      const { core, map } = createCore();
+      map.findById.mockReturnValue({ rotation: 0, boundingBox: { x: 0, y: 0, width: 100, height: 100 } });
+      core.remoteAgentManager.handleAwarenessStates(
+        new Map([[2, { agents: [remoteAgent({ position: { x: 20, y: 30 }, attachedTo: { objectId: 'frame', selector: '#play', anchor: 'center', offset: { x: 0, y: 0 } } })] }]]),
+        1,
+      );
+
+      core.remoteAgentManager.tick(now + AGENT_BROADCAST_INTERVAL_MS);
+
+      expect(core.remoteAgentManager.getAll()[0]).toMatchObject({ attachedTo: null, position: { x: 20, y: 30 } });
     });
 
     it('glides to new positions within one update interval', () => {

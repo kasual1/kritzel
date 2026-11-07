@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
+import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatBoxChip, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
 import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 import { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
 import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
@@ -15,7 +15,7 @@ import { FontOption } from "./components/kritzel-font-family/kritzel-font-family
 import { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
 import { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs";
 import { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
-export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
+export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatBoxChip, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
 export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 export { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
 export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
@@ -112,6 +112,11 @@ export namespace Components {
         "variant": 'primary' | 'secondary' | 'text';
     }
     interface KritzelChatBox {
+        /**
+          * Chips shown above the box, e.g. the object or element the next prompt refers to. The first three share one row as wide as the box; the rest are summarized as "+N more". The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
+          * @default []
+         */
+        "chips": KritzelChatBoxChip[];
         /**
           * Whether the chat box is disabled.
           * @default false
@@ -301,10 +306,20 @@ export namespace Components {
         "centerObjectInViewport": (object: KritzelBaseObject) => Promise<KritzelBaseObject<HTMLElement | SVGElement>>;
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
         /**
+          * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
+          * @default []
+         */
+        "chatBoxChips": KritzelChatBoxChip[];
+        /**
           * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
           * @default "collapsed"
          */
         "chatBoxMode": KritzelChatBoxMode1;
+        /**
+          * Removes element highlights.
+          * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
+         */
+        "clearObjectElementHighlights": (objectId?: string) => Promise<void>;
         "clearSelection": () => Promise<void>;
         "closeExportDialog": () => Promise<void>;
         "closeImportDialog": () => Promise<void>;
@@ -392,6 +407,12 @@ export namespace Components {
         "globalContextMenuItems": ContextMenuItem[];
         "group": (objects: KritzelBaseObject<any>[]) => Promise<KritzelGroup | null>;
         "hideContextMenu": () => Promise<void>;
+        /**
+          * Highlights elements inside an object's content, replacing its previous highlights. Highlights are local: they are neither saved nor shown to collaborators.
+          * @param objectId - The object ID.
+          * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
+         */
+        "highlightObjectElements": (objectId: string, highlights: KritzelObjectElementHighlight[]) => Promise<void>;
         "importFromFile": () => Promise<void>;
         "importFromJson": (json: string) => Promise<void>;
         /**
@@ -488,6 +509,14 @@ export namespace Components {
         "panTo": (x: number, y: number) => Promise<void>;
         "panToObject": (object: KritzelBaseObject) => Promise<void>;
         "paste": (x: number, y: number) => Promise<void>;
+        /**
+          * Describes the elements inside an object's content that match a CSS selector, in document order. The object must be mounted, which it is while it is in or near the viewport.
+          * @param objectId - The object ID.
+          * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+          * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
+          * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor at it with `agent.moveTo({ objectId, selector })`.
+         */
+        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<KritzelObjectElementInfo[]>;
         "redo": () => Promise<void>;
         /**
           * Registers custom fonts for the editor runtime.
@@ -531,6 +560,13 @@ export namespace Components {
          */
         "setLocale": (code: LocaleCode) => Promise<void>;
         "setLoginLoading": (provider: string | null) => Promise<void>;
+        /**
+          * Turns element picking on or off for an object whose content has elements, such as an iframe object. While picking, the element under the pointer is highlighted, and a click emits `objectElementPick` instead of reaching the content. Picking works while the object is interactive, which it is while selected.
+          * @param objectId - The object ID.
+          * @param enabled - Whether the object picks elements.
+          * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
+         */
+        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions) => Promise<void>;
         "setViewport": (x: number, y: number, scale: number) => Promise<void>;
         /**
           * @default DEFAULT_SYNC_CONFIG
@@ -1327,6 +1363,7 @@ declare global {
         "chatSubmit": string;
         "chatStop": void;
         "modeChange": KritzelChatBoxMode;
+        "chatChipRemove": KritzelChatBoxChip;
     }
     interface HTMLKritzelChatBoxElement extends Components.KritzelChatBox, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelChatBoxElementEventMap>(type: K, listener: (this: HTMLKritzelChatBoxElement, ev: KritzelChatBoxCustomEvent<HTMLKritzelChatBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1459,8 +1496,12 @@ declare global {
         "awarenessChange": Map<number, Record<string, any>>;
         "chatSubmit": string;
         "chatStop": void;
+        "chatChipRemove": KritzelChatBoxChip;
         "agentsChange": KritzelAgentsChangeEvent;
         "objectTitlebarAction": KritzelObjectTitlebarActionEvent;
+        "objectElementHover": KritzelObjectElementHoverEvent;
+        "objectElementClick": KritzelObjectElementClickEvent;
+        "objectElementPick": KritzelObjectElementPickEvent;
     }
     interface HTMLKritzelEditorElement extends Components.KritzelEditor, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEditorElementEventMap>(type: K, listener: (this: HTMLKritzelEditorElement, ev: KritzelEditorCustomEvent<HTMLKritzelEditorElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -2142,6 +2183,11 @@ declare namespace LocalJSX {
     }
     interface KritzelChatBox {
         /**
+          * Chips shown above the box, e.g. the object or element the next prompt refers to. The first three share one row as wide as the box; the rest are summarized as "+N more". The box never changes this array: pass a new array to add, change or remove chips. Each chip's remove button emits `chatChipRemove`.
+          * @default []
+         */
+        "chips"?: KritzelChatBoxChip[];
+        /**
           * Whether the chat box is disabled.
           * @default false
          */
@@ -2156,6 +2202,10 @@ declare namespace LocalJSX {
           * @default 'collapsed'
          */
         "mode"?: KritzelChatBoxMode;
+        /**
+          * Emitted with the chip whose remove button the user activated. The chip stays until `chips` no longer contains it.
+         */
+        "onChatChipRemove"?: (event: KritzelChatBoxCustomEvent<KritzelChatBoxChip>) => void;
         /**
           * Emitted when the user stops the current response.
          */
@@ -2336,6 +2386,11 @@ declare namespace LocalJSX {
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
         /**
+          * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
+          * @default []
+         */
+        "chatBoxChips"?: KritzelChatBoxChip[];
+        /**
           * Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row.
           * @default "collapsed"
          */
@@ -2457,6 +2512,10 @@ declare namespace LocalJSX {
         "onAgentsChange"?: (event: KritzelEditorCustomEvent<KritzelAgentsChangeEvent>) => void;
         "onAwarenessChange"?: (event: KritzelEditorCustomEvent<Map<number, Record<string, any>>>) => void;
         /**
+          * Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it.
+         */
+        "onChatChipRemove"?: (event: KritzelEditorCustomEvent<KritzelChatBoxChip>) => void;
+        /**
           * Emitted when the user stops the current chat response.
          */
         "onChatStop"?: (event: KritzelEditorCustomEvent<void>) => void;
@@ -2469,6 +2528,18 @@ declare namespace LocalJSX {
         "onLocaleChange"?: (event: KritzelEditorCustomEvent<LocaleCode>) => void;
         "onLogin"?: (event: KritzelEditorCustomEvent<LoginEvent>) => void;
         "onLogout"?: (event: KritzelEditorCustomEvent<void>) => void;
+        /**
+          * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
+         */
+        "onObjectElementClick"?: (event: KritzelEditorCustomEvent<KritzelObjectElementClickEvent>) => void;
+        /**
+          * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
+         */
+        "onObjectElementHover"?: (event: KritzelEditorCustomEvent<KritzelObjectElementHoverEvent>) => void;
+        /**
+          * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
+         */
+        "onObjectElementPick"?: (event: KritzelEditorCustomEvent<KritzelObjectElementPickEvent>) => void;
         /**
           * Emitted when a button or a menu item in an object titlebar is clicked.
          */

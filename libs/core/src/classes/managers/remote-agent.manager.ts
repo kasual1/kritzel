@@ -307,6 +307,11 @@ function parseAttachment(raw: unknown): KritzelAgenticAttachment | null {
   if (typeof value['objectId'] !== 'string' || value['objectId'].length === 0 || value['objectId'].length > MAX_NAME_LENGTH) {
     return null;
   }
+  // An element inside an object can only be resolved where its content reports it: follow the position instead
+  // of sticking to the object's anchor.
+  if (value['selector'] !== undefined) {
+    return null;
+  }
   return {
     objectId: value['objectId'],
     // Known anchors only: an inherited key such as "toString" would break the anchor lookup.

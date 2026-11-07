@@ -153,6 +153,16 @@ customLocales: KritzelLocale[] = [customEnglish];
 | zoom.zoomIn | Zoom in |
 | zoom.zoomOut | Zoom out |
 
+### Chat box
+
+| Key | Default text |
+|------|--------------|
+| chatBox.placeholder | Ask the AI... |
+| chatBox.submit | Send |
+| chatBox.stop | Stop |
+| chatBox.removeChip | Remove |
+| chatBox.moreChips | more |
+
 ### Utility panel
 
 | Key | Default text |

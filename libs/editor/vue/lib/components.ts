@@ -21,13 +21,16 @@ export const KritzelChatBox: StencilVueComponent<JSX.KritzelChatBox> = /*@__PURE
   'disabled',
   'loading',
   'terms',
+  'chips',
   'chatSubmit',
   'chatStop',
-  'modeChange'
+  'modeChange',
+  'chatChipRemove'
 ], [
   'chatSubmit',
   'chatStop',
-  'modeChange'
+  'modeChange',
+  'chatChipRemove'
 ]);
 
 
@@ -62,6 +65,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'isChatBoxVisible',
   'chatBoxMode',
   'isChatBoxLoading',
+  'chatBoxChips',
   'isUtilityPanelVisible',
   'isWorkspaceManagerVisible',
   'isMoreMenuVisible',
@@ -91,8 +95,12 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'awarenessChange',
   'chatSubmit',
   'chatStop',
+  'chatChipRemove',
   'agentsChange',
-  'objectTitlebarAction'
+  'objectTitlebarAction',
+  'objectElementHover',
+  'objectElementClick',
+  'objectElementPick'
 ], [
   'isReady',
   'activeWorkspaceChange',
@@ -111,8 +119,12 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'awarenessChange',
   'chatSubmit',
   'chatStop',
+  'chatChipRemove',
   'agentsChange',
-  'objectTitlebarAction'
+  'objectTitlebarAction',
+  'objectElementHover',
+  'objectElementClick',
+  'objectElementPick'
 ]);
 
 

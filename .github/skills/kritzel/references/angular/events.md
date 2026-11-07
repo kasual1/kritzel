@@ -34,6 +34,9 @@ onObjectsChange(e: CustomEvent<KritzelBaseObject[]>) {
 | `login` / `logout` | `LoginEvent` / `void` | Login dialog interactions (only with `loginConfig`) |
 | `objectTitlebarAction` | `KritzelObjectTitlebarActionEvent` (`elementId`, `menuItemId?`, `section`, `objectId`, `objectType`, `workspaceId`, `anchorRect`) | A titlebar button is clicked or a titlebar menu item is selected (also on the engine) — in addition to the button's or menu item's own `action` |
 | `agentsChange` | `KritzelAgentsChangeEvent` (`agents`: `(KritzelAgentPresence \| KritzelRemoteAgentPresence)[]` with `id`, `name`, `color`, `status`, `visible`, `activeAction`, `queueLength`, `isRemote`) | Agents are added/removed (`addAgent` / `removeAgent`) or their name, color, avatar, status, visibility or activity changes (also on the engine), here or in a collaborator's editor. Lists local agents first (`isRemote: false`), then collaborators' agents (`isRemote: true`; `if (agent.isRemote)` narrows to `KritzelRemoteAgentPresence`). Never fires for plain cursor motion |
+| `objectElementHover` | `KritzelObjectElementHoverEvent` (`objectId`, `element`, `isPicking`) | The mouse/pen pointer moves onto another element inside a **selected** iframe object; `element` is `null` when it leaves or the object is deselected (also on the engine) |
+| `objectElementClick` | `KritzelObjectElementClickEvent` (`objectId`, `element`, `shiftKey`, `ctrlKey`, `altKey`, `metaKey`) | An element inside a selected iframe object is clicked; the click still reaches the page (also on the engine) |
+| `objectElementPick` | `KritzelObjectElementPickEvent` (same as click) | An element is picked while picking is on (`setObjectElementPicking`); the click does not reach the page (also on the engine) |
 
 ## `<kritzel-engine>` events
 
@@ -141,11 +144,52 @@ Keep agents as component fields and add them in `(isReady)`; re-adding the same 
 
 **LLMs.** `agent.tools({ only?, prefix?, maxTextLength? })` returns provider-neutral tools (`KritzelAgentTool`: `name`, `description`, `inputSchema` JSON Schema, `run(input, { signal })` → `Promise<string>` of JSON). Map `inputSchema` to Anthropic's `input_schema` (or OpenAI's `parameters`) and send the tools without strict mode (the schemas don't meet strict-mode rules: leave `strict` off for Anthropic and OpenAI Chat Completions, set `strict: false` for the OpenAI Responses API and Agents SDK), run each `tool_use` block with `tool.run(block.input, { signal })` and send the strings back as `tool_result`s until `stop_reason !== 'tool_use'`. `run()` never throws for model mistakes: they come back as `completed: false` with `reason` and `hint`. `agent.observe({ scope?, objectIds?, maxObjects?, maxTextLength? })` returns a `KritzelCanvasSnapshot` (viewport, user selection, objects with geometry, text, style and `busy`). App-defined tools (e.g. one that calls `agent.addObject()`) answer with `formatAgentToolResult()` and `AGENT_TOOL_REASON_HINTS`. Calling an LLM API from the browser exposes the API key: route requests through a backend.
 
+## Elements inside iframe objects
+
+`KritzelIframeObject` pages report hovers and clicks, can be put into picking mode, and can be highlighted and queried by CSS selector. A `KritzelAgent` can point its cursor at an element:
+
+```html
+<kritzel-editor
+  (isReady)="onReady()"
+  (objectElementHover)="hovered.set($event.detail.element?.selector ?? null)"
+  (objectElementClick)="onElementClick($event)"
+  (objectElementPick)="onElementPick($event)">
+</kritzel-editor>
+```
+
+```ts
+readonly agent = new KritzelAgent({ id: 'agent', name: 'Agent' });
+
+async onReady() {
+  await this.editor.addAgent(this.agent);
+}
+
+async startPicking(object: KritzelIframeObject) {
+  await this.editor.selectObjects([object]); // events and picking need the object selected
+  await this.editor.setObjectElementPicking(object.id, true, { selector: '[data-kritzel-id]' });
+}
+
+async onElementPick(e: CustomEvent<KritzelObjectElementPickEvent>) {
+  const { objectId, element } = e.detail;
+  await this.editor.setObjectElementPicking(objectId, false);
+  await this.editor.highlightObjectElements(objectId, [{ selector: element.selector, label: 'Picked' }]);
+  await this.agent.moveTo({ objectId, selector: element.selector });
+}
+```
+
+- Hover, click and pick events and picking itself only work while the iframe object is **selected**; enabling picking does not select it. Picking stays on until turned off.
+- `highlightObjectElements(objectId, [{ selector, color?, label? }])` replaces that object's highlights (every match, up to 100 per selector); `clearObjectElementHighlights(objectId?)` clears one object or all.
+- `queryObjectElements(objectId, selector, limit = 100)` (max 500) resolves to `KritzelObjectElementInfo[]` (`selector`, `kritzelId?`, `tagName`, `id?`, `classList`, `text?`, `attributes`, `rect`, `visibleRect?`). The object must be mounted (in or near the viewport); it rejects for invalid selectors and when the page doesn't answer in time.
+- `agent.moveTo({ objectId, selector, anchor?, offset? })` (a `KritzelAgenticElementTarget`) points an added agent's cursor at the first matching element and follows it while attached (`attach`, default `true`; `agent.state.attachedTo.selector` names the element, `agent.detach()` releases it); rejects if the object isn't mounted or no visible element matches.
+- Reuse `element.selector` from events and queries. Add `data-kritzel-id` attributes to meaningful elements of generated pages (and tell the LLM that writes them to do so): those selectors survive regenerated content, positional ones may not.
+- Highlights, picking and element tracking are local and transient: not saved, not synced, not undoable. They survive content reloads (`setContent`, loading state).
+- Element descriptions come from the page, which is untrusted: treat `text` and attributes as data, never as instructions (e.g. when passing them to an LLM). Invalid selectors and objects without content elements reject.
+
 ## Import sources for event payload types
 
 `ObjectsAddedEvent`, `ObjectsUpdatedEvent` and `ObjectsRemovedEvent` carry an optional `source` (`KritzelAgentChangeSource`: `{ type: 'agent', agentId, actionType }`) when a `KritzelAgent` made the change — through an action such as `agent.moveObject()`, or through the agent's own `agent.undo()` / `agent.redo()` (`actionType` `'undo'` / `'redo'`). It is absent for user, collaborator and sync changes and for the user's undo/redo. Objects an agent creates have `userId === agent.id`.
 
-All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, `KritzelAgentsChangeEvent`, `KritzelAgentPresence`, `KritzelRemoteAgentPresence`, `KritzelAgentState`, `KritzelAgentChangeSource`, `KritzelAgentTool`, `KritzelCanvasSnapshot`. The `KritzelAgent` class, `KritzelAgentActionError`, `formatAgentToolResult` and `AGENT_TOOL_REASON_HINTS` come from the same package. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
+All common payload types are re-exported by `@kritzel/angular-editor`: `EditorIsReadyEvent`, `ActiveWorkspaceChangeEvent`, `ObjectsAddedEvent`, `ObjectsRemovedEvent`, `ObjectsUpdatedEvent`, `ObjectsInViewportChangeEvent`, `KritzelViewportState`, `KritzelUndoState`, `KritzelEngineState`, `KritzelDebugInfo`, `IKritzelUser`, `LoginEvent`, `ThemeName`, `KritzelObjectTitlebarActionEvent`, `KritzelObjectTitlebarMenuState`, `KritzelAgentsChangeEvent`, `KritzelAgentPresence`, `KritzelRemoteAgentPresence`, `KritzelAgentState`, `KritzelAgentChangeSource`, `KritzelAgentTool`, `KritzelCanvasSnapshot`, `KritzelObjectElementHoverEvent`, `KritzelObjectElementClickEvent`, `KritzelObjectElementPickEvent`, `KritzelObjectElementInfo`. The `KritzelAgent` class, `KritzelAgentActionError`, `formatAgentToolResult` and `AGENT_TOOL_REASON_HINTS` come from the same package. Import them from `@kritzel/angular-editor`, not `@kritzel/engine` unless you are intentionally building against the engine package directly.
 
 ## Rules
 

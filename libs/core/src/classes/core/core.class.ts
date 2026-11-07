@@ -619,8 +619,12 @@ export class KritzelCore {
           continue;
         }
 
-        // Same ID but a different instance: swap the live object for the incoming one
+        // Same ID but a different instance: swap the live object for the incoming one. Local element state
+        // (highlights, picking, tracked elements) moves along, so cursors pointing at an element stay on it.
         this.detachObject(existingObject);
+        if (ObjectHelper.isKritzelElementAwareObject(object) && typeof object.adoptElementStateFrom === 'function') {
+          object.adoptElementStateFrom(existingObject);
+        }
         objectsMap.remove(o => o.id === object.id);
         this.prepareObjectForWorkspace(object, workspaceId, object.zIndex ?? nextZIndex(), scaleFallback);
         objectsMap.insert(object);

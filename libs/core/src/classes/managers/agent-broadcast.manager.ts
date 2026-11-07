@@ -100,7 +100,9 @@ export class KritzelAgentBroadcaster {
         activeAction: cursor.activeAction,
         queueLength: cursor.queueLength,
         position: { x: round(cursor.position.x), y: round(cursor.position.y) },
-        attachedTo: cursor.attachedTo,
+        // Collaborators can't resolve an element inside an object (element positions are reported by the local
+        // content only): a cursor on an element is shared by its position, which follows the element.
+        attachedTo: cursor.attachedTo && cursor.attachedTo.selector === undefined ? cursor.attachedTo : null,
         isPressed: cursor.isPressed,
         pressCount: cursor.pressCount,
         selectedObjectIds: cursor.selectedObjectIds.slice(0, AGENT_BROADCAST_MAX_IDS),

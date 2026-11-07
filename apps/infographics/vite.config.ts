@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react(), restartOnEnvChange(envFiles)],
     define: {
-      // The agentic canvas calls the Claude API from the browser with this key: only run it locally.
+      // The generative UI page calls the Claude API from the browser with this key: only run it locally.
       'import.meta.env.ANTHROPIC_API_KEY': JSON.stringify(readRootEnv(envFiles, 'ANTHROPIC_API_KEY')),
     },
     server: {

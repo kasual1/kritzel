@@ -52,6 +52,9 @@
 | `isLoadingChange`               | Emitted while the selected workspace's objects are being initialized and synchronized.                                                                                                                                                                                       | `CustomEvent<boolean>`                                        |
 | `longpress`                     | Emitted on long-press (touch/pen). Useful for showing custom context menus on mobile.                                                                                                                                                                                        | `CustomEvent<PointerEvent>`                                   |
 | `notificationsChange`           | Emitted when notifications change.                                                                                                                                                                                                                                           | `CustomEvent<KritzelNotification>`                            |
+| `objectElementClick`            | Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.                                                                                                                                                    | `CustomEvent<KritzelObjectElementClickEvent>`                 |
+| `objectElementHover`            | Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.                                             | `CustomEvent<KritzelObjectElementHoverEvent>`                 |
+| `objectElementPick`             | Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.                                                                                                                                                             | `CustomEvent<KritzelObjectElementPickEvent>`                  |
 | `objectsAdded`                  | Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change.                                                                                                                                                                     | `CustomEvent<ObjectsAddedEvent>`                              |
 | `objectsChange`                 | Emitted when objects on the canvas are added, removed, or modified.                                                                                                                                                                                                          | `CustomEvent<KritzelBaseObject<HTMLElement \| SVGElement>[]>` |
 | `objectsInViewportChange`       | Emitted when the set of objects visible in the current viewport changes (e.g., after pan or zoom).                                                                                                                                                                           | `CustomEvent<KritzelBaseObject<Element>[]>`                   |
@@ -268,6 +271,22 @@ Calculates the combined bounding box of the given objects and centers the viewpo
 Type: `Promise<boolean>`
 
 `true` if objects were provided and the viewport was adjusted, `false` otherwise.
+
+### `clearObjectElementHighlights(objectId?: string) => Promise<void>`
+
+Removes element highlights.
+
+#### Parameters
+
+| Name       | Type     | Description                                                                                    |
+| ---------- | -------- | ---------------------------------------------------------------------------------------------- |
+| `objectId` | `string` | - The object whose highlights are removed. Removes the highlights of all objects when omitted. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
 
 ### `clearSelection() => Promise<void>`
 
@@ -741,6 +760,24 @@ Type: `Promise<void>`
 
 
 
+### `highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]) => Promise<void>`
+
+Highlights elements inside an object's content, replacing its previous highlights.
+Highlights are local: they are neither saved nor shown to collaborators.
+
+#### Parameters
+
+| Name         | Type                              | Description                                                                                     |
+| ------------ | --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `objectId`   | `string`                          | - The object ID.                                                                                |
+| `highlights` | `KritzelObjectElementHighlight[]` | - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
 ### `importFromFile() => Promise<void>`
 
 Opens a file picker dialog and imports the selected JSON file into the workspace.
@@ -885,6 +922,26 @@ Pastes previously copied objects at the specified world coordinates.
 Type: `Promise<void>`
 
 
+
+### `queryObjectElements(objectId: string, selector: string, limit?: number) => Promise<KritzelObjectElementInfo[]>`
+
+Describes the elements inside an object's content that match a CSS selector, in document order.
+The object must be mounted, which it is while it is in or near the viewport.
+
+#### Parameters
+
+| Name       | Type     | Description                                                 |
+| ---------- | -------- | ----------------------------------------------------------- |
+| `objectId` | `string` | - The object ID.                                            |
+| `selector` | `string` | - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`. |
+| `limit`    | `number` | - Maximum number of elements, 1 to 500. Defaults to 100.    |
+
+#### Returns
+
+Type: `Promise<KritzelObjectElementInfo[]>`
+
+The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor
+at it with `agent.moveTo({ objectId, selector })`.
 
 ### `redo() => Promise<void>`
 
@@ -1147,6 +1204,26 @@ Sets the active locale (language) and re-renders the UI.
 | Name   | Type                                    | Description                               |
 | ------ | --------------------------------------- | ----------------------------------------- |
 | `code` | `(string & {}) \| "en" \| "de" \| "fr"` | - The locale code to activate, e.g. 'de'. |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setObjectElementPicking(objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions) => Promise<void>`
+
+Turns element picking on or off for an object whose content has elements, such as an iframe object.
+While picking, the element under the pointer is highlighted, and a click emits `objectElementPick`
+instead of reaching the content. Picking works while the object is interactive, which it is while selected.
+
+#### Parameters
+
+| Name       | Type                                 | Description                                                                         |
+| ---------- | ------------------------------------ | ----------------------------------------------------------------------------------- |
+| `objectId` | `string`                             | - The object ID.                                                                    |
+| `enabled`  | `boolean`                            | - Whether the object picks elements.                                                |
+| `options`  | `KritzelObjectElementPickingOptions` | - `selector` limits picking to matching elements, `color` sets the highlight color. |
 
 #### Returns
 

@@ -563,6 +563,108 @@ describe('KritzelAgent', () => {
       expect(agent.state.attachedTo).toBeNull();
     });
   });
+  describe('element targets', () => {
+    /** Turns a shape into an object whose content has elements, like an iframe object (content scale 1). */
+    const makeElementAware = (shape: any, rects: Record<string, { x: number; y: number; width: number; height: number }>) => {
+      const tracked = new Map<string, number>();
+      Object.assign(shape, {
+        isElementPicking: false,
+        setElementPicking: jest.fn(),
+        setElementHighlights: jest.fn(),
+        getElementHighlights: jest.fn(() => []),
+        refreshElementTheme: jest.fn(),
+        queryElements: jest.fn(async (selector: string) =>
+          rects[selector] ? [{ selector, tagName: 'button', classList: [], attributes: {}, rect: rects[selector], visibleRect: rects[selector] }] : [],
+        ),
+        trackElement: jest.fn((selector: string) => tracked.set(selector, (tracked.get(selector) ?? 0) + 1)),
+        untrackElement: jest.fn((selector: string) => {
+          const count = tracked.get(selector) ?? 0;
+          if (count > 1) tracked.set(selector, count - 1);
+          else tracked.delete(selector);
+        }),
+        getTrackedElementRect: jest.fn((selector: string) => (tracked.has(selector) ? rects[selector] ?? null : null)),
+        contentToObjectLocal: (point: { x: number; y: number }) => point,
+      });
+      return tracked;
+    };
+
+    it('moves to an element inside an object, sticks to it and follows it', async () => {
+      const shape = addShape(100, 100, 200, 100);
+      const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
+      const tracked = makeElementAware(shape, rects);
+      const agent = add(new KritzelAgent({ name: 'A' }));
+
+      await expect(settle(agent.moveTo({ objectId: shape.id, selector: '#play' }))).resolves.toEqual({ completed: true });
+      expect(agent.state.attachedTo).toEqual({ objectId: shape.id, selector: '#play', anchor: 'center', offset: { x: 0, y: 0 } });
+      expect(agent.state.position).toEqual({ x: 120, y: 125 });
+
+      rects['#play'] = { x: 50, y: 50, width: 20, height: 10 };
+      await step();
+      expect(agent.state.position).toEqual({ x: 160, y: 155 });
+
+      agent.detach();
+      expect(tracked.size).toBe(0);
+    });
+
+    it('rejects a move to an element that is missing or inside an object without elements', async () => {
+      const frame = addShape(0, 0);
+      makeElementAware(frame, {});
+      const plain = addShape(300, 0);
+      const agent = add(new KritzelAgent({ name: 'A' }));
+
+      await expect(agent.moveTo({ objectId: frame.id, selector: '#missing' })).rejects.toThrow('not found');
+      await expect(agent.moveTo({ objectId: plain.id, selector: '#play' })).rejects.toThrow('has no elements');
+    });
+
+    it('stops a running action when it moves to an element', async () => {
+      const frame = addShape(500, 500, 200, 100);
+      makeElementAware(frame, { '#play': { x: 0, y: 0, width: 20, height: 20 } });
+      const agent = add(new KritzelAgent({ name: 'A', position: { x: 0, y: 0 } }));
+
+      const action = agent.createShape({ x: 1000, y: 1000, width: 100, height: 100 });
+      await step();
+      const move = agent.moveTo({ objectId: frame.id, selector: '#play' });
+
+      await expect(settle(action)).resolves.toMatchObject({ completed: false, reason: 'agent-moved' });
+      await expect(settle(move)).resolves.toEqual({ completed: true });
+      expect(agent.state.attachedTo).toMatchObject({ objectId: frame.id, selector: '#play' });
+    });
+
+    it('refuses element targets for actions', async () => {
+      const frame = addShape(0, 0);
+      makeElementAware(frame, { '#play': { x: 0, y: 0, width: 20, height: 20 } });
+      const agent = add(new KritzelAgent({ name: 'A' }));
+
+      await expect(agent.click({ objectId: frame.id, selector: '#play' } as any)).rejects.toThrow('agent.moveTo');
+      await expect(agent.moveObject(frame.id, { objectId: frame.id, selector: '#play' } as any)).rejects.toThrow('agent.moveTo');
+    });
+
+    it('starts at an element, or at the viewport center when its object has no elements', () => {
+      const frame = addShape(100, 100, 200, 100);
+      makeElementAware(frame, { '#play': { x: 10, y: 20, width: 20, height: 10 } });
+      const plain = addShape(300, 0);
+
+      const atElement = add(new KritzelAgent({ name: 'A', position: { objectId: frame.id, selector: '#play', anchor: 'top-left' } }));
+      expect(atElement.state).toMatchObject({ position: { x: 110, y: 120 }, attachedTo: { objectId: frame.id, selector: '#play', anchor: 'top-left' } });
+
+      const atPlain = add(new KritzelAgent({ name: 'B', position: { objectId: plain.id, selector: '#play' } }));
+      expect(atPlain.state).toMatchObject({ position: { x: 1000, y: 1000 }, attachedTo: null });
+    });
+
+    it('starts at the viewport center when its object refuses to track the start element', () => {
+      const frame: any = addShape(100, 100, 200, 100);
+      makeElementAware(frame, { '#play': { x: 10, y: 20, width: 20, height: 10 } });
+      frame.trackElement.mockImplementation(() => {
+        throw new Error('At most 50 elements can be tracked per object.');
+      });
+
+      const agent = add(new KritzelAgent({ name: 'A', position: { objectId: frame.id, selector: '#play' } }));
+
+      expect(agent.state).toMatchObject({ isAdded: true, position: { x: 1000, y: 1000 }, attachedTo: null });
+      expect(frame.trackElement).toHaveBeenCalledWith('#play');
+    });
+  });
+
   describe('tools and observe', () => {
     const toolOf = (agent: KritzelAgent, name: string) => agent.tools().find(candidate => candidate.name === name)!;
     const call = async (agent: KritzelAgent, name: string, input: unknown) => {

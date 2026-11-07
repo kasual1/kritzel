@@ -38,6 +38,12 @@ import { ContextMenuItem } from "@kritzel/core";
 import {
   KritzelObjectConfig,
   KritzelObjectTitlebarActionEvent,
+  KritzelObjectElementClickEvent,
+  KritzelObjectElementHighlight,
+  KritzelObjectElementHoverEvent,
+  KritzelObjectElementInfo,
+  KritzelObjectElementPickEvent,
+  KritzelObjectElementPickingOptions,
   KritzelObjectTitlebarConfig,
   KritzelObjectTitlebarMenuState,
 } from "@kritzel/core";
@@ -98,6 +104,7 @@ import { resolveTextToolAvailableFonts } from "@kritzel/core";
 import { KritzelContextMenuState } from "@kritzel/core";
 import { KritzelObjectExportFormat } from "@kritzel/core";
 import { KritzelSvgIconMap } from "@kritzel/core";
+import { KritzelChatBoxChip } from "@kritzel/core";
 import { KritzelChatBoxMode } from "../kritzel-chat-box/kritzel-chat-box";
 
 @Component({
@@ -464,6 +471,12 @@ export class KritzelEditor {
   @Prop() chatBoxMode: KritzelChatBoxMode = "collapsed";
   /** Whether the chat box shows its progress ring and turns its send button into a stop button. */
   @Prop() isChatBoxLoading: boolean = false;
+  /**
+   * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to.
+   * Up to three share one row as wide as the box; the rest are summarized as "+N more".
+   * Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
+   */
+  @Prop() chatBoxChips: KritzelChatBoxChip[] = [];
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
@@ -511,6 +524,8 @@ export class KritzelEditor {
   @Event() chatSubmit!: EventEmitter<string>;
   /** Emitted when the user stops the current chat response. */
   @Event() chatStop!: EventEmitter<void>;
+  /** Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it. */
+  @Event() chatChipRemove!: EventEmitter<KritzelChatBoxChip>;
   /**
    * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
    * (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
@@ -519,6 +534,18 @@ export class KritzelEditor {
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event()
   objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
+  /**
+   * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
+   * such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
+   */
+  @Event()
+  objectElementHover!: EventEmitter<KritzelObjectElementHoverEvent>;
+  /** Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. */
+  @Event()
+  objectElementClick!: EventEmitter<KritzelObjectElementClickEvent>;
+  /** Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`. */
+  @Event()
+  objectElementPick!: EventEmitter<KritzelObjectElementPickEvent>;
   @State() isEngineReady: boolean = false;
   @State() agents: (KritzelAgentPresence | KritzelRemoteAgentPresence)[] = [];
   @State() isToolbarReady: boolean = false;
@@ -1096,6 +1123,64 @@ export class KritzelEditor {
     return this.engineRef.getRemoteAgents();
   }
 
+  /**
+   * Turns element picking on or off for an object whose content has elements, such as an iframe object.
+   * While picking, the element under the pointer is highlighted, and a click emits `objectElementPick`
+   * instead of reaching the content. Picking works while the object is interactive, which it is while selected.
+   * @param objectId - The object ID.
+   * @param enabled - Whether the object picks elements.
+   * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
+   */
+  @Method()
+  async setObjectElementPicking(
+    objectId: string,
+    enabled: boolean,
+    options: KritzelObjectElementPickingOptions = {},
+  ): Promise<void> {
+    return this.engineRef.setObjectElementPicking(objectId, enabled, options);
+  }
+
+  /**
+   * Highlights elements inside an object's content, replacing its previous highlights.
+   * Highlights are local: they are neither saved nor shown to collaborators.
+   * @param objectId - The object ID.
+   * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
+   */
+  @Method()
+  async highlightObjectElements(
+    objectId: string,
+    highlights: KritzelObjectElementHighlight[],
+  ): Promise<void> {
+    return this.engineRef.highlightObjectElements(objectId, highlights);
+  }
+
+  /**
+   * Removes element highlights.
+   * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
+   */
+  @Method()
+  async clearObjectElementHighlights(objectId?: string): Promise<void> {
+    return this.engineRef.clearObjectElementHighlights(objectId);
+  }
+
+  /**
+   * Describes the elements inside an object's content that match a CSS selector, in document order.
+   * The object must be mounted, which it is while it is in or near the viewport.
+   * @param objectId - The object ID.
+   * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+   * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
+   * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor
+   * at it with `agent.moveTo({ objectId, selector })`.
+   */
+  @Method()
+  async queryObjectElements(
+    objectId: string,
+    selector: string,
+    limit?: number,
+  ): Promise<KritzelObjectElementInfo[]> {
+    return this.engineRef.queryObjectElements(objectId, selector, limit);
+  }
+
   @Method()
   async hideContextMenu() {
     return this.engineRef.hideContextMenu();
@@ -1532,7 +1617,6 @@ export class KritzelEditor {
   }
 
   handleObjectsSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
-    console.log(event.detail);
     event.stopPropagation();
     this.objectsSelectionChange.emit(event.detail);
   }
@@ -1583,6 +1667,26 @@ export class KritzelEditor {
   ) {
     event.stopPropagation();
     this.objectTitlebarAction.emit(event.detail);
+  }
+
+  handleObjectElementHover(event: CustomEvent<KritzelObjectElementHoverEvent>) {
+    event.stopPropagation();
+    this.objectElementHover.emit(event.detail);
+  }
+
+  handleObjectElementClick(event: CustomEvent<KritzelObjectElementClickEvent>) {
+    event.stopPropagation();
+    this.objectElementClick.emit(event.detail);
+  }
+
+  handleObjectElementPick(event: CustomEvent<KritzelObjectElementPickEvent>) {
+    event.stopPropagation();
+    this.objectElementPick.emit(event.detail);
+  }
+
+  handleChatChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
+    event.stopPropagation();
+    this.chatChipRemove.emit(event.detail);
   }
 
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
@@ -2139,6 +2243,13 @@ export class KritzelEditor {
             onObjectTitlebarMenuStateChange={(event) =>
               this.handleObjectTitlebarMenuStateChange(event)
             }
+            onObjectElementHover={(event) =>
+              this.handleObjectElementHover(event)
+            }
+            onObjectElementClick={(event) =>
+              this.handleObjectElementClick(event)
+            }
+            onObjectElementPick={(event) => this.handleObjectElementPick(event)}
           ></kritzel-engine>
 
           {this.isChatBoxVisible && (
@@ -2146,6 +2257,7 @@ export class KritzelEditor {
               mode={this.chatBoxMode}
               loading={this.isChatBoxLoading}
               terms={this.resolvedTerms}
+              chips={this.chatBoxChips}
               onChatSubmit={(event) => {
                 event.stopPropagation();
                 this.chatSubmit.emit(event.detail);
@@ -2154,6 +2266,7 @@ export class KritzelEditor {
                 event.stopPropagation();
                 this.chatStop.emit();
               }}
+              onChatChipRemove={(event) => this.handleChatChipRemove(event)}
             ></kritzel-chat-box>
           )}
 

@@ -3,8 +3,11 @@ import type { IKritzelUser } from '../../interfaces/user.interface';
 import type { KritzelPoint } from '../../interfaces/point.interface';
 import type {
   KritzelAgenticAnchor,
+  KritzelAgenticElementTarget,
   KritzelAgenticMoveOptions,
   KritzelAgenticMoveResult,
+  KritzelAgenticObjectTarget,
+  KritzelAgenticPointTarget,
   KritzelAgenticTarget,
 } from '../../interfaces/agentic-cursor.interface';
 import type {
@@ -49,6 +52,20 @@ const INTERRUPTING_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new
 ]);
 
 type AgentListener<K extends keyof KritzelAgentEventMap> = (payload: KritzelAgentEventMap[K]) => void;
+
+/** Whether a target points at an element inside an object (`{ objectId, selector }`). */
+function isElementTarget(target: KritzelAgenticTarget): target is KritzelAgenticElementTarget {
+  const { objectId, selector } = target as { objectId?: unknown; selector?: unknown };
+  return typeof objectId === 'string' && typeof selector === 'string';
+}
+
+/** Whether the cursor can start at a position: any point or object target, or an element target the object can resolve. */
+function canStartAt(core: KritzelCore, target: KritzelAgenticTarget): boolean {
+  if (!isElementTarget(target)) {
+    return true;
+  }
+  return target.selector.trim() !== '' && ObjectHelper.isKritzelElementAwareObject(core.store.objects?.findById(target.objectId));
+}
 
 /** Whether a value is a `KritzelAgent`, also when it comes from another copy of `@kritzel/core`. */
 export function isKritzelAgent(value: unknown): value is KritzelAgent {
@@ -232,9 +249,14 @@ export class KritzelAgent implements IKritzelUser {
   }
 
   /**
-   * Moves the cursor to a world point or to an anchor on an object, where it sticks by default.
-   * Resolves when it arrives; `completed: false` when another move or the agent's removal interrupted it.
+   * Moves the cursor to a world point, to an anchor on an object, or to an element inside an object
+   * (`{ objectId, selector }`, e.g. a button in the page of a `KritzelIframeObject`), where it sticks by default.
+   * Resolves when it arrives; `completed: false` when another move, an action or the agent's removal interrupted it.
    * A running action of the agent stops with `'agent-moved'`.
+   *
+   * A move to an element first asks the object where the element is: it rejects when the object can't point at
+   * elements, isn't mounted or has no visible element that matches the selector, and until then the cursor keeps
+   * its current move and attachment. While stuck to the element, the cursor follows it inside the content.
    */
   async moveTo(target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
     const core = this.requireCore();
@@ -268,8 +290,11 @@ export class KritzelAgent implements IKritzelUser {
     return this.settle(action, result, task);
   }
 
-  /** Presses at a point or object anchor. Nothing changes; `objectIds` holds the object under the cursor. */
-  click(target: KritzelAgenticTarget, options: { count?: 1 | 2 } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  /**
+   * Presses at a point or object anchor. Nothing changes; `objectIds` holds the object under the cursor.
+   * Elements inside objects can't be clicked; use `moveTo({ objectId, selector })` to point at one.
+   */
+  click(target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget, options: { count?: 1 | 2 } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
     const { count, ...actionOptions } = options;
     return this.perform({ type: 'click', target, ...(count ? { count } : {}) }, actionOptions);
   }
@@ -288,7 +313,7 @@ export class KritzelAgent implements IKritzelUser {
   /** Drags an object so that its `align` point (default `'center'`) lands on `to`. */
   moveObject(
     objectId: string,
-    to: KritzelAgenticTarget,
+    to: KritzelAgenticPointTarget | KritzelAgenticObjectTarget,
     options: { align?: KritzelAgenticAnchor } & KritzelAgenticActionOptions = {},
   ): Promise<KritzelAgenticActionResult> {
     const { align, ...actionOptions } = options;
@@ -483,17 +508,28 @@ export class KritzelAgent implements IKritzelUser {
   /** Creates the cursor in `core` and starts listening. Throws if the cursor can't be created. @internal */
   _attach(core: KritzelCore): void {
     // The start position may name an object that is gone, that this editor's document never had (an agent added
-    // again, or moved from a removed editor), or that has no position: the cursor then starts at the viewport center.
-    const start = this._initialPosition ? core.agenticCursorManager.resolveTarget(this._initialPosition) : null;
-    const position = start && Number.isFinite(start.x) && Number.isFinite(start.y) ? this._initialPosition : undefined;
-    core.agenticCursorManager.add({
+    // again, or moved from a removed editor), that has no position, or that can't point at elements for an element
+    // target: the cursor then starts at the viewport center.
+    const initial = this._initialPosition;
+    const start = initial && canStartAt(core, initial) ? core.agenticCursorManager.resolveTarget(initial) : null;
+    const position = start && Number.isFinite(start.x) && Number.isFinite(start.y) ? initial : undefined;
+    const cursor = {
       id: this.id,
       name: this._name,
       color: this._color,
       status: this._status ?? undefined,
       visible: this._visible,
-      position,
-    });
+    };
+    try {
+      core.agenticCursorManager.add({ ...cursor, position });
+    } catch (error) {
+      // The object can still refuse to track the start element, for example a selector the browser can't parse or
+      // one more element than it can track: the cursor then starts at the viewport center too.
+      if (!position || !isElementTarget(position)) {
+        throw error;
+      }
+      core.agenticCursorManager.add(cursor);
+    }
     this._core = core;
     this._lastStateKey = null;
     this._subscriptions = [

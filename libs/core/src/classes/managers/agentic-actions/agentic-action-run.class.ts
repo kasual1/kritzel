@@ -263,7 +263,7 @@ export class KritzelAgenticActionRun {
     return Math.min(maxMs / k, Math.max(minMs / k, duration));
   }
 
-  /** Flies the cursor to a target, like `moveAgenticCursor`. Instant runs jump. */
+  /** Flies the cursor to a target, like `agent.moveTo()`. Instant runs jump. */
   async fly(target: KritzelAgenticTarget, attach = false): Promise<void> {
     this.assertActive();
     const cursors = this.cursorManager;

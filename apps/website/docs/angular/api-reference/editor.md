@@ -54,9 +54,13 @@ endSceneBootstrap(): Promise<void>
 
 | Property | Type | Description |
 |----------|------|-------------|
+| chatBoxChips | KritzelChatBoxChip[] | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row, the rest show as "+N more". The editor never changes them: pass a new array, for example when `chatChipRemove` fires. |
+| chatBoxMode | 'collapsed' \| 'expanded' | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
 | cursorTarget | HTMLElement | Element used as cursor target. Defaults to editor container if omitted. |
 | customSvgIcons | string | Custom SVG icon definitions. |
 | globalContextMenuItems | ContextMenuItem[] | Context menu items shown on canvas background. |
+| isChatBoxLoading | boolean | Shows the chat box progress ring and turns its send button into a stop button. |
+| isChatBoxVisible | boolean | Shows the chat box instead of the toolbar. |
 | isMoreMenuVisible | boolean | Controls visibility of the More menu. |
 | isToolbarVisible | boolean | Controls toolbar visibility. |
 | isUtilityPanelVisible | boolean | Controls utility panel visibility. |
@@ -68,7 +72,21 @@ endSceneBootstrap(): Promise<void>
 
 ### Events
 
-No UI-specific events.
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| chatChipRemove | KritzelChatBoxChip | Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it. |
+| chatStop | void | Emitted when the user stops the current chat response. |
+| chatSubmit | string | Emitted with the chat box text when the user submits it. |
+
+`KritzelChatBoxChip` describes one chip. Its texts are shown verbatim, they are not translated:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| id | string | Unique, stable identifier, e.g. the id of the referenced object. |
+| label | string | Main text, shown bold, e.g. the referenced object's name. |
+| detail | string (optional) | A narrower part of the label, shown after `›`, e.g. the element picked inside the object. |
+| hint | string (optional) | Muted text after the label and detail, e.g. what the user can do next. |
+| icon | KritzelIconName (optional) | Registered icon shown before the label, e.g. `'cursor'`. |
 
 ### Methods
 
@@ -1026,3 +1044,57 @@ getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]>
 ### Methods
 
 No titlebar-specific methods. Titlebar menus are rendered by the editor itself. Use [updateObject](#updateobject) to change the `name` of an existing object.
+
+---
+
+## Object Elements
+
+Elements inside the content of objects such as `KritzelIframeObject`. See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content).
+
+### Props
+
+No object-element-specific props.
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| objectElementHover | KritzelObjectElementHoverEvent | Emitted when the mouse or pen pointer moves onto another element inside the content of a selected object, such as an iframe object, and with `element: null` when it leaves the content or the object is deselected. |
+| objectElementClick | KritzelObjectElementClickEvent | Emitted when the user clicks an element inside the content of a selected object. The click works as usual. |
+| objectElementPick | KritzelObjectElementPickEvent | Emitted when the user picks an element inside an object that is picking elements. The click doesn't reach the content. See [setObjectElementPicking](#setobjectelementpicking). |
+
+### Methods
+
+#### setObjectElementPicking
+
+Turns element picking on or off for an object whose content has elements, such as an iframe object. While picking, the element under the pointer is highlighted, and a press or click emits `objectElementPick` instead of reaching the content. Picking works while the object is selected and stays on until it is turned off. `selector` limits picking to the closest matching ancestor of the element under the pointer, `color` sets the highlight color.
+
+```ts
+setObjectElementPicking(objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions): Promise<void>
+```
+
+#### highlightObjectElements
+
+Highlights elements inside an object's content, replacing the object's previous highlights. Each entry is `{ selector, color?, label? }`, and every element that matches its selector is highlighted, up to 100 per selector. Highlights are local: they are neither saved nor shown to collaborators.
+
+```ts
+highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]): Promise<void>
+```
+
+#### clearObjectElementHighlights
+
+Removes the element highlights of an object, or of all objects when `objectId` is omitted.
+
+```ts
+clearObjectElementHighlights(objectId?: string): Promise<void>
+```
+
+#### queryObjectElements
+
+Describes the elements inside an object's content that match a CSS selector, in document order. Each result has a `selector` that can be used to highlight the element or point an agent's cursor at it (`agent.moveTo({ objectId, selector })`, see [KritzelAgenticTarget](./agent.md#kritzelagentictarget)). `limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. Rejects when the content does not answer within 3 seconds, or within 15 seconds while it is still loading.
+
+```ts
+queryObjectElements(objectId: string, selector: string, limit?: number): Promise<KritzelObjectElementInfo[]>
+```
+
+All object element methods reject for invalid selectors and for objects that don't exist or have no content elements.

@@ -34,7 +34,7 @@ export interface KritzelAgentState {
   isAdded: boolean;
   /** Cursor position in world coordinates, or `null` while the agent is not added. */
   position: KritzelPoint | null;
-  /** The object the cursor sticks to, or `null`. */
+  /** The object the cursor sticks to (with the element's `selector` when it sticks to an element inside it), or `null`. */
   attachedTo: KritzelAgenticAttachment | null;
   /** Whether the cursor is animating. */
   isMoving: boolean;
@@ -241,6 +241,7 @@ export interface KritzelAwarenessAgent {
   queueLength: number;
   /** World position, rounded to 0.1. */
   position: KritzelPoint;
+  /** The object the cursor sticks to. `null` while it sticks to an element inside an object: `position` follows the element. */
   attachedTo: KritzelAgenticAttachment | null;
   isPressed: boolean;
   pressCount: number;

@@ -1,4 +1,9 @@
-import type { KritzelAgenticAnchor, KritzelAgenticTarget } from '../../../interfaces/agentic-cursor.interface';
+import type {
+  KritzelAgenticAnchor,
+  KritzelAgenticObjectTarget,
+  KritzelAgenticPointTarget,
+  KritzelAgenticTarget,
+} from '../../../interfaces/agentic-cursor.interface';
 import type { KritzelAgenticResizeHandle } from '../../../interfaces/agentic-action.interface';
 import type { ArrowHeadStyle } from '../../../interfaces/arrow-head.interface';
 import { ShapeType } from '../../../enums/shape-type.enum';
@@ -146,12 +151,19 @@ export function assertArrows(arrows: unknown, field: string): void {
   }
 }
 
-/** Throws a `TypeError` unless `target` is `{ x, y }` or `{ objectId, anchor?, offset? }`. */
-export function assertTarget(target: unknown, field: string): asserts target is KritzelAgenticTarget {
+/**
+ * Throws a `TypeError` unless `target` is `{ x, y }` or `{ objectId, anchor?, offset? }`. Element targets
+ * (`{ objectId, selector }`) are refused: actions resolve their targets synchronously, while an element's position
+ * has to be asked from the object's content first. Only `agent.moveTo()` points at elements.
+ */
+export function assertTarget(target: unknown, field: string): asserts target is KritzelAgenticPointTarget | KritzelAgenticObjectTarget {
   if (!target || typeof target !== 'object') {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
   }
-  const candidate = target as { objectId?: unknown; x?: unknown; y?: unknown; anchor?: unknown; offset?: { x?: unknown; y?: unknown } };
+  const candidate = target as { objectId?: unknown; selector?: unknown; x?: unknown; y?: unknown; anchor?: unknown; offset?: { x?: unknown; y?: unknown } };
+  if (candidate.selector !== undefined) {
+    throw new TypeError(`"${field}" can't be an element inside an object. Use agent.moveTo({ objectId, selector }) to point at an element.`);
+  }
   if (candidate.objectId !== undefined) {
     assertObjectId(candidate.objectId, `${field}.objectId`);
     assertAnchor(candidate.anchor, `${field}.anchor`);

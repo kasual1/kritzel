@@ -81,6 +81,7 @@ Select the relevant pattern based on what you're working on:
 | [dynamic-objects.md](patterns/dynamic-objects.md) | Maintaining dynamic object rendering, renderer lifecycle, wheel behavior, and wrapper integration |
 | [object-config.md](patterns/object-config.md) | Maintaining the `objectConfig` prop (`hasTitlebar`, `isRotatable`, `isResizable`): resolution rules, enforcement in handles and handlers, adding new options |
 | [object-titlebar.md](patterns/object-titlebar.md) | Maintaining object titlebars: config, owner resolution, world-space render layer, pointer integration, and `titlebar` theme tokens |
+| [iframe-element-bridge.md](patterns/iframe-element-bridge.md) | Maintaining element hover/click/pick events, picking, highlights, queries and agent cursor element targets (`agent.moveTo({ objectId, selector })`) of `KritzelIframeObject`: page script, host bridge, message protocol, untrusted-message validation, and extending `KritzelElementAwareObject` to other objects |
 | [unit-tests.md](patterns/unit-tests.md) | Adding/updating Jest specs, fixing flaky tests, or adapting tests after refactors |
 | [reactivity-and-wrappers.md](patterns/reactivity-and-wrappers.md) | Debugging or preventing prop timing bugs between Stencil core and Angular/React/Vue wrappers |
 

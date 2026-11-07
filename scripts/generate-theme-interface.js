@@ -60,7 +60,8 @@ const KNOWN_CATEGORIES = [
   'zoom-panel',
   'chat-box',
   'sync-indicator',
-  'titlebar'
+  'titlebar',
+  'element-highlight'
 ];
 
 /**

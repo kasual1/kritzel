@@ -38,3 +38,6 @@ jobs:
 
       - name: Validate generated LLM documentation
         run: npm run test:llms -w apps/website
+
+      - name: Validate blog video output
+        run: npm run test:videos-output -w apps/website

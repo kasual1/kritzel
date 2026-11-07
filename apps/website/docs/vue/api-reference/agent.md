@@ -39,7 +39,7 @@ Throws a `TypeError` when `name` is missing or empty.
 | broadcast | boolean | `true` | Whether collaborators see the agent. See [Collaboration](#collaboration). |
 | status | string | — | Status message shown below the cursor label. |
 | visible | boolean | `true` | Whether the cursor is visible. |
-| position | KritzelAgenticTarget | Center of the viewport | Where the cursor starts when the agent is added. An object target sticks the cursor to that object. If the object does not exist then, for example because it was deleted or the editor shows another document, the cursor starts at the center of the viewport. |
+| position | KritzelAgenticTarget | Center of the viewport | Where the cursor starts when the agent is added. An object target sticks the cursor to that object. An element target starts at the center of the object and sticks the cursor to the element once the page has reported it. If the object does not exist then, for example because it was deleted or the editor shows another document, the cursor starts at the center of the viewport. |
 
 `isKritzelAgent(value)` returns whether a value is a `KritzelAgent`, also when it comes from another copy of the package.
 
@@ -71,7 +71,7 @@ Throws a `TypeError` when `name` is missing or empty.
 |-------|------|-------------|
 | isAdded | boolean | Whether the agent is added to an editor. |
 | position | KritzelPoint \| null | Cursor position in world coordinates, or `null` while the agent is not added. |
-| attachedTo | KritzelAgenticAttachment \| null | The object the cursor sticks to, or `null`. |
+| attachedTo | KritzelAgenticAttachment \| null | The object the cursor sticks to, or `null`. Includes the `selector` while it sticks to an element inside the object. |
 | isMoving | boolean | Whether the cursor is animating. |
 | status | string \| null | The status message, or `null`. |
 | visible | boolean | Whether the cursor is visible. |
@@ -115,7 +115,7 @@ hide(): void
 
 ### moveTo
 
-Animates the cursor to a point in world coordinates or to an anchor on an object, where it sticks by default. Resolves when the cursor arrives; `completed` is `false` when another move, the removal of the agent, or the deletion of the target interrupted it. A running action of the agent stops with `'agent-moved'`. Rejects when the agent is not added, for an invalid target, and for an object that does not exist.
+Animates the cursor to a point in world coordinates, to an anchor on an object, or to an element inside an object's content, such as a button in an iframe object (`{ objectId, selector, anchor?, offset? }`), where it sticks by default. Resolves when the cursor arrives; `completed` is `false` when another move, the removal of the agent, or the deletion of the target interrupted it. A running action of the agent stops with `'agent-moved'`. Rejects when the agent is not added, for an invalid target, for an object that does not exist, and when an element target's object isn't mounted or has no visible element that matches the selector. See [Pointing at Elements](../advanced/agents.md#pointing-at-elements).
 
 ```ts
 moveTo(target: KritzelAgenticTarget, options?: KritzelAgenticMoveOptions): Promise<KritzelAgenticMoveResult>
@@ -123,7 +123,7 @@ moveTo(target: KritzelAgenticTarget, options?: KritzelAgenticMoveOptions): Promi
 
 ### detach
 
-Releases the cursor from the object it sticks to. The cursor stays where it is, and the agent emits `detached` with `reason: 'manual'`.
+Releases the cursor from the object or element it sticks to. The cursor stays where it is, and the agent emits `detached` with `reason: 'manual'`.
 
 ```ts
 detach(): void
@@ -157,10 +157,10 @@ perform(action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Pr
 
 ### click
 
-Presses at a point or an object anchor. Nothing changes; `objectIds` holds the object under the cursor, or is empty on a miss. `count: 2` plays a double press.
+Presses at a point or an object anchor. Nothing changes; `objectIds` holds the object under the cursor, or is empty on a miss. `count: 2` plays a double press. Elements inside objects can't be clicked; use `moveTo({ objectId, selector })` to point at one.
 
 ```ts
-click(target: KritzelAgenticTarget, options?: { count?: 1 | 2 } & KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+click(target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget, options?: { count?: 1 | 2 } & KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
 ### select
@@ -184,7 +184,7 @@ clearSelection(options?: KritzelAgenticActionOptions): Promise<KritzelAgenticAct
 Drags an object so that its `align` point (default `'center'`) lands on `to`, a point or an anchor on another object.
 
 ```ts
-moveObject(objectId: string, to: KritzelAgenticTarget, options?: { align?: KritzelAgenticAnchor } & KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+moveObject(objectId: string, to: KritzelAgenticPointTarget | KritzelAgenticObjectTarget, options?: { align?: KritzelAgenticAnchor } & KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
 ### resizeObject
@@ -420,7 +420,7 @@ const json = formatAgentToolResult(result.reason ? { ...result, hint: AGENT_TOOL
 
 When the editor shares presence with collaborators, it shares every agent whose [`broadcast`](#properties) is `true`, the default. See [Collaboration](../advanced/agents.md#collaboration) for a guide.
 
-- **What is shared:** the name, color, avatar URL, status, visibility, running action and queue length, cursor position and attachment, presses, the agent's selection, and the objects of its running action. The agent's history and the agent object itself are not shared.
+- **What is shared:** the name, color, avatar URL, status, visibility, running action and queue length, cursor position and attachment, presses, the agent's selection, and the objects of its running action. The agent's history and the agent object itself are not shared. A cursor that sticks to an element inside an object is shared by its position only, sent at most every 100 ms like other cursor motion: the editors of collaborators don't track the element, so there the cursor follows it only through these updates.
 - **When:** only when something changed. Adding or removing the agent, renaming, recoloring, changing the avatar, hiding or showing it, and turning `broadcast` on or off are sent at once. The status, activity, selection, and cursor motion are sent at most every 100 ms. Each workspace has its own presence, so the agents are shared in the open workspace.
 - **Limits:** the status is cut to 200 characters, and the selection and the objects of the running action to 50 IDs each.
 - **Requirement:** a sync provider with awareness, such as the WebSocket and Hocuspocus providers, or `BroadcastSyncProvider.with({ awareness: true })` between tabs. Without one, nothing is shared. See [Providers](./providers.md).
@@ -442,7 +442,7 @@ on<K extends keyof KritzelAgentEventMap>(event: K, listener: (payload: KritzelAg
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
 | change | KritzelAgentState | The state changed: the agent was added or removed (`isAdded`), or its status, visibility, name, color, avatar, `broadcast`, activity, selection, history, or attachment changed. Also emitted for these changes while the agent is not added, and when a workspace switch drops the history (`canUndo` and `canRedo`). Not emitted for plain cursor motion. |
-| detached | KritzelAgentDetachedEvent | The cursor stopped sticking to an object, because the object was deleted (`'object-removed'`) or after `detach()` (`'manual'`). |
+| detached | KritzelAgentDetachedEvent | The cursor stopped sticking to an object or an element inside it, because the object was deleted (`'object-removed'`) or after `detach()` (`'manual'`). |
 | interrupted | KritzelAgentInterruptedEvent | Someone took over the objects of a running action: the user selected or grabbed them, a collaborator started editing them, or they were changed elsewhere. |
 | removed | void | The agent was removed from its editor. |
 
@@ -492,6 +492,8 @@ try {
 | An action or `moveTo()` while the agent is not added | Rejects with an `Error`. |
 | An action with an unknown `type` or invalid fields | Rejects with a `TypeError`. |
 | `moveTo()` with an invalid target or to an object that does not exist | Rejects with an `Error`. |
+| `moveTo()` to an element of an object that is not mounted or has no content elements, or when no visible element matches the selector | Rejects with an `Error`. |
+| `click()` or `moveObject()` (also through `perform()`) with an element target (`selector`) | Rejects with a `TypeError`. Use `moveTo({ objectId, selector })` to point at an element. |
 | `task()` while another task of the agent is running | Rejects with an `Error`. |
 | `observe()` while the agent is not added or no workspace is loaded | Rejects with an `Error`. |
 | `addAgent()` with a value that is not a `KritzelAgent` | Rejects with a `TypeError`. |
@@ -617,10 +619,10 @@ interface KritzelAgentInterruptedEvent {
 
 ### KritzelAgenticTarget
 
-A point in world coordinates or an anchor on an object. Used by `moveTo()`, `click()`, `moveObject()`, and the `position` option. Anchors rotate with the object, and `offset` is in world units of the object's unrotated space.
+A point in world coordinates, an anchor on an object, or an element inside an object's content, such as a button in an iframe object. Used by `moveTo()` and the `position` option. `click()` and `moveObject()` take only point and object targets (`KritzelAgenticPointTarget | KritzelAgenticObjectTarget`): element targets are accepted only by `moveTo()` and `position`, which point the cursor at the element. Anchors rotate with the object, and `offset` is in world units of the object's unrotated space. For an element target, the first element that matches `selector` is used, and `anchor` and `offset` are relative to the element's box. While the cursor sticks to an element, it follows the element inside the content; if the element disappears or is scrolled out of view, the cursor stays at its last visible position and returns once it reappears.
 
 ```ts
-type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
+type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget;
 
 interface KritzelAgenticPointTarget {
   x: number;
@@ -633,12 +635,21 @@ interface KritzelAgenticObjectTarget {
   offset?: KritzelPoint;
 }
 
+// An element inside an object's content, such as a button in an iframe object
+interface KritzelAgenticElementTarget {
+  objectId: string;
+  selector: string; // CSS selector, the first match is used
+  anchor?: KritzelAgenticAnchor; // on the element, defaults to 'center'
+  offset?: KritzelPoint;
+}
+
 type KritzelAgenticAnchor =
   | 'center' | 'top-left' | 'top' | 'top-right' | 'right'
   | 'bottom-right' | 'bottom' | 'bottom-left' | 'left';
 
 interface KritzelAgenticAttachment {
   objectId: string;
+  selector?: string; // set when the cursor sticks to an element inside the object
   anchor: KritzelAgenticAnchor;
   offset: KritzelPoint;
 }
@@ -656,7 +667,7 @@ interface KritzelAgenticMoveOptions {
   easing?: KritzelEasing;
   /** Screen pixels per second. Defaults to the agent's `speed`, or 1200. */
   speed?: number;
-  /** Whether the cursor sticks to an object target after arriving. Defaults to true. */
+  /** Whether the cursor sticks to an object or element target after arriving. Defaults to true. */
   attach?: boolean;
 }
 
@@ -673,10 +684,10 @@ Passed to `perform()`. Each action method builds one of these objects. Coordinat
 
 ```ts
 type KritzelAgenticAction =
-  | { type: 'click'; target: KritzelAgenticTarget; count?: 1 | 2 }
+  | { type: 'click'; target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget; count?: 1 | 2 }
   | { type: 'select'; objectIds: string[]; additive?: boolean }
   | { type: 'clearSelection' }
-  | { type: 'moveObject'; objectId: string; to: KritzelAgenticTarget; align?: KritzelAgenticAnchor }
+  | { type: 'moveObject'; objectId: string; to: KritzelAgenticPointTarget | KritzelAgenticObjectTarget; align?: KritzelAgenticAnchor }
   | { type: 'resizeObject'; objectId: string; width?: number; height?: number; keepAspectRatio?: boolean; handle?: KritzelAgenticResizeHandle }
   | { type: 'rotateObject'; objectId: string; angle: number; relative?: boolean }
   | { type: 'createShape'; x: number; y: number; width: number; height: number; shapeType?: ShapeType; text?: string; style?: KritzelAgenticShapeStyle }

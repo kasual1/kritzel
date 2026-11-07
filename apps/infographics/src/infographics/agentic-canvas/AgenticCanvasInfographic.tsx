@@ -1,13 +1,6 @@
-import { useRef, useState, type CSSProperties } from 'react';
-import {
-  KritzelAgent,
-  KritzelEditor,
-  KritzelWorkspace,
-  type HTMLKritzelEditorElement,
-  type KritzelObjectConfig,
-  type KritzelObjectTitlebarConfig,
-} from '@kritzel/react-editor';
-import { CanvasAgent, isIframe } from './canvas-agent';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { KritzelEditor, KritzelWorkspace, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { playHeroScene } from './hero-scene';
 
 const WORKSPACE_ID = 'agentic-canvas';
 
@@ -16,53 +9,32 @@ const hostStyle: CSSProperties = {
   height: '100%',
 };
 
-/** The iframe objects Claude adds get a titlebar. */
-const objectConfig: KritzelObjectConfig = {
-  hasTitlebar: isIframe,
-};
-
-/** The titlebar shows the object's name, which users can rename by clicking it while the object is selected. */
-const objectTitlebar: KritzelObjectTitlebarConfig = {
-  left: [{ id: 'title', type: 'title', isEditable: true }],
-};
-
-/** An editor with the chat box instead of the toolbar: every prompt lets Claude add iframe objects to the canvas. */
+/**
+ * Hero of the "What is an agentic canvas?" blog post: three agents help a musician release the jazz song "Full Control".
+ * The scene plays once when the editor is ready; reload the page to play it again.
+ */
 export function AgenticCanvasInfographic() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const agentRef = useRef<CanvasAgent | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [isWorking, setIsWorking] = useState(false);
-  // Claude works on the canvas as an agent: its own cursor, status and undo history.
-  const [claude] = useState(() => new KritzelAgent({ id: 'claude', name: 'Claude', color: '#D97757' }));
   const [workspaces] = useState(() => [
     new KritzelWorkspace({ id: WORKSPACE_ID, name: 'Agentic canvas', objects: [] }),
   ]);
 
-  async function onChatSubmit(prompt: string) {
+  useEffect(() => () => abortRef.current?.abort(), []);
+
+  function onReady() {
     const editor = editorRef.current;
     if (!editor || abortRef.current) {
       return;
     }
-    if (!CanvasAgent.hasApiKey) {
-      console.warn('Add ANTHROPIC_API_KEY to the .env file at the repository root and restart the dev server.');
-      return;
-    }
-
-    agentRef.current ??= new CanvasAgent(editor, claude);
     const abort = new AbortController();
     abortRef.current = abort;
-    setIsWorking(true);
-
-    try {
-      await agentRef.current.send(prompt, abort.signal);
-    } catch (error) {
+    playHeroScene(editor, setIsWorking, abort.signal).catch(error => {
       if (!abort.signal.aborted) {
         console.error(error);
       }
-    } finally {
-      abortRef.current = null;
-      setIsWorking(false);
-    }
+    });
   }
 
   return (
@@ -72,14 +44,15 @@ export function AgenticCanvasInfographic() {
         editorId="infographic-agentic-canvas"
         workspaces={workspaces}
         activeWorkspaceId={WORKSPACE_ID}
-        objectConfig={objectConfig}
-        objectTitlebar={objectTitlebar}
         isChatBoxVisible
         isChatBoxLoading={isWorking}
         isWorkspaceManagerVisible={false}
-        onIsReady={() => void editorRef.current?.addAgent(claude)}
-        onChatSubmit={event => void onChatSubmit(event.detail)}
-        onChatStop={() => abortRef.current?.abort()}
+        isMoreMenuVisible={false}
+        isZoomPanelVisible={false}
+        // The scene shows the agents by their cursors only, not in the avatar stack.
+        isAgentAvatarsVisible={false}
+        style={{ display: 'block', height: '100%' }}
+        onIsReady={onReady}
       />
     </div>
   );

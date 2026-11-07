@@ -1,5 +1,5 @@
 import type { KritzelEasing } from './easing.interface';
-import type { KritzelAgenticAnchor, KritzelAgenticTarget } from './agentic-cursor.interface';
+import type { KritzelAgenticAnchor, KritzelAgenticObjectTarget, KritzelAgenticPointTarget } from './agentic-cursor.interface';
 import type { KritzelPoint } from './point.interface';
 import type { LineArrowConfig } from './arrow-head.interface';
 import type { ThemeAwareColor } from '../constants/color-palette.constants';
@@ -46,8 +46,11 @@ export interface KritzelAgenticLineStyle extends KritzelAgenticStrokeStyle {
 /** Presses at a world point or an anchor on an object. Visual only: nothing is selected or changed. */
 export interface KritzelAgenticClickAction {
   type: 'click';
-  /** World point, or an anchor on an object (the anchor rotates with the object). */
-  target: KritzelAgenticTarget;
+  /**
+   * World point, or an anchor on an object (the anchor rotates with the object). Elements inside objects can't be
+   * clicked; point at one with `agent.moveTo({ objectId, selector })`.
+   */
+  target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
   /** `2` plays a double press. Defaults to `1`. */
   count?: 1 | 2;
 }
@@ -75,7 +78,7 @@ export interface KritzelAgenticMoveObjectAction {
   /** ID of a top-level object. */
   objectId: string;
   /** World point, or an anchor (with an optional offset in world units) on another object. Resolved once when the drag starts. */
-  to: KritzelAgenticTarget;
+  to: KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
   /** Point of the moved object that lands on `to`. Defaults to `'center'`. */
   align?: KritzelAgenticAnchor;
 }

@@ -30,7 +30,25 @@ export interface KritzelAgenticObjectTarget {
   offset?: KritzelPoint;
 }
 
-export type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
+/**
+ * An element inside an object's content to move to (and, by default, stick to), e.g. a button in the page of a
+ * `KritzelIframeObject`. The object must support elements (see `KritzelElementAwareObject`) and be mounted, and the
+ * element must be visible, when the agent's cursor starts moving. While attached, the cursor follows the element when
+ * it moves inside the content. If the element disappears or is scrolled out of view, e.g. while the content is
+ * regenerated, the cursor stays at the element's last visible position and returns to the element once it reappears.
+ */
+export interface KritzelAgenticElementTarget {
+  /** ID of the canvas object. */
+  objectId: string;
+  /** CSS selector of the element. The first match is used. */
+  selector: string;
+  /** Anchor point on the element. Defaults to `'center'`. */
+  anchor?: KritzelAgenticAnchor;
+  /** Offset from the anchor in world units, in the object's local (unrotated) space. */
+  offset?: KritzelPoint;
+}
+
+export type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget;
 
 /** Options for creating the cursor of an agent. @internal */
 export interface KritzelAgenticCursorOptions {
@@ -44,7 +62,7 @@ export interface KritzelAgenticCursorOptions {
   status?: string;
   /** Whether the cursor is visible. Defaults to `true`. */
   visible?: boolean;
-  /** Initial position. Defaults to the center of the viewport. An object target attaches the cursor immediately. */
+  /** Initial position. Defaults to the center of the viewport. An object or element target attaches the cursor immediately. */
   position?: KritzelAgenticTarget;
 }
 
@@ -65,7 +83,7 @@ export interface KritzelAgenticMoveOptions {
   easing?: KritzelEasing;
   /** Movement speed in screen pixels per second, used when `duration` is omitted. Defaults to 1200. */
   speed?: number;
-  /** Whether the cursor sticks to the object after arriving. Only applies to object targets. Defaults to `true`. */
+  /** Whether the cursor sticks to the object or element after arriving. Only applies to object and element targets. Defaults to `true`. */
   attach?: boolean;
 }
 
@@ -75,9 +93,11 @@ export interface KritzelAgenticMoveResult {
   completed: boolean;
 }
 
-/** The object an agent's cursor sticks to. */
+/** The object, or the element inside an object, an agent's cursor sticks to. */
 export interface KritzelAgenticAttachment {
   objectId: string;
+  /** Selector of the element inside the object, when attached to an element. */
+  selector?: string;
   anchor: KritzelAgenticAnchor;
   offset: KritzelPoint;
 }

@@ -5,10 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+import { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
 import { Element, Event } from "@stencil/core";
 import { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
-export { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+export { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
 export { Element, Event } from "@stencil/core";
 export { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export namespace Components {
@@ -123,6 +123,11 @@ export namespace Components {
           * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
          */
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
+        /**
+          * Removes element highlights.
+          * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
+         */
+        "clearObjectElementHighlights": (objectId?: string) => Promise<void>;
         /**
           * Deselects all currently selected objects.
          */
@@ -319,6 +324,12 @@ export namespace Components {
          */
         "hideContextMenu": () => Promise<void>;
         /**
+          * Highlights elements inside an object's content, replacing its previous highlights. Highlights are local: they are neither saved nor shown to collaborators.
+          * @param objectId - The object ID.
+          * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
+         */
+        "highlightObjectElements": (objectId: string, highlights: KritzelObjectElementHighlight[]) => Promise<void>;
+        /**
           * Opens a file picker dialog and imports the selected JSON file into the workspace. This method creates a hidden file input, triggers the browser's file chooser, reads the selected JSON file, and imports it using importFromJson.
           * @returns A promise that resolves when the import is complete or rejects on error/cancel.
          */
@@ -411,6 +422,14 @@ export namespace Components {
           * @param y - Y position in world coordinates.
          */
         "paste": (x: number, y: number) => Promise<void>;
+        /**
+          * Describes the elements inside an object's content that match a CSS selector, in document order. The object must be mounted, which it is while it is in or near the viewport.
+          * @param objectId - The object ID.
+          * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+          * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
+          * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor at it with `agent.moveTo({ objectId, selector })`.
+         */
+        "queryObjectElements": (objectId: string, selector: string, limit?: number) => Promise<KritzelObjectElementInfo[]>;
         /**
           * Redoes the last undone action.
          */
@@ -511,6 +530,13 @@ export namespace Components {
           * @param code - The locale code to activate, e.g. 'de'.
          */
         "setLocale": (code: LocaleCode) => Promise<void>;
+        /**
+          * Turns element picking on or off for an object whose content has elements, such as an iframe object. While picking, the element under the pointer is highlighted, and a click emits `objectElementPick` instead of reaching the content. Picking works while the object is interactive, which it is while selected.
+          * @param objectId - The object ID.
+          * @param enabled - Whether the object picks elements.
+          * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
+         */
+        "setObjectElementPicking": (objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions) => Promise<void>;
         /**
           * Sets the viewport to center on the given world coordinates at the specified scale.
           * @param x - X position in world coordinates to center on.
@@ -727,6 +753,9 @@ declare global {
         "agentsChange": KritzelAgentsChangeEvent;
         "objectTitlebarAction": KritzelObjectTitlebarActionEvent;
         "objectTitlebarMenuStateChange": KritzelObjectTitlebarMenuState;
+        "objectElementHover": KritzelObjectElementHoverEvent;
+        "objectElementClick": KritzelObjectElementClickEvent;
+        "objectElementPick": KritzelObjectElementPickEvent;
     }
     interface HTMLKritzelEngineElement extends Components.KritzelEngine, HTMLStencilElement {
         addEventListener<K extends keyof HTMLKritzelEngineElementEventMap>(type: K, listener: (this: HTMLKritzelEngineElement, ev: KritzelEngineCustomEvent<HTMLKritzelEngineElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -924,6 +953,18 @@ declare namespace LocalJSX {
           * Emitted when notifications change.
          */
         "onNotificationsChange"?: (event: KritzelEngineCustomEvent<KritzelNotification>) => void;
+        /**
+          * Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual.
+         */
+        "onObjectElementClick"?: (event: KritzelEngineCustomEvent<KritzelObjectElementClickEvent>) => void;
+        /**
+          * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object, such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
+         */
+        "onObjectElementHover"?: (event: KritzelEngineCustomEvent<KritzelObjectElementHoverEvent>) => void;
+        /**
+          * Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`.
+         */
+        "onObjectElementPick"?: (event: KritzelEngineCustomEvent<KritzelObjectElementPickEvent>) => void;
         /**
           * Emitted when a button or a menu item in an object titlebar is clicked.
          */

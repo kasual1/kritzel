@@ -13,7 +13,7 @@ import LiveDemo from '@site/src/components/LiveDemo';
 
 An agent is a participant on the canvas that you drive from code instead of a pointer device, for example an AI assistant that reviews, arranges, or annotates the board. Each agent is a `KritzelAgent` with:
 
-- **A cursor** with a name label, a color, and an optional status message. It flies smoothly to its targets and can stick to an object, so it follows that object while it is moved, resized, or rotated. When the cursor leaves the visible area, an indicator at the edge of the viewport points to it.
+- **A cursor** with a name label, a color, and an optional status message. It flies smoothly to its targets and can stick to an object, so it follows that object while it is moved, resized, or rotated. It can also point at an element inside the page of an iframe object, such as a button. When the cursor leaves the visible area, an indicator at the edge of the viewport points to it.
 - **Actions** that change the canvas the way a person would: the cursor flies to the target, presses, and animates the change, for example dragging an object, drawing a stroke, or typing text.
 - **Its own selection and undo history.** The user's undo never reverts an agent's work, and an agent's undo never reverts the user's.
 
@@ -61,7 +61,7 @@ The constructor accepts the following options. Only `name` is required:
 | broadcast | boolean | Whether collaborators see the agent. Defaults to `true`. See [Collaboration](#collaboration). |
 | status | string | Status message shown below the label. |
 | visible | boolean | Whether the cursor is visible. Defaults to `true`. |
-| position | KritzelAgenticTarget | Where the cursor starts. Defaults to the center of the viewport. An object target sticks the cursor to that object right away. If the object does not exist when the agent is added, for example because it was deleted or the editor shows another document, the cursor starts at the center of the viewport. |
+| position | KritzelAgenticTarget | Where the cursor starts. Defaults to the center of the viewport. An object target sticks the cursor to that object right away, and an [element target](#pointing-at-elements) to that element once the page has reported it. If the object does not exist when the agent is added, for example because it was deleted or the editor shows another document, the cursor starts at the center of the viewport. |
 
 `addAgent()` resolves with the same agent. Adding the same instance again does nothing, so it is safe to call on every `isReady`. Adding a different agent with an ID that is already in use throws.
 
@@ -87,7 +87,7 @@ planner.hide(); // the agent keeps working without a visible cursor
 planner.show();
 ```
 
-`moveTo()` animates the cursor to world coordinates or to an anchor on an object. The returned promise resolves when the cursor arrives, so you can `await` each step:
+`moveTo()` animates the cursor to world coordinates, to an anchor on an object, or to an [element inside an object](#pointing-at-elements). The returned promise resolves when the cursor arrives, so you can `await` each step:
 
 ```ts
 // Move to a point in world coordinates
@@ -107,7 +107,7 @@ By default the duration depends on the distance, so short moves are quick and lo
 | duration | number | Fixed duration in milliseconds. Overrides the distance-based duration. |
 | easing | KritzelEasing | `'linear'`, `'ease-in'`, `'ease-out'`, `'ease-in-out'` (default), or a custom `(t: number) => number` function. |
 | speed | number | Speed in screen pixels per second for the distance-based duration. Defaults to the agent's `speed`. |
-| attach | boolean | Whether the cursor sticks to an object target after arriving. Defaults to `true`. |
+| attach | boolean | Whether the cursor sticks to an object or element target after arriving. Defaults to `true`. |
 
 Object targets accept an `anchor` (`'center'`, `'top-left'`, `'top'`, `'top-right'`, `'right'`, `'bottom-right'`, `'bottom'`, `'bottom-left'`, or `'left'`) and an optional `offset` in world units. Anchors rotate with the object.
 
@@ -143,6 +143,42 @@ function onAgentsChange(event: CustomEvent<KritzelAgentsChangeEvent>) {
   <KritzelEditor ref="editor" @agentsChange="onAgentsChange" />
 </template>
 ```
+
+## Pointing at Elements
+
+An agent's cursor can point at an element inside the page of an [iframe object](./dynamic-objects.md#interacting-with-iframe-content), for example the button the agent is about to press. Pass the object ID and a CSS selector to `moveTo()`. The first element that matches the selector is used:
+
+```ts
+await planner.moveTo({
+  objectId: iframeObject.id,
+  selector: '[data-kritzel-id="checkout"]',
+});
+
+// Point at the top-left corner of the element instead of its center
+await planner.moveTo({
+  objectId: iframeObject.id,
+  selector: '[data-kritzel-id="checkout"]',
+  anchor: 'top-left',
+  offset: { x: 4, y: 4 },
+});
+```
+
+`anchor` and `offset` work as for objects, but relative to the element's box. Element targets stick the cursor to the element by default, so it follows the element when the element moves inside the page, for example because the layout changes or the page scrolls, and when the object is moved or rotated. Moving the cursor somewhere else releases it, and `detach()` releases it in place. Use the `selector` of an [element description](./dynamic-objects.md#element-descriptions), for example of a picked element. Selectors built from a `data-kritzel-id` keep matching when the page is regenerated.
+
+The object must be mounted, which it is while it is in or near the viewport, and the first element that matches the selector must be visible when the move starts. Otherwise the promise rejects. If the element disappears or is scrolled out of view later, for example while the page is regenerated, the cursor stays at the last position where the element was visible and returns to the element when it reappears.
+
+An element can also be the `position` where the cursor of an agent starts. The cursor starts at the center of the object and moves onto the element once the page has reported it:
+
+```ts
+const reviewer = new KritzelAgent({
+  name: 'Reviewer',
+  position: { objectId: iframeObject.id, selector: '[data-kritzel-id="title"]' },
+});
+
+await editor.value?.addAgent(reviewer);
+```
+
+While the cursor sticks to an element, `attachedTo` in the agent's `state` includes the `selector`. Collaborators see the cursor at the element's position, but their editors don't track the element (see [Collaboration](#collaboration)).
 
 ## Performing Actions
 
@@ -369,7 +405,7 @@ const syncConfig: KritzelSyncConfig = { providers: [BroadcastSyncProvider.with({
 
 The [actions demo](#performing-actions) uses this configuration. Open it in two tabs, and each tab shows the agent of the other tab.
 
-An agent shares its name, color, avatar, status, visibility, activity, cursor position and attachment, presses, selection, and the objects of its running action. Updates are sent only when something changed, so an idle agent sends nothing. Adding or removing an agent, renaming, recoloring, changing the avatar, hiding or showing it, and turning `broadcast` on or off are sent at once. The status, activity, selection, and cursor motion are sent at most every 100 ms. The status is cut to 200 characters, and the selection and the objects of the running action to 50 IDs each. In the editors of collaborators, the cursor glides between updates, a cursor that sticks to an object stays on it while the object moves, and the outlines are dashed. Avatar URLs from collaborators are only used when they are `http:`, `https:`, `data:image/`, or relative URLs.
+An agent shares its name, color, avatar, status, visibility, activity, cursor position and attachment, presses, selection, and the objects of its running action. Updates are sent only when something changed, so an idle agent sends nothing. Adding or removing an agent, renaming, recoloring, changing the avatar, hiding or showing it, and turning `broadcast` on or off are sent at once. The status, activity, selection, and cursor motion are sent at most every 100 ms. The status is cut to 200 characters, and the selection and the objects of the running action to 50 IDs each. In the editors of collaborators, the cursor glides between updates, a cursor that sticks to an object stays on it while the object moves, and the outlines are dashed. A cursor that sticks to an element inside an object is shared by its position only, sent at most every 100 ms like other cursor motion: the editors of collaborators don't track the element, so there the cursor follows it only through these updates. Avatar URLs from collaborators are only used when they are `http:`, `https:`, `data:image/`, or relative URLs.
 
 To keep an agent in your editor only, create it with `broadcast: false`. Changing `broadcast` later takes effect at once:
 
@@ -593,4 +629,5 @@ For the full list of related APIs, see the following reference sections.
 - [Agent](../api-reference/agent.md)
 - [Agent: LLM Tools](../api-reference/agent.md#llm-tools)
 - [Editor: Agents](../api-reference/editor.md#agents)
+- [Editor: Object Elements](../api-reference/editor.md#object-elements)
 - [Providers: Broadcast Provider](../api-reference/providers.md#broadcast-provider)

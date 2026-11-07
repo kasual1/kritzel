@@ -1,3 +1,4 @@
+import { KritzelIframeObject } from '../objects/iframe.class';
 import { KritzelCore } from './core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
@@ -516,6 +517,23 @@ describe('KritzelCore', () => {
       expect(mockObjectsMap.insert).toHaveBeenCalledWith(incoming);
       expect(incoming.zIndex).toBe(7);
       expect(diff?.updated).toEqual([incoming]);
+    });
+
+    it('should hand local element state to the instance that replaces an iframe object', async () => {
+      const existing = new KritzelIframeObject({ html: '<button id="run">Run</button>' });
+      existing.id = 'frame-1';
+      existing.setElementHighlights([{ selector: '#run', label: 'Run' }]);
+      existing.trackElement('#run');
+      const incoming = new KritzelIframeObject({ html: '<button id="run">Run!</button>' });
+      incoming.id = 'frame-1';
+      mockObjectsMap.allObjects.mockReturnValue([existing]);
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+
+      await core.updateWorkspace(ws);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(incoming);
+      expect(incoming.getElementHighlights()).toEqual([{ selector: '#run', label: 'Run' }]);
+      expect(existing.getElementHighlights()).toEqual([]);
     });
 
     it('should rebuild the anchor index after reconciling the active workspace', async () => {

@@ -4,6 +4,7 @@ import { CollaborationRealtimePage } from "./pages/advanced/collaboration/Collab
 import { DynamicObjectsComponentPage } from "./pages/advanced/dynamic-objects/DynamicObjectsComponentPage";
 import { DynamicObjectsHtmlPage } from "./pages/advanced/dynamic-objects/DynamicObjectsHtmlPage";
 import { DynamicObjectsIframePage } from "./pages/advanced/dynamic-objects/DynamicObjectsIframePage";
+import { DynamicObjectsIframeElementsPage } from "./pages/advanced/dynamic-objects/DynamicObjectsIframeElementsPage";
 import { ImportExportViewportExportPage } from "./pages/advanced/import-export/ImportExportViewportExportPage";
 import { ImportExportWorkspaceExportPage } from "./pages/advanced/import-export/ImportExportWorkspaceExportPage";
 import { ImportExportWorkspaceImportPage } from "./pages/advanced/import-export/ImportExportWorkspaceImportPage";
@@ -140,6 +141,7 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/advanced/dynamic-objects/html", title: "HTML Dynamic Objects", category: "Advanced", context: "Dynamic Objects", component: DynamicObjectsHtmlPage },
   { path: "/advanced/dynamic-objects/component", title: "React Dynamic Objects", category: "Advanced", context: "Dynamic Objects", component: DynamicObjectsComponentPage },
   { path: "/advanced/dynamic-objects/iframe", title: "Iframe Dynamic Objects", category: "Advanced", context: "Dynamic Objects", component: DynamicObjectsIframePage },
+  { path: "/advanced/dynamic-objects/iframe-elements", title: "Iframe Element Interaction", category: "Advanced", context: "Dynamic Objects", component: DynamicObjectsIframeElementsPage },
   { path: "/advanced/import-export/viewport-export", title: "Viewport Export", category: "Advanced", context: "Import / Export", component: ImportExportViewportExportPage },
   { path: "/advanced/import-export/workspace-export", title: "Workspace Export", category: "Advanced", context: "Import / Export", component: ImportExportWorkspaceExportPage },
   { path: "/advanced/import-export/workspace-import", title: "Workspace Import", category: "Advanced", context: "Import / Export", component: ImportExportWorkspaceImportPage },
