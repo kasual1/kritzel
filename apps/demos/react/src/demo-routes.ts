@@ -14,6 +14,11 @@ import { AgentsShowcasePage } from "./pages/advanced/agents/AgentsShowcasePage";
 import { AgentsCopilotPage } from "./pages/advanced/agents/AgentsCopilotPage";
 import { AgentsGuidedTourPage } from "./pages/advanced/agents/AgentsGuidedTourPage";
 import { AgentsTeamPage } from "./pages/advanced/agents/AgentsTeamPage";
+import { AgentsHelloPage } from "./pages/advanced/agents/AgentsHelloPage";
+import { AgentsFollowPage } from "./pages/advanced/agents/AgentsFollowPage";
+import { AgentsSketchPage } from "./pages/advanced/agents/AgentsSketchPage";
+import { AgentsChartPage } from "./pages/advanced/agents/AgentsChartPage";
+import { AgentsWidgetsPage } from "./pages/advanced/agents/AgentsWidgetsPage";
 import { UserManagementLoginPage } from "./pages/advanced/user-management/UserManagementLoginPage";
 import { UserManagementLogoutPage } from "./pages/advanced/user-management/UserManagementLogoutPage";
 import { UserManagementProvidersPage } from "./pages/advanced/user-management/UserManagementProvidersPage";
@@ -148,6 +153,11 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/advanced/import-export/viewport-export", title: "Viewport Export", category: "Advanced", context: "Import / Export", component: ImportExportViewportExportPage },
   { path: "/advanced/import-export/workspace-export", title: "Workspace Export", category: "Advanced", context: "Import / Export", component: ImportExportWorkspaceExportPage },
   { path: "/advanced/import-export/workspace-import", title: "Workspace Import", category: "Advanced", context: "Import / Export", component: ImportExportWorkspaceImportPage },
+  { path: "/advanced/agents/hello", title: "Hello Agent", category: "Advanced", context: "Agentic Cursors", component: AgentsHelloPage },
+  { path: "/advanced/agents/follow", title: "Follow the Selection", category: "Advanced", context: "Agentic Cursors", component: AgentsFollowPage },
+  { path: "/advanced/agents/sketch", title: "Sketch Artist", category: "Advanced", context: "Agentic Cursors", component: AgentsSketchPage },
+  { path: "/advanced/agents/chart", title: "Chart Builder", category: "Advanced", context: "Agentic Cursors", component: AgentsChartPage },
+  { path: "/advanced/agents/widgets", title: "Widget Builder", category: "Advanced", context: "Agentic Cursors", component: AgentsWidgetsPage },
   { path: "/advanced/agents/basic", title: "Agentic Cursors", category: "Advanced", context: "Agentic Cursors", component: AgentsBasicPage },
   { path: "/advanced/agents/actions", title: "Agentic Actions", category: "Advanced", context: "Agentic Cursors", component: AgentsActionsPage },
   { path: "/advanced/agents/showcase", title: "Agentic Showcase", category: "Advanced", context: "Agentic Cursors", component: AgentsShowcasePage },

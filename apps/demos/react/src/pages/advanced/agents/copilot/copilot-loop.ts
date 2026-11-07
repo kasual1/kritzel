@@ -55,6 +55,7 @@ const TOOL_STATUS: Record<string, string> = {
   draw_path: "Sketching",
   delete_objects: "Cleaning up",
   select: "Selecting",
+  add_widget: "Building a widget",
 };
 
 /** Turns the agent's tools into Claude tool definitions. Anthropic calls the input schema `input_schema`. */
@@ -80,14 +81,17 @@ export interface RunCopilotOptions {
   prompt: string;
   signal: AbortSignal;
   onEvent: (event: CopilotEvent) => void;
+  /** The tools the model may use. Defaults to all of `agent.tools()`; pass a subset or add tools of the app. */
+  tools?: KritzelAgentTool[];
+  /** Defaults to the copilot's system prompt. */
+  system?: string;
 }
 
 /**
  * Sends a prompt to the model and runs the tools it asks for until it is done: the classic tool-use loop. The tools
  * are the agent's own (`agent.tools()`), so every call shows up on the canvas as the agent's cursor at work.
  */
-export async function runCopilot({ agent, model, history, prompt, signal, onEvent }: RunCopilotOptions): Promise<void> {
-  const tools = agent.tools();
+export async function runCopilot({ agent, model, history, prompt, signal, onEvent, tools = agent.tools(), system = SYSTEM_PROMPT }: RunCopilotOptions): Promise<void> {
   const claudeTools = toClaudeTools(tools);
   history.push({ role: "user", content: prompt });
 
@@ -98,7 +102,7 @@ export async function runCopilot({ agent, model, history, prompt, signal, onEven
       onEvent({ type: "thinking", active: true });
       let reply: ModelReply;
       try {
-        reply = await model({ system: SYSTEM_PROMPT, tools: claudeTools, messages: history, signal });
+        reply = await model({ system, tools: claudeTools, messages: history, signal });
       } finally {
         onEvent({ type: "thinking", active: false });
       }

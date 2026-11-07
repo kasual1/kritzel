@@ -10,7 +10,7 @@ import { parseToolResult, type CopilotContent, type CopilotMessage, type Copilot
 
 const THINK_TIME = 650;
 
-interface ToolCall {
+export interface ToolCall {
   name: string;
   input: Record<string, unknown>;
 }
@@ -20,7 +20,7 @@ interface Phase {
   calls: ToolCall[];
 }
 
-interface CallRecord {
+export interface CallRecord {
   name: string;
   input: Record<string, unknown>;
   result: KritzelAgentToolResult | null;
@@ -281,7 +281,7 @@ function promptText(message: CopilotMessage | undefined) {
 }
 
 /** The prompt being answered and everything that happened since: the tool calls with their results. */
-function readTurn(messages: CopilotMessage[]) {
+export function readTurn(messages: CopilotMessage[]) {
   let start = messages.length - 1;
   while (start > 0 && !isPrompt(messages[start])) start--;
   const after = messages.slice(start + 1);
@@ -308,7 +308,7 @@ function readTurn(messages: CopilotMessage[]) {
 
 let callCounter = 0;
 
-function reply(text: string, calls: ToolCall[] = [], phase = 0) {
+export function reply(text: string, calls: ToolCall[] = [], phase = 0) {
   const content: CopilotContent = [];
   if (text) content.push({ type: "text", text });
   for (const call of calls) {
@@ -317,7 +317,7 @@ function reply(text: string, calls: ToolCall[] = [], phase = 0) {
   return { content, stopReason: calls.length > 0 ? "tool_use" : "end_turn" };
 }
 
-function wait(ms: number, signal: AbortSignal) {
+export function wait(ms: number, signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
     const timer = setTimeout(resolve, ms);
     signal.addEventListener("abort", () => {

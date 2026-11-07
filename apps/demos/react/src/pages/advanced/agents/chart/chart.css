@@ -1,0 +1,102 @@
+.chart-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  font-family: Roboto, system-ui, sans-serif;
+  color: #1f1f24;
+}
+
+.chart-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.chart-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 280px;
+  padding: 16px;
+  border-left: 1px solid #e7e7ea;
+  background: #fbfbfc;
+  box-sizing: border-box;
+  font-size: 13px;
+}
+
+.chart-panel h2 {
+  margin: 0;
+  color: #6b6b76;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 38px 1fr 22px;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-row span {
+  font-weight: 600;
+}
+
+.chart-row output {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.chart-row input {
+  width: 100%;
+  accent-color: #2563eb;
+}
+
+.chart-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.chart-buttons button {
+  height: 32px;
+  border: 1px solid #d9d9de;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1f1f24;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.chart-buttons button.primary {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.chart-buttons button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.chart-message {
+  margin: 0;
+  color: #6b6b76;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .chart-body {
+    flex-direction: column;
+  }
+
+  .chart-panel {
+    width: auto;
+    border-top: 1px solid #e7e7ea;
+    border-left: 0;
+  }
+}
