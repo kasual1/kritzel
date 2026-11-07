@@ -11,6 +11,9 @@ import { ImportExportWorkspaceImportPage } from "./pages/advanced/import-export/
 import { AgentsBasicPage } from "./pages/advanced/agents/AgentsBasicPage";
 import { AgentsActionsPage } from "./pages/advanced/agents/AgentsActionsPage";
 import { AgentsShowcasePage } from "./pages/advanced/agents/AgentsShowcasePage";
+import { AgentsCopilotPage } from "./pages/advanced/agents/AgentsCopilotPage";
+import { AgentsGuidedTourPage } from "./pages/advanced/agents/AgentsGuidedTourPage";
+import { AgentsTeamPage } from "./pages/advanced/agents/AgentsTeamPage";
 import { UserManagementLoginPage } from "./pages/advanced/user-management/UserManagementLoginPage";
 import { UserManagementLogoutPage } from "./pages/advanced/user-management/UserManagementLogoutPage";
 import { UserManagementProvidersPage } from "./pages/advanced/user-management/UserManagementProvidersPage";
@@ -148,6 +151,9 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/advanced/agents/basic", title: "Agentic Cursors", category: "Advanced", context: "Agentic Cursors", component: AgentsBasicPage },
   { path: "/advanced/agents/actions", title: "Agentic Actions", category: "Advanced", context: "Agentic Cursors", component: AgentsActionsPage },
   { path: "/advanced/agents/showcase", title: "Agentic Showcase", category: "Advanced", context: "Agentic Cursors", component: AgentsShowcasePage },
+  { path: "/advanced/agents/copilot", title: "Agent Copilot", category: "Advanced", context: "Agentic Cursors", component: AgentsCopilotPage },
+  { path: "/advanced/agents/guided-tour", title: "Agent Guided Tour", category: "Advanced", context: "Agentic Cursors", component: AgentsGuidedTourPage },
+  { path: "/advanced/agents/team", title: "Agent Team", category: "Advanced", context: "Agentic Cursors", component: AgentsTeamPage },
 
   { path: "/customization/theming/apply", title: "Apply Themes", category: "Customization", context: "Theming", component: ThemingApplyPage },
   { path: "/customization/theming/custom", title: "Custom Themes", category: "Customization", context: "Theming", component: ThemingCustomPage },
