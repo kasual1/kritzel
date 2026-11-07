@@ -25,18 +25,8 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
   },
 
   prepare(run, action) {
-    const map = run.map!;
-    // The same instance can't be inserted twice, neither as the object nor as a child of a new group: the
-    // insert gives it a new ID, which would leave the canvas object under two IDs.
-    const live = [action.object, ...pendingDescendants(action.object)].filter(object => map.findById(object.id) === object);
-    if (live.length > 0) {
-      return { reason: 'invalid-target', objectIds: live.map(object => object.id) };
-    }
-    // A group whose children were inserted before (and removed again) has none left to insert.
-    if (action.object instanceof KritzelGroup && action.object._pendingChildren.length === 0 && action.object.childIds.length > 0) {
-      return { reason: 'invalid-target', objectIds: [action.object.id] };
-    }
-    return { targetIds: [], referenceIds: [] };
+    const refused = findUninsertable(run.map!, action.object);
+    return refused.length > 0 ? { reason: 'invalid-target', objectIds: refused } : { targetIds: [], referenceIds: [] };
   },
 
   async execute(run, action) {
@@ -44,10 +34,12 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
     const map = run.map!;
     const object = action.object;
 
-    object._core = core;
+    // Nothing but the scale (which the insert would set the same way) changes before the insert: a group with a
+    // core would, for example, stop collecting the children added to it later.
     object.scale = object.scale ?? core.store.state.scale;
     if (object instanceof KritzelImage) {
       // Fetches and stores the image; a failure rejects the action.
+      object._core = core;
       await object.prepareForInsert();
       run.assertActive();
     }
@@ -62,6 +54,11 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
     }
     await run.press();
 
+    // The app (or another agent) may have inserted the same instance while the cursor flew.
+    const refused = findUninsertable(map, object);
+    if (refused.length > 0) {
+      run.stop('invalid-target', refused);
+    }
     let all: KritzelBaseObject<any>[] = [];
     run.mutate(() => {
       const descendants = core.prepareObjectForInsert(object);
@@ -93,6 +90,17 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
     return [object.id];
   },
 };
+
+/**
+ * IDs of what can't be inserted: an instance that is already on the canvas, as the object or as a pending child
+ * (the insert would give it a new ID and leave it under two), and a group, at any level, whose children were
+ * inserted before (it has none left to insert).
+ */
+function findUninsertable(map: { findById(id: string): unknown }, object: KritzelBaseObject<any>): string[] {
+  return [object, ...pendingDescendants(object)]
+    .filter(item => map.findById(item.id) === item || (item instanceof KritzelGroup && item._pendingChildren.length === 0 && item.childIds.length > 0))
+    .map(item => item.id);
+}
 
 /** The children a group will insert with it, at all nesting levels. */
 function pendingDescendants(object: KritzelBaseObject<any>): KritzelBaseObject<any>[] {

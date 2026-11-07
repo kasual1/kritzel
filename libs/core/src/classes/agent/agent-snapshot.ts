@@ -233,7 +233,12 @@ function keepMostRelevant(
   objects.forEach(object => {
     const parentId = parentOf(object);
     if (parentId) {
-      children.set(parentId, [...(children.get(parentId) ?? []), object]);
+      const list = children.get(parentId);
+      if (list) {
+        list.push(object);
+      } else {
+        children.set(parentId, [object]);
+      }
     }
   });
 
@@ -282,7 +287,12 @@ function keepMostRelevant(
     }
     const parentId = parentOf(object);
     if (parentId && !kept.has(parentId)) {
-      waiting.set(parentId, [...(waiting.get(parentId) ?? []), object]);
+      const list = waiting.get(parentId);
+      if (list) {
+        list.push(object);
+      } else {
+        waiting.set(parentId, [object]);
+      }
       continue;
     }
     keep(object);

@@ -620,6 +620,56 @@ describe('agentic create and transform actions', () => {
       expect(Math.min(a.zIndex, b.zIndex, group.zIndex)).toBeGreaterThan(other.zIndex);
     });
 
+    it('refuses at the insert an object that landed on the canvas while the cursor flew', async () => {
+      const shape = new KritzelShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
+      const added = actions.perform('agent', { type: 'addObject', object: shape }, {});
+      now += 16;
+      cursors.tick(now);
+      await flushMicrotasks();
+      // The app inserts the same instance meanwhile, the way editor.addObject() does.
+      core.insertPreparedObject(shape, core.prepareObjectForInsert(shape));
+      const appId = shape.id;
+
+      await expect(settle(added)).resolves.toEqual({ completed: false, reason: 'invalid-target', objectIds: [appId] });
+      expect(shape.id).toBe(appId);
+      expect(map.allObjects().filter(object => object === shape)).toHaveLength(1);
+    });
+
+    it('keeps collecting children added to a group after a stopped addObject', async () => {
+      const group = new KritzelGroup();
+      const a = new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 });
+      group.addChild(a);
+      const controller = new AbortController();
+      const stopped = actions.perform('agent', { type: 'addObject', object: group }, { signal: controller.signal });
+      now += 16;
+      cursors.tick(now);
+      await flushMicrotasks();
+      controller.abort();
+      await settle(stopped);
+
+      const b = new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 });
+      group.addChild(b);
+      await expect(perform({ type: 'addObject', object: group })).resolves.toMatchObject({ completed: true });
+
+      expect(map.findById(a.id)).toBe(a);
+      expect(map.findById(b.id)).toBe(b);
+      expect(group.childIds).toEqual([a.id, b.id]);
+    });
+
+    it('refuses a nested group whose children were inserted before', async () => {
+      const inner = new KritzelGroup();
+      inner.addChild(new KritzelShape({ translateX: 0, translateY: 0, width: 50, height: 50 }));
+      await expect(perform({ type: 'addObject', object: inner })).resolves.toMatchObject({ completed: true });
+      await perform({ type: 'undo' });
+
+      const outer = new KritzelGroup();
+      outer.addChild(inner);
+      outer.addChild(new KritzelShape({ translateX: 100, translateY: 0, width: 50, height: 50 }));
+
+      await expect(perform({ type: 'addObject', object: outer })).resolves.toEqual({ completed: false, reason: 'invalid-target', objectIds: [inner.id] });
+      expect(map.allObjects()).toEqual([]);
+    });
+
     it('refuses an object that is already on the canvas and anything that is not an object', async () => {
       const shape = addShape(0, 0, 50, 50);
 
