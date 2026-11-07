@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs'
+import { readFileSync, watch } from 'node:fs'
+import { basename, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse } from 'dotenv'
 import { defineConfig, type Plugin } from 'vite'
@@ -12,6 +13,7 @@ function rootEnvFiles(mode: string): string[] {
 /**
  * Reads one variable from the env files at the repository root, and only from there: never from the shell
  * environment, so a key exported for other tools doesn't end up in the browser bundle by accident.
+ * Values are taken as written: `${OTHER}` is not expanded.
  */
 function readRootEnv(files: string[], name: string): string {
   let value = ''
@@ -30,20 +32,32 @@ function readRootEnv(files: string[], name: string): string {
   return value
 }
 
-/** Restarts the dev server when a root env file changes, so a new key is picked up. */
+/**
+ * Restarts the dev server when a root env file is created, changed or deleted, so a new key is picked up. Watches
+ * the root directory itself (not recursively): watching a file that doesn't exist yet misses its creation.
+ */
 function restartOnEnvChange(files: string[]): Plugin {
   return {
     name: 'restart-on-root-env-change',
     configureServer(server) {
-      server.watcher.add(files)
-      const restart = (file: string) => {
-        if (files.includes(file)) {
-          void server.restart()
-        }
+      const names = new Set(files.map(file => basename(file)))
+      let timer: ReturnType<typeof setTimeout> | undefined
+      let watcher: ReturnType<typeof watch> | undefined
+      try {
+        watcher = watch(dirname(files[0]), (_event, name) => {
+          if (name && names.has(name.toString())) {
+            // One save can fire several events: restart once.
+            clearTimeout(timer)
+            timer = setTimeout(() => void server.restart(), 100)
+          }
+        })
+      } catch {
+        return
       }
-      server.watcher.on('add', restart)
-      server.watcher.on('change', restart)
-      server.watcher.on('unlink', restart)
+      server.httpServer?.once('close', () => {
+        clearTimeout(timer)
+        watcher?.close()
+      })
     },
   }
 }

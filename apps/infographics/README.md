@@ -39,7 +39,8 @@ ANTHROPIC_API_KEY=sk-ant-...
 
 The key is used straight from the browser, so only run this locally. It is read from the env files at the repository root
 only (`.env`, `.env.local` and the mode files, as Vite orders them), never from your shell environment, so a key you
-export for other tools is not bundled by accident. The dev server restarts when one of these files changes.
+export for other tools is not bundled by accident. Values are taken as written (`${OTHER}` is not expanded). The dev
+server restarts when one of these files is created, changed or deleted.
 
 ## Record
 
