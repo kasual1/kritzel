@@ -1,10 +1,28 @@
 import { KritzelBaseObject } from '../classes/objects/base-object.class';
+import type { KritzelAgenticActionType } from './agentic-action.interface';
+
+/** A change made by a `KritzelAgent`. */
+export interface KritzelAgentChangeSource {
+    type: 'agent';
+    /** ID of the agent that made the change. */
+    agentId: string;
+    /** The action that made the change; `'undo'` or `'redo'` for the agent's own history. */
+    actionType: KritzelAgenticActionType;
+}
+
+/**
+ * Who made an object change. Absent for changes by the local user, collaborators,
+ * sync and the user's undo/redo.
+ */
+export type KritzelObjectChangeSource = KritzelAgentChangeSource;
 
 /**
  * Emitted when one or more objects are added to the canvas.
  */
 export interface ObjectsAddedEvent {
     objects: KritzelBaseObject[];
+    /** Set when an agent made the change. */
+    source?: KritzelObjectChangeSource;
 }
 
 /**
@@ -13,6 +31,8 @@ export interface ObjectsAddedEvent {
  */
 export interface ObjectsRemovedEvent {
     objects: KritzelBaseObject[];
+    /** Set when an agent made the change. */
+    source?: KritzelObjectChangeSource;
 }
 
 /**
@@ -21,6 +41,8 @@ export interface ObjectsRemovedEvent {
  */
 export interface ObjectsUpdatedEvent {
     objects: { object: KritzelBaseObject; changedProperties: string[] }[];
+    /** Set when an agent made the change. */
+    source?: KritzelObjectChangeSource;
 }
 
 /**

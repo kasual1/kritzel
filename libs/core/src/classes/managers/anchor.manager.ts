@@ -1812,7 +1812,7 @@ export class KritzelAnchorManager {
    * @param object - The object to check for anchorability.
    * @returns True if the object can be anchored to, false otherwise.
    */
-  private isAnchorable(object: KritzelBaseObject<Element>): boolean {
+  isAnchorable(object: KritzelBaseObject<Element>): boolean {
     // Exclude selection-related objects
     if (object instanceof KritzelSelectionBox || object instanceof KritzelSelectionGroup) {
       return false;

@@ -1,3 +1,4 @@
+import { KritzelIframeObject } from '../objects/iframe.class';
 import { KritzelCore } from './core.class';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelSelectionBox } from '../objects/selection-box.class';
@@ -518,6 +519,23 @@ describe('KritzelCore', () => {
       expect(diff?.updated).toEqual([incoming]);
     });
 
+    it('should hand local element state to the instance that replaces an iframe object', async () => {
+      const existing = new KritzelIframeObject({ html: '<button id="run">Run</button>' });
+      existing.id = 'frame-1';
+      existing.setElementHighlights([{ selector: '#run', label: 'Run' }]);
+      existing.trackElement('#run');
+      const incoming = new KritzelIframeObject({ html: '<button id="run">Run!</button>' });
+      incoming.id = 'frame-1';
+      mockObjectsMap.allObjects.mockReturnValue([existing]);
+      const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [incoming] });
+
+      await core.updateWorkspace(ws);
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(incoming);
+      expect(incoming.getElementHighlights()).toEqual([{ selector: '#run', label: 'Run' }]);
+      expect(existing.getElementHighlights()).toEqual([]);
+    });
+
     it('should rebuild the anchor index after reconciling the active workspace', async () => {
       mockObjectsMap.allObjects.mockReturnValue([]);
       const ws = new KritzelWorkspace({ id: 'ws-1', name: 'Workspace', objects: [createStubObject('obj-new')] });
@@ -769,6 +787,157 @@ describe('KritzelCore', () => {
 
       expect(mockObjectsMap.insert).toHaveBeenCalledWith(obj);
       expect(obj.rotation).toBeCloseTo(-Math.PI / 2);
+    });
+  });
+
+  describe('setUser', () => {
+    it('refuses an agent as the local user', () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      core.setUser({ id: 'human' });
+
+      core.setUser({ id: 'agent-1', kind: 'agent' });
+
+      expect(core.user).toEqual({ id: 'human' });
+      expect(mockStore.setLocalUserId).toHaveBeenLastCalledWith('human');
+      expect(warn).toHaveBeenCalled();
+    });
+  });
+
+  describe('prepareObjectForInsert / insertPreparedObject', () => {
+    it('gives a plain object a fresh ID, the core, the viewport scale, z-index and workspace', () => {
+      mockStore.state.scale = 2;
+      mockStore.currentZIndex = 7;
+      const shape = new KritzelShape({ shapeType: ShapeType.Rectangle });
+      shape.scale = undefined; // only an unset scale falls back to the viewport scale
+      const originalId = shape.id;
+
+      const descendants = core.prepareObjectForInsert(shape);
+
+      expect(descendants).toEqual([]);
+      expect(shape.id).not.toBe(originalId);
+      expect(shape._core).toBe(core);
+      expect(shape.scale).toBe(2);
+      expect(shape.zIndex).toBe(7);
+      expect(shape.workspaceId).toBe('ws-1');
+      expect(mockObjectsMap.insert).not.toHaveBeenCalled();
+    });
+
+    it('keeps an explicit scale', () => {
+      mockStore.state.scale = 3;
+      const shape = new KritzelShape({ shapeType: ShapeType.Rectangle, scale: 0.5 });
+
+      core.prepareObjectForInsert(shape);
+
+      expect(shape.scale).toBe(0.5);
+    });
+
+    it('recreates the text editor with the pending content', () => {
+      const text = new KritzelText({});
+      const content = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Hi' }] }] };
+      text.content = content as any;
+      const setContent = jest.spyOn(text, 'setContent');
+
+      core.prepareObjectForInsert(text);
+
+      expect(text.editor).toBeDefined();
+      expect(setContent).toHaveBeenCalledWith(content);
+    });
+
+    it('flushes pending group children with new IDs and remaps line anchors, nested groups included', () => {
+      const a = new KritzelShape({ shapeType: ShapeType.Rectangle });
+      const b = new KritzelShape({ shapeType: ShapeType.Ellipse });
+      const line = new KritzelLine({ startX: 0, startY: 0, endX: 10, endY: 10 });
+      line.startAnchor = { objectId: a.id };
+      line.endAnchor = { objectId: b.id };
+      const inner = new KritzelGroup();
+      inner.addChild(b);
+      const group = new KritzelGroup();
+      group.addChild(a);
+      group.addChild(inner);
+      group.addChild(line);
+      const oldA = a.id;
+      const oldB = b.id;
+
+      const descendants = core.prepareObjectForInsert(group);
+
+      expect(descendants).toEqual([a, inner, b, line]);
+      expect(a.id).not.toBe(oldA);
+      expect(b.id).not.toBe(oldB);
+      expect(group.childIds).toEqual([a.id, inner.id, line.id]);
+      expect(inner.childIds).toEqual([b.id]);
+      expect(group._pendingChildren).toEqual([]);
+      expect(line.startAnchor).toEqual({ objectId: a.id });
+      expect(line.endAnchor).toEqual({ objectId: b.id });
+      descendants.forEach(child => {
+        expect(child._core).toBe(core);
+        expect(child.workspaceId).toBe('ws-1');
+      });
+    });
+
+    it('inserts descendants first, finalizes the group, rebuilds anchors, then inserts the group', () => {
+      const a = new KritzelShape({ shapeType: ShapeType.Rectangle });
+      const group = new KritzelGroup();
+      group.addChild(a);
+      const descendants = core.prepareObjectForInsert(group);
+      const finalize = jest.spyOn(group, 'finalize').mockImplementation(() => undefined);
+
+      core.insertPreparedObject(group, descendants);
+
+      expect(mockObjectsMap.insert.mock.calls.map((call: any[]) => call[0])).toEqual([a, group]);
+      expect(finalize).toHaveBeenCalledTimes(1);
+      expect(mockAnchorManager.rebuildIndex).toHaveBeenCalledTimes(1);
+    });
+
+    describe('z-order of flushed groups', () => {
+      /** zIndex of every object at the moment it was inserted. */
+      let stored: Map<KritzelBaseObject<any> | string, number>;
+
+      beforeEach(() => {
+        jest.spyOn(KritzelGroup.prototype, 'finalize').mockImplementation(() => undefined);
+        // Like the real store, currentZIndex is one above the highest stored zIndex.
+        stored = new Map<KritzelBaseObject<any> | string, number>([['existing', 4]]);
+        mockObjectsMap.insert.mockImplementation((object: KritzelBaseObject<any>) => stored.set(object, object.zIndex));
+        Object.defineProperty(mockStore, 'currentZIndex', { get: () => Math.max(0, ...stored.values()) + 1, configurable: true });
+      });
+
+      const shape = () => new KritzelShape({ shapeType: ShapeType.Rectangle });
+      const insert = (object: KritzelBaseObject<any>) => core.insertPreparedObject(object, core.prepareObjectForInsert(object));
+
+      it('stacks pending children bottom to top in the order they were added; groups take their top child', () => {
+        const [r1, r2, r3, r4] = [shape(), shape(), shape(), shape()];
+        const inner = new KritzelGroup();
+        inner.addChild(r2);
+        inner.addChild(r3);
+        const group = new KritzelGroup();
+        group.addChild(r1);
+        group.addChild(inner);
+        group.addChild(r4);
+
+        insert(group);
+
+        expect([r1, r2, r3, inner, r4, group].map(object => stored.get(object))).toEqual([5, 6, 7, 7, 8, 8]);
+      });
+
+      it('places a plain object inserted after a group above the group band', () => {
+        const [a, b, plain] = [shape(), shape(), shape()];
+        const group = new KritzelGroup();
+        group.addChild(a);
+        group.addChild(b);
+
+        insert(group);
+        insert(plain);
+
+        expect([a, b, group, plain].map(object => stored.get(object))).toEqual([5, 6, 6, 7]);
+      });
+    });
+
+    it('inserts a plain object without touching the anchor index', () => {
+      const shape = new KritzelShape({ shapeType: ShapeType.Rectangle });
+
+      core.insertPreparedObject(shape, core.prepareObjectForInsert(shape));
+
+      expect(mockObjectsMap.insert).toHaveBeenCalledWith(shape);
+      expect(mockAnchorManager.rebuildIndex).not.toHaveBeenCalled();
     });
   });
 
@@ -2495,6 +2664,23 @@ describe('KritzelCore', () => {
 
     afterEach(() => {
       localStorage.removeItem(STORAGE_KEY);
+    });
+
+    it('picks up the agents of collaborators that were there before the workspace loaded', async () => {
+      const ws = createWorkspace('ws-presence', 'Presence', new Date('2025-06-01'));
+      mockObjectsMap.localClientId = 1;
+      mockObjectsMap.awareness = {
+        getStates: () =>
+          new Map<number, Record<string, unknown>>([
+            [1, { agents: [{ id: 'mine', name: 'Mine', color: '#000', position: { x: 0, y: 0 } }] }],
+            [2, { agents: [{ id: 'writer', name: 'Writer', color: '#7C3AED', position: { x: 0, y: 0 } }] }],
+          ]),
+      };
+
+      await core.initializeWorkspace(ws);
+
+      expect(core.remoteAgentManager.getPresences()).toEqual([expect.objectContaining({ id: 'writer', isRemote: true, clientId: 2 })]);
+      core.remoteAgentManager.clear();
     });
 
     it('should use the provided workspace when one is passed', async () => {

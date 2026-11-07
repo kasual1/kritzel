@@ -383,6 +383,13 @@ export const demoRoutes = [
     component: () => import('./pages/advanced/dynamic-objects/DynamicObjectsIframePage.vue'),
   },
   {
+    path: '/advanced/dynamic-objects/iframe-elements',
+    title: 'Iframe Element Interaction',
+    category: 'advanced',
+    context: 'Dynamic Objects',
+    component: () => import('./pages/advanced/dynamic-objects/DynamicObjectsIframeElementsPage.vue'),
+  },
+  {
     path: '/advanced/import-export/viewport-export',
     title: 'Viewport Export',
     category: 'advanced',
@@ -404,11 +411,18 @@ export const demoRoutes = [
     component: () => import('./pages/advanced/import-export/ImportExportWorkspaceImportPage.vue'),
   },
   {
-    path: '/advanced/agentic-cursors/basic',
+    path: '/advanced/agents/basic',
     title: 'Agentic Cursors',
     category: 'advanced',
     context: 'Agentic Cursors',
-    component: () => import('./pages/advanced/agentic-cursors/AgenticCursorsBasicPage.vue'),
+    component: () => import('./pages/advanced/agents/AgentsBasicPage.vue'),
+  },
+  {
+    path: '/advanced/agents/actions',
+    title: 'Agentic Actions',
+    category: 'advanced',
+    context: 'Agentic Cursors',
+    component: () => import('./pages/advanced/agents/AgentsActionsPage.vue'),
   },
   {
     path: '/customization/theming/apply',

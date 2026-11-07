@@ -112,6 +112,19 @@ describe('KritzelEngine', () => {
     setSyncConfig: jest.fn(),
     setAssetStorageConfig: jest.fn(),
     addObject: jest.fn(),
+    // Mirrors the real preparation for plain objects; group flushing is covered by the core spec.
+    prepareObjectForInsert: jest.fn(function (this: any, object: any) {
+      object.id = object.generateId();
+      object._core = this;
+      object.scale = object.scale ?? this.store.state.scale;
+      object.zIndex = this.store.currentZIndex;
+      object.workspaceId = this.store.state.activeWorkspace?.id;
+      return [];
+    }),
+    insertPreparedObject: jest.fn(function (this: any, object: any, descendants: any[]) {
+      descendants.forEach((child: any) => this.addObject(child));
+      this.addObject(object);
+    }),
     updateObject: jest.fn(),
     removeObject: jest.fn(),
     delete: jest.fn(),
@@ -163,8 +176,27 @@ describe('KritzelEngine', () => {
       cleanup: jest.fn(),
     },
     agenticCursorManager: {
-      onDetached: jest.fn(),
       cleanup: jest.fn(),
+    },
+    agenticActionManager: {
+      cleanup: jest.fn(),
+    },
+    agentManager: {
+      add: jest.fn((agent: any) => agent),
+      remove: jest.fn().mockReturnValue(true),
+      get: jest.fn().mockReturnValue(null),
+      getAll: jest.fn().mockReturnValue([]),
+      getPresences: jest.fn().mockReturnValue([]),
+      onChange: jest.fn(),
+      setDisposed: jest.fn(),
+    },
+    agentBroadcaster: {
+      clear: jest.fn(),
+    },
+    remoteAgentManager: {
+      getPresences: jest.fn().mockReturnValue([]),
+      onChange: jest.fn(),
+      clear: jest.fn(),
     },
     themeManager: {
       setTargetElement: jest.fn(),
@@ -263,6 +295,7 @@ describe('KritzelEngine', () => {
       'notificationsChange',
       'contextMenuStateChange',
       'isLoadingChange',
+      'agentsChange',
     ];
     for (const field of emitterFields) {
       (engine as any)[field] = { emit: jest.fn() };
@@ -708,6 +741,16 @@ describe('KritzelEngine', () => {
       titlebarLayer.classList.add('object-titlebar-layer');
       expect(filter(titlebarLayer)).toBe(false);
       expect(filter(document.createElement('div'))).toBe(true);
+    });
+
+    it('excludes agentic cursors and their selections from screenshots', async () => {
+      const { toPng } = jest.requireMock('html-to-image');
+      (toPng as jest.Mock).mockClear();
+
+      await engine.getScreenshot('png');
+
+      const { filter } = (toPng as jest.Mock).mock.calls[0][1];
+      expect(filter({ tagName: 'KRITZEL-AGENTIC-CURSORS' })).toBe(false);
     });
 
     it('lifts the rotation handle above the titlebar of a group whose nested child is selected', () => {
@@ -2100,6 +2143,84 @@ describe('KritzelEngine', () => {
     });
   });
 
+  describe('object elements', () => {
+    const createElementAwareObject = (id = 'frame') => ({
+      id,
+      isElementPicking: false,
+      setElementPicking: jest.fn(),
+      setElementHighlights: jest.fn(),
+      getElementHighlights: jest.fn().mockReturnValue([{ selector: 'p' }]),
+      queryElements: jest.fn().mockResolvedValue([{ selector: 'p' }]),
+      trackElement: jest.fn(),
+      untrackElement: jest.fn(),
+      getTrackedElementRect: jest.fn().mockReturnValue(null),
+      contentToObjectLocal: jest.fn(),
+      refreshElementTheme: jest.fn(),
+    });
+
+    it('delegates picking, highlights and queries to the object', async () => {
+      const object = createElementAwareObject();
+      core.store.objects.findById.mockImplementation((id: string) => (id === 'frame' ? object : null));
+
+      await engine.setObjectElementPicking('frame', true, { selector: 'button' });
+      await engine.highlightObjectElements('frame', [{ selector: '#run', label: 'Run' }]);
+      await engine.clearObjectElementHighlights('frame');
+      const elements = await engine.queryObjectElements('frame', 'p', 3);
+
+      expect(object.setElementPicking).toHaveBeenCalledWith(true, { selector: 'button' });
+      expect(object.setElementHighlights).toHaveBeenNthCalledWith(1, [{ selector: '#run', label: 'Run' }]);
+      expect(object.setElementHighlights).toHaveBeenNthCalledWith(2, []);
+      expect(object.queryElements).toHaveBeenCalledWith('p', 3);
+      expect(elements).toEqual([{ selector: 'p' }]);
+    });
+
+    it('rejects for missing objects and objects without elements', async () => {
+      core.store.objects.findById.mockImplementation((id: string) => (id === 'shape' ? { id: 'shape' } : null));
+
+      await expect(engine.setObjectElementPicking('missing', true)).rejects.toThrow('Object "missing" not found.');
+      await expect(engine.highlightObjectElements('shape', [])).rejects.toThrow('Object "shape" has no content elements.');
+      await expect(engine.queryObjectElements('shape', 'p')).rejects.toThrow('has no content elements');
+    });
+
+    it('clears the highlights of all objects when no object is given', async () => {
+      const highlighted = createElementAwareObject('a');
+      const plain = createElementAwareObject('b');
+      plain.getElementHighlights.mockReturnValue([]);
+      core.store.objects.allObjects = jest.fn().mockReturnValue([highlighted, plain, { id: 'shape' }]);
+
+      await engine.clearObjectElementHighlights();
+
+      expect(highlighted.setElementHighlights).toHaveBeenCalledWith([]);
+      expect(plain.setElementHighlights).not.toHaveBeenCalled();
+    });
+
+    it('refreshes element highlight colors when the theme changes', () => {
+      const object = createElementAwareObject();
+      core.store.objects.allObjects = jest.fn().mockReturnValue([object, { id: 'shape' }]);
+
+      engine.onThemeChange('dark');
+
+      expect(core.themeManager.setTheme).toHaveBeenCalledWith('dark');
+      expect(object.refreshElementTheme).toHaveBeenCalledTimes(1);
+    });
+
+    it('emits hover, click and pick events', () => {
+      (engine as any).objectElementHover = { emit: jest.fn() };
+      (engine as any).objectElementClick = { emit: jest.fn() };
+      (engine as any).objectElementPick = { emit: jest.fn() };
+      const element = { selector: 'p', tagName: 'p', classList: [], attributes: {}, rect: { x: 0, y: 0, width: 1, height: 1 } };
+      const modifiers = { shiftKey: false, ctrlKey: false, altKey: false, metaKey: false };
+
+      engine.emitObjectElementHover({ objectId: 'frame', element, isPicking: false });
+      engine.emitObjectElementClick({ objectId: 'frame', element, ...modifiers });
+      engine.emitObjectElementPick({ objectId: 'frame', element, ...modifiers });
+
+      expect((engine as any).objectElementHover.emit).toHaveBeenCalledWith({ objectId: 'frame', element, isPicking: false });
+      expect((engine as any).objectElementClick.emit).toHaveBeenCalledWith({ objectId: 'frame', element, ...modifiers });
+      expect((engine as any).objectElementPick.emit).toHaveBeenCalledWith({ objectId: 'frame', element, ...modifiers });
+    });
+  });
+
   describe('event emission helpers', () => {
     it('emitObjectsAdded emits with the provided objects', () => {
       const objects: any[] = [{ id: 'a' }];
@@ -2120,6 +2241,18 @@ describe('KritzelEngine', () => {
       engine.emitObjectsUpdated(objects);
 
       expect((engine as any).objectsUpdated.emit).toHaveBeenCalledWith({ objects });
+    });
+
+    it('includes the source of agentic changes in object events', () => {
+      const source = { type: 'agent' as const, agentId: 'agent', actionType: 'moveObject' as const };
+      const objects: any[] = [{ id: 'a' }];
+      engine.emitObjectsAdded(objects, source);
+      engine.emitObjectsRemoved(objects, source);
+      engine.emitObjectsUpdated([{ object: objects[0], changedProperties: [] }], source);
+
+      expect((engine as any).objectsAdded.emit).toHaveBeenCalledWith({ objects, source });
+      expect((engine as any).objectsRemoved.emit).toHaveBeenCalledWith({ objects, source });
+      expect((engine as any).objectsUpdated.emit).toHaveBeenCalledWith({ objects: [{ object: objects[0], changedProperties: [] }], source });
     });
 
     it('emitAwarenessChange emits the awareness state map', () => {
@@ -2870,10 +3003,7 @@ describe('KritzelEngine', () => {
     });
   });
 
-  describe('addObject / addObjects group zIndex allocation', () => {
-    /** zIndex of every object in the simulated store at the moment it was inserted, keyed by id. */
-    let stored: Map<string, number>;
-
+  describe('addObject / addObjects insertion', () => {
     const makeObject = (id: string): any => ({
       id,
       scale: 1,
@@ -2883,43 +3013,86 @@ describe('KritzelEngine', () => {
       generateId: jest.fn().mockReturnValue(id),
     });
 
-    // KritzelGroup is mocked above, so the engine's `instanceof KritzelGroup` checks compare against MockKritzelGroup.
-    const makeGroup = (id: string, children: any[]): any =>
-      withPrototype(MockKritzelGroup, {
-        ...makeObject(id),
-        __class__: 'KritzelGroup',
-        childIds: children.map(child => child.id),
-        _pendingChildren: children,
-        finalize: jest.fn(),
-      });
-
     beforeEach(() => {
       core.store.state.activeWorkspace = { id: 'ws1' } as KritzelWorkspace;
       jest.spyOn(globalThis, 'requestAnimationFrame').mockImplementation(cb => { cb(0); return 0; });
-
-      // Like the real store, currentZIndex is one above the highest stored zIndex.
-      stored = new Map([['existing', 4]]);
-      core.addObject.mockImplementation((object: any) => stored.set(object.id, object.zIndex));
-      Object.defineProperty(core.store, 'currentZIndex', { get: () => Math.max(0, ...stored.values()) + 1, configurable: true });
     });
 
-    it('addObject stacks pending children bottom to top in the order they were added', async () => {
-      const inner = makeGroup('inner', [makeObject('r2'), makeObject('r3')]);
-      const group = makeGroup('group', [makeObject('r1'), inner, makeObject('r4')]);
+    it('addObject prepares and inserts the object through the core', async () => {
+      const object = makeObject('a');
 
-      await engine.addObject(group);
+      await engine.addObject(object);
 
-      // Each group takes the value of its top child.
-      expect(Object.fromEntries(stored)).toEqual({ existing: 4, r1: 5, r2: 6, r3: 7, inner: 7, r4: 8, group: 8 });
+      expect(core.prepareObjectForInsert).toHaveBeenCalledWith(object);
+      expect(core.insertPreparedObject).toHaveBeenCalledWith(object, []);
+      expect(core.deselectAllObjects).toHaveBeenCalled();
     });
 
-    it('addObjects places a plain object that follows a group above the group band', async () => {
-      const group = makeGroup('group', [makeObject('a'), makeObject('b')]);
-      const plain = makeObject('plain');
+    it('addObjects prepares and inserts every object inside one transaction', async () => {
+      const a = makeObject('a');
+      const b = makeObject('b');
+      let inTransaction = false;
+      core.store.objects.transaction = jest.fn((callback: () => void) => {
+        inTransaction = true;
+        callback();
+        inTransaction = false;
+      });
+      const insertedInTransaction: boolean[] = [];
+      core.insertPreparedObject.mockImplementation(() => insertedInTransaction.push(inTransaction));
 
-      await engine.addObjects([group, plain]);
+      await engine.addObjects([a, b]);
 
-      expect(Object.fromEntries(stored)).toEqual({ existing: 4, a: 5, b: 6, group: 6, plain: 7 });
+      expect(core.store.objects.transaction).toHaveBeenCalledTimes(1);
+      expect(core.prepareObjectForInsert.mock.calls.map((call: any[]) => call[0])).toEqual([a, b]);
+      expect(insertedInTransaction).toEqual([true, true]);
+    });
+  });
+
+  describe('agents', () => {
+    it('delegates addAgent, removeAgent, getAgent and getAgents to the agent manager', async () => {
+      const agent = { id: 'planner' } as any;
+      const remote = [{ id: 'writer', kind: 'agent', isRemote: true, clientId: 2 }];
+      core.agentManager.get.mockReturnValue(agent);
+      core.agentManager.getAll.mockReturnValue([agent]);
+      core.remoteAgentManager.getPresences.mockReturnValue(remote);
+
+      await expect(engine.addAgent(agent)).resolves.toBe(agent);
+      await expect(engine.removeAgent('planner')).resolves.toBe(true);
+      await expect(engine.getAgent('planner')).resolves.toBe(agent);
+      await expect(engine.getAgents()).resolves.toEqual([agent]);
+      await expect(engine.getRemoteAgents()).resolves.toEqual(remote);
+      expect(core.agentManager.add).toHaveBeenCalledWith(agent);
+      expect(core.agentManager.remove).toHaveBeenCalledWith('planner');
+    });
+
+    it('emits agentsChange with local agents first, then remote ones, when either manager changes', () => {
+      const presences = [{ id: 'planner', kind: 'agent', isRemote: false }];
+      const remote = [{ id: 'writer', kind: 'agent', isRemote: true, clientId: 2 }];
+      core.agentManager.getPresences.mockReturnValue(presences);
+      core.remoteAgentManager.getPresences.mockReturnValue(remote);
+
+      core.agentManager.onChange.mock.calls[0][0]();
+      core.remoteAgentManager.onChange.mock.calls[0][0]();
+
+      const emit = (engine as any).agentsChange.emit as jest.Mock;
+      expect(emit).toHaveBeenCalledTimes(2);
+      expect(emit).toHaveBeenLastCalledWith({ agents: [...presences, ...remote] });
+    });
+
+    it('stops agent actions before tearing down objects on disconnect, and frees its agents', () => {
+      core.store.objects.destroy = core.store.objects.destroy ?? jest.fn();
+      engine.disconnectedCallback();
+
+      const cleanupOrder = (core.agenticActionManager.cleanup as jest.Mock).mock.invocationCallOrder[0];
+      const destroyOrder = (core.store.objects.destroy as jest.Mock).mock.invocationCallOrder[0];
+      expect(cleanupOrder).toBeLessThan(destroyOrder);
+      expect(core.agentManager.setDisposed).toHaveBeenLastCalledWith(true);
+      // Collaborators stop seeing this editor's agents, and its remote agents are forgotten.
+      expect(core.agentBroadcaster.clear).toHaveBeenCalled();
+      expect(core.remoteAgentManager.clear).toHaveBeenCalled();
+
+      engine.connectedCallback();
+      expect(core.agentManager.setDisposed).toHaveBeenLastCalledWith(false);
     });
   });
 });

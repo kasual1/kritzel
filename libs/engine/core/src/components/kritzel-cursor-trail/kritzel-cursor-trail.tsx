@@ -96,7 +96,7 @@ export class KritzelCursorTrail {
               width: '100%',
               height: '100%',
               pointerEvents: 'none',
-              opacity: 'var(--kritzel-cursor-trail-opacity, 0.6)',
+              opacity: 'var(--kritzel-cursor-trail-opacity, var(--kritzel-global-cursor-trail-opacity, 0.6))',
               zIndex: '9000',
             }}
           >
@@ -117,7 +117,7 @@ export class KritzelCursorTrail {
                   y1={prevPoint.y.toString()}
                   x2={point.x.toString()}
                   y2={point.y.toString()}
-                  stroke="var(--kritzel-cursor-trail-color, rgb(228, 228, 228))"
+                  stroke="var(--kritzel-cursor-trail-color, var(--kritzel-global-cursor-trail-color, rgb(228, 228, 228)))"
                   stroke-width={baseStrokeWidth.toString()}
                   stroke-linecap="round"
                 />

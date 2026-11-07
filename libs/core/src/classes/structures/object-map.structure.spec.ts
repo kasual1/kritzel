@@ -990,6 +990,30 @@ describe('KritzelObjectMap', () => {
       expect(child.isSelected).toBe(false);
     });
 
+    it('should unmount an embedded object deleted remotely', () => {
+      const embedded: any = {
+        id: 'frame-1',
+        isInteractive: false,
+        isSelected: false,
+        mount: jest.fn(),
+        unmount: jest.fn(),
+        setIsInteractive: jest.fn(),
+        hasFocusedInputElement: jest.fn(),
+        getEmbeddedContentRoots: jest.fn(),
+        serialize: jest.fn().mockReturnValue({ id: 'frame-1', __class__: 'KritzelIframeObject' }),
+      };
+      objectMap.insert(embedded);
+
+      observerCallback({
+        transaction: { origin: null },
+        keysChanged: new Set(['frame-1']),
+        changes: { keys: new Map([['frame-1', { action: 'delete' }]]) },
+      });
+
+      expect(embedded.unmount).toHaveBeenCalledTimes(1);
+      expect(objectMap.findById('frame-1')).toBeFalsy();
+    });
+
     it('should rebuild the anchor index when a remote line is updated', () => {
       const { KritzelLine } = require('../objects/line.class');
       const mockLine: any = {
@@ -1503,6 +1527,59 @@ describe('KritzelObjectMap', () => {
       // Local user's selection group should be inserted, not deleted
       expect(mockQuadtreeInsert).toHaveBeenCalledWith(localSelGroup);
       expect(mockMapDelete).not.toHaveBeenCalledWith('sg-local');
+    });
+  });
+
+  describe('agent origins', () => {
+    beforeEach(async () => {
+      await objectMap.initialize(mockCore as unknown as KritzelCore, 'ws-1', { providers: [] });
+      mockYdocTransact.mockClear();
+      mockUndoManagerStopCapturing.mockClear();
+    });
+
+    it('writes with the agent origin instance inside withOrigin', () => {
+      const origin = objectMap.getAgentOrigin('agent')!;
+      objectMap.withOrigin(origin, () => {
+        objectMap.insert(createMockObject('a'));
+      });
+      expect(mockYdocTransact).toHaveBeenCalledWith(expect.any(Function), origin);
+      expect(objectMap.activeAgentOrigin).toBeNull();
+    });
+
+    it('does not close the user undo step for agent inserts and removes', () => {
+      objectMap.insert(createMockObject('a'));
+      mockUndoManagerStopCapturing.mockClear();
+      const origin = objectMap.getAgentOrigin('agent')!;
+      mockQuadtreeFilter.mockReturnValue([createMockObject('a')]);
+      objectMap.withOrigin(origin, () => {
+        objectMap.insert(createMockObject('b'));
+        objectMap.remove(o => o.id === 'a');
+      });
+      expect(mockUndoManagerStopCapturing).not.toHaveBeenCalled();
+    });
+
+    it('supports nested withLocalUpdatesOnly calls', () => {
+      const object = createMockObject('a');
+      objectMap.insert(object);
+      mockMapSet.mockClear();
+      objectMap.withLocalUpdatesOnly(() => {
+        objectMap.withLocalUpdatesOnly(() => objectMap.update(object));
+        objectMap.update(object);
+      });
+      expect(mockMapSet).not.toHaveBeenCalled();
+      objectMap.update(object);
+      expect(mockMapSet).toHaveBeenCalledTimes(1);
+    });
+
+    it('records the drawn object id without awareness', () => {
+      objectMap.setActiveDrawingObject('path-1');
+      expect(objectMap.localActiveDrawingObjectId).toBe('path-1');
+      objectMap.setActiveDrawingObject(null);
+      expect(objectMap.localActiveDrawingObjectId).toBeNull();
+    });
+
+    it('returns no agent origin before initialization', () => {
+      expect(new KritzelObjectMap().getAgentOrigin('agent')).toBeNull();
     });
   });
 });

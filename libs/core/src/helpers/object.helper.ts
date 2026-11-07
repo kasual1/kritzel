@@ -1,4 +1,5 @@
 import { KritzelEmbeddedObject } from '../interfaces/embedded-object.interface';
+import { KritzelElementAwareObject } from '../interfaces/object-element.interface';
 
 export class ObjectHelper {
   static generateUUID(length: number = 16): string {
@@ -35,6 +36,26 @@ export class ObjectHelper {
       typeof candidate.setIsInteractive === 'function' &&
       typeof candidate.hasFocusedInputElement === 'function' &&
       typeof candidate.getEmbeddedContentRoots === 'function'
+    );
+  }
+
+  /** Whether an object's content elements can be picked, highlighted, queried and pointed at, see `KritzelElementAwareObject`. */
+  static isKritzelElementAwareObject(object: unknown): object is KritzelElementAwareObject {
+    if (!object || typeof object !== 'object') {
+      return false;
+    }
+
+    const candidate = object as Partial<KritzelElementAwareObject>;
+    return (
+      typeof candidate.setElementPicking === 'function' &&
+      typeof candidate.setElementHighlights === 'function' &&
+      typeof candidate.getElementHighlights === 'function' &&
+      typeof candidate.queryElements === 'function' &&
+      typeof candidate.trackElement === 'function' &&
+      typeof candidate.untrackElement === 'function' &&
+      typeof candidate.getTrackedElementRect === 'function' &&
+      typeof candidate.contentToObjectLocal === 'function' &&
+      typeof candidate.refreshElementTheme === 'function'
     );
   }
 

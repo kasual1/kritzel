@@ -15,8 +15,12 @@ export interface KritzelTheme {
     agenticCursorFontFamily?: string;
     agenticCursorLabelFontSize?: string;
     agenticCursorLabelTextColor?: string;
+    agenticCursorRippleSize?: string;
+    agenticCursorSelectionBorderWidth?: string;
+    agenticCursorSelectionFillOpacity?: string;
     agenticCursorStatusBackgroundColor?: string;
     agenticCursorStatusFontSize?: string;
+    agenticCursorStatusMaxLines?: string;
     agenticCursorStatusMaxWidth?: string;
     agenticCursorStatusTextColor?: string;
     cursorTrailColor?: string;
@@ -42,6 +46,9 @@ export interface KritzelTheme {
 
   /** Active users variables */
   activeUsers?: {
+    agentBadgeBackground?: string;
+    agentBadgeColor?: string;
+    agentRingWidth?: string;
     avatarBorderColor?: string;
     fontFamily?: string;
     overflowColor?: string;
@@ -117,6 +124,8 @@ export interface KritzelTheme {
     buttonHoverBackgroundColor?: string;
     caretColor?: string;
     caretWidth?: string;
+    chipBoxShadow?: string;
+    chipMutedTextColor?: string;
     fontSize?: string;
     inputBackgroundColor?: string;
     inputBorderRadius?: string;
@@ -239,6 +248,13 @@ export interface KritzelTheme {
     topLeftButtonsTop?: string;
     topRightButtonsRight?: string;
     topRightButtonsTop?: string;
+  };
+
+  /** Element highlight variables, for highlights and picking inside the content of objects such as `KritzelIframeObject` */
+  elementHighlight?: {
+    backgroundColor?: string;
+    color?: string;
+    labelTextColor?: string;
   };
 
   /** Engine variables */

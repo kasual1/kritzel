@@ -27,6 +27,14 @@ export interface KritzelGroupConfig {
 export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     override __class__: string = 'KritzelGroup';
 
+    /**
+     * Groups being resized by an agentic action. Like the user's interactive resize
+     * (`state.isResizing`), they keep their child snapshots stable between frames.
+     * Never serialized.
+     * @internal
+     */
+    static readonly transformLocks = new WeakSet<KritzelGroup>();
+
     constructor(config?: KritzelGroupConfig) {
         super();
         this.name = config?.name;
@@ -511,7 +519,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
             // recapturing each frame would defeat the purpose of using stable snapshots
             // and re-introduce the compounding distortion described above. Snapshots are
             // refreshed at the start of the next gesture via beginTransform/finalize.
-            if (!this._core.store.state.isResizing) {
+            if (!this._core.store.state.isResizing && !KritzelGroup.transformLocks.has(this)) {
                 this.captureChildSnapshots();
             }
 

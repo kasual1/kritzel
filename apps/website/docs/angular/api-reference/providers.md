@@ -60,7 +60,7 @@ syncConfig: KritzelSyncConfig = {
 | Property | Type | Description |
 |----------|------|-------------|
 | type | SyncProviderType | `'local'` for providers that resolve without a network, `'network'` for server-backed providers |
-| awareness | Awareness \| null | Yjs awareness instance used for presence. Network providers expose one, local providers return `null` or `undefined` |
+| awareness | Awareness \| null | Yjs awareness instance used for presence: cursors, selections, and [agents](../advanced/agents.md#collaboration). Network providers expose one. Local providers return `null` or `undefined`, except `BroadcastSyncProvider` with `awareness: true`. The editor uses the awareness of the first network provider that has one, otherwise that of the first local provider that has one |
 
 `type` controls initialization behavior: local providers are awaited during startup so their data is available immediately, while network providers connect in the background so a slow or unreachable server never blocks the editor.
 
@@ -181,13 +181,38 @@ syncConfig: KritzelSyncConfig = {
 
 `BroadcastSyncProvider` mirrors document updates between browser tabs of the same origin using the [BroadcastChannel API](https://developer.mozilla.org/en-US/docs/Web/API/BroadcastChannel). It stores nothing itself and is normally combined with a persisting provider.
 
-The channel name is the `docName`, so the same document is shared across tabs automatically. The provider takes no options.
+The channel name is the `docName`, so the same document is shared across tabs automatically. The tabs share only the document by default. With `awareness: true`, they also share presence: the cursors and selections of users, and [agents](../advanced/agents.md#collaboration). It is off by default, because the tabs of one person are usually not collaborators.
+
+### Options
+
+`BroadcastSyncOptions`
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| awareness | boolean | `false` | Shares presence between the tabs. A tab that is closed takes its presence with it, and a tab in the back/forward cache takes it away until the tab is shown again. |
+| quiet | boolean | `false` | Suppresses console output |
+
+### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| awareness | Awareness \| null | Presence shared between the tabs, or `null` without `awareness: true` |
+
+### Methods
+
+#### with
+
+Creates a `ProviderFactory` bound to the given options. Pass the class itself to use the defaults.
+
+```ts
+static with(options?: BroadcastSyncOptions): ProviderFactory
+```
 
 ```ts
 import { BroadcastSyncProvider, IndexedDBSyncProvider, KritzelSyncConfig } from '@kritzel/angular-editor';
 
 syncConfig: KritzelSyncConfig = {
-  providers: [IndexedDBSyncProvider, BroadcastSyncProvider],
+  providers: [IndexedDBSyncProvider, BroadcastSyncProvider.with({ awareness: true })],
 };
 ```
 

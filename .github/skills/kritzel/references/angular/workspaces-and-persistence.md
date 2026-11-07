@@ -61,7 +61,7 @@ Available providers (all exported from `@kritzel/angular-editor`):
 |---|---|---|
 | `InMemorySyncProvider` | memory only | Explicit "no persistence" |
 | `IndexedDBSyncProvider` | browser IndexedDB | Local persistence / offline |
-| `BroadcastSyncProvider` | BroadcastChannel | Sync across tabs on the same device |
+| `BroadcastSyncProvider` | BroadcastChannel | Sync across tabs on the same device; `BroadcastSyncProvider.with({ awareness: true })` also shares presence (cursors, selections, agents) between the tabs |
 | `WebSocketSyncProvider.with({ url, roomName })` | y-websocket server | Real-time network sync |
 | `HocuspocusSyncProvider.with({ url, name, token })` | Hocuspocus server | Real-time sync with auth; `token` may be a string or (async) function |
 

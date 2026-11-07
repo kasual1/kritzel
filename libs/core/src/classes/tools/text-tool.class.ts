@@ -63,6 +63,26 @@ export class KritzelTextTool extends KritzelBaseTool {
     this.applyToActiveText({ opacity: value });
   }
 
+  /** Font family for new text objects, ignoring the text being edited. */
+  get defaultFontFamily(): string {
+    return this._fontFamily;
+  }
+
+  /** Font size for new text objects, ignoring the text being edited. */
+  get defaultFontSize(): number {
+    return this._fontSize;
+  }
+
+  /** Font color for new text objects, ignoring the text being edited. */
+  get defaultFontColor(): ThemeAwareColor {
+    return this._fontColor;
+  }
+
+  /** Opacity for new text objects, ignoring the text being edited. */
+  get defaultOpacity(): number {
+    return this._opacity;
+  }
+
   /** Available color palette for the text tool */
   palette: ThemeAwareColor[] = [...DEFAULT_COLOR_PALETTE];
 

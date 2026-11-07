@@ -27,3 +27,6 @@ tools/starter-smoke/.validation/
 # Private admin notes (account registry, marketing material) — kept locally, not in the repo
 .admin/
 admin/
+
+# Angular CLI cache from builds started at the repository root
+/.angular/
