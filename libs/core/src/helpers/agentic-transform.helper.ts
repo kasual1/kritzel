@@ -1,7 +1,7 @@
-import type { KritzelCore } from '../../core/core.class';
-import type { KritzelPoint } from '../../../interfaces/point.interface';
-import type { KritzelAgenticResizeHandle } from '../../../interfaces/agentic-action.interface';
-import { KritzelSelectionGroup } from '../../objects/selection-group.class';
+import type { KritzelCore } from '../classes/core/core.class';
+import type { KritzelPoint } from '../interfaces/point.interface';
+import type { KritzelAgenticResizeHandle } from '../interfaces/agentic-action.interface';
+import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
 
 /**
  * Creates a selection group over objects for agent transforms. It is never inserted into

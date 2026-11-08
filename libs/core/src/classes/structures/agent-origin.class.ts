@@ -63,9 +63,4 @@ export class KritzelAgentOrigin {
     this._localOnly.clear();
     return recording;
   }
-
-  /** Whether an action is currently recording. */
-  get isRecording(): boolean {
-    return this._recording !== null;
-  }
 }

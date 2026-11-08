@@ -1,12 +1,12 @@
 import { AGENT_TOOL_SPECS, OBSERVE_CANVAS_SCHEMA, agentToolInputSchema, type KritzelJsonSchemaNode } from './agent-tool-schemas';
-import { AGENTIC_ACTION_EXECUTORS, getAgenticActionExecutor } from '../managers/agentic-actions';
+import { AGENTIC_ACTION_EXECUTORS, getAgenticActionExecutor } from '../../executors/agentic-action-executor.registry';
 import {
   AGENTIC_ANCHORS,
   AGENTIC_ARROW_HEAD_STYLES,
   AGENTIC_RESIZE_HANDLES,
   AGENTIC_SHAPE_TYPES,
-} from '../managers/agentic-actions/agentic-validation.helper';
-import { AGENTIC_ANCHOR_FACTORS } from '../managers/agentic-actions/agentic-geometry.helper';
+} from '../../helpers/agentic-validation.helper';
+import { AGENTIC_ANCHOR_FACTORS } from '../../helpers/agentic-geometry.helper';
 import { ShapeType } from '../../enums/shape-type.enum';
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 
@@ -23,6 +23,10 @@ const FIXTURES: Partial<Record<KritzelAgenticActionType, Record<string, unknown>
   redo: {},
   resizeObject: { objectId: 'a', width: 100, keepAspectRatio: false, handle: 'top-left' },
   rotateObject: { objectId: 'a', angle: 15, relative: true },
+  copyObjects: { objectIds: ['a'], to: { objectId: 'b', anchor: 'right', offset: { x: 20, y: 0 } } },
+  groupObjects: { objectIds: ['a', 'b'] },
+  ungroupObjects: { objectIds: ['g'] },
+  orderObjects: { objectIds: ['a'], order: 'front' },
   createShape: { shapeType: 'ellipse', x: 0, y: 0, width: 10, height: 10, text: 'Hi', style: { fillColor: 'tomato', opacity: 0.5 } },
   createText: { x: 0, y: 0, text: 'Hi', style: { fontSize: 20 } },
   typeText: { objectId: 'a', text: 'Hi', mode: 'replace' },

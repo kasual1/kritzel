@@ -1,5 +1,5 @@
-import type { KritzelAgenticAction, KritzelAgenticActionFailureReason } from '../../../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionRun } from './agentic-action-run.class';
+import type { KritzelAgenticAction, KritzelAgenticActionFailureReason } from '../interfaces/agentic-action.interface';
+import type { KritzelAgenticActionRun } from '../classes/managers/agentic-action-run.class';
 
 /** Press duration in milliseconds at the default speed. */
 export const AGENTIC_ACTION_PRESS_MS = 90;
@@ -21,8 +21,6 @@ export const AGENTIC_ACTION_ROTATE_SPEED = 180;
 export const AGENTIC_ACTION_DRAW_SPEED = 900;
 /** Typing speed in characters per second at the default speed. */
 export const AGENTIC_ACTION_TYPING_CPS = 25;
-/** Screen distance of the rotation handle above an object's top edge, without titlebars. */
-export const AGENTIC_ACTION_ROTATION_HANDLE_PX = 15;
 /** Frames a created text waits to be mounted so its size can be measured. */
 export const AGENTIC_ACTION_MOUNT_WAIT_FRAMES = 10;
 

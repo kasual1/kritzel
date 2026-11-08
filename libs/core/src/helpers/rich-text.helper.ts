@@ -38,11 +38,6 @@ export class KritzelRichTextHelper {
     }
   }
 
-  /** The plain text of the document. */
-  static getText(view: EditorView): string {
-    return view.state.doc.textContent;
-  }
-
   /** The plain text of the document with a line break between paragraphs and at hard breaks. */
   static getPlainText(view: EditorView): string {
     const { doc } = view.state;

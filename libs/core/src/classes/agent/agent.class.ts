@@ -3,7 +3,6 @@ import type { IKritzelUser } from '../../interfaces/user.interface';
 import type { KritzelPoint } from '../../interfaces/point.interface';
 import type {
   KritzelAgenticAnchor,
-  KritzelAgenticElementTarget,
   KritzelAgenticMoveOptions,
   KritzelAgenticMoveResult,
   KritzelAgenticObjectTarget,
@@ -16,6 +15,7 @@ import type {
   KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
   KritzelAgenticCreateShapeAction,
+  KritzelAgenticOrder,
   KritzelAgenticCreateTextAction,
   KritzelAgenticLineStyle,
   KritzelAgenticObjectStyle,
@@ -39,6 +39,8 @@ import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelAgentActionError } from './agent-action-error.class';
 import { createAgentTools } from './agent-tools';
 import { buildCanvasSnapshot, describeObject } from './agent-snapshot';
+import { KritzelEventHelper } from '../../helpers/event.helper';
+import { isElementTarget } from '../../helpers/agentic-geometry.helper';
 
 /** Brand that identifies agents across copies of `@kritzel/core`. */
 export const KRITZEL_AGENT_BRAND = Symbol.for('kritzel.agent');
@@ -52,12 +54,6 @@ const INTERRUPTING_REASONS: ReadonlySet<KritzelAgenticActionFailureReason> = new
 ]);
 
 type AgentListener<K extends keyof KritzelAgentEventMap> = (payload: KritzelAgentEventMap[K]) => void;
-
-/** Whether a target points at an element inside an object (`{ objectId, selector }`). */
-function isElementTarget(target: KritzelAgenticTarget): target is KritzelAgenticElementTarget {
-  const { objectId, selector } = target as { objectId?: unknown; selector?: unknown };
-  return typeof objectId === 'string' && typeof selector === 'string';
-}
 
 /** Whether the cursor can start at a position: any point or object target, or an element target the object can resolve. */
 function canStartAt(core: KritzelCore, target: KritzelAgenticTarget): boolean {
@@ -136,7 +132,7 @@ export class KritzelAgent implements IKritzelUser {
 
   set name(name: string) {
     this._name = name;
-    this._core?.agenticCursorManager.update(this.id, { name });
+    this._core?.agenticCursorManager.refresh(this.id);
     this.notifyChange();
   }
 
@@ -152,7 +148,7 @@ export class KritzelAgent implements IKritzelUser {
 
   set color(color: string) {
     this._color = color;
-    this._core?.agenticCursorManager.update(this.id, { color });
+    this._core?.agenticCursorManager.refresh(this.id);
     this.notifyChange();
   }
 
@@ -219,8 +215,8 @@ export class KritzelAgent implements IKritzelUser {
       position: cursor.position,
       attachedTo: cursor.attachedTo,
       isMoving: cursor.isMoving,
-      status: cursor.status ?? null,
-      visible: cursor.visible,
+      status: this._status,
+      visible: this._visible,
       selection: core.agenticActionManager.getSelection(this.id),
       activeAction: cursor.activeAction,
       queueLength: cursor.queueLength,
@@ -234,7 +230,7 @@ export class KritzelAgent implements IKritzelUser {
   /** Shows a status message below the cursor label; `null` or `''` hides it. */
   setStatus(status: string | null): void {
     this._status = status || null;
-    this._core?.agenticCursorManager.update(this.id, { status: this._status });
+    this._core?.agenticCursorManager.refresh(this.id);
     this.notifyChange();
   }
 
@@ -333,6 +329,33 @@ export class KritzelAgent implements IKritzelUser {
   rotateObject(objectId: string, angle: number, options: { relative?: boolean } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
     const { relative, ...actionOptions } = options;
     return this.perform({ type: 'rotateObject', objectId, angle, ...(relative !== undefined ? { relative } : {}) }, actionOptions);
+  }
+
+  /**
+   * Duplicates objects by Alt-dragging them so that the copies' center lands on `to` (by default right next to the
+   * originals). `objectIds` holds the copies' IDs.
+   */
+  copyObjects(
+    objectIds: string[],
+    options: { to?: KritzelAgenticPointTarget | KritzelAgenticObjectTarget } & KritzelAgenticActionOptions = {},
+  ): Promise<KritzelAgenticActionResult> {
+    const { to, ...actionOptions } = options;
+    return this.perform({ type: 'copyObjects', objectIds, ...(to ? { to } : {}) }, actionOptions);
+  }
+
+  /** Groups at least two objects. `objectIds` holds the group's ID. */
+  groupObjects(objectIds: string[], options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'groupObjects', objectIds }, options);
+  }
+
+  /** Dissolves groups. `objectIds` holds their children's IDs. */
+  ungroupObjects(objectIds: string[], options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'ungroupObjects', objectIds }, options);
+  }
+
+  /** Moves objects to the front or back of the stacking order, or one layer forward or backward. */
+  orderObjects(objectIds: string[], order: KritzelAgenticOrder, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'orderObjects', objectIds, order }, options);
   }
 
   /** Drags out a new shape. `objectIds` holds its ID. */
@@ -513,12 +536,24 @@ export class KritzelAgent implements IKritzelUser {
     const initial = this._initialPosition;
     const start = initial && canStartAt(core, initial) ? core.agenticCursorManager.resolveTarget(initial) : null;
     const position = start && Number.isFinite(start.x) && Number.isFinite(start.y) ? initial : undefined;
+    // The cursor reads how it looks from the agent, so name, color, status and visibility live only here.
+    const agent = this;
     const cursor = {
       id: this.id,
-      name: this._name,
-      color: this._color,
-      status: this._status ?? undefined,
-      visible: this._visible,
+      appearance: {
+        get name() {
+          return agent._name;
+        },
+        get color() {
+          return agent._color;
+        },
+        get status() {
+          return agent._status;
+        },
+        get visible() {
+          return agent._visible;
+        },
+      },
     };
     try {
       core.agenticCursorManager.add({ ...cursor, position });
@@ -571,11 +606,6 @@ export class KritzelAgent implements IKritzelUser {
     }
     this._subscriptions.forEach(unsubscribe => unsubscribe());
     this._subscriptions = [];
-    const cursor = core.agenticCursorManager.get(this.id);
-    if (cursor) {
-      this._status = cursor.status ?? null;
-      this._visible = cursor.visible;
-    }
     core.agenticCursorManager.remove(this.id);
     this._core = null;
     this._lastStateKey = null;
@@ -587,7 +617,7 @@ export class KritzelAgent implements IKritzelUser {
 
   private setVisible(visible: boolean): void {
     this._visible = visible;
-    this._core?.agenticCursorManager.update(this.id, { visible });
+    this._core?.agenticCursorManager.refresh(this.id);
     this.notifyChange();
   }
 
@@ -626,12 +656,6 @@ export class KritzelAgent implements IKritzelUser {
   }
 
   private emit<K extends keyof KritzelAgentEventMap>(event: K, payload: KritzelAgentEventMap[K]): void {
-    this._listeners.get(event)?.forEach(listener => {
-      try {
-        listener(payload);
-      } catch (error) {
-        console.error(`[Kritzel] Agent "${event}" listener failed:`, error);
-      }
-    });
+    this._listeners.get(event)?.forEach(listener => KritzelEventHelper.callListener(() => listener(payload), `Agent "${event}" listener`));
   }
 }

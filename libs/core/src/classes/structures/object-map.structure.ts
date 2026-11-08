@@ -21,6 +21,7 @@ import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelAgentOrigin } from './agent-origin.class';
 import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
 import type { KritzelAwarenessAgent } from '../../interfaces/agent.interface';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 
 /** Per-agent history of an agentic cursor. */
 interface KritzelAgentHistory {
@@ -651,13 +652,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
         // A local write saved the whole instance, including any pending agent changes:
         // agents must not write these objects again when they commit.
         this._agents.forEach(agent => agent.origin.forgetLocalOnly(keys));
-        for (const callback of this._localObjectsChangeCallbacks) {
-          try {
-            callback(keys);
-          } catch (error) {
-            console.error('[Kritzel] Local objects change callback failed:', error);
-          }
-        }
+        this._localObjectsChangeCallbacks.forEach(callback => KritzelEventHelper.callListener(() => callback(keys), 'Local objects change callback'));
       }
       this.requestRerender();
       return;
@@ -1274,13 +1269,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this._temporaryItemsCount = 0;
     }
     this._agents.forEach(agent => agent.undoManager.clear());
-    this._historyClearedCallbacks.forEach(callback => {
-      try {
-        callback();
-      } catch (error) {
-        console.error('[Kritzel] onHistoryCleared callback failed:', error);
-      }
-    });
+    this._historyClearedCallbacks.forEach(callback => KritzelEventHelper.callListener(callback, 'onHistoryCleared callback'));
   }
 
   /**
@@ -1608,13 +1597,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // Let owners (e.g. running agentic actions) clean up while the map is still usable
     const beforeDestroyCallbacks = this._beforeDestroyCallbacks;
     this._beforeDestroyCallbacks = [];
-    for (const callback of beforeDestroyCallbacks) {
-      try {
-        callback();
-      } catch (error) {
-        console.error('[Kritzel] onBeforeDestroy callback failed:', error);
-      }
-    }
+    beforeDestroyCallbacks.forEach(callback => KritzelEventHelper.callListener(callback, 'onBeforeDestroy callback'));
 
     // Destroy agent histories
     this._agents.forEach(agent => agent.undoManager.destroy());

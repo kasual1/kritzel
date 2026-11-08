@@ -1,6 +1,6 @@
-import type { KritzelAgenticAnchor } from '../../../interfaces/agentic-cursor.interface';
-import type { KritzelPoint } from '../../../interfaces/point.interface';
-import type { KritzelBoundingBox } from '../../../interfaces/bounding-box.interface';
+import type { KritzelAgenticAnchor, KritzelAgenticElementTarget, KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../interfaces/agentic-cursor.interface';
+import type { KritzelPoint } from '../interfaces/point.interface';
+import type { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 
 /** Relative position of each anchor within an object's unrotated box. */
 export const AGENTIC_ANCHOR_FACTORS: Record<KritzelAgenticAnchor, [number, number]> = {
@@ -25,6 +25,16 @@ export interface KritzelAnchorableGeometry {
  * Resolves an anchor (plus an offset in the object's local, unrotated space) to a world point.
  * The anchor rotates with the object around its center.
  */
+/** Whether a target refers to an object: `{ objectId }`, or `{ objectId, selector }` for an element inside it. */
+export function isObjectTarget(target: KritzelAgenticTarget): target is KritzelAgenticObjectTarget | KritzelAgenticElementTarget {
+  return typeof (target as { objectId?: unknown }).objectId === 'string';
+}
+
+/** Whether a target points at an element inside an object (`{ objectId, selector }`). */
+export function isElementTarget(target: KritzelAgenticTarget): target is KritzelAgenticElementTarget {
+  return isObjectTarget(target) && typeof (target as { selector?: unknown }).selector === 'string';
+}
+
 /** Whether `value` is one of the anchors (an own key of the anchor table, never an inherited one). */
 export function isAgenticAnchor(value: unknown): value is KritzelAgenticAnchor {
   return typeof value === 'string' && Object.prototype.hasOwnProperty.call(AGENTIC_ANCHOR_FACTORS, value);
@@ -56,8 +66,8 @@ export function resolveObjectAnchor(
   };
 }
 
-/** Center of the union of the given objects' rotated bounding boxes. */
-export function unionCenter(objects: { rotatedBoundingBox: KritzelBoundingBox }[]): KritzelPoint | null {
+/** Union of the given objects' rotated bounding boxes. */
+export function unionBox(objects: { rotatedBoundingBox: KritzelBoundingBox }[]): { x: number; y: number; width: number; height: number } | null {
   if (objects.length === 0) {
     return null;
   }
@@ -72,7 +82,13 @@ export function unionCenter(objects: { rotatedBoundingBox: KritzelBoundingBox }[
     maxX = Math.max(maxX, box.x + box.width);
     maxY = Math.max(maxY, box.y + box.height);
   }
-  return { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
+  return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+}
+
+/** Center of the union of the given objects' rotated bounding boxes. */
+export function unionCenter(objects: { rotatedBoundingBox: KritzelBoundingBox }[]): KritzelPoint | null {
+  const box = unionBox(objects);
+  return box && { x: box.x + box.width / 2, y: box.y + box.height / 2 };
 }
 
 /** Whether `point` lies inside the polygon given by its corners (ray casting). */

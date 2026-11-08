@@ -1,10 +1,10 @@
-import type { KritzelCore } from '../../core/core.class';
-import type { KritzelObjectMap } from '../../structures/object-map.structure';
-import type { KritzelBaseObject } from '../../objects/base-object.class';
-import { KritzelGroup } from '../../objects/group.class';
-import { KritzelSelectionGroup } from '../../objects/selection-group.class';
-import { KritzelSelectionBox } from '../../objects/selection-box.class';
-import type { KritzelAgenticActionFailureReason } from '../../../interfaces/agentic-action.interface';
+import type { KritzelCore } from '../classes/core/core.class';
+import type { KritzelObjectMap } from '../classes/structures/object-map.structure';
+import type { KritzelBaseObject } from '../classes/objects/base-object.class';
+import { KritzelGroup } from '../classes/objects/group.class';
+import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
+import { KritzelSelectionBox } from '../classes/objects/selection-box.class';
+import type { KritzelAgenticActionFailureReason } from '../interfaces/agentic-action.interface';
 
 type AnyObject = KritzelBaseObject<any>;
 type ObjectMap = KritzelObjectMap<AnyObject>;

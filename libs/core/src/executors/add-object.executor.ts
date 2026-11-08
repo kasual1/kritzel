@@ -1,11 +1,11 @@
-import type { KritzelAgenticAddObjectAction } from '../../../interfaces/agentic-action.interface';
-import { KritzelBaseObject } from '../../objects/base-object.class';
-import { KritzelGroup } from '../../objects/group.class';
-import { KritzelImage } from '../../objects/image.class';
-import { KritzelText } from '../../objects/text.class';
+import type { KritzelAgenticAddObjectAction } from '../interfaces/agentic-action.interface';
+import { KritzelBaseObject } from '../classes/objects/base-object.class';
+import { KritzelGroup } from '../classes/objects/group.class';
+import { KritzelImage } from '../classes/objects/image.class';
+import { KritzelText } from '../classes/objects/text.class';
 import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES, type KritzelAgenticActionExecutor } from './agentic-action.types';
-import { isSelectionObject } from './agentic-conflict.helper';
-import { unionCenter } from './agentic-geometry.helper';
+import { isSelectionObject } from '../helpers/agentic-conflict.helper';
+import { unionCenter } from '../helpers/agentic-geometry.helper';
 
 /**
  * `addObject`: places an object the app built (an iframe, an image, a custom object, a group with
@@ -113,7 +113,7 @@ function findUninsertable(map: { findById(id: string): unknown }, object: Kritze
 }
 
 /** The children a group will insert with it, at all nesting levels. A group that contains itself is walked once. */
-function pendingDescendants(object: KritzelBaseObject<any>, visited = new Set<KritzelBaseObject<any>>()): KritzelBaseObject<any>[] {
+export function pendingDescendants(object: KritzelBaseObject<any>, visited = new Set<KritzelBaseObject<any>>()): KritzelBaseObject<any>[] {
   if (!(object instanceof KritzelGroup) || visited.has(object)) {
     return [];
   }

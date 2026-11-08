@@ -1,4 +1,4 @@
-import type { KritzelAgenticAction, KritzelAgenticActionType } from '../../../interfaces/agentic-action.interface';
+import type { KritzelAgenticAction, KritzelAgenticActionType } from '../interfaces/agentic-action.interface';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
 import { clickExecutor } from './click.executor';
 import { clearSelectionExecutor, selectExecutor } from './select.executor';
@@ -7,6 +7,9 @@ import { deleteObjectsExecutor } from './delete-objects.executor';
 import { redoExecutor, undoExecutor } from './history.executor';
 import { resizeObjectExecutor } from './resize-object.executor';
 import { rotateObjectExecutor } from './rotate-object.executor';
+import { copyObjectsExecutor } from './copy-objects.executor';
+import { groupObjectsExecutor, ungroupObjectsExecutor } from './group-objects.executor';
+import { orderObjectsExecutor } from './order-objects.executor';
 import { createShapeExecutor } from './create-shape.executor';
 import { createTextExecutor } from './create-text.executor';
 import { typeTextExecutor } from './type-text.executor';
@@ -31,6 +34,10 @@ export const AGENTIC_ACTION_EXECUTORS: {
   redo: redoExecutor,
   resizeObject: resizeObjectExecutor,
   rotateObject: rotateObjectExecutor,
+  copyObjects: copyObjectsExecutor,
+  groupObjects: groupObjectsExecutor,
+  ungroupObjects: ungroupObjectsExecutor,
+  orderObjects: orderObjectsExecutor,
   createShape: createShapeExecutor,
   createText: createTextExecutor,
   typeText: typeTextExecutor,

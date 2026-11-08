@@ -4,7 +4,9 @@ import type { KritzelAgenticAttachment, KritzelAgenticCursor } from '../../inter
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import type { KritzelAwarenessAgent, KritzelRemoteAgentPresence } from '../../interfaces/agent.interface';
 import { AGENT_BROADCAST_INTERVAL_MS, AGENT_BROADCAST_MAX_IDS, AGENT_BROADCAST_MAX_STATUS_LENGTH } from './agent-broadcast.manager';
-import { isAgenticAnchor } from './agentic-actions/agentic-geometry.helper';
+import { isAgenticAnchor } from '../../helpers/agentic-geometry.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /** A collaborator's agent as the cursor overlay draws it. */
 export interface KritzelRemoteAgentCursor extends KritzelAgenticCursor {
@@ -48,13 +50,9 @@ export class KritzelRemoteAgentManager {
     this._core = core;
   }
 
-  get count(): number {
-    return this._entries.size;
-  }
-
   /** Reads the `agents` fields of all other clients. Called with every awareness change. @internal */
   handleAwarenessStates(states: Map<number, Record<string, unknown>>, localClientId: number | null): void {
-    const now = this.now();
+    const now = performance.now();
     const seen = new Set<string>();
     states.forEach((state, clientId) => {
       if (clientId === localClientId || !state || !Array.isArray(state['agents'])) {
@@ -115,7 +113,7 @@ export class KritzelRemoteAgentManager {
       visible: entry.agent.visible,
       position: { ...entry.rendered },
       attachedTo: entry.agent.attachedTo,
-      isMoving: this.isGliding(entry, this.now()),
+      isMoving: this.isGliding(entry, performance.now()),
       selectedObjectIds: [...entry.agent.selectedObjectIds],
       isPressed: entry.agent.isPressed,
       pressCount: entry.agent.pressCount,
@@ -168,10 +166,10 @@ export class KritzelRemoteAgentManager {
   /**
    * Advances gliding cursors and resolves attachments. Called by the internal loop; public for testing.
    */
-  tick(now: number = this.now()): void {
+  tick(now: number = performance.now()): void {
     this._entries.forEach(entry => {
       // One entry that fails (it comes from another client) must not stop the others or the frame listeners.
-      this.safeCall(() => {
+      KritzelEventHelper.callListener(() => {
         const attached = entry.agent.attachedTo ? this._core.agenticCursorManager?.resolveTarget(entry.agent.attachedTo) : null;
         if (attached && !this.isGliding(entry, now)) {
           entry.rendered = attached;
@@ -182,9 +180,9 @@ export class KritzelRemoteAgentManager {
           x: entry.from.x + (entry.to.x - entry.from.x) * progress,
           y: entry.from.y + (entry.to.y - entry.from.y) * progress,
         };
-      });
+      }, 'Remote agent listener');
     });
-    this._frameListeners.forEach(listener => this.safeCall(listener));
+    this._frameListeners.forEach(listener => KritzelEventHelper.callListener(listener, 'Remote agent listener'));
   }
 
   /** Forgets all remote agents, e.g. on a workspace switch. */
@@ -222,7 +220,7 @@ export class KritzelRemoteAgentManager {
       return;
     }
     this._structureKey = key;
-    this._changeListeners.forEach(listener => this.safeCall(listener));
+    this._changeListeners.forEach(listener => KritzelEventHelper.callListener(listener, 'Remote agent listener'));
   }
 
   private ensureLoop(): void {
@@ -248,18 +246,6 @@ export class KritzelRemoteAgentManager {
     }
     this._rafId = null;
   }
-
-  private safeCall(fn: () => void): void {
-    try {
-      fn();
-    } catch (error) {
-      console.error('[Kritzel] Remote agent listener failed:', error);
-    }
-  }
-
-  private now(): number {
-    return typeof performance !== 'undefined' ? performance.now() : Date.now();
-  }
 }
 
 /** Awareness comes from other clients: accept only well-formed agents, with bounded strings and lists. */
@@ -275,8 +261,8 @@ function parseAgent(raw: unknown): KritzelAwarenessAgent | null {
     typeof value['name'] !== 'string' ||
     typeof value['color'] !== 'string' ||
     !position ||
-    !isFiniteNumber(position['x']) ||
-    !isFiniteNumber(position['y'])
+    !KritzelMathHelper.isFiniteNumber(position['x']) ||
+    !KritzelMathHelper.isFiniteNumber(position['y'])
   ) {
     return null;
   }
@@ -288,11 +274,11 @@ function parseAgent(raw: unknown): KritzelAwarenessAgent | null {
     status: typeof value['status'] === 'string' && value['status'] ? value['status'].slice(0, AGENT_BROADCAST_MAX_STATUS_LENGTH) : null,
     visible: value['visible'] !== false,
     activeAction: typeof value['activeAction'] === 'string' ? value['activeAction'] : null,
-    queueLength: isFiniteNumber(value['queueLength']) ? Math.max(0, Math.floor(value['queueLength'])) : 0,
+    queueLength: KritzelMathHelper.isFiniteNumber(value['queueLength']) ? Math.max(0, Math.floor(value['queueLength'])) : 0,
     position: { x: position['x'] as number, y: position['y'] as number },
     attachedTo: parseAttachment(value['attachedTo']),
     isPressed: value['isPressed'] === true,
-    pressCount: isFiniteNumber(value['pressCount']) ? Math.max(0, Math.floor(value['pressCount'])) : 0,
+    pressCount: KritzelMathHelper.isFiniteNumber(value['pressCount']) ? Math.max(0, Math.floor(value['pressCount'])) : 0,
     selectedObjectIds: parseIds(value['selectedObjectIds']),
     claimedObjectIds: parseIds(value['claimedObjectIds']),
   };
@@ -316,7 +302,7 @@ function parseAttachment(raw: unknown): KritzelAgenticAttachment | null {
     objectId: value['objectId'],
     // Known anchors only: an inherited key such as "toString" would break the anchor lookup.
     anchor: isAgenticAnchor(value['anchor']) ? value['anchor'] : 'center',
-    offset: { x: isFiniteNumber(offset?.['x']) ? (offset!['x'] as number) : 0, y: isFiniteNumber(offset?.['y']) ? (offset!['y'] as number) : 0 },
+    offset: { x: KritzelMathHelper.isFiniteNumber(offset?.['x']) ? (offset!['x'] as number) : 0, y: KritzelMathHelper.isFiniteNumber(offset?.['y']) ? (offset!['y'] as number) : 0 },
   };
 }
 
@@ -343,8 +329,4 @@ function isSafeImageUrl(value: unknown): value is string {
   }
   const scheme = /^([a-z][a-z0-9+.-]*):/i.exec(value.trim())?.[1]?.toLowerCase();
   return scheme === undefined || scheme === 'http' || scheme === 'https' || (scheme === 'data' && /^data:image\//i.test(value.trim()));
-}
-
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value);
 }

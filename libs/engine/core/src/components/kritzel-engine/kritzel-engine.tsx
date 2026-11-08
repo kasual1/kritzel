@@ -85,8 +85,7 @@ import {
   KritzelTitlebarSection,
   KritzelObjectConfig,
   KritzelEngineHost,
-  KritzelResolvedTitlebar,
-  KritzelTitlebarMetrics,
+  KRITZEL_ROTATION_HANDLE_DISTANCE,
 } from '@kritzel/core';
 import throttle from 'lodash/throttle';
 import { toPng, toSvg } from 'html-to-image';
@@ -3295,29 +3294,6 @@ export class KritzelEngine implements KritzelEngineHost {
     return state.activeTool?.toolType === 'selection' || isEditing ? 'auto' : 'none';
   }
 
-  /**
-   * Extra screen pixels to move the rotation handle up by, so it is not hidden behind the
-   * titlebar of a selected object whose top edge it sits on.
-   */
-  private getRotationHandleTitlebarOffset(titlebars: KritzelResolvedTitlebar[], metrics: KritzelTitlebarMetrics): number {
-    const selectionGroup = this.core.store.selectionGroup;
-    if (!selectionGroup || titlebars.length === 0) {
-      return 0;
-    }
-
-    const selectedIds = selectionGroup.objectIds;
-    const band = metrics.height + metrics.offset;
-    if (selectedIds.length === 1 && titlebars.some(titlebar => titlebar.owner.id === selectedIds[0])) {
-      return band;
-    }
-
-    // Active bars include groups whose nested child is the selected unit.
-    const groupTop = selectionGroup.rotatedBoundingBox.y;
-    const tolerance = 1 / (this.core.store.state.scale || 1);
-    const overlapsHandle = titlebars.some(titlebar => titlebar.isActive && Math.abs(titlebar.owner.rotatedBoundingBox.y - groupTop) <= tolerance);
-    return overlapsHandle ? band : 0;
-  }
-
   private getSelectionHandleCapabilities(object: KritzelBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
     return {
       canRenderResizeHandles: this.core.objectConfigManager.isResizable(object),
@@ -3372,7 +3348,11 @@ export class KritzelEngine implements KritzelEngineHost {
     // Titlebars hang above their objects, so the render query is widened while titlebars are configured.
     const visibleObjects = this.core.store.getObjectsInViewport(titlebarManager.getCullingPadding(titlebarMetrics));
     const titlebars = titlebarManager.resolveTitlebars(visibleObjects);
-    const rotationHandleTitlebarOffset = this.getRotationHandleTitlebarOffset(titlebars, titlebarMetrics);
+    // The same distance agents draw and grab their handles at: above a titlebar on the selection's top edge.
+    const selectionGroup = this.core.store.selectionGroup;
+    const rotationHandleDistance = selectionGroup
+      ? titlebarManager.getRotationHandleDistance(selectionGroup, { titlebars, metrics: titlebarMetrics })
+      : KRITZEL_ROTATION_HANDLE_DISTANCE;
 
     const getObjectWrapperPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
       if (this.core.store.state.isScaling) {
@@ -4185,7 +4165,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                       x1={object.totalWidth / 2}
                                       y1="0"
                                       x2={object.totalWidth / 2}
-                                      y2={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
+                                      y2={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       style={{
                                         stroke: selectionBorderColor,
                                         strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${handleScale} / ${this.core.store.state?.scale})`,
@@ -4194,7 +4174,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                     <circle
                                       class="rotation-handle"
                                       cx={object.totalWidth / 2}
-                                      cy={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
+                                      cy={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       r={`${((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
                                       style={{
                                         fill: 'var(--kritzel-selection-handle-color, #ffffff)',
@@ -4206,7 +4186,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                     <circle
                                       class="rotation-handle-overlay"
                                       cx={object.totalWidth / 2}
-                                      cy={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
+                                      cy={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       r={`${(baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
                                       style={{
                                         fill: 'transparent',

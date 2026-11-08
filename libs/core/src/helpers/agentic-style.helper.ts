@@ -1,15 +1,15 @@
-import type { KritzelCore } from '../../core/core.class';
-import type { KritzelBaseTool } from '../../tools/base-tool.class';
+import type { KritzelCore } from '../classes/core/core.class';
+import type { KritzelBaseTool } from '../classes/tools/base-tool.class';
 import type {
   KritzelAgenticColor,
   KritzelAgenticLineStyle,
   KritzelAgenticShapeStyle,
   KritzelAgenticStrokeStyle,
   KritzelAgenticTextStyle,
-} from '../../../interfaces/agentic-action.interface';
-import type { LineArrowConfig } from '../../../interfaces/arrow-head.interface';
-import { DEFAULT_COLOR_PALETTE, type ThemeAwareColor } from '../../../constants/color-palette.constants';
-import { ShapeType } from '../../../enums/shape-type.enum';
+} from '../interfaces/agentic-action.interface';
+import type { LineArrowConfig } from '../interfaces/arrow-head.interface';
+import { DEFAULT_COLOR_PALETTE, type ThemeAwareColor } from '../constants/color-palette.constants';
+import { ShapeType } from '../enums/shape-type.enum';
 
 /** The first registered tool of a type. Tool names are configurable, so tools are matched by type. */
 export function findToolByType(core: KritzelCore, toolType: string): KritzelBaseTool | null {

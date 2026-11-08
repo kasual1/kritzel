@@ -1,16 +1,17 @@
-import type { KritzelCore } from '../../core/core.class';
-import type { KritzelObjectMap } from '../../structures/object-map.structure';
-import type { KritzelAgentOrigin } from '../../structures/agent-origin.class';
-import type { KritzelBaseObject } from '../../objects/base-object.class';
-import type { KritzelAgenticCursorManager } from '../agentic-cursor.manager';
+import type { KritzelCore } from '../core/core.class';
+import type { KritzelObjectMap } from '../structures/object-map.structure';
+import type { KritzelAgentOrigin } from '../structures/agent-origin.class';
+import type { KritzelBaseObject } from '../objects/base-object.class';
+import type { KritzelAgenticCursorManager } from './agentic-cursor.manager';
 import type {
   KritzelAgenticAction,
   KritzelAgenticActionFailureReason,
   KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
-} from '../../../interfaces/agentic-action.interface';
-import type { KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../../interfaces/agentic-cursor.interface';
-import { KritzelEasingHelper } from '../../../helpers/easing.helper';
+} from '../../interfaces/agentic-action.interface';
+import type { KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../interfaces/agentic-cursor.interface';
+import { KritzelEasingHelper } from '../../helpers/easing.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 import {
   AGENTIC_ACTION_DEFAULT_SPEED,
   AGENTIC_ACTION_DRAG_MAX_MS,
@@ -22,8 +23,9 @@ import {
   KritzelAgenticAbortError,
   KritzelAgenticActionExecutor,
   KritzelAgenticPreparation,
-} from './agentic-action.types';
-import { collectAnchoredLines } from './agentic-conflict.helper';
+} from '../../executors/agentic-action.types';
+import { collectAnchoredLines } from '../../helpers/agentic-conflict.helper';
+import { isObjectTarget } from '../../helpers/agentic-geometry.helper';
 
 type AnyObject = KritzelBaseObject<any>;
 type ObjectMap = KritzelObjectMap<AnyObject>;
@@ -48,6 +50,8 @@ export interface KritzelAgenticRunHost {
   setSelection(cursorId: string, objectIds: string[]): void;
   /** The explicit selection of a cursor. */
   getSelection(cursorId: string): string[];
+  /** Shows the cursor's explicit selection plus what its running action displays. */
+  showSelection(cursorId: string): void;
 }
 
 interface Waiter {
@@ -267,11 +271,9 @@ export class KritzelAgenticActionRun {
   async fly(target: KritzelAgenticTarget, attach = false): Promise<void> {
     this.assertActive();
     const cursors = this.cursorManager;
-    const isObjectTarget = typeof (target as KritzelAgenticObjectTarget).objectId === 'string';
-
     if (this.instant) {
-      if (attach && isObjectTarget) {
-        cursors.attach(this.cursorId, target as KritzelAgenticObjectTarget);
+      if (attach && isObjectTarget(target)) {
+        cursors.attach(this.cursorId, target);
         return;
       }
       const point = cursors.resolveTarget(target);
@@ -335,9 +337,7 @@ export class KritzelAgenticActionRun {
 
   /** Duration of a drag over a screen distance, scaled by speed. */
   dragDuration(screenDistance: number): number {
-    const k = this.speedFactor;
-    const duration = (Math.abs(screenDistance) / (AGENTIC_ACTION_DRAG_SPEED * k)) * 1000;
-    return Math.min(AGENTIC_ACTION_DRAG_MAX_MS / k, Math.max(AGENTIC_ACTION_DRAG_MIN_MS / k, duration));
+    return this.phaseDuration(screenDistance, AGENTIC_ACTION_DRAG_SPEED, AGENTIC_ACTION_DRAG_MIN_MS, AGENTIC_ACTION_DRAG_MAX_MS);
   }
 
   // ─── Mutation ───────────────────────────────────────────────────────────────
@@ -358,7 +358,7 @@ export class KritzelAgenticActionRun {
     }
     this.hasMutated = true;
 
-    const now = this.host.lastFrameTime ?? (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const now = this.host.lastFrameTime ?? performance.now();
     const persistNow = persist === 'final' || now - this._lastPersistAt >= AGENTIC_ACTION_PERSIST_INTERVAL_MS;
     if (persistNow) {
       this._lastPersistAt = now;
@@ -402,11 +402,6 @@ export class KritzelAgenticActionRun {
     );
   }
 
-  /** The agent this run belongs to (the cursor ID). */
-  get agentId(): string {
-    return this.cursorId;
-  }
-
   /**
    * Marks the agent as the creator of an object it is about to insert (`userId = agentId`),
    * instead of the local user that `X.create(core)` stamps. Returns the object.
@@ -431,6 +426,21 @@ export class KritzelAgenticActionRun {
       this.trackedIds.delete(id);
       this.releasedIds.add(id);
     }
+  }
+
+  /** Shows other objects as selected while the action runs, e.g. a group once it is created. */
+  display(objectIds: string[]): void {
+    this.displayIds = [...objectIds];
+    this.host.showSelection(this.cursorId);
+  }
+
+  /** Replaces objects in the agent's selection, e.g. grouped objects by their group. Others stay selected. */
+  replaceInSelection(replacements: Map<string, string[]>): void {
+    const selection = this.host.getSelection(this.cursorId);
+    if (!selection.some(id => replacements.has(id))) {
+      return;
+    }
+    this.host.setSelection(this.cursorId, Array.from(new Set(selection.flatMap(id => replacements.get(id) ?? [id]))));
   }
 
   /** Registers a hook that runs when the run settles, whatever the outcome. */
@@ -464,14 +474,7 @@ export class KritzelAgenticActionRun {
 
   /** Runs the settle hooks once. @internal */
   runSettleHooks(): void {
-    const hooks = this._settleHooks.splice(0);
-    for (const hook of hooks) {
-      try {
-        hook();
-      } catch (error) {
-        console.error('[Kritzel] Agentic action settle hook failed:', error);
-      }
-    }
+    this._settleHooks.splice(0).forEach(hook => KritzelEventHelper.callListener(hook, 'Agentic action settle hook'));
   }
 
   /** Removes the abort listener. @internal */

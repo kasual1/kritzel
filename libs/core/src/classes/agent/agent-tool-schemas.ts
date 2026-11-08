@@ -13,9 +13,10 @@ import type { KritzelAgentToolSchema } from '../../interfaces/agent.interface';
 import {
   AGENTIC_ANCHORS,
   AGENTIC_ARROW_HEAD_STYLES,
+  AGENTIC_ORDERS,
   AGENTIC_RESIZE_HANDLES,
   AGENTIC_SHAPE_TYPES,
-} from '../managers/agentic-actions/agentic-validation.helper';
+} from '../../helpers/agentic-validation.helper';
 
 /** A JSON Schema node, limited to keywords every LLM provider accepts (no anyOf, const, $ref, min/max). */
 export interface KritzelJsonSchemaNode {
@@ -203,6 +204,37 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
       objectId: req(id('ID of a top-level object.')),
       angle: req(num('Degrees clockwise. Absolute (0 straightens it) unless relative is true.')),
       relative: opt(bool('Add angle to the current rotation.')),
+    },
+  },
+  copyObjects: {
+    name: 'copy_objects',
+    description:
+      'Duplicates top-level objects by Alt-dragging them; group children and lines between them are copied too. Returns the copies\' IDs.',
+    params: {
+      objectIds: req(ids),
+      to: opt(target('Where the center of the copies lands. Defaults to right next to the originals.')),
+    },
+  },
+  groupObjects: {
+    name: 'group_objects',
+    description: 'Groups at least two top-level objects into one group at the position of the topmost one. Returns the group\'s ID.',
+    params: { objectIds: req({ ...ids, minItems: 2 }) },
+  },
+  ungroupObjects: {
+    name: 'ungroup_objects',
+    description: "Dissolves top-level groups; their children keep their place. Returns the children's IDs.",
+    params: { objectIds: req({ ...ids, description: 'IDs of top-level groups.' }) },
+  },
+  orderObjects: {
+    name: 'order_objects',
+    description: 'Moves top-level objects in the stacking order; a group moves with its children.',
+    params: {
+      objectIds: req(ids),
+      order: req({
+        type: 'string',
+        enum: AGENTIC_ORDERS,
+        description: "'front' or 'back' moves them above or below all other objects, 'forward' or 'backward' one layer.",
+      }),
     },
   },
   createShape: {

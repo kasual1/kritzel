@@ -210,6 +210,10 @@ Coordinates and sizes are in world units:
 | `moveObject(objectId, to, { align? })` | Drags an object so that its `align` point (default `'center'`) lands on `to`, a point or an object anchor. |
 | `resizeObject(objectId, { width?, height?, keepAspectRatio?, handle? })` | Drags a corner handle until the object has the new size. The opposite corner stays in place. |
 | `rotateObject(objectId, angle, { relative? })` | Turns the object with the rotation handle. `angle` is in degrees, clockwise. |
+| `copyObjects(objectIds, { to? })` | Duplicates objects by Alt-dragging them, so that the copies' center lands on `to` or, without `to`, right next to the originals. |
+| `groupObjects(objectIds)` | Clicks the objects one after the other and groups them. |
+| `ungroupObjects(objectIds)` | Dissolves groups; their children keep their place. |
+| `orderObjects(objectIds, order)` | Moves objects to the `'front'` or `'back'`, or one layer `'forward'` or `'backward'`. |
 | `createShape({ x, y, width, height, shapeType?, text?, style? })` | Drags out a new shape and optionally types text into it. |
 | `createText({ x, y, text, style? })` | Creates a text object and types into it. |
 | `typeText(objectId, text, { mode? })` | Types into a text or shape. `mode: 'replace'` clears it first. |
@@ -586,7 +590,7 @@ const output = await tools.find(tool => tool.name === call.function.name)?.run(c
 const reviewTools = planner.tools({ only: ['observe_canvas', 'select', 'create_text', 'draw_path'] });
 ```
 
-The tools are `observe_canvas`, `click`, `select`, `clear_selection`, `move_object`, `resize_object`, `rotate_object`, `create_shape`, `create_text`, `type_text`, `draw_path`, `connect`, `set_style`, `delete_objects`, `undo`, and `redo`. `addObject()` has no tool, because the object comes from your app. Give the model your own tool for it, in the same shape as the agent's tools. `formatAgentToolResult()` and `AGENT_TOOL_REASON_HINTS` let it answer like them:
+The tools are `observe_canvas`, `click`, `select`, `clear_selection`, `move_object`, `resize_object`, `rotate_object`, `copy_objects`, `group_objects`, `ungroup_objects`, `order_objects`, `create_shape`, `create_text`, `type_text`, `draw_path`, `connect`, `set_style`, `delete_objects`, `undo`, and `redo`. `addObject()` has no tool, because the object comes from your app. Give the model your own tool for it, in the same shape as the agent's tools. `formatAgentToolResult()` and `AGENT_TOOL_REASON_HINTS` let it answer like them:
 
 ```ts
 import { AGENT_TOOL_REASON_HINTS, KritzelIframeObject, formatAgentToolResult } from '@kritzel/vue-editor';

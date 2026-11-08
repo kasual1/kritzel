@@ -20,7 +20,7 @@ import {
   classifySelectionGroup,
   collectWithDescendants,
   isSelectionObject,
-} from '../managers/agentic-actions/agentic-conflict.helper';
+} from '../../helpers/agentic-conflict.helper';
 
 type AnyObject = KritzelBaseObject<any>;
 

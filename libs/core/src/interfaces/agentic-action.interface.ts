@@ -116,6 +116,51 @@ export interface KritzelAgenticRotateObjectAction {
   relative?: boolean;
 }
 
+/**
+ * Duplicates top-level objects like Alt-dragging them: the copies appear on the originals and are dragged so that
+ * their center lands on `to`. Group children and lines between copied objects are copied along. The copies take
+ * the place of the originals in the agent's selection.
+ */
+export interface KritzelAgenticCopyObjectsAction {
+  type: 'copyObjects';
+  /** Non-empty list of IDs of top-level objects. */
+  objectIds: string[];
+  /** Where the center of the copies lands. Defaults to right next to the originals. */
+  to?: KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
+}
+
+/**
+ * Groups top-level objects into one group, which takes their place in the stacking order (at the topmost object)
+ * and in the agent's selection. `objectIds` of the result holds the group's ID.
+ */
+export interface KritzelAgenticGroupObjectsAction {
+  type: 'groupObjects';
+  /** IDs of at least two top-level objects. */
+  objectIds: string[];
+}
+
+/**
+ * Dissolves top-level groups. Their children keep their place in the stacking order and take the group's place in
+ * the agent's selection. `objectIds` of the result holds the children's IDs.
+ */
+export interface KritzelAgenticUngroupObjectsAction {
+  type: 'ungroupObjects';
+  /** Non-empty list of IDs of top-level groups. */
+  objectIds: string[];
+}
+
+/** Where `orderObjects` moves objects in the stacking order. */
+export type KritzelAgenticOrder = 'front' | 'back' | 'forward' | 'backward';
+
+/** Moves top-level objects in the stacking order; a group moves with all of its children. */
+export interface KritzelAgenticOrderObjectsAction {
+  type: 'orderObjects';
+  /** Non-empty list of IDs of top-level objects. */
+  objectIds: string[];
+  /** `'front'` and `'back'` move them above or below all other objects, `'forward'` and `'backward'` one layer. */
+  order: KritzelAgenticOrder;
+}
+
 /** Drags out a new shape. */
 export interface KritzelAgenticCreateShapeAction {
   type: 'createShape';
@@ -229,6 +274,10 @@ export type KritzelAgenticAction =
   | KritzelAgenticRedoAction
   | KritzelAgenticResizeObjectAction
   | KritzelAgenticRotateObjectAction
+  | KritzelAgenticCopyObjectsAction
+  | KritzelAgenticGroupObjectsAction
+  | KritzelAgenticUngroupObjectsAction
+  | KritzelAgenticOrderObjectsAction
   | KritzelAgenticCreateShapeAction
   | KritzelAgenticCreateTextAction
   | KritzelAgenticTypeTextAction

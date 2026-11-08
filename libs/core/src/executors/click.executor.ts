@@ -1,12 +1,13 @@
-import type { KritzelAgenticClickAction } from '../../../interfaces/agentic-action.interface';
-import type { KritzelPoint } from '../../../interfaces/point.interface';
-import type { KritzelBaseObject } from '../../objects/base-object.class';
-import type { KritzelObjectMap } from '../../structures/object-map.structure';
-import { KritzelZOrderHelper } from '../../../helpers/z-order.helper';
+import type { KritzelAgenticClickAction } from '../interfaces/agentic-action.interface';
+import type { KritzelPoint } from '../interfaces/point.interface';
+import type { KritzelBaseObject } from '../classes/objects/base-object.class';
+import type { KritzelObjectMap } from '../classes/structures/object-map.structure';
+import { KritzelZOrderHelper } from '../helpers/z-order.helper';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import { findParentGroup, isSelectionObject } from './agentic-conflict.helper';
-import { isPointInCorners } from './agentic-geometry.helper';
-import { assertTarget, isObjectTarget } from './agentic-validation.helper';
+import { findParentGroup, isSelectionObject } from '../helpers/agentic-conflict.helper';
+import { isPointInCorners } from '../helpers/agentic-geometry.helper';
+import { assertTarget } from '../helpers/agentic-validation.helper';
+import { isObjectTarget } from '../helpers/agentic-geometry.helper';
 
 type ObjectMap = KritzelObjectMap<KritzelBaseObject<any>>;
 

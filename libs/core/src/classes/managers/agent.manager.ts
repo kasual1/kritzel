@@ -1,6 +1,7 @@
 import type { KritzelCore } from '../core/core.class';
 import { KritzelAgent, isKritzelAgent } from '../agent/agent.class';
 import type { KritzelAgentPresence } from '../../interfaces/agent.interface';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 
 /**
  * The agents added to one editor. Behind `editor.addAgent()`, `removeAgent()`, `getAgent()`,
@@ -81,11 +82,6 @@ export class KritzelAgentManager {
     return true;
   }
 
-  /** Removes all agents. */
-  clear(): void {
-    Array.from(this._agents.values()).forEach(agent => this.remove(agent));
-  }
-
   get(id: string): KritzelAgent | null {
     return this._agents.get(id) ?? null;
   }
@@ -115,13 +111,7 @@ export class KritzelAgentManager {
     this._changeScheduled = true;
     queueMicrotask(() => {
       this._changeScheduled = false;
-      this._changeListeners.forEach(listener => {
-        try {
-          listener();
-        } catch (error) {
-          console.error('[Kritzel] Agents change listener failed:', error);
-        }
-      });
+      this._changeListeners.forEach(listener => KritzelEventHelper.callListener(listener, 'Agents change listener'));
     });
   }
 }

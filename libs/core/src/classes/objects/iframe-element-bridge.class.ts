@@ -6,6 +6,7 @@ import {
   KritzelObjectElementRect,
 } from '../../interfaces/object-element.interface';
 import { IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
+import { KritzelMathHelper } from '../../helpers/math.helper';
 
 /** The object side of the bridge: what the bridge needs from its `KritzelIframeObject`. */
 export interface KritzelIframeElementBridgeOwner {
@@ -74,8 +75,7 @@ function readRect(value: unknown): KritzelObjectElementRect | null {
     return null;
   }
   const { x, y, width, height } = value;
-  const isFiniteNumber = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
-  if (!isFiniteNumber(x) || !isFiniteNumber(y) || !isFiniteNumber(width) || !isFiniteNumber(height) || width < 0 || height < 0) {
+  if (!KritzelMathHelper.isFiniteNumber(x) || !KritzelMathHelper.isFiniteNumber(y) || !KritzelMathHelper.isFiniteNumber(width) || !KritzelMathHelper.isFiniteNumber(height) || width < 0 || height < 0) {
     return null;
   }
   return { x, y, width, height };

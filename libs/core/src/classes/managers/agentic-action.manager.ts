@@ -8,10 +8,11 @@ import type {
   KritzelAgenticActionResult,
 } from '../../interfaces/agentic-action.interface';
 import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
-import { getAgenticActionExecutor } from './agentic-actions';
-import { KritzelAgenticAbortError, isAgenticRefusal } from './agentic-actions/agentic-action.types';
-import { KritzelAgenticActionRun, KritzelAgenticRunHost, KritzelAgenticRunOutcome } from './agentic-actions/agentic-action-run.class';
-import { KritzelAgenticFrameCache, buildFrameCache, detectObjectConflict, expandWithRelatives } from './agentic-actions/agentic-conflict.helper';
+import { getAgenticActionExecutor } from '../../executors/agentic-action-executor.registry';
+import { KritzelAgenticAbortError, isAgenticRefusal } from '../../executors/agentic-action.types';
+import { KritzelAgenticActionRun, KritzelAgenticRunHost, KritzelAgenticRunOutcome } from './agentic-action-run.class';
+import { KritzelAgenticFrameCache, buildFrameCache, detectObjectConflict, expandWithRelatives } from '../../helpers/agentic-conflict.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 
 type AnyObject = KritzelBaseObject<any>;
 type ObjectMap = KritzelObjectMap<AnyObject>;
@@ -316,13 +317,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   }
 
   private emitSettled(event: KritzelAgenticActionSettledEvent): void {
-    this._settledListeners.forEach(listener => {
-      try {
-        listener(event);
-      } catch (error) {
-        console.error('[Kritzel] Agentic action settled listener failed:', error);
-      }
-    });
+    this._settledListeners.forEach(listener => KritzelEventHelper.callListener(() => listener(event), 'Agentic action settled listener'));
   }
 
   private deriveEvents(run: KritzelAgenticActionRun, map: ObjectMap, recording: Map<string, boolean>) {
@@ -628,7 +623,8 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 
   // ─── Selection display ──────────────────────────────────────────────────────
 
-  private showSelection(cursorId: string): void {
+  /** Shows the cursor's explicit selection plus what its running action displays. @internal */
+  showSelection(cursorId: string): void {
     const explicit = this._selections.get(cursorId)?.ids ?? [];
     const running = this._running.get(cursorId);
     const shown = running && !running.settled && running.executing ? [...explicit, ...running.displayIds] : [...explicit];

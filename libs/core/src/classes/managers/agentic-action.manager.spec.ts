@@ -6,6 +6,9 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import type { KritzelCore } from '../core/core.class';
 import type { KritzelAgenticActionResult } from '../../interfaces/agentic-action.interface';
 
+/** How the test agent's cursor looks; agents own these values in the editor. */
+const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };
+
 /** A persistable test object with the geometry the agentic actions use. */
 class MockObject {
   translateX: number;
@@ -207,12 +210,12 @@ describe('KritzelAgenticActionManager', () => {
     core.agenticCursorManager = cursors;
     actions = new KritzelAgenticActionManager(core);
     core.agenticActionManager = actions;
-    cursors.add({ id: 'agent', position: { x: 0, y: 0 } });
+    cursors.add({ appearance: AGENT_APPEARANCE, id: 'agent', position: { x: 0, y: 0 } });
   });
 
   afterEach(() => {
     actions.cleanup();
-    cursors.clear();
+    cursors.cleanup();
     map.destroy();
     jest.restoreAllMocks();
   });
@@ -286,7 +289,7 @@ describe('KritzelAgenticActionManager', () => {
     it('runs actions of one cursor in order and different cursors in parallel', async () => {
       add('a', 0, 0);
       add('b', 0, 200);
-      cursors.add({ id: 'other', position: { x: 0, y: 0 } });
+      cursors.add({ appearance: AGENT_APPEARANCE, id: 'other', position: { x: 0, y: 0 } });
 
       const first = actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 300, y: 25 } });
       const second = actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 600, y: 25 } });
@@ -429,7 +432,7 @@ describe('KritzelAgenticActionManager', () => {
 
     it('refuses objects claimed by another agent', async () => {
       add('a', 0, 0);
-      cursors.add({ id: 'other' });
+      cursors.add({ appearance: AGENT_APPEARANCE, id: 'other' });
       await settle(actions.perform('other', { type: 'select', objectIds: ['a'] }, { instant: true }));
       await expect(settle(actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 300, y: 0 } }))).resolves.toMatchObject({
         completed: false,
@@ -483,7 +486,7 @@ describe('KritzelAgenticActionManager', () => {
       add('q', 0, 300);
       add('L', 0, 150, 10, 10);
       core.anchorManager.getLinesAnchoredTo.mockImplementation((id: string) => (id === 'p' || id === 'q' ? [{ lineId: 'L', endpoint: id === 'p' ? 'start' : 'end' }] : []));
-      cursors.add({ id: 'other', position: { x: 0, y: 0 } });
+      cursors.add({ appearance: AGENT_APPEARANCE, id: 'other', position: { x: 0, y: 0 } });
 
       const running = actions.perform('other', { type: 'moveObject', objectId: 'q', to: { x: 650, y: 325 } });
       for (let i = 0; i < 60 && obj('q')!.translateX === 0; i++) await step();
@@ -500,7 +503,7 @@ describe('KritzelAgenticActionManager', () => {
       cursors.remove('agent');
       actions.setSelection('agent', ['a']);
       expect(actions.getSelection('agent')).toEqual([]);
-      cursors.add({ id: 'other' });
+      cursors.add({ appearance: AGENT_APPEARANCE, id: 'other' });
       await expect(settle(actions.perform('other', { type: 'select', objectIds: ['a'] }, { instant: true }))).resolves.toMatchObject({ completed: true });
     });
 
@@ -624,7 +627,7 @@ describe('KritzelAgenticActionManager', () => {
     it('undoes and redoes only this agent and only after the conflict checks', async () => {
       add('a', 0, 0);
       add('b', 0, 200);
-      cursors.add({ id: 'other' });
+      cursors.add({ appearance: AGENT_APPEARANCE, id: 'other' });
       await settle(actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } }, { instant: true }));
       await settle(actions.perform('other', { type: 'moveObject', objectId: 'b', to: { x: 150, y: 225 } }, { instant: true }));
 
