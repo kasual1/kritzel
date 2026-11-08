@@ -1,9 +1,9 @@
-import type { KritzelAgenticCreateShapeAction } from '../interfaces/agentic-action.interface';
-import { KritzelShape } from '../classes/objects/shape.class';
-import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import { resolveShapeStyle } from '../helpers/agentic-style.helper';
+import type { KritzelAgenticCreateShapeAction } from '../../interfaces/agentic-action.interface';
+import { KritzelShape } from '../objects/shape.class';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { resolveShapeStyle } from '../../helpers/agentic-style.helper';
 import { typeInto } from './type-text.executor';
-import { AGENTIC_SHAPE_STYLE_KEYS, AGENTIC_SHAPE_TYPES, assertStyle } from '../helpers/agentic-validation.helper';
+import { AGENTIC_SHAPE_STYLE_KEYS, AGENTIC_SHAPE_TYPES, assertStyle } from '../../helpers/agentic-validation.helper';
 
 function assertFinite(value: unknown, field: string, min = -Infinity): void {
   if (typeof value !== 'number' || !Number.isFinite(value) || value < min) {

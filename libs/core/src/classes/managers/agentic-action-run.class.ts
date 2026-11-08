@@ -23,7 +23,7 @@ import {
   KritzelAgenticAbortError,
   KritzelAgenticActionExecutor,
   KritzelAgenticPreparation,
-} from '../../executors/agentic-action.types';
+} from '../../types/agentic-action.types';
 import { collectAnchoredLines } from '../../helpers/agentic-conflict.helper';
 import { isObjectTarget } from '../../helpers/agentic-geometry.helper';
 

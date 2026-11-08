@@ -1,10 +1,10 @@
-import type { KritzelAgenticConnectAction } from '../interfaces/agentic-action.interface';
-import type { KritzelPoint } from '../interfaces/point.interface';
-import { KritzelLine } from '../classes/objects/line.class';
-import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import { isSelectionObject } from '../helpers/agentic-conflict.helper';
-import { resolveLineStyle } from '../helpers/agentic-style.helper';
-import { AGENTIC_LINE_STYLE_KEYS, assertObjectId, assertStyle } from '../helpers/agentic-validation.helper';
+import type { KritzelAgenticConnectAction } from '../../interfaces/agentic-action.interface';
+import type { KritzelPoint } from '../../interfaces/point.interface';
+import { KritzelLine } from '../objects/line.class';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
+import { resolveLineStyle } from '../../helpers/agentic-style.helper';
+import { AGENTIC_LINE_STYLE_KEYS, assertObjectId, assertStyle } from '../../helpers/agentic-validation.helper';
 
 /** `connect`: drags a line from one object to another and anchors both ends, so it follows them. */
 export const connectExecutor: KritzelAgenticActionExecutor<KritzelAgenticConnectAction> = {

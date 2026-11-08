@@ -1,9 +1,9 @@
-import type { KritzelAgenticOrderObjectsAction } from '../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import type { KritzelAgenticActionRun } from '../classes/managers/agentic-action-run.class';
+import type { KritzelAgenticOrderObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { KritzelAgenticActionRun } from '../managers/agentic-action-run.class';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
-import { AGENTIC_ORDERS, assertObjectIds, uniqueIds } from '../helpers/agentic-validation.helper';
-import { KritzelZOrderHelper } from '../helpers/z-order.helper';
+import { AGENTIC_ORDERS, assertObjectIds, uniqueIds } from '../../helpers/agentic-validation.helper';
+import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 
 /**
  * Writes planned z-indices under the run's agent origin and records them for `objectsUpdated`. Objects that are

@@ -1,9 +1,9 @@
-import type { KritzelAgenticDrawPathAction } from '../interfaces/agentic-action.interface';
-import type { KritzelPoint } from '../interfaces/point.interface';
-import { KritzelPath } from '../classes/objects/path.class';
-import { AGENTIC_ACTION_DRAW_SPEED, type KritzelAgenticActionExecutor } from './agentic-action.types';
-import { resolveBrushStyle } from '../helpers/agentic-style.helper';
-import { AGENTIC_STROKE_STYLE_KEYS, assertStyle } from '../helpers/agentic-validation.helper';
+import type { KritzelAgenticDrawPathAction } from '../../interfaces/agentic-action.interface';
+import type { KritzelPoint } from '../../interfaces/point.interface';
+import { KritzelPath } from '../objects/path.class';
+import { AGENTIC_ACTION_DRAW_SPEED, type KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { resolveBrushStyle } from '../../helpers/agentic-style.helper';
+import { AGENTIC_STROKE_STYLE_KEYS, assertStyle } from '../../helpers/agentic-validation.helper';
 
 /** Same as the brush tool: points closer than this many screen pixels are dropped. */
 const MIN_POINT_DISTANCE_PX = 3;

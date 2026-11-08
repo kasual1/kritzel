@@ -1,9 +1,9 @@
-import type { KritzelAgenticClearSelectionAction, KritzelAgenticSelectAction } from '../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionExecutor, KritzelAgenticPreparation, KritzelAgenticRefusal } from './agentic-action.types';
-import type { KritzelAgenticActionRun } from '../classes/managers/agentic-action-run.class';
-import { isSelectionObject, isTopLevel } from '../helpers/agentic-conflict.helper';
-import { unionCenter } from '../helpers/agentic-geometry.helper';
-import { assertObjectIds, uniqueIds } from '../helpers/agentic-validation.helper';
+import type { KritzelAgenticClearSelectionAction, KritzelAgenticSelectAction } from '../../interfaces/agentic-action.interface';
+import type { KritzelAgenticActionExecutor, KritzelAgenticPreparation, KritzelAgenticRefusal } from '../../types/agentic-action.types';
+import type { KritzelAgenticActionRun } from '../managers/agentic-action-run.class';
+import { isSelectionObject, isTopLevel } from '../../helpers/agentic-conflict.helper';
+import { unionCenter } from '../../helpers/agentic-geometry.helper';
+import { assertObjectIds, uniqueIds } from '../../helpers/agentic-validation.helper';
 
 /**
  * Checks that every ID is an existing top-level object that is not a selection.

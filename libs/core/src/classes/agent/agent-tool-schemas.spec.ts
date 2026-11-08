@@ -1,5 +1,5 @@
 import { AGENT_TOOL_SPECS, OBSERVE_CANVAS_SCHEMA, agentToolInputSchema, type KritzelJsonSchemaNode } from './agent-tool-schemas';
-import { AGENTIC_ACTION_EXECUTORS, getAgenticActionExecutor } from '../../executors/agentic-action-executor.registry';
+import { AGENTIC_ACTION_EXECUTORS, getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
 import {
   AGENTIC_ANCHORS,
   AGENTIC_ARROW_HEAD_STYLES,

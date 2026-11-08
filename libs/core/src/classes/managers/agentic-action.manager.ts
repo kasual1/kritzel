@@ -8,8 +8,8 @@ import type {
   KritzelAgenticActionResult,
 } from '../../interfaces/agentic-action.interface';
 import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
-import { getAgenticActionExecutor } from '../../executors/agentic-action-executor.registry';
-import { KritzelAgenticAbortError, isAgenticRefusal } from '../../executors/agentic-action.types';
+import { getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
+import { KritzelAgenticAbortError, isAgenticRefusal } from '../../types/agentic-action.types';
 import { KritzelAgenticActionRun, KritzelAgenticRunHost, KritzelAgenticRunOutcome } from './agentic-action-run.class';
 import { KritzelAgenticFrameCache, buildFrameCache, detectObjectConflict, expandWithRelatives } from '../../helpers/agentic-conflict.helper';
 import { KritzelEventHelper } from '../../helpers/event.helper';
