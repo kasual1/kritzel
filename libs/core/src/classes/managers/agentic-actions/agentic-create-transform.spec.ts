@@ -322,6 +322,19 @@ describe('agentic create and transform actions', () => {
       expect(shape.rotation).toBeCloseTo(Math.PI / 3);
     });
 
+    it('grabs the handle where the cursor overlay draws it, above a shown titlebar', async () => {
+      const shape = addShape(0, 0, 100, 100);
+      core.objectTitlebarManager = { editingTitle: null, isEnabled: true, getRotationHandleLift: () => 34 };
+      core.store.state.scale = 2;
+
+      await perform({ type: 'rotateObject', objectId: shape.id, angle: 90 }, {});
+
+      expect(cursors.get('agent')!.attachedTo).toEqual({ objectId: shape.id, anchor: 'top', offset: { x: 0, y: -(15 + 34) / 2 } });
+      const handle = cursors.getRotationHandle(shape.id)!.handle;
+      expect(cursors.get('agent')!.position.x).toBeCloseTo(handle.x);
+      expect(cursors.get('agent')!.position.y).toBeCloseTo(handle.y);
+    });
+
     it('undoes a rotation through the agent history only', async () => {
       const shape = addShape(0, 0, 100, 100);
       await perform({ type: 'rotateObject', objectId: shape.id, angle: 45 });

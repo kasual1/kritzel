@@ -1,5 +1,5 @@
 import { Component, Host, Prop, State, h } from '@stencil/core';
-import { KritzelCore, KritzelAgenticCursor, KritzelViewportOverlayHelper } from '@kritzel/core';
+import { KritzelCore, KritzelAgenticCursor, KritzelLine, KritzelPoint, KritzelViewportOverlayHelper } from '@kritzel/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
 /** A cursor to draw: a local agent (key = its ID) or a collaborator's agent (key = `r:<client>:<id>`). */
@@ -11,10 +11,14 @@ interface RenderedPosition {
   inViewport: boolean;
 }
 
+/** Size of the engine's selection handles when `--kritzel-selection-handle-size` is not set. */
+const DEFAULT_HANDLE_SIZE_PX = 6;
+
 /**
  * Renders the cursors of the local agents (`KritzelAgenticCursorManager`) and of collaborators' agents
- * (`KritzelRemoteAgentManager`), and the outlines of the objects each agent has selected. Everything is
- * keyed by the cursor key, so the same agent ID in two tabs never collides.
+ * (`KritzelRemoteAgentManager`), the outlines of the objects each agent has selected and, like a person's
+ * selection of one object, its rotation handle. Everything is keyed by the cursor key, so the same agent ID
+ * in two tabs never collides.
  *
  * Structural changes (added/removed cursors, name, color, status, selections) re-render through
  * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
@@ -38,6 +42,9 @@ export class KritzelAgenticCursors {
   /** Press count whose ripple has played per cursor, so re-created cursor elements don't replay it. */
   private readonly playedPressCounts = new Map<string, number>();
   private readonly renderedSelectionPoints = new Map<string, string>();
+  private readonly handleElements = new Map<string, { stem?: SVGLineElement; knob?: SVGCircleElement }>();
+  private readonly renderedHandleGeometry = new Map<string, string>();
+  /** Keys of the rendered outlines and handles; a change re-renders. */
   private renderedSelectionKeys = '';
   private unsubscribers: (() => void)[] = [];
 
@@ -72,9 +79,10 @@ export class KritzelAgenticCursors {
     let needsRender = false;
     const cursorsList = this.getCursors();
 
-    // Selection outlines follow their objects (drags, remote changes, pan and zoom).
+    // Selection outlines and handles follow their objects (drags, remote changes, pan and zoom).
     const selections = this.collectSelections(cursorsList);
-    if (selections.map(selection => selection.key).join('|') !== this.renderedSelectionKeys) {
+    const handles = this.collectRotationHandles(cursorsList);
+    if (this.getSelectionKeys(selections, handles) !== this.renderedSelectionKeys) {
       needsRender = true;
     } else {
       for (const selection of selections) {
@@ -83,6 +91,21 @@ export class KritzelAgenticCursors {
         if (element) {
           element.setAttribute('points', selection.points);
           this.renderedSelectionPoints.set(selection.key, selection.points);
+        } else {
+          needsRender = true;
+        }
+      }
+      for (const handle of handles) {
+        if (this.renderedHandleGeometry.get(handle.key) === handle.geometry) continue;
+        const { stem, knob } = this.handleElements.get(handle.key) ?? {};
+        if (stem && knob) {
+          stem.setAttribute('x1', `${handle.x1}`);
+          stem.setAttribute('y1', `${handle.y1}`);
+          stem.setAttribute('x2', `${handle.x2}`);
+          stem.setAttribute('y2', `${handle.y2}`);
+          knob.setAttribute('cx', `${handle.x2}`);
+          knob.setAttribute('cy', `${handle.y2}`);
+          this.renderedHandleGeometry.set(handle.key, handle.geometry);
         } else {
           needsRender = true;
         }
@@ -137,13 +160,17 @@ export class KritzelAgenticCursors {
     }
 
     const selections = this.collectSelections(cursors);
-    this.renderedSelectionKeys = selections.map(selection => selection.key).join('|');
+    const handles = this.collectRotationHandles(cursors);
+    this.renderedSelectionKeys = this.getSelectionKeys(selections, handles);
     this.renderedSelectionPoints.clear();
     selections.forEach(selection => this.renderedSelectionPoints.set(selection.key, selection.points));
+    this.renderedHandleGeometry.clear();
+    handles.forEach(handle => this.renderedHandleGeometry.set(handle.key, handle.geometry));
+    const handleRadius = handles.length > 0 ? this.getHandleRadius() : 0;
 
     return (
       <Host>
-        {selections.length > 0 && (
+        {(selections.length > 0 || handles.length > 0) && (
           <svg class="agentic-selections" aria-hidden="true">
             {selections.map(selection => (
               <polygon
@@ -155,6 +182,32 @@ export class KritzelAgenticCursors {
                 style={{ '--agentic-cursor-color': selection.color }}
                 ref={el => this.setSelectionElement(selection.key, el as SVGPolygonElement | undefined)}
               />
+            ))}
+            {/* After the outlines, so a handle is never hidden behind another agent's outline. */}
+            {handles.map(handle => (
+              <g
+                key={`agentic-rotation-handle-${handle.key}`}
+                class={{ 'agentic-rotation-handle': true, 'is-remote': handle.isRemote }}
+                data-cursor-id={handle.cursorId}
+                data-object-id={handle.objectId}
+                style={{ '--agentic-cursor-color': handle.color }}
+              >
+                <line
+                  class="agentic-rotation-handle-stem"
+                  x1={handle.x1}
+                  y1={handle.y1}
+                  x2={handle.x2}
+                  y2={handle.y2}
+                  ref={el => this.setHandleElement(handle.key, 'stem', el as SVGLineElement | undefined)}
+                />
+                <circle
+                  class="agentic-rotation-handle-knob"
+                  cx={handle.x2}
+                  cy={handle.y2}
+                  r={handleRadius}
+                  ref={el => this.setHandleElement(handle.key, 'knob', el as SVGCircleElement | undefined)}
+                />
+              </g>
             ))}
           </svg>
         )}
@@ -247,6 +300,96 @@ export class KritzelAgenticCursors {
     }
   }
 
+  private setHandleElement(key: string, part: 'stem' | 'knob', element: SVGLineElement | SVGCircleElement | undefined) {
+    const elements = this.handleElements.get(key) ?? {};
+    if (element) {
+      (elements as Record<string, SVGElement>)[part] = element;
+      this.handleElements.set(key, elements);
+      return;
+    }
+    delete elements[part];
+    if (!elements.stem && !elements.knob) {
+      this.handleElements.delete(key);
+    }
+  }
+
+  private getSelectionKeys(selections: RenderedSelection[], handles: RenderedRotationHandle[]): string {
+    return [...selections.map(selection => selection.key), ...handles.map(handle => `handle:${handle.key}`)].join('|');
+  }
+
+  /** Radius of the handle in screen pixels, the same as the engine's rotation handle. */
+  private getHandleRadius(): number {
+    const host = this.core.engine?.host;
+    const size = host && typeof getComputedStyle === 'function' ? parseFloat(getComputedStyle(host).getPropertyValue('--kritzel-selection-handle-size')) : NaN;
+    return (Number.isFinite(size) && size > 1 ? size : DEFAULT_HANDLE_SIZE_PX) - 1;
+  }
+
+  /**
+   * Rotation handles of the visible cursors, in screen coordinates. Like a person's selection, a cursor shows one
+   * when it has exactly one rotatable object selected that is not a line (lines show their endpoints instead).
+   * While an agent rotates an object, the object always shows its handle.
+   */
+  private collectRotationHandles(cursors: DrawnCursor[]): RenderedRotationHandle[] {
+    const state = this.core.store.state;
+    const objects = this.core.store.objects;
+    const handles: RenderedRotationHandle[] = [];
+    if (!objects) return handles;
+
+    for (const cursor of cursors) {
+      if (!cursor.visible || cursor.selectedObjectIds.length !== 1) continue;
+      const objectId = cursor.selectedObjectIds[0];
+      const object = objects.findById(objectId);
+      if (!object) continue;
+      const isRotating = cursor.activeAction === 'rotateObject';
+      if (!isRotating && (object instanceof KritzelLine || !this.core.objectConfigManager.isRotatable(object))) continue;
+
+      const handle = this.core.agenticCursorManager.getRotationHandle(objectId);
+      if (!handle) continue;
+      const center = this.isOnHandle(cursor, objectId) ? this.followCursor(handle.base, handle.handle, cursor.position) : handle.handle;
+
+      const base = KritzelViewportOverlayHelper.worldToScreen(state, handle.base.x, handle.base.y);
+      const knob = KritzelViewportOverlayHelper.worldToScreen(state, center.x, center.y);
+      const [x1, y1, x2, y2] = [base.x, base.y, knob.x, knob.y].map(value => Math.round(value * 100) / 100);
+      handles.push({
+        key: `${cursor.key}:${objectId}`,
+        cursorId: cursor.id,
+        objectId,
+        color: cursor.color,
+        isRemote: !!cursor.isRemote,
+        x1,
+        y1,
+        x2,
+        y2,
+        geometry: `${x1},${y1},${x2},${y2}`,
+      });
+    }
+    return handles;
+  }
+
+  /**
+   * Whether the cursor holds the object's rotation handle: pressed while rotating, or resting on it afterwards
+   * (attached straight above the middle of the top edge, where the rotate action leaves it).
+   */
+  private isOnHandle(cursor: DrawnCursor, objectId: string): boolean {
+    if (cursor.activeAction === 'rotateObject' && cursor.isPressed) return true;
+    const attached = cursor.attachedTo;
+    return !!attached && attached.objectId === objectId && attached.selector === undefined && attached.anchor === 'top' && attached.offset.x === 0 && attached.offset.y < 0;
+  }
+
+  /**
+   * A handle the cursor holds is under the cursor. The agent grabbed it at the zoom (and titlebar) of the tab it
+   * runs in, so on a collaborator's screen, or after zooming, the handle slides along its stem to the cursor.
+   */
+  private followCursor(base: KritzelPoint, handle: KritzelPoint, cursor: KritzelPoint): KritzelPoint {
+    const dx = handle.x - base.x;
+    const dy = handle.y - base.y;
+    const length = Math.hypot(dx, dy);
+    if (length === 0) return handle;
+    const along = ((cursor.x - base.x) * dx + (cursor.y - base.y) * dy) / length;
+    if (!(along > 0)) return handle;
+    return { x: base.x + (dx / length) * along, y: base.y + (dy / length) * along };
+  }
+
   /** Outlines of the objects visible cursors have selected, in screen coordinates. */
   private collectSelections(cursors: DrawnCursor[]): RenderedSelection[] {
     const state = this.core.store.state;
@@ -280,4 +423,20 @@ interface RenderedSelection {
   color: string;
   points: string;
   isRemote: boolean;
+}
+
+interface RenderedRotationHandle {
+  key: string;
+  cursorId: string;
+  objectId: string;
+  color: string;
+  isRemote: boolean;
+  /** Screen point where the stem leaves the top edge. */
+  x1: number;
+  y1: number;
+  /** Screen point of the handle's center. */
+  x2: number;
+  y2: number;
+  /** The four coordinates, to skip frames in which nothing moved. */
+  geometry: string;
 }

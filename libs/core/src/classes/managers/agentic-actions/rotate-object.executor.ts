@@ -1,6 +1,5 @@
 import type { KritzelAgenticRotateObjectAction } from '../../../interfaces/agentic-action.interface';
-import type { KritzelAgenticObjectTarget } from '../../../interfaces/agentic-cursor.interface';
-import { AGENTIC_ACTION_ROTATE_SPEED, AGENTIC_ACTION_ROTATION_HANDLE_PX, type KritzelAgenticActionExecutor } from './agentic-action.types';
+import { AGENTIC_ACTION_ROTATE_SPEED, type KritzelAgenticActionExecutor } from './agentic-action.types';
 import { prepareTopLevelTargets } from './select.executor';
 import { assertObjectId } from './agentic-validation.helper';
 import { createTransientSelectionGroup, targetRotation } from './agentic-transform.helper';
@@ -45,13 +44,8 @@ export const rotateObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticRo
     const target = targetRotation(start, action.angle, !!action.relative);
     const delta = target - start;
 
-    // The rotation handle sits above the top edge and turns with the object.
-    // (Approximate when a titlebar is shown: the engine moves the handle above it.)
-    const handleTarget = (): KritzelAgenticObjectTarget => ({
-      objectId: id,
-      anchor: 'top',
-      offset: { x: 0, y: -AGENTIC_ACTION_ROTATION_HANDLE_PX / (core.store.state.scale || 1) },
-    });
+    // The handle the cursor overlay draws: above the top edge (and a shown titlebar), turning with the object.
+    const handleTarget = () => cursors.getRotationHandleTarget(id);
 
     const group = createTransientSelectionGroup(core, [id]);
     group.beginTransform();

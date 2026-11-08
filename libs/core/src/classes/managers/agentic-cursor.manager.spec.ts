@@ -6,6 +6,7 @@ describe('KritzelAgenticCursorManager', () => {
   let manager: KritzelAgenticCursorManager;
   let objects: Map<string, any>;
   let state: any;
+  let core: any;
   let now: number;
 
   const createObject = (id: string, x: number, y: number, width: number, height: number, rotation = 0) => ({
@@ -19,7 +20,7 @@ describe('KritzelAgenticCursorManager', () => {
     jest.spyOn(performance, 'now').mockImplementation(() => now);
     objects = new Map();
     state = { scale: 1, translateX: 0, translateY: 0, viewportWidth: 800, viewportHeight: 600 };
-    const core: any = {
+    core = {
       store: {
         state,
         objects: { findById: (id: string) => objects.get(id) ?? null },
@@ -76,6 +77,42 @@ describe('KritzelAgenticCursorManager', () => {
       const point = manager.resolveTarget({ objectId: 'a', anchor: 'top-left' })!;
       expect(point.x).toBeCloseTo(100);
       expect(point.y).toBeCloseTo(0);
+    });
+  });
+
+  describe('rotation handle', () => {
+    it('should sit 15 screen pixels above the middle of the top edge at any zoom', () => {
+      objects.set('a', createObject('a', 0, 0, 100, 50));
+      expect(manager.getRotationHandle('a')).toEqual({ base: { x: 50, y: 0 }, handle: { x: 50, y: -15 } });
+
+      state.scale = 3;
+      expect(manager.getRotationHandleTarget('a')).toEqual({ objectId: 'a', anchor: 'top', offset: { x: 0, y: -5 } });
+      expect(manager.getRotationHandle('a')!.handle).toEqual({ x: 50, y: -5 });
+    });
+
+    it('should turn with the object', () => {
+      objects.set('a', createObject('a', 0, 0, 100, 100, Math.PI / 2));
+      const { base, handle } = manager.getRotationHandle('a')!;
+      expect(base.x).toBeCloseTo(100);
+      expect(base.y).toBeCloseTo(50);
+      expect(handle.x).toBeCloseTo(115);
+      expect(handle.y).toBeCloseTo(50);
+    });
+
+    it('should move above a shown titlebar, where the rotate action grabs it as well', () => {
+      objects.set('a', createObject('a', 0, 0, 100, 50));
+      const getRotationHandleLift = jest.fn(() => 34);
+      core.objectTitlebarManager = { isEnabled: true, getRotationHandleLift };
+      state.scale = 2;
+
+      expect(manager.getRotationHandle('a')!.handle).toEqual({ x: 50, y: -24.5 });
+      expect(manager.getRotationHandleTarget('a').offset).toEqual({ x: 0, y: -24.5 });
+      expect(getRotationHandleLift).toHaveBeenCalledWith(objects.get('a'));
+    });
+
+    it('should have no handle for a missing object', () => {
+      expect(manager.getRotationHandle('missing')).toBeNull();
+      expect(manager.getRotationHandleTarget('missing')).toEqual({ objectId: 'missing', anchor: 'top', offset: { x: 0, y: -15 } });
     });
   });
 

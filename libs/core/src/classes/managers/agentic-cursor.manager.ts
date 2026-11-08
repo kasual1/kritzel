@@ -9,9 +9,12 @@ import {
   KritzelAgenticObjectTarget,
   KritzelAgenticCursorOptions,
   KritzelAgenticCursorPatch,
+  KritzelAgenticRotationHandle,
   KritzelAgenticTarget,
 } from '../../interfaces/agentic-cursor.interface';
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
+import type { KritzelBaseObject } from '../objects/base-object.class';
+import { AGENTIC_ACTION_ROTATION_HANDLE_PX } from './agentic-actions/agentic-action.types';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelElementAwareObject } from '../../interfaces/object-element.interface';
 import { KritzelEasingHelper } from '../../helpers/easing.helper';
@@ -447,6 +450,32 @@ export class KritzelAgenticCursorManager {
       return this.resolveElementTarget(object, target);
     }
     return resolveObjectAnchor(object, target.anchor ?? 'center', target.offset);
+  }
+
+  /**
+   * Target on the rotation handle of an object, where agents grab it. Like the engine's handle, it sits a
+   * fixed screen distance above the middle of the top edge (above a shown titlebar) and turns with the object.
+   */
+  getRotationHandleTarget(objectId: string): KritzelAgenticObjectTarget {
+    const object = this._core.store.objects?.findById(objectId);
+    return { objectId, anchor: 'top', offset: { x: 0, y: -this.getRotationHandleDistance(object) } };
+  }
+
+  /** World points of an object's rotation handle as agents show it, or `null` if the object doesn't exist. */
+  getRotationHandle(objectId: string): KritzelAgenticRotationHandle | null {
+    const object = this._core.store.objects?.findById(objectId);
+    if (!object) return null;
+    return {
+      base: resolveObjectAnchor(object, 'top'),
+      handle: resolveObjectAnchor(object, 'top', { x: 0, y: -this.getRotationHandleDistance(object) }),
+    };
+  }
+
+  /** World distance of the rotation handle above the top edge, for the current zoom. */
+  private getRotationHandleDistance(object: KritzelBaseObject<any> | null | undefined): number {
+    const titlebars = this._core.objectTitlebarManager;
+    const lift = object && titlebars?.isEnabled ? titlebars.getRotationHandleLift(object) : 0;
+    return (AGENTIC_ACTION_ROTATION_HANDLE_PX + lift) / (this._core.store.state.scale || 1);
   }
 
   /**

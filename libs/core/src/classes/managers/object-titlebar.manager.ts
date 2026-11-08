@@ -232,6 +232,51 @@ export class KritzelObjectTitlebarManager {
     return active;
   }
 
+  /**
+   * Screen pixels by which a rotation handle on the top edge of a top-level object moves up, so that the
+   * object's titlebar does not hide it: the titlebar band while the object shows a titlebar, otherwise 0.
+   * Applies the same rules as `resolveTitlebars`, without its side effects on open edits and menus.
+   */
+  getRotationHandleLift(object: KritzelBaseObject<any>): number {
+    const config = this.config;
+    if (!config || this.getOwners([object]).length === 0) {
+      return 0;
+    }
+
+    if (this._editingTitle?.ownerId !== object.id) {
+      if (config.visibility === 'active' && !this.getActiveOwnerIds(this.withNestedGroups(object)).has(object.id)) {
+        return 0;
+      }
+      const anchor = KritzelObjectTitlebarHelper.getAnchor(object, this._core.store.state, config.rotation ?? 'follow');
+      if (!(anchor.width >= (config.hideBelowWidth ?? KRITZEL_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH))) {
+        return 0;
+      }
+    }
+
+    const host = this._core.engine?.host;
+    const metrics = this.getMetrics(host && typeof getComputedStyle === 'function' ? getComputedStyle(host) : null);
+    return metrics.height + metrics.offset;
+  }
+
+  /** The object and the groups nested in it, so that a selected descendant makes it active. */
+  private withNestedGroups(object: KritzelBaseObject<any>): KritzelBaseObject<any>[] {
+    const result = [object];
+    const seen = new Set([object.id]);
+    for (let i = 0; i < result.length; i++) {
+      const current = result[i];
+      if (!(current instanceof KritzelGroup)) {
+        continue;
+      }
+      for (const child of current.children) {
+        if (child instanceof KritzelGroup && !seen.has(child.id)) {
+          seen.add(child.id);
+          result.push(child);
+        }
+      }
+    }
+    return result;
+  }
+
   /** Resolves the titlebars to render for the given candidate objects. */
   resolveTitlebars(candidates: KritzelBaseObject<any>[]): KritzelResolvedTitlebar[] {
     const config = this.config;

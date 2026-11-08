@@ -102,6 +102,14 @@ export interface KritzelAgenticAttachment {
   offset: KritzelPoint;
 }
 
+/** World points of an object's rotation handle as agents show and grab it. It turns with the object. */
+export interface KritzelAgenticRotationHandle {
+  /** Middle of the object's top edge, where the handle's stem starts. */
+  base: KritzelPoint;
+  /** Center of the handle. */
+  handle: KritzelPoint;
+}
+
 /** Snapshot of an agent's cursor, used by the cursor overlay. @internal */
 export interface KritzelAgenticCursor {
   id: string;

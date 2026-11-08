@@ -261,6 +261,65 @@ describe('KritzelObjectTitlebarManager', () => {
     });
   });
 
+  describe('getRotationHandleLift', () => {
+    let originalGetComputedStyle: unknown;
+    let tokens: Record<string, string>;
+
+    beforeEach(() => {
+      tokens = {};
+      originalGetComputedStyle = (globalThis as any).getComputedStyle;
+      (globalThis as any).getComputedStyle = jest.fn(() => ({ getPropertyValue: (name: string) => tokens[name] ?? '' }));
+    });
+
+    afterEach(() => {
+      (globalThis as any).getComputedStyle = originalGetComputedStyle;
+    });
+
+    it('lifts the handle by the titlebar band of the engine theme while the object shows a titlebar', () => {
+      const object = createObject('a');
+      expect(manager.getRotationHandleLift(object)).toBe(28 + 6);
+
+      tokens = { '--kritzel-titlebar-height': '40px', '--kritzel-titlebar-offset': '10px' };
+      expect(manager.getRotationHandleLift(object)).toBe(50);
+      expect((globalThis as any).getComputedStyle).toHaveBeenCalledWith(mockCore.engine.host);
+    });
+
+    it('does not lift the handle of objects without a shown titlebar', () => {
+      const object = createObject('a');
+      setConfig(undefined);
+      expect(manager.getRotationHandleLift(object)).toBe(0);
+
+      setConfig({ left: [{ id: 'title', type: 'title' }] });
+      setObjectConfig({ hasTitlebar: false });
+      expect(manager.getRotationHandleLift(object)).toBe(0);
+
+      setObjectConfig({ hasTitlebar: true });
+      mockCore.store.state.scale = 0.1; // 20 screen pixels wide, below the default 40
+      expect(manager.getRotationHandleLift(object)).toBe(0);
+    });
+
+    it('lifts the handle in active visibility mode only while the local selection activates the titlebar', () => {
+      setConfig({ visibility: 'active' });
+      createObject('child');
+      createGroup('inner', ['child']);
+      const root = createGroup('root', ['inner']);
+      expect(manager.getRotationHandleLift(root)).toBe(0);
+
+      select('child');
+      expect(manager.getRotationHandleLift(root)).toBe(34);
+    });
+
+    it('lifts the handle while the title is edited, without ending the edit', () => {
+      setConfig({ visibility: 'active' });
+      const object = createObject('a');
+      manager.startTitleEditing('a', 'title');
+
+      expect(manager.getRotationHandleLift(object)).toBe(34);
+      expect(manager.getRotationHandleLift(createObject('b'))).toBe(0);
+      expect(manager.editingTitle).toEqual({ ownerId: 'a', elementId: 'title' });
+    });
+  });
+
   describe('resolveTitlebars', () => {
     it('defaults the left section to the title', () => {
       setConfig({});

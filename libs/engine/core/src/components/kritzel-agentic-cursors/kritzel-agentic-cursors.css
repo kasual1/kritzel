@@ -30,6 +30,18 @@
   stroke-linejoin: round;
 }
 
+/* Rotation handle of an agent's selection, drawn like the engine's: a stem from the top edge and a round knob. */
+.agentic-rotation-handle-stem {
+  stroke: var(--agentic-cursor-color);
+  stroke-width: var(--kritzel-agentic-cursor-selection-border-width, var(--kritzel-global-agentic-cursor-selection-border-width, 1.5px));
+}
+
+.agentic-rotation-handle-knob {
+  fill: var(--kritzel-agentic-cursor-rotation-handle-fill, var(--kritzel-global-agentic-cursor-rotation-handle-fill, var(--kritzel-selection-handle-color, #ffffff)));
+  stroke: var(--agentic-cursor-color);
+  stroke-width: var(--kritzel-agentic-cursor-rotation-handle-border-width, var(--kritzel-global-agentic-cursor-rotation-handle-border-width, 2px));
+}
+
 /* Movement is driven by JavaScript, so no transform transition here. */
 .agentic-cursor {
   position: absolute;
