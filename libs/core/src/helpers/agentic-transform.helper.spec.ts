@@ -94,6 +94,6 @@ describe('KritzelRichTextHelper', () => {
     KritzelRichTextHelper.appendText(view, 'a\nb');
     KritzelRichTextHelper.clear(view);
     expect(view.state.doc.childCount).toBe(1);
-    expect(KritzelRichTextHelper.getText(view)).toBe('');
+    expect(view.state.doc.textContent).toBe('');
   });
 });

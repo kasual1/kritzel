@@ -12,6 +12,7 @@ import { getAgenticActionExecutor } from '../../executors/agentic-action-executo
 import { KritzelAgenticAbortError, isAgenticRefusal } from '../../executors/agentic-action.types';
 import { KritzelAgenticActionRun, KritzelAgenticRunHost, KritzelAgenticRunOutcome } from './agentic-action-run.class';
 import { KritzelAgenticFrameCache, buildFrameCache, detectObjectConflict, expandWithRelatives } from '../../helpers/agentic-conflict.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 
 type AnyObject = KritzelBaseObject<any>;
 type ObjectMap = KritzelObjectMap<AnyObject>;
@@ -316,13 +317,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   }
 
   private emitSettled(event: KritzelAgenticActionSettledEvent): void {
-    this._settledListeners.forEach(listener => {
-      try {
-        listener(event);
-      } catch (error) {
-        console.error('[Kritzel] Agentic action settled listener failed:', error);
-      }
-    });
+    this._settledListeners.forEach(listener => KritzelEventHelper.callListener(() => listener(event), 'Agentic action settled listener'));
   }
 
   private deriveEvents(run: KritzelAgenticActionRun, map: ObjectMap, recording: Map<string, boolean>) {

@@ -175,9 +175,9 @@ describe('KritzelAgent', () => {
 
   afterEach(() => {
     harnesses.forEach(harness => {
-      harness.core.agentManager.clear();
+      harness.core.agentManager.getAll().forEach(agent => harness.core.agentManager.remove(agent));
       harness.core.agenticActionManager.cleanup();
-      harness.core.agenticCursorManager.clear();
+      harness.core.agenticCursorManager.cleanup();
       harness.map.destroy();
     });
     jest.restoreAllMocks();

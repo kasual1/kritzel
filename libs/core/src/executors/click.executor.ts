@@ -6,7 +6,8 @@ import { KritzelZOrderHelper } from '../helpers/z-order.helper';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
 import { findParentGroup, isSelectionObject } from '../helpers/agentic-conflict.helper';
 import { isPointInCorners } from '../helpers/agentic-geometry.helper';
-import { assertTarget, isObjectTarget } from '../helpers/agentic-validation.helper';
+import { assertTarget } from '../helpers/agentic-validation.helper';
+import { isObjectTarget } from '../helpers/agentic-geometry.helper';
 
 type ObjectMap = KritzelObjectMap<KritzelBaseObject<any>>;
 

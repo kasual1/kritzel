@@ -52,27 +52,22 @@ export type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObj
 
 /** Options for creating the cursor of an agent. @internal */
 export interface KritzelAgenticCursorOptions {
-  /** Unique ID. Generated when omitted. */
-  id?: string;
-  /** Display name shown in the cursor label. */
-  name?: string;
-  /** Any CSS color. Derived from the name when omitted. */
-  color?: string;
-  /** Optional status message shown below the label (e.g. "Thinking…"). */
-  status?: string;
-  /** Whether the cursor is visible. Defaults to `true`. */
-  visible?: boolean;
+  /** The ID of the agent the cursor belongs to. */
+  id: string;
+  /** How the cursor looks. Read for every snapshot, so the agent is the only place that stores it. */
+  appearance: KritzelAgenticCursorAppearance;
   /** Initial position. Defaults to the center of the viewport. An object or element target attaches the cursor immediately. */
   position?: KritzelAgenticTarget;
 }
 
-/** Properties of an agent's cursor that can be changed after creation. @internal */
-export interface KritzelAgenticCursorPatch {
-  name?: string;
-  color?: string;
-  /** Pass `null` or an empty string to clear the status. */
-  status?: string | null;
-  visible?: boolean;
+/** How an agent's cursor looks: its label, color, status and visibility. @internal */
+export interface KritzelAgenticCursorAppearance {
+  readonly name: string;
+  /** Any CSS color. */
+  readonly color: string;
+  /** Status message shown below the label, or `null` for none. */
+  readonly status: string | null;
+  readonly visible: boolean;
 }
 
 /** Options for `agent.moveTo()`. */

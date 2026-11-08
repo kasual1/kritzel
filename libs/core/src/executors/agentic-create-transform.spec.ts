@@ -7,9 +7,11 @@ import { KritzelText } from '../classes/objects/text.class';
 import { KritzelPath } from '../classes/objects/path.class';
 import { KritzelLine } from '../classes/objects/line.class';
 import { KritzelGroup } from '../classes/objects/group.class';
-import { KritzelRichTextHelper } from '../helpers/rich-text.helper';
 import { KritzelCore } from '../classes/core/core.class';
 import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
+
+/** How the test agent's cursor looks; agents own these values in the editor. */
+const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };
 
 // Real object classes on a real Yjs object map: these tests check the geometry and history of
 // the create and transform actions end to end, without a rendered canvas.
@@ -123,7 +125,7 @@ describe('agentic create and transform actions', () => {
         invalidateSelectionCache: jest.fn(),
       },
       objectConfigManager: { isResizable: jest.fn(() => true), isRotatable: jest.fn(() => true) },
-      objectTitlebarManager: { editingTitle: null, isEnabled: false },
+      objectTitlebarManager: { editingTitle: null, isEnabled: false, getRotationHandleDistance: () => 15 },
       toolRegistry: { getToolByIndex: (index: number) => tools[index] ?? null },
       engine: {
         emitObjectsChange: jest.fn(),
@@ -145,12 +147,12 @@ describe('agentic create and transform actions', () => {
     cursors = new KritzelAgenticCursorManager(core);
     core.agenticCursorManager = cursors;
     actions = new KritzelAgenticActionManager(core);
-    cursors.add({ id: 'agent', position: { x: 0, y: 0 } });
+    cursors.add({ appearance: AGENT_APPEARANCE, id: 'agent', position: { x: 0, y: 0 } });
   });
 
   afterEach(() => {
     actions.cleanup();
-    cursors.clear();
+    cursors.cleanup();
     map.destroy();
     jest.restoreAllMocks();
   });
@@ -190,7 +192,7 @@ describe('agentic create and transform actions', () => {
       const userStack = map.undoManager!.undoStack.length;
       const result = await perform({ type: 'createShape', x: 0, y: 0, width: 100, height: 60, text: 'Hi\nthere' });
       const shape = map.findById(result.objectIds![0]) as KritzelShape;
-      expect(KritzelRichTextHelper.getText(shape.editor!)).toBe('Hithere');
+      expect(shape.editor!.state.doc.textContent).toBe('Hithere');
       expect(map.getAgentUndoStackLength('agent')).toBe(1);
       expect(map.undoManager!.undoStack.length).toBe(userStack);
 
@@ -225,7 +227,7 @@ describe('agentic create and transform actions', () => {
       expect(text.fontSize).toBe(24);
       expect(text.fontFamily).toBe('Georgia');
       expect(text.isEditing).toBe(false);
-      expect(KritzelRichTextHelper.getText(text.editor!)).toBe('Hello');
+      expect(text.editor!.state.doc.textContent).toBe('Hello');
       expect((map as any)._temporaryItemsCount).toBe(0);
       expect(map.getAgentUndoStackLength('agent')).toBe(1);
     });
@@ -234,9 +236,9 @@ describe('agentic create and transform actions', () => {
       const created = await perform({ type: 'createText', x: 0, y: 0, text: 'One' });
       const id = created.objectIds![0];
       await perform({ type: 'typeText', objectId: id, text: ' two' });
-      expect(KritzelRichTextHelper.getText((map.findById(id) as KritzelText).editor!)).toBe('One two');
+      expect((map.findById(id) as KritzelText).editor!.state.doc.textContent).toBe('One two');
       await perform({ type: 'typeText', objectId: id, text: 'Fresh', mode: 'replace' });
-      expect(KritzelRichTextHelper.getText((map.findById(id) as KritzelText).editor!)).toBe('Fresh');
+      expect((map.findById(id) as KritzelText).editor!.state.doc.textContent).toBe('Fresh');
       expect(core.engine.emitObjectsUpdated).toHaveBeenLastCalledWith(
         [{ object: map.findById(id), changedProperties: ['content', 'width', 'height'] }],
         { type: 'agent', agentId: 'agent', actionType: 'typeText' },
@@ -324,7 +326,7 @@ describe('agentic create and transform actions', () => {
 
     it('grabs the handle where the cursor overlay draws it, above a shown titlebar', async () => {
       const shape = addShape(0, 0, 100, 100);
-      core.objectTitlebarManager = { editingTitle: null, isEnabled: true, getRotationHandleLift: () => 34 };
+      core.objectTitlebarManager = { editingTitle: null, isEnabled: true, getRotationHandleDistance: () => 15 + 34 };
       core.store.state.scale = 2;
 
       await perform({ type: 'rotateObject', objectId: shape.id, angle: 90 }, {});

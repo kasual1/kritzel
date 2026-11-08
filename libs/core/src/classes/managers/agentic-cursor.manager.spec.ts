@@ -1,4 +1,5 @@
 import { AGENTIC_CURSOR_MAX_DURATION, AGENTIC_CURSOR_MIN_DURATION, KritzelAgenticCursorManager } from './agentic-cursor.manager';
+import type { KritzelAgenticCursorOptions } from '../../interfaces/agentic-cursor.interface';
 
 jest.mock('../core/core.class');
 
@@ -15,6 +16,18 @@ describe('KritzelAgenticCursorManager', () => {
     boundingBox: { x, y, width, height, z: 1 },
   });
 
+  /** How a cursor looks. In the editor, its agent owns these values. */
+  const appearance = (overrides: Partial<{ name: string; color: string; status: string | null; visible: boolean }> = {}) => ({
+    name: 'Agent',
+    color: '#6B7280',
+    status: null as string | null,
+    visible: true,
+    ...overrides,
+  });
+  let cursorCount = 0;
+  /** Adds a cursor with a fresh ID unless one is given, as an agent would. */
+  const addCursor = (options: Partial<KritzelAgenticCursorOptions> = {}) => manager.add({ id: `cursor-${++cursorCount}`, appearance: appearance(), ...options });
+
   beforeEach(() => {
     now = 1000;
     jest.spyOn(performance, 'now').mockImplementation(() => now);
@@ -25,12 +38,14 @@ describe('KritzelAgenticCursorManager', () => {
         state,
         objects: { findById: (id: string) => objects.get(id) ?? null },
       },
+      // No titlebars: the plain screen distance of the rotation handle.
+      objectTitlebarManager: { getRotationHandleDistance: () => 15 },
     };
     manager = new KritzelAgenticCursorManager(core);
   });
 
   afterEach(() => {
-    manager.clear();
+    manager.cleanup();
     jest.restoreAllMocks();
   });
 
@@ -38,29 +53,22 @@ describe('KritzelAgenticCursorManager', () => {
     it('should place a cursor at the viewport center by default', () => {
       state.translateX = 100;
       state.scale = 2;
-      const cursor = manager.add({ name: 'Planner', color: '#ff0000' });
+      const cursor = addCursor({ id: 'planner', appearance: appearance({ name: 'Planner', color: '#ff0000' }) });
       expect(cursor.position).toEqual({ x: 150, y: 150 });
-      expect(cursor.color).toBe('#ff0000');
-      expect(cursor.visible).toBe(true);
-      expect(cursor.id).toMatch(/^agentic-cursor-/);
-    });
-
-    it('should derive a color from the name when none is given', () => {
-      const cursor = manager.add({ name: 'Planner' });
-      expect(cursor.color).toMatch(/^hsl\(/);
+      expect(cursor).toMatchObject({ id: 'planner', name: 'Planner', color: '#ff0000', visible: true });
     });
 
     it('should attach immediately when the initial position is an object', () => {
       objects.set('a', createObject('a', 0, 0, 100, 50));
-      const cursor = manager.add({ position: { objectId: 'a', anchor: 'bottom-right' } });
+      const cursor = addCursor({ position: { objectId: 'a', anchor: 'bottom-right' } });
       expect(cursor.position).toEqual({ x: 100, y: 50 });
       expect(cursor.attachedTo).toEqual({ objectId: 'a', anchor: 'bottom-right', offset: { x: 0, y: 0 } });
     });
 
     it('should throw for duplicate ids and missing objects', () => {
-      manager.add({ id: 'one' });
-      expect(() => manager.add({ id: 'one' })).toThrow();
-      expect(() => manager.add({ position: { objectId: 'missing' } })).toThrow();
+      addCursor({ id: 'one' });
+      expect(() => addCursor({ id: 'one' })).toThrow();
+      expect(() => addCursor({ position: { objectId: 'missing' } })).toThrow();
     });
   });
 
@@ -101,13 +109,13 @@ describe('KritzelAgenticCursorManager', () => {
 
     it('should move above a shown titlebar, where the rotate action grabs it as well', () => {
       objects.set('a', createObject('a', 0, 0, 100, 50));
-      const getRotationHandleLift = jest.fn(() => 34);
-      core.objectTitlebarManager = { isEnabled: true, getRotationHandleLift };
+      const getRotationHandleDistance = jest.fn(() => 15 + 34);
+      core.objectTitlebarManager = { getRotationHandleDistance };
       state.scale = 2;
 
       expect(manager.getRotationHandle('a')!.handle).toEqual({ x: 50, y: -24.5 });
       expect(manager.getRotationHandleTarget('a').offset).toEqual({ x: 0, y: -24.5 });
-      expect(getRotationHandleLift).toHaveBeenCalledWith(objects.get('a'));
+      expect(getRotationHandleDistance).toHaveBeenCalledWith(objects.get('a'));
     });
 
     it('should have no handle for a missing object', () => {
@@ -118,7 +126,7 @@ describe('KritzelAgenticCursorManager', () => {
 
   describe('move', () => {
     it('should animate to a world point and resolve when done', async () => {
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
       const promise = manager.move(cursor.id, { x: 100, y: 0 }, { duration: 100, easing: 'linear' });
 
       manager.tick(1050);
@@ -132,7 +140,7 @@ describe('KritzelAgenticCursorManager', () => {
     });
 
     it('should derive the duration from the screen distance and clamp it', async () => {
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
       const short = manager.move(cursor.id, { x: 1, y: 0 }, { easing: 'linear' });
       manager.tick(1000 + AGENTIC_CURSOR_MIN_DURATION - 1);
       expect(manager.get(cursor.id)!.isMoving).toBe(true);
@@ -145,7 +153,7 @@ describe('KritzelAgenticCursorManager', () => {
     });
 
     it('should resolve an interrupted move with completed: false and continue from the current position', async () => {
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
       const first = manager.move(cursor.id, { x: 100, y: 0 }, { duration: 100, easing: 'linear' });
       manager.tick(1050);
 
@@ -163,7 +171,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should attach to an object on arrival and follow it', async () => {
       const object = createObject('a', 0, 0, 100, 100);
       objects.set('a', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
       const promise = manager.move(cursor.id, { objectId: 'a', anchor: 'top-right' }, { duration: 100 });
       manager.tick(1100);
       await promise;
@@ -176,7 +184,7 @@ describe('KritzelAgenticCursorManager', () => {
 
     it('should not attach when attach is false', async () => {
       objects.set('a', createObject('a', 0, 0, 100, 100));
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
       const promise = manager.move(cursor.id, { objectId: 'a' }, { duration: 0, attach: false });
       manager.tick(1000);
       await promise;
@@ -185,7 +193,7 @@ describe('KritzelAgenticCursorManager', () => {
     });
 
     it('should reject for unknown cursors and objects', async () => {
-      const cursor = manager.add();
+      const cursor = addCursor();
       expect(() => manager.move('missing', { x: 0, y: 0 })).toThrow();
       expect(() => manager.move(cursor.id, { objectId: 'missing' })).toThrow();
       // A cursor never goes to NaN, where it would stay.
@@ -198,7 +206,7 @@ describe('KritzelAgenticCursorManager', () => {
   describe('detaching', () => {
     it('should detach and keep the last position when the attached object is removed', () => {
       objects.set('a', createObject('a', 0, 0, 100, 100));
-      const cursor = manager.add({ position: { objectId: 'a' } });
+      const cursor = addCursor({ position: { objectId: 'a' } });
       const listener = jest.fn();
       manager.onDetached(listener);
 
@@ -212,7 +220,7 @@ describe('KritzelAgenticCursorManager', () => {
 
     it('should resolve a move with completed: false when the target object is removed mid-flight', async () => {
       objects.set('a', createObject('a', 100, 0, 100, 100));
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
       const listener = jest.fn();
       manager.onDetached(listener);
       const promise = manager.move(cursor.id, { objectId: 'a' }, { duration: 100 });
@@ -226,7 +234,7 @@ describe('KritzelAgenticCursorManager', () => {
 
     it('should emit a manual detach event', () => {
       objects.set('a', createObject('a', 0, 0, 100, 100));
-      const cursor = manager.add({ position: { objectId: 'a' } });
+      const cursor = addCursor({ position: { objectId: 'a' } });
       const listener = jest.fn();
       manager.onDetached(listener);
       manager.detach(cursor.id);
@@ -235,28 +243,32 @@ describe('KritzelAgenticCursorManager', () => {
     });
   });
 
-  describe('update and remove', () => {
-    it('should update style properties and clear the status', () => {
-      const cursor = manager.add({ name: 'A', status: 'Thinking' });
+  describe('appearance and remove', () => {
+    it('should read its appearance from the owner and notify on refresh', () => {
+      const look = appearance({ name: 'A', status: 'Thinking' });
+      const cursor = addCursor({ appearance: look });
+      expect(cursor).toMatchObject({ name: 'A', status: 'Thinking' });
+
       const listener = jest.fn();
       manager.onChange(listener);
-      const updated = manager.update(cursor.id, { name: 'B', color: 'red', status: null, visible: false });
-      expect(updated).toMatchObject({ name: 'B', color: 'red', status: undefined, visible: false });
-      expect(listener).toHaveBeenCalled();
+      Object.assign(look, { name: 'B', color: 'red', status: null, visible: false });
+      manager.refresh(cursor.id);
+      expect(listener).toHaveBeenCalledWith(cursor.id);
+      expect(manager.get(cursor.id)).toMatchObject({ name: 'B', color: 'red', status: undefined, visible: false });
     });
 
     it('should resolve a pending move when the cursor is removed', async () => {
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
       const promise = manager.move(cursor.id, { x: 100, y: 0 }, { duration: 100 });
       expect(manager.remove(cursor.id)).toBe(true);
       await expect(promise).resolves.toEqual({ completed: false });
-      expect(manager.count).toBe(0);
+      expect(manager.get(cursor.id)).toBeNull();
     });
   });
 
   describe('action support', () => {
     it('should include the action fields in snapshots', () => {
-      const cursor = manager.add({ id: 'a' });
+      const cursor = addCursor({ id: 'a' });
       expect(cursor).toMatchObject({
         selectedObjectIds: [],
         isPressed: false,
@@ -271,7 +283,7 @@ describe('KritzelAgenticCursorManager', () => {
     });
 
     it('should count host moves but not action flights', () => {
-      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      addCursor({ id: 'a', position: { x: 0, y: 0 } });
       void manager.fly('a', { x: 10, y: 0 });
       expect(manager.getHostMoveGeneration('a')).toBe(0);
       void manager.move('a', { x: 20, y: 0 });
@@ -279,7 +291,7 @@ describe('KritzelAgenticCursorManager', () => {
     });
 
     it('should stop an animation and resolve it with completed: false', async () => {
-      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      addCursor({ id: 'a', position: { x: 0, y: 0 } });
       const promise = manager.fly('a', { x: 100, y: 0 }, { duration: 100 });
       manager.stopAnimation('a');
       await expect(promise).resolves.toEqual({ completed: false });
@@ -288,7 +300,7 @@ describe('KritzelAgenticCursorManager', () => {
 
     it('should set the position immediately, cancelling animations and attachments', async () => {
       objects.set('o', createObject('o', 0, 0, 10, 10));
-      manager.add({ id: 'a', position: { objectId: 'o' } });
+      addCursor({ id: 'a', position: { objectId: 'o' } });
       const promise = manager.fly('a', { x: 100, y: 0 }, { duration: 100 });
       manager.setPosition('a', { x: 7, y: 8 });
       await expect(promise).resolves.toEqual({ completed: false });
@@ -297,13 +309,13 @@ describe('KritzelAgenticCursorManager', () => {
 
     it('should attach to an object anchor immediately', () => {
       objects.set('o', createObject('o', 0, 0, 100, 50));
-      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      addCursor({ id: 'a', position: { x: 0, y: 0 } });
       manager.attach('a', { objectId: 'o', anchor: 'right' });
       expect(manager.get('a')).toMatchObject({ position: { x: 100, y: 25 }, attachedTo: { objectId: 'o', anchor: 'right' } });
     });
 
     it('should count presses', () => {
-      manager.add({ id: 'a' });
+      addCursor({ id: 'a' });
       manager.setPressed('a', true);
       manager.setPressed('a', true);
       manager.setPressed('a', false);
@@ -312,7 +324,7 @@ describe('KritzelAgenticCursorManager', () => {
     });
 
     it('should only emit changes when selection or activity actually change', () => {
-      manager.add({ id: 'a' });
+      addCursor({ id: 'a' });
       const listener = jest.fn();
       manager.onChange(listener);
       manager.setSelectedObjectIds('a', ['x']);
@@ -324,7 +336,7 @@ describe('KritzelAgenticCursorManager', () => {
     });
 
     it('should call before-frame listeners before advancing animations', () => {
-      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      addCursor({ id: 'a', position: { x: 0, y: 0 } });
       void manager.fly('a', { x: 100, y: 0 }, { duration: 100, easing: 'linear' });
       const positions: number[] = [];
       manager.onBeforeFrame(t => positions.push(t, manager.get('a')!.position.x));
@@ -333,20 +345,20 @@ describe('KritzelAgenticCursorManager', () => {
       expect(manager.get('a')!.position.x).toBe(50);
     });
 
-    it('should notify removal from remove() and clear()', () => {
-      manager.add({ id: 'a' });
-      manager.add({ id: 'b' });
-      manager.add({ id: 'c' });
+    it('should notify removal from remove()', () => {
+      addCursor({ id: 'a' });
+      addCursor({ id: 'b' });
       const removed: string[] = [];
       manager.onRemoved(id => removed.push(id));
       manager.remove('a');
-      manager.clear();
-      expect(removed).toEqual(['a', 'b', 'c']);
+      manager.remove('b');
+      expect(manager.remove('a')).toBe(false);
+      expect(removed).toEqual(['a', 'b']);
     });
 
     it('should isolate listener errors', () => {
       const error = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-      manager.add({ id: 'a' });
+      addCursor({ id: 'a' });
       const good = jest.fn();
       manager.onFrame(() => {
         throw new Error('boom');
@@ -369,14 +381,14 @@ describe('KritzelAgenticCursorManager', () => {
       (globalThis as any).requestAnimationFrame = raf;
       (globalThis as any).cancelAnimationFrame = jest.fn();
       try {
-        manager.add({ id: 'a' });
+        addCursor({ id: 'a' });
         jest.spyOn(manager, 'tick').mockImplementationOnce(() => {
           throw new Error('boom');
         });
         expect(() => scheduled!(1016)).toThrow('boom');
         expect(raf).toHaveBeenCalledTimes(2);
       } finally {
-        manager.clear();
+        manager.cleanup();
         delete (globalThis as any).requestAnimationFrame;
         delete (globalThis as any).cancelAnimationFrame;
       }
@@ -442,7 +454,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should move to an element, attach to it and follow it', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 20, y: 40, width: 40, height: 20 } });
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       const promise = manager.move(cursor.id, { objectId: 'frame', selector: '#run' }, { duration: 100, easing: 'linear' });
       expect(object.trackElement).toHaveBeenCalledWith('#run');
@@ -465,7 +477,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should stop tracking when the cursor arrives without attaching', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 20, y: 40, width: 40, height: 20 } });
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       const promise = manager.move(cursor.id, { objectId: 'frame', selector: '#run' }, { duration: 0, attach: false });
       await flush();
@@ -480,7 +492,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should reject when the element does not exist and release it', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, {});
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       await expect(manager.move(cursor.id, { objectId: 'frame', selector: '#missing' })).rejects.toThrow('Element "#missing" not found in object "frame".');
       expect(object.tracked.size).toBe(0);
@@ -490,7 +502,7 @@ describe('KritzelAgenticCursorManager', () => {
       const object = createElementObject('frame', 0, 0, 200, 200, {});
       object.queryElements.mockResolvedValueOnce([{ selector: '#hidden', tagName: 'button', classList: [], attributes: {}, rect: { x: 0, y: 0, width: 0, height: 0 } } as any]);
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       await expect(manager.move(cursor.id, { objectId: 'frame', selector: '#hidden' })).rejects.toThrow('Element "#hidden" in object "frame" is not visible.');
       expect(object.tracked.size).toBe(0);
@@ -500,7 +512,7 @@ describe('KritzelAgenticCursorManager', () => {
       const object = createElementObject('frame', 0, 0, 200, 200, {});
       object.queryElements.mockRejectedValueOnce(new Error('not mounted'));
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       await expect(manager.move(cursor.id, { objectId: 'frame', selector: '#run' })).rejects.toThrow('not mounted');
       expect(object.tracked.size).toBe(0);
@@ -509,18 +521,18 @@ describe('KritzelAgenticCursorManager', () => {
     it('should throw for objects without elements, missing objects and empty selectors', () => {
       objects.set('plain', createObject('plain', 0, 0, 10, 10));
       objects.set('frame', createElementObject('frame', 0, 0, 10, 10, {}));
-      const cursor = manager.add();
+      const cursor = addCursor();
 
       expect(() => manager.move(cursor.id, { objectId: 'plain', selector: '#run' })).toThrow('has no elements');
       expect(() => manager.move(cursor.id, { objectId: 'missing', selector: '#run' })).toThrow('not found');
       expect(() => manager.move(cursor.id, { objectId: 'frame', selector: ' ' })).toThrow('non-empty selector');
-      expect(() => manager.add({ position: { objectId: 'plain', selector: '#run' } })).toThrow('has no elements');
+      expect(() => addCursor({ position: { objectId: 'plain', selector: '#run' } })).toThrow('has no elements');
     });
 
     it('should resolve a superseded element move with completed: false without releasing the newer target', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 0, y: 0, width: 10, height: 10 }, '#stop': { x: 50, y: 50, width: 10, height: 10 } });
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       const first = manager.move(cursor.id, { objectId: 'frame', selector: '#run' }, { duration: 100 });
       const second = manager.move(cursor.id, { objectId: 'frame', selector: '#stop' }, { duration: 100 });
@@ -536,7 +548,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should resolve with completed: false when the cursor is removed while the element is looked up', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 0, y: 0, width: 10, height: 10 } });
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       const promise = manager.move(cursor.id, { objectId: 'frame', selector: '#run' });
       manager.remove(cursor.id);
@@ -551,7 +563,7 @@ describe('KritzelAgenticCursorManager', () => {
       let failLookup: (error: Error) => void = () => undefined;
       object.queryElements.mockImplementationOnce(() => new Promise((_resolve, reject) => { failLookup = reject; }));
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       const first = manager.move(cursor.id, { objectId: 'frame', selector: '#run' });
       const second = manager.move(cursor.id, { x: 10, y: 0 }, { duration: 0 });
@@ -567,7 +579,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should keep the current move and attachment when an element move fails', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 20, y: 40, width: 40, height: 20 } });
       objects.set('frame', object);
-      const cursor = manager.add({ position: { objectId: 'frame', selector: '#run' } });
+      const cursor = addCursor({ position: { objectId: 'frame', selector: '#run' } });
       object.queryElements.mockRejectedValueOnce(new Error('Object "frame" is not mounted.'));
 
       await expect(manager.move(cursor.id, { objectId: 'frame', selector: '#run' })).rejects.toThrow('is not mounted');
@@ -579,7 +591,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should resolve element moves that are still looking up their element on cleanup', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 0, y: 0, width: 10, height: 10 } });
       objects.set('frame', object);
-      const cursor = manager.add({ position: { x: 0, y: 0 } });
+      const cursor = addCursor({ position: { x: 0, y: 0 } });
 
       const promise = manager.move(cursor.id, { objectId: 'frame', selector: '#run' });
       manager.cleanup();
@@ -590,11 +602,11 @@ describe('KritzelAgenticCursorManager', () => {
       expect(object.tracked.size).toBe(0);
     });
 
-    it('should release an element when the cursor moves elsewhere or all cursors are cleared', async () => {
+    it('should release an element when the cursor moves elsewhere or is removed', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 0, y: 0, width: 10, height: 10 } });
       objects.set('frame', object);
-      const first = manager.add({ position: { objectId: 'frame', selector: '#run' } });
-      manager.add({ position: { objectId: 'frame', selector: '#run' } });
+      const first = addCursor({ position: { objectId: 'frame', selector: '#run' } });
+      const second = addCursor({ position: { objectId: 'frame', selector: '#run' } });
       expect(object.tracked.get('#run')).toBe(2);
 
       const promise = manager.move(first.id, { x: 0, y: 0 }, { duration: 0 });
@@ -602,7 +614,7 @@ describe('KritzelAgenticCursorManager', () => {
       await promise;
       expect(object.tracked.get('#run')).toBe(1);
 
-      manager.clear();
+      manager.remove(second.id);
       expect(object.tracked.size).toBe(0);
     });
 
@@ -610,7 +622,7 @@ describe('KritzelAgenticCursorManager', () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 20, y: 40, width: 40, height: 20 } });
       objects.set('frame', object);
 
-      const cursor = manager.add({ position: { objectId: 'frame', selector: '#run', anchor: 'top-left' } });
+      const cursor = addCursor({ position: { objectId: 'frame', selector: '#run', anchor: 'top-left' } });
 
       expect(cursor.position).toEqual({ x: 10, y: 20 });
       expect(cursor.attachedTo).toEqual({ objectId: 'frame', selector: '#run', anchor: 'top-left', offset: { x: 0, y: 0 } });
@@ -619,7 +631,7 @@ describe('KritzelAgenticCursorManager', () => {
 
     it('should detach when the object of the element is removed', () => {
       objects.set('frame', createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 0, y: 0, width: 10, height: 10 } }));
-      const cursor = manager.add({ position: { objectId: 'frame', selector: '#run' } });
+      const cursor = addCursor({ position: { objectId: 'frame', selector: '#run' } });
       const listener = jest.fn();
       manager.onDetached(listener);
 
@@ -633,7 +645,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should count an element move as a host move as soon as it is called', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, {});
       objects.set('frame', object);
-      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      addCursor({ id: 'a', position: { x: 0, y: 0 } });
 
       expect(() => manager.move('a', { objectId: 'frame', selector: '' })).toThrow('non-empty selector');
       expect(manager.getHostMoveGeneration('a')).toBe(0);
@@ -647,7 +659,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should stop the flight of an action right away but keep a host move until the element is found', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 20, y: 40, width: 40, height: 20 } });
       objects.set('frame', object);
-      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      addCursor({ id: 'a', position: { x: 0, y: 0 } });
 
       const flight = manager.fly('a', { x: 100, y: 0 }, { duration: 100 });
       const toElement = manager.move('a', { objectId: 'frame', selector: '#run' }, { duration: 0 });
@@ -668,7 +680,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should let an action take over while an element is looked up', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 0, y: 0, width: 10, height: 10 } });
       objects.set('frame', object);
-      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      addCursor({ id: 'a', position: { x: 0, y: 0 } });
 
       const promise = manager.move('a', { objectId: 'frame', selector: '#run' });
       manager.stopAnimation('a');
@@ -682,7 +694,7 @@ describe('KritzelAgenticCursorManager', () => {
     it('should release the element when an animation to it is stopped', async () => {
       const object = createElementObject('frame', 0, 0, 200, 200, { '#run': { x: 0, y: 0, width: 10, height: 10 } });
       objects.set('frame', object);
-      manager.add({ id: 'a', position: { x: 0, y: 0 } });
+      addCursor({ id: 'a', position: { x: 0, y: 0 } });
 
       const promise = manager.move('a', { objectId: 'frame', selector: '#run' }, { duration: 100 });
       await flush();
@@ -695,7 +707,7 @@ describe('KritzelAgenticCursorManager', () => {
 
     it('should refuse element targets for action flights', () => {
       objects.set('frame', createElementObject('frame', 0, 0, 200, 200, {}));
-      manager.add({ id: 'a' });
+      addCursor({ id: 'a' });
       expect(() => manager.fly('a', { objectId: 'frame', selector: '#run' })).toThrow('Actions cannot target elements');
     });
 
@@ -704,11 +716,11 @@ describe('KritzelAgenticCursorManager', () => {
       objects.set('frame', object);
       objects.set('o', createObject('o', 0, 0, 10, 10));
 
-      manager.add({ id: 'a', position: { objectId: 'frame', selector: '#run' } });
+      addCursor({ id: 'a', position: { objectId: 'frame', selector: '#run' } });
       manager.setPosition('a', { x: 5, y: 5 });
       expect(object.tracked.size).toBe(0);
 
-      manager.add({ id: 'b', position: { objectId: 'frame', selector: '#run' } });
+      addCursor({ id: 'b', position: { objectId: 'frame', selector: '#run' } });
       manager.attach('b', { objectId: 'o', anchor: 'right' });
       expect(object.tracked.size).toBe(0);
       expect(manager.get('b')!.attachedTo).toEqual({ objectId: 'o', anchor: 'right', offset: { x: 0, y: 0 } });

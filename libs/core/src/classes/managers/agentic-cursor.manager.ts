@@ -8,24 +8,23 @@ import {
   KritzelAgenticMoveResult,
   KritzelAgenticObjectTarget,
   KritzelAgenticCursorOptions,
-  KritzelAgenticCursorPatch,
+  KritzelAgenticCursorAppearance,
   KritzelAgenticRotationHandle,
   KritzelAgenticTarget,
 } from '../../interfaces/agentic-cursor.interface';
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import type { KritzelBaseObject } from '../objects/base-object.class';
-import { AGENTIC_ACTION_ROTATION_HANDLE_PX } from '../../executors/agentic-action.types';
+import { KRITZEL_ROTATION_HANDLE_DISTANCE } from '../../constants/engine.constants';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelElementAwareObject } from '../../interfaces/object-element.interface';
 import { KritzelEasingHelper } from '../../helpers/easing.helper';
-import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor, KritzelAnchorableGeometry, resolveObjectAnchor } from '../../helpers/agentic-geometry.helper';
+import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor, isElementTarget, isObjectTarget, KritzelAnchorableGeometry, resolveObjectAnchor } from '../../helpers/agentic-geometry.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 
 export const AGENTIC_CURSOR_DEFAULT_SPEED = 1200;
 export const AGENTIC_CURSOR_MIN_DURATION = 250;
 export const AGENTIC_CURSOR_MAX_DURATION = 1200;
-const DEFAULT_COLOR = '#6B7280';
 
 interface AgenticCursorAnimation {
   from: KritzelPoint;
@@ -46,10 +45,7 @@ interface AgenticCursorTrackedElement {
 
 interface AgenticCursorEntry {
   id: string;
-  name?: string;
-  color: string;
-  status?: string;
-  visible: boolean;
+  appearance: KritzelAgenticCursorAppearance;
   position: KritzelPoint;
   attachedTo: KritzelAgenticAttachment | null;
   animation: AgenticCursorAnimation | null;
@@ -93,19 +89,14 @@ export class KritzelAgenticCursorManager {
   private readonly _detachedListeners = new Set<(event: KritzelAgenticCursorDetachedEvent) => void>();
   private _historyProvider: KritzelAgenticCursorHistoryProvider | null = null;
   private _rafId: number | null = null;
-  private _idCounter = 0;
 
   constructor(core: KritzelCore) {
     this._core = core;
   }
 
-  get count(): number {
-    return this._cursors.size;
-  }
-
-  /** Creates a new agentic cursor. Throws if a cursor with the same ID exists. */
-  add(options: KritzelAgenticCursorOptions = {}): KritzelAgenticCursor {
-    const id = options.id ?? this.generateId();
+  /** Creates the cursor of an agent. Throws if a cursor with the same ID exists. */
+  add(options: KritzelAgenticCursorOptions): KritzelAgenticCursor {
+    const id = options.id;
     if (this._cursors.has(id)) {
       throw new Error(`Agentic cursor "${id}" already exists.`);
     }
@@ -114,7 +105,7 @@ export class KritzelAgenticCursorManager {
     let attachedTo: KritzelAgenticAttachment | null = null;
     let trackedElement: AgenticCursorTrackedElement | null = null;
     if (options.position) {
-      if (this.isElementTarget(options.position)) {
+      if (isElementTarget(options.position)) {
         // Tracked before resolving, so an element the object already knows is used right away. Until the
         // content reports the element, the cursor sits at the center of the object.
         this.validateElementTarget(options.position).trackElement(options.position.selector);
@@ -126,17 +117,14 @@ export class KritzelAgenticCursorManager {
         if (trackedElement) this.untrack(trackedElement);
         throw error;
       }
-      if (this.isObjectTarget(options.position)) {
+      if (isObjectTarget(options.position)) {
         attachedTo = this.toAttachment(options.position);
       }
     }
 
     const entry: AgenticCursorEntry = {
       id,
-      name: options.name,
-      color: options.color || (options.name ? KritzelUserColorHelper.generateColorFromName(options.name) : DEFAULT_COLOR),
-      status: options.status || undefined,
-      visible: options.visible ?? true,
+      appearance: options.appearance,
       position,
       attachedTo,
       animation: null,
@@ -157,17 +145,6 @@ export class KritzelAgenticCursorManager {
     return this.toSnapshot(entry);
   }
 
-  /** Updates name, color, status or visibility of a cursor. */
-  update(id: string, patch: KritzelAgenticCursorPatch): KritzelAgenticCursor {
-    const entry = this.getEntryOrThrow(id);
-    if (patch.name !== undefined) entry.name = patch.name;
-    if (patch.color !== undefined) entry.color = patch.color;
-    if (patch.status !== undefined) entry.status = patch.status || undefined;
-    if (patch.visible !== undefined) entry.visible = patch.visible;
-    this.emitChange(id);
-    return this.toSnapshot(entry);
-  }
-
   /**
    * Animates a cursor to a world point, an object anchor or an element inside an object.
    * Resolves when the animation ends. An interrupted move resolves with `completed: false`.
@@ -178,7 +155,7 @@ export class KritzelAgenticCursorManager {
    */
   move(id: string, target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
     const entry = this.getEntryOrThrow(id);
-    if (this.isElementTarget(target)) {
+    if (isElementTarget(target)) {
       return this.moveToElement(entry, target, options);
     }
 
@@ -197,7 +174,7 @@ export class KritzelAgenticCursorManager {
    */
   fly(id: string, target: KritzelAgenticTarget, options: KritzelAgenticMoveOptions = {}): Promise<KritzelAgenticMoveResult> {
     const entry = this.getEntryOrThrow(id);
-    if (this.isElementTarget(target)) {
+    if (isElementTarget(target)) {
       throw new Error('Invalid agentic cursor target. Actions cannot target elements inside objects.');
     }
     const destination = this.resolveTargetOrThrow(target);
@@ -308,21 +285,6 @@ export class KritzelAgenticCursorManager {
     return true;
   }
 
-  /** Removes all cursors. */
-  clear(): void {
-    if (this._cursors.size === 0) return;
-    const ids = Array.from(this._cursors.keys());
-    this._cursors.forEach(entry => {
-      this.supersede(entry);
-      this.finishAnimation(entry, false);
-      this.setTrackedElement(entry, null);
-    });
-    this._cursors.clear();
-    this.emitChange();
-    this.stopLoop();
-    ids.forEach(id => this.emitRemoved(id));
-  }
-
   get(id: string): KritzelAgenticCursor | null {
     const entry = this._cursors.get(id);
     return entry ? this.toSnapshot(entry) : null;
@@ -374,8 +336,8 @@ export class KritzelAgenticCursorManager {
    * Advances animations and attachments to the given timestamp.
    * Called by the internal animation loop; public for testing.
    */
-  tick(now: number = this.now()): void {
-    this._beforeFrameListeners.forEach(listener => this.safeCall(() => listener(now)));
+  tick(now: number = performance.now()): void {
+    this._beforeFrameListeners.forEach(listener => KritzelEventHelper.callListener(() => listener(now), 'Agentic cursor listener'));
 
     let structuralChange = false;
 
@@ -404,7 +366,7 @@ export class KritzelAgenticCursorManager {
         if (progress >= 1) {
           entry.position = destination;
           entry.animation = null;
-          if (animation.attach && this.isObjectTarget(animation.target)) {
+          if (animation.attach && isObjectTarget(animation.target)) {
             entry.attachedTo = this.toAttachment(animation.target);
           } else {
             this.setTrackedElement(entry, null);
@@ -430,7 +392,7 @@ export class KritzelAgenticCursorManager {
     });
 
     if (structuralChange) this.emitChange();
-    this._frameListeners.forEach(listener => this.safeCall(listener));
+    this._frameListeners.forEach(listener => KritzelEventHelper.callListener(listener, 'Agentic cursor listener'));
   }
 
   /**
@@ -439,14 +401,14 @@ export class KritzelAgenticCursorManager {
    * center of its object while the element hasn't been reported yet.
    */
   resolveTarget(target: KritzelAgenticTarget): KritzelPoint | null {
-    if (!this.isObjectTarget(target)) {
+    if (!isObjectTarget(target)) {
       return { x: target.x, y: target.y };
     }
 
     const object = this._core.store.objects?.findById(target.objectId);
     if (!object) return null;
 
-    if (this.isElementTarget(target)) {
+    if (isElementTarget(target)) {
       return this.resolveElementTarget(object, target);
     }
     return resolveObjectAnchor(object, target.anchor ?? 'center', target.offset);
@@ -473,17 +435,17 @@ export class KritzelAgenticCursorManager {
 
   /** World distance of the rotation handle above the top edge, for the current zoom. */
   private getRotationHandleDistance(object: KritzelBaseObject<any> | null | undefined): number {
-    const titlebars = this._core.objectTitlebarManager;
-    const lift = object && titlebars?.isEnabled ? titlebars.getRotationHandleLift(object) : 0;
-    return (AGENTIC_ACTION_ROTATION_HANDLE_PX + lift) / (this._core.store.state.scale || 1);
+    const distance = object ? this._core.objectTitlebarManager.getRotationHandleDistance(object) : KRITZEL_ROTATION_HANDLE_DISTANCE;
+    return distance / (this._core.store.state.scale || 1);
   }
 
   /**
-   * Notifies the change listeners about all cursors, e.g. after a workspace switch dropped the agents'
-   * histories, so that `canUndo` and `canRedo` are read again. @internal
+   * Notifies the change listeners about one cursor, e.g. after its agent changed how it looks, or about all
+   * cursors, e.g. after a workspace switch dropped the agents' histories, so that `canUndo` and `canRedo` are
+   * read again. @internal
    */
-  refresh(): void {
-    this.emitChange();
+  refresh(id?: string): void {
+    this.emitChange(id);
   }
 
   /** Stops the animation loop and resolves pending moves. Cursors are kept. */
@@ -522,7 +484,7 @@ export class KritzelAgenticCursorManager {
       entry.animation = {
         from: { ...entry.position },
         target,
-        startTime: this.now(),
+        startTime: performance.now(),
         duration: Math.max(0, duration),
         easing: KritzelEasingHelper.resolve(options.easing),
         attach: options.attach ?? true,
@@ -678,7 +640,7 @@ export class KritzelAgenticCursorManager {
   }
 
   private toTrackedElement(target: KritzelAgenticTarget): AgenticCursorTrackedElement | null {
-    return this.isElementTarget(target) ? { objectId: target.objectId, selector: target.selector } : null;
+    return isElementTarget(target) ? { objectId: target.objectId, selector: target.selector } : null;
   }
 
   private computeDuration(from: KritzelPoint, to: KritzelPoint, speed: number = AGENTIC_CURSOR_DEFAULT_SPEED): number {
@@ -705,28 +667,20 @@ export class KritzelAgenticCursorManager {
     };
   }
 
-  private isObjectTarget(target: KritzelAgenticTarget): target is KritzelAgenticObjectTarget | KritzelAgenticElementTarget {
-    return typeof (target as KritzelAgenticObjectTarget).objectId === 'string';
-  }
-
-  private isElementTarget(target: KritzelAgenticTarget): target is KritzelAgenticElementTarget {
-    return this.isObjectTarget(target) && typeof (target as KritzelAgenticElementTarget).selector === 'string';
-  }
-
   private toAttachment(target: KritzelAgenticObjectTarget | KritzelAgenticElementTarget): KritzelAgenticAttachment {
     const attachment: KritzelAgenticAttachment = {
       objectId: target.objectId,
       anchor: target.anchor ?? 'center',
       offset: { x: target.offset?.x ?? 0, y: target.offset?.y ?? 0 },
     };
-    if (this.isElementTarget(target)) {
+    if (isElementTarget(target)) {
       attachment.selector = target.selector;
     }
     return attachment;
   }
 
   private resolveTargetOrThrow(target: KritzelAgenticTarget): KritzelPoint {
-    if (!target || (!this.isObjectTarget(target) && (!Number.isFinite(target.x) || !Number.isFinite(target.y)))) {
+    if (!target || (!isObjectTarget(target) && (!Number.isFinite(target.x) || !Number.isFinite(target.y)))) {
       throw new Error('Invalid agentic cursor target. Expected { x, y } with finite numbers, { objectId } or { objectId, selector }.');
     }
     const point = this.resolveTarget(target);
@@ -752,10 +706,10 @@ export class KritzelAgenticCursorManager {
     const history = this._historyProvider?.(entry.id) ?? { canUndo: false, canRedo: false };
     return {
       id: entry.id,
-      name: entry.name,
-      color: entry.color,
-      status: entry.status,
-      visible: entry.visible,
+      name: entry.appearance.name,
+      color: entry.appearance.color,
+      status: entry.appearance.status || undefined,
+      visible: entry.appearance.visible,
       position: { ...entry.position },
       attachedTo: entry.attachedTo ? { ...entry.attachedTo, offset: { ...entry.attachedTo.offset } } : null,
       isMoving: entry.animation !== null,
@@ -769,38 +723,19 @@ export class KritzelAgenticCursorManager {
     };
   }
 
-  private generateId(): string {
-    let id: string;
-    do {
-      id = `agentic-cursor-${++this._idCounter}`;
-    } while (this._cursors.has(id));
-    return id;
-  }
-
   private emitChange(id?: string): void {
-    this._changeListeners.forEach(listener => this.safeCall(() => listener(id)));
+    this._changeListeners.forEach(listener => KritzelEventHelper.callListener(() => listener(id), 'Agentic cursor listener'));
   }
 
   private emitDetached(event: KritzelAgenticCursorDetachedEvent): void {
-    this._detachedListeners.forEach(listener => this.safeCall(() => listener(event)));
+    this._detachedListeners.forEach(listener => KritzelEventHelper.callListener(() => listener(event), 'Agentic cursor listener'));
   }
 
   private emitRemoved(id: string): void {
-    this._removedListeners.forEach(listener => this.safeCall(() => listener(id)));
+    this._removedListeners.forEach(listener => KritzelEventHelper.callListener(() => listener(id), 'Agentic cursor listener'));
   }
 
   /** Runs a listener so that one failing listener never stops the others or the frame loop. */
-  private safeCall(fn: () => void): void {
-    try {
-      fn();
-    } catch (error) {
-      console.error('[Kritzel] Agentic cursor listener failed:', error);
-    }
-  }
-
-  private now(): number {
-    return typeof performance !== 'undefined' ? performance.now() : Date.now();
-  }
 
   private ensureLoop(): void {
     if (this._rafId !== null || this._cursors.size === 0 || typeof requestAnimationFrame !== 'function') return;

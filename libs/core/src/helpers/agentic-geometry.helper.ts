@@ -1,4 +1,4 @@
-import type { KritzelAgenticAnchor } from '../interfaces/agentic-cursor.interface';
+import type { KritzelAgenticAnchor, KritzelAgenticElementTarget, KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../interfaces/agentic-cursor.interface';
 import type { KritzelPoint } from '../interfaces/point.interface';
 import type { KritzelBoundingBox } from '../interfaces/bounding-box.interface';
 
@@ -25,6 +25,16 @@ export interface KritzelAnchorableGeometry {
  * Resolves an anchor (plus an offset in the object's local, unrotated space) to a world point.
  * The anchor rotates with the object around its center.
  */
+/** Whether a target refers to an object: `{ objectId }`, or `{ objectId, selector }` for an element inside it. */
+export function isObjectTarget(target: KritzelAgenticTarget): target is KritzelAgenticObjectTarget | KritzelAgenticElementTarget {
+  return typeof (target as { objectId?: unknown }).objectId === 'string';
+}
+
+/** Whether a target points at an element inside an object (`{ objectId, selector }`). */
+export function isElementTarget(target: KritzelAgenticTarget): target is KritzelAgenticElementTarget {
+  return isObjectTarget(target) && typeof (target as { selector?: unknown }).selector === 'string';
+}
+
 /** Whether `value` is one of the anchors (an own key of the anchor table, never an inherited one). */
 export function isAgenticAnchor(value: unknown): value is KritzelAgenticAnchor {
   return typeof value === 'string' && Object.prototype.hasOwnProperty.call(AGENTIC_ANCHOR_FACTORS, value);

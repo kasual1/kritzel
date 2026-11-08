@@ -24,7 +24,7 @@ export class KritzelAgentBroadcaster {
   private _lastSentAt = -Infinity;
   private _timer: ReturnType<typeof setTimeout> | null = null;
   private _dirty = false;
-  private _unsubscribers: (() => void)[] = [];
+  private _started = false;
 
   constructor(core: KritzelCore) {
     this._core = core;
@@ -32,28 +32,15 @@ export class KritzelAgentBroadcaster {
 
   /** Starts listening to the agents. Called once by the core. @internal */
   start(): void {
-    if (this._unsubscribers.length > 0) {
+    if (this._started) {
       return;
     }
-    this._unsubscribers = [
-      // Added, removed, renamed, recolored, hidden, broadcast toggled: send at once. Any other change of an
-      // agent (status, activity, selection, history) follows the throttle.
-      this._core.agentManager.onChange(() => (structureOf(this.buildPayload()) !== this._lastStructure ? this.flush() : this.schedule())),
-      this._core.agenticCursorManager.onChange(() => this.schedule()),
-      this._core.agenticCursorManager.onFrame(() => this.schedule()),
-    ];
-  }
-
-  /**
-   * Sends the current agents. Without `immediate`, waits for the throttle; with it, sends now.
-   * Called after every workspace switch, because each workspace has its own awareness.
-   */
-  publish(immediate = false): void {
-    if (immediate) {
-      this.flush();
-    } else {
-      this.schedule();
-    }
+    this._started = true;
+    // Added, removed, renamed, recolored, hidden, broadcast toggled: send at once. Any other change of an
+    // agent (status, activity, selection, history) follows the throttle.
+    this._core.agentManager.onChange(() => (structureOf(this.buildPayload()) !== this._lastStructure ? this.flush() : this.schedule()));
+    this._core.agenticCursorManager.onChange(() => this.schedule());
+    this._core.agenticCursorManager.onFrame(() => this.schedule());
   }
 
   /** Sends the agents to a newly loaded workspace (each workspace has its own awareness). @internal */
@@ -70,13 +57,6 @@ export class KritzelAgentBroadcaster {
     this._lastSent = null;
     this._lastStructure = null;
     this.objectMap()?.setLocalAgents(null);
-  }
-
-  /** Stops listening. @internal */
-  dispose(): void {
-    this.clear();
-    this._unsubscribers.forEach(unsubscribe => unsubscribe());
-    this._unsubscribers = [];
   }
 
   /** The payload of the local agents that have `broadcast` on. */
@@ -117,7 +97,7 @@ export class KritzelAgentBroadcaster {
     if (this._timer !== null) {
       return;
     }
-    const wait = Math.max(0, this._lastSentAt + AGENT_BROADCAST_INTERVAL_MS - this.now());
+    const wait = Math.max(0, this._lastSentAt + AGENT_BROADCAST_INTERVAL_MS - performance.now());
     if (wait === 0) {
       this.flush();
       return;
@@ -146,7 +126,7 @@ export class KritzelAgentBroadcaster {
     }
     this._lastSent = serialized;
     this._lastStructure = structureOf(payload);
-    this._lastSentAt = this.now();
+    this._lastSentAt = performance.now();
     map.setLocalAgents(payload);
   }
 
@@ -163,10 +143,6 @@ export class KritzelAgentBroadcaster {
     } catch {
       return null;
     }
-  }
-
-  private now(): number {
-    return typeof performance !== 'undefined' ? performance.now() : Date.now();
   }
 }
 

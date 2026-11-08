@@ -261,7 +261,7 @@ describe('KritzelObjectTitlebarManager', () => {
     });
   });
 
-  describe('getRotationHandleLift', () => {
+  describe('getRotationHandleDistance', () => {
     let originalGetComputedStyle: unknown;
     let tokens: Record<string, string>;
 
@@ -275,48 +275,66 @@ describe('KritzelObjectTitlebarManager', () => {
       (globalThis as any).getComputedStyle = originalGetComputedStyle;
     });
 
-    it('lifts the handle by the titlebar band of the engine theme while the object shows a titlebar', () => {
+    it('puts the handle above the titlebar band of the engine theme while the object shows a titlebar', () => {
       const object = createObject('a');
-      expect(manager.getRotationHandleLift(object)).toBe(28 + 6);
+      expect(manager.getRotationHandleDistance(object)).toBe(15 + 28 + 6);
 
       tokens = { '--kritzel-titlebar-height': '40px', '--kritzel-titlebar-offset': '10px' };
-      expect(manager.getRotationHandleLift(object)).toBe(50);
+      expect(manager.getRotationHandleDistance(object)).toBe(15 + 50);
       expect((globalThis as any).getComputedStyle).toHaveBeenCalledWith(mockCore.engine.host);
     });
 
-    it('does not lift the handle of objects without a shown titlebar', () => {
+    it('keeps the plain distance for objects without a shown titlebar', () => {
       const object = createObject('a');
       setConfig(undefined);
-      expect(manager.getRotationHandleLift(object)).toBe(0);
+      expect(manager.getRotationHandleDistance(object)).toBe(15);
 
       setConfig({ left: [{ id: 'title', type: 'title' }] });
       setObjectConfig({ hasTitlebar: false });
-      expect(manager.getRotationHandleLift(object)).toBe(0);
+      expect(manager.getRotationHandleDistance(object)).toBe(15);
 
       setObjectConfig({ hasTitlebar: true });
       mockCore.store.state.scale = 0.1; // 20 screen pixels wide, below the default 40
-      expect(manager.getRotationHandleLift(object)).toBe(0);
+      expect(manager.getRotationHandleDistance(object)).toBe(15);
+      expect((globalThis as any).getComputedStyle).not.toHaveBeenCalled();
     });
 
-    it('lifts the handle in active visibility mode only while the local selection activates the titlebar', () => {
+    it('counts a titlebar in active visibility mode only while the local selection activates it', () => {
       setConfig({ visibility: 'active' });
       createObject('child');
       createGroup('inner', ['child']);
       const root = createGroup('root', ['inner']);
-      expect(manager.getRotationHandleLift(root)).toBe(0);
+      expect(manager.getRotationHandleDistance(root)).toBe(15);
 
       select('child');
-      expect(manager.getRotationHandleLift(root)).toBe(34);
+      expect(manager.getRotationHandleDistance(root)).toBe(49);
     });
 
-    it('lifts the handle while the title is edited, without ending the edit', () => {
+    it('counts a titlebar while its title is edited, without ending the edit', () => {
       setConfig({ visibility: 'active' });
       const object = createObject('a');
       manager.startTitleEditing('a', 'title');
 
-      expect(manager.getRotationHandleLift(object)).toBe(34);
-      expect(manager.getRotationHandleLift(createObject('b'))).toBe(0);
+      expect(manager.getRotationHandleDistance(object)).toBe(49);
+      expect(manager.getRotationHandleDistance(createObject('b'))).toBe(15);
       expect(manager.editingTitle).toEqual({ ownerId: 'a', elementId: 'title' });
+    });
+
+    it('uses the titlebars the engine rendered for the local selection', () => {
+      const a = createObject('a');
+      const root = createGroup('root', ['inner']);
+      const selection = (objectIds: string[]) =>
+        Object.assign(Object.create(KritzelSelectionGroup.prototype), { id: 'selection', translateX: 0, translateY: 0, width: 200, height: 100, padding: 0, scale: 1, rotation: 0, _objectIds: objectIds });
+      const metrics = { height: 28, offset: 6 };
+      const rendered = (titlebars: { owner: KritzelBaseObject<any>; isActive: boolean }[]) => ({ titlebars: titlebars as any, metrics });
+
+      // The titlebar of the only selected object.
+      expect(manager.getRotationHandleDistance(selection(['a']), rendered([{ owner: a, isActive: true }]))).toBe(49);
+      // An active titlebar on the selection's top edge: a group whose nested child is selected.
+      expect(manager.getRotationHandleDistance(selection(['inner']), rendered([{ owner: root, isActive: true }]))).toBe(49);
+      expect(manager.getRotationHandleDistance(selection(['inner']), rendered([{ owner: root, isActive: false }]))).toBe(15);
+      expect(manager.getRotationHandleDistance(selection(['inner']), rendered([]))).toBe(15);
+      expect((globalThis as any).getComputedStyle).not.toHaveBeenCalled();
     });
   });
 

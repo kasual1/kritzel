@@ -2,12 +2,12 @@ import type {
   KritzelAgenticAnchor,
   KritzelAgenticObjectTarget,
   KritzelAgenticPointTarget,
-  KritzelAgenticTarget,
 } from '../interfaces/agentic-cursor.interface';
 import type { KritzelAgenticResizeHandle } from '../interfaces/agentic-action.interface';
 import type { ArrowHeadStyle } from '../interfaces/arrow-head.interface';
 import { ShapeType } from '../enums/shape-type.enum';
 import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from './agentic-geometry.helper';
+import { KritzelMathHelper } from './math.helper';
 
 /** Every anchor on an object. */
 export const AGENTIC_ANCHORS = Object.keys(AGENTIC_ANCHOR_FACTORS) as KritzelAgenticAnchor[];
@@ -88,12 +88,12 @@ export function assertStyle(style: unknown, field: string, keys: readonly string
         break;
       case 'strokeWidth':
       case 'fontSize':
-        if (!isFiniteNumber(value) || value <= 0) {
+        if (!KritzelMathHelper.isFiniteNumber(value) || value <= 0) {
           throw new TypeError(`"${path}" must be a number greater than 0.`);
         }
         break;
       case 'opacity':
-        if (!isFiniteNumber(value) || value < 0 || value > 1) {
+        if (!KritzelMathHelper.isFiniteNumber(value) || value < 0 || value > 1) {
           throw new TypeError(`"${path}" must be a number from 0 to 1.`);
         }
         break;
@@ -137,7 +137,7 @@ export function assertArrows(arrows: unknown, field: string): void {
           throw new TypeError(`"${path}.style" must be one of ${AGENTIC_ARROW_HEAD_STYLES.join(', ')}.`);
         }
       } else if (key === 'size') {
-        if (!isFiniteNumber(value) || value <= 0) {
+        if (!KritzelMathHelper.isFiniteNumber(value) || value <= 0) {
           throw new TypeError(`"${path}.size" must be a number greater than 0.`);
         }
       } else if (key === 'fill') {
@@ -167,28 +167,19 @@ export function assertTarget(target: unknown, field: string): asserts target is 
   if (candidate.objectId !== undefined) {
     assertObjectId(candidate.objectId, `${field}.objectId`);
     assertAnchor(candidate.anchor, `${field}.anchor`);
-    if (candidate.offset !== undefined && (!isFiniteNumber(candidate.offset?.x) || !isFiniteNumber(candidate.offset?.y))) {
+    if (candidate.offset !== undefined && (!KritzelMathHelper.isFiniteNumber(candidate.offset?.x) || !KritzelMathHelper.isFiniteNumber(candidate.offset?.y))) {
       throw new TypeError(`"${field}.offset" must be { x, y }.`);
     }
     return;
   }
-  if (!isFiniteNumber(candidate.x) || !isFiniteNumber(candidate.y)) {
+  if (!KritzelMathHelper.isFiniteNumber(candidate.x) || !KritzelMathHelper.isFiniteNumber(candidate.y)) {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
   }
-}
-
-/** Whether a target refers to an object. */
-export function isObjectTarget(target: KritzelAgenticTarget): target is Extract<KritzelAgenticTarget, { objectId: string }> {
-  return typeof (target as { objectId?: unknown }).objectId === 'string';
 }
 
 /** Removes duplicates while keeping the order. */
 export function uniqueIds(ids: string[]): string[] {
   return Array.from(new Set(ids));
-}
-
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === 'number' && Number.isFinite(value);
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

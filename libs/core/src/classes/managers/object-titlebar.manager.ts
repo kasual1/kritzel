@@ -21,6 +21,7 @@ import {
 } from '../../interfaces/object-titlebar.interface';
 import { KritzelTermKey } from '../../interfaces/localization.interface';
 import { KritzelIconName } from '../registries/icon-registry.class';
+import { KRITZEL_ROTATION_HANDLE_DISTANCE } from '../../constants/engine.constants';
 
 /** Marks titlebar elements that resolve to their owner object (the drag surface). */
 export const KRITZEL_TITLEBAR_OWNER_ATTRIBUTE = 'data-titlebar-owner-id';
@@ -233,29 +234,52 @@ export class KritzelObjectTitlebarManager {
   }
 
   /**
-   * Screen pixels by which a rotation handle on the top edge of a top-level object moves up, so that the
-   * object's titlebar does not hide it: the titlebar band while the object shows a titlebar, otherwise 0.
-   * Applies the same rules as `resolveTitlebars`, without its side effects on open edits and menus.
+   * Screen distance of the rotation handle above the top edge of `target`: the local selection group, or an object
+   * an agent has selected. A titlebar shown on that edge would cover the handle, so the handle then sits above it.
+   * The engine passes the titlebars and metrics of its render; without them, only the titlebar `target` shows on its
+   * own is considered, by the rules of `resolveTitlebars` but without its side effects on open edits and menus.
    */
-  getRotationHandleLift(object: KritzelBaseObject<any>): number {
+  getRotationHandleDistance(target: KritzelBaseObject<any>, rendered?: { titlebars: KritzelResolvedTitlebar[]; metrics: KritzelTitlebarMetrics }): number {
+    if (!this.coversTopEdge(target, rendered?.titlebars ?? this.getOwnTitlebar(target))) {
+      return KRITZEL_ROTATION_HANDLE_DISTANCE;
+    }
+    const host = this._core.engine?.host;
+    const { height, offset } = rendered?.metrics ?? this.getMetrics(host && typeof getComputedStyle === 'function' ? getComputedStyle(host) : null);
+    return KRITZEL_ROTATION_HANDLE_DISTANCE + height + offset;
+  }
+
+  /** Whether one of the shown titlebars sits on the top edge of `target`, where its rotation handle starts. */
+  private coversTopEdge(target: KritzelBaseObject<any>, titlebars: Pick<KritzelResolvedTitlebar, 'owner' | 'isActive'>[]): boolean {
+    if (titlebars.length === 0) {
+      return false;
+    }
+    const ids = target instanceof KritzelSelectionGroup ? target.objectIds : [target.id];
+    if (ids.length === 1 && titlebars.some(titlebar => titlebar.owner.id === ids[0])) {
+      return true;
+    }
+    // Active bars include groups whose nested child is the selected unit.
+    const top = target.rotatedBoundingBox.y;
+    const tolerance = 1 / (this._core.store.state.scale || 1);
+    return titlebars.some(titlebar => titlebar.isActive && Math.abs(titlebar.owner.rotatedBoundingBox.y - top) <= tolerance);
+  }
+
+  /** The titlebar `object` shows on its own, if any. */
+  private getOwnTitlebar(object: KritzelBaseObject<any>): Pick<KritzelResolvedTitlebar, 'owner' | 'isActive'>[] {
     const config = this.config;
     if (!config || this.getOwners([object]).length === 0) {
-      return 0;
+      return [];
     }
+    const isActive = this.getActiveOwnerIds(this.withNestedGroups(object)).has(object.id);
+    const anchor = KritzelObjectTitlebarHelper.getAnchor(object, this._core.store.state, config.rotation ?? 'follow');
+    return this.isShown(object, isActive, anchor.width, config) ? [{ owner: object, isActive }] : [];
+  }
 
-    if (this._editingTitle?.ownerId !== object.id) {
-      if (config.visibility === 'active' && !this.getActiveOwnerIds(this.withNestedGroups(object)).has(object.id)) {
-        return 0;
-      }
-      const anchor = KritzelObjectTitlebarHelper.getAnchor(object, this._core.store.state, config.rotation ?? 'follow');
-      if (!(anchor.width >= (config.hideBelowWidth ?? KRITZEL_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH))) {
-        return 0;
-      }
+  /** The visibility rules: a titlebar being edited stays visible until the edit ends. */
+  private isShown(owner: KritzelBaseObject<any>, isActive: boolean, width: number, config: KritzelObjectTitlebarConfig): boolean {
+    if (this._editingTitle?.ownerId === owner.id) {
+      return true;
     }
-
-    const host = this._core.engine?.host;
-    const metrics = this.getMetrics(host && typeof getComputedStyle === 'function' ? getComputedStyle(host) : null);
-    return metrics.height + metrics.offset;
+    return (config.visibility !== 'active' || isActive) && width >= (config.hideBelowWidth ?? KRITZEL_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH);
   }
 
   /** The object and the groups nested in it, so that a selected descendant makes it active. */
@@ -287,7 +311,6 @@ export class KritzelObjectTitlebarManager {
 
     const state = this._core.store.state;
     const viewport = { scale: state.scale, translateX: state.translateX, translateY: state.translateY };
-    const hideBelowWidth = config.hideBelowWidth ?? KRITZEL_TITLEBAR_DEFAULT_HIDE_BELOW_WIDTH;
     // Without owners the loop renders nothing, but an open edit or menu must still end below.
     const owners = this.getOwners(candidates);
 
@@ -297,14 +320,9 @@ export class KritzelObjectTitlebarManager {
 
     for (const owner of owners) {
       const isActive = activeOwnerIds.has(owner.id);
-      // A titlebar being edited stays visible until the edit ends.
       const isEditing = editing?.ownerId === owner.id;
-      if (config.visibility === 'active' && !isActive && !isEditing) {
-        continue;
-      }
-
       const anchor = KritzelObjectTitlebarHelper.getAnchor(owner, viewport, config.rotation ?? 'follow');
-      if (!(anchor.width >= hideBelowWidth) && !isEditing) {
+      if (!this.isShown(owner, isActive, anchor.width, config)) {
         continue;
       }
 

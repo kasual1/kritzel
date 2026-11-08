@@ -124,7 +124,8 @@ describe('agent presence', () => {
       core.agentManager.add(new KritzelAgent({ id: 'a', name: 'A', status: 'x'.repeat(500) }));
       core.agenticCursorManager.setSelectedObjectIds('a', Array.from({ length: 200 }, (_, index) => `o${index}`));
       await flushMicrotasks();
-      core.agentBroadcaster.publish(true);
+      now += AGENT_BROADCAST_INTERVAL_MS;
+      jest.advanceTimersByTime(AGENT_BROADCAST_INTERVAL_MS);
 
       const [payload] = sentAgents(map);
       expect(payload.status).toHaveLength(200);
@@ -245,10 +246,10 @@ describe('agent presence', () => {
         new Map([[2, { agents: [remoteAgent(), { id: 'broken' }, null, remoteAgent({ id: 'x', position: { x: 'a', y: 1 } })] }]]),
         1,
       );
-      expect(core.remoteAgentManager.count).toBe(1);
+      expect(core.remoteAgentManager.getAll()).toHaveLength(1);
 
       core.remoteAgentManager.handleAwarenessStates(new Map([[2, { agents: null }]]), 1);
-      expect(core.remoteAgentManager.count).toBe(0);
+      expect(core.remoteAgentManager.getAll()).toHaveLength(0);
       expect(change).toHaveBeenCalledTimes(2);
     });
 
@@ -355,7 +356,7 @@ describe('agent presence', () => {
 
     removeAwarenessStates(awarenessA, [docA.clientID], 'test');
     receiver.core.remoteAgentManager.handleAwarenessStates(awarenessB.getStates(), docB.clientID);
-    expect(receiver.core.remoteAgentManager.count).toBe(0);
+    expect(receiver.core.remoteAgentManager.getAll()).toHaveLength(0);
 
     awarenessA.destroy();
     awarenessB.destroy();

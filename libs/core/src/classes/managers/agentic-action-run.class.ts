@@ -24,6 +24,7 @@ import {
   KritzelAgenticPreparation,
 } from '../../executors/agentic-action.types';
 import { collectAnchoredLines } from '../../helpers/agentic-conflict.helper';
+import { isObjectTarget } from '../../helpers/agentic-geometry.helper';
 
 type AnyObject = KritzelBaseObject<any>;
 type ObjectMap = KritzelObjectMap<AnyObject>;
@@ -267,11 +268,9 @@ export class KritzelAgenticActionRun {
   async fly(target: KritzelAgenticTarget, attach = false): Promise<void> {
     this.assertActive();
     const cursors = this.cursorManager;
-    const isObjectTarget = typeof (target as KritzelAgenticObjectTarget).objectId === 'string';
-
     if (this.instant) {
-      if (attach && isObjectTarget) {
-        cursors.attach(this.cursorId, target as KritzelAgenticObjectTarget);
+      if (attach && isObjectTarget(target)) {
+        cursors.attach(this.cursorId, target);
         return;
       }
       const point = cursors.resolveTarget(target);
@@ -335,9 +334,7 @@ export class KritzelAgenticActionRun {
 
   /** Duration of a drag over a screen distance, scaled by speed. */
   dragDuration(screenDistance: number): number {
-    const k = this.speedFactor;
-    const duration = (Math.abs(screenDistance) / (AGENTIC_ACTION_DRAG_SPEED * k)) * 1000;
-    return Math.min(AGENTIC_ACTION_DRAG_MAX_MS / k, Math.max(AGENTIC_ACTION_DRAG_MIN_MS / k, duration));
+    return this.phaseDuration(screenDistance, AGENTIC_ACTION_DRAG_SPEED, AGENTIC_ACTION_DRAG_MIN_MS, AGENTIC_ACTION_DRAG_MAX_MS);
   }
 
   // ─── Mutation ───────────────────────────────────────────────────────────────
@@ -358,7 +355,7 @@ export class KritzelAgenticActionRun {
     }
     this.hasMutated = true;
 
-    const now = this.host.lastFrameTime ?? (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const now = this.host.lastFrameTime ?? performance.now();
     const persistNow = persist === 'final' || now - this._lastPersistAt >= AGENTIC_ACTION_PERSIST_INTERVAL_MS;
     if (persistNow) {
       this._lastPersistAt = now;
@@ -400,11 +397,6 @@ export class KritzelAgenticActionRun {
         }
       }),
     );
-  }
-
-  /** The agent this run belongs to (the cursor ID). */
-  get agentId(): string {
-    return this.cursorId;
   }
 
   /**
