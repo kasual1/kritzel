@@ -207,6 +207,41 @@ Turns an object with the rotation handle to `angle` degrees clockwise, the short
 rotateObject(objectId: string, angle: number, options?: { relative?: boolean } & KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
+### copyObjects
+
+Duplicates objects like Alt-dragging them: the copies appear on the originals and are dragged so that their center lands on `to`, a point or an object anchor. Without `to`, they land right next to the originals. Group children and lines between copied objects are copied too, and a copied line lets go of objects that are not copied. The copies are stacked above all other objects and take the place of the originals in the agent's selection. `objectIds` holds the IDs of the copies, in stacking order.
+
+```ts
+copyObjects(
+  objectIds: string[],
+  options?: { to?: KritzelAgenticPointTarget | KritzelAgenticObjectTarget } & KritzelAgenticActionOptions,
+): Promise<KritzelAgenticActionResult>
+```
+
+### groupObjects
+
+Clicks the objects one after the other and groups them, like `group()` on the editor. The group becomes one layer at the position of the topmost object and takes the place of the objects in the agent's selection. Needs at least two objects. `objectIds` holds the ID of the group.
+
+```ts
+groupObjects(objectIds: string[], options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+```
+
+### ungroupObjects
+
+Dissolves groups. Their children keep their place in the stacking order and take the place of the groups in the agent's selection. Resolves with `'invalid-target'` for an object that is not a group. `objectIds` holds the IDs of the children.
+
+```ts
+ungroupObjects(objectIds: string[], options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+```
+
+### orderObjects
+
+Moves objects in the stacking order, like `bringToFront()`, `sendToBack()`, `bringForward()`, and `sendBackward()` on the editor. A group moves with its children.
+
+```ts
+orderObjects(objectIds: string[], order: 'front' | 'back' | 'forward' | 'backward', options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+```
+
 ### createShape
 
 Drags out a new shape with its top-left corner at `x`, `y` and optionally types `text` into it, in one step of the agent's history. `shapeType` and unset `style` fields default to the shape tool's current settings. `objectIds` holds the ID of the new shape.
@@ -346,6 +381,10 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | move_object | [`moveObject()`](#moveobject) | `objectId`, `to`, `align?` |
 | resize_object | [`resizeObject()`](#resizeobject) | `objectId`, `width?`, `height?`, `keepAspectRatio?`, `handle?` |
 | rotate_object | [`rotateObject()`](#rotateobject) | `objectId`, `angle`, `relative?` |
+| copy_objects | [`copyObjects()`](#copyobjects) | `objectIds`, `to?` |
+| group_objects | [`groupObjects()`](#groupobjects) | `objectIds` |
+| ungroup_objects | [`ungroupObjects()`](#ungroupobjects) | `objectIds` |
+| order_objects | [`orderObjects()`](#orderobjects) | `objectIds`, `order` |
 | create_shape | [`createShape()`](#createshape) | `x`, `y`, `width`, `height`, `shapeType?`, `text?`, `style?` |
 | create_text | [`createText()`](#createtext) | `x`, `y`, `text`, `style?` |
 | type_text | [`typeText()`](#typetext) | `objectId`, `text`, `mode?` |
@@ -690,6 +729,10 @@ type KritzelAgenticAction =
   | { type: 'moveObject'; objectId: string; to: KritzelAgenticPointTarget | KritzelAgenticObjectTarget; align?: KritzelAgenticAnchor }
   | { type: 'resizeObject'; objectId: string; width?: number; height?: number; keepAspectRatio?: boolean; handle?: KritzelAgenticResizeHandle }
   | { type: 'rotateObject'; objectId: string; angle: number; relative?: boolean }
+  | { type: 'copyObjects'; objectIds: string[]; to?: KritzelAgenticPointTarget | KritzelAgenticObjectTarget }
+  | { type: 'groupObjects'; objectIds: string[] }
+  | { type: 'ungroupObjects'; objectIds: string[] }
+  | { type: 'orderObjects'; objectIds: string[]; order: KritzelAgenticOrder }
   | { type: 'createShape'; x: number; y: number; width: number; height: number; shapeType?: ShapeType; text?: string; style?: KritzelAgenticShapeStyle }
   | { type: 'createText'; x: number; y: number; text: string; style?: KritzelAgenticTextStyle }
   | { type: 'typeText'; objectId: string; text: string; mode?: 'append' | 'replace' }
@@ -704,6 +747,8 @@ type KritzelAgenticAction =
 type KritzelAgenticActionType = KritzelAgenticAction['type'];
 
 type KritzelAgenticResizeHandle = 'top-left' | 'top-right' | 'bottom-right' | 'bottom-left';
+
+type KritzelAgenticOrder = 'front' | 'back' | 'forward' | 'backward';
 ```
 
 Each member is also exported as its own interface, for example `KritzelAgenticMoveObjectAction`, `KritzelAgenticSetStyleAction`, and `KritzelAgenticAddObjectAction`.

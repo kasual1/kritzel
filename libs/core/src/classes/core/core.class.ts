@@ -1303,18 +1303,7 @@ export class KritzelCore {
    * @returns The objects by id and their z-order view in store order.
    */
   private getZOrderItems(): { objects: Map<string, KritzelBaseObject<any>>; items: KritzelZOrderItem[] } {
-    const objects = new Map<string, KritzelBaseObject<any>>();
-    const items: KritzelZOrderItem[] = [];
-
-    for (const object of this._store.objects?.allObjects() ?? []) {
-      if (object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox || objects.has(object.id)) {
-        continue;
-      }
-      objects.set(object.id, object);
-      items.push(KritzelZOrderHelper.toItem(object));
-    }
-
-    return { objects, items };
+    return KritzelZOrderHelper.collect(this._store.objects?.allObjects() ?? []);
   }
 
   /**

@@ -1,5 +1,7 @@
 import type { KritzelBaseObject } from '../classes/objects/base-object.class';
 import { KritzelGroup } from '../classes/objects/group.class';
+import { KritzelSelectionBox } from '../classes/objects/selection-box.class';
+import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
 
 /**
  * Minimal view of an object needed to plan z-order changes.
@@ -146,6 +148,20 @@ export class KritzelZOrderHelper {
       .filter(child => !KritzelZOrderHelper.isGroup(child) || getChildren(child).length > 0)
       .map(child => KritzelZOrderHelper.stackAnchor(child, getChildren));
     return anchors.length > 0 ? Math.max(...anchors) : object.zIndex;
+  }
+
+  /** The objects z-order changes are planned for, each once and without selections, with their items. */
+  static collect(objects: Iterable<KritzelBaseObject<any>>): { objects: Map<string, KritzelBaseObject<any>>; items: KritzelZOrderItem[] } {
+    const byId = new Map<string, KritzelBaseObject<any>>();
+    const items: KritzelZOrderItem[] = [];
+    for (const object of objects) {
+      if (object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox || byId.has(object.id)) {
+        continue;
+      }
+      byId.set(object.id, object);
+      items.push(KritzelZOrderHelper.toItem(object));
+    }
+    return { objects: byId, items };
   }
 
   /**

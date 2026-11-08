@@ -623,7 +623,8 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 
   // ─── Selection display ──────────────────────────────────────────────────────
 
-  private showSelection(cursorId: string): void {
+  /** Shows the cursor's explicit selection plus what its running action displays. @internal */
+  showSelection(cursorId: string): void {
     const explicit = this._selections.get(cursorId)?.ids ?? [];
     const running = this._running.get(cursorId);
     const shown = running && !running.settled && running.executing ? [...explicit, ...running.displayIds] : [...explicit];

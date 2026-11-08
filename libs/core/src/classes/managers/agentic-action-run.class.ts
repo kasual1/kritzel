@@ -11,6 +11,7 @@ import type {
 } from '../../interfaces/agentic-action.interface';
 import type { KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../interfaces/agentic-cursor.interface';
 import { KritzelEasingHelper } from '../../helpers/easing.helper';
+import { KritzelEventHelper } from '../../helpers/event.helper';
 import {
   AGENTIC_ACTION_DEFAULT_SPEED,
   AGENTIC_ACTION_DRAG_MAX_MS,
@@ -49,6 +50,8 @@ export interface KritzelAgenticRunHost {
   setSelection(cursorId: string, objectIds: string[]): void;
   /** The explicit selection of a cursor. */
   getSelection(cursorId: string): string[];
+  /** Shows the cursor's explicit selection plus what its running action displays. */
+  showSelection(cursorId: string): void;
 }
 
 interface Waiter {
@@ -425,6 +428,21 @@ export class KritzelAgenticActionRun {
     }
   }
 
+  /** Shows other objects as selected while the action runs, e.g. a group once it is created. */
+  display(objectIds: string[]): void {
+    this.displayIds = [...objectIds];
+    this.host.showSelection(this.cursorId);
+  }
+
+  /** Replaces objects in the agent's selection, e.g. grouped objects by their group. Others stay selected. */
+  replaceInSelection(replacements: Map<string, string[]>): void {
+    const selection = this.host.getSelection(this.cursorId);
+    if (!selection.some(id => replacements.has(id))) {
+      return;
+    }
+    this.host.setSelection(this.cursorId, Array.from(new Set(selection.flatMap(id => replacements.get(id) ?? [id]))));
+  }
+
   /** Registers a hook that runs when the run settles, whatever the outcome. */
   onSettle(hook: () => void): void {
     this._settleHooks.push(hook);
@@ -456,14 +474,7 @@ export class KritzelAgenticActionRun {
 
   /** Runs the settle hooks once. @internal */
   runSettleHooks(): void {
-    const hooks = this._settleHooks.splice(0);
-    for (const hook of hooks) {
-      try {
-        hook();
-      } catch (error) {
-        console.error('[Kritzel] Agentic action settle hook failed:', error);
-      }
-    }
+    this._settleHooks.splice(0).forEach(hook => KritzelEventHelper.callListener(hook, 'Agentic action settle hook'));
   }
 
   /** Removes the abort listener. @internal */

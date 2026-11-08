@@ -66,8 +66,8 @@ export function resolveObjectAnchor(
   };
 }
 
-/** Center of the union of the given objects' rotated bounding boxes. */
-export function unionCenter(objects: { rotatedBoundingBox: KritzelBoundingBox }[]): KritzelPoint | null {
+/** Union of the given objects' rotated bounding boxes. */
+export function unionBox(objects: { rotatedBoundingBox: KritzelBoundingBox }[]): { x: number; y: number; width: number; height: number } | null {
   if (objects.length === 0) {
     return null;
   }
@@ -82,7 +82,13 @@ export function unionCenter(objects: { rotatedBoundingBox: KritzelBoundingBox }[
     maxX = Math.max(maxX, box.x + box.width);
     maxY = Math.max(maxY, box.y + box.height);
   }
-  return { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
+  return { x: minX, y: minY, width: maxX - minX, height: maxY - minY };
+}
+
+/** Center of the union of the given objects' rotated bounding boxes. */
+export function unionCenter(objects: { rotatedBoundingBox: KritzelBoundingBox }[]): KritzelPoint | null {
+  const box = unionBox(objects);
+  return box && { x: box.x + box.width / 2, y: box.y + box.height / 2 };
 }
 
 /** Whether `point` lies inside the polygon given by its corners (ray casting). */

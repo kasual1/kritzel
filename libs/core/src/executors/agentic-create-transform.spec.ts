@@ -9,6 +9,7 @@ import { KritzelLine } from '../classes/objects/line.class';
 import { KritzelGroup } from '../classes/objects/group.class';
 import { KritzelCore } from '../classes/core/core.class';
 import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
+import { KritzelClipboardManager } from '../classes/managers/clipboard.manager';
 
 /** How the test agent's cursor looks; agents own these values in the editor. */
 const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };
@@ -142,6 +143,7 @@ describe('agentic create and transform actions', () => {
     core.prepareObjectForInsert = KritzelCore.prototype.prepareObjectForInsert;
     core.insertPreparedObject = KritzelCore.prototype.insertPreparedObject;
     core.anchorManager = new KritzelAnchorManager(core);
+    core.clipboardManager = new KritzelClipboardManager(core);
     map = new KritzelObjectMap<any>();
     await map.initialize(core as unknown as KritzelCore, 'ws', { providers: [] });
     cursors = new KritzelAgenticCursorManager(core);
@@ -342,6 +344,189 @@ describe('agentic create and transform actions', () => {
       await perform({ type: 'rotateObject', objectId: shape.id, angle: 45 });
       await perform({ type: 'undo' });
       expect((map.findById(shape.id) as KritzelShape).rotation).toBeCloseTo(0);
+    });
+  });
+
+  describe('copyObjects', () => {
+    const center = (object: { rotatedBoundingBox: { x: number; y: number; width: number; height: number } }) => {
+      const box = object.rotatedBoundingBox;
+      return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+    };
+
+    it('Alt-drags copies to `to` as the agent, stacked above everything, and leaves the originals', async () => {
+      const a = addShape(0, 0, 100, 50);
+      const b = addShape(200, 0, 100, 50);
+      const before = [a, b].map(object => ({ ...center(object) }));
+
+      const result = await perform({ type: 'copyObjects', objectIds: [a.id, b.id], to: { x: 500, y: 400 } }, {});
+
+      expect(result.completed).toBe(true);
+      const copies = result.objectIds!.map(id => map.findById(id) as KritzelShape);
+      expect(copies).toHaveLength(2);
+      expect(copies.map(copy => copy.id)).not.toContain(a.id);
+      copies.forEach(copy => expect(copy.userId).toBe('agent'));
+      // The union of the copies is centered on `to`, the originals stay where they were.
+      const box = { x: Math.min(...copies.map(c => c.rotatedBoundingBox.x)), right: Math.max(...copies.map(c => c.rotatedBoundingBox.x + c.rotatedBoundingBox.width)) };
+      expect((box.x + box.right) / 2).toBeCloseTo(500);
+      expect([a, b].map(center)).toEqual(before);
+      expect(Math.min(...copies.map(copy => copy.zIndex))).toBeGreaterThan(Math.max(a.zIndex, b.zIndex));
+      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith(copies, { type: 'agent', agentId: 'agent', actionType: 'copyObjects' });
+    });
+
+    it('puts the copies right next to the originals by default and undoes them in one step', async () => {
+      const a = addShape(0, 0, 100, 50);
+      const [copyId] = (await perform({ type: 'copyObjects', objectIds: [a.id] }, {})).objectIds!;
+      const copy = map.findById(copyId) as KritzelShape;
+      expect(copy.rotatedBoundingBox.x).toBeCloseTo(a.rotatedBoundingBox.x + a.rotatedBoundingBox.width + 24);
+      expect(copy.rotatedBoundingBox.y).toBeCloseTo(a.rotatedBoundingBox.y);
+
+      await perform({ type: 'undo' });
+      expect(map.findById(copyId)).toBeFalsy();
+      expect(map.findById(a.id)).toBe(a);
+    });
+
+    it('copies group children and keeps lines between copied objects connected', async () => {
+      const first = addShape(0, 0, 50, 50);
+      const second = addShape(100, 0, 50, 50);
+      const group = KritzelGroup.createFromObjects(core, [first, second]);
+      map.insert(group);
+      const other = addShape(0, 200, 50, 50);
+      const [lineId] = (await perform({ type: 'connect', from: group.id, to: other.id })).objectIds!;
+
+      const result = await perform({ type: 'copyObjects', objectIds: [group.id, other.id, lineId], to: { x: 600, y: 600 } });
+
+      const [groupCopy, otherCopy, lineCopy] = result.objectIds!.map(id => map.findById(id));
+      expect(groupCopy).toBeInstanceOf(KritzelGroup);
+      const childCopies = (groupCopy as KritzelGroup).childIds.map(id => map.findById(id));
+      expect(childCopies).toHaveLength(2);
+      childCopies.forEach(child => {
+        expect(child).toBeInstanceOf(KritzelShape);
+        expect([first.id, second.id]).not.toContain(child.id);
+        expect(child.userId).toBe('agent');
+      });
+      expect((lineCopy as KritzelLine).startAnchor?.objectId).toBe(groupCopy.id);
+      expect((lineCopy as KritzelLine).endAnchor?.objectId).toBe(otherCopy.id);
+    });
+
+    it('detaches a copied line from objects that stay behind', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const [lineId] = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds!;
+
+      const result = await perform({ type: 'copyObjects', objectIds: [a.id, lineId], to: { x: 200, y: 400 } });
+
+      const [aCopy, lineCopy] = result.objectIds!.map(id => map.findById(id)) as [KritzelShape, KritzelLine];
+      expect(lineCopy.startAnchor?.objectId).toBe(aCopy.id);
+      expect(lineCopy.endAnchor).toBeUndefined();
+      expect((map.findById(lineId) as KritzelLine).endAnchor?.objectId).toBe(b.id);
+    });
+
+    it('replaces copied originals in its selection', async () => {
+      const a = addShape(0, 0, 100, 50);
+      const b = addShape(200, 0, 100, 50);
+      await perform({ type: 'select', objectIds: [a.id, b.id] });
+      const result = await perform({ type: 'copyObjects', objectIds: [a.id] });
+      expect(actions.getSelection('agent')).toEqual([result.objectIds![0], b.id]);
+    });
+  });
+
+  describe('groupObjects and ungroupObjects', () => {
+    it('groups objects as the agent at the topmost one, and undoes it in one step', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(100, 0, 50, 50);
+      const result = await perform({ type: 'groupObjects', objectIds: [b.id, a.id] }, {});
+
+      expect(result.completed).toBe(true);
+      const group = map.findById(result.objectIds![0]) as KritzelGroup;
+      expect(group).toBeInstanceOf(KritzelGroup);
+      expect(group.childIds).toEqual([a.id, b.id]);
+      expect(group.userId).toBe('agent');
+      expect(group.zIndex).toBe(Math.max(a.zIndex, b.zIndex));
+      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith([group], { type: 'agent', agentId: 'agent', actionType: 'groupObjects' });
+
+      await perform({ type: 'undo' });
+      expect(map.findById(group.id)).toBeFalsy();
+      expect(map.findById(a.id)).toBeTruthy();
+    });
+
+    it('needs two top-level objects', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(100, 0, 50, 50);
+      expect(() => actions.perform('agent', { type: 'groupObjects', objectIds: [a.id, a.id] })).toThrow('at least two');
+      const group = KritzelGroup.createFromObjects(core, [b]);
+      map.insert(group);
+      await expect(perform({ type: 'groupObjects', objectIds: [a.id, b.id] })).resolves.toMatchObject({ reason: 'invalid-target', objectIds: [b.id] });
+    });
+
+    it('replaces grouped objects in its selection by the group', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(100, 0, 50, 50);
+      const c = addShape(200, 0, 50, 50);
+      await perform({ type: 'select', objectIds: [a.id, b.id, c.id] });
+      const [groupId] = (await perform({ type: 'groupObjects', objectIds: [a.id, b.id] })).objectIds!;
+      expect(actions.getSelection('agent')).toEqual([groupId, c.id]);
+    });
+
+    it('dissolves groups as the agent, keeps the children, and undoes it in one step', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(100, 0, 50, 50);
+      const group = KritzelGroup.createFromObjects(core, [a, b]);
+      map.insert(group);
+      map.stopUndoCapturing();
+      await perform({ type: 'select', objectIds: [group.id] });
+
+      const result = await perform({ type: 'ungroupObjects', objectIds: [group.id] }, {});
+
+      expect(result).toMatchObject({ completed: true, objectIds: [a.id, b.id] });
+      expect(map.findById(group.id)).toBeFalsy();
+      expect(map.findById(a.id)).toBeTruthy();
+      expect(actions.getSelection('agent')).toEqual([a.id, b.id]);
+      expect(core.engine.emitObjectsRemoved).toHaveBeenCalledWith([expect.objectContaining({ id: group.id })], { type: 'agent', agentId: 'agent', actionType: 'ungroupObjects' });
+
+      await perform({ type: 'undo' });
+      expect((map.findById(group.id) as KritzelGroup).childIds).toEqual([a.id, b.id]);
+    });
+
+    it('refuses to ungroup objects that are not groups', async () => {
+      const a = addShape(0, 0, 50, 50);
+      await expect(perform({ type: 'ungroupObjects', objectIds: [a.id] })).resolves.toMatchObject({ reason: 'invalid-target', objectIds: [a.id] });
+    });
+  });
+
+  describe('orderObjects', () => {
+    const stack = () => [...map.allObjects()].filter(o => o instanceof KritzelShape).sort((x, y) => x.zIndex - y.zIndex).map(o => o.id);
+
+    it('moves objects to the front, back, forward and backward as the agent', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(20, 0, 50, 50);
+      const c = addShape(40, 0, 50, 50);
+      expect(stack()).toEqual([a.id, b.id, c.id]);
+
+      await perform({ type: 'orderObjects', objectIds: [a.id], order: 'front' }, {});
+      expect(stack()).toEqual([b.id, c.id, a.id]);
+      await perform({ type: 'orderObjects', objectIds: [a.id], order: 'back' });
+      expect(stack()).toEqual([a.id, b.id, c.id]);
+      await perform({ type: 'orderObjects', objectIds: [a.id], order: 'forward' });
+      expect(stack()).toEqual([b.id, a.id, c.id]);
+      await perform({ type: 'orderObjects', objectIds: [c.id], order: 'backward' });
+      expect(stack()).toEqual([b.id, c.id, a.id]);
+      expect(core.engine.emitObjectsUpdated).toHaveBeenLastCalledWith(
+        expect.arrayContaining([{ object: c, changedProperties: ['zIndex'] }]),
+        { type: 'agent', agentId: 'agent', actionType: 'orderObjects' },
+      );
+
+      await perform({ type: 'undo' });
+      expect(stack()).toEqual([b.id, a.id, c.id]);
+    });
+
+    it('completes without a change when the objects are already in place', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(20, 0, 50, 50);
+      const updates = core.engine.emitObjectsUpdated.mock.calls.length;
+      await expect(perform({ type: 'orderObjects', objectIds: [b.id], order: 'front' })).resolves.toMatchObject({ completed: true });
+      expect(stack()).toEqual([a.id, b.id]);
+      expect(core.engine.emitObjectsUpdated.mock.calls.length).toBe(updates);
+      expect(() => actions.perform('agent', { type: 'orderObjects', objectIds: [a.id], order: 'top' } as any)).toThrow('"order"');
     });
   });
 

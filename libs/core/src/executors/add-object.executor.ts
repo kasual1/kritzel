@@ -113,7 +113,7 @@ function findUninsertable(map: { findById(id: string): unknown }, object: Kritze
 }
 
 /** The children a group will insert with it, at all nesting levels. A group that contains itself is walked once. */
-function pendingDescendants(object: KritzelBaseObject<any>, visited = new Set<KritzelBaseObject<any>>()): KritzelBaseObject<any>[] {
+export function pendingDescendants(object: KritzelBaseObject<any>, visited = new Set<KritzelBaseObject<any>>()): KritzelBaseObject<any>[] {
   if (!(object instanceof KritzelGroup) || visited.has(object)) {
     return [];
   }

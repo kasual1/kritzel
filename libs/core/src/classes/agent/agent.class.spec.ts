@@ -3,6 +3,7 @@ import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager'
 import { KritzelAgenticActionManager } from '../managers/agentic-action.manager';
 import { KritzelAgentManager } from '../managers/agent.manager';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
+import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
@@ -108,6 +109,7 @@ describe('KritzelAgent', () => {
       removeObject: (object: any) => harness.map.remove((o: any) => o.id === object.id),
     };
     fakeCore.anchorManager = new KritzelAnchorManager(fakeCore);
+    fakeCore.clipboardManager = new KritzelClipboardManager(fakeCore);
     await harness.map.initialize(fakeCore as unknown as KritzelCore, 'ws', { providers: [] });
     fakeCore.agenticCursorManager = new KritzelAgenticCursorManager(fakeCore);
     fakeCore.agenticActionManager = new KritzelAgenticActionManager(fakeCore);
@@ -357,6 +359,26 @@ describe('KritzelAgent', () => {
       expect(perform).toHaveBeenNthCalledWith(1, agent.id, { type: 'moveObject', objectId: shape.id, to: { x: 300, y: 0 }, align: 'top-left' }, { instant: true, speed: 900 });
       expect(perform).toHaveBeenNthCalledWith(2, agent.id, { type: 'select', objectIds: [shape.id], additive: true }, { instant: true, speed: 900 });
       expect(agent.state.selection).toEqual([shape.id]);
+    });
+
+    it('maps the copy, group, ungroup and order shortcuts onto actions', async () => {
+      const [a, b] = [addShape(0, 0), addShape(0, 200)];
+      const agent = add(new KritzelAgent({ name: 'A' }));
+      const perform = jest.spyOn(core.agenticActionManager, 'perform');
+
+      const copied = await settle(agent.copyObjects([a.id], { to: { x: 500, y: 0 }, instant: true }));
+      await settle(agent.orderObjects([a.id], 'back', { instant: true }));
+      const grouped = await settle(agent.groupObjects([a.id, b.id], { instant: true }));
+      const ungrouped = await settle(agent.ungroupObjects(grouped.objectIds!, { instant: true }));
+
+      expect(perform.mock.calls.map(call => call[1])).toEqual([
+        { type: 'copyObjects', objectIds: [a.id], to: { x: 500, y: 0 } },
+        { type: 'orderObjects', objectIds: [a.id], order: 'back' },
+        { type: 'groupObjects', objectIds: [a.id, b.id] },
+        { type: 'ungroupObjects', objectIds: grouped.objectIds },
+      ]);
+      expect([copied, grouped, ungrouped].every(result => result.completed)).toBe(true);
+      expect(ungrouped.objectIds).toEqual([a.id, b.id]);
     });
   });
 

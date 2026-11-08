@@ -15,6 +15,7 @@ import type {
   KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
   KritzelAgenticCreateShapeAction,
+  KritzelAgenticOrder,
   KritzelAgenticCreateTextAction,
   KritzelAgenticLineStyle,
   KritzelAgenticObjectStyle,
@@ -328,6 +329,33 @@ export class KritzelAgent implements IKritzelUser {
   rotateObject(objectId: string, angle: number, options: { relative?: boolean } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
     const { relative, ...actionOptions } = options;
     return this.perform({ type: 'rotateObject', objectId, angle, ...(relative !== undefined ? { relative } : {}) }, actionOptions);
+  }
+
+  /**
+   * Duplicates objects by Alt-dragging them so that the copies' center lands on `to` (by default right next to the
+   * originals). `objectIds` holds the copies' IDs.
+   */
+  copyObjects(
+    objectIds: string[],
+    options: { to?: KritzelAgenticPointTarget | KritzelAgenticObjectTarget } & KritzelAgenticActionOptions = {},
+  ): Promise<KritzelAgenticActionResult> {
+    const { to, ...actionOptions } = options;
+    return this.perform({ type: 'copyObjects', objectIds, ...(to ? { to } : {}) }, actionOptions);
+  }
+
+  /** Groups at least two objects. `objectIds` holds the group's ID. */
+  groupObjects(objectIds: string[], options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'groupObjects', objectIds }, options);
+  }
+
+  /** Dissolves groups. `objectIds` holds their children's IDs. */
+  ungroupObjects(objectIds: string[], options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'ungroupObjects', objectIds }, options);
+  }
+
+  /** Moves objects to the front or back of the stacking order, or one layer forward or backward. */
+  orderObjects(objectIds: string[], order: KritzelAgenticOrder, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'orderObjects', objectIds, order }, options);
   }
 
   /** Drags out a new shape. `objectIds` holds its ID. */

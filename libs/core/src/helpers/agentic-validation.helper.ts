@@ -3,7 +3,7 @@ import type {
   KritzelAgenticObjectTarget,
   KritzelAgenticPointTarget,
 } from '../interfaces/agentic-cursor.interface';
-import type { KritzelAgenticResizeHandle } from '../interfaces/agentic-action.interface';
+import type { KritzelAgenticOrder, KritzelAgenticResizeHandle } from '../interfaces/agentic-action.interface';
 import type { ArrowHeadStyle } from '../interfaces/arrow-head.interface';
 import { ShapeType } from '../enums/shape-type.enum';
 import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from './agentic-geometry.helper';
@@ -176,6 +176,9 @@ export function assertTarget(target: unknown, field: string): asserts target is 
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
   }
 }
+
+/** Where `orderObjects` can move objects. */
+export const AGENTIC_ORDERS: readonly KritzelAgenticOrder[] = ['front', 'back', 'forward', 'backward'];
 
 /** Removes duplicates while keeping the order. */
 export function uniqueIds(ids: string[]): string[] {
