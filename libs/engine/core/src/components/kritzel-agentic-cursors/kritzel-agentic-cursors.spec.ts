@@ -1,8 +1,12 @@
+/** Tasks queued for Stencil's write phase; `flushWrites()` runs them like the next frame would. */
+const mockWrites: (() => void)[] = [];
+
 jest.mock('@stencil/core', () => ({
   ...jest.requireActual('@stencil/core/internal/testing'),
   Component: () => (cls: any) => cls,
   Prop: () => () => {},
   State: () => () => {},
+  writeTask: (task: () => void) => mockWrites.push(task),
 }));
 
 import { KritzelAgenticCursors } from './kritzel-agentic-cursors';
@@ -26,6 +30,8 @@ const flatten = (node: VNode | null | undefined, out: VNode[] = []): VNode[] => 
 
 const byClass = (root: VNode, className: string) =>
   flatten(root).filter(node => typeof node.$attrs$?.class === 'string' && node.$attrs$.class.split(' ').includes(className));
+
+const flushWrites = () => mockWrites.splice(0).forEach(task => task());
 
 const createCursor = (overrides: Partial<KritzelAgenticCursor> = {}): KritzelAgenticCursor => ({
   id: 'agent',
@@ -75,6 +81,7 @@ describe('KritzelAgenticCursors', () => {
   });
 
   beforeEach(() => {
+    mockWrites.length = 0;
     cursors = [createCursor()];
     objects = new Map();
     state = { scale: 2, translateX: 5, translateY: 0, viewportWidth: 1000, viewportHeight: 800 };
@@ -180,8 +187,52 @@ describe('KritzelAgenticCursors', () => {
     objects.set('a', createObject('a', 10, 0, 10, 5));
     const versionBefore = component.version;
     frameListener!();
+    flushWrites();
 
     expect(element.setAttribute).toHaveBeenCalledWith('points', '25,0 45,0 45,10 25,10');
+    expect(component.version).toBe(versionBefore);
+  });
+
+  it('draws a frame in the write phase, where the engine renders objects, once for both frame loops', () => {
+    isRotatable.mockReturnValue(false);
+    objects.set('a', createObject('a', 0, 0, 10, 5));
+    cursors = [createCursor({ selectedObjectIds: ['a'] })];
+    const polygon = byClass(component.render() as unknown as VNode, 'agentic-selection')[0];
+    const element = { setAttribute: jest.fn() };
+    (polygon.$attrs$!.ref as (el: unknown) => void)(element);
+
+    // An agent action moves the object in the cursor loop; the local and the remote loop both report the frame.
+    objects.set('a', createObject('a', 10, 0, 10, 5));
+    frameListener!();
+    frameListener!();
+    expect(mockWrites).toHaveLength(1);
+    expect(element.setAttribute).not.toHaveBeenCalled();
+
+    // The object moves again before the write phase: the outline follows the state the engine renders.
+    objects.set('a', createObject('a', 20, 0, 10, 5));
+    flushWrites();
+    expect(element.setAttribute).toHaveBeenCalledTimes(1);
+    expect(element.setAttribute).toHaveBeenCalledWith('points', '45,0 65,0 65,10 45,10');
+
+    frameListener!();
+    expect(mockWrites).toHaveLength(1);
+  });
+
+  it('skips a queued frame after disconnecting', () => {
+    isRotatable.mockReturnValue(false);
+    objects.set('a', createObject('a', 0, 0, 10, 5));
+    cursors = [createCursor({ selectedObjectIds: ['a'] })];
+    const polygon = byClass(component.render() as unknown as VNode, 'agentic-selection')[0];
+    const element = { setAttribute: jest.fn() };
+    (polygon.$attrs$!.ref as (el: unknown) => void)(element);
+
+    objects.set('a', createObject('a', 10, 0, 10, 5));
+    frameListener!();
+    component.disconnectedCallback();
+    const versionBefore = component.version;
+    flushWrites();
+
+    expect(element.setAttribute).not.toHaveBeenCalled();
     expect(component.version).toBe(versionBefore);
   });
 
@@ -191,6 +242,7 @@ describe('KritzelAgenticCursors', () => {
     cursors = [createCursor({ selectedObjectIds: ['a'] })];
     const versionBefore = component.version;
     frameListener!();
+    flushWrites();
     expect(component.version).toBe(versionBefore + 1);
   });
 
@@ -267,6 +319,7 @@ describe('KritzelAgenticCursors', () => {
       objects.set('a', createObject('a', 10, 0, 10, 5));
       const versionBefore = component.version;
       frameListener!();
+      flushWrites();
 
       expect(stem.setAttribute).toHaveBeenCalledWith('x1', '35');
       expect(stem.setAttribute).toHaveBeenCalledWith('x2', '35');
@@ -276,6 +329,7 @@ describe('KritzelAgenticCursors', () => {
 
       stem.setAttribute.mockClear();
       frameListener!();
+      flushWrites();
       expect(stem.setAttribute).not.toHaveBeenCalled();
     });
 
@@ -288,6 +342,7 @@ describe('KritzelAgenticCursors', () => {
       cursors = [createCursor({ selectedObjectIds: ['a'] })];
       const versionBefore = component.version;
       frameListener!();
+      flushWrites();
       expect(component.version).toBe(versionBefore + 1);
     });
 

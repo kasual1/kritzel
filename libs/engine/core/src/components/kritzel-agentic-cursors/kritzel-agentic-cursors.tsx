@@ -1,4 +1,4 @@
-import { Component, Host, Prop, State, h } from '@stencil/core';
+import { Component, Host, Prop, State, h, writeTask } from '@stencil/core';
 import { KritzelCore, KritzelAgenticCursor, KritzelLine, KritzelPoint, KritzelViewportOverlayHelper } from '@kritzel/core';
 import { CursorArrow, CursorLabel, EdgeIndicator } from '../shared/cursor/cursor-visuals';
 
@@ -21,8 +21,9 @@ const DEFAULT_HANDLE_SIZE_PX = 6;
  * in two tabs never collides.
  *
  * Structural changes (added/removed cursors, name, color, status, selections) re-render through
- * Stencil. Per-frame movement of on-screen cursors and outlines is written directly to
- * the elements, so animations and object tracking don't lag a frame behind.
+ * Stencil. Per-frame movement of on-screen cursors, outlines and handles is written directly to the
+ * elements, in Stencil's write phase: the engine renders objects there too, so an outline is drawn in
+ * the same frame as the object state it follows and never runs ahead of the object.
  */
 @Component({
   tag: 'kritzel-agentic-cursors',
@@ -47,6 +48,8 @@ export class KritzelAgenticCursors {
   /** Keys of the rendered outlines and handles; a change re-renders. */
   private renderedSelectionKeys = '';
   private unsubscribers: (() => void)[] = [];
+  /** Whether a frame is waiting for Stencil's write phase; both managers' frame loops share it. */
+  private isFrameQueued = false;
 
   connectedCallback() {
     const local = this.core.agenticCursorManager;
@@ -74,7 +77,22 @@ export class KritzelAgenticCursors {
     return [...local, ...remote];
   }
 
+  /**
+   * Queues the frame for Stencil's next write phase instead of writing right away. Agent actions change
+   * objects in the cursor loop, and the engine renders those changes in that write phase; writing now
+   * would draw outlines, handles and cursors one frame ahead of the objects they belong to.
+   */
   private handleFrame() {
+    if (this.isFrameQueued) return;
+    this.isFrameQueued = true;
+    writeTask(() => {
+      this.isFrameQueued = false;
+      // Removed before the write phase: nothing to draw.
+      if (this.unsubscribers.length > 0) this.writeFrame();
+    });
+  }
+
+  private writeFrame() {
     const state = this.core.store.state;
     let needsRender = false;
     const cursorsList = this.getCursors();
