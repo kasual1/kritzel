@@ -49,6 +49,8 @@ export function AgenticCanvasGenerativeUiInfographic() {
         isWorkspaceManagerVisible={false}
         isMoreMenuVisible={false}
         isZoomPanelVisible={false}
+        // The Covers agent works with a hidden cursor and shows nowhere else either.
+        isAgentAvatarsVisible={false}
         style={{ display: 'block', height: '100%' }}
         onIsReady={onReady}
       />

@@ -31,10 +31,11 @@ function pause(ms: number, signal: AbortSignal): Promise<void> {
 }
 
 /**
- * Adds the pages invisible and a little below their place, ready for `fadeIn`. A page with a placeholder gets the
- * placeholder's grey behind its frame, so the canvas never shows through while the frame swaps to the content.
+ * Makes pages invisible and moves them a little below their place, before they are added, ready for `fadeIn`. A page
+ * with a placeholder gets the placeholder's grey behind its frame, so the canvas never shows through while the frame
+ * swaps to the content. Agents add the prepared pages with `agent.addObject()`.
  */
-export async function addHidden<T extends KritzelIframeObject>(editor: HTMLKritzelEditorElement, objects: T[]): Promise<T[]> {
+export function prepareToAppear(objects: KritzelIframeObject[]): void {
   for (const object of objects) {
     object.opacity = 0;
     object.translateY += APPEAR_RISE;
@@ -42,6 +43,11 @@ export async function addHidden<T extends KritzelIframeObject>(editor: HTMLKritz
       object.backgroundColor = { light: PLACEHOLDER_GREY, dark: PLACEHOLDER_GREY };
     }
   }
+}
+
+/** Adds pages that the app itself shows (not an agent), prepared with `prepareToAppear`. */
+export async function addHidden<T extends KritzelIframeObject>(editor: HTMLKritzelEditorElement, objects: T[]): Promise<T[]> {
+  prepareToAppear(objects);
   const added = await editor.addObjects(objects);
   return added?.length ? added : objects;
 }

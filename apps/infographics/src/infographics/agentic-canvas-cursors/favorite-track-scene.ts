@@ -1,17 +1,17 @@
 import { KritzelIframeObject, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
 import {
-  BUTTON_PRESS_OFFSET,
   EXIT_DURATION,
   RECORDER,
   SHADOW,
-  STAR_OFFSET,
   STUDIO_AGENT,
   TAKE_GAP,
   TAKE_HEIGHT,
   TAKES_GAP,
+  act,
   addAgentAt,
   frame,
   removeAgents,
+  starTarget,
   takeContent,
   typePrompt,
   union,
@@ -22,9 +22,9 @@ import { APPEAR_LOAD, appear } from '../agentic-canvas/appear';
 
 /**
  * Agentic cursors on a generative UI page: the canvas starts empty, then the recorder widget of the agentic canvas post
- * appears in the middle of it with its tracks below it. The user asks for track 2 to be a favorite, and Studio's
- * cursor glides to the star of track 2, clicks it and leaves the view. Scripted, with no model calls, so every
- * recording is the same.
+ * appears in the middle of it with its tracks below it. The user asks for track 2 to be a favorite, and Studio clicks
+ * the star of track 2 with `agent.click()` and leaves the view. Scripted, with no model calls, so every recording is
+ * the same.
  */
 
 const PROMPT = 'Please favoritize track 2';
@@ -60,9 +60,6 @@ const SCENE_BOX = union([WIDGET_BOX, ...TRACK_BOXES]);
 const EMPTY_PAUSE = 1500;
 /** How long the recorder shows before the prompt is typed. */
 const OPENING_PAUSE = 1200;
-/** How long Studio takes to glide from the edge of the view to the star, and how long it hovers before the click. */
-const STAR_APPROACH = 900;
-const STAR_HOVER = 120;
 /** How long Studio stays on the star after the click before it leaves. */
 const AFTER_CLICK = 250;
 /** How long the result stays after the cursor has left, before every object is removed. */
@@ -126,16 +123,10 @@ export async function playAgenticCanvasCursorsScene(
   const bottom = top + viewport.height / viewport.scale;
   const studio = await addAgentAt(editor, STUDIO_AGENT, { x: right + 40, y: top - 40 });
 
-  const trackId = trackIds[FAVORITE_TRACK];
-  const track = trackId ? await editor.getObjectById(trackId) : null;
-  // An object anchor, so the cursor lands on the star wherever the track is.
-  const star = trackId
-    ? { objectId: trackId, anchor: 'right' as const, offset: { x: STAR_OFFSET.x + BUTTON_PRESS_OFFSET.x, y: STAR_OFFSET.y + BUTTON_PRESS_OFFSET.y } }
-    : { x: 0, y: 0 };
-  await studio.moveTo(star, { duration: STAR_APPROACH, easing: 'ease-in-out' });
-  await wait(STAR_HOVER, signal);
+  const track = await editor.getObjectById(trackIds[FAVORITE_TRACK]);
   if (track instanceof KritzelIframeObject) {
-    // The star turns on through the track's state, so the page animates it in place.
+    await act(studio.click(starTarget(track.id), { signal }));
+    // The star turns on through the track's state, as the track's star button would, so the page animates it in place.
     track.setState({ ...track.state, favorite: true });
   }
   setWorking(false);

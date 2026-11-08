@@ -1,11 +1,11 @@
-import { KritzelIframeObject, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { KritzelAgent, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
 import { coverImage } from '../agentic-canvas/album-covers';
-import { addHidden, fadeIn, withReveal } from '../agentic-canvas/appear';
-import { SHADOW, SKELETON, coverContent, frame, removeAgents, typePrompt, wait, type Box } from '../agentic-canvas/hero-scene';
+import { COVER_AGENT, coverContent, frame, generatePage, removeAgents, typePrompt, wait, type Box } from '../agentic-canvas/hero-scene';
 
 /**
  * Generative UI on the agentic canvas, in its shortest form: one prompt in the chat box adds a new album cover in the
- * middle of the canvas. No agentic cursors. Everything is scripted, so every recording is the same.
+ * middle of the canvas. The Covers agent places the cover with `agent.addObject()`, so the cover is its change, but its
+ * cursor stays hidden: the page shows no agentic cursors. Everything is scripted, so every recording is the same.
  */
 
 /**
@@ -40,25 +40,19 @@ export async function playAlbumCoverScene(
 
   await typePrompt(editor, PROMPT, signal);
   setWorking(true);
-  // The cover fades in while it rises into place, and the image fades in over the placeholder once it is done.
-  const [cover] = await addHidden(editor, [
-    new KritzelIframeObject({
-      title: 'Album cover',
-      content: withReveal(coverContent(NEW_COVER)),
-      loadingContent: SKELETON,
-      isLoading: true,
-      translateX: COVER_BOX.x,
-      translateY: COVER_BOX.y,
-      width: COVER_BOX.width,
-      height: COVER_BOX.height,
-      borderRadius: 12,
-      boxShadow: SHADOW,
-    }),
-  ]);
-  await Promise.all([wait(WRITING_TIME, signal), fadeIn(editor, [cover], signal, { load: 120 })]);
-  cover?.setLoading(false);
+  // The cover fades in while it rises into place, and the image fades in over the placeholder once it is done. The
+  // cursor is hidden, so the action runs without animation.
+  const covers = await editor.addAgent(new KritzelAgent({ ...COVER_AGENT, visible: false }));
+  await generatePage(
+    editor,
+    covers,
+    { box: COVER_BOX, content: coverContent(NEW_COVER), writingTime: WRITING_TIME, title: 'Album cover', borderRadius: 12 },
+    signal,
+    { instant: true },
+  );
   setWorking(false);
 
   await wait(CLEAR_DELAY, signal);
+  await editor.removeAgent(covers);
   await editor.removeObjects(await editor.getAllObjects());
 }

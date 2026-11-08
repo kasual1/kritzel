@@ -35,9 +35,12 @@ recording widget and keeps recording: it starts each take with the record button
 which saves the take to the list below. Studio presses record as soon as the widget is done. Covers draws four jazz covers for "Full Control" in a square in the middle of the canvas, and Social
 writes a social media post about the release. The work runs from left to right: widget, covers, post. The camera follows each agent to its work and finally pulls back to show
 all three results. Every agent's cursor leaves the view as soon as that agent is done. Each agent is a `KritzelAgent`: it is added
-with `editor.addAgent()` when its cursor enters, moves with `agent.moveTo()` and is removed with `editor.removeAgent()`
-when it leaves. The agents only show as cursors (`isAgentAvatarsVisible` is off). The scene is scripted in
-`hero-scene.ts`, with no model calls, so every recording is the same; reload the page to play it again.
+with `editor.addAgent()` when its cursor enters and is removed with `editor.removeAgent()` when it leaves. The agents
+work through their agent actions: each places its pages with `agent.addObject()`, so every page is that agent's change,
+and Studio presses the record button and the star of the favorite take with `agent.click()`. Between actions the
+cursors glide with `agent.moveTo()`. The takes are saved by the widget, not by Studio. The agents only show as cursors
+(`isAgentAvatarsVisible` is off). The scene is scripted in `hero-scene.ts`, with no model calls, so every recording is
+the same; reload the page to play it again.
 
 Every page the agents add comes in smoothly: it fades in while it rises into place, and when it was showing the glare
 placeholder, its content fades in over the placeholder's grey. The agentic canvas generative UI and agentic canvas
@@ -51,15 +54,16 @@ The album covers are PNG images in `public/covers/`, listed in `album-covers.ts`
 `src/infographics/agentic-canvas-generative-ui/` shows generative UI on the same canvas as the agentic canvas page, with
 the chat box and no agentic cursors. "Please generate a new album cover" is typed into the chat box, and a cover is
 added in the middle of the canvas: it shows the glare placeholder first and then the image. 1.5 seconds later every
-object is removed. It is scripted in `album-cover-scene.ts` and reuses the helpers of the agentic canvas page. The cover is its own,
+object is removed. The Covers agent places the cover with `agent.addObject()`, so the cover is its change, but the agent
+is hidden: it is added with `visible: false`, the action runs with `instant: true`, and `isAgentAvatarsVisible` is off. It is scripted in `album-cover-scene.ts` and reuses the helpers of the agentic canvas page. The cover is its own,
 `covers/midnight-skyline.svg`, not one of the four the agentic canvas page shows.
 
 ## Agentic canvas cursors
 
 `src/infographics/agentic-canvas-cursors/` shows an agentic cursor working on a generative UI page, with the chat box. The
 canvas starts empty; after 1.5 seconds the recorder widget of the agentic canvas page fades in centered in the view, with
-its two tracks below it. Then "Please favoritize track 2" is typed into the chat box, Studio's cursor glides to the star of track 2 and clicks it,
-and the cursor leaves the view. 1.5 seconds later every object is removed. It is scripted in `favorite-track-scene.ts`
+its two tracks below it. Then "Please favoritize track 2" is typed into the chat box, and Studio clicks the star of track 2
+with `agent.click()`: its cursor glides to the star and presses it, the star turns amber, and the cursor leaves the view. 1.5 seconds later every object is removed. It is scripted in `favorite-track-scene.ts`
 and reuses the widget, the tracks and the helpers of the agentic canvas page; Studio is a `KritzelAgent` there too.
 
 ## Generative UI API key
