@@ -1,11 +1,12 @@
-import type { KritzelAgenticAddObjectAction } from '../interfaces/agentic-action.interface';
-import { KritzelBaseObject } from '../classes/objects/base-object.class';
-import { KritzelGroup } from '../classes/objects/group.class';
-import { KritzelImage } from '../classes/objects/image.class';
-import { KritzelText } from '../classes/objects/text.class';
-import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES, type KritzelAgenticActionExecutor } from './agentic-action.types';
-import { isSelectionObject } from '../helpers/agentic-conflict.helper';
-import { unionCenter } from '../helpers/agentic-geometry.helper';
+import type { KritzelAgenticAddObjectAction } from '../../interfaces/agentic-action.interface';
+import { KritzelBaseObject } from '../objects/base-object.class';
+import { KritzelGroup } from '../objects/group.class';
+import { KritzelImage } from '../objects/image.class';
+import { KritzelText } from '../objects/text.class';
+import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES } from '../../constants/agentic-action.constants';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
+import { unionCenter } from '../../helpers/agentic-geometry.helper';
 
 /**
  * `addObject`: places an object the app built (an iframe, an image, a custom object, a group with

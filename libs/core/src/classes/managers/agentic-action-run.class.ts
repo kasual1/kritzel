@@ -20,10 +20,9 @@ import {
   AGENTIC_ACTION_PERSIST_INTERVAL_MS,
   AGENTIC_ACTION_PRESS_MS,
   AGENTIC_ACTION_RELEASE_MS,
-  KritzelAgenticAbortError,
-  KritzelAgenticActionExecutor,
-  KritzelAgenticPreparation,
-} from '../../executors/agentic-action.types';
+} from '../../constants/agentic-action.constants';
+import { KritzelAgenticAbortError } from '../agent/agentic-abort-error.class';
+import type { KritzelAgenticActionExecutor, KritzelAgenticPreparation } from '../../types/agentic-action.types';
 import { collectAnchoredLines } from '../../helpers/agentic-conflict.helper';
 import { isObjectTarget } from '../../helpers/agentic-geometry.helper';
 

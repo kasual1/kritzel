@@ -1,10 +1,10 @@
-import type { KritzelAgenticResizeObjectAction } from '../interfaces/agentic-action.interface';
-import { KritzelGroup } from '../classes/objects/group.class';
-import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import { collectWithDescendants } from '../helpers/agentic-conflict.helper';
+import type { KritzelAgenticResizeObjectAction } from '../../interfaces/agentic-action.interface';
+import { KritzelGroup } from '../objects/group.class';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { collectWithDescendants } from '../../helpers/agentic-conflict.helper';
 import { prepareTopLevelTargets } from './select.executor';
-import { AGENTIC_RESIZE_HANDLES, assertObjectId } from '../helpers/agentic-validation.helper';
-import { computeAnchoredResize, createTransientSelectionGroup, fixedCorner } from '../helpers/agentic-transform.helper';
+import { AGENTIC_RESIZE_HANDLES, assertObjectId } from '../../helpers/agentic-validation.helper';
+import { computeAnchoredResize, createTransientSelectionGroup, fixedCorner } from '../../helpers/agentic-transform.helper';
 
 function assertPositiveSize(value: unknown, field: string): void {
   if (value !== undefined && !(typeof value === 'number' && Number.isFinite(value) && value > 0)) {

@@ -1,11 +1,11 @@
-import type { KritzelAgenticGroupObjectsAction, KritzelAgenticUngroupObjectsAction } from '../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import { KritzelGroup } from '../classes/objects/group.class';
+import type { KritzelAgenticGroupObjectsAction, KritzelAgenticUngroupObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { KritzelGroup } from '../objects/group.class';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
 import { applyZIndexUpdates } from './order-objects.executor';
-import { assertObjectIds, uniqueIds } from '../helpers/agentic-validation.helper';
-import { unionCenter } from '../helpers/agentic-geometry.helper';
-import { KritzelZOrderHelper } from '../helpers/z-order.helper';
+import { assertObjectIds, uniqueIds } from '../../helpers/agentic-validation.helper';
+import { unionCenter } from '../../helpers/agentic-geometry.helper';
+import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 
 /**
  * `groupObjects`: clicks the objects one after the other, so the selection builds up like shift-clicking them, and

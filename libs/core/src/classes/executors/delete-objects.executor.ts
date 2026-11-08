@@ -1,8 +1,8 @@
-import type { KritzelAgenticDeleteObjectsAction } from '../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import { collectWithDescendants } from '../helpers/agentic-conflict.helper';
+import type { KritzelAgenticDeleteObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { collectWithDescendants } from '../../helpers/agentic-conflict.helper';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
-import { assertObjectIds, uniqueIds } from '../helpers/agentic-validation.helper';
+import { assertObjectIds, uniqueIds } from '../../helpers/agentic-validation.helper';
 
 /** `deleteObjects`: clicks the objects and deletes them (group children go with their group). */
 export const deleteObjectsExecutor: KritzelAgenticActionExecutor<KritzelAgenticDeleteObjectsAction> = {

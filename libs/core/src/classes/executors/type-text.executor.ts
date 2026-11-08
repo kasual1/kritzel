@@ -1,12 +1,13 @@
-import type { KritzelAgenticTypeTextAction } from '../interfaces/agentic-action.interface';
+import type { KritzelAgenticTypeTextAction } from '../../interfaces/agentic-action.interface';
 import type { EditorView } from 'prosemirror-view';
-import { KritzelText } from '../classes/objects/text.class';
-import { KritzelShape } from '../classes/objects/shape.class';
-import { KritzelRichTextHelper } from '../helpers/rich-text.helper';
-import { AGENTIC_ACTION_TYPING_CPS, type KritzelAgenticActionExecutor } from './agentic-action.types';
-import type { KritzelAgenticActionRun } from '../classes/managers/agentic-action-run.class';
-import { isSelectionObject } from '../helpers/agentic-conflict.helper';
-import { assertObjectId } from '../helpers/agentic-validation.helper';
+import { KritzelText } from '../objects/text.class';
+import { KritzelShape } from '../objects/shape.class';
+import { KritzelRichTextHelper } from '../../helpers/rich-text.helper';
+import { AGENTIC_ACTION_TYPING_CPS } from '../../constants/agentic-action.constants';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { KritzelAgenticActionRun } from '../managers/agentic-action-run.class';
+import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
+import { assertObjectId } from '../../helpers/agentic-validation.helper';
 
 type TypeableObject = KritzelText | KritzelShape;
 

@@ -1,13 +1,13 @@
-import type { KritzelAgenticCopyObjectsAction } from '../interfaces/agentic-action.interface';
-import type { KritzelBaseObject } from '../classes/objects/base-object.class';
-import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import { KritzelLine } from '../classes/objects/line.class';
+import type { KritzelAgenticCopyObjectsAction } from '../../interfaces/agentic-action.interface';
+import type { KritzelBaseObject } from '../objects/base-object.class';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { KritzelLine } from '../objects/line.class';
 import { prepareTopLevelTargets } from './select.executor';
 import { pendingDescendants } from './add-object.executor';
-import { isSelectionObject } from '../helpers/agentic-conflict.helper';
-import { isObjectTarget, unionBox, unionCenter } from '../helpers/agentic-geometry.helper';
-import { assertObjectIds, assertTarget, uniqueIds } from '../helpers/agentic-validation.helper';
-import { KritzelZOrderHelper } from '../helpers/z-order.helper';
+import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
+import { isObjectTarget, unionBox, unionCenter } from '../../helpers/agentic-geometry.helper';
+import { assertObjectIds, assertTarget, uniqueIds } from '../../helpers/agentic-validation.helper';
+import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 
 /** Screen gap between the originals and their copies when `to` is not given. */
 const COPY_GAP_PX = 24;
