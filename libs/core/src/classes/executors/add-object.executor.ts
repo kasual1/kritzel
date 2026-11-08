@@ -3,7 +3,8 @@ import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelText } from '../objects/text.class';
-import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES, type KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES } from '../../constants/agentic-action.constants';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { unionCenter } from '../../helpers/agentic-geometry.helper';
 

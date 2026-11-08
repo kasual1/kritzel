@@ -1,7 +1,7 @@
 import { KritzelObjectMap } from '../structures/object-map.structure';
-import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
-import { KritzelAgenticActionManager } from '../managers/agentic-action.manager';
-import { KritzelAnchorManager } from '../managers/anchor.manager';
+import { KritzelAgenticCursorManager } from './agentic-cursor.manager';
+import { KritzelAgenticActionManager } from './agentic-action.manager';
+import { KritzelAnchorManager } from './anchor.manager';
 import { KritzelShape } from '../objects/shape.class';
 import { KritzelText } from '../objects/text.class';
 import { KritzelPath } from '../objects/path.class';
@@ -9,7 +9,7 @@ import { KritzelLine } from '../objects/line.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
-import { KritzelClipboardManager } from '../managers/clipboard.manager';
+import { KritzelClipboardManager } from './clipboard.manager';
 
 /** How the test agent's cursor looks; agents own these values in the editor. */
 const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };

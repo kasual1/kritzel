@@ -1,5 +1,6 @@
 import type { KritzelAgenticRotateObjectAction } from '../../interfaces/agentic-action.interface';
-import { AGENTIC_ACTION_ROTATE_SPEED, type KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { AGENTIC_ACTION_ROTATE_SPEED } from '../../constants/agentic-action.constants';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
 import { prepareTopLevelTargets } from './select.executor';
 import { assertObjectId } from '../../helpers/agentic-validation.helper';
 import { createTransientSelectionGroup, targetRotation } from '../../helpers/agentic-transform.helper';

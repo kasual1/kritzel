@@ -1,7 +1,8 @@
 import type { KritzelAgenticDrawPathAction } from '../../interfaces/agentic-action.interface';
 import type { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelPath } from '../objects/path.class';
-import { AGENTIC_ACTION_DRAW_SPEED, type KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { AGENTIC_ACTION_DRAW_SPEED } from '../../constants/agentic-action.constants';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
 import { resolveBrushStyle } from '../../helpers/agentic-style.helper';
 import { AGENTIC_STROKE_STYLE_KEYS, assertStyle } from '../../helpers/agentic-validation.helper';
 

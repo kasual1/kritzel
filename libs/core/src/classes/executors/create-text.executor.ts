@@ -1,6 +1,7 @@
 import type { KritzelAgenticCreateTextAction } from '../../interfaces/agentic-action.interface';
 import { KritzelText } from '../objects/text.class';
-import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES, type KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES } from '../../constants/agentic-action.constants';
+import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
 import { resolveTextStyle } from '../../helpers/agentic-style.helper';
 import { typeInto } from './type-text.executor';
 import { AGENTIC_TEXT_STYLE_KEYS, assertStyle } from '../../helpers/agentic-validation.helper';

@@ -9,7 +9,8 @@ import type {
 } from '../../interfaces/agentic-action.interface';
 import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
 import { getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
-import { KritzelAgenticAbortError, isAgenticRefusal } from '../../types/agentic-action.types';
+import { KritzelAgenticAbortError } from '../agent/agentic-abort-error.class';
+import type { KritzelAgenticPreparation, KritzelAgenticRefusal } from '../../types/agentic-action.types';
 import { KritzelAgenticActionRun, KritzelAgenticRunHost, KritzelAgenticRunOutcome } from './agentic-action-run.class';
 import { KritzelAgenticFrameCache, buildFrameCache, detectObjectConflict, expandWithRelatives } from '../../helpers/agentic-conflict.helper';
 import { KritzelEventHelper } from '../../helpers/event.helper';
@@ -807,4 +808,9 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       }
     }
   }
+}
+
+/** Whether a preparation result is a refusal. */
+function isAgenticRefusal(value: KritzelAgenticPreparation | KritzelAgenticRefusal): value is KritzelAgenticRefusal {
+  return typeof (value as KritzelAgenticRefusal).reason === 'string';
 }
