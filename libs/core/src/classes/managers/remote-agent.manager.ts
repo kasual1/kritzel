@@ -4,7 +4,7 @@ import type { KritzelAgenticAttachment, KritzelAgenticCursor } from '../../inter
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import type { KritzelAwarenessAgent, KritzelRemoteAgentPresence } from '../../interfaces/agent.interface';
 import { AGENT_BROADCAST_INTERVAL_MS, AGENT_BROADCAST_MAX_IDS, AGENT_BROADCAST_MAX_STATUS_LENGTH } from './agent-broadcast.manager';
-import { isAgenticAnchor } from './agentic-actions/agentic-geometry.helper';
+import { isAgenticAnchor } from '../../helpers/agentic-geometry.helper';
 
 /** A collaborator's agent as the cursor overlay draws it. */
 export interface KritzelRemoteAgentCursor extends KritzelAgenticCursor {

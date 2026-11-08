@@ -8,10 +8,10 @@ import type {
   KritzelAgenticActionResult,
 } from '../../interfaces/agentic-action.interface';
 import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
-import { getAgenticActionExecutor } from './agentic-actions';
-import { KritzelAgenticAbortError, isAgenticRefusal } from './agentic-actions/agentic-action.types';
-import { KritzelAgenticActionRun, KritzelAgenticRunHost, KritzelAgenticRunOutcome } from './agentic-actions/agentic-action-run.class';
-import { KritzelAgenticFrameCache, buildFrameCache, detectObjectConflict, expandWithRelatives } from './agentic-actions/agentic-conflict.helper';
+import { getAgenticActionExecutor } from '../../executors/agentic-action-executor.registry';
+import { KritzelAgenticAbortError, isAgenticRefusal } from '../../executors/agentic-action.types';
+import { KritzelAgenticActionRun, KritzelAgenticRunHost, KritzelAgenticRunOutcome } from './agentic-action-run.class';
+import { KritzelAgenticFrameCache, buildFrameCache, detectObjectConflict, expandWithRelatives } from '../../helpers/agentic-conflict.helper';
 
 type AnyObject = KritzelBaseObject<any>;
 type ObjectMap = KritzelObjectMap<AnyObject>;

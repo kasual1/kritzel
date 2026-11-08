@@ -1,16 +1,16 @@
-import type { KritzelCore } from '../../core/core.class';
-import type { KritzelObjectMap } from '../../structures/object-map.structure';
-import type { KritzelAgentOrigin } from '../../structures/agent-origin.class';
-import type { KritzelBaseObject } from '../../objects/base-object.class';
-import type { KritzelAgenticCursorManager } from '../agentic-cursor.manager';
+import type { KritzelCore } from '../core/core.class';
+import type { KritzelObjectMap } from '../structures/object-map.structure';
+import type { KritzelAgentOrigin } from '../structures/agent-origin.class';
+import type { KritzelBaseObject } from '../objects/base-object.class';
+import type { KritzelAgenticCursorManager } from './agentic-cursor.manager';
 import type {
   KritzelAgenticAction,
   KritzelAgenticActionFailureReason,
   KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
-} from '../../../interfaces/agentic-action.interface';
-import type { KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../../interfaces/agentic-cursor.interface';
-import { KritzelEasingHelper } from '../../../helpers/easing.helper';
+} from '../../interfaces/agentic-action.interface';
+import type { KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../interfaces/agentic-cursor.interface';
+import { KritzelEasingHelper } from '../../helpers/easing.helper';
 import {
   AGENTIC_ACTION_DEFAULT_SPEED,
   AGENTIC_ACTION_DRAG_MAX_MS,
@@ -22,8 +22,8 @@ import {
   KritzelAgenticAbortError,
   KritzelAgenticActionExecutor,
   KritzelAgenticPreparation,
-} from './agentic-action.types';
-import { collectAnchoredLines } from './agentic-conflict.helper';
+} from '../../executors/agentic-action.types';
+import { collectAnchoredLines } from '../../helpers/agentic-conflict.helper';
 
 type AnyObject = KritzelBaseObject<any>;
 type ObjectMap = KritzelObjectMap<AnyObject>;

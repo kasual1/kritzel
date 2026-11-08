@@ -1,21 +1,21 @@
-import { KritzelObjectMap } from '../../structures/object-map.structure';
-import { KritzelAgenticCursorManager } from '../agentic-cursor.manager';
-import { KritzelAgenticActionManager } from '../agentic-action.manager';
-import { KritzelAnchorManager } from '../anchor.manager';
-import { KritzelShape } from '../../objects/shape.class';
-import { KritzelText } from '../../objects/text.class';
-import { KritzelPath } from '../../objects/path.class';
-import { KritzelLine } from '../../objects/line.class';
-import { KritzelGroup } from '../../objects/group.class';
-import { KritzelRichTextHelper } from '../../../helpers/rich-text.helper';
-import { KritzelCore } from '../../core/core.class';
-import { KritzelSelectionGroup } from '../../objects/selection-group.class';
+import { KritzelObjectMap } from '../classes/structures/object-map.structure';
+import { KritzelAgenticCursorManager } from '../classes/managers/agentic-cursor.manager';
+import { KritzelAgenticActionManager } from '../classes/managers/agentic-action.manager';
+import { KritzelAnchorManager } from '../classes/managers/anchor.manager';
+import { KritzelShape } from '../classes/objects/shape.class';
+import { KritzelText } from '../classes/objects/text.class';
+import { KritzelPath } from '../classes/objects/path.class';
+import { KritzelLine } from '../classes/objects/line.class';
+import { KritzelGroup } from '../classes/objects/group.class';
+import { KritzelRichTextHelper } from '../helpers/rich-text.helper';
+import { KritzelCore } from '../classes/core/core.class';
+import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
 
 // Real object classes on a real Yjs object map: these tests check the geometry and history of
 // the create and transform actions end to end, without a rendered canvas.
 
-jest.mock('../../../configs/default-sync.config', () => ({ DEFAULT_SYNC_CONFIG: { providers: [] } }));
-jest.mock('../../../helpers/migration.helper', () => ({ runMigrations: jest.fn() }));
+jest.mock('../configs/default-sync.config', () => ({ DEFAULT_SYNC_CONFIG: { providers: [] } }));
+jest.mock('../helpers/migration.helper', () => ({ runMigrations: jest.fn() }));
 
 /**
  * Same-realm deep clone. Jest's structuredClone returns objects from another realm, which Yjs

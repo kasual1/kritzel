@@ -1,12 +1,12 @@
 import { AGENT_TOOL_SPECS, OBSERVE_CANVAS_SCHEMA, agentToolInputSchema, type KritzelJsonSchemaNode } from './agent-tool-schemas';
-import { AGENTIC_ACTION_EXECUTORS, getAgenticActionExecutor } from '../managers/agentic-actions';
+import { AGENTIC_ACTION_EXECUTORS, getAgenticActionExecutor } from '../../executors/agentic-action-executor.registry';
 import {
   AGENTIC_ANCHORS,
   AGENTIC_ARROW_HEAD_STYLES,
   AGENTIC_RESIZE_HANDLES,
   AGENTIC_SHAPE_TYPES,
-} from '../managers/agentic-actions/agentic-validation.helper';
-import { AGENTIC_ANCHOR_FACTORS } from '../managers/agentic-actions/agentic-geometry.helper';
+} from '../../helpers/agentic-validation.helper';
+import { AGENTIC_ANCHOR_FACTORS } from '../../helpers/agentic-geometry.helper';
 import { ShapeType } from '../../enums/shape-type.enum';
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 

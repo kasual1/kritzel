@@ -1,15 +1,15 @@
-import type { KritzelAgenticObjectStyle, KritzelAgenticSetStyleAction } from '../../../interfaces/agentic-action.interface';
-import type { KritzelBaseObject } from '../../objects/base-object.class';
-import { KritzelShape } from '../../objects/shape.class';
-import { KritzelText } from '../../objects/text.class';
-import { KritzelPath } from '../../objects/path.class';
-import { KritzelLine } from '../../objects/line.class';
-import { KritzelGroup } from '../../objects/group.class';
+import type { KritzelAgenticObjectStyle, KritzelAgenticSetStyleAction } from '../interfaces/agentic-action.interface';
+import type { KritzelBaseObject } from '../classes/objects/base-object.class';
+import { KritzelShape } from '../classes/objects/shape.class';
+import { KritzelText } from '../classes/objects/text.class';
+import { KritzelPath } from '../classes/objects/path.class';
+import { KritzelLine } from '../classes/objects/line.class';
+import { KritzelGroup } from '../classes/objects/group.class';
 import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES, type KritzelAgenticActionExecutor } from './agentic-action.types';
-import { collectWithDescendants } from './agentic-conflict.helper';
-import { toThemeColor } from './agentic-style.helper';
+import { collectWithDescendants } from '../helpers/agentic-conflict.helper';
+import { toThemeColor } from '../helpers/agentic-style.helper';
 import { flyToObjects, prepareTopLevelTargets } from './select.executor';
-import { AGENTIC_OBJECT_STYLE_KEYS, assertObjectIds, assertStyle, uniqueIds } from './agentic-validation.helper';
+import { AGENTIC_OBJECT_STYLE_KEYS, assertObjectIds, assertStyle, uniqueIds } from '../helpers/agentic-validation.helper';
 
 type AnyObject = KritzelBaseObject<any>;
 

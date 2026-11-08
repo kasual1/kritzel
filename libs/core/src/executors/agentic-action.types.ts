@@ -1,5 +1,5 @@
-import type { KritzelAgenticAction, KritzelAgenticActionFailureReason } from '../../../interfaces/agentic-action.interface';
-import type { KritzelAgenticActionRun } from './agentic-action-run.class';
+import type { KritzelAgenticAction, KritzelAgenticActionFailureReason } from '../interfaces/agentic-action.interface';
+import type { KritzelAgenticActionRun } from '../classes/managers/agentic-action-run.class';
 
 /** Press duration in milliseconds at the default speed. */
 export const AGENTIC_ACTION_PRESS_MS = 90;

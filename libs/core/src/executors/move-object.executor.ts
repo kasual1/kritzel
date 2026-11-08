@@ -1,9 +1,9 @@
-import type { KritzelAgenticMoveObjectAction } from '../../../interfaces/agentic-action.interface';
-import { KritzelLine } from '../../objects/line.class';
+import type { KritzelAgenticMoveObjectAction } from '../interfaces/agentic-action.interface';
+import { KritzelLine } from '../classes/objects/line.class';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import { isSelectionObject } from './agentic-conflict.helper';
+import { isSelectionObject } from '../helpers/agentic-conflict.helper';
 import { prepareTopLevelTargets } from './select.executor';
-import { assertAnchor, assertObjectId, assertTarget, isObjectTarget } from './agentic-validation.helper';
+import { assertAnchor, assertObjectId, assertTarget, isObjectTarget } from '../helpers/agentic-validation.helper';
 
 /** `moveObject`: grabs the object, drags it so its `align` point lands on `to`, and releases it. */
 export const moveObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticMoveObjectAction> = {

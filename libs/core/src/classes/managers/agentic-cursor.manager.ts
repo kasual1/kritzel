@@ -14,13 +14,13 @@ import {
 } from '../../interfaces/agentic-cursor.interface';
 import type { KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import type { KritzelBaseObject } from '../objects/base-object.class';
-import { AGENTIC_ACTION_ROTATION_HANDLE_PX } from './agentic-actions/agentic-action.types';
+import { AGENTIC_ACTION_ROTATION_HANDLE_PX } from '../../executors/agentic-action.types';
 import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelElementAwareObject } from '../../interfaces/object-element.interface';
 import { KritzelEasingHelper } from '../../helpers/easing.helper';
 import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
-import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor, KritzelAnchorableGeometry, resolveObjectAnchor } from './agentic-actions/agentic-geometry.helper';
+import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor, KritzelAnchorableGeometry, resolveObjectAnchor } from '../../helpers/agentic-geometry.helper';
 
 export const AGENTIC_CURSOR_DEFAULT_SPEED = 1200;
 export const AGENTIC_CURSOR_MIN_DURATION = 250;

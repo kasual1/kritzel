@@ -1,8 +1,8 @@
-import type { KritzelAgenticRotateObjectAction } from '../../../interfaces/agentic-action.interface';
+import type { KritzelAgenticRotateObjectAction } from '../interfaces/agentic-action.interface';
 import { AGENTIC_ACTION_ROTATE_SPEED, type KritzelAgenticActionExecutor } from './agentic-action.types';
 import { prepareTopLevelTargets } from './select.executor';
-import { assertObjectId } from './agentic-validation.helper';
-import { createTransientSelectionGroup, targetRotation } from './agentic-transform.helper';
+import { assertObjectId } from '../helpers/agentic-validation.helper';
+import { createTransientSelectionGroup, targetRotation } from '../helpers/agentic-transform.helper';
 
 /** `rotateObject`: grabs the rotation handle and turns the object to the new angle. */
 export const rotateObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticRotateObjectAction> = {

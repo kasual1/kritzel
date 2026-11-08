@@ -1,9 +1,9 @@
-import type { KritzelAgenticCreateTextAction } from '../../../interfaces/agentic-action.interface';
-import { KritzelText } from '../../objects/text.class';
+import type { KritzelAgenticCreateTextAction } from '../interfaces/agentic-action.interface';
+import { KritzelText } from '../classes/objects/text.class';
 import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES, type KritzelAgenticActionExecutor } from './agentic-action.types';
-import { resolveTextStyle } from './agentic-style.helper';
+import { resolveTextStyle } from '../helpers/agentic-style.helper';
 import { typeInto } from './type-text.executor';
-import { AGENTIC_TEXT_STYLE_KEYS, assertStyle } from './agentic-validation.helper';
+import { AGENTIC_TEXT_STYLE_KEYS, assertStyle } from '../helpers/agentic-validation.helper';
 
 /** `createText`: clicks to place a text object and types into it. */
 export const createTextExecutor: KritzelAgenticActionExecutor<KritzelAgenticCreateTextAction> = {

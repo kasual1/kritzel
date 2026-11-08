@@ -15,7 +15,7 @@ import {
   AGENTIC_ARROW_HEAD_STYLES,
   AGENTIC_RESIZE_HANDLES,
   AGENTIC_SHAPE_TYPES,
-} from '../managers/agentic-actions/agentic-validation.helper';
+} from '../../helpers/agentic-validation.helper';
 
 /** A JSON Schema node, limited to keywords every LLM provider accepts (no anyOf, const, $ref, min/max). */
 export interface KritzelJsonSchemaNode {

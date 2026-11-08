@@ -1,4 +1,4 @@
-import type { KritzelAgenticAction, KritzelAgenticActionType } from '../../../interfaces/agentic-action.interface';
+import type { KritzelAgenticAction, KritzelAgenticActionType } from '../interfaces/agentic-action.interface';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
 import { clickExecutor } from './click.executor';
 import { clearSelectionExecutor, selectExecutor } from './select.executor';

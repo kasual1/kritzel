@@ -1,7 +1,7 @@
-import type { KritzelAgenticRedoAction, KritzelAgenticUndoAction } from '../../../interfaces/agentic-action.interface';
+import type { KritzelAgenticRedoAction, KritzelAgenticUndoAction } from '../interfaces/agentic-action.interface';
 import type { KritzelAgenticActionExecutor } from './agentic-action.types';
-import type { KritzelAgenticActionRun } from './agentic-action-run.class';
-import type { KritzelAgentHistoryResult } from '../../structures/object-map.structure';
+import type { KritzelAgenticActionRun } from '../classes/managers/agentic-action-run.class';
+import type { KritzelAgentHistoryResult } from '../classes/structures/object-map.structure';
 import { flyToObjects } from './select.executor';
 
 type HistoryAction = KritzelAgenticUndoAction | KritzelAgenticRedoAction;

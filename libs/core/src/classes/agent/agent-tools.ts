@@ -8,7 +8,7 @@ import type {
   KritzelAgentToolsOptions,
   KritzelCanvasObject,
 } from '../../interfaces/agent.interface';
-import { getAgenticActionExecutor } from '../managers/agentic-actions';
+import { getAgenticActionExecutor } from '../../executors/agentic-action-executor.registry';
 import { KritzelAgentActionError } from './agent-action-error.class';
 import { AGENT_TOOL_SPECS, OBSERVE_CANVAS_SCHEMA, agentToolInputSchema, type KritzelAgentToolSpec, type KritzelJsonSchemaNode } from './agent-tool-schemas';
 

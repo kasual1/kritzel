@@ -1,6 +1,6 @@
 import { computeAnchoredResize, fixedCorner, normalizeAngle, rotateVector, targetRotation } from './agentic-transform.helper';
-import { cumulativeLengths, polylinePrefix } from './draw-path.executor';
-import { KritzelRichTextHelper } from '../../../helpers/rich-text.helper';
+import { cumulativeLengths, polylinePrefix } from '../executors/draw-path.executor';
+import { KritzelRichTextHelper } from './rich-text.helper';
 import { EditorState } from 'prosemirror-state';
 import { schema } from 'prosemirror-schema-basic';
 

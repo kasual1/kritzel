@@ -1,5 +1,5 @@
-import { KritzelSelectionGroup } from '../../objects/selection-group.class';
-import { KritzelGroup } from '../../objects/group.class';
+import { KritzelSelectionGroup } from '../classes/objects/selection-group.class';
+import { KritzelGroup } from '../classes/objects/group.class';
 import { buildFrameCache, buildParentIndex, classifySelectionGroup, detectObjectConflict, expandWithRelatives, findParentGroup } from './agentic-conflict.helper';
 
 const createGroup = (fields: Record<string, unknown>) => {

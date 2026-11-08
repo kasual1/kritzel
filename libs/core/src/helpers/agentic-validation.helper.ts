@@ -3,10 +3,10 @@ import type {
   KritzelAgenticObjectTarget,
   KritzelAgenticPointTarget,
   KritzelAgenticTarget,
-} from '../../../interfaces/agentic-cursor.interface';
-import type { KritzelAgenticResizeHandle } from '../../../interfaces/agentic-action.interface';
-import type { ArrowHeadStyle } from '../../../interfaces/arrow-head.interface';
-import { ShapeType } from '../../../enums/shape-type.enum';
+} from '../interfaces/agentic-cursor.interface';
+import type { KritzelAgenticResizeHandle } from '../interfaces/agentic-action.interface';
+import type { ArrowHeadStyle } from '../interfaces/arrow-head.interface';
+import { ShapeType } from '../enums/shape-type.enum';
 import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from './agentic-geometry.helper';
 
 /** Every anchor on an object. */
