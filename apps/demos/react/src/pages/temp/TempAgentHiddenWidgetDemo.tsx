@@ -77,6 +77,12 @@ const widgetContent: KritzelIframeContent = {
     .actions { display: flex; gap: 8px; }
     button { height: 32px; padding: 0 12px; border: 1px solid #dadce0; border-radius: 8px; background: #ffffff; font: inherit; font-size: 13px; font-weight: 700; }
     button.primary { flex: 1; border-color: #1565c0; background: #1565c0; color: #ffffff; }
+    /* Fades in over the placeholder's grey when it replaces the placeholder, instead of snapping in. */
+    html { animation: settle 450ms ease-out both; }
+    body { animation: reveal 450ms ease-out both; }
+    @keyframes settle { from { background: #eef1f4; } to { background: transparent; } }
+    @keyframes reveal { from { opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { html, body { animation: none; } }
   `,
   script: `
     const GOAL = 8;
