@@ -107,6 +107,12 @@ const iframePointerBridgeStarts = new WeakMap<HTMLIFrameElement, KritzelIframePo
  */
 const iframeElementBridges = new WeakMap<KritzelIframeObject, KritzelIframeElementBridge>();
 
+/**
+ * Iframes that have loaded their first document. Kept per element, so the state is never serialized and stays with
+ * the iframe when a synced update hands it to the object that replaces this one (see `adoptTransientStateFrom`).
+ */
+const loadedIframes = new WeakSet<HTMLIFrameElement>();
+
 export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> implements KritzelEmbeddedObject, KritzelElementAwareObject {
   override __class__: string = 'KritzelIframeObject';
 
@@ -172,6 +178,14 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     return this.sandbox.join(' ');
   }
 
+  /**
+   * Whether the mounted iframe has loaded its first document. Until then the engine keeps the object invisible, so
+   * it fades in with its content instead of showing an empty frame first.
+   */
+  get isDocumentLoaded(): boolean {
+    return this.isMounted && loadedIframes.has(this.elementRef);
+  }
+
   override mount(iframe: HTMLIFrameElement): void {
     if (this.isMounted && this.elementRef === iframe) {
       return;
@@ -189,6 +203,13 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
     this.messageListener = event => this.handleMessage(event);
     window.addEventListener('message', this.messageListener);
+    if (!loadedIframes.has(iframe)) {
+      // Listens only from here on, so the blank document a new iframe starts with doesn't count.
+      iframe.addEventListener('load', () => {
+        loadedIframes.add(iframe);
+        this._core?.rerender();
+      }, { once: true });
+    }
     iframe.srcdoc = this.createSourceDocument();
     this.onMount(this.createLifecycleContext());
   }

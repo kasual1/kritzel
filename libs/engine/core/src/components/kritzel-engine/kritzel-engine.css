@@ -74,6 +74,22 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   }
 }
 
+.kritzel-iframe-object--revealed {
+  animation: kritzel-iframe-reveal 280ms ease-out backwards;
+}
+
+@keyframes kritzel-iframe-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kritzel-iframe-object--revealed {
+    animation: none;
+  }
+}
+
 .PlaygroundEditorTheme__quote {
   margin: 0;
   margin-left: 20px;

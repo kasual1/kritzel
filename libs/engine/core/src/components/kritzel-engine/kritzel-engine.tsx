@@ -3679,6 +3679,9 @@ export class KritzelEngine implements KritzelEngineHost {
 
                 {object instanceof KritzelIframeObject && (
                   <div
+                    // Invisible until the iframe has loaded its first document, then it fades in with its content
+                    // instead of showing an empty frame first.
+                    class={object.isDocumentLoaded ? 'kritzel-iframe-object kritzel-iframe-object--revealed' : 'kritzel-iframe-object'}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3687,7 +3690,7 @@ export class KritzelEngine implements KritzelEngineHost {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: effectiveOpacityString,
+                      opacity: object.isDocumentLoaded ? effectiveOpacityString : '0',
                       backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
                       borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',

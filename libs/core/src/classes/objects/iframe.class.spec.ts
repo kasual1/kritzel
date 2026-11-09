@@ -173,6 +173,36 @@ describe('KritzelIframeObject', () => {
     expect(previous.isMounted).toBe(false);
   });
 
+  it('reports its document as loaded once the iframe has loaded its first document', () => {
+    const object = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    const iframe = document.createElement('iframe');
+    const rerender = jest.fn();
+    (object as any)._core = { rerender };
+
+    expect(object.isDocumentLoaded).toBe(false);
+    object.mount(iframe);
+    expect(object.isDocumentLoaded).toBe(false);
+
+    iframe.dispatchEvent(new Event('load'));
+    expect(object.isDocumentLoaded).toBe(true);
+    expect(rerender).toHaveBeenCalledTimes(1);
+
+    object.unmount();
+    expect(object.isDocumentLoaded).toBe(false);
+  });
+
+  it('keeps the loaded document when a synced update replaces the object', () => {
+    const previous = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    const iframe = document.createElement('iframe');
+    previous.mount(iframe);
+    iframe.dispatchEvent(new Event('load'));
+
+    const revived = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    revived.adoptTransientStateFrom(previous);
+
+    expect(revived.isDocumentLoaded).toBe(true);
+  });
+
   it('bridges pointer movement at viewport scale without feeding the moved iframe position back into the coordinates', () => {
     const originalPointerEvent = globalThis.PointerEvent;
     Object.defineProperty(globalThis, 'PointerEvent', {
