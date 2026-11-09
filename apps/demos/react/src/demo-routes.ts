@@ -78,6 +78,7 @@ import {
   TempAgentGroupPage,
   TempAgentMovePage,
   TempAgentOrderPage,
+  TempAgentRectanglePage,
   TempAgentResizePage,
   TempAgentRotatePage,
   TempAgentUngroupPage,
@@ -180,6 +181,7 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/examples/generative-ui", title: "Generative UI", category: "Examples", component: GenerativeUiPage },
 
   // TEMP: agent action checks; delete with pages/temp/ and the import above.
+  { path: "/temp/agent-rectangle", title: "Agent: Rectangle", category: "Temp", component: TempAgentRectanglePage },
   { path: "/temp/agent-create", title: "Agent: Create", category: "Temp", component: TempAgentCreatePage },
   { path: "/temp/agent-move", title: "Agent: Move", category: "Temp", component: TempAgentMovePage },
   { path: "/temp/agent-rotate", title: "Agent: Rotate", category: "Temp", component: TempAgentRotatePage },
