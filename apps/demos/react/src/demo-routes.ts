@@ -78,11 +78,11 @@ import {
   TempAgentGroupPage,
   TempAgentMovePage,
   TempAgentOrderPage,
-  TempAgentRectanglePage,
   TempAgentResizePage,
   TempAgentRotatePage,
   TempAgentUngroupPage,
 } from "./pages/temp/TempAgentDemos";
+import { TempAgentRectanglePage } from "./pages/temp/TempAgentRectangleDemo";
 import { BasicUsagePage } from "./pages/getting-started/BasicUsagePage";
 import { QuickStartPage } from "./pages/getting-started/QuickStartPage";
 
