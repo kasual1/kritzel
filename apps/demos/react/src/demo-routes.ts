@@ -70,22 +70,6 @@ import { WorkspacesDeletePage } from "./pages/fundamentals/workspaces/Workspaces
 import { WorkspacesReadPage } from "./pages/fundamentals/workspaces/WorkspacesReadPage";
 import { WorkspacesSwitchPage } from "./pages/fundamentals/workspaces/WorkspacesSwitchPage";
 import { WorkspacesUpdatePage } from "./pages/fundamentals/workspaces/WorkspacesUpdatePage";
-// TEMP: agent action checks; delete with pages/temp/ and the "Temp" routes below.
-import {
-  TempAgentCopyPage,
-  TempAgentCreatePage,
-  TempAgentErasePage,
-  TempAgentGroupPage,
-  TempAgentMovePage,
-  TempAgentOrderPage,
-  TempAgentResizePage,
-  TempAgentRotatePage,
-  TempAgentUngroupPage,
-} from "./pages/temp/TempAgentDemos";
-import { TempAgentRectanglePage } from "./pages/temp/TempAgentRectangleDemo";
-import { TempAgentWidgetPage } from "./pages/temp/TempAgentWidgetDemo";
-import { TempAgentHiddenWidgetPage } from "./pages/temp/TempAgentHiddenWidgetDemo";
-import { TempAgentClaudeWidgetPage } from "./pages/temp/TempAgentClaudeWidgetDemo";
 import { BasicUsagePage } from "./pages/getting-started/BasicUsagePage";
 import { QuickStartPage } from "./pages/getting-started/QuickStartPage";
 
@@ -182,19 +166,4 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/examples/image-annotation-studio", title: "Image Annotation Studio", category: "Examples", component: ImageAnnotationStudioPage },
   { path: "/examples/performance-showcase", title: "Performance Showcase", category: "Examples", component: PerformanceShowcasePage },
   { path: "/examples/generative-ui", title: "Generative UI", category: "Examples", component: GenerativeUiPage },
-
-  // TEMP: agent action checks; delete with pages/temp/ and the import above.
-  { path: "/temp/agent-rectangle", title: "Agent: Rectangle", category: "Temp", component: TempAgentRectanglePage },
-  { path: "/temp/agent-widget", title: "Agent: Widget", category: "Temp", component: TempAgentWidgetPage },
-  { path: "/temp/agent-hidden-widget", title: "Agent: Hidden widget", category: "Temp", component: TempAgentHiddenWidgetPage },
-  { path: "/temp/agent-claude-widget", title: "Agent: Claude widget", category: "Temp", component: TempAgentClaudeWidgetPage },
-  { path: "/temp/agent-create", title: "Agent: Create", category: "Temp", component: TempAgentCreatePage },
-  { path: "/temp/agent-move", title: "Agent: Move", category: "Temp", component: TempAgentMovePage },
-  { path: "/temp/agent-rotate", title: "Agent: Rotate", category: "Temp", component: TempAgentRotatePage },
-  { path: "/temp/agent-copy", title: "Agent: Copy", category: "Temp", component: TempAgentCopyPage },
-  { path: "/temp/agent-group", title: "Agent: Group", category: "Temp", component: TempAgentGroupPage },
-  { path: "/temp/agent-ungroup", title: "Agent: Ungroup", category: "Temp", component: TempAgentUngroupPage },
-  { path: "/temp/agent-order", title: "Agent: Order", category: "Temp", component: TempAgentOrderPage },
-  { path: "/temp/agent-resize", title: "Agent: Resize", category: "Temp", component: TempAgentResizePage },
-  { path: "/temp/agent-erase", title: "Agent: Erase", category: "Temp", component: TempAgentErasePage },
 ];
