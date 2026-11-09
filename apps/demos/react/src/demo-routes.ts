@@ -11,6 +11,7 @@ import { ImportExportWorkspaceImportPage } from "./pages/advanced/import-export/
 import { AgentsBasicPage } from "./pages/advanced/agents/AgentsBasicPage";
 import { AgentsActionsPage } from "./pages/advanced/agents/AgentsActionsPage";
 import { AgentsShowcasePage } from "./pages/advanced/agents/AgentsShowcasePage";
+import { ChatSessionsModesPage } from "./pages/advanced/chat-sessions/ChatSessionsModesPage";
 import { UserManagementLoginPage } from "./pages/advanced/user-management/UserManagementLoginPage";
 import { UserManagementLogoutPage } from "./pages/advanced/user-management/UserManagementLogoutPage";
 import { UserManagementProvidersPage } from "./pages/advanced/user-management/UserManagementProvidersPage";
@@ -148,6 +149,7 @@ export const demoRoutes: readonly DemoRoute[] = [
   { path: "/advanced/agents/basic", title: "Agentic Cursors", category: "Advanced", context: "Agentic Cursors", component: AgentsBasicPage },
   { path: "/advanced/agents/actions", title: "Agentic Actions", category: "Advanced", context: "Agentic Cursors", component: AgentsActionsPage },
   { path: "/advanced/agents/showcase", title: "Agentic Showcase", category: "Advanced", context: "Agentic Cursors", component: AgentsShowcasePage },
+  { path: "/advanced/chat-sessions/modes", title: "Chat Session Modes", category: "Advanced", context: "Chat Sessions", component: ChatSessionsModesPage },
 
   { path: "/customization/theming/apply", title: "Apply Themes", category: "Customization", context: "Theming", component: ThemingApplyPage },
   { path: "/customization/theming/custom", title: "Custom Themes", category: "Customization", context: "Theming", component: ThemingCustomPage },

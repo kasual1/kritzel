@@ -54,6 +54,8 @@ import {
   KritzelAlignment,
   KritzelViewportState,
   KritzelAgent,
+  KritzelChatSession,
+  isKritzelChatSession,
   KritzelAgentsChangeEvent,
   KritzelRemoteAgentPresence,
   KritzelObjectChangeSource,
@@ -205,6 +207,16 @@ export class KritzelEngine implements KritzelEngineHost {
   @Watch('user')
   onUserChange(newValue: IKritzelUser | undefined) {
     this.core.setUser(newValue);
+  }
+
+  /**
+   * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here.
+   * A session replaced by another one is unbound once its running prompt ends.
+   */
+  @Prop() chatSession?: KritzelChatSession | null;
+  @Watch('chatSession')
+  onChatSessionChange() {
+    this.bindChatSession();
   }
 
   /** Tool definitions to register with this engine instance. */
@@ -2683,6 +2695,42 @@ export class KritzelEngine implements KritzelEngineHost {
     }
   }
 
+  /** The session `chatSession` is bound to; binding again is a no-op. */
+  private _boundChatSession: KritzelChatSession | null = null;
+
+  private bindChatSession(): void {
+    const next = isKritzelChatSession(this.chatSession) ? this.chatSession : null;
+    if (this.chatSession != null && !next) {
+      console.error('[Kritzel] chatSession expects a KritzelChatSession.');
+    }
+    const previous = this._boundChatSession;
+    if (next && next === previous && next._owner === this.core) {
+      return;
+    }
+    if (previous && previous !== next) {
+      // A prompt that is running finishes first.
+      previous._detachWhenIdle();
+    }
+    this._boundChatSession = next;
+    if (!next) {
+      return;
+    }
+    try {
+      if (next.agent) {
+        this.core.agentManager.add(next.agent);
+      }
+      next._attach(this.core);
+    } catch (error) {
+      this._boundChatSession = null;
+      console.error('[Kritzel] Failed to bind the chat session:', error);
+    }
+  }
+
+  private unbindChatSession(): void {
+    this._boundChatSession?._detach();
+    this._boundChatSession = null;
+  }
+
   get isSelecting() {
     return this.core.store.state.activeTool?.toolType === 'selection' && this.core.store.state.isSelecting;
   }
@@ -2701,9 +2749,11 @@ export class KritzelEngine implements KritzelEngineHost {
 
   connectedCallback() {
     this.core.agentManager.setDisposed(false);
+    this.bindChatSession();
   }
 
   disconnectedCallback() {
+    this.unbindChatSession();
     // From now on, the agents of this engine can be added to another editor.
     this.core.agentManager.setDisposed(true);
     // Stop agentic actions first, while their objects and workspace still exist.
@@ -2746,6 +2796,7 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   componentWillLoad() {
+    this.bindChatSession();
     this._toolsRevision++;
     void this.registerConfiguredTools();
     this.core.setEditorId(this.editorId);
@@ -2775,6 +2826,8 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   async componentDidLoad() {
+    // A chatSession set after componentWillLoad but before @Watch handlers run is bound here.
+    this.bindChatSession();
     setTimeout(async () => {
       this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems ?? [], this.objectContextMenuItems ?? []);
       this.keyHandler = new KritzelKeyHandler(this.core);

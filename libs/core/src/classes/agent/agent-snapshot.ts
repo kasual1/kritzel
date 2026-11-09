@@ -13,11 +13,10 @@ import { KritzelGroup } from '../objects/group.class';
 import { KritzelDynamicObject } from '../objects/dynamic-object.class';
 import { KritzelRichTextHelper } from '../../helpers/rich-text.helper';
 import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
-import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import {
   buildFrameCache,
   buildParentIndex,
-  classifySelectionGroup,
+  collectHumanSelection,
   collectWithDescendants,
   isSelectionObject,
 } from '../../helpers/agentic-conflict.helper';
@@ -32,7 +31,16 @@ const DEFAULT_MAX_TEXT_LENGTH = 300;
  * objects with their geometry, text, connections and style. Never includes image data, iframe code or
  * path points. Throws when no workspace is ready.
  */
-export function buildCanvasSnapshot(core: KritzelCore, agentId: string, options: KritzelObserveOptions = {}): KritzelCanvasSnapshot {
+export function buildCanvasSnapshot(core: KritzelCore, agentId: string, options?: KritzelObserveOptions): KritzelCanvasSnapshot;
+/**
+ * For an actor working as the local user: `agent` describes the actor (no position, the user's selection as its
+ * selection) and the user's selection never marks objects as busy.
+ * @internal
+ */
+export function buildCanvasSnapshot(core: KritzelCore, actor: { kind: 'user'; id: string }, options?: KritzelObserveOptions): KritzelCanvasSnapshot;
+export function buildCanvasSnapshot(core: KritzelCore, actor: string | { kind: 'user'; id: string }, options: KritzelObserveOptions = {}): KritzelCanvasSnapshot {
+  const asUser = typeof actor !== 'string';
+  const agentId = typeof actor === 'string' ? actor : actor.id;
   const map = getMap(core);
   if (!map) {
     throw new Error('The canvas is not ready (no workspace is loaded).');
@@ -48,16 +56,9 @@ export function buildCanvasSnapshot(core: KritzelCore, agentId: string, options:
   };
   const theme = core.themeManager?.currentTheme ?? 'light';
   // The same rule as the agents' conflict checks: selection groups that belong to the local user.
-  const userSelection = Array.from(
-    new Set(
-      map
-        .allObjects()
-        .filter((object): object is KritzelSelectionGroup => object instanceof KritzelSelectionGroup && classifySelectionGroup(map, core, object) === 'human')
-        .flatMap(group => group.objectIds),
-    ),
-  );
-  const agentSelection = core.agenticActionManager?.getSelection(agentId) ?? [];
-  const cursor = core.agenticCursorManager?.get(agentId);
+  const userSelection = collectHumanSelection(core, map);
+  const agentSelection = asUser ? userSelection : (core.agenticActionManager?.getSelection(agentId) ?? []);
+  const cursor = asUser ? null : core.agenticCursorManager?.get(agentId);
 
   const parents = buildParentIndex(map);
   const frame = buildFrameCache(core, map);
@@ -88,7 +89,7 @@ export function buildCanvasSnapshot(core: KritzelCore, agentId: string, options:
     if (parent) {
       entry.parentId = parent.id;
     }
-    if (frame.humanSelectedIds.has(object.id) || (object instanceof KritzelText && object.isEditing)) {
+    if ((!asUser && frame.humanSelectedIds.has(object.id)) || (object instanceof KritzelText && object.isEditing)) {
       entry.busy = 'user';
     } else if (frame.collaboratorIds.has(object.id)) {
       entry.busy = 'collaborator';

@@ -64,11 +64,32 @@ class MockObject {
   }
 }
 
+/** A selection group with just what the map and the conflict checks use. */
+function createMockSelection(objectIds: string[], clientId: number | undefined, id = `sg-${Math.round(Math.random() * 1e9)}`) {
+  const group = Object.create(KritzelSelectionGroup.prototype);
+  const fields: Record<string, unknown> = {
+    objectIds,
+    id,
+    clientId,
+    userId: undefined,
+    rotatedBoundingBox: { x: 0, y: 0, z: 1, width: 1, height: 1 },
+    serialize: () => ({ __class__: 'MockSelection', id, objectIds, clientId }),
+    invalidateObjectsCache: jest.fn(),
+    refreshObjectDimensions: jest.fn(),
+    captureUnchangedSnapshots: jest.fn(),
+    deselectAllChildren: jest.fn(),
+  };
+  for (const [key, value] of Object.entries(fields)) {
+    Object.defineProperty(group, key, { value, writable: true, configurable: true, enumerable: true });
+  }
+  return group;
+}
+
 jest.mock('../core/reviver.class', () => ({
   KritzelReviver: jest.fn().mockImplementation((core: any) => ({
     revive: (data: any) => {
       if (data.__class__ === 'MockSelection') {
-        return null;
+        return createMockSelection(data.objectIds, data.clientId, data.id);
       }
       return new MockObject(core, data.id, data.translateX, data.translateY, data.width, data.height, data.zIndex);
     },
@@ -122,25 +143,15 @@ describe('KritzelAgenticActionManager', () => {
 
   /** Inserts a selection group like the selection tool does (same tab when `clientId` is the doc client ID). */
   const addSelection = (objectIds: string[], clientId: number | undefined = map.docClientId ?? undefined) => {
-    const group = Object.create(KritzelSelectionGroup.prototype);
-    const fields: Record<string, unknown> = {
-      objectIds,
-      id: `sg-${Math.round(Math.random() * 1e9)}`,
-      clientId,
-      userId: undefined,
-      rotatedBoundingBox: { x: 0, y: 0, z: 1, width: 1, height: 1 },
-      serialize: () => ({ __class__: 'MockSelection', id: group.id }),
-      invalidateObjectsCache: jest.fn(),
-      refreshObjectDimensions: jest.fn(),
-      captureUnchangedSnapshots: jest.fn(),
-    };
-    for (const [key, value] of Object.entries(fields)) {
-      Object.defineProperty(group, key, { value, writable: true, configurable: true, enumerable: true });
-    }
+    const group = makeSelection(objectIds, clientId);
     map.insert(group);
     map.stopUndoCapturing();
     return group;
   };
+
+  const makeSelection = (objectIds: string[], clientId: number | undefined = map.docClientId ?? undefined) => createMockSelection(objectIds, clientId);
+
+  const selectionGroups = () => map.filter(o => o instanceof KritzelSelectionGroup) as any[];
 
   const ydoc = () => (map as unknown as { _ydoc: Y.Doc })._ydoc;
 
@@ -201,7 +212,17 @@ describe('KritzelAgenticActionManager', () => {
         emitObjectsRemoved: jest.fn(),
         emitObjectsUpdated: jest.fn(),
         emitObjectsInViewportChange: jest.fn(),
+        triggerSelectionChange: jest.fn().mockResolvedValue(undefined),
       },
+      // Like the core: the user's selection is a selection group in the map.
+      removeSelectionGroup: jest.fn(() => {
+        const ids = new Set(selectionGroups().map(group => group.id));
+        if (ids.size > 0) map.remove((o: any) => ids.has(o.id));
+      }),
+      selectObjects: jest.fn((objects: any[]) => {
+        core.removeSelectionGroup();
+        map.insert(makeSelection(objects.map(object => object.id)));
+      }),
       removeObject: jest.fn((object: any) => map.remove((o: any) => o.id === object.id)),
     };
     map = new KritzelObjectMap<any>();
@@ -615,6 +636,142 @@ describe('KritzelAgenticActionManager', () => {
       expect(undo).toEqual({ completed: true, objectIds: ['a'] });
       expect(obj('a')).toMatchObject({ translateX: 10, translateY: 20 });
       expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith(expect.any(Array), { type: 'agent', agentId: 'agent', actionType: 'undo' });
+    });
+  });
+
+  describe('user actors', () => {
+    beforeEach(() => {
+      actions.registerUserActor('me');
+    });
+
+    it('registers actors with unique IDs and resolves who performs an ID', () => {
+      expect(actions.getActor('me')).toEqual({ id: 'me', kind: 'user' });
+      expect(actions.getActor('agent')).toEqual({ id: 'agent', kind: 'agent' });
+      expect(actions.getActor('nope')).toBeNull();
+      expect(() => actions.registerUserActor('me')).toThrow('already exists');
+      expect(() => actions.registerUserActor('agent')).toThrow('already exists');
+      expect(actions.unregisterUserActor('me')).toBe(true);
+      expect(actions.unregisterUserActor('me')).toBe(false);
+      expect(() => actions.perform('me', { type: 'clearSelection' })).toThrow('not found');
+    });
+
+    it('changes objects instantly as one step of the user history, without a source', async () => {
+      add('a', 0, 0);
+      const userSteps = map.undoManager!.undoStack.length;
+      const promise = actions.perform('me', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } });
+      await flushMicrotasks();
+      await expect(promise).resolves.toEqual({ completed: true, objectIds: ['a'] });
+      expect(obj('a')!.translateX).toBe(100);
+      expect(map.getAgentUndoStackLength('me')).toBe(0);
+      expect(map.undoManager!.undoStack.length).toBe(userSteps + 1);
+      expect(core.engine.emitObjectsUpdated).toHaveBeenCalledWith([expect.objectContaining({ object: expect.objectContaining({ id: 'a' }) })]);
+
+      map.undo();
+      expect(obj('a')!.translateX).toBe(0);
+      map.redo();
+      expect(obj('a')!.translateX).toBe(100);
+    });
+
+    it('merges the actions of one history group into one user step', async () => {
+      add('a', 0, 0);
+      add('b', 0, 200);
+      const userSteps = map.undoManager!.undoStack.length;
+      await settle(actions.perform('me', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } }, { historyGroup: 'p1' } as any));
+      await settle(actions.perform('me', { type: 'moveObject', objectId: 'b', to: { x: 150, y: 225 } }, { historyGroup: 'p1' } as any));
+      await settle(actions.perform('me', { type: 'moveObject', objectId: 'b', to: { x: 350, y: 225 } }, { historyGroup: 'p2' } as any));
+      expect(map.undoManager!.undoStack.length).toBe(userSteps + 2);
+
+      map.undo();
+      expect(obj('b')!.translateX).toBe(100);
+      map.undo();
+      expect(obj('a')!.translateX).toBe(0);
+      expect(obj('b')!.translateX).toBe(0);
+    });
+
+    it('refuses undo and redo: they belong to the user', async () => {
+      await expect(settle(actions.perform('me', { type: 'undo' }))).resolves.toEqual({ completed: false, reason: 'not-allowed' });
+      await expect(settle(actions.perform('me', { type: 'redo' }))).resolves.toEqual({ completed: false, reason: 'not-allowed' });
+    });
+
+    it('works on objects the user has selected, but not during a gesture', async () => {
+      add('a', 0, 0);
+      addSelection(['a']);
+      await expect(settle(actions.perform('me', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } }))).resolves.toMatchObject({ completed: true });
+
+      state.isDragging = true;
+      await expect(settle(actions.perform('me', { type: 'moveObject', objectId: 'a', to: { x: 250, y: 25 } }))).resolves.toMatchObject({
+        completed: false,
+        reason: 'user-interaction',
+      });
+    });
+
+    it('is blocked by running actions of agents, but not by their selections', async () => {
+      add('a', 0, 0);
+      add('b', 0, 200);
+      await settle(actions.perform('agent', { type: 'select', objectIds: ['b'] }, { instant: true }));
+      await expect(settle(actions.perform('me', { type: 'moveObject', objectId: 'b', to: { x: 150, y: 225 } }))).resolves.toMatchObject({ completed: true });
+
+      const slow = actions.perform('agent', { type: 'moveObject', objectId: 'a', to: { x: 400, y: 25 } });
+      await step();
+      await step();
+      await expect(settle(actions.perform('me', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } }))).resolves.toMatchObject({
+        completed: false,
+        reason: 'claimed-by-agent',
+      });
+      await settle(slow);
+    });
+
+    it('runs one user actor at a time', async () => {
+      actions.registerUserActor('me-too');
+      add('a', 0, 0);
+      const first = actions.perform('me', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } });
+      const second = actions.perform('me-too', { type: 'moveObject', objectId: 'a', to: { x: 250, y: 25 } });
+      await expect(settle(first)).resolves.toMatchObject({ completed: true });
+      await expect(settle(second)).resolves.toMatchObject({ completed: true });
+      expect(obj('a')!.translateX).toBe(200);
+    });
+
+    it("changes the user's selection, leaves selection groups out of events and undoes it with the action", async () => {
+      add('a', 0, 0);
+      add('b', 200, 0);
+      addSelection(['a', 'b']);
+      const userSteps = map.undoManager!.undoStack.length;
+
+      await expect(settle(actions.perform('me', { type: 'deleteObjects', objectIds: ['a'] }))).resolves.toEqual({ completed: true, objectIds: ['a'] });
+      expect(selectionGroups().map(group => group.objectIds)).toEqual([['b']]);
+      expect(core.engine.emitObjectsRemoved).toHaveBeenCalledWith([expect.objectContaining({ id: 'a' })]);
+      expect(core.engine.emitObjectsAdded).not.toHaveBeenCalled();
+      expect(map.undoManager!.undoStack.length).toBe(userSteps + 1);
+
+      map.undo();
+      expect(obj('a')).toBeDefined();
+      expect(selectionGroups().map(group => group.objectIds)).toEqual([['a', 'b']]);
+    });
+
+    it('rolls back a selection change of an aborted action and reports the selection change', async () => {
+      add('a', 0, 0);
+      addSelection(['a']);
+      const controller = new AbortController();
+      core.selectObjects.mockImplementationOnce((objects: any[]) => {
+        core.removeSelectionGroup();
+        map.insert(makeSelection(objects.map(object => object.id)));
+        controller.abort();
+      });
+      add('b', 200, 0);
+      const result = await settle(actions.perform('me', { type: 'select', objectIds: ['b'] }, { signal: controller.signal }));
+      expect(result).toEqual({ completed: false, reason: 'aborted' });
+      expect(selectionGroups().map(group => group.objectIds)).toEqual([['a']]);
+      expect(core.engine.triggerSelectionChange).toHaveBeenCalled();
+    });
+
+    it('settles queued actions when the actor is unregistered', async () => {
+      add('a', 0, 0);
+      const first = actions.perform('me', { type: 'moveObject', objectId: 'a', to: { x: 150, y: 25 } });
+      const second = actions.perform('me', { type: 'moveObject', objectId: 'a', to: { x: 250, y: 25 } });
+      actions.unregisterUserActor('me');
+      await expect(settle(first)).resolves.toEqual({ completed: false, reason: 'agent-removed' });
+      await expect(settle(second)).resolves.toEqual({ completed: false, reason: 'agent-removed' });
+      expect(obj('a')!.translateX).toBe(0);
     });
   });
 

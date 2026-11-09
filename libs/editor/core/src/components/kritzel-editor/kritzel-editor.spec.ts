@@ -164,6 +164,91 @@ describe('KritzelEditor', () => {
       expect(emit).toHaveBeenCalledTimes(1);
       expect(emit).toHaveBeenCalledWith(detail);
     });
+
+    describe('with a chat session', () => {
+      const createSession = () => {
+        const listeners = new Set<() => void>();
+        const session: any = {
+          [Symbol.for('kritzel.chatSession')]: true,
+          running: false,
+          send: jest.fn(() => {
+            session.running = true;
+            listeners.forEach(listener => listener());
+            return Promise.resolve({ status: 'completed' });
+          }),
+          stop: jest.fn(),
+          on: jest.fn((_event: string, listener: () => void) => {
+            listeners.add(listener);
+            return () => listeners.delete(listener);
+          }),
+          finish: () => {
+            session.running = false;
+            listeners.forEach(listener => listener());
+          },
+          listenerCount: () => listeners.size,
+        };
+        return session;
+      };
+
+      it('sends the prompt with the chips, tracks running and stops the session', () => {
+        const session = createSession();
+        const chips = [{ id: 'a', label: 'Page', objectId: 'obj-1' }];
+        component.chatBoxChips = chips;
+        component.chatSession = session;
+        component.onChatSessionChange();
+        (component as any).chatSubmit = { emit: jest.fn(() => ({ defaultPrevented: false })) };
+        (component as any).chatStop = { emit: jest.fn() };
+
+        (component as any).handleChatSubmit('Make it red');
+        expect(session.send).toHaveBeenCalledWith({ text: 'Make it red', chips });
+        expect(component.isChatSessionRunning).toBe(true);
+
+        (component as any).handleChatStop();
+        expect((component as any).chatStop.emit).toHaveBeenCalled();
+        expect(session.stop).toHaveBeenCalled();
+
+        session.finish();
+        expect(component.isChatSessionRunning).toBe(false);
+      });
+
+      it('picks up a session set while @Watch handlers are not active yet, before the next render', () => {
+        const session = createSession();
+        component.componentWillLoad();
+        // Set without the watcher, as Angular does while the element loads.
+        component.chatSession = session;
+        component.componentWillRender();
+        expect(session.on).toHaveBeenCalledTimes(1);
+        component.componentWillRender();
+        expect(session.on).toHaveBeenCalledTimes(1);
+      });
+
+      it('lets a chatSubmit listener opt out with preventDefault', () => {
+        const session = createSession();
+        component.chatSession = session;
+        component.onChatSessionChange();
+        (component as any).chatSubmit = { emit: jest.fn(() => ({ defaultPrevented: true })) };
+
+        (component as any).handleChatSubmit('Mine');
+        expect(session.send).not.toHaveBeenCalled();
+      });
+
+      it('subscribes once per session and unsubscribes on swap and disconnect', () => {
+        const first = createSession();
+        component.chatSession = first;
+        component.onChatSessionChange();
+        component.onChatSessionChange();
+        expect(first.on).toHaveBeenCalledTimes(1);
+
+        const second = createSession();
+        component.chatSession = second;
+        component.onChatSessionChange();
+        expect(first.listenerCount()).toBe(0);
+        expect(second.listenerCount()).toBe(1);
+
+        component.disconnectedCallback();
+        expect(second.listenerCount()).toBe(0);
+      });
+    });
   });
 
   describe('Object Titlebar', () => {

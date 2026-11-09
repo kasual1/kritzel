@@ -19,4 +19,8 @@ export interface KritzelChatBoxChip {
   hint?: string;
   /** Registered icon shown before the label, e.g. `'cursor'`. No icon when omitted. */
   icon?: KritzelIconName;
+  /** The object the chip refers to. A chat session tells the model about it. Not shown. */
+  objectId?: string;
+  /** CSS selector of the element inside the object the chip refers to. A chat session tells the model about it. Not shown. */
+  selector?: string;
 }

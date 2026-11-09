@@ -29,6 +29,24 @@ import { isObjectTarget } from '../../helpers/agentic-geometry.helper';
 type AnyObject = KritzelBaseObject<any>;
 type ObjectMap = KritzelObjectMap<AnyObject>;
 
+/** Who performs an action: an agent with its own cursor, or an actor working as the local user (no cursor). */
+export type KritzelActorKind = 'agent' | 'user';
+
+/** Reads and writes the selection an action works with: the agent's own one, or the user's real selection. @internal */
+export interface KritzelActorSelection {
+  get(): string[];
+  set(objectIds: string[]): void;
+}
+
+/** Options of a run beyond the public action options. @internal */
+export interface KritzelActorActionOptions extends KritzelAgenticActionOptions {
+  /**
+   * User actors only: kept changes of consecutive actions with the same group become one step in the user's
+   * history (e.g. all actions of one chat prompt).
+   */
+  historyGroup?: string;
+}
+
 /** How a run ended. */
 export type KritzelAgenticRunOutcome =
   | { kind: 'commit'; objectIds: string[] }
@@ -77,6 +95,12 @@ export class KritzelAgenticActionRun {
   hostMoveGeneration = 0;
   /** Length of the agent's undo stack when the action started. */
   undoLengthAtStart = 0;
+  /** User actors: length of the user's undo stack when the action started; the kept step is moved there. */
+  userUndoLengthAtStart = 0;
+  /** User actors: whether the action changed the user's selection. */
+  selectionTouched = false;
+  /** User actors: selection groups the action wrote; they are left out of change events. */
+  readonly selectionObjectIds = new Set<string>();
   /** Redo steps set aside while a mutating action runs, so a rollback can restore them. */
   suspendedRedo: unknown[] | null = null;
   /** Set while an agent undo/redo step is applied; aborts arriving then are held until it returns. */
@@ -136,8 +160,9 @@ export class KritzelAgenticActionRun {
     readonly core: KritzelCore,
     readonly cursorId: string,
     readonly action: KritzelAgenticAction,
-    readonly options: KritzelAgenticActionOptions,
+    readonly options: KritzelActorActionOptions,
     readonly executor: KritzelAgenticActionExecutor,
+    readonly actorKind: KritzelActorKind = 'agent',
   ) {
     this.promise = new Promise<KritzelAgenticActionResult>((resolve, reject) => {
       this._resolve = resolve;
@@ -152,10 +177,21 @@ export class KritzelAgenticActionRun {
     return this.core.agenticCursorManager;
   }
 
-  /** Whether all animation is skipped. */
+  /** Whether all animation is skipped. Actions of user actors are always instant. */
   get instant(): boolean {
-    return !!this.options.instant;
+    return this.actorKind === 'user' || !!this.options.instant;
   }
+
+  /** Who created objects belong to: the agent, or the local user for user actors. */
+  get ownerId(): string | undefined {
+    return this.actorKind === 'user' ? this.core.user?.id : this.cursorId;
+  }
+
+  /** The selection the action works with; set by the action manager. */
+  selection: KritzelActorSelection = {
+    get: () => this.host.getSelection(this.cursorId),
+    set: objectIds => this.host.setSelection(this.cursorId, objectIds),
+  };
 
   /** Factor all non-flight phase durations are divided by. */
   get speedFactor(): number {
@@ -402,11 +438,14 @@ export class KritzelAgenticActionRun {
   }
 
   /**
-   * Marks the agent as the creator of an object it is about to insert (`userId = agentId`),
-   * instead of the local user that `X.create(core)` stamps. Returns the object.
+   * Marks the creator of an object the action is about to insert: the agent (`userId = agentId`), or for
+   * user actors the local user. Returns the object.
    */
   own<T extends AnyObject>(object: T): T {
-    object.userId = this.cursorId;
+    const owner = this.ownerId;
+    if (owner !== undefined) {
+      object.userId = owner;
+    }
     return object;
   }
 
@@ -435,11 +474,11 @@ export class KritzelAgenticActionRun {
 
   /** Replaces objects in the agent's selection, e.g. grouped objects by their group. Others stay selected. */
   replaceInSelection(replacements: Map<string, string[]>): void {
-    const selection = this.host.getSelection(this.cursorId);
+    const selection = this.selection.get();
     if (!selection.some(id => replacements.has(id))) {
       return;
     }
-    this.host.setSelection(this.cursorId, Array.from(new Set(selection.flatMap(id => replacements.get(id) ?? [id]))));
+    this.selection.set(Array.from(new Set(selection.flatMap(id => replacements.get(id) ?? [id]))));
   }
 
   /** Registers a hook that runs when the run settles, whatever the outcome. */

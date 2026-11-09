@@ -105,6 +105,7 @@ import { KritzelContextMenuState } from "@kritzel/core";
 import { KritzelObjectExportFormat } from "@kritzel/core";
 import { KritzelSvgIconMap } from "@kritzel/core";
 import { KritzelChatBoxChip } from "@kritzel/core";
+import { KritzelChatSession, isKritzelChatSession } from "@kritzel/core";
 import { KritzelChatBoxMode } from "../kritzel-chat-box/kritzel-chat-box";
 
 @Component({
@@ -477,6 +478,16 @@ export class KritzelEditor {
    * Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
    */
   @Prop() chatBoxChips: KritzelChatBoxChip[] = [];
+  /**
+   * A chat session the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs,
+   * the chat box shows its progress and the stop button stops it. Call `preventDefault()` on `chatSubmit` to
+   * send a prompt yourself.
+   */
+  @Prop() chatSession?: KritzelChatSession | null;
+  @Watch("chatSession")
+  onChatSessionChange() {
+    this.subscribeChatSession();
+  }
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
@@ -520,9 +531,12 @@ export class KritzelEditor {
   @Event() login!: EventEmitter<LoginEvent>;
   @Event() isPublicChange!: EventEmitter<IKritzelIsPublicChangeEvent>;
   @Event() awarenessChange!: EventEmitter<Map<number, Record<string, any>>>;
-  /** Emitted with the chat box text when the user submits it. */
-  @Event() chatSubmit!: EventEmitter<string>;
-  /** Emitted when the user stops the current chat response. */
+  /**
+   * Emitted with the chat box text when the user submits it. With a `chatSession`, the prompt is sent to it
+   * unless a listener calls `preventDefault()`.
+   */
+  @Event({ cancelable: true }) chatSubmit!: EventEmitter<string>;
+  /** Emitted when the user stops the current chat response. A `chatSession` is stopped too. */
   @Event() chatStop!: EventEmitter<void>;
   /** Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it. */
   @Event() chatChipRemove!: EventEmitter<KritzelChatBoxChip>;
@@ -547,6 +561,8 @@ export class KritzelEditor {
   @Event()
   objectElementPick!: EventEmitter<KritzelObjectElementPickEvent>;
   @State() isEngineReady: boolean = false;
+  /** Whether the bound chat session runs a prompt. */
+  @State() isChatSessionRunning: boolean = false;
   @State() agents: (KritzelAgentPresence | KritzelRemoteAgentPresence)[] = [];
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
@@ -1397,6 +1413,7 @@ export class KritzelEditor {
   currentUserDialogRef!: HTMLKritzelCurrentUserDialogElement;
 
   componentWillLoad() {
+    this.subscribeChatSession();
     this.registerCustomSvgIcons(this.customSvgIcons);
     this.recomputeMoreMenuItems();
     this.loadSettingsFromStorage();
@@ -1405,6 +1422,9 @@ export class KritzelEditor {
 
   componentWillRender() {
     this.registerCustomSvgIcons(this.customSvgIcons);
+    // Frameworks can set `chatSession` after componentWillLoad but before Stencil runs @Watch handlers,
+    // so the subscription is checked again before every render (a no-op when it is current).
+    this.subscribeChatSession();
   }
 
   private isTextToolConfig(
@@ -1497,7 +1517,12 @@ export class KritzelEditor {
     this.setOsSpecificCssVariables();
   }
 
+  connectedCallback() {
+    this.subscribeChatSession();
+  }
+
   disconnectedCallback() {
+    this.unsubscribeChatSession();
     this.clearNotificationDismissTimer();
     this.clearNotificationDismissAnimationTimer();
   }
@@ -1682,6 +1707,45 @@ export class KritzelEditor {
   handleObjectElementPick(event: CustomEvent<KritzelObjectElementPickEvent>) {
     event.stopPropagation();
     this.objectElementPick.emit(event.detail);
+  }
+
+  private chatSessionSubscription: { session: KritzelChatSession; unsubscribe: () => void } | null = null;
+
+  private subscribeChatSession(): void {
+    const session = isKritzelChatSession(this.chatSession) ? this.chatSession : null;
+    if (this.chatSessionSubscription?.session === session) {
+      return;
+    }
+    this.unsubscribeChatSession();
+    if (session) {
+      const unsubscribe = session.on("change", () => {
+        this.isChatSessionRunning = session.running;
+      });
+      this.chatSessionSubscription = { session, unsubscribe };
+    }
+    this.isChatSessionRunning = !!session?.running;
+  }
+
+  private unsubscribeChatSession(): void {
+    this.chatSessionSubscription?.unsubscribe();
+    this.chatSessionSubscription = null;
+  }
+
+  private handleChatSubmit(text: string): void {
+    const event = this.chatSubmit.emit(text);
+    const session = isKritzelChatSession(this.chatSession) ? this.chatSession : null;
+    if (!session || event?.defaultPrevented) {
+      return;
+    }
+    void session.send({ text, chips: this.chatBoxChips ?? [] });
+    this.isChatSessionRunning = session.running;
+  }
+
+  private handleChatStop(): void {
+    this.chatStop.emit();
+    if (isKritzelChatSession(this.chatSession)) {
+      this.chatSession.stop();
+    }
   }
 
   handleChatChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
@@ -2190,6 +2254,7 @@ export class KritzelEditor {
             syncConfig={this.syncConfig}
             assetStorageConfig={this.assetStorageConfig}
             user={this.user}
+            chatSession={this.chatSession}
             scaleMax={this.scaleMax}
             lockDrawingScale={this.lockDrawingScale}
             scaleMin={this.scaleMin}
@@ -2255,16 +2320,16 @@ export class KritzelEditor {
           {this.isChatBoxVisible && (
             <kritzel-chat-box
               mode={this.chatBoxMode}
-              loading={this.isChatBoxLoading}
+              loading={this.isChatBoxLoading || this.isChatSessionRunning}
               terms={this.resolvedTerms}
               chips={this.chatBoxChips}
               onChatSubmit={(event) => {
                 event.stopPropagation();
-                this.chatSubmit.emit(event.detail);
+                this.handleChatSubmit(event.detail);
               }}
               onChatStop={(event) => {
                 event.stopPropagation();
-                this.chatStop.emit();
+                this.handleChatStop();
               }}
               onChatChipRemove={(event) => this.handleChatChipRemove(event)}
             ></kritzel-chat-box>

@@ -1,4 +1,4 @@
-import { createAgentTools, formatAgentToolResult } from './agent-tools';
+import { createActorTools, createAgentTools, formatAgentToolResult } from './agent-tools';
 import { KritzelAgentActionError } from './agent-action-error.class';
 
 /** The parts of a KritzelAgent the tools use. */
@@ -136,5 +136,33 @@ describe('agent tools', () => {
 
   it('formats results for app-defined tools', () => {
     expect(formatAgentToolResult({ completed: true, objectIds: ['x'] })).toBe('{"completed":true,"objectIds":["x"]}');
+  });
+  describe('for an actor working as the user', () => {
+    const userActor = () => ({ ...createFakeAgent(), kind: 'user' as const });
+
+    it('leaves out click, selection and history tools, and words observe_canvas for the user', () => {
+      const tools = createActorTools(userActor() as any);
+      const names = tools.map(candidate => candidate.name);
+      expect(names).toEqual(expect.arrayContaining(['observe_canvas', 'create_shape', 'move_object', 'delete_objects', 'group_objects']));
+      for (const excluded of ['click', 'select', 'clear_selection', 'undo', 'redo']) {
+        expect(names).not.toContain(excluded);
+      }
+      expect(tools.find(candidate => candidate.name === 'observe_canvas')!.description).toContain('You work as the user');
+      expect(tools.find(candidate => candidate.name === 'delete_objects')!.description).toContain("the user's selection follows");
+      expect(createActorTools(userActor() as any, { only: ['undo', 'observe_canvas'] }).map(candidate => candidate.name)).toEqual(['observe_canvas']);
+    });
+
+    it('uses user wording in hints', async () => {
+      const actor = userActor();
+      actor.isAdded = false;
+      const removed = JSON.parse(await createActorTools(actor as any).find(candidate => candidate.name === 'move_object')!.run({ objectId: 'a', to: { x: 1, y: 2 } }));
+      expect(removed).toEqual({ completed: false, reason: 'agent-removed', hint: 'The chat session ended. Stop working.' });
+    });
+  });
+
+  it('performs instantly with the instant option', async () => {
+    const instantTool = createAgentTools(agent as any, { instant: true }).find(candidate => candidate.name === 'move_object')!;
+    await instantTool.run({ objectId: 'a', to: { x: 1, y: 2 } });
+    expect(agent.perform).toHaveBeenCalledWith({ objectId: 'a', to: { x: 1, y: 2 }, type: 'moveObject' }, { instant: true });
   });
 });

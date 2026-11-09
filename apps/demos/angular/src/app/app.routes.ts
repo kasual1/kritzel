@@ -55,6 +55,7 @@ import { ImportExportWorkspaceExportComponent } from './pages/advanced/import-ex
 import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-export/import-export-workspace-import.component';
 import { AgentsBasicComponent } from './pages/advanced/agents/agents-basic.component';
 import { AgentsActionsComponent } from './pages/advanced/agents/agents-actions.component';
+import { ChatSessionsModesComponent } from './pages/advanced/chat-sessions/chat-sessions-modes.component';
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
 import { ThemingListenComponent } from './pages/customization/theming/theming-listen.component';
@@ -71,6 +72,7 @@ import { BlueprintDefectMapperComponent } from './pages/examples/blueprint-defec
 import { SlideshowPresentationComponent } from './pages/examples/slideshow-presentation.component';
 import { ImageAnnotationStudioComponent } from './pages/examples/image-annotation-studio.component';
 import { GenerativeUiComponent } from './pages/examples/generative-ui/generative-ui.component';
+import { TempChatModesComponent } from './pages/temp/temp-chat-modes.component'; // TEMP: delete with pages/temp/
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'getting-started/quick-start' },
@@ -207,6 +209,10 @@ export const routes: Routes = [
           { path: 'actions', component: AgentsActionsComponent },
         ],
       },
+      {
+        path: 'chat-sessions',
+        children: [{ path: 'modes', component: ChatSessionsModesComponent }],
+      },
     ],
   },
   {
@@ -255,5 +261,7 @@ export const routes: Routes = [
       { path: 'generative-ui', component: GenerativeUiComponent },
     ],
   },
+  // TEMP: delete with pages/temp/
+  { path: 'temp', children: [{ path: 'chat-modes', component: TempChatModesComponent }] },
   { path: '**', redirectTo: 'getting-started/quick-start' },
 ];

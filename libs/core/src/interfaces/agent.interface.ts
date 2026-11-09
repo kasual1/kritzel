@@ -147,6 +147,8 @@ export interface KritzelAgentToolsOptions {
   prefix?: string;
   /** Longest text an action may type. Defaults to 2000 characters. */
   maxTextLength?: number;
+  /** Skips all animation in the actions of these tools: the changes appear at once. Defaults to `false`. */
+  instant?: boolean;
 }
 
 /** What a tool's `run` returns, as JSON. */

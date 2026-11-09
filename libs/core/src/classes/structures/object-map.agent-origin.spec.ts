@@ -392,6 +392,158 @@ describe('KritzelObjectMap agent origins (real Yjs)', () => {
     expect(map.activeAgentOrigin).toBeNull();
   });
 
+  describe('moveActorStepToUser', () => {
+    const userStack = () => map.undoManager!.undoStack;
+
+    const actorMoveA = (origin: KritzelAgentOrigin, x: number) =>
+      agentWrite(map, origin, () => {
+        const a = map.findById('a');
+        a.x = x;
+        map.update(a);
+      });
+
+    it('moves an actor step to the top of the user stack, where the user can undo and redo it', () => {
+      const before = userStack().length;
+      const origin = map.getAgentOrigin('user-actor')!;
+      actorMoveA(origin, 30);
+
+      expect(map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: before })).toBe(true);
+      expect(map.getAgentUndoStackLength('user-actor')).toBe(0);
+      expect(userStack().length).toBe(before + 1);
+
+      map.undo();
+      expect(xOf(map, 'a')).toBe(0);
+      map.redo();
+      expect(xOf(map, 'a')).toBe(30);
+    });
+
+    it('does not let the next user change merge into the moved step', () => {
+      const before = userStack().length;
+      const origin = map.getAgentOrigin('user-actor')!;
+      actorMoveA(origin, 30);
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: before });
+
+      const b = map.findById('b');
+      b.x = 7;
+      map.update(b);
+      expect(userStack().length).toBe(before + 2);
+
+      map.undo();
+      expect(xOf(map, 'b')).toBe(0);
+      expect(xOf(map, 'a')).toBe(30);
+    });
+
+    it('clears the user redo stack like a new change', () => {
+      const b = map.findById('b');
+      b.x = 9;
+      map.update(b);
+      map.stopUndoCapturing();
+      map.undo();
+      expect(map.canRedo()).toBe(true);
+
+      const origin = map.getAgentOrigin('user-actor')!;
+      actorMoveA(origin, 30);
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: userStack().length });
+      expect(map.canRedo()).toBe(false);
+    });
+
+    it('merges consecutive steps of the same group into one user step', () => {
+      const before = userStack().length;
+      const origin = map.getAgentOrigin('user-actor')!;
+      actorMoveA(origin, 30);
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: before, group: 'prompt-1' });
+      map.insert(new FakeObject('c', 5) as any);
+      // The insert above is a user step: the next action of the prompt is no longer adjacent.
+      map.stopUndoCapturing();
+      const afterUser = userStack().length;
+
+      agentWrite(map, origin, () => map.insert(new FakeObject('d', 1) as any));
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: afterUser, group: 'prompt-1' });
+      agentWrite(map, origin, () => map.insert(new FakeObject('e', 1) as any));
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: userStack().length, group: 'prompt-1' });
+
+      expect(userStack().length).toBe(afterUser + 1);
+      map.undo();
+      expect(map.findById('d')).toBeUndefined();
+      expect(map.findById('e')).toBeUndefined();
+      expect(map.findById('c')).toBeDefined();
+    });
+
+    it('keeps steps of different groups apart', () => {
+      const before = userStack().length;
+      const origin = map.getAgentOrigin('user-actor')!;
+      agentWrite(map, origin, () => map.insert(new FakeObject('d', 1) as any));
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: before, group: 'prompt-1' });
+      agentWrite(map, origin, () => map.insert(new FakeObject('e', 1) as any));
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: before + 1, group: 'prompt-2' });
+      expect(userStack().length).toBe(before + 2);
+    });
+
+    it('inserts below user changes made during the action', () => {
+      const before = userStack().length;
+      const origin = map.getAgentOrigin('user-actor')!;
+      actorMoveA(origin, 30);
+
+      const b = map.findById('b');
+      b.x = 11;
+      map.update(b);
+      map.stopUndoCapturing();
+
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: before });
+      expect(userStack().length).toBe(before + 2);
+      map.undo();
+      expect(xOf(map, 'b')).toBe(0);
+      expect(xOf(map, 'a')).toBe(30);
+      map.undo();
+      expect(xOf(map, 'a')).toBe(0);
+    });
+
+    it('inserts below pending temporary items, which still consolidate', () => {
+      const before = userStack().length;
+      const b = map.findById('b');
+      b.label = 'x';
+      map.update(b, { temporary: true });
+      map.stopUndoCapturing();
+      b.label = 'xy';
+      map.update(b, { temporary: true });
+      map.stopUndoCapturing();
+
+      const origin = map.getAgentOrigin('user-actor')!;
+      actorMoveA(origin, 30);
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: userStack().length });
+      expect(userStack().length).toBe(before + 3);
+
+      map.consolidateTemporaryItems();
+      expect(userStack().length).toBe(before + 2);
+      map.undo();
+      expect((map.findById('b') as FakeObject).label).toBe('');
+      expect(xOf(map, 'a')).toBe(30);
+      map.undo();
+      expect(xOf(map, 'a')).toBe(0);
+    });
+
+    it('merges several actor steps above fromLength into one', () => {
+      const before = userStack().length;
+      const origin = map.getAgentOrigin('user-actor')!;
+      actorMoveA(origin, 10);
+      map.stopAgentCapturing('user-actor');
+      agentWrite(map, origin, () => map.insert(new FakeObject('d', 1) as any));
+      expect(map.getAgentUndoStackLength('user-actor')).toBe(2);
+
+      map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: before });
+      expect(userStack().length).toBe(before + 1);
+      map.undo();
+      expect(xOf(map, 'a')).toBe(0);
+      expect(map.findById('d')).toBeUndefined();
+    });
+
+    it('returns false without steps', () => {
+      map.getAgentOrigin('user-actor');
+      expect(map.moveActorStepToUser('user-actor', { fromLength: 0, userIndex: 0 })).toBe(false);
+      expect(map.moveActorStepToUser('unknown', { fromLength: 0, userIndex: 0 })).toBe(false);
+    });
+  });
+
   it('keeps user undo grouping unchanged for a nested transaction followed by an insert', () => {
     const stopCapturing = jest.spyOn(map.undoManager!, 'stopCapturing');
     map.transaction(() => {

@@ -86,6 +86,27 @@ describe('kritzel-chat-box', () => {
     expect(component.value).toBe('');
   });
 
+  it('keeps the draft when Enter is pressed while loading', () => {
+    const component = new KritzelChatBox();
+    component.loading = true;
+    component.value = 'Next idea';
+    const emitSubmit = jest.fn();
+    Object.defineProperty(component, 'chatSubmit', { value: { emit: emitSubmit } });
+    (component as any).scheduleCaretUpdate = jest.fn();
+    const event = { key: 'Enter', shiftKey: false, isComposing: false, preventDefault: jest.fn(), stopPropagation: jest.fn() };
+
+    (component as any).handleKeyDown(event);
+
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(emitSubmit).not.toHaveBeenCalled();
+    expect(component.value).toBe('Next idea');
+
+    component.loading = false;
+    (component as any).handleKeyDown(event);
+    expect(emitSubmit).toHaveBeenCalledWith('Next idea');
+    expect(component.value).toBe('');
+  });
+
   describe('chips', () => {
     const byClass = (className: string) => (node: any) => node?.props?.class === className;
     const byKey = (key: string) => (node: any) => node?.props?.key === key;

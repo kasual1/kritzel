@@ -1144,6 +1144,39 @@ export class EditorPage {
       return el.removeObject(realObject);
     }, object.id as string);
   }
+
+  // ─── Chat box ──────────────────────────────────────────────────────────────
+
+  /** The chat box text input. */
+  get chatInput(): Locator {
+    return this.page.locator('kritzel-chat-box textarea');
+  }
+
+  /** The chat box send button, which turns into a stop button while a response runs. */
+  get chatSubmitButton(): Locator {
+    return this.page.locator('kritzel-chat-box .chat-submit');
+  }
+
+  /** The chips shown above the chat box. */
+  get chatChips(): Locator {
+    return this.page.locator('kritzel-chat-box .chat-chip');
+  }
+
+  /** Types a prompt and sends it with Enter. */
+  async sendChatPrompt(text: string) {
+    await this.chatInput.fill(text);
+    await this.chatInput.press('Enter');
+  }
+
+  /** Whether the chat box shows a running response (its card is busy). */
+  async isChatBusy(): Promise<boolean> {
+    return (await this.page.locator('kritzel-chat-box .chat-box').getAttribute('aria-busy')) === 'true';
+  }
+
+  /** Waits until the chat box no longer shows a running response. */
+  async waitForChatIdle(timeout = 15_000) {
+    await this.page.locator('kritzel-chat-box .chat-box[aria-busy="false"]').waitFor({ timeout });
+  }
 }
 
 export const test = base.extend<{ editorPage: EditorPage }>({

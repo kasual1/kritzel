@@ -445,6 +445,10 @@ Your agents treat the agents of collaborators like the other agents of your edit
 
 ## Connecting an LLM
 
+:::tip
+To connect the editor's chat box to an LLM, use a [chat session](./chat-sessions.md). It runs the tool loop for you, keeps your API key on your server, and lets the model work as this agent or as the user.
+:::
+
 `agent.tools()` hands an agent to an LLM. It returns `observe_canvas`, which describes the canvas, and one tool per action, such as `create_shape`, `move_object`, `connect`, and `set_style`. The tools work with any provider: each has a `name`, a `description`, an `inputSchema` (a JSON Schema), and `run(input)`, which performs the action and resolves with a JSON string for the model. The model decides what to do, and the agent does it on the canvas: its cursor shows the work, the changes go to its own history, and collaborators see it like any other agent.
 
 ```ts
@@ -632,6 +636,7 @@ For the full list of related APIs, see the following reference sections.
 
 - [Agent](../api-reference/agent.md)
 - [Agent: LLM Tools](../api-reference/agent.md#llm-tools)
+- [Chat Session](../api-reference/chat-session.md)
 - [Editor: Agents](../api-reference/editor.md#agents)
 - [Editor: Object Elements](../api-reference/editor.md#object-elements)
 - [Providers: Broadcast Provider](../api-reference/providers.md#broadcast-provider)

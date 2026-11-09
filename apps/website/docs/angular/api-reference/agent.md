@@ -356,7 +356,7 @@ task<T>(label: string, fn: () => Promise<T> | T): Promise<T>
 
 ## LLM Tools
 
-Provider-neutral tool definitions and a canvas snapshot for LLMs. See [Connecting an LLM](../advanced/agents.md#connecting-an-llm) for a complete example with Claude.
+Provider-neutral tool definitions and a canvas snapshot for LLMs. See [Connecting an LLM](../advanced/agents.md#connecting-an-llm) for a complete example with Claude, and [Chat Sessions](../advanced/chat-sessions.md) to connect the chat box without writing the tool loop.
 
 ### tools
 
@@ -371,6 +371,7 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | only | string[] | All tools | Only these tools, by name without `prefix`. |
 | prefix | string | `''` | Put in front of every tool name, for example `'kritzel_'`, to avoid clashes with other tools. |
 | maxTextLength | number | `2000` | Longest `text` that `create_shape`, `create_text`, or `type_text` may type. Longer input is rejected with `'invalid-input'`. |
+| instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. |
 
 | Tool | Runs | Input |
 |------|------|-------|
