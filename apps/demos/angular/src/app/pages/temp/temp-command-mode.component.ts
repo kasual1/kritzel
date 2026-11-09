@@ -4,6 +4,7 @@ import { KritzelChatSession, KritzelEditor, KritzelWorkspace } from '@kritzel/an
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { llmTransport } from './mock-llm-chat-server';
+import { createWidgetTool } from './create-widget-tool';
 
 const SYSTEM = 'You draw on a whiteboard. Look at the canvas before you change it. Keep answers short.';
 @Component({
@@ -44,5 +45,5 @@ export class TempCommandModeComponent {
   themes = [angularThemeLight, angularThemeDark];
   workspaces = [new KritzelWorkspace({ viewport: { centerWorldX: 200, centerWorldY: 280, scale: 0.7 } })];
 
-  readonly session = new KritzelChatSession({ transport: llmTransport, system: SYSTEM });
+  readonly session = new KritzelChatSession({ transport: llmTransport, system: SYSTEM, tools: [createWidgetTool] });
 }

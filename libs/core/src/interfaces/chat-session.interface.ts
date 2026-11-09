@@ -1,5 +1,6 @@
 import type { KritzelAgent } from '../classes/agent/agent.class';
-import type { KritzelAgentTool, KritzelAgentToolSchema } from './agent.interface';
+import type { KritzelAgentTool, KritzelAgentToolContext, KritzelAgentToolSchema, KritzelCanvasSnapshot, KritzelObserveOptions } from './agent.interface';
+import type { KritzelAgenticAction, KritzelAgenticActionOptions, KritzelAgenticActionResult } from './agentic-action.interface';
 import type { KritzelChatBoxChip } from './chat-box.interface';
 
 /** Version of the chat protocol between a `KritzelChatSession` and your server. */
@@ -121,6 +122,40 @@ export type KritzelChatTransport = (
   options: KritzelChatTransportOptions,
 ) => Promise<KritzelChatResponse | AsyncIterable<KritzelChatStreamEvent>> | AsyncIterable<KritzelChatStreamEvent>;
 
+/**
+ * Whoever a chat session acts as: its agent, or the local user when it has none. App tools act through it, so
+ * their changes behave like the canvas tools' changes: they undo with the rest of the prompt, the stop button
+ * rolls them back and, with an agent, they are the agent's changes.
+ */
+export interface KritzelChatActor {
+  /** `'agent'` with an agent, otherwise `'user'`. */
+  readonly kind: 'agent' | 'user';
+  /**
+   * Performs an action, e.g. `{ type: 'addObject', object }` to place an object the app built. The session adds
+   * the tool call's abort signal and, in agent mode, its `instant` option. Resolves with `completed: false` and a
+   * `reason` when the action was refused or stopped.
+   */
+  perform(action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>;
+  /** What the actor sees of the canvas, as the `observe_canvas` tool returns it. */
+  observe(options?: KritzelObserveOptions): Promise<KritzelCanvasSnapshot>;
+}
+
+/** Context a chat session passes to an app tool. */
+export interface KritzelChatToolContext extends KritzelAgentToolContext {
+  /** Aborted when the user stops the response. */
+  signal: AbortSignal;
+  /** Acts on the canvas as the session: its agent, or the user. */
+  actor: KritzelChatActor;
+}
+
+/**
+ * An app-defined tool of a chat session. Like `KritzelAgentTool`, but `run` gets the session's actor to act on
+ * the canvas with. Return a JSON result, e.g. with `formatAgentToolResult()`.
+ */
+export interface KritzelChatTool extends Omit<KritzelAgentTool, 'run'> {
+  run: (input: unknown, context: KritzelChatToolContext) => Promise<string>;
+}
+
 /** Options of `new KritzelChatSession()`. */
 export interface KritzelChatSessionOptions {
   /** Sends model steps to your server. */
@@ -131,7 +166,7 @@ export interface KritzelChatSessionOptions {
    */
   agent?: KritzelAgent;
   /** App-defined tools added to the canvas tools. Their names must not clash with them. */
-  tools?: KritzelAgentTool[];
+  tools?: KritzelChatTool[];
   /** Instructions sent with every request. */
   system?: string;
   /** App data sent with every request, or a function returning it (called per request). */

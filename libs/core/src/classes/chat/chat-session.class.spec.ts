@@ -7,8 +7,10 @@ import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgent } from '../agent/agent.class';
 import { KritzelChatSession, isKritzelChatSession } from './chat-session.class';
 import { createScriptedTransport } from './scripted-transport';
-import type { KritzelCore } from '../core/core.class';
-import type { KritzelChatMessage, KritzelChatRequest, KritzelChatStreamEvent, KritzelChatToolResultPart } from '../../interfaces/chat-session.interface';
+import { KritzelCore } from '../core/core.class';
+import { KritzelShape } from '../objects/shape.class';
+import { formatAgentToolResult } from '../agent/agent-tools';
+import type { KritzelChatMessage, KritzelChatTool, KritzelChatRequest, KritzelChatStreamEvent, KritzelChatToolResultPart } from '../../interfaces/chat-session.interface';
 
 // Chat sessions on a real Yjs object map with real object classes and the real agentic managers.
 
@@ -104,6 +106,10 @@ describe('KritzelChatSession', () => {
       addObject: (object: any) => objects.insert(object),
       removeObject: (object: any) => objects.remove((o: any) => o.id === object.id),
     };
+    // The real insert preparation, as the addObject action uses it.
+    fakeCore._store = fakeCore.store;
+    fakeCore.prepareObjectForInsert = KritzelCore.prototype.prepareObjectForInsert;
+    fakeCore.insertPreparedObject = KritzelCore.prototype.insertPreparedObject;
     fakeCore.anchorManager = new KritzelAnchorManager(fakeCore);
     fakeCore.clipboardManager = new KritzelClipboardManager(fakeCore);
     await objects.initialize(fakeCore as unknown as KritzelCore, 'ws', { providers: [] });
@@ -131,6 +137,19 @@ describe('KritzelChatSession', () => {
     }
     return promise;
   };
+
+  /** An app tool that places a pre-built shape through the session's actor and records what it got. */
+  const placeBoxTool = (seen: { kind?: string; signal?: AbortSignal }): KritzelChatTool => ({
+    name: 'place_box',
+    description: 'Places a box built by the app.',
+    inputSchema: { type: 'object', properties: {} },
+    run: async (_input, { actor, signal }) => {
+      seen.kind = actor.kind;
+      seen.signal = signal;
+      const box = new KritzelShape({ translateX: 400, translateY: 0, width: 100, height: 50 });
+      return formatAgentToolResult(await actor.perform({ type: 'addObject', object: box }));
+    },
+  });
 
   const shapeCall = (x: number, text?: string) => ({ tool: 'create_shape', input: { x, y: 0, width: 100, height: 50, ...(text ? { text } : {}) } });
 
@@ -337,6 +356,40 @@ describe('KritzelChatSession', () => {
       expect(result.status).toBe('error');
     });
 
+    it('lets app tools act as the user: their objects undo with the rest of the prompt', async () => {
+      const seen: { kind?: string; signal?: AbortSignal } = {};
+      const session = new KritzelChatSession({
+        tools: [placeBoxTool(seen)],
+        transport: createScriptedTransport([{ toolCalls: [shapeCall(0), { tool: 'place_box' }] }, 'Done.']),
+      });
+      session._attach(core);
+      const userSteps = map.undoManager!.undoStack.length;
+
+      await expect(settle(session.send('Two boxes'))).resolves.toEqual({ status: 'completed' });
+
+      expect(seen.kind).toBe('user');
+      expect(seen.signal).toBeInstanceOf(AbortSignal);
+      const results = resultsOf(session.messages[2]);
+      expect(results.map(result => [result.name, !!result.isError])).toEqual([
+        ['create_shape', false],
+        ['place_box', false],
+      ]);
+      const { completed, objectIds } = JSON.parse(results[1].output);
+      expect(completed).toBe(true);
+      expect(map.findById(objectIds[0])).toMatchObject({ userId: 'human' });
+      expect(map.allObjects()).toHaveLength(2);
+      expect(map.undoManager!.undoStack.length).toBe(userSteps + 1);
+
+      map.undo();
+      expect(map.allObjects()).toHaveLength(0);
+    });
+
+    it('fails app tools that act while the session is not bound to an editor', async () => {
+      const session = new KritzelChatSession({ tools: [placeBoxTool({})], transport: createScriptedTransport(['x']) });
+      const tool = session.tools.find(candidate => candidate.name === 'place_box')!;
+      await expect(tool.run({})).rejects.toThrow('not bound to an editor');
+    });
+
     it('closes open tool calls of a restored conversation', () => {
       const session = new KritzelChatSession({
         transport: createScriptedTransport(['x']),
@@ -451,6 +504,28 @@ describe('KritzelChatSession', () => {
       expect(map.undoManager!.undoStack.length).toBe(userSteps);
       expect(map.getAgentUndoStackLength('claude')).toBe(1);
       expect(JSON.parse(resultsOf(session.messages[2])[0].output)).toMatchObject({ completed: true, objects: [{ createdBy: 'claude' }] });
+    });
+
+    it('lets app tools act as the agent', async () => {
+      const agent = core.agentManager.add(new KritzelAgent({ id: 'claude', name: 'Claude' }));
+      const seen: { kind?: string } = {};
+      const session = new KritzelChatSession({
+        agent,
+        instant: true,
+        tools: [placeBoxTool(seen)],
+        transport: createScriptedTransport([{ toolCalls: [{ tool: 'place_box' }] }, 'Done.']),
+      });
+      session._attach(core);
+      const userSteps = map.undoManager!.undoStack.length;
+
+      await expect(settle(session.send('A box'))).resolves.toEqual({ status: 'completed' });
+
+      expect(seen.kind).toBe('agent');
+      const { completed, objectIds } = JSON.parse(resultsOf(session.messages[2])[0].output);
+      expect(completed).toBe(true);
+      expect(map.findById(objectIds[0])).toMatchObject({ userId: 'claude' });
+      expect(map.undoManager!.undoStack.length).toBe(userSteps);
+      expect(map.getAgentUndoStackLength('claude')).toBe(1);
     });
 
     it('ends with detached when the agent is removed', async () => {

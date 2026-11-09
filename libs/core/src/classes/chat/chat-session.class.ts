@@ -14,6 +14,8 @@ import {
   type KritzelChatSessionEventMap,
   type KritzelChatSessionOptions,
   type KritzelChatStreamEvent,
+  type KritzelChatActor,
+  type KritzelChatTool,
   type KritzelChatToolCallPart,
   type KritzelChatToolResultPart,
 } from '../../interfaces/chat-session.interface';
@@ -386,7 +388,35 @@ export class KritzelChatSession {
       }
       names.add(tool.name);
     }
-    return [...canvas, ...(this._options.tools ?? [])];
+    return [...canvas, ...(this._options.tools ?? []).map(tool => this.bindAppTool(tool))];
+  }
+
+  /** An app tool as a plain agent tool: its `run` gets the session's actor, resolved when it runs. */
+  private bindAppTool(tool: KritzelChatTool): KritzelAgentTool {
+    return {
+      name: tool.name,
+      description: tool.description,
+      inputSchema: tool.inputSchema,
+      run: async (input, context) => {
+        const signal = context?.signal ?? new AbortController().signal;
+        return tool.run(input, { signal, actor: this.toolActor(signal) });
+      },
+    };
+  }
+
+  /** What app tools act through: the agent or the user actor, with the tool call's signal and the session's options. */
+  private toolActor(signal: AbortSignal): KritzelChatActor {
+    const agent = this._options.agent;
+    const actor = agent ?? this._userActor;
+    if (!actor) {
+      throw new Error('The chat session is not bound to an editor.');
+    }
+    const instant = !!agent && !!this._options.instant;
+    return {
+      kind: actor.kind,
+      perform: (action, options = {}) => actor.perform(action, { signal, ...(instant ? { instant: true } : {}), ...options }),
+      observe: options => actor.observe(options),
+    };
   }
 
   private resolveContext(): { context?: Record<string, unknown> } {
