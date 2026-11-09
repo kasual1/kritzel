@@ -17,6 +17,29 @@ import { IKritzelUser } from '../../interfaces/user.interface';
 import { runMigrations } from '../../helpers/migration.helper';
 import { WORKSPACE_MIGRATIONS } from '../../migrations/workspace.migrations';
 import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
+import { ObjectHelper } from '../../helpers/object.helper';
+import { KritzelAgentOrigin } from './agent-origin.class';
+import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
+import type { KritzelAwarenessAgent } from '../../interfaces/agent.interface';
+import { KritzelEventHelper } from '../../helpers/event.helper';
+
+/** Per-agent history of an agentic cursor. */
+interface KritzelAgentHistory {
+  origin: KritzelAgentOrigin;
+  undoManager: Y.UndoManager;
+  /** Set while this agent's undo/redo runs, so the resulting events carry a source. */
+  historyAction: 'undo' | 'redo' | null;
+  /** Set while a rollback runs; its events are not emitted. */
+  suppressEvents: boolean;
+}
+
+/** Result of an agent undo or redo. */
+export interface KritzelAgentHistoryResult {
+  /** `'empty'`: nothing to undo/redo. `'conflict'`: the step was fully superseded by other changes and dropped. */
+  status: 'done' | 'empty' | 'conflict';
+  /** IDs of the objects the step touched. */
+  objectIds: string[];
+}
 
 /**
  * A synchronized object map that stores and manages drawable objects on the canvas.
@@ -50,16 +73,28 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _awarenessChangeHandler: ((change: { added: number[]; updated: number[]; removed: number[] }, origin: string) => void) | null = null;
   private _awarenessChangeCallbacks: ((states: Map<number, Record<string, any>>) => void)[] = [];
   private _objectsChangeCallbacks: (() => void)[] = [];
+  private _localObjectsChangeCallbacks: ((keys: Set<string>) => void)[] = [];
   private _lastAwarenessEmitTime: number = 0;
   private _awarenessEmitTimeout: ReturnType<typeof setTimeout> | null = null;
   private readonly AWARENESS_THROTTLE_INTERVAL = 100; // milliseconds
 
   /**
-   * When true, update() only modifies local state (quadtree + idMap)
+   * While greater than zero, update() only modifies local state (quadtree + idMap)
    * without writing to Yjs. Used during drag operations to avoid
    * redundant full serializations of every child object per frame.
    */
-  private _localOnlyMode = false;
+  private _localOnlyDepth = 0;
+
+  /** Stack of agent origins; writes use the top one instead of `'local'`. */
+  private _originStack: KritzelAgentOrigin[] = [];
+  /** Per-agent histories, keyed by agentic cursor ID. */
+  private _agents = new Map<string, KritzelAgentHistory>();
+  private _beforeDestroyCallbacks: (() => void)[] = [];
+  private _historyClearedCallbacks: (() => void)[] = [];
+  /** Object the local user is drawing; also tracked without awareness. */
+  private _localActiveDrawingObjectId: string | null = null;
+  /** Stack item meta key holding the object IDs an agent step touched. */
+  private static readonly AGENT_IDS_META = 'kritzel:objectIds';
 
   /**
    * Tracks whether we're currently executing inside a `transaction()`
@@ -114,6 +149,58 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   }
 
   /**
+   * The Yjs client ID of this document. Equals the awareness client ID whenever awareness exists,
+   * and also identifies this tab when there is no awareness.
+   */
+  get docClientId(): number | null {
+    return this._ydoc?.clientID ?? null;
+  }
+
+  /** ID of the object the local user is currently drawing, also without awareness. */
+  get localActiveDrawingObjectId(): string | null {
+    return this._localActiveDrawingObjectId;
+  }
+
+  /** The agent origin writes currently use, or `null` for regular `'local'` writes. */
+  get activeAgentOrigin(): KritzelAgentOrigin | null {
+    return this._originStack.length > 0 ? this._originStack[this._originStack.length - 1] : null;
+  }
+
+  /** Origin for persisted writes. */
+  private get writeOrigin(): 'local' | KritzelAgentOrigin {
+    return this.activeAgentOrigin ?? 'local';
+  }
+
+  /**
+   * Whether a Yjs transaction or its observer phase is running. Undo managers must not be
+   * driven from inside one: Yjs would record the resulting changes as part of the running undo.
+   */
+  get isInsideYjsCallback(): boolean {
+    const doc = this._ydoc as (Y.Doc & { _transaction: unknown; _transactionCleanups: unknown[] }) | null;
+    return !!doc && (doc._transaction !== null || doc._transactionCleanups.length > 0);
+  }
+
+  /**
+   * Runs `fn` with an agent origin: every write inside goes to that agent's history instead of the
+   * user's. `fn` must be synchronous so the origin never leaks to other code.
+   */
+  withOrigin<R>(origin: KritzelAgentOrigin, fn: () => R): R {
+    if (!origin) {
+      throw new TypeError('An agent origin is required.');
+    }
+    this._originStack.push(origin);
+    try {
+      const result = fn();
+      if (result && typeof (result as unknown as PromiseLike<unknown>).then === 'function') {
+        throw new TypeError('withOrigin callbacks must be synchronous.');
+      }
+      return result;
+    } finally {
+      this._originStack.pop();
+    }
+  }
+
+  /**
    * Sets the local user identity in the awareness state.
    * This broadcasts the user's identity to all connected peers.
    */
@@ -127,6 +214,17 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       displayName,
       color: user.color || KritzelUserColorHelper.generateColorFromName(displayName),
     });
+  }
+
+  /**
+   * Shares the agents of this client with collaborators (awareness field `agents`); `null` or an
+   * empty list removes the field. No-op without awareness and for background maps.
+   */
+  setLocalAgents(agents: KritzelAwarenessAgent[] | null): void {
+    if (!this._awareness || this._headless) {
+      return;
+    }
+    this._awareness.setLocalStateField('agents', agents && agents.length > 0 ? agents : null);
   }
 
   /**
@@ -157,6 +255,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    * Pass `null` when drawing ends.
    */
   setActiveDrawingObject(objectId: string | null): void {
+    this._localActiveDrawingObjectId = objectId;
     if (!this._awareness) {
       return;
     }
@@ -246,6 +345,18 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
     return () => {
       this._awarenessChangeCallbacks = this._awarenessChangeCallbacks.filter(existingCallback => existingCallback !== callback);
+    };
+  }
+
+  /**
+   * Registers a callback for object changes written with the user's (`'local'`/`'temporary'`)
+   * origin, with the changed object IDs. Agent writes and remote changes are not included.
+   * Used to stop agentic actions when the user or host code changes one of their objects.
+   */
+  onLocalObjectsChange(callback: (keys: Set<string>) => void): () => void {
+    this._localObjectsChangeCallbacks.push(callback);
+    return () => {
+      this._localObjectsChangeCallbacks = this._localObjectsChangeCallbacks.filter(existing => existing !== callback);
     };
   }
 
@@ -450,9 +561,9 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this._networkSyncPromise = networkConnectPromises.length > 0 ? Promise.allSettled(networkConnectPromises).then(() => undefined) : null;
     this._isReady = true;
 
-    // Find the first provider that exposes awareness (network providers)
-    // Awareness is available immediately after provider construction, before connect() resolves
-    for (const provider of networkProviders) {
+    // Find the first provider that exposes awareness: network providers first, then local ones that opt in
+    // (BroadcastSyncProvider.with({ awareness: true })). Awareness exists right after construction.
+    for (const provider of [...networkProviders, ...localProviders]) {
       if (provider.awareness) {
         this._awareness = provider.awareness;
         break;
@@ -522,9 +633,27 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    * @param event - The Yjs map event containing information about changed keys and their actions
    */
   private handleObjectsChange(event: Y.YMapEvent<any>): void {
+    const origin = event.transaction.origin;
+
+    // Agent changes are local too: the instances are already up to date. Record the changed
+    // keys for the running action and keep selection frames that contain them in sync.
+    if (origin instanceof KritzelAgentOrigin) {
+      origin.recordKeyChanges(event.changes.keys as Map<string, { action: 'add' | 'update' | 'delete' }>);
+      this.refreshSelectionGroupsContaining(new Set(event.keysChanged), new Set());
+      this.requestRerender();
+      return;
+    }
+
     // Skip Map updates for local changes (already done), but still trigger re-render
     // 'temporary' is also a local change that shouldn't be re-deserialized
-    if (event.transaction.origin === 'local' || event.transaction.origin === 'temporary') {
+    if (origin === 'local' || origin === 'temporary') {
+      if (this._agents.size > 0 || this._localObjectsChangeCallbacks.length > 0) {
+        const keys = new Set<string>(event.keysChanged);
+        // A local write saved the whole instance, including any pending agent changes:
+        // agents must not write these objects again when they commit.
+        this._agents.forEach(agent => agent.origin.forgetLocalOnly(keys));
+        this._localObjectsChangeCallbacks.forEach(callback => KritzelEventHelper.callListener(() => callback(keys), 'Local objects change callback'));
+      }
       this.requestRerender();
       return;
     }
@@ -579,6 +708,13 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
         // Remote deletion of a selection group must also clear the transient
         // selection flags it had applied to its children locally.
         existingObject.deselectAllChildren?.();
+      }
+
+      // Deletes from collaborators, undo/redo and agent rollbacks never pass through
+      // core.removeObject(), and the viewport sweep can no longer find the object once it
+      // is gone: release iframes and renderers here, or their listeners leak.
+      if (ObjectHelper.isKritzelEmbeddedObject(existingObject)) {
+        existingObject.unmount();
       }
 
       this.quadtree.remove(o => o.id === objectId);
@@ -639,31 +775,23 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     // If regular objects were changed but their SelectionGroup wasn't explicitly updated,
     // we still need to refresh that SelectionGroup's dimensions
     if (objectsToUpdate.length > 0 || objectsToDelete.length > 0) {
-      const changedObjectIds = new Set([
+      const changedObjectIds = new Set<string>([
         ...objectsToUpdate.map(o => o.id),
         ...objectsToDelete
       ]);
-
-      // Find any existing SelectionGroups that contain changed objects
-      const existingSelectionGroups = this.quadtree.filter(
-        o => o instanceof KritzelSelectionGroup && !updatedSelectionGroupIds.has(o.id)
-      ) as unknown as KritzelSelectionGroup[];
-
-      for (const selectionGroup of existingSelectionGroups) {
-        const hasChangedChildren = selectionGroup.objectIds.some(id => changedObjectIds.has(id));
-        if (hasChangedChildren) {
-          selectionGroup.invalidateObjectsCache();
-          selectionGroup.refreshObjectDimensions(undefined, true);
-          selectionGroup.captureUnchangedSnapshots();
-          // Update quadtree with corrected dimensions
-          this.quadtree.reindex(selectionGroup as unknown as T);
-        }
-      }
+      this.refreshSelectionGroupsContaining(changedObjectIds, updatedSelectionGroupIds);
     }
 
     if (this._headless) {
       return;
     }
+
+    // Changes made by an agent's undo/redo carry that agent as source; its rollbacks are silent.
+    const agent = this.findAgentByUndoManager(origin);
+    const suppressEvents = !!agent?.suppressEvents;
+    const source: KritzelObjectChangeSource | undefined = agent?.historyAction
+      ? { type: 'agent', agentId: agent.origin.agentId, actionType: agent.historyAction }
+      : undefined;
 
     // Rebuild the anchor index if any line anchor connections may have changed, so that
     // subsequent local operations (moving a target, refreshing selection UI) resolve the
@@ -678,24 +806,66 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this._core?.rerender();
 
     // Emit granular lifecycle events
-    if (addedObjects.length > 0) {
-      this._core?.engine.emitObjectsAdded(addedObjects);
-    }
-    if (objectsToDelete.length > 0) {
-      // For deleted objects we only have IDs, not the full objects
-      // Create minimal object references with the IDs
-      const removedObjects = objectsToDelete.map(id => ({ id } as KritzelBaseObject<any>));
-      this._core?.engine.emitObjectsRemoved(removedObjects);
-    }
-    if (updatedObjects.length > 0) {
-      this._core?.engine.emitObjectsUpdated(
-        updatedObjects.map(obj => ({ object: obj, changedProperties: [] }))
-      );
+    if (!suppressEvents) {
+      if (addedObjects.length > 0) {
+        if (source) {
+          this._core?.engine.emitObjectsAdded(addedObjects, source);
+        } else {
+          this._core?.engine.emitObjectsAdded(addedObjects);
+        }
+      }
+      if (objectsToDelete.length > 0) {
+        // For deleted objects we only have IDs, not the full objects
+        // Create minimal object references with the IDs
+        const removedObjects = objectsToDelete.map(id => ({ id } as KritzelBaseObject<any>));
+        if (source) {
+          this._core?.engine.emitObjectsRemoved(removedObjects, source);
+        } else {
+          this._core?.engine.emitObjectsRemoved(removedObjects);
+        }
+      }
+      if (updatedObjects.length > 0) {
+        const updated = updatedObjects.map(obj => ({ object: obj, changedProperties: [] as string[] }));
+        if (source) {
+          this._core?.engine.emitObjectsUpdated(updated, source);
+        } else {
+          this._core?.engine.emitObjectsUpdated(updated);
+        }
+      }
     }
 
     // Notify subscribers of remote object changes (e.g., awareness cursors)
     for (const callback of this._objectsChangeCallbacks) {
       callback();
+    }
+  }
+
+  /**
+   * Refreshes the frame of every stored selection group that contains one of `changedIds`.
+   * Snapshots are not recaptured while the user is transforming, so a running drag, resize
+   * or rotation keeps its stable starting point.
+   */
+  private refreshSelectionGroupsContaining(changedIds: Set<string>, skipGroupIds: Set<string>): void {
+    if (changedIds.size === 0) {
+      return;
+    }
+    const state = this._core?.store?.state;
+    const isTransforming = !!state && (state.isDragging || state.isResizing || state.isRotating);
+    const selectionGroups = this.quadtree.filter(
+      o => o instanceof KritzelSelectionGroup && !skipGroupIds.has(o.id),
+    ) as unknown as KritzelSelectionGroup[];
+
+    for (const selectionGroup of selectionGroups) {
+      if (!selectionGroup.objectIds.some(id => changedIds.has(id))) {
+        continue;
+      }
+      selectionGroup.invalidateObjectsCache();
+      selectionGroup.refreshObjectDimensions(undefined, true);
+      if (!isTransforming) {
+        selectionGroup.captureUnchangedSnapshots();
+      }
+      // Update quadtree with corrected dimensions
+      this.quadtree.reindex(selectionGroup as unknown as T);
     }
   }
 
@@ -792,7 +962,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (this._ydoc) {
       this._inTransaction = true;
       try {
-        this._ydoc.transact(callback, 'local');
+        this._ydoc.transact(callback, this.writeOrigin);
       } finally {
         this._inTransaction = false;
       }
@@ -815,7 +985,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    * transaction() so wrapped multi-op work stays a single undo step.
    */
   private markUndoBoundary(): void {
-    if (this._inTransaction) {
+    // Agent writes never close the user's undo step; agent boundaries are set by the action runner.
+    if (this._inTransaction || this.activeAgentOrigin) {
       return;
     }
     this._undoManager?.stopCapturing();
@@ -831,12 +1002,12 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    *
    * @param callback - The function containing operations to execute locally
    */
-  withLocalUpdatesOnly(callback: () => void): void {
-    this._localOnlyMode = true;
+  withLocalUpdatesOnly<R>(callback: () => R): R {
+    this._localOnlyDepth++;
     try {
-      callback();
+      return callback();
     } finally {
-      this._localOnlyMode = false;
+      this._localOnlyDepth--;
     }
   }
 
@@ -895,7 +1066,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     this.markUndoBoundary();
     this._ydoc?.transact(() => {
       this._objectsMap?.clear();
-    }, 'local');
+    }, this.writeOrigin);
   }
 
   /**
@@ -918,7 +1089,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this.markUndoBoundary();
       this._ydoc?.transact(() => {
         this._objectsMap?.set(object.id, serialized);
-      }, 'local');
+      }, this.writeOrigin);
     }
 
     return true;
@@ -943,17 +1114,24 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (!existed) {
       return false;
     }
-    if (this._localOnlyMode || options.skipReindex) {
+    const localOnly = this._localOnlyDepth > 0;
+    if (localOnly || options.skipReindex) {
       this.quadtree.update(object);
     } else {
       this.quadtree.reindex(object);
     }
     this._idMap.set(object.id, object);
 
-    if (!this._localOnlyMode && this._objectsMap && this.isPersistable(object)) {
+    if (localOnly) {
+      // Remember agent changes that still have to be written when the action commits.
+      this.activeAgentOrigin?.markLocalOnly(object.id);
+    }
+
+    if (!localOnly && this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
 
-      const origin = options.temporary ? 'temporary' : 'local';
+      // Inside an agent scope even 'temporary' writes (e.g. text input) go to the agent's history.
+      const origin = this.activeAgentOrigin ?? (options.temporary ? 'temporary' : 'local');
 
       this._ydoc?.transact(() => {
         this._objectsMap?.set(object.id, serialized);
@@ -982,7 +1160,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       if (this._objectsMap && this.isPersistable(object)) {
         this._ydoc?.transact(() => {
           this._objectsMap?.delete(object.id);
-        }, 'local');
+        }, this.writeOrigin);
       }
     }
   }
@@ -1090,6 +1268,231 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this._undoManager.clear();
       this._temporaryItemsCount = 0;
     }
+    this._agents.forEach(agent => agent.undoManager.clear());
+    this._historyClearedCallbacks.forEach(callback => KritzelEventHelper.callListener(callback, 'onHistoryCleared callback'));
+  }
+
+  /**
+   * Registers a callback that runs after `clearHistory()`, e.g. to update what agents report as undoable.
+   * @returns A function that unregisters the callback
+   */
+  onHistoryCleared(callback: () => void): () => void {
+    this._historyClearedCallbacks.push(callback);
+    return () => {
+      this._historyClearedCallbacks = this._historyClearedCallbacks.filter(existing => existing !== callback);
+    };
+  }
+
+  // ─── Agent histories ─────────────────────────────────────────────────────────
+
+  /**
+   * Returns the origin of an agentic cursor, creating its history on first use.
+   * Returns `null` when the map is not initialized or headless.
+   */
+  getAgentOrigin(cursorId: string): KritzelAgentOrigin | null {
+    if (!this._objectsMap || !this._ydoc || this._headless) {
+      return null;
+    }
+    let agent = this._agents.get(cursorId);
+    if (!agent) {
+      const origin = new KritzelAgentOrigin(cursorId);
+      const undoManager = new Y.UndoManager([this._objectsMap], {
+        captureTimeout: Number.MAX_SAFE_INTEGER,
+        // Track exactly this origin instance (never the class: Yjs also matches origin.constructor).
+        trackedOrigins: new Set<unknown>([origin]),
+        // Agent undo never overwrites keys someone else changed since.
+        ignoreRemoteMapChanges: false,
+      });
+      agent = { origin, undoManager, historyAction: null, suppressEvents: false };
+      this._agents.set(cursorId, agent);
+    }
+    return agent.origin;
+  }
+
+  /** Closes the current step of an agent's history, so the next change starts a new step. */
+  stopAgentCapturing(cursorId: string): void {
+    this._agents.get(cursorId)?.undoManager.stopCapturing();
+  }
+
+  /** Number of steps in an agent's undo stack. */
+  getAgentUndoStackLength(cursorId: string): number {
+    return this._agents.get(cursorId)?.undoManager.undoStack.length ?? 0;
+  }
+
+  /** Undo state of an agent's history. */
+  getAgentUndoState(cursorId: string): KritzelUndoState {
+    const undoManager = this._agents.get(cursorId)?.undoManager;
+    return {
+      canUndo: !!undoManager && undoManager.undoStack.length > 0,
+      canRedo: !!undoManager && undoManager.redoStack.length > 0,
+      undoStackSize: undoManager?.undoStack.length ?? 0,
+      redoStackSize: undoManager?.redoStack.length ?? 0,
+    };
+  }
+
+  /** Stores the object IDs touched by an agent's newest step on that step. */
+  tagLastAgentStackItem(cursorId: string, objectIds: string[]): void {
+    const stack = this._agents.get(cursorId)?.undoManager.undoStack;
+    if (stack && stack.length > 0) {
+      stack[stack.length - 1].meta.set(KritzelObjectMap.AGENT_IDS_META, [...objectIds]);
+    }
+  }
+
+  /** Object IDs touched by the newest step of an agent's undo or redo stack. */
+  peekAgentObjectIds(cursorId: string, stack: 'undo' | 'redo'): string[] {
+    const undoManager = this._agents.get(cursorId)?.undoManager;
+    const items = stack === 'undo' ? undoManager?.undoStack : undoManager?.redoStack;
+    if (!items || items.length === 0) {
+      return [];
+    }
+    const ids = items[items.length - 1].meta.get(KritzelObjectMap.AGENT_IDS_META) as string[] | undefined;
+    return ids ? [...ids] : [];
+  }
+
+  /** Undoes the newest step of an agent's history. Older steps are never touched. */
+  undoAgent(cursorId: string): KritzelAgentHistoryResult {
+    return this.applyAgentHistory(cursorId, 'undo');
+  }
+
+  /** Redoes the newest undone step of an agent's history. */
+  redoAgent(cursorId: string): KritzelAgentHistoryResult {
+    return this.applyAgentHistory(cursorId, 'redo');
+  }
+
+  /**
+   * Reverts every agent step recorded after `undoLengthBefore` without emitting events,
+   * and makes them non-redoable. Used to roll back an aborted action.
+   * @returns `true` if something was rolled back
+   */
+  rollbackAgent(cursorId: string, undoLengthBefore: number): boolean {
+    this.assertNotInsideYjsCallback();
+    const agent = this._agents.get(cursorId);
+    if (!agent) {
+      return false;
+    }
+    const undoManager = agent.undoManager;
+    undoManager.stopCapturing();
+    if (undoManager.undoStack.length <= undoLengthBefore) {
+      return false;
+    }
+    // Isolate the action's steps so popping can never fall through to older steps.
+    const older = undoManager.undoStack.splice(0, undoLengthBefore);
+    agent.suppressEvents = true;
+    try {
+      while (undoManager.undoStack.length > 0) {
+        undoManager.undo();
+      }
+    } finally {
+      agent.suppressEvents = false;
+      undoManager.undoStack.unshift(...older);
+    }
+    // The aborted action must not be redoable.
+    undoManager.clear(false, true);
+    this._core?.anchorManager.rebuildIndex();
+    this.requestRerender();
+    return true;
+  }
+
+  /**
+   * Takes an agent's redo steps aside while an action runs. Yjs would otherwise clear (and release)
+   * them on the action's first write, so a rolled-back action could not leave the history as it was.
+   * @returns The steps to pass to `resumeAgentRedo`
+   */
+  suspendAgentRedo(cursorId: string): unknown[] {
+    const undoManager = this._agents.get(cursorId)?.undoManager;
+    return undoManager ? undoManager.redoStack.splice(0) : [];
+  }
+
+  /**
+   * Ends `suspendAgentRedo`. With `restore`, the steps become redoable again (after a rollback);
+   * otherwise they are discarded properly, as a new change does.
+   */
+  resumeAgentRedo(cursorId: string, steps: unknown[], restore: boolean): void {
+    const undoManager = this._agents.get(cursorId)?.undoManager;
+    if (!undoManager || steps.length === 0) {
+      return;
+    }
+    if (restore) {
+      undoManager.redoStack.unshift(...(steps as typeof undoManager.redoStack));
+      return;
+    }
+    undoManager.redoStack.unshift(...(steps as typeof undoManager.redoStack));
+    undoManager.clear(false, true);
+  }
+
+  /** Destroys the history of an agentic cursor. */
+  disposeAgent(cursorId: string): void {
+    const agent = this._agents.get(cursorId);
+    if (agent) {
+      agent.undoManager.destroy();
+      this._agents.delete(cursorId);
+    }
+  }
+
+  /**
+   * Registers a callback that runs at the start of `destroy()`, while the map is still usable.
+   * @returns A function that unregisters the callback
+   */
+  onBeforeDestroy(callback: () => void): () => void {
+    this._beforeDestroyCallbacks.push(callback);
+    return () => {
+      this._beforeDestroyCallbacks = this._beforeDestroyCallbacks.filter(existing => existing !== callback);
+    };
+  }
+
+  private applyAgentHistory(cursorId: string, direction: 'undo' | 'redo'): KritzelAgentHistoryResult {
+    this.assertNotInsideYjsCallback();
+    const agent = this._agents.get(cursorId);
+    const undoManager = agent?.undoManager;
+    const stack = direction === 'undo' ? undoManager?.undoStack : undoManager?.redoStack;
+    if (!agent || !undoManager || !stack || stack.length === 0) {
+      return { status: 'empty', objectIds: [] };
+    }
+    undoManager.stopCapturing();
+    const objectIds = (stack[stack.length - 1].meta.get(KritzelObjectMap.AGENT_IDS_META) as string[] | undefined) ?? [];
+
+    // Isolate the top step: Yjs keeps popping until a step changes something, which would
+    // otherwise apply older steps that were never conflict-checked.
+    const older = stack.splice(0, stack.length - 1);
+    agent.historyAction = direction;
+    let item: unknown = null;
+    try {
+      item = direction === 'undo' ? undoManager.undo() : undoManager.redo();
+    } finally {
+      agent.historyAction = null;
+      stack.unshift(...older);
+    }
+
+    if (!item) {
+      // The step was fully superseded by other changes; Yjs dropped it.
+      return { status: 'conflict', objectIds: [...objectIds] };
+    }
+
+    const target = direction === 'undo' ? undoManager.redoStack : undoManager.undoStack;
+    if (target.length > 0) {
+      target[target.length - 1].meta.set(KritzelObjectMap.AGENT_IDS_META, [...objectIds]);
+    }
+    this._core?.anchorManager.rebuildIndex();
+    this._core?.engine.emitObjectsChange();
+    return { status: 'done', objectIds: [...objectIds] };
+  }
+
+  private findAgentByUndoManager(origin: unknown): KritzelAgentHistory | null {
+    if (!origin || this._agents.size === 0) {
+      return null;
+    }
+    for (const agent of this._agents.values()) {
+      if (agent.undoManager === origin) {
+        return agent;
+      }
+    }
+    return null;
+  }
+
+  private assertNotInsideYjsCallback(): void {
+    if (this.isInsideYjsCallback) {
+      throw new Error('Agent history cannot be changed from inside a Yjs transaction or observer.');
+    }
   }
 
   /**
@@ -1191,6 +1594,18 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
    * and destroys the Yjs document. After calling this, the object map cannot be used.
    */
   destroy(): void {
+    // Let owners (e.g. running agentic actions) clean up while the map is still usable
+    const beforeDestroyCallbacks = this._beforeDestroyCallbacks;
+    this._beforeDestroyCallbacks = [];
+    beforeDestroyCallbacks.forEach(callback => KritzelEventHelper.callListener(callback, 'onBeforeDestroy callback'));
+
+    // Destroy agent histories
+    this._agents.forEach(agent => agent.undoManager.destroy());
+    this._agents.clear();
+    this._originStack = [];
+    this._localOnlyDepth = 0;
+    this._localActiveDrawingObjectId = null;
+
     // Unobserve the objects map
     if (this._objectsMap && this._objectsObserver) {
       this._objectsMap.unobserve(this._objectsObserver);
@@ -1226,6 +1641,7 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
     this._awareness = null;
     this._awarenessChangeCallbacks = [];
+    this._localObjectsChangeCallbacks = [];
 
     // Destroy providers (destroy handles disconnection internally)
     this._providers.forEach(p => {

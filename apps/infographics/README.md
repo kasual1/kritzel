@@ -21,21 +21,82 @@ npm run infographics
 | ----------- | ----------------------------------------------- |
 | `#/welcome` | The animated "Welcome" path from `apps/app`.   |
 | `#/open-source` | The animated outline of the open source logo. |
-| `#/agentic-canvas` | An agentic canvas: Claude adds interactive iframe objects from the chat box. |
+| `#/agentic-canvas` | Hero of the agentic canvas post: three agents help release the jazz song "Full Control". |
+| `#/agentic-canvas-generative-ui` | Generative UI on the agentic canvas: one prompt adds a new album cover. |
+| `#/agentic-canvas-cursors` | Agentic cursors: Studio stars track 2 of the recorder widget after the prompt "Please favoritize track 2". |
+| `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
 ## Agentic canvas
 
-`src/infographics/agentic-canvas/` is the showcase for the "infinite agentic canvas" blog series. The editor shows its chat
-box instead of the toolbar. Every prompt runs Claude in a tool-use loop (`canvas-agent.ts`) with a single `add_iframe`
-tool, which adds a `KritzelIframeObject` with a titlebar that renders the page Claude wrote.
+`src/infographics/agentic-canvas/` is the hero of the "What is an agentic canvas?" blog post, and uses the same jazz
+record as the generative UI and agentic cursor posts. The editor shows its chat box instead of the toolbar. When the page
+loads, three prompts are typed into the chat box one after another, and each starts an agent: Studio adds a small
+recording widget and keeps recording: it starts each take with the record button and stops it with the next press,
+which saves the take to the list below. Studio presses record as soon as the widget is done. Covers draws four jazz covers for "Full Control" in a square in the middle of the canvas, and Social
+writes a social media post about the release. The work runs from left to right: widget, covers, post. The camera follows each agent to its work and finally pulls back to show
+all three results. Every agent's cursor leaves the view as soon as that agent is done. Each agent is a `KritzelAgent`: it is added
+with `editor.addAgent()` when its cursor enters and is removed with `editor.removeAgent()` when it leaves. The agents
+work through their agent actions: each places its pages with `agent.addObject()`, so every page is that agent's change,
+and Studio presses the record button and the star of the favorite take with `agent.click()`. Between actions the
+cursors glide with `agent.moveTo()`. The takes are saved by the widget, not by Studio. The agents only show as cursors
+(`isAgentAvatarsVisible` is off). The scene is scripted in `hero-scene.ts`, with no model calls, so every recording is
+the same; reload the page to play it again.
 
-To try it, copy `.env.example` at the repository root to `.env` and set your Anthropic API key:
+Every page the agents add comes in smoothly: it fades in while it rises into place, and when it was showing the glare
+placeholder, its content fades in over the placeholder's grey. The agentic canvas generative UI and agentic canvas
+cursors pages use the same effect, from `appear.ts`.
+
+The album covers are PNG images in `public/covers/`, listed in `album-covers.ts`. Their sources are the SVG files in
+`covers/`; after changing one, render the PNGs again with `npm run covers -w apps/infographics`.
+
+## Agentic canvas generative UI
+
+`src/infographics/agentic-canvas-generative-ui/` shows generative UI on the same canvas as the agentic canvas page, with
+the chat box and no agentic cursors. "Please generate a new album cover" is typed into the chat box, and a cover is
+added in the middle of the canvas: it shows the glare placeholder first and then the image. 1.5 seconds later every
+object is removed. The Covers agent places the cover with `agent.addObject()`, so the cover is its change, but the agent
+is hidden: it is added with `visible: false`, the action runs with `instant: true`, and `isAgentAvatarsVisible` is off. It is scripted in `album-cover-scene.ts` and reuses the helpers of the agentic canvas page. The cover is its own,
+`covers/midnight-skyline.svg`, not one of the four the agentic canvas page shows.
+
+## Agentic canvas cursors
+
+`src/infographics/agentic-canvas-cursors/` shows an agentic cursor working on a generative UI page, with the chat box. The
+canvas starts empty; after 1.5 seconds the recorder widget of the agentic canvas page fades in centered in the view, with
+its two tracks below it. Then "Please favoritize track 2" is typed into the chat box, and Studio clicks the star of track 2
+with `agent.click()`: its cursor glides to the star and presses it, the star turns amber, and the cursor leaves the view. 1.5 seconds later every object is removed. It is scripted in `favorite-track-scene.ts`
+and reuses the widget, the tracks and the helpers of the agentic canvas page; Studio is a `KritzelAgent` there too.
+
+## Generative UI API key
+
+The generative UI page calls the Claude API. To try it, copy `.env.example` at the repository root to `.env` and set your
+Anthropic API key:
 
 ```bash
-VITE_ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-The key is used straight from the browser, so only run this locally.
+The key is used straight from the browser, so only run this locally. It is read from the env files at the repository root
+only (`.env`, `.env.local` and the mode files, as Vite orders them), never from your shell environment, so a key you
+export for other tools is not bundled by accident. Values are taken as written (`${OTHER}` is not expanded). The dev
+server restarts when one of these files is created, changed or deleted. A `vite build` puts the key into `dist`.
+
+## Generative UI
+
+`src/infographics/generative-ui/` uses the chat box and the API key above. The canvas starts with a music player
+(`music-player.ts`), so there is something to pick before the first prompt. Without a selection, a prompt adds a new
+page (`add_page`). Select a page and it starts picking elements: hovering highlights the element under the pointer and a
+click picks it. Cmd-, Ctrl- or Shift-click adds an element to the picked ones or removes it again, while a plain click
+starts over. An inline SVG icon is picked as a whole, and an icon inside a button or link picks the button or link.
+The chat box chips show what the next prompt changes: one chip per picked element, or a page chip when none is picked.
+An element chip's close button drops that element, the page chip's deselects the page. Claude gets the page's current source with the request and changes it with
+find-and-replace edits (`edit_page`), so small changes are quick. Prompts don't share a conversation; the pages on the
+canvas are the state (`generative-ui-agent.ts`).
+
+Claude is a `KritzelAgent` with its own cursor, status and history: `add_page` places the page through
+`agent.addObject()`, so the user's selection and undo history stay untouched, and `agent.tools()` adds `observe_canvas`,
+`move_object`, `resize_object` and `delete_objects` so Claude can see and arrange its pages. While Claude changes a page,
+its cursor points at the first picked element (`agent.moveTo({ objectId, selector })`), or at the page when none is
+picked.
 
 ## Record
 

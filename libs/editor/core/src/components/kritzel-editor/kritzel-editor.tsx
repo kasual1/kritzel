@@ -16,13 +16,10 @@ import {
 // type. Stencil removes this import from the output; classes come from @kritzel/core.
 import "@kritzel/engine";
 import {
-  KritzelAgenticCursor,
-  KritzelAgenticCursorDetachedEvent,
-  KritzelAgenticCursorMoveOptions,
-  KritzelAgenticCursorMoveResult,
-  KritzelAgenticCursorOptions,
-  KritzelAgenticCursorPatch,
-  KritzelAgenticCursorTarget,
+  KritzelAgent,
+  KritzelAgentPresence,
+  KritzelAgentsChangeEvent,
+  KritzelRemoteAgentPresence,
   KritzelIconRegistry,
 } from "@kritzel/core";
 import { KritzelToolbarItem } from "@kritzel/core";
@@ -41,6 +38,12 @@ import { ContextMenuItem } from "@kritzel/core";
 import {
   KritzelObjectConfig,
   KritzelObjectTitlebarActionEvent,
+  KritzelObjectElementClickEvent,
+  KritzelObjectElementHighlight,
+  KritzelObjectElementHoverEvent,
+  KritzelObjectElementInfo,
+  KritzelObjectElementPickEvent,
+  KritzelObjectElementPickingOptions,
   KritzelObjectTitlebarConfig,
   KritzelObjectTitlebarMenuState,
 } from "@kritzel/core";
@@ -101,6 +104,7 @@ import { resolveTextToolAvailableFonts } from "@kritzel/core";
 import { KritzelContextMenuState } from "@kritzel/core";
 import { KritzelObjectExportFormat } from "@kritzel/core";
 import { KritzelSvgIconMap } from "@kritzel/core";
+import { KritzelChatBoxChip } from "@kritzel/core";
 import { KritzelChatBoxMode } from "../kritzel-chat-box/kritzel-chat-box";
 
 @Component({
@@ -127,6 +131,8 @@ export class KritzelEditor {
   };
   @Prop() user?: IKritzelUser;
   @Prop() activeUsers?: IKritzelUser[];
+  /** Whether the avatar stack shows agents (local ones and those of collaborators) after the active users. */
+  @Prop() isAgentAvatarsVisible: boolean = true;
   @Prop() toolbarItems: KritzelToolbarItem[] = [
     {
       name: "selection",
@@ -465,6 +471,12 @@ export class KritzelEditor {
   @Prop() chatBoxMode: KritzelChatBoxMode = "collapsed";
   /** Whether the chat box shows its progress ring and turns its send button into a stop button. */
   @Prop() isChatBoxLoading: boolean = false;
+  /**
+   * Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to.
+   * Up to three share one row as wide as the box; the rest are summarized as "+N more".
+   * Pass a new array to change them. The editor never removes chips itself: update the array when `chatChipRemove` fires.
+   */
+  @Prop() chatBoxChips: KritzelChatBoxChip[] = [];
   @Prop() isUtilityPanelVisible: boolean = true;
   @Prop() isWorkspaceManagerVisible: boolean = true;
   @Prop() isMoreMenuVisible: boolean = true;
@@ -493,8 +505,11 @@ export class KritzelEditor {
   @Event() isReady!: EventEmitter<EditorIsReadyEvent>;
   @Event() activeWorkspaceChange!: EventEmitter<ActiveWorkspaceChangeEvent>;
   @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
+  /** Emitted when objects are added. `source` is set when an agent made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
+  /** Emitted when objects are removed. `source` is set when an agent made the change. */
   @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
+  /** Emitted when objects are updated. `source` is set when an agent made the change. */
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
   @Event() objectsSelectionChange!: EventEmitter<KritzelBaseObject[]>;
   @Event() undoStateChange!: EventEmitter<KritzelUndoState>;
@@ -509,13 +524,30 @@ export class KritzelEditor {
   @Event() chatSubmit!: EventEmitter<string>;
   /** Emitted when the user stops the current chat response. */
   @Event() chatStop!: EventEmitter<void>;
-  /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
-  @Event()
-  agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
+  /** Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it. */
+  @Event() chatChipRemove!: EventEmitter<KritzelChatBoxChip>;
+  /**
+   * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
+   * (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion.
+   */
+  @Event() agentsChange!: EventEmitter<KritzelAgentsChangeEvent>;
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event()
   objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
+  /**
+   * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
+   * such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
+   */
+  @Event()
+  objectElementHover!: EventEmitter<KritzelObjectElementHoverEvent>;
+  /** Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. */
+  @Event()
+  objectElementClick!: EventEmitter<KritzelObjectElementClickEvent>;
+  /** Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`. */
+  @Event()
+  objectElementPick!: EventEmitter<KritzelObjectElementPickEvent>;
   @State() isEngineReady: boolean = false;
+  @State() agents: (KritzelAgentPresence | KritzelRemoteAgentPresence)[] = [];
   @State() isToolbarReady: boolean = false;
   @State() isWorkspaceManagerReady: boolean = false;
   @State() availableWorkspaces: KritzelWorkspace[] = [];
@@ -1048,87 +1080,105 @@ export class KritzelEditor {
   }
 
   /**
-   * Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
-   * @param options - Name, color, status, visibility and initial position (defaults to the viewport center).
-   * @returns A snapshot of the created cursor.
+   * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to
+   * one editor at a time; an agent of an editor that was removed from the page moves here.
+   * Call it after the editor emitted `isReady`.
+   * @param agent - A `new KritzelAgent({ name })`.
+   * @returns The same agent.
    */
   @Method()
-  async addAgenticCursor(
-    options: KritzelAgenticCursorOptions = {},
-  ): Promise<KritzelAgenticCursor> {
-    return this.engineRef.addAgenticCursor(options);
+  async addAgent(agent: KritzelAgent): Promise<KritzelAgent> {
+    return this.engineRef.addAgent(agent);
   }
 
   /**
-   * Updates the name, color, status or visibility of an agentic cursor.
-   * @param id - The cursor ID.
-   * @param patch - The properties to change. Pass `status: null` to clear the status.
-   * @returns A snapshot of the updated cursor.
+   * Removes an agent: its running action is rolled back, its queued actions resolve with
+   * `'agent-removed'`, and its cursor and history are dropped. The agent can be added again.
+   * @param agent - The agent or its ID.
+   * @returns `false` if the agent was not added.
    */
   @Method()
-  async updateAgenticCursor(
-    id: string,
-    patch: KritzelAgenticCursorPatch,
-  ): Promise<KritzelAgenticCursor> {
-    return this.engineRef.updateAgenticCursor(id, patch);
+  async removeAgent(agent: KritzelAgent | string): Promise<boolean> {
+    return this.engineRef.removeAgent(agent);
   }
 
   /**
-   * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
-   * Object targets attach the cursor by default, so it follows the object afterwards.
-   * @param id - The cursor ID.
-   * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
-   * @param options - Duration, easing, speed and whether to attach to an object target.
-   * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+   * Returns an added agent by its ID.
+   * @param id - The agent's ID.
    */
   @Method()
-  async moveAgenticCursor(
-    id: string,
-    target: KritzelAgenticCursorTarget,
-    options: KritzelAgenticCursorMoveOptions = {},
-  ): Promise<KritzelAgenticCursorMoveResult> {
-    return this.engineRef.moveAgenticCursor(id, target, options);
+  async getAgent(id: string): Promise<KritzelAgent | null> {
+    return this.engineRef.getAgent(id);
+  }
+
+  /** Returns the added agents. */
+  @Method()
+  async getAgents(): Promise<KritzelAgent[]> {
+    return this.engineRef.getAgents();
+  }
+
+  /** Returns the agents of collaborators, as shared through presence. */
+  @Method()
+  async getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]> {
+    return this.engineRef.getRemoteAgents();
   }
 
   /**
-   * Detaches an agentic cursor from its object. The cursor stays at its current position.
-   * @param id - The cursor ID.
+   * Turns element picking on or off for an object whose content has elements, such as an iframe object.
+   * While picking, the element under the pointer is highlighted, and a click emits `objectElementPick`
+   * instead of reaching the content. Picking works while the object is interactive, which it is while selected.
+   * @param objectId - The object ID.
+   * @param enabled - Whether the object picks elements.
+   * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
    */
   @Method()
-  async detachAgenticCursor(id: string): Promise<void> {
-    return this.engineRef.detachAgenticCursor(id);
+  async setObjectElementPicking(
+    objectId: string,
+    enabled: boolean,
+    options: KritzelObjectElementPickingOptions = {},
+  ): Promise<void> {
+    return this.engineRef.setObjectElementPicking(objectId, enabled, options);
   }
 
   /**
-   * Removes an agentic cursor. A running move resolves with `completed: false`.
-   * @param id - The cursor ID.
-   * @returns `true` if the cursor existed.
+   * Highlights elements inside an object's content, replacing its previous highlights.
+   * Highlights are local: they are neither saved nor shown to collaborators.
+   * @param objectId - The object ID.
+   * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
    */
   @Method()
-  async removeAgenticCursor(id: string): Promise<boolean> {
-    return this.engineRef.removeAgenticCursor(id);
-  }
-
-  /** Removes all agentic cursors. */
-  @Method()
-  async clearAgenticCursors(): Promise<void> {
-    return this.engineRef.clearAgenticCursors();
+  async highlightObjectElements(
+    objectId: string,
+    highlights: KritzelObjectElementHighlight[],
+  ): Promise<void> {
+    return this.engineRef.highlightObjectElements(objectId, highlights);
   }
 
   /**
-   * Returns a snapshot of an agentic cursor.
-   * @param id - The cursor ID.
-   * @returns The cursor, or `null` if it doesn't exist.
+   * Removes element highlights.
+   * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
    */
   @Method()
-  async getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null> {
-    return this.engineRef.getAgenticCursor(id);
+  async clearObjectElementHighlights(objectId?: string): Promise<void> {
+    return this.engineRef.clearObjectElementHighlights(objectId);
   }
 
-  /** Returns snapshots of all agentic cursors. */
+  /**
+   * Describes the elements inside an object's content that match a CSS selector, in document order.
+   * The object must be mounted, which it is while it is in or near the viewport.
+   * @param objectId - The object ID.
+   * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+   * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
+   * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor
+   * at it with `agent.moveTo({ objectId, selector })`.
+   */
   @Method()
-  async getAgenticCursors(): Promise<KritzelAgenticCursor[]> {
-    return this.engineRef.getAgenticCursors();
+  async queryObjectElements(
+    objectId: string,
+    selector: string,
+    limit?: number,
+  ): Promise<KritzelObjectElementInfo[]> {
+    return this.engineRef.queryObjectElements(objectId, selector, limit);
   }
 
   @Method()
@@ -1567,7 +1617,6 @@ export class KritzelEditor {
   }
 
   handleObjectsSelectionChange(event: CustomEvent<KritzelBaseObject[]>) {
-    console.log(event.detail);
     event.stopPropagation();
     this.objectsSelectionChange.emit(event.detail);
   }
@@ -1607,11 +1656,10 @@ export class KritzelEditor {
     this.awarenessChange.emit(event.detail);
   }
 
-  handleAgenticCursorDetached(
-    event: CustomEvent<KritzelAgenticCursorDetachedEvent>,
-  ) {
+  handleAgentsChange(event: CustomEvent<KritzelAgentsChangeEvent>) {
     event.stopPropagation();
-    this.agenticCursorDetached.emit(event.detail);
+    this.agents = event.detail.agents;
+    this.agentsChange.emit(event.detail);
   }
 
   handleObjectTitlebarAction(
@@ -1619,6 +1667,26 @@ export class KritzelEditor {
   ) {
     event.stopPropagation();
     this.objectTitlebarAction.emit(event.detail);
+  }
+
+  handleObjectElementHover(event: CustomEvent<KritzelObjectElementHoverEvent>) {
+    event.stopPropagation();
+    this.objectElementHover.emit(event.detail);
+  }
+
+  handleObjectElementClick(event: CustomEvent<KritzelObjectElementClickEvent>) {
+    event.stopPropagation();
+    this.objectElementClick.emit(event.detail);
+  }
+
+  handleObjectElementPick(event: CustomEvent<KritzelObjectElementPickEvent>) {
+    event.stopPropagation();
+    this.objectElementPick.emit(event.detail);
+  }
+
+  handleChatChipRemove(event: CustomEvent<KritzelChatBoxChip>) {
+    event.stopPropagation();
+    this.chatChipRemove.emit(event.detail);
   }
 
   handleNotificationsChange(event: CustomEvent<KritzelNotification>) {
@@ -2168,15 +2236,20 @@ export class KritzelEditor {
             onContextMenuStateChange={(event) =>
               this.handleContextMenuStateChange(event)
             }
-            onAgenticCursorDetached={(event) =>
-              this.handleAgenticCursorDetached(event)
-            }
+            onAgentsChange={(event) => this.handleAgentsChange(event)}
             onObjectTitlebarAction={(event) =>
               this.handleObjectTitlebarAction(event)
             }
             onObjectTitlebarMenuStateChange={(event) =>
               this.handleObjectTitlebarMenuStateChange(event)
             }
+            onObjectElementHover={(event) =>
+              this.handleObjectElementHover(event)
+            }
+            onObjectElementClick={(event) =>
+              this.handleObjectElementClick(event)
+            }
+            onObjectElementPick={(event) => this.handleObjectElementPick(event)}
           ></kritzel-engine>
 
           {this.isChatBoxVisible && (
@@ -2184,6 +2257,7 @@ export class KritzelEditor {
               mode={this.chatBoxMode}
               loading={this.isChatBoxLoading}
               terms={this.resolvedTerms}
+              chips={this.chatBoxChips}
               onChatSubmit={(event) => {
                 event.stopPropagation();
                 this.chatSubmit.emit(event.detail);
@@ -2192,6 +2266,7 @@ export class KritzelEditor {
                 event.stopPropagation();
                 this.chatStop.emit();
               }}
+              onChatChipRemove={(event) => this.handleChatChipRemove(event)}
             ></kritzel-chat-box>
           )}
 
@@ -2262,6 +2337,7 @@ export class KritzelEditor {
 
             <kritzel-active-users
               users={this.activeUsers}
+              agents={this.isAgentAvatarsVisible ? this.agents : []}
             ></kritzel-active-users>
 
             {shouldShowCurrentUser && (

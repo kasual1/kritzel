@@ -179,7 +179,8 @@ export class KritzelSelectionGroup extends KritzelBaseObject<HTMLElement> {
     object.id = object.generateId();
     object.workspaceId = core.store.state.activeWorkspace!.id;
     object.userId = core.user?.id;
-    object.clientId = core.store.objects?.localClientId ?? undefined;
+    // The awareness client ID equals the doc client ID; the doc ID also identifies the tab without awareness.
+    object.clientId = core.store.objects?.localClientId ?? core.store.objects?.docClientId ?? undefined;
     object.scale = core.store.state.scale;
     object.zIndex = 99999;
     

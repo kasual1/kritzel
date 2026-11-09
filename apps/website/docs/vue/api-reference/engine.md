@@ -39,9 +39,9 @@ All methods are async and return Promises. The `<KritzelEditor>` exposes all the
 | activeToolChange | KritzelBaseTool | Emitted when the active tool changes |
 | longpress | PointerEvent | Emitted on long-press (useful for mobile context menus) |
 | objectsChange | KritzelBaseObject[] | Emitted when objects are added, removed, or modified |
-| objectsAdded | ObjectsAddedEvent | Emitted when objects are added |
-| objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed |
-| objectsUpdated | ObjectsUpdatedEvent | Emitted when objects are updated |
+| objectsAdded | ObjectsAddedEvent | Emitted when objects are added. `source` is set when an agent made the change. |
+| objectsRemoved | ObjectsRemovedEvent | Emitted when objects are removed. `source` is set when an agent made the change. |
+| objectsUpdated | ObjectsUpdatedEvent | Emitted when objects are updated. `source` is set when an agent made the change. |
 | objectsInViewportChange | KritzelBaseObject[] | Emitted when visible objects change (after pan/zoom) |
 | objectsSelectionChange | void | Emitted when selected objects change |
 | undoStateChange | KritzelUndoState | Emitted when undo/redo availability changes |
@@ -666,82 +666,60 @@ Starts scene bootstrap and hides the scene: `beginSceneBootstrap(): Promise<void
 
 Ends scene bootstrap: `endSceneBootstrap(): Promise<void>`.
 
-## Agentic Cursors
+## Agents
+
+Agents are participants on the canvas that are driven by code, for example an AI assistant. Each agent is a [`KritzelAgent`](./agent.md) with its own cursor, actions, and undo history. See [Agents](../advanced/agents.md) for a guide. When the editor shares presence, collaborators see its agents, and it shows theirs; see [Collaboration](../advanced/agents.md#collaboration).
 
 ### Props
 
-No agentic-cursor-specific props.
+No agent-specific props.
 
 ### Events
 
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
-| agenticCursorDetached | KritzelAgenticCursorDetachedEvent | Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. |
+| agentsChange | KritzelAgentsChangeEvent | Emitted when agents are added or removed, or when their name, color, avatar, status, visibility, or activity changes, in this editor or in the editor of a collaborator. Lists the agents of this editor first, then the agents of collaborators (`isRemote: true`). Never emitted for plain cursor motion. |
 
 ### Methods
 
-#### addAgenticCursor
+#### addAgent
 
-Adds a programmatically controlled cursor. Agentic cursors are rendered locally only.
+Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to one editor at a time; an agent of an editor that was removed from the page moves here. Call it after the engine emitted `isEngineReady`. Rejects for a value that is not a `KritzelAgent`, for a second agent with the same ID, and for an agent of another editor.
 
 ```ts
-addAgenticCursor(options?: KritzelAgenticCursorOptions): Promise<KritzelAgenticCursor>
+addAgent(agent: KritzelAgent): Promise<KritzelAgent>
 ```
 
-#### updateAgenticCursor
+#### removeAgent
 
-Updates the name, color, status or visibility of an agentic cursor. Pass `status: null` to clear the status.
+Removes an agent, given the agent or its ID: its running action is rolled back, its queued actions resolve with `'agent-removed'`, and its cursor and history are dropped. The agent can be added again. Resolves with `false` if the agent was not added.
 
 ```ts
-updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch): Promise<KritzelAgenticCursor>
+removeAgent(agent: KritzelAgent | string): Promise<boolean>
 ```
 
-#### moveAgenticCursor
+#### getAgent
 
-Smoothly moves an agentic cursor to world coordinates or to an anchor on an object. Object targets attach the cursor by default. Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+Returns an agent added to this editor by its ID, or `null` if there is none. Agents of collaborators are never returned; see `getRemoteAgents`.
 
 ```ts
-moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options?: KritzelAgenticCursorMoveOptions): Promise<KritzelAgenticCursorMoveResult>
+getAgent(id: string): Promise<KritzelAgent | null>
 ```
 
-#### detachAgenticCursor
+#### getAgents
 
-Detaches an agentic cursor from its object. The cursor stays at its current position.
+Returns the agents added to this editor.
 
 ```ts
-detachAgenticCursor(id: string): Promise<void>
+getAgents(): Promise<KritzelAgent[]>
 ```
 
-#### removeAgenticCursor
+#### getRemoteAgents
 
-Removes an agentic cursor. A running move resolves with `completed: false`.
-
-```ts
-removeAgenticCursor(id: string): Promise<boolean>
-```
-
-#### clearAgenticCursors
-
-Removes all agentic cursors.
+Returns the agents of collaborators, as they share them through presence. They are descriptions, not `KritzelAgent` objects, and cannot be controlled from here. Empty without a sync provider that shares presence. See [`KritzelRemoteAgentPresence`](./agent.md#kritzelremoteagentpresence).
 
 ```ts
-clearAgenticCursors(): Promise<void>
-```
-
-#### getAgenticCursor
-
-Returns a snapshot of an agentic cursor, or `null` if it doesn't exist.
-
-```ts
-getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null>
-```
-
-#### getAgenticCursors
-
-Returns snapshots of all agentic cursors.
-
-```ts
-getAgenticCursors(): Promise<KritzelAgenticCursor[]>
+getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]>
 ```
 
 ---
@@ -780,3 +758,57 @@ selectObjectTitlebarMenuItem(menuItemId: string): Promise<void>
 ```
 
 Use [updateObject](#updateobject) to change the `name` of an existing object.
+
+---
+
+## Object Elements
+
+Elements inside the content of objects such as `KritzelIframeObject`. See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content).
+
+### Props
+
+No object-element-specific props.
+
+### Events
+
+| Event | Payload Type | Description |
+|-------|--------------|-------------|
+| objectElementHover | KritzelObjectElementHoverEvent | Emitted when the mouse or pen pointer moves onto another element inside the content of a selected object, such as an iframe object, and with `element: null` when it leaves the content or the object is deselected. |
+| objectElementClick | KritzelObjectElementClickEvent | Emitted when the user clicks an element inside the content of a selected object. The click works as usual. |
+| objectElementPick | KritzelObjectElementPickEvent | Emitted when the user picks an element inside an object that is picking elements. The click doesn't reach the content. See [setObjectElementPicking](#setobjectelementpicking). |
+
+### Methods
+
+#### setObjectElementPicking
+
+Turns element picking on or off for an object whose content has elements, such as an iframe object. While picking, the element under the pointer is highlighted, and a press or click emits `objectElementPick` instead of reaching the content. Picking works while the object is selected and stays on until it is turned off. `selector` limits picking to the closest matching ancestor of the element under the pointer, `color` sets the highlight color.
+
+```ts
+setObjectElementPicking(objectId: string, enabled: boolean, options?: KritzelObjectElementPickingOptions): Promise<void>
+```
+
+#### highlightObjectElements
+
+Highlights elements inside an object's content, replacing the object's previous highlights. Each entry is `{ selector, color?, label? }`, and every element that matches its selector is highlighted, up to 100 per selector. Highlights are local: they are neither saved nor shown to collaborators.
+
+```ts
+highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]): Promise<void>
+```
+
+#### clearObjectElementHighlights
+
+Removes the element highlights of an object, or of all objects when `objectId` is omitted.
+
+```ts
+clearObjectElementHighlights(objectId?: string): Promise<void>
+```
+
+#### queryObjectElements
+
+Describes the elements inside an object's content that match a CSS selector, in document order. Each result has a `selector` that can be used to highlight the element or point an agent's cursor at it (`agent.moveTo({ objectId, selector })`, see [KritzelAgenticTarget](./agent.md#kritzelagentictarget)). `limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. Rejects when the content does not answer within 3 seconds, or within 15 seconds while it is still loading.
+
+```ts
+queryObjectElements(objectId: string, selector: string, limit?: number): Promise<KritzelObjectElementInfo[]>
+```
+
+All object element methods reject for invalid selectors and for objects that don't exist or have no content elements.

@@ -518,4 +518,118 @@ Returns true when a text-input-like element inside this object currently has foc
 hasFocusedInputElement()
 ```
 
+---
 
+## Iframe Object
+
+`KritzelIframeObject` renders HTML, CSS, and JavaScript in a sandboxed iframe on the canvas. See [Rendering iFrames](../advanced/dynamic-objects.md#rendering-iframes) and [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content). The editor's [object element methods](./editor.md#object-elements) call the element methods below by object ID.
+
+### Properties
+
+| Property | Type | Description |
+|----------|------|-------------|
+| content | KritzelIframeContent | The `html`, `css`, and `script` of the page |
+| loadingContent | KritzelIframeContent | Content shown instead of `content` while `isLoading` is true |
+| isLoading | boolean | Whether the loading content is shown |
+| state | `Record<string, unknown>` | Serializable state shared with the page as `kritzel.state` |
+| title | string | Title of the iframe element |
+| sandbox | string[] | Sandbox tokens of the iframe. Defaults to `['allow-scripts']` |
+| isElementPicking | boolean | Whether the object is picking elements (not persisted) |
+
+### Methods
+
+#### setContent
+
+Replaces the content and reloads the page.
+
+```ts
+setContent(content)
+```
+
+#### setLoadingContent
+
+Replaces the loading content.
+
+```ts
+setLoadingContent(content)
+```
+
+#### setLoading
+
+Shows or hides the loading content.
+
+```ts
+setLoading(isLoading)
+```
+
+#### setState
+
+Replaces the state and sends it to the page.
+
+```ts
+setState(state)
+```
+
+#### setElementPicking
+
+Turns element picking on or off. While picking, a click on an element of the page picks it instead of reaching the page.
+
+```ts
+setElementPicking(enabled, options)
+```
+
+#### setElementHighlights
+
+Replaces the element highlights drawn inside the page. Pass an empty array to remove them.
+
+```ts
+setElementHighlights(highlights)
+```
+
+#### getElementHighlights
+
+Returns the current element highlights.
+
+```ts
+getElementHighlights()
+```
+
+#### queryElements
+
+Describes the elements of the page that match a CSS selector, in document order. `limit` defaults to 100 and can be at most 500.
+
+```ts
+queryElements(selector, limit)
+```
+
+#### trackElement
+
+Starts reporting the visible position of the first element that matches a selector. Calls are counted, so each call needs a matching `untrackElement`. An agent's cursor uses this to follow an element it points at (`agent.moveTo({ objectId, selector })`).
+
+```ts
+trackElement(selector)
+```
+
+#### untrackElement
+
+Undoes one `trackElement` call for a selector.
+
+```ts
+untrackElement(selector)
+```
+
+#### getTrackedElementRect
+
+Returns the last known visible bounding box of a tracked element in content coordinates, or `null` if it hasn't been seen yet.
+
+```ts
+getTrackedElementRect(selector)
+```
+
+#### contentToObjectLocal
+
+Converts a point in content coordinates to world units in the object's local, unrotated space, relative to its top-left corner.
+
+```ts
+contentToObjectLocal(point)
+```

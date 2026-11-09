@@ -28,7 +28,6 @@ import {
   KritzelContextMenuHandler,
   KritzelBaseObject,
   KritzelEventHelper,
-  KritzelZOrderHelper,
   ABSOLUTE_SCALE_MAX,
   ABSOLUTE_SCALE_MIN,
   KritzelDynamicObject,
@@ -54,13 +53,10 @@ import {
   KritzelShortcut,
   KritzelAlignment,
   KritzelViewportState,
-  KritzelAgenticCursor,
-  KritzelAgenticCursorDetachedEvent,
-  KritzelAgenticCursorMoveOptions,
-  KritzelAgenticCursorMoveResult,
-  KritzelAgenticCursorOptions,
-  KritzelAgenticCursorPatch,
-  KritzelAgenticCursorTarget,
+  KritzelAgent,
+  KritzelAgentsChangeEvent,
+  KritzelRemoteAgentPresence,
+  KritzelObjectChangeSource,
   ObjectHelper,
   KritzelWheelHelper,
   ObjectsAddedEvent,
@@ -79,11 +75,17 @@ import {
   KritzelObjectTitlebarActionEvent,
   KritzelObjectTitlebarConfig,
   KritzelObjectTitlebarMenuState,
+  KritzelElementAwareObject,
+  KritzelObjectElementClickEvent,
+  KritzelObjectElementHighlight,
+  KritzelObjectElementHoverEvent,
+  KritzelObjectElementInfo,
+  KritzelObjectElementPickEvent,
+  KritzelObjectElementPickingOptions,
   KritzelTitlebarSection,
   KritzelObjectConfig,
   KritzelEngineHost,
-  KritzelResolvedTitlebar,
-  KritzelTitlebarMetrics,
+  KRITZEL_ROTATION_HANDLE_DISTANCE,
 } from '@kritzel/core';
 import throttle from 'lodash/throttle';
 import { toPng, toSvg } from 'html-to-image';
@@ -298,6 +300,7 @@ export class KritzelEngine implements KritzelEngineHost {
   @Watch('theme')
   onThemeChange(newValue: ThemeName) {
     this.core.themeManager.setTheme(newValue);
+    this.refreshObjectElementThemes();
   }
 
   /** Whether the "Powered by Kritzel" watermark is shown. Keeping it visible helps support the project. */
@@ -310,6 +313,7 @@ export class KritzelEngine implements KritzelEngineHost {
     if (newValue && newValue.length > 0) {
       this.core.themeManager.registerThemes(newValue);
       this.core.themeManager.applyTheme(this.core.themeManager.currentTheme);
+      this.refreshObjectElementThemes();
     }
   }
 
@@ -398,13 +402,13 @@ export class KritzelEngine implements KritzelEngineHost {
   /** Emitted when objects on the canvas are added, removed, or modified. */
   @Event() objectsChange!: EventEmitter<KritzelBaseObject[]>;
 
-  /** Emitted when one or more objects are added to the canvas. */
+  /** Emitted when one or more objects are added to the canvas. `source` is set when an agent made the change. */
   @Event() objectsAdded!: EventEmitter<ObjectsAddedEvent>;
 
-  /** Emitted when one or more objects are removed from the canvas. */
+  /** Emitted when one or more objects are removed from the canvas. `source` is set when an agent made the change. */
   @Event() objectsRemoved!: EventEmitter<ObjectsRemovedEvent>;
 
-  /** Emitted when one or more objects are updated on the canvas. */
+  /** Emitted when one or more objects are updated on the canvas. `source` is set when an agent made the change. */
   @Event() objectsUpdated!: EventEmitter<ObjectsUpdatedEvent>;
 
   /** Emitted when the set of selected objects changes. */
@@ -431,8 +435,12 @@ export class KritzelEngine implements KritzelEngineHost {
   /** Emitted while the selected workspace's objects are being initialized and synchronized. */
   @Event() isLoadingChange!: EventEmitter<boolean>;
 
-  /** Emitted when an agentic cursor is detached from an object, either manually or because the object was removed. */
-  @Event() agenticCursorDetached!: EventEmitter<KritzelAgenticCursorDetachedEvent>;
+  /**
+   * Emitted when agents are added or removed, or when what the avatar stack shows of them changes
+   * (name, color, avatar, status, visibility, activity). Lists the local agents first, then the agents of
+   * collaborators (`isRemote: true`). Never emitted for plain cursor motion.
+   */
+  @Event() agentsChange!: EventEmitter<KritzelAgentsChangeEvent>;
 
   /** Emitted when a button or a menu item in an object titlebar is clicked. */
   @Event() objectTitlebarAction!: EventEmitter<KritzelObjectTitlebarActionEvent>;
@@ -442,6 +450,18 @@ export class KritzelEngine implements KritzelEngineHost {
    * `items` anchored to `anchor` and report selections through `selectObjectTitlebarMenuItem`.
    */
   @Event() objectTitlebarMenuStateChange!: EventEmitter<KritzelObjectTitlebarMenuState>;
+
+  /**
+   * Emitted when the pointer moves onto another element inside the content of an interactive (selected) object,
+   * such as an iframe object, and with `element: null` when it leaves the content or the object stops being interactive.
+   */
+  @Event() objectElementHover!: EventEmitter<KritzelObjectElementHoverEvent>;
+
+  /** Emitted when the user clicks an element inside the content of an interactive (selected) object. The click works as usual. */
+  @Event() objectElementClick!: EventEmitter<KritzelObjectElementClickEvent>;
+
+  /** Emitted when the user picks an element inside an object that is picking elements, see `setObjectElementPicking`. */
+  @Event() objectElementPick!: EventEmitter<KritzelObjectElementPickEvent>;
 
   @State() forceUpdate: number = 0;
 
@@ -1167,91 +1187,15 @@ export class KritzelEngine implements KritzelEngineHost {
   async addObject<T extends KritzelBaseObject>(object: T): Promise<T | null> {
     this.core.deselectAllObjects();
 
-    object.id = object.generateId();
     object._core = this.core;
     object.scale = object.scale ?? this.core.store.state.scale;
-    object.zIndex = this.core.store.currentZIndex;
-    object.workspaceId = this.core.store.state.activeWorkspace!.id;
 
     if (object instanceof KritzelImage) {
       await object.prepareForInsert();
     }
 
-    // Handle KritzelText: recreate the editor now that _core is available
-    // The editor's dispatchTransaction callback needs _core for persisting changes
-    if (object instanceof KritzelText) {
-      const pendingContent = object.content;
-      object.editor = object.createEditor();
-      if (pendingContent) {
-        object.setContent(pendingContent);
-      }
-    }
-
-    // Handle KritzelGroup: flush pending children (recursively for nested groups) into the store
-    if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
-      // Build a map of old ID → new ID across all nesting levels so we can
-      // remap anchor references regardless of how deeply nested the line is.
-      const idRemapping = new Map<string, string>();
-      const allFlushedChildren: KritzelBaseObject<any>[] = [];
-
-      // Children stack bottom to top in the order they were added; the group takes its top child's zIndex.
-      KritzelZOrderHelper.allocate(object, this.core.store.currentZIndex, group => group._pendingChildren);
-
-      const flushGroup = (group: KritzelGroup): void => {
-        if (group._pendingChildren.length === 0) {
-          return;
-        }
-
-        const pending = group._pendingChildren;
-        group._pendingChildren = [];
-        group.childIds = [];
-
-        pending.forEach(child => {
-          const oldId = child.id;
-          child.id = child.generateId();
-          child._core = this.core;
-          child.scale = child.scale ?? this.core.store.state.scale;
-          child.workspaceId = this.core.store.state.activeWorkspace!.id;
-
-          idRemapping.set(oldId, child.id);
-          group.childIds.push(child.id);
-          allFlushedChildren.push(child);
-
-          // Recurse into nested groups before inserting so grandchildren get
-          // proper IDs and `childIds` references before the parent is added.
-          if (child instanceof KritzelGroup) {
-            flushGroup(child);
-          }
-        });
-      };
-
-      flushGroup(object);
-
-      // Remap anchor references in lines across all flushed descendants
-      allFlushedChildren.forEach(child => {
-        if (child instanceof KritzelLine) {
-          if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
-            child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
-          }
-          if (child.endAnchor && idRemapping.has(child.endAnchor.objectId)) {
-            child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId)! };
-          }
-        }
-      });
-
-      // Insert all flushed descendants into the store
-      allFlushedChildren.forEach(child => {
-        this.core.addObject(child);
-      });
-
-      // finalize() recurses into nested groups so all bounding boxes/snapshots align
-      object.finalize();
-
-      // Rebuild anchor index so anchored lines are tracked
-      this.core.anchorManager.rebuildIndex();
-    }
-
-    this.core.addObject(object);
+    const descendants = this.core.prepareObjectForInsert(object);
+    this.core.insertPreparedObject(object, descendants);
     this.core.rerender();
 
     // Wait for the object to be fully rendered and mounted before resolving.
@@ -1291,74 +1235,8 @@ export class KritzelEngine implements KritzelEngineHost {
 
     this.core.store.objects.transaction(() => {
       for (const object of objects) {
-        object.id = object.generateId();
-        object._core = this.core;
-        object.scale = object.scale ?? this.core.store.state.scale;
-        object.zIndex = this.core.store.currentZIndex;
-        object.workspaceId = this.core.store.state.activeWorkspace!.id;
-
-        if (object instanceof KritzelText) {
-          const pendingContent = object.content;
-          object.editor = object.createEditor();
-          if (pendingContent) {
-            object.setContent(pendingContent);
-          }
-        }
-
-        if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
-          const idRemapping = new Map<string, string>();
-          const allFlushedChildren: KritzelBaseObject<any>[] = [];
-
-          KritzelZOrderHelper.allocate(object, this.core.store.currentZIndex, group => group._pendingChildren);
-
-          const flushGroup = (group: KritzelGroup): void => {
-            if (group._pendingChildren.length === 0) {
-              return;
-            }
-
-            const pending = group._pendingChildren;
-            group._pendingChildren = [];
-            group.childIds = [];
-
-            pending.forEach(child => {
-              const oldId = child.id;
-              child.id = child.generateId();
-              child._core = this.core;
-              child.scale = child.scale ?? this.core.store.state.scale;
-              child.workspaceId = this.core.store.state.activeWorkspace!.id;
-
-              idRemapping.set(oldId, child.id);
-              group.childIds.push(child.id);
-              allFlushedChildren.push(child);
-
-              if (child instanceof KritzelGroup) {
-                flushGroup(child);
-              }
-            });
-          };
-
-          flushGroup(object);
-
-          allFlushedChildren.forEach(child => {
-            if (child instanceof KritzelLine) {
-              if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
-                child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
-              }
-              if (child.endAnchor && idRemapping.has(child.endAnchor.objectId)) {
-                child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId)! };
-              }
-            }
-          });
-
-          allFlushedChildren.forEach(child => {
-            this.core.addObject(child);
-          });
-
-          object.finalize();
-          this.core.anchorManager.rebuildIndex();
-        }
-
-        this.core.addObject(object);
+        const descendants = this.core.prepareObjectForInsert(object);
+        this.core.insertPreparedObject(object, descendants);
       }
     });
 
@@ -1641,78 +1519,101 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /**
-   * Adds a programmatically controlled ("agentic") cursor. Agentic cursors are rendered locally only.
-   * @param options - Name, color, status, visibility and initial position (defaults to the viewport center).
-   * @returns A snapshot of the created cursor.
+   * Adds an agent and shows its cursor. Adding the same agent again does nothing. An agent belongs to
+   * one editor at a time; an agent of an editor that was removed from the page moves here.
+   * @param agent - A `new KritzelAgent({ name })`.
+   * @returns The same agent.
    */
   @Method()
-  async addAgenticCursor(options: KritzelAgenticCursorOptions = {}): Promise<KritzelAgenticCursor> {
-    return this.core.agenticCursorManager.add(options);
+  async addAgent(agent: KritzelAgent): Promise<KritzelAgent> {
+    return this.core.agentManager.add(agent);
   }
 
   /**
-   * Updates the name, color, status or visibility of an agentic cursor.
-   * @param id - The cursor ID.
-   * @param patch - The properties to change. Pass `status: null` to clear the status.
-   * @returns A snapshot of the updated cursor.
+   * Removes an agent: its running action is rolled back, its queued actions resolve with
+   * `'agent-removed'`, and its cursor and history are dropped. The agent can be added again.
+   * @param agent - The agent or its ID.
+   * @returns `false` if the agent was not added.
    */
   @Method()
-  async updateAgenticCursor(id: string, patch: KritzelAgenticCursorPatch): Promise<KritzelAgenticCursor> {
-    return this.core.agenticCursorManager.update(id, patch);
+  async removeAgent(agent: KritzelAgent | string): Promise<boolean> {
+    return this.core.agentManager.remove(agent);
   }
 
   /**
-   * Smoothly moves an agentic cursor to world coordinates or to an anchor on an object.
-   * Object targets attach the cursor by default, so it follows the object afterwards.
-   * @param id - The cursor ID.
-   * @param target - `{ x, y }` in world coordinates or `{ objectId, anchor?, offset? }`.
-   * @param options - Duration, easing, speed and whether to attach to an object target.
-   * @returns Resolves when the animation ends; `completed` is `false` if the move was interrupted.
+   * Returns an added agent by its ID.
+   * @param id - The agent's ID.
    */
   @Method()
-  async moveAgenticCursor(id: string, target: KritzelAgenticCursorTarget, options: KritzelAgenticCursorMoveOptions = {}): Promise<KritzelAgenticCursorMoveResult> {
-    return this.core.agenticCursorManager.move(id, target, options);
+  async getAgent(id: string): Promise<KritzelAgent | null> {
+    return this.core.agentManager.get(id);
+  }
+
+  /** Returns the added agents. */
+  @Method()
+  async getAgents(): Promise<KritzelAgent[]> {
+    return this.core.agentManager.getAll();
+  }
+
+  /** Returns the agents of collaborators, as shared through presence. */
+  @Method()
+  async getRemoteAgents(): Promise<KritzelRemoteAgentPresence[]> {
+    return this.core.remoteAgentManager.getPresences();
   }
 
   /**
-   * Detaches an agentic cursor from its object. The cursor stays at its current position.
-   * @param id - The cursor ID.
+   * Turns element picking on or off for an object whose content has elements, such as an iframe object.
+   * While picking, the element under the pointer is highlighted, and a click emits `objectElementPick`
+   * instead of reaching the content. Picking works while the object is interactive, which it is while selected.
+   * @param objectId - The object ID.
+   * @param enabled - Whether the object picks elements.
+   * @param options - `selector` limits picking to matching elements, `color` sets the highlight color.
    */
   @Method()
-  async detachAgenticCursor(id: string): Promise<void> {
-    this.core.agenticCursorManager.detach(id);
+  async setObjectElementPicking(objectId: string, enabled: boolean, options: KritzelObjectElementPickingOptions = {}): Promise<void> {
+    this.getElementAwareObjectOrThrow(objectId).setElementPicking(enabled, options);
   }
 
   /**
-   * Removes an agentic cursor. A running move resolves with `completed: false`.
-   * @param id - The cursor ID.
-   * @returns `true` if the cursor existed.
+   * Highlights elements inside an object's content, replacing its previous highlights.
+   * Highlights are local: they are neither saved nor shown to collaborators.
+   * @param objectId - The object ID.
+   * @param highlights - `{ selector, color?, label? }` entries. Every element that matches a selector is highlighted.
    */
   @Method()
-  async removeAgenticCursor(id: string): Promise<boolean> {
-    return this.core.agenticCursorManager.remove(id);
-  }
-
-  /** Removes all agentic cursors. */
-  @Method()
-  async clearAgenticCursors(): Promise<void> {
-    this.core.agenticCursorManager.clear();
+  async highlightObjectElements(objectId: string, highlights: KritzelObjectElementHighlight[]): Promise<void> {
+    this.getElementAwareObjectOrThrow(objectId).setElementHighlights(highlights);
   }
 
   /**
-   * Returns a snapshot of an agentic cursor.
-   * @param id - The cursor ID.
-   * @returns The cursor, or `null` if it doesn't exist.
+   * Removes element highlights.
+   * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
    */
   @Method()
-  async getAgenticCursor(id: string): Promise<KritzelAgenticCursor | null> {
-    return this.core.agenticCursorManager.get(id);
+  async clearObjectElementHighlights(objectId?: string): Promise<void> {
+    if (objectId !== undefined) {
+      this.getElementAwareObjectOrThrow(objectId).setElementHighlights([]);
+      return;
+    }
+    this.core.store.objects?.allObjects().forEach(object => {
+      if (ObjectHelper.isKritzelElementAwareObject(object) && object.getElementHighlights().length > 0) {
+        object.setElementHighlights([]);
+      }
+    });
   }
 
-  /** Returns snapshots of all agentic cursors. */
+  /**
+   * Describes the elements inside an object's content that match a CSS selector, in document order.
+   * The object must be mounted, which it is while it is in or near the viewport.
+   * @param objectId - The object ID.
+   * @param selector - A CSS selector, e.g. `'button'` or `'[data-kritzel-id]'`.
+   * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
+   * @returns The matching elements, each with a `selector` that can be used to highlight it or point an agent's cursor
+   * at it with `agent.moveTo({ objectId, selector })`.
+   */
   @Method()
-  async getAgenticCursors(): Promise<KritzelAgenticCursor[]> {
-    return this.core.agenticCursorManager.getAll();
+  async queryObjectElements(objectId: string, selector: string, limit?: number): Promise<KritzelObjectElementInfo[]> {
+    return this.getElementAwareObjectOrThrow(objectId).queryElements(selector, limit);
   }
 
   /**
@@ -1743,6 +1644,10 @@ export class KritzelEngine implements KritzelEngineHost {
           return false;
         }
         if (node.tagName === 'KRITZEL-AWARENESS-CURSORS') {
+          return false;
+        }
+        // Agent cursors and their selections are UI, not content
+        if (node.tagName === 'KRITZEL-AGENTIC-CURSORS') {
           return false;
         }
         if (node.classList && node.classList.contains('debug-panel')) {
@@ -2639,7 +2544,8 @@ export class KritzelEngine implements KritzelEngineHost {
   private _syncConfigRevision: number = 0;
   private _assetStorageConfigRevision: number = 0;
   private _workspacesRevision: number = 0;
-  private _previousVisibleDynamicObjects: Set<string> = new Set();
+  /** Embedded objects rendered by the previous render, by id, so they can be unmounted even after they were deleted. */
+  private _previousVisibleDynamicObjects: Map<string, { unmount(): void }> = new Map();
   private _revealedImageKeys: Set<string> = new Set();
   private _sceneBootstrapOpacity: number = 1;
   private _sceneBootstrapTransitionEnabled: boolean = false;
@@ -2787,10 +2693,21 @@ export class KritzelEngine implements KritzelEngineHost {
 
   constructor() {
     this.core = new KritzelCore(this);
-    this.core.agenticCursorManager.onDetached(event => this.agenticCursorDetached?.emit(event));
+    const emitAgents = () =>
+      this.agentsChange?.emit({ agents: [...this.core.agentManager.getPresences(), ...this.core.remoteAgentManager.getPresences()] });
+    this.core.agentManager.onChange(emitAgents);
+    this.core.remoteAgentManager.onChange(emitAgents);
+  }
+
+  connectedCallback() {
+    this.core.agentManager.setDisposed(false);
   }
 
   disconnectedCallback() {
+    // From now on, the agents of this engine can be added to another editor.
+    this.core.agentManager.setDisposed(true);
+    // Stop agentic actions first, while their objects and workspace still exist.
+    this.core.agenticActionManager.cleanup();
     this.throttledPointerMoveMulti.cancel();
     window.visualViewport?.removeEventListener('resize', this.handleVisualViewportResize);
     this._revealedImageKeys.clear();
@@ -2809,8 +2726,10 @@ export class KritzelEngine implements KritzelEngineHost {
       });
     }
 
-    // Clear cursor position in awareness before destroying
+    // Clear cursor position and agents in awareness before destroying
     this.core.store.objects?.clearCursorPosition();
+    this.core.agentBroadcaster.clear();
+    this.core.remoteAgentManager.clear();
 
     // Clean up current workspace's ObjectMap
     if (this.core.store.objects) {
@@ -3253,16 +3172,16 @@ export class KritzelEngine implements KritzelEngineHost {
     }
   }
 
-  emitObjectsAdded(objects: KritzelBaseObject<any>[]) {
-    this.objectsAdded.emit({ objects });
+  emitObjectsAdded(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource) {
+    this.objectsAdded.emit(source ? { objects, source } : { objects });
   }
 
-  emitObjectsRemoved(objects: KritzelBaseObject<any>[]) {
-    this.objectsRemoved.emit({ objects });
+  emitObjectsRemoved(objects: KritzelBaseObject<any>[], source?: KritzelObjectChangeSource) {
+    this.objectsRemoved.emit(source ? { objects, source } : { objects });
   }
 
-  emitObjectsUpdated(objects: { object: KritzelBaseObject<any>; changedProperties: string[] }[]) {
-    this.objectsUpdated.emit({ objects });
+  emitObjectsUpdated(objects: { object: KritzelBaseObject<any>; changedProperties: string[] }[], source?: KritzelObjectChangeSource) {
+    this.objectsUpdated.emit(source ? { objects, source } : { objects });
   }
 
   emitAwarenessChange(states: Map<number, Record<string, any>>) {
@@ -3275,6 +3194,38 @@ export class KritzelEngine implements KritzelEngineHost {
 
   emitObjectTitlebarMenuStateChange(detail: KritzelObjectTitlebarMenuState) {
     this.objectTitlebarMenuStateChange.emit(detail);
+  }
+
+  emitObjectElementHover(detail: KritzelObjectElementHoverEvent) {
+    this.objectElementHover.emit(detail);
+  }
+
+  emitObjectElementClick(detail: KritzelObjectElementClickEvent) {
+    this.objectElementClick.emit(detail);
+  }
+
+  emitObjectElementPick(detail: KritzelObjectElementPickEvent) {
+    this.objectElementPick.emit(detail);
+  }
+
+  private getElementAwareObjectOrThrow(objectId: string): KritzelElementAwareObject {
+    const object = this.core.store.objects?.findById(objectId);
+    if (!object) {
+      throw new Error(`Object "${objectId}" not found.`);
+    }
+    if (!ObjectHelper.isKritzelElementAwareObject(object)) {
+      throw new Error(`Object "${objectId}" has no content elements.`);
+    }
+    return object;
+  }
+
+  /** Element highlights are drawn inside the objects' content, which can't read the engine's CSS variables. */
+  private refreshObjectElementThemes() {
+    this.core.store.objects?.allObjects().forEach(object => {
+      if (ObjectHelper.isKritzelElementAwareObject(object)) {
+        object.refreshElementTheme();
+      }
+    });
   }
 
   emitObjectsInViewportChange() {
@@ -3343,29 +3294,6 @@ export class KritzelEngine implements KritzelEngineHost {
     return state.activeTool?.toolType === 'selection' || isEditing ? 'auto' : 'none';
   }
 
-  /**
-   * Extra screen pixels to move the rotation handle up by, so it is not hidden behind the
-   * titlebar of a selected object whose top edge it sits on.
-   */
-  private getRotationHandleTitlebarOffset(titlebars: KritzelResolvedTitlebar[], metrics: KritzelTitlebarMetrics): number {
-    const selectionGroup = this.core.store.selectionGroup;
-    if (!selectionGroup || titlebars.length === 0) {
-      return 0;
-    }
-
-    const selectedIds = selectionGroup.objectIds;
-    const band = metrics.height + metrics.offset;
-    if (selectedIds.length === 1 && titlebars.some(titlebar => titlebar.owner.id === selectedIds[0])) {
-      return band;
-    }
-
-    // Active bars include groups whose nested child is the selected unit.
-    const groupTop = selectionGroup.rotatedBoundingBox.y;
-    const tolerance = 1 / (this.core.store.state.scale || 1);
-    const overlapsHandle = titlebars.some(titlebar => titlebar.isActive && Math.abs(titlebar.owner.rotatedBoundingBox.y - groupTop) <= tolerance);
-    return overlapsHandle ? band : 0;
-  }
-
   private getSelectionHandleCapabilities(object: KritzelBaseObject<any>): { canRenderResizeHandles: boolean; canRenderRotationHandle: boolean } {
     return {
       canRenderResizeHandles: this.core.objectConfigManager.isResizable(object),
@@ -3420,7 +3348,11 @@ export class KritzelEngine implements KritzelEngineHost {
     // Titlebars hang above their objects, so the render query is widened while titlebars are configured.
     const visibleObjects = this.core.store.getObjectsInViewport(titlebarManager.getCullingPadding(titlebarMetrics));
     const titlebars = titlebarManager.resolveTitlebars(visibleObjects);
-    const rotationHandleTitlebarOffset = this.getRotationHandleTitlebarOffset(titlebars, titlebarMetrics);
+    // The same distance agents draw and grab their handles at: above a titlebar on the selection's top edge.
+    const selectionGroup = this.core.store.selectionGroup;
+    const rotationHandleDistance = selectionGroup
+      ? titlebarManager.getRotationHandleDistance(selectionGroup, { titlebars, metrics: titlebarMetrics })
+      : KRITZEL_ROTATION_HANDLE_DISTANCE;
 
     const getObjectWrapperPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
       if (this.core.store.state.isScaling) {
@@ -3451,17 +3383,18 @@ export class KritzelEngine implements KritzelEngineHost {
     };
 
     // Track visible dynamic objects and unmount culled ones
-    const currentVisibleDynamicObjects = new Set<string>();
+    const currentVisibleDynamicObjects = new Map<string, { unmount(): void }>();
     visibleObjects.forEach(object => {
       if (ObjectHelper.isKritzelEmbeddedObject(object)) {
-        currentVisibleDynamicObjects.add(object.id);
+        currentVisibleDynamicObjects.set(object.id, object);
       }
     });
 
-    // Unmount dynamic objects that left the viewport
-    this._previousVisibleDynamicObjects.forEach(id => {
+    // Unmount dynamic objects that left the viewport. Objects that were deleted without being unmounted, e.g. by
+    // undo or a collaborator, are no longer in the store, so the instance from the previous render is unmounted.
+    this._previousVisibleDynamicObjects.forEach((previous, id) => {
       if (!currentVisibleDynamicObjects.has(id)) {
-        const object = this.core.store.objects.findById(id);
+        const object = this.core.store.objects.findById(id) ?? previous;
         if (object && ObjectHelper.isKritzelEmbeddedObject(object)) {
           object.unmount();
         }
@@ -3746,6 +3679,9 @@ export class KritzelEngine implements KritzelEngineHost {
 
                 {object instanceof KritzelIframeObject && (
                   <div
+                    // Invisible until the iframe has loaded its first document, then it fades in with its content
+                    // instead of showing an empty frame first.
+                    class={object.isDocumentLoaded ? 'kritzel-iframe-object kritzel-iframe-object--revealed' : 'kritzel-iframe-object'}
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3754,7 +3690,7 @@ export class KritzelEngine implements KritzelEngineHost {
                       height: object.totalHeight + 'px',
                       transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
                       transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
-                      opacity: effectiveOpacityString,
+                      opacity: object.isDocumentLoaded ? effectiveOpacityString : '0',
                       backgroundColor: KritzelColorHelper.resolveThemeColor(object.backgroundColor, currentTheme),
                       borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
@@ -4232,7 +4168,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                       x1={object.totalWidth / 2}
                                       y1="0"
                                       x2={object.totalWidth / 2}
-                                      y2={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
+                                      y2={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       style={{
                                         stroke: selectionBorderColor,
                                         strokeWidth: `calc(var(--kritzel-selection-border-width, 2px) * ${handleScale} / ${this.core.store.state?.scale})`,
@@ -4241,7 +4177,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                     <circle
                                       class="rotation-handle"
                                       cx={object.totalWidth / 2}
-                                      cy={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
+                                      cy={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       r={`${((baseHandleSize - 1) * handleScale) / this.core.store.state?.scale}`}
                                       style={{
                                         fill: 'var(--kritzel-selection-handle-color, #ffffff)',
@@ -4253,7 +4189,7 @@ export class KritzelEngine implements KritzelEngineHost {
                                     <circle
                                       class="rotation-handle-overlay"
                                       cx={object.totalWidth / 2}
-                                      cy={-(((15 + rotationHandleTitlebarOffset) * handleScale) / this.core.store.state?.scale)}
+                                      cy={-((rotationHandleDistance * handleScale) / this.core.store.state?.scale)}
                                       r={`${(baseHandleTouchSize * handleScale) / this.core.store.state?.scale}`}
                                       style={{
                                         fill: 'transparent',

@@ -170,6 +170,16 @@ describe('KritzelSelectionGroup', () => {
 
       expect(group.rotation).toBeCloseTo(-Math.PI / 2);
     });
+
+    it('should stamp the awareness client id when awareness exists', () => {
+      Object.defineProperty(mockCore.store, 'objects', { configurable: true, get: () => ({ localClientId: 7, docClientId: 7 }) });
+      expect(KritzelSelectionGroup.create(mockCore).clientId).toBe(7);
+    });
+
+    it('should fall back to the doc client id without awareness', () => {
+      Object.defineProperty(mockCore.store, 'objects', { configurable: true, get: () => ({ localClientId: null, docClientId: 42 }) });
+      expect(KritzelSelectionGroup.create(mockCore).clientId).toBe(42);
+    });
   });
 
   describe('objects getter', () => {

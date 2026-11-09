@@ -4,6 +4,7 @@ const os = require('os');
 const path = require('path');
 const { chromium } = require('@playwright/test');
 const { installRecorderCursor } = require('./cursor');
+const { installRecorderWatermark } = require('./watermark');
 
 const DEFAULT_WIDTH = 640;
 const DEFAULT_HEIGHT = 360;
@@ -12,6 +13,7 @@ const PROFILE_DIR = path.join(__dirname, '.profile');
 const ICON_REGISTRY = path.join(__dirname, '../../libs/core/src/classes/registries/icon-registry.class.ts');
 // Same hotspot KritzelCursorHelper.getCursor() uses for the default cursor.
 const CURSOR_HOTSPOT = { x: 4, y: 4 };
+const WATERMARK_TEXT = 'Powered by kritzel.io';
 
 function getArgValue(name) {
 	const prefix = `--${name}=`;
@@ -75,6 +77,7 @@ function defaultName() {
 		const name = getArgValue('name') || defaultName();
 		const outDir = path.resolve(getArgValue('out') || DEFAULT_OUT_DIR);
 		const withCursor = !hasFlag('no-cursor');
+		const withWatermark = !hasFlag('no-watermark');
 		const fresh = hasFlag('fresh');
 		const headless = hasFlag('headless');
 
@@ -98,6 +101,10 @@ function defaultName() {
 			await context.addInitScript(installRecorderCursor, { svg: loadEngineCursorSvg(), hotspot: CURSOR_HOTSPOT });
 		}
 
+		if (withWatermark) {
+			await context.addInitScript(installRecorderWatermark, { text: WATERMARK_TEXT });
+		}
+
 		const page = context.pages()[0] || (await context.newPage());
 		const video = page.video();
 
@@ -111,7 +118,8 @@ function defaultName() {
 
 		await page.goto(url, { waitUntil: 'load' });
 
-		console.log(`Recording ${url} at ${width}x${height}${withCursor ? ' with cursor' : ''}.`);
+		const extras = [withCursor && 'cursor', withWatermark && 'watermark'].filter(Boolean);
+		console.log(`Recording ${url} at ${width}x${height}${extras.length ? ` with ${extras.join(' and ')}` : ''}.`);
 		console.log('Close the browser window or press Ctrl+C to stop.');
 
 		await stopped;

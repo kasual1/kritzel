@@ -211,11 +211,70 @@ export class KritzelClipboardManager {
   }
 
   private materializeKritzelObjects(intent: Extract<PasteIntent, { type: 'kritzel_objects' }>): KritzelBaseObject<any>[] {
-    const objects = intent.payload.objects.map(object => this.reviveClipboardObject(object)).filter((object): object is KritzelBaseObject<any> => object != null);
+    return this.reviveCopies(intent.payload.objects);
+  }
 
+  /**
+   * Copies of objects, not inserted yet: fresh IDs at every nesting level, group children pending, and lines
+   * anchored to copied objects anchored to the copies instead. Insert them with {@link insertCopies}.
+   */
+  createCopies(objects: KritzelBaseObject<any>[]): KritzelBaseObject<any>[] {
+    return this.reviveCopies(objects.map(object => this.serializeForClipboard(object)));
+  }
+
+  private reviveCopies(serialized: SerializedClipboardObject[]): KritzelBaseObject<any>[] {
+    const objects = serialized.map(object => this.reviveClipboardObject(object)).filter((object): object is KritzelBaseObject<any> => object != null);
     this.regenerateIdsAndRemapAnchors(objects);
-
     return objects;
+  }
+
+  /**
+   * Inserts copies into the active workspace, moved by the offset, with their group children: stacked above all
+   * other objects in their original order, each group as one contiguous layer. Emits no events and leaves the
+   * selection alone; call it inside the caller's transaction.
+   * @returns Every inserted object, group children before their group.
+   */
+  insertCopies(copies: KritzelBaseObject<any>[], offsetX: number, offsetY: number): KritzelBaseObject<any>[] {
+    const workspaceId = this._core.store.state.activeWorkspace!.id;
+
+    // Stack the copies above everything in their original order; each group becomes one contiguous layer.
+    const getPendingChildren = (group: KritzelGroup) => group._pendingChildren;
+    const sortByStackOrder = (objects: KritzelBaseObject<any>[]) =>
+      objects
+        .map(object => ({ object, anchor: KritzelZOrderHelper.stackAnchor(object, getPendingChildren) }))
+        .sort((a, b) => a.anchor - b.anchor)
+        .map(({ object }) => object);
+    const sortPendingChildren = (object: KritzelBaseObject<any>): void => {
+      if (object instanceof KritzelGroup) {
+        object._pendingChildren.forEach(sortPendingChildren);
+        object._pendingChildren = sortByStackOrder(object._pendingChildren);
+      }
+    };
+    copies.forEach(sortPendingChildren);
+    let nextZIndex = this._core.store.currentZIndex;
+    sortByStackOrder(copies).forEach(obj => (nextZIndex = KritzelZOrderHelper.allocate(obj, nextZIndex, getPendingChildren)));
+
+    const inserted: KritzelBaseObject<any>[] = [];
+    const insert = (object: KritzelBaseObject<any>): void => {
+      if (object.workspaceId !== workspaceId) {
+        object.workspaceId = workspaceId;
+      }
+      object.updatePosition(object.translateX + offsetX, object.translateY + offsetY);
+
+      if (object instanceof KritzelGroup && object._pendingChildren.length > 0) {
+        const pendingChildren = object._pendingChildren;
+        object._pendingChildren = [];
+        pendingChildren.forEach(insert);
+        object.finalize();
+      }
+
+      this._core.addObject(object);
+      inserted.push(object);
+    };
+    copies.forEach(insert);
+
+    this._core.anchorManager.rebuildIndex();
+    return inserted;
   }
 
   private async materializeImageFiles(intent: Extract<PasteIntent, { type: 'image_files' }>): Promise<KritzelBaseObject<any>[] | null> {
@@ -332,72 +391,11 @@ export class KritzelClipboardManager {
 
     const selectionGroup = KritzelSelectionGroup.create(this._core);
 
-    // Stack the pasted objects above everything in their original order; each group becomes one contiguous layer.
-    const getPendingChildren = (group: KritzelGroup) => group._pendingChildren;
-    const sortByStackOrder = (objects: KritzelBaseObject<any>[]) =>
-      objects
-        .map(object => ({ object, anchor: KritzelZOrderHelper.stackAnchor(object, getPendingChildren) }))
-        .sort((a, b) => a.anchor - b.anchor)
-        .map(({ object }) => object);
-    const sortPendingChildren = (object: KritzelBaseObject<any>): void => {
-      if (object instanceof KritzelGroup) {
-        object._pendingChildren.forEach(sortPendingChildren);
-        object._pendingChildren = sortByStackOrder(object._pendingChildren);
-      }
-    };
-    copiedObjects.forEach(sortPendingChildren);
-    let nextZIndex = this._core.store.currentZIndex;
-    sortByStackOrder(copiedObjects).forEach(obj => (nextZIndex = KritzelZOrderHelper.allocate(obj, nextZIndex, getPendingChildren)));
-
     this._core.store.objects.transaction(() => {
-      const flushPendingChildren = (group: KritzelGroup): void => {
-        if (group._pendingChildren.length === 0) {
-          return;
-        }
-
-        const pendingChildren = group._pendingChildren;
-        group._pendingChildren = [];
-
-        pendingChildren.forEach(child => {
-          if (child.workspaceId !== activeWorkspace.id) {
-            child.workspaceId = activeWorkspace.id;
-          }
-
-          child.updatePosition(child.translateX + offsetX, child.translateY + offsetY);
-
-          if (child instanceof KritzelGroup) {
-            flushPendingChildren(child);
-          }
-
-          this._core.addObject(child);
-        });
-
-        group.finalize();
-      };
-
-      const newlyAddedObjects: KritzelBaseObject<any>[] = [];
-
-      copiedObjects.forEach(obj => {
-        if (obj.workspaceId !== activeWorkspace.id) {
-          obj.workspaceId = activeWorkspace.id;
-        }
-
-        obj.updatePosition(obj.translateX + offsetX, obj.translateY + offsetY);
-
-        if (obj instanceof KritzelGroup) {
-          flushPendingChildren(obj);
-        }
-
-        this._core.addObject(obj);
-        newlyAddedObjects.push(obj);
-
-        selectionGroup.addOrRemove(obj);
-      });
-
-      this._core.engine.emitObjectsAdded(newlyAddedObjects);
+      this.insertCopies(copiedObjects, offsetX, offsetY);
+      copiedObjects.forEach(obj => selectionGroup.addOrRemove(obj));
+      this._core.engine.emitObjectsAdded(copiedObjects);
     });
-
-    this._core.anchorManager.rebuildIndex();
 
     selectionGroup.isSelected = true;
 

@@ -1,0 +1,13 @@
+.video {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  /* the element is scaled to fractional pixels; while scrolling, the browser snaps the video frame to whole pixels and
+     the element's default black background shows as a 1px strip at the edge. Cover + no background hides that. */
+  object-fit: cover;
+  background-color: transparent;
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(32, 33, 36, 0.14);
+  margin: 1rem 0 1.75rem;
+}

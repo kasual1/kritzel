@@ -22,6 +22,10 @@ import { KritzelLocalizationManager } from '../managers/localization.manager';
 import { KritzelBrowserPermissionManager } from '../managers/browser-permission.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
 import { KritzelAgenticCursorManager } from '../managers/agentic-cursor.manager';
+import { KritzelAgenticActionManager } from '../managers/agentic-action.manager';
+import { KritzelAgentManager } from '../managers/agent.manager';
+import { KritzelAgentBroadcaster } from '../managers/agent-broadcast.manager';
+import { KritzelRemoteAgentManager } from '../managers/remote-agent.manager';
 import { KritzelObjectTitlebarManager } from '../managers/object-titlebar.manager';
 import { KritzelObjectConfigManager } from '../managers/object-config.manager';
 import { ObjectHelper } from '../../helpers/object.helper';
@@ -77,6 +81,11 @@ export class KritzelCore {
   private readonly _clipboardManager: KritzelClipboardManager;
   /** Manager for programmatically controlled (agentic) cursors */
   private readonly _agenticCursorManager: KritzelAgenticCursorManager;
+  /** Runs actions performed by agentic cursors */
+  private readonly _agenticActionManager: KritzelAgenticActionManager;
+  private readonly _agentManager: KritzelAgentManager;
+  private readonly _agentBroadcaster: KritzelAgentBroadcaster;
+  private readonly _remoteAgentManager: KritzelRemoteAgentManager;
   /** Manager for titlebars rendered above objects */
   private readonly _objectTitlebarManager: KritzelObjectTitlebarManager;
   private readonly _objectConfigManager: KritzelObjectConfigManager;
@@ -192,6 +201,29 @@ export class KritzelCore {
   }
 
   /**
+   * Gets the agentic action manager.
+   * @returns The KritzelAgenticActionManager that runs `performAgenticAction` calls
+   */
+  get agenticActionManager(): KritzelAgenticActionManager {
+    return this._agenticActionManager;
+  }
+
+  /** The agents added to this editor. */
+  get agentManager(): KritzelAgentManager {
+    return this._agentManager;
+  }
+
+  /** Shares the local agents with collaborators. */
+  get agentBroadcaster(): KritzelAgentBroadcaster {
+    return this._agentBroadcaster;
+  }
+
+  /** The agents of collaborators. */
+  get remoteAgentManager(): KritzelRemoteAgentManager {
+    return this._remoteAgentManager;
+  }
+
+  /**
    * Gets the editor ID used for namespacing storage keys.
    * @returns The editor ID or undefined if not set
    */
@@ -221,6 +253,11 @@ export class KritzelCore {
    * Sets the current user and propagates to the active object map's awareness.
    */
   setUser(user?: IKritzelUser): void {
+    if (user?.kind === 'agent') {
+      // Agents are added with addAgent(); as the local user they would own the human's selection.
+      console.warn('[Kritzel] An agent cannot be the current user. Add it with addAgent() instead.');
+      return;
+    }
     this._user = user;
     this._store.setLocalUserId(user?.id ?? null);
     this._store.objects?.setLocalUser(user);
@@ -244,6 +281,11 @@ export class KritzelCore {
     this._permissionManager = new KritzelBrowserPermissionManager(this);
     this._clipboardManager = new KritzelClipboardManager(this);
     this._agenticCursorManager = new KritzelAgenticCursorManager(this);
+    this._agenticActionManager = new KritzelAgenticActionManager(this);
+    this._agentManager = new KritzelAgentManager(this);
+    this._agentBroadcaster = new KritzelAgentBroadcaster(this);
+    this._remoteAgentManager = new KritzelRemoteAgentManager(this);
+    this._agentBroadcaster.start();
     this._objectTitlebarManager = new KritzelObjectTitlebarManager(this);
     this._objectConfigManager = new KritzelObjectConfigManager(this);
     this._toolRegistry = new KritzelToolRegistry(this);
@@ -444,10 +486,20 @@ export class KritzelCore {
       objectsMap.setLocalUser(this._user);
     }
 
+    // Each workspace has its own awareness: share the agents there and forget the old workspace's.
+    this._remoteAgentManager.clear();
+    this._agentBroadcaster.reset();
+
     // Forward awareness changes to the engine as events
     objectsMap.onAwarenessChange(states => {
+      this._remoteAgentManager.handleAwarenessStates(states as Map<number, Record<string, unknown>>, objectsMap.localClientId);
       this.engine.emitAwarenessChange(states);
     });
+    // Collaborators that were there before this workspace loaded only send again when their state changes.
+    const awareness = objectsMap.awareness;
+    if (awareness) {
+      this._remoteAgentManager.handleAwarenessStates(awareness.getStates() as Map<number, Record<string, unknown>>, objectsMap.localClientId);
+    }
 
     // Rebuild anchor index after loading objects
     this._anchorManager.rebuildIndex();
@@ -567,8 +619,12 @@ export class KritzelCore {
           continue;
         }
 
-        // Same ID but a different instance: swap the live object for the incoming one
+        // Same ID but a different instance: swap the live object for the incoming one. Local element state
+        // (highlights, picking, tracked elements) moves along, so cursors pointing at an element stay on it.
         this.detachObject(existingObject);
+        if (ObjectHelper.isKritzelElementAwareObject(object) && typeof object.adoptElementStateFrom === 'function') {
+          object.adoptElementStateFrom(existingObject);
+        }
         objectsMap.remove(o => o.id === object.id);
         this.prepareObjectForWorkspace(object, workspaceId, object.zIndex ?? nextZIndex(), scaleFallback);
         objectsMap.insert(object);
@@ -918,6 +974,105 @@ export class KritzelCore {
   }
 
   /**
+   * Prepares an object that was built outside the canvas (e.g. `new KritzelShape(...)`) for the
+   * active workspace: a fresh ID, the core reference, scale, z-index and workspace, a text editor
+   * that can persist, and, for a group, its pending children with new IDs and remapped line anchors.
+   * Nothing is inserted yet; pass the result to {@link insertPreparedObject}.
+   * Async preparation (`KritzelImage.prepareForInsert()`) must run before this call.
+   * @param object - The object to prepare
+   * @returns The group's flushed descendants in insertion order; empty for other objects.
+   */
+  prepareObjectForInsert(object: KritzelBaseObject<any>): KritzelBaseObject<any>[] {
+    const state = this._store.state;
+    object.id = object.generateId();
+    object._core = this;
+    object.scale = object.scale ?? state.scale;
+    object.zIndex = this._store.currentZIndex;
+    object.workspaceId = state.activeWorkspace!.id;
+
+    // The editor's dispatchTransaction callback needs _core to persist changes.
+    if (object instanceof KritzelText) {
+      const pendingContent = object.content;
+      object.editor = object.createEditor();
+      if (pendingContent) {
+        object.setContent(pendingContent);
+      }
+    }
+
+    if (!(object instanceof KritzelGroup) || object._pendingChildren.length === 0) {
+      return [];
+    }
+
+    // Old ID -> new ID across all nesting levels, to remap anchors however deep the line is.
+    const idRemapping = new Map<string, string>();
+    const descendants: KritzelBaseObject<any>[] = [];
+
+    // Children stack bottom to top in the order they were added; the group takes its top child's zIndex.
+    KritzelZOrderHelper.allocate(object, this._store.currentZIndex, group => group._pendingChildren);
+
+    const flushGroup = (group: KritzelGroup): void => {
+      if (group._pendingChildren.length === 0) {
+        return;
+      }
+
+      const pending = group._pendingChildren;
+      group._pendingChildren = [];
+      group.childIds = [];
+
+      pending.forEach(child => {
+        const oldId = child.id;
+        child.id = child.generateId();
+        child._core = this;
+        child.scale = child.scale ?? state.scale;
+        child.workspaceId = state.activeWorkspace!.id;
+
+        idRemapping.set(oldId, child.id);
+        group.childIds.push(child.id);
+        descendants.push(child);
+
+        // Nested groups get their IDs and childIds before their parent is inserted.
+        if (child instanceof KritzelGroup) {
+          flushGroup(child);
+        }
+      });
+    };
+
+    flushGroup(object);
+
+    descendants.forEach(child => {
+      if (child instanceof KritzelLine) {
+        if (child.startAnchor && idRemapping.has(child.startAnchor.objectId)) {
+          child.startAnchor = { objectId: idRemapping.get(child.startAnchor.objectId)! };
+        }
+        if (child.endAnchor && idRemapping.has(child.endAnchor.objectId)) {
+          child.endAnchor = { objectId: idRemapping.get(child.endAnchor.objectId)! };
+        }
+      }
+    });
+
+    return descendants;
+  }
+
+  /**
+   * Inserts an object prepared by {@link prepareObjectForInsert} together with its flushed
+   * descendants: descendants first, then the group is finalized and the anchor index rebuilt,
+   * then the object itself.
+   * @param object - The prepared object
+   * @param descendants - The descendants returned by prepareObjectForInsert
+   */
+  insertPreparedObject(object: KritzelBaseObject<any>, descendants: KritzelBaseObject<any>[]): void {
+    if (descendants.length > 0) {
+      descendants.forEach(child => this.addObject(child));
+      if (object instanceof KritzelGroup) {
+        // finalize() recurses into nested groups so all bounding boxes and snapshots align.
+        object.finalize();
+      }
+      this.anchorManager.rebuildIndex();
+    }
+    this.addObject(object);
+  }
+
+  /**
    * Removes an object from the workspace.
    * Handles recursive deletion of group children (unless preserved),
    * cleans up line anchors, and removes from the object map.
@@ -1148,18 +1303,7 @@ export class KritzelCore {
    * @returns The objects by id and their z-order view in store order.
    */
   private getZOrderItems(): { objects: Map<string, KritzelBaseObject<any>>; items: KritzelZOrderItem[] } {
-    const objects = new Map<string, KritzelBaseObject<any>>();
-    const items: KritzelZOrderItem[] = [];
-
-    for (const object of this._store.objects?.allObjects() ?? []) {
-      if (object instanceof KritzelSelectionGroup || object instanceof KritzelSelectionBox || objects.has(object.id)) {
-        continue;
-      }
-      objects.set(object.id, object);
-      items.push(KritzelZOrderHelper.toItem(object));
-    }
-
-    return { objects, items };
+    return KritzelZOrderHelper.collect(this._store.objects?.allObjects() ?? []);
   }
 
   /**

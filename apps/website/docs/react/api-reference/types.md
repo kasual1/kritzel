@@ -130,14 +130,20 @@ interface KritzelShapeToolConfig {
 ```ts
 interface ObjectsAddedEvent {
   objects: KritzelBaseObject[];
+  /** Set when an agent made the change. */
+  source?: KritzelAgentChangeSource;
 }
 
 interface ObjectsRemovedEvent {
   objects: KritzelBaseObject[];
+  /** Set when an agent made the change. */
+  source?: KritzelAgentChangeSource;
 }
 
 interface ObjectsUpdatedEvent {
   objects: { object: KritzelBaseObject; changedProperties: Partial<KritzelBaseObject> }[];
+  /** Set when an agent made the change. */
+  source?: KritzelAgentChangeSource;
 }
 ```
 
@@ -257,97 +263,125 @@ enum ShapeType {
 | `ThemeAwareColor` | `{ light: string; dark: string; label?: string }` | Color that adapts to active theme |
 | `ColorPalette` | `readonly ThemeAwareColor[]` | Array of theme-aware colors |
 
-## Agentic Cursor Types
+## Agent Types
 
-Types used by the [agentic cursor methods](./editor.md#agentic-cursors).
+Types used by [`KritzelAgent`](./agent.md) and the [agent methods](./editor.md#agents) of the editor. The [Agent API Reference](./agent.md#related-types) lists their full definitions.
 
-### `KritzelAgenticCursorOptions`
+| Type | Description |
+|------|-------------|
+| [`KritzelAgentOptions`](./agent.md#kritzelagentoptions) | Options of `new KritzelAgent()`: `name` (required), `id`, `color`, `avatarUrl`, `speed`, `broadcast`, `status`, `visible`, and `position`. |
+| [`KritzelAgentState`](./agent.md#kritzelagentstate) | Snapshot returned by `agent.state`: position, attachment, status, visibility, selection, activity, and `canUndo` / `canRedo`. |
+| [`KritzelAgentPresence`](./agent.md#kritzelagentpresence) | An agent of this editor as reported by `agentsChange` and `agent.toPresence()`, with `isRemote: false`. |
+| [`KritzelAgentsChangeEvent`](./agent.md#kritzelagentschangeevent) | Detail of the `agentsChange` event: `{ agents: (KritzelAgentPresence \| KritzelRemoteAgentPresence)[] }`, the agents of the editor first, then those of collaborators. `isRemote` tells them apart. |
+| [`KritzelRemoteAgentPresence`](./agent.md#kritzelremoteagentpresence) | An agent of a collaborator, as returned by `getRemoteAgents()` and listed in `agentsChange`: `isRemote: true`, `clientId`, and `hostUser`. |
+| [`KritzelAgentEventMap`](./agent.md#kritzelagenteventmap) | Events of `agent.on()`, with `KritzelAgentDetachedEvent` and `KritzelAgentInterruptedEvent`. |
+| [`KritzelAgenticTarget`](./agent.md#kritzelagentictarget) | A point in world coordinates, an anchor (`KritzelAgenticAnchor`) on an object, or an element inside an object's content (`KritzelAgenticElementTarget`: `{ objectId, selector }`), such as a button in an iframe object. |
+| [`KritzelAgenticMoveOptions`](./agent.md#kritzelagenticmoveoptions) | Options of `agent.moveTo()`, which resolves with `KritzelAgenticMoveResult`. |
+| [`KritzelAgenticAction`](./agent.md#kritzelagenticaction) | The actions of `agent.perform()`, from `click` to `setStyle`, `addObject`, `undo`, and `redo`. |
+| [`KritzelAgenticActionOptions`](./agent.md#kritzelagenticactionoptions) | `speed`, `instant`, `signal`, and `easing` of an action. |
+| [`KritzelAgenticActionResult`](./agent.md#kritzelagenticactionresult) | Result of an action, with a `KritzelAgenticActionFailureReason` when it did not complete. |
+| [`KritzelAgentActionError`](./agent.md#kritzelagentactionerror) | Thrown when an action that belongs to a running `agent.task()` does not complete. |
+| [`KritzelAgentTool`](./agent.md#kritzelagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, and `run(input, context?)` with a `KritzelAgentToolContext` (`signal`). |
+| [`KritzelAgentToolSchema`](./agent.md#kritzelagenttoolschema) | The JSON Schema of a tool's input. |
+| [`KritzelAgentToolsOptions`](./agent.md#kritzelagenttoolsoptions) | `only`, `prefix`, and `maxTextLength` of `agent.tools()`. |
+| [`KritzelAgentToolResult`](./agent.md#kritzelagenttoolresult) | What a tool's `run()` resolves with as JSON: `completed`, `reason`, `objectIds`, `message`, `hint`, and `objects`. |
+| [`KritzelObserveOptions`](./agent.md#kritzelobserveoptions) | `scope`, `objectIds`, `maxObjects`, and `maxTextLength` of `agent.observe()`. |
+| [`KritzelCanvasSnapshot`](./agent.md#kritzelcanvassnapshot) | What `agent.observe()` returns: the viewport, the user's selection, the agent, and the objects. |
+| [`KritzelCanvasObject`](./agent.md#kritzelcanvasobject) | One object of a snapshot: ID, type, box, rotation, text, group and line relations, style, `busy`, and `createdBy`. |
 
-Passed to `addAgenticCursor()`.
+### `KritzelAgentChangeSource`
+
+The `source` of `objectsAdded`, `objectsUpdated`, and `objectsRemoved` when an agent made the change. `actionType` is `'undo'` or `'redo'` for changes from the agent's own history.
 
 ```ts
-interface KritzelAgenticCursorOptions {
+interface KritzelAgentChangeSource {
+  type: 'agent';
+  agentId: string;
+  actionType: KritzelAgenticAction['type'];
+}
+```
+
+## Object Element Types
+
+Types used by the [object element events and methods](./editor.md#object-elements). See [Interacting with iFrame Content](../advanced/dynamic-objects.md#interacting-with-iframe-content) for usage. To point an agent's cursor at an element, pass a [`KritzelAgenticElementTarget`](./agent.md#kritzelagentictarget) to `agent.moveTo()`.
+
+### `KritzelObjectElementInfo`
+
+Description of an element inside an object's content, reported by events and returned by `queryObjectElements()`. The content is untrusted, so treat these values like any other untrusted input.
+
+```ts
+interface KritzelObjectElementInfo {
+  selector: string;                    // matched exactly this element when it was reported
+  kritzelId?: string;                  // the data-kritzel-id attribute
+  tagName: string;                     // lowercase, e.g. 'button'
   id?: string;
-  name?: string;
-  color?: string;
-  status?: string;
-  visible?: boolean;
-  position?: KritzelAgenticCursorTarget;
+  classList: string[];
+  text?: string;                       // collapsed whitespace, at most 200 characters
+  attributes: Record<string, string>;  // role, aria-*, data-*, name, type, href, src, alt, title, placeholder, for
+  rect: KritzelObjectElementRect;
+  visibleRect?: KritzelObjectElementRect; // omitted when no part of the element can be seen
+}
+
+// CSS pixels relative to the top-left corner of the content, before canvas zoom, object scale and rotation
+interface KritzelObjectElementRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
 ```
 
-### `KritzelAgenticCursorTarget`
+### `KritzelObjectElementHighlight`
 
-Target of `moveAgenticCursor()` and the initial `position` of a cursor. Either world coordinates or an anchor on an object.
-
-```ts
-type KritzelAgenticCursorTarget =
-  | { x: number; y: number }
-  | { objectId: string; anchor?: KritzelAgenticCursorAnchor; offset?: { x: number; y: number } };
-
-type KritzelAgenticCursorAnchor =
-  | 'center' | 'top-left' | 'top' | 'top-right' | 'right'
-  | 'bottom-right' | 'bottom' | 'bottom-left' | 'left';
-```
-
-### `KritzelAgenticCursorMoveOptions`
-
-Passed to `moveAgenticCursor()`.
+Passed to `highlightObjectElements()`.
 
 ```ts
-interface KritzelAgenticCursorMoveOptions {
-  duration?: number;
-  easing?: KritzelEasing;
-  speed?: number;
-  attach?: boolean;
-}
-
-type KritzelEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | ((t: number) => number);
-
-interface KritzelAgenticCursorMoveResult {
-  completed: boolean;
+interface KritzelObjectElementHighlight {
+  selector: string; // every match is highlighted, up to 100 elements
+  color?: string;   // defaults to the theme's elementHighlight.color
+  label?: string;   // shown above each highlighted element
 }
 ```
 
-### `KritzelAgenticCursorPatch`
+### `KritzelObjectElementPickingOptions`
 
-Passed to `updateAgenticCursor()`.
+Passed to `setObjectElementPicking()`.
 
 ```ts
-interface KritzelAgenticCursorPatch {
-  name?: string;
-  color?: string;
-  status?: string | null;
-  visible?: boolean;
+interface KritzelObjectElementPickingOptions {
+  selector?: string; // picks the closest matching ancestor of the element under the pointer
+  color?: string;    // defaults to the theme's elementHighlight.color
 }
 ```
 
-### `KritzelAgenticCursor`
+### Event Payloads
 
-Snapshot returned by `addAgenticCursor()`, `updateAgenticCursor()`, `getAgenticCursor()` and `getAgenticCursors()`.
-
-```ts
-interface KritzelAgenticCursor {
-  id: string;
-  name?: string;
-  color: string;
-  status?: string;
-  visible: boolean;
-  position: { x: number; y: number };
-  attachedTo: { objectId: string; anchor: KritzelAgenticCursorAnchor; offset: { x: number; y: number } } | null;
-  isMoving: boolean;
-}
-```
-
-### `KritzelAgenticCursorDetachedEvent`
-
-Emitted by the `agenticCursorDetached` event.
+Emitted by the `objectElementHover`, `objectElementClick`, and `objectElementPick` events.
 
 ```ts
-interface KritzelAgenticCursorDetachedEvent {
-  id: string;
+interface KritzelObjectElementHoverEvent {
   objectId: string;
-  reason: 'object-removed' | 'manual';
+  element: KritzelObjectElementInfo | null; // null when the pointer left the content or the object was deselected
+  isPicking: boolean;
+}
+
+interface KritzelObjectElementClickEvent {
+  objectId: string;
+  element: KritzelObjectElementInfo;
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
+}
+
+// Same shape as KritzelObjectElementClickEvent
+interface KritzelObjectElementPickEvent {
+  objectId: string;
+  element: KritzelObjectElementInfo;
+  shiftKey: boolean;
+  ctrlKey: boolean;
+  altKey: boolean;
+  metaKey: boolean;
 }
 ```
 

@@ -55,6 +55,8 @@
     "ngrok:stencil": "node ./tools/ngrok/start.js --port=3333 --name=stencil-lib",
     "ngrok:website": "node ./tools/ngrok/start.js --port=3000 --name=website",
     "record": "node ./tools/recorder/record.js",
+    "videos:optimize": "node ./tools/blog-videos/optimize.mjs",
+    "videos:check": "node ./tools/blog-videos/optimize.mjs --check",
     "demo:angular": "npm run start -w apps/demos/angular",
     "demo:react": "npm run start -w apps/demos/react",
     "demo:vue": "npm run start -w apps/demos/vue",

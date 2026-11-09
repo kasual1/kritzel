@@ -49,10 +49,12 @@ import { CollaborationRealtimeComponent } from './pages/advanced/collaboration/c
 import { DynamicObjectsHtmlComponent } from './pages/advanced/dynamic-objects/dynamic-objects-html.component';
 import { DynamicObjectsComponentComponent } from './pages/advanced/dynamic-objects/dynamic-objects-component.component';
 import { DynamicObjectsIframeComponent } from './pages/advanced/dynamic-objects/dynamic-objects-iframe.component';
+import { DynamicObjectsIframeElementsComponent } from './pages/advanced/dynamic-objects/dynamic-objects-iframe-elements.component';
 import { ImportExportViewportExportComponent } from './pages/advanced/import-export/import-export-viewport-export.component';
 import { ImportExportWorkspaceExportComponent } from './pages/advanced/import-export/import-export-workspace-export.component';
 import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-export/import-export-workspace-import.component';
-import { AgenticCursorsBasicComponent } from './pages/advanced/agentic-cursors/agentic-cursors-basic.component';
+import { AgentsBasicComponent } from './pages/advanced/agents/agents-basic.component';
+import { AgentsActionsComponent } from './pages/advanced/agents/agents-actions.component';
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
 import { ThemingListenComponent } from './pages/customization/theming/theming-listen.component';
@@ -187,6 +189,7 @@ export const routes: Routes = [
           { path: 'html', component: DynamicObjectsHtmlComponent },
           { path: 'component', component: DynamicObjectsComponentComponent },
           { path: 'iframe', component: DynamicObjectsIframeComponent },
+          { path: 'iframe-elements', component: DynamicObjectsIframeElementsComponent },
         ],
       },
       {
@@ -198,8 +201,11 @@ export const routes: Routes = [
         ],
       },
       {
-        path: 'agentic-cursors',
-        children: [{ path: 'basic', component: AgenticCursorsBasicComponent }],
+        path: 'agents',
+        children: [
+          { path: 'basic', component: AgentsBasicComponent },
+          { path: 'actions', component: AgentsActionsComponent },
+        ],
       },
     ],
   },

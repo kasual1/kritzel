@@ -1,7 +1,17 @@
 import { KritzelMathHelper } from '../../helpers/math.helper';
 import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interface';
+import {
+  KritzelElementAwareObject,
+  KritzelObjectElementHighlight,
+  KritzelObjectElementInfo,
+  KritzelObjectElementPickingOptions,
+  KritzelObjectElementRect,
+} from '../../interfaces/object-element.interface';
+import { KritzelPoint } from '../../interfaces/point.interface';
 import { KritzelCore } from '../core/core.class';
 import { KritzelBaseObject } from './base-object.class';
+import { KritzelIframeElementBridge, KritzelIframeElementBridgeOwner } from './iframe-element-bridge.class';
+import { createIframeElementBridgeScript, IFRAME_ELEMENT_PICKING_CSS } from './iframe-element-bridge.script';
 
 const IFRAME_STATE_MESSAGE = 'kritzel-iframe-state';
 const IFRAME_PARENT_STATE_MESSAGE = 'kritzel-iframe-parent-state';
@@ -91,7 +101,19 @@ interface KritzelIframeContextMenuMessage {
 
 const iframePointerBridgeStarts = new WeakMap<HTMLIFrameElement, KritzelIframePointerBridgeStart>();
 
-export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> implements KritzelEmbeddedObject {
+/**
+ * Element bridges are transient: kept outside the instances so they are never serialized, cloned or copied,
+ * and handed to the instance that replaces an object after a synced update (see `adoptTransientStateFrom`).
+ */
+const iframeElementBridges = new WeakMap<KritzelIframeObject, KritzelIframeElementBridge>();
+
+/**
+ * Iframes that have loaded their first document. Kept per element, so the state is never serialized and stays with
+ * the iframe when a synced update hands it to the object that replaces this one (see `adoptTransientStateFrom`).
+ */
+const loadedIframes = new WeakSet<HTMLIFrameElement>();
+
+export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> implements KritzelEmbeddedObject, KritzelElementAwareObject {
   override __class__: string = 'KritzelIframeObject';
 
   content: KritzelIframeContent = { html: '', css: '', script: '' };
@@ -156,6 +178,14 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     return this.sandbox.join(' ');
   }
 
+  /**
+   * Whether the mounted iframe has loaded its first document. Until then the engine keeps the object invisible, so
+   * it fades in with its content instead of showing an empty frame first.
+   */
+  get isDocumentLoaded(): boolean {
+    return this.isMounted && loadedIframes.has(this.elementRef);
+  }
+
   override mount(iframe: HTMLIFrameElement): void {
     if (this.isMounted && this.elementRef === iframe) {
       return;
@@ -173,6 +203,13 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
     this.messageListener = event => this.handleMessage(event);
     window.addEventListener('message', this.messageListener);
+    if (!loadedIframes.has(iframe)) {
+      // Listens only from here on, so the blank document a new iframe starts with doesn't count.
+      iframe.addEventListener('load', () => {
+        loadedIframes.add(iframe);
+        this._core?.rerender();
+      }, { once: true });
+    }
     iframe.srcdoc = this.createSourceDocument();
     this.onMount(this.createLifecycleContext());
   }
@@ -194,6 +231,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
 
     this.isMounted = false;
     this._elementRef = null as unknown as HTMLIFrameElement;
+    iframeElementBridges.get(this)?.onUnmounted();
   }
 
   setContent(content: Partial<KritzelIframeContent>): void {
@@ -240,6 +278,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   }
 
   setIsInteractive(isInteractive: boolean): void {
+    const changed = this.isInteractive !== isInteractive;
     this.isInteractive = isInteractive;
 
     if (this.isMounted && this.elementRef) {
@@ -248,6 +287,76 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
         this.elementRef.blur();
       }
     }
+
+    if (changed) {
+      iframeElementBridges.get(this)?.onInteractivityChange();
+    }
+  }
+
+  /** Whether the object is picking elements, see `setElementPicking()`. */
+  get isElementPicking(): boolean {
+    return iframeElementBridges.get(this)?.isPicking ?? false;
+  }
+
+  /**
+   * Turns element picking on or off. While picking, the element under the pointer is highlighted and a click
+   * picks it (the engine emits `objectElementPick`) instead of reaching the page. Picking needs the object to
+   * be interactive, which it is while selected; until then the setting waits.
+   */
+  setElementPicking(enabled: boolean, options?: KritzelObjectElementPickingOptions): void {
+    this.elementBridge.setPicking(enabled, options);
+  }
+
+  /** Replaces the element highlights drawn inside the page. Pass an empty array to remove them. */
+  setElementHighlights(highlights: KritzelObjectElementHighlight[]): void {
+    this.elementBridge.setHighlights(highlights);
+  }
+
+  getElementHighlights(): KritzelObjectElementHighlight[] {
+    return iframeElementBridges.get(this)?.getHighlights() ?? [];
+  }
+
+  /**
+   * Describes the elements of the page that match a CSS selector, in document order.
+   * Rejects if the selector is invalid, the object isn't mounted or the page doesn't respond.
+   */
+  queryElements(selector: string, limit?: number): Promise<KritzelObjectElementInfo[]> {
+    if (!this.sandbox.includes('allow-scripts')) {
+      return Promise.reject(new Error(`Object "${this.id}" runs its content without scripts, so its elements can't be reached.`));
+    }
+    return this.elementBridge.query(selector, limit);
+  }
+
+  trackElement(selector: string): void {
+    this.elementBridge.track(selector);
+  }
+
+  untrackElement(selector: string): void {
+    iframeElementBridges.get(this)?.untrack(selector);
+  }
+
+  getTrackedElementRect(selector: string): KritzelObjectElementRect | null {
+    return iframeElementBridges.get(this)?.getRect(selector) ?? null;
+  }
+
+  contentToObjectLocal(point: KritzelPoint): KritzelPoint {
+    const scale = this.scale || 1;
+    const inset = this.borderWidth || 0;
+    return { x: (inset + point.x) / scale, y: (inset + point.y) / scale };
+  }
+
+  refreshElementTheme(): void {
+    iframeElementBridges.get(this)?.refreshTheme();
+  }
+
+  adoptElementStateFrom(previous: unknown): void {
+    const elementBridge = previous instanceof KritzelIframeObject && previous !== this ? iframeElementBridges.get(previous) : undefined;
+    if (!elementBridge) {
+      return;
+    }
+    iframeElementBridges.delete(previous as KritzelIframeObject);
+    iframeElementBridges.set(this, elementBridge);
+    elementBridge.attach(this.createElementBridgeOwner());
   }
 
   hasFocusedInputElement(): boolean {
@@ -345,6 +454,8 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     this.isSelected = previous.isSelected;
     this.isHovered = previous.isHovered;
 
+    this.adoptElementStateFrom(previous);
+
     if (!previous.isMounted || !(previous.elementRef instanceof HTMLElement) || previous.elementRef.tagName !== 'IFRAME') {
       return;
     }
@@ -362,6 +473,29 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     previous.messageListener = null;
     previous.isMounted = false;
     previous._elementRef = null as unknown as HTMLIFrameElement;
+  }
+
+  private get elementBridge(): KritzelIframeElementBridge {
+    let bridge = iframeElementBridges.get(this);
+    if (!bridge) {
+      bridge = new KritzelIframeElementBridge(this.createElementBridgeOwner());
+      iframeElementBridges.set(this, bridge);
+    }
+    return bridge;
+  }
+
+  private createElementBridgeOwner(): KritzelIframeElementBridgeOwner {
+    const object = this;
+    return {
+      get id() { return object.id; },
+      get isInteractive() { return object.isInteractive; },
+      get isMounted() { return object.isMounted; },
+      getIframe: () => object.isMounted && object.elementRef ? object.elementRef : null,
+      getContentSize: () => ({ width: object.totalWidth, height: object.totalHeight }),
+      emitHover: (element, isPicking) => object._core?.engine?.emitObjectElementHover?.({ objectId: object.id, element, isPicking }),
+      emitClick: (element, modifiers) => object._core?.engine?.emitObjectElementClick?.({ objectId: object.id, element, ...modifiers }),
+      emitPick: (element, modifiers) => object._core?.engine?.emitObjectElementPick?.({ objectId: object.id, element, ...modifiers }),
+    };
   }
 
   private createLifecycleContext(): KritzelIframeObjectLifecycleContext {
@@ -398,8 +532,10 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
       }
       html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; cursor: var(--kritzel-iframe-default-cursor); }
       button, button *, a, a *, input, textarea, select { cursor: var(--kritzel-iframe-pointer-cursor) !important; }
+      ${IFRAME_ELEMENT_PICKING_CSS}
       ${css}
     </style>
+    <script>${createIframeElementBridgeScript(this.elementBridge.beginDocument())}<\/script>
   </head>
   <body>
     ${activeContent.html}
@@ -479,6 +615,10 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     }
 
     const message = event.data as { type?: unknown; state?: unknown };
+    if (this.elementBridge.handleMessage(event.data as Record<string, unknown>)) {
+      return;
+    }
+
     if (message.type === IFRAME_POINTER_MESSAGE) {
       this.dispatchPointerMessage(event.data as KritzelIframePointerMessage);
       return;

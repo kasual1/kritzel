@@ -281,6 +281,10 @@ await editor.value?.redo();
 // (event as CustomEvent<KritzelUndoState>).detail
 ```
 
+## Elements inside iframe objects
+
+The page of a `KritzelIframeObject` can be observed and controlled per element by CSS selector: `setObjectElementPicking`, `highlightObjectElements`, `clearObjectElementHighlights`, `queryObjectElements`, and agents that point their cursor at an element with `agent.moveTo({ objectId, selector })`. Hover, click and pick events and the rules for these methods are in the "Elements inside iframe objects" section of events.md.
+
 ## Pitfalls
 
 - Mutating `obj.translateX = …` directly renders nothing and syncs nothing — wrap changes in `updateObject`.

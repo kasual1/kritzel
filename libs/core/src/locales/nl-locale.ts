@@ -100,6 +100,8 @@ export const NL_LOCALE: KritzelLocale = {
     'chatBox.placeholder': 'Vraag het de AI...',
     'chatBox.submit': 'Versturen',
     'chatBox.stop': 'Stoppen',
+    'chatBox.removeChip': 'Verwijderen',
+    'chatBox.moreChips': 'meer',
 
     // Utility panel
     'utility.undo': 'Ongedaan maken',

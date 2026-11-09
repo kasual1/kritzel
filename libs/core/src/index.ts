@@ -54,6 +54,13 @@ export * from './classes/managers/theme.manager';
 export * from './classes/managers/localization.manager';
 export * from './classes/managers/object-titlebar.manager';
 export * from './classes/managers/object-config.manager';
+export * from './classes/managers/agent.manager';
+export * from './classes/managers/agent-broadcast.manager';
+export * from './classes/managers/remote-agent.manager';
+
+export * from './classes/agent/agent.class';
+export * from './classes/agent/agent-action-error.class';
+export { formatAgentToolResult, AGENT_TOOL_REASON_HINTS } from './classes/agent/agent-tools';
 
 export * from './classes/registries/dynamic-object-renderer.registry';
 export * from './classes/registries/font-registry.class';
@@ -76,6 +83,10 @@ export * from './interfaces/document-metadata.interface';
 export * from './interfaces/anchor.interface';
 export * from './interfaces/viewport-state.interface';
 export * from './interfaces/agentic-cursor.interface';
+export * from './interfaces/agentic-action.interface';
+export * from './interfaces/agent.interface';
+export * from './interfaces/object-element.interface';
+export * from './interfaces/chat-box.interface';
 export * from './interfaces/easing.interface';
 export * from './interfaces/point.interface';
 export * from './interfaces/context-menu-state.interface';

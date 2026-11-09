@@ -75,4 +75,15 @@ export class KritzelEventHelper {
     return cancel;
   }
 
+  /**
+   * Calls a listener and logs what it throws instead of passing it on, so one failing listener neither breaks the
+   * caller nor stops the listeners after it. `name` names the listener in the log.
+   */
+  public static callListener(listener: () => void, name: string): void {
+    try {
+      listener();
+    } catch (error) {
+      console.error(`[Kritzel] ${name} failed:`, error);
+    }
+  }
 }

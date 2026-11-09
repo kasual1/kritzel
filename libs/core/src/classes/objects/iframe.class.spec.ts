@@ -1,4 +1,6 @@
 import { KritzelIframeObject, KritzelIframeObjectLifecycleContext } from './iframe.class';
+import { createIframeElementBridgeScript, IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
+import { ObjectHelper } from '../../helpers/object.helper';
 
 describe('KritzelIframeObject', () => {
   const createCore = () => ({
@@ -171,6 +173,36 @@ describe('KritzelIframeObject', () => {
     expect(previous.isMounted).toBe(false);
   });
 
+  it('reports its document as loaded once the iframe has loaded its first document', () => {
+    const object = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    const iframe = document.createElement('iframe');
+    const rerender = jest.fn();
+    (object as any)._core = { rerender };
+
+    expect(object.isDocumentLoaded).toBe(false);
+    object.mount(iframe);
+    expect(object.isDocumentLoaded).toBe(false);
+
+    iframe.dispatchEvent(new Event('load'));
+    expect(object.isDocumentLoaded).toBe(true);
+    expect(rerender).toHaveBeenCalledTimes(1);
+
+    object.unmount();
+    expect(object.isDocumentLoaded).toBe(false);
+  });
+
+  it('keeps the loaded document when a synced update replaces the object', () => {
+    const previous = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    const iframe = document.createElement('iframe');
+    previous.mount(iframe);
+    iframe.dispatchEvent(new Event('load'));
+
+    const revived = new KritzelIframeObject({ html: '<p>Loaded</p>' });
+    revived.adoptTransientStateFrom(previous);
+
+    expect(revived.isDocumentLoaded).toBe(true);
+  });
+
   it('bridges pointer movement at viewport scale without feeding the moved iframe position back into the coordinates', () => {
     const originalPointerEvent = globalThis.PointerEvent;
     Object.defineProperty(globalThis, 'PointerEvent', {
@@ -304,5 +336,192 @@ describe('KritzelIframeObject', () => {
     expect(object.state).toEqual({ nested: { count: 1 } });
     expect(object.sandbox).toEqual(['allow-scripts', 'allow-forms']);
     expect(copy.isMounted).toBe(false);
+  });
+
+  describe('element bridge', () => {
+    const element = { selector: '#run', id: 'run', tagName: 'button', classList: [], attributes: {}, text: 'Run', rect: { x: 4, y: 6, width: 20, height: 10 } };
+
+    const mountWithWindow = (object: KritzelIframeObject) => {
+      const iframe = document.createElement('iframe');
+      const contentWindow = { postMessage: jest.fn() };
+      Object.defineProperty(iframe, 'contentWindow', { configurable: true, value: contentWindow });
+      object.mount(iframe);
+      const syncs = () => contentWindow.postMessage.mock.calls.map(call => call[0]).filter(message => message.type === IFRAME_ELEMENT_MESSAGES.sync);
+      // Messages of the page's current document that applied the latest sync, as the bridge script sends them.
+      const receive = (data: Record<string, unknown>) => (object as any).handleMessage({
+        source: contentWindow,
+        data: { doc: Number(/const DOCUMENT = (\d+);/.exec(iframe.srcdoc)?.[1]), version: syncs().pop()?.version ?? 0, ...data },
+      });
+      return { iframe, contentWindow, receive, syncs };
+    };
+
+    const createEngineCore = () => {
+      const core = createCore();
+      core.engine = { emitObjectElementHover: jest.fn(), emitObjectElementClick: jest.fn(), emitObjectElementPick: jest.fn() };
+      return core;
+    };
+
+    it('runs the bridge in its own script in the head, before any script of the content', () => {
+      const object = new KritzelIframeObject({ html: '<script>const inline = 1;</script>', script: 'const marker = 1;' });
+      const iframe = document.createElement('iframe');
+      object.mount(iframe);
+
+      const bridgeIndex = iframe.srcdoc.indexOf(IFRAME_ELEMENT_MESSAGES.ready);
+      expect(bridgeIndex).toBeGreaterThan(-1);
+      expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('</head>'));
+      expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('const inline = 1;'));
+      expect(bridgeIndex).toBeLessThan(iframe.srcdoc.indexOf('const marker = 1;'));
+      expect(iframe.srcdoc.slice(bridgeIndex, iframe.srcdoc.indexOf('</head>'))).toContain('</script>');
+      expect(iframe.srcdoc).toContain('html[data-kritzel-picking]');
+    });
+
+    it('generates a bridge script that parses and can be inlined', () => {
+      const script = createIframeElementBridgeScript(1);
+
+      expect(() => new Function(script)).not.toThrow();
+      expect(script).toContain('const DOCUMENT = 1;');
+      expect(script.toLowerCase()).not.toContain('</script');
+    });
+
+    it('is recognized as an element-aware object', () => {
+      expect(ObjectHelper.isKritzelElementAwareObject(new KritzelIframeObject())).toBe(true);
+      expect(ObjectHelper.isKritzelElementAwareObject({ setElementPicking: () => undefined })).toBe(false);
+      expect(ObjectHelper.isKritzelElementAwareObject(null)).toBe(false);
+    });
+
+    it('sends picking and highlights once the page is ready', () => {
+      const object = KritzelIframeObject.create(createCore());
+      const { receive, syncs } = mountWithWindow(object);
+      object.setElementPicking(true, { selector: 'button' });
+      object.setElementHighlights([{ selector: '#run', label: 'Run' }]);
+      expect(syncs()).toHaveLength(0);
+
+      receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+
+      expect(object.isElementPicking).toBe(true);
+      expect(object.getElementHighlights()).toEqual([{ selector: '#run', label: 'Run' }]);
+      expect(syncs()[0]).toEqual(expect.objectContaining({ picking: true, pickSelector: 'button', highlights: [{ selector: '#run', label: 'Run' }] }));
+    });
+
+    it('waits for a new ready after the document is reloaded', () => {
+      const object = KritzelIframeObject.create(createCore());
+      const { receive, syncs } = mountWithWindow(object);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+      object.setContent({ html: '<p>New</p>' });
+
+      object.setElementHighlights([{ selector: 'p' }]);
+      expect(syncs()).toHaveLength(1);
+
+      receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+      expect(syncs()).toHaveLength(2);
+      expect(syncs()[1].highlights).toEqual([{ selector: 'p' }]);
+    });
+
+    it('emits hovers, clicks and picks through the engine with the object id', () => {
+      const core = createEngineCore();
+      const object = KritzelIframeObject.create(core);
+      const { receive } = mountWithWindow(object);
+      object.setIsInteractive(true);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element });
+      receive({ type: IFRAME_ELEMENT_MESSAGES.click, element, ctrlKey: true });
+      object.setElementPicking(true);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.pick, element });
+
+      expect(core.engine.emitObjectElementHover).toHaveBeenCalledWith({ objectId: object.id, element: expect.objectContaining({ selector: '#run' }), isPicking: false });
+      expect(core.engine.emitObjectElementClick).toHaveBeenCalledWith(expect.objectContaining({ objectId: object.id, ctrlKey: true, element: expect.objectContaining({ text: 'Run' }) }));
+      expect(core.engine.emitObjectElementPick).toHaveBeenCalledWith(expect.objectContaining({ objectId: object.id, shiftKey: false }));
+    });
+
+    it('ignores element messages from other windows', () => {
+      const core = createEngineCore();
+      const object = KritzelIframeObject.create(core);
+      mountWithWindow(object);
+      object.setIsInteractive(true);
+
+      (object as any).handleMessage({ source: {}, data: { type: IFRAME_ELEMENT_MESSAGES.hover, element } });
+
+      expect(core.engine.emitObjectElementHover).not.toHaveBeenCalled();
+    });
+
+    it('reports that the hover ended when the object stops being interactive or unmounts', () => {
+      const core = createEngineCore();
+      const object = KritzelIframeObject.create(core);
+      const { receive } = mountWithWindow(object);
+      object.setIsInteractive(true);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element });
+
+      object.setIsInteractive(false);
+      expect(core.engine.emitObjectElementHover).toHaveBeenLastCalledWith({ objectId: object.id, element: null, isPicking: false });
+
+      object.setIsInteractive(true);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.hover, element });
+      object.unmount();
+      expect(core.engine.emitObjectElementHover).toHaveBeenCalledTimes(4);
+      expect(core.engine.emitObjectElementHover).toHaveBeenLastCalledWith({ objectId: object.id, element: null, isPicking: false });
+    });
+
+    it('keeps element state transient: not serialized and not copied', () => {
+      const object = new KritzelIframeObject();
+      object.setElementHighlights([{ selector: 'p' }]);
+      object.setElementPicking(true);
+      object.trackElement('p');
+
+      expect(JSON.stringify(object.serialize())).not.toContain('Highlight');
+      const copy = object.copy();
+      const clone = object.clone();
+      expect(copy.getElementHighlights()).toEqual([]);
+      expect(copy.isElementPicking).toBe(false);
+      expect(clone.getElementHighlights()).toEqual([]);
+      expect(object.getElementHighlights()).toEqual([{ selector: 'p' }]);
+    });
+
+    it('hands element state to the instance that replaces it after a synced update', () => {
+      const core = createEngineCore();
+      const previous = KritzelIframeObject.create(core);
+      const { iframe, receive, syncs } = mountWithWindow(previous);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+      previous.setIsInteractive(true);
+      previous.setElementHighlights([{ selector: 'p' }]);
+      previous.trackElement('#run');
+      receive({ type: IFRAME_ELEMENT_MESSAGES.rects, rects: { '#run': element.rect } });
+
+      const revived = new KritzelIframeObject().deserialize<KritzelIframeObject>(previous.serialize());
+      revived._core = core;
+      revived.adoptTransientStateFrom(previous);
+
+      expect(revived.getElementHighlights()).toEqual([{ selector: 'p' }]);
+      expect(revived.getTrackedElementRect('#run')).toEqual(element.rect);
+      expect(previous.getElementHighlights()).toEqual([]);
+
+      const doc = Number(/const DOCUMENT = (\d+);/.exec(iframe.srcdoc)?.[1]);
+      (revived as any).handleMessage({ source: (revived.elementRef as HTMLIFrameElement).contentWindow, data: { type: IFRAME_ELEMENT_MESSAGES.hover, element, doc } });
+      expect(core.engine.emitObjectElementHover).toHaveBeenCalledWith(expect.objectContaining({ objectId: revived.id }));
+
+      revived.setElementHighlights([]);
+      expect(syncs().pop().highlights).toEqual([]);
+    });
+
+    it('converts content coordinates to the object space using scale and border', () => {
+      const object = new KritzelIframeObject({ scale: 2 });
+      object.borderWidth = 4;
+
+      expect(object.contentToObjectLocal({ x: 10, y: 20 })).toEqual({ x: 7, y: 12 });
+    });
+
+    it('queries elements through the page', async () => {
+      const object = KritzelIframeObject.create(createCore());
+      const { receive, contentWindow } = mountWithWindow(object);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+
+      const promise = object.queryElements('button', 5);
+      const request = contentWindow.postMessage.mock.calls.map(call => call[0]).find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
+      receive({ type: IFRAME_ELEMENT_MESSAGES.queryResult, requestId: request.requestId, elements: [element] });
+
+      await expect(promise).resolves.toEqual([expect.objectContaining({ selector: '#run' })]);
+      await expect(new KritzelIframeObject().queryElements('button')).rejects.toThrow('is not mounted');
+      await expect(new KritzelIframeObject({ sandbox: ['allow-forms'] }).queryElements('button')).rejects.toThrow('without scripts');
+    });
   });
 });

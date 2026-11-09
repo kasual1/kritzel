@@ -101,9 +101,40 @@ describe('KritzelEditor', () => {
       getResolvedTerms: jest.fn().mockResolvedValue({}),
       getAvailableLocaleOptions: jest.fn().mockResolvedValue([{ code: 'en', label: 'English' }]),
       saveSettings: jest.fn().mockResolvedValue(undefined),
+      addAgent: jest.fn((agent: any) => Promise.resolve(agent)),
+      removeAgent: jest.fn().mockResolvedValue(true),
+      getAgent: jest.fn().mockResolvedValue(null),
+      getAgents: jest.fn().mockResolvedValue([]),
     };
-    
+
     component.engineRef = mockEngine as any;
+  });
+
+  describe('Agents', () => {
+    it('forwards the agent methods to the engine', async () => {
+      const agent = { id: 'planner' } as any;
+
+      await expect(component.addAgent(agent)).resolves.toBe(agent);
+      await expect(component.removeAgent('planner')).resolves.toBe(true);
+      await component.getAgent('planner');
+      await component.getAgents();
+
+      expect(mockEngine.addAgent).toHaveBeenCalledWith(agent);
+      expect(mockEngine.removeAgent).toHaveBeenCalledWith('planner');
+      expect(mockEngine.getAgent).toHaveBeenCalledWith('planner');
+      expect(mockEngine.getAgents).toHaveBeenCalled();
+    });
+
+    it('re-emits agentsChange from the engine without letting it bubble', () => {
+      component.agentsChange = { emit: jest.fn() } as any;
+      const detail = { agents: [] };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleAgentsChange(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(component.agentsChange.emit).toHaveBeenCalledWith(detail);
+    });
   });
 
   describe('Component Initialization', () => {
@@ -120,6 +151,21 @@ describe('KritzelEditor', () => {
     });
   });
 
+  describe('Chat Box', () => {
+    it('re-emits chat chip removals once, stopping the chat box event', () => {
+      const emit = jest.fn();
+      (component as any).chatChipRemove = { emit };
+      const detail = { id: 'a', label: 'Page' };
+      const event = { detail, stopPropagation: jest.fn() } as any;
+
+      component.handleChatChipRemove(event);
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+      expect(emit).toHaveBeenCalledTimes(1);
+      expect(emit).toHaveBeenCalledWith(detail);
+    });
+  });
+
   describe('Object Titlebar', () => {
     it('re-emits titlebar actions once, stopping the engine event', () => {
       const emit = jest.fn();
@@ -132,6 +178,47 @@ describe('KritzelEditor', () => {
       expect(event.stopPropagation).toHaveBeenCalled();
       expect(emit).toHaveBeenCalledTimes(1);
       expect(emit).toHaveBeenCalledWith(detail);
+    });
+
+    it('re-emits object element hovers, clicks and picks, stopping the engine events', () => {
+      const element = { selector: '#run', tagName: 'button', classList: [], attributes: {}, rect: { x: 0, y: 0, width: 1, height: 1 } };
+      const modifiers = { shiftKey: false, ctrlKey: false, altKey: false, metaKey: false };
+      const cases = [
+        { field: 'objectElementHover', handler: 'handleObjectElementHover', detail: { objectId: 'a', element, isPicking: true } },
+        { field: 'objectElementClick', handler: 'handleObjectElementClick', detail: { objectId: 'a', element, ...modifiers } },
+        { field: 'objectElementPick', handler: 'handleObjectElementPick', detail: { objectId: 'a', element, ...modifiers } },
+      ];
+
+      for (const { field, handler, detail } of cases) {
+        const emit = jest.fn();
+        (component as any)[field] = { emit };
+        const event = { detail, stopPropagation: jest.fn() } as any;
+
+        (component as any)[handler](event);
+
+        expect(event.stopPropagation).toHaveBeenCalled();
+        expect(emit).toHaveBeenCalledWith(detail);
+      }
+    });
+
+    it('forwards the object element methods to the engine', async () => {
+      const engineRef = {
+        setObjectElementPicking: jest.fn().mockResolvedValue(undefined),
+        highlightObjectElements: jest.fn().mockResolvedValue(undefined),
+        clearObjectElementHighlights: jest.fn().mockResolvedValue(undefined),
+        queryObjectElements: jest.fn().mockResolvedValue([]),
+      };
+      (component as any).engineRef = engineRef;
+
+      await component.setObjectElementPicking('a', true, { selector: 'button' });
+      await component.highlightObjectElements('a', [{ selector: 'p' }]);
+      await component.clearObjectElementHighlights();
+      await component.queryObjectElements('a', 'p', 2);
+
+      expect(engineRef.setObjectElementPicking).toHaveBeenCalledWith('a', true, { selector: 'button' });
+      expect(engineRef.highlightObjectElements).toHaveBeenCalledWith('a', [{ selector: 'p' }]);
+      expect(engineRef.clearObjectElementHighlights).toHaveBeenCalledWith(undefined);
+      expect(engineRef.queryObjectElements).toHaveBeenCalledWith('a', 'p', 2);
     });
 
     it('tracks the open titlebar menu', () => {
