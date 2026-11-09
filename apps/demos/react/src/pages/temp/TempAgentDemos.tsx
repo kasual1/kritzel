@@ -152,6 +152,20 @@ function TempAgentDemo({ id, title, seeds, setup, script }: TempAgentDemoProps) 
 const twoShapes = () => [rectangle(), ellipse()];
 const threeShapes = () => [rectangle(), ellipse(), triangle()];
 
+export function TempAgentRectanglePage() {
+  return (
+    <TempAgentDemo
+      id="rectangle"
+      title="Agent: add a rectangle"
+      script={async ({ agent, step }) => {
+        await step("Drawing a rectangle", () =>
+          agent.createShape({ x: -100, y: -60, width: 200, height: 120, shapeType: ShapeType.Rectangle, style: { fillColor: "#fce4ec", strokeColor: "#c62828" } }),
+        );
+      }}
+    />
+  );
+}
+
 export function TempAgentCreatePage() {
   return (
     <TempAgentDemo
