@@ -211,6 +211,17 @@ describe('KritzelEditor', () => {
         expect(component.isChatSessionRunning).toBe(false);
       });
 
+      it('picks up a session set while @Watch handlers are not active yet, before the next render', () => {
+        const session = createSession();
+        component.componentWillLoad();
+        // Set without the watcher, as Angular does while the element loads.
+        component.chatSession = session;
+        component.componentWillRender();
+        expect(session.on).toHaveBeenCalledTimes(1);
+        component.componentWillRender();
+        expect(session.on).toHaveBeenCalledTimes(1);
+      });
+
       it('lets a chatSubmit listener opt out with preventDefault', () => {
         const session = createSession();
         component.chatSession = session;

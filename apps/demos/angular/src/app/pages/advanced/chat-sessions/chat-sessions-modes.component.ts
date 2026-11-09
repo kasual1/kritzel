@@ -54,13 +54,12 @@ function describe(message: KritzelChatMessage): string {
           [workspaces]="workspaces()"
           [user]="user"
           [isChatBoxVisible]="true"
-          [chatSession]="isEditorReady() ? session() : null"
+          [chatSession]="session()"
           [chatBoxChips]="chips()"
           [isMoreMenuVisible]="false"
           [isWorkspaceManagerVisible]="false"
           (objectsSelectionChange)="onSelectionChange($event.detail)"
           (chatChipRemove)="onChipRemove($event.detail)"
-          (isReady)="isEditorReady.set(true)"
         ></kritzel-editor>
       </div>
       <ol class="chat-transcript" aria-label="Transcript">
@@ -127,12 +126,6 @@ export class ChatSessionsModesComponent implements OnDestroy {
   session = computed(() => this.sessions[this.mode()]);
 
   chips = signal<KritzelChatBoxChip[]>([]);
-
-  /**
-   * Angular sets inputs on the editor element while it is still loading, before it watches its props, so a
-   * session bound from the start would never be picked up. Bind it once the editor is ready instead.
-   */
-  isEditorReady = signal(false);
 
   messages = signal<readonly KritzelChatMessage[]>([]);
 

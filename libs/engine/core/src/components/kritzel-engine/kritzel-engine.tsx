@@ -2704,6 +2704,9 @@ export class KritzelEngine implements KritzelEngineHost {
       console.error('[Kritzel] chatSession expects a KritzelChatSession.');
     }
     const previous = this._boundChatSession;
+    if (next && next === previous && next._owner === this.core) {
+      return;
+    }
     if (previous && previous !== next) {
       // A prompt that is running finishes first.
       previous._detachWhenIdle();
@@ -2823,6 +2826,8 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   async componentDidLoad() {
+    // A chatSession set after componentWillLoad but before @Watch handlers run is bound here.
+    this.bindChatSession();
     setTimeout(async () => {
       this.contextMenuHandler = new KritzelContextMenuHandler(this.core, this.globalContextMenuItems ?? [], this.objectContextMenuItems ?? []);
       this.keyHandler = new KritzelKeyHandler(this.core);

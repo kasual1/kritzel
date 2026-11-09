@@ -686,6 +686,15 @@ describe('KritzelEngine', () => {
       expect(session._attach).toHaveBeenCalledTimes(2);
     });
 
+    it('binds a session set before its watcher runs on componentDidLoad, and not twice', () => {
+      const session = { ...createSession(), _owner: null as unknown };
+      session._attach = jest.fn(() => (session._owner = (engine as any).core));
+      (engine as any).chatSession = session;
+      (engine as any).bindChatSession();
+      (engine as any).bindChatSession();
+      expect(session._attach).toHaveBeenCalledTimes(1);
+    });
+
     it('rejects values that are not chat sessions', () => {
       const error = jest.spyOn(console, 'error').mockImplementation(() => undefined);
       (engine as any).chatSession = { send: () => undefined };

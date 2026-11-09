@@ -1422,6 +1422,9 @@ export class KritzelEditor {
 
   componentWillRender() {
     this.registerCustomSvgIcons(this.customSvgIcons);
+    // Frameworks can set `chatSession` after componentWillLoad but before Stencil runs @Watch handlers,
+    // so the subscription is checked again before every render (a no-op when it is current).
+    this.subscribeChatSession();
   }
 
   private isTextToolConfig(
