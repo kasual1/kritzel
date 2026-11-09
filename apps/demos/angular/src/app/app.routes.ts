@@ -55,6 +55,7 @@ import { ImportExportWorkspaceExportComponent } from './pages/advanced/import-ex
 import { ImportExportWorkspaceImportComponent } from './pages/advanced/import-export/import-export-workspace-import.component';
 import { AgentsBasicComponent } from './pages/advanced/agents/agents-basic.component';
 import { AgentsActionsComponent } from './pages/advanced/agents/agents-actions.component';
+import { ChatSessionsModesComponent } from './pages/advanced/chat-sessions/chat-sessions-modes.component';
 import { ThemingApplyComponent } from './pages/customization/theming/theming-apply.component';
 import { ThemingCustomComponent } from './pages/customization/theming/theming-custom.component';
 import { ThemingListenComponent } from './pages/customization/theming/theming-listen.component';
@@ -206,6 +207,10 @@ export const routes: Routes = [
           { path: 'basic', component: AgentsBasicComponent },
           { path: 'actions', component: AgentsActionsComponent },
         ],
+      },
+      {
+        path: 'chat-sessions',
+        children: [{ path: 'modes', component: ChatSessionsModesComponent }],
       },
     ],
   },
