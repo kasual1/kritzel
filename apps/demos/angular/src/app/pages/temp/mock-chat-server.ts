@@ -25,14 +25,19 @@ function answer(request: KritzelChatRequest): Step {
   const selected = [...prompt.matchAll(/objectId: ([\w-]+)/g)].map(m => m[1]);
   const text = prompt.split('\n')[0].toLowerCase();
 
-  // Prompts about the selection (chips).
-  if (selected.length > 0) {
+  // A refused or failed tool call ends the turn with an explanation.
+  const failed = results.find(r => r.completed === false);
+  if (failed) return { text: refusal(failed.reason) };
+
+  // Restyle or delete the selection (chips).
+  const color = text.match(/\b(red|green|blue|yellow|purple)\b/)?.[1];
+  const remove = /\b(delete|remove)\b/.test(text);
+  if (color || remove) {
+    if (selected.length === 0) return { text: 'Select what you mean first, then ask again.' };
     if (step > 0) return { text: 'Done.' };
-    if (text.includes('delete') || text.includes('remove')) {
-      return { text: 'Removing it.', calls: [{ name: 'delete_objects', input: { objectIds: selected } }] };
-    }
-    const color = ['red', 'green', 'blue', 'yellow', 'purple'].find(c => text.includes(c)) ?? 'orange';
-    return { text: `Making it ${color}.`, calls: [{ name: 'set_style', input: { objectIds: selected, style: { fillColor: color } } }] };
+    return remove
+      ? { text: 'Removing it.', calls: [{ name: 'delete_objects', input: { objectIds: selected } }] }
+      : { text: `Making it ${color}.`, calls: [{ name: 'set_style', input: { objectIds: selected, style: { fillColor: color, strokeColor: color } } }] };
   }
 
   // Everything else: look at the board, then build below what is there.
@@ -55,9 +60,17 @@ function answer(request: KritzelChatRequest): Step {
   }
 
   if (step === 1) {
-    return { text: 'Adding a sticky note.', calls: [{ name: 'create_shape', input: { x: 0, y: top, width: 200, height: 100, text: prompt.split('\n')[0], style: { fillColor: '#fef3c7' } } }] };
+    const note = prompt.split('\n')[0].replace(/^add a note:\s*/i, '');
+    return { text: 'Adding a sticky note.', calls: [{ name: 'create_shape', input: { x: 0, y: top, width: 200, height: 100, text: note, style: { fillColor: '#fef3c7' } } }] };
   }
   return { text: 'Added a note with your text.' };
+}
+
+/** What the model tells the user when a tool was refused. */
+function refusal(reason: string): string {
+  return reason === 'user-selected'
+    ? 'You have that selected, so I left it alone. Switch to Command mode to change what you have selected.'
+    : `I could not do that (${reason}).`;
 }
 
 /** The y below the lowest object of an observe_canvas snapshot. */

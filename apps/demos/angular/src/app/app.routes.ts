@@ -72,6 +72,7 @@ import { BlueprintDefectMapperComponent } from './pages/examples/blueprint-defec
 import { SlideshowPresentationComponent } from './pages/examples/slideshow-presentation.component';
 import { ImageAnnotationStudioComponent } from './pages/examples/image-annotation-studio.component';
 import { GenerativeUiComponent } from './pages/examples/generative-ui/generative-ui.component';
+import { TempChatModesComponent } from './pages/temp/temp-chat-modes.component'; // TEMP: delete with pages/temp/
 
 export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'getting-started/quick-start' },
@@ -260,5 +261,7 @@ export const routes: Routes = [
       { path: 'generative-ui', component: GenerativeUiComponent },
     ],
   },
+  // TEMP: delete with pages/temp/
+  { path: 'temp', children: [{ path: 'chat-modes', component: TempChatModesComponent }] },
   { path: '**', redirectTo: 'getting-started/quick-start' },
 ];
