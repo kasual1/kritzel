@@ -83,6 +83,7 @@ import {
   TempAgentUngroupPage,
 } from "./pages/temp/TempAgentDemos";
 import { TempAgentRectanglePage } from "./pages/temp/TempAgentRectangleDemo";
+import { TempAgentWidgetPage } from "./pages/temp/TempAgentWidgetDemo";
 import { BasicUsagePage } from "./pages/getting-started/BasicUsagePage";
 import { QuickStartPage } from "./pages/getting-started/QuickStartPage";
 
@@ -182,6 +183,7 @@ export const demoRoutes: readonly DemoRoute[] = [
 
   // TEMP: agent action checks; delete with pages/temp/ and the import above.
   { path: "/temp/agent-rectangle", title: "Agent: Rectangle", category: "Temp", component: TempAgentRectanglePage },
+  { path: "/temp/agent-widget", title: "Agent: Widget", category: "Temp", component: TempAgentWidgetPage },
   { path: "/temp/agent-create", title: "Agent: Create", category: "Temp", component: TempAgentCreatePage },
   { path: "/temp/agent-move", title: "Agent: Move", category: "Temp", component: TempAgentMovePage },
   { path: "/temp/agent-rotate", title: "Agent: Rotate", category: "Temp", component: TempAgentRotatePage },
