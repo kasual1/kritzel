@@ -18,6 +18,10 @@ function createHistoryExecutor(direction: 'undo' | 'redo'): KritzelAgenticAction
     },
 
     prepare(run: KritzelAgenticActionRun) {
+      // Actors working as the user share the user's history; they never undo or redo on their own.
+      if (run.actorKind === 'user') {
+        return { reason: 'not-allowed' as const };
+      }
       const map = run.map!;
       const state = map.getAgentUndoState(run.cursorId);
       if (direction === 'undo' ? !state.canUndo : !state.canRedo) {

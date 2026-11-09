@@ -405,7 +405,8 @@ export class KritzelChatBox {
   };
 
   private submit = (): void => {
-    if (!this.canSubmit) {
+    // While a response runs, Enter keeps the draft for the next prompt.
+    if (!this.canSubmit || this.loading) {
       return;
     }
 

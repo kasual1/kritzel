@@ -9,6 +9,8 @@ import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelAgent, isKritzelAgent } from './agent.class';
 import { KritzelAgentActionError } from './agent-action-error.class';
+import { buildCanvasSnapshot } from './agent-snapshot';
+import { KritzelUserActor } from './user-actor.class';
 import type { KritzelCore } from '../core/core.class';
 
 // A KritzelAgent on a real Yjs object map with real object classes and the real agentic managers.
@@ -727,6 +729,47 @@ describe('KritzelAgent', () => {
       const snapshot = await agent.observe();
       expect(snapshot.userSelection).toEqual([shape.id]);
       expect(snapshot.objects.find(object => object.id === shape.id)?.busy).toBe('user');
+    });
+
+    it('creates objects for the local user and sees the canvas as the user when working as the user', async () => {
+      core.agenticActionManager.registerUserActor('me');
+      const created: any = await settle(core.agenticActionManager.perform('me', { type: 'createShape', x: 0, y: 0, width: 120, height: 60 }));
+      expect(created).toMatchObject({ completed: true });
+      const shape = map.findById(created.objectIds[0]);
+      expect(shape.userId).toBe('human');
+
+      selectAsUser([shape.id]);
+      const snapshot = buildCanvasSnapshot(core, { kind: 'user', id: 'me' });
+      expect(snapshot.agent).toEqual({ id: 'me', position: null, selection: [shape.id] });
+      expect(snapshot.objects.find(object => object.id === shape.id)?.busy).toBeUndefined();
+      expect(snapshot.objects.find(object => object.id === shape.id)?.createdBy).toBe('human');
+    });
+
+    it('lets a user actor build through tools; one prompt undoes as one user step', async () => {
+      const actor = new KritzelUserActor('me');
+      actor._attach(core);
+      actor.historyGroup = 'prompt-1';
+      const tools = actor.tools();
+      const callUser = async (name: string, input: unknown) => JSON.parse(await settle(tools.find(candidate => candidate.name === name)!.run(input)));
+      const userSteps = map.undoManager!.undoStack.length;
+
+      const first = await callUser('create_shape', { x: 0, y: 0, width: 120, height: 60, text: 'A' });
+      const second = await callUser('create_shape', { x: 300, y: 0, width: 120, height: 60 });
+      expect(first).toMatchObject({ completed: true, objects: [{ createdBy: 'human' }] });
+      await expect(callUser('connect', { from: first.objectIds[0], to: second.objectIds[0] })).resolves.toMatchObject({ completed: true });
+      expect(map.undoManager!.undoStack.length).toBe(userSteps + 1);
+      expect(core.engine.emitObjectsAdded).toHaveBeenCalledWith([expect.objectContaining({ id: first.objectIds[0] })]);
+
+      const snapshot = await callUser('observe_canvas', {});
+      expect(snapshot.totalObjects).toBe(3);
+      expect(snapshot.agent).toEqual({ id: 'me', position: null, selection: [] });
+
+      map.undo();
+      expect((await actor.observe()).totalObjects).toBe(0);
+
+      actor._detach();
+      expect(core.agenticActionManager.getActor('me')).toBeNull();
+      await expect(callUser('create_shape', { x: 0, y: 0, width: 10, height: 10 })).resolves.toMatchObject({ completed: false, reason: 'agent-removed' });
     });
 
     it('keeps the objects that matter when the board is too big, children only with their group', async () => {

@@ -89,16 +89,19 @@ Select the relevant pattern based on what you're working on:
 
 ## Public Exports
 
-To expose a class, function, interface, or constant publicly, it must be exported in **four** places:
+To expose a class, function, interface, or constant publicly, it must be exported in **seven** places:
 
 1. **`libs/core/src/index.ts`** — the `@kritzel/core` barrel file, which `@kritzel/engine` re-exports
 2. **`libs/editor/angular/projects/lib/src/public-api.ts`** — re-exports from `@kritzel/engine`
 3. **`libs/editor/react/lib/index.ts`** — re-exports from `@kritzel/engine`
 4. **`libs/editor/vue/lib/index.ts`** — re-exports from `@kritzel/engine`
+5. **`libs/engine/angular/projects/lib/src/public-api.ts`** — re-exports from `@kritzel/engine`
+6. **`libs/engine/react/lib/index.ts`** — re-exports from `@kritzel/engine`
+7. **`libs/engine/vue/lib/index.ts`** — re-exports from `@kritzel/engine`
 
-All three framework wrappers explicitly re-export symbols from `@kritzel/engine` so that consuming applications (e.g. the demos) only need a single import source — `@kritzel/angular-editor`, `@kritzel/react-editor`, or `@kritzel/vue-editor` — unless they are intentionally building against the engine package directly.
+All six framework wrappers (editor and engine, for Angular, React and Vue) explicitly re-export symbols from `@kritzel/engine` so that consuming applications (e.g. the demos) only need a single import source — `@kritzel/angular-editor`, `@kritzel/react-editor`, `@kritzel/vue-editor`, or the matching engine package.
 
-**Keep the export lists consistent across all three wrappers.** When adding a new public symbol, add it to all four files.
+**Keep the export lists consistent across all six wrappers.** When adding a new public symbol, add it to all seven files.
 
 Example (adding `KritzelFoo`):
 
@@ -106,9 +109,9 @@ Example (adding `KritzelFoo`):
 // libs/core/src/index.ts
 export * from './classes/objects/foo.class';
 
-// libs/editor/angular/projects/lib/src/public-api.ts
-// libs/editor/react/lib/index.ts
-// libs/editor/vue/lib/index.ts
+// libs/editor/angular/projects/lib/src/public-api.ts (and the engine wrapper)
+// libs/editor/react/lib/index.ts (and the engine wrapper)
+// libs/editor/vue/lib/index.ts (and the engine wrapper)
 export {
     // ... existing exports ...
     KritzelFoo,

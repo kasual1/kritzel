@@ -425,6 +425,13 @@ export const demoRoutes = [
     component: () => import('./pages/advanced/agents/AgentsActionsPage.vue'),
   },
   {
+    path: '/advanced/chat-sessions/modes',
+    title: 'Chat Session Modes',
+    category: 'advanced',
+    context: 'Chat Sessions',
+    component: () => import('./pages/advanced/chat-sessions/ChatSessionsModesPage.vue'),
+  },
+  {
     path: '/customization/theming/apply',
     title: 'Apply',
     category: 'customization',

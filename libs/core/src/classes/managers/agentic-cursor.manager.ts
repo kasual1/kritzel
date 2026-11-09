@@ -88,6 +88,7 @@ export class KritzelAgenticCursorManager {
   private readonly _removedListeners = new Set<(id: string) => void>();
   private readonly _detachedListeners = new Set<(event: KritzelAgenticCursorDetachedEvent) => void>();
   private _historyProvider: KritzelAgenticCursorHistoryProvider | null = null;
+  private _frameDemand: (() => boolean) | null = null;
   private _rafId: number | null = null;
 
   constructor(core: KritzelCore) {
@@ -280,7 +281,7 @@ export class KritzelAgenticCursorManager {
     this.setTrackedElement(entry, null);
     this._cursors.delete(id);
     this.emitChange(id);
-    if (this._cursors.size === 0) this.stopLoop();
+    if (!this.needsFrames()) this.stopLoop();
     this.emitRemoved(id);
     return true;
   }
@@ -327,8 +328,17 @@ export class KritzelAgenticCursorManager {
     return () => this._detachedListeners.delete(listener);
   }
 
-  /** Makes sure the frame loop runs while cursors exist. @internal */
+  /** Makes sure the frame loop runs while cursors exist or frames are demanded. @internal */
   requestFrames(): void {
+    this.ensureLoop();
+  }
+
+  /**
+   * Sets a predicate that keeps the frame loop running without cursors, e.g. while actions of actors
+   * without a cursor wait for frames. @internal
+   */
+  setFrameDemand(demand: (() => boolean) | null): void {
+    this._frameDemand = demand;
     this.ensureLoop();
   }
 
@@ -737,14 +747,26 @@ export class KritzelAgenticCursorManager {
 
   /** Runs a listener so that one failing listener never stops the others or the frame loop. */
 
+  /** Whether the frame loop has work: cursors exist or frames are demanded. */
+  private needsFrames(): boolean {
+    if (this._cursors.size > 0) return true;
+    if (!this._frameDemand) return false;
+    try {
+      return this._frameDemand();
+    } catch (error) {
+      console.error('[Kritzel] Agentic frame demand failed:', error);
+      return false;
+    }
+  }
+
   private ensureLoop(): void {
-    if (this._rafId !== null || this._cursors.size === 0 || typeof requestAnimationFrame !== 'function') return;
+    if (this._rafId !== null || typeof requestAnimationFrame !== 'function' || !this.needsFrames()) return;
     const loop = (time: number) => {
       this._rafId = null;
       try {
         this.tick(time);
       } finally {
-        if (this._cursors.size > 0 && this._rafId === null) {
+        if (this._rafId === null && this.needsFrames()) {
           this._rafId = requestAnimationFrame(loop);
         }
       }

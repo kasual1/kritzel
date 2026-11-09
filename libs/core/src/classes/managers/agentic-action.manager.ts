@@ -4,15 +4,29 @@ import type { KritzelBaseObject } from '../objects/base-object.class';
 import type {
   KritzelAgenticAction,
   KritzelAgenticActionFailureReason,
-  KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
 } from '../../interfaces/agentic-action.interface';
 import type { KritzelObjectChangeSource } from '../../interfaces/object-change-event.interface';
 import { getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
 import { KritzelAgenticAbortError } from '../agent/agentic-abort-error.class';
 import type { KritzelAgenticPreparation, KritzelAgenticRefusal } from '../../types/agentic-action.types';
-import { KritzelAgenticActionRun, KritzelAgenticRunHost, KritzelAgenticRunOutcome } from './agentic-action-run.class';
-import { KritzelAgenticFrameCache, buildFrameCache, detectObjectConflict, expandWithRelatives } from '../../helpers/agentic-conflict.helper';
+import {
+  KritzelActorActionOptions,
+  KritzelActorKind,
+  KritzelActorSelection,
+  KritzelAgenticActionRun,
+  KritzelAgenticRunHost,
+  KritzelAgenticRunOutcome,
+} from './agentic-action-run.class';
+import {
+  KritzelAgenticFrameCache,
+  buildFrameCache,
+  collectHumanSelection,
+  collectHumanSelectionGroupIds,
+  detectObjectConflict,
+  expandWithRelatives,
+  isSelectionObject,
+} from '../../helpers/agentic-conflict.helper';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 
 type AnyObject = KritzelBaseObject<any>;
@@ -39,6 +53,12 @@ export interface KritzelAgenticActionSettledEvent {
   executing: boolean;
   /** Whether the action's changes were kept. */
   keptChanges: boolean;
+}
+
+/** Who performs actions under an ID. */
+export interface KritzelActorInfo {
+  id: string;
+  kind: KritzelActorKind;
 }
 
 interface DeferredTask {
@@ -77,6 +97,8 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
   private _lastFrameTime: number | null = null;
   private readonly _settledListeners = new Set<(event: KritzelAgenticActionSettledEvent) => void>();
   private readonly _idleWaiters = new Map<string, (() => void)[]>();
+  /** Actors working as the local user, without a cursor. */
+  private readonly _userActors = new Set<string>();
 
   constructor(core: KritzelCore) {
     this._core = core;
@@ -90,9 +112,9 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
    * Queues an action for a cursor. Rejects for unknown cursors and invalid actions; every runtime
    * condition resolves with `completed: false` and a reason.
    */
-  perform(cursorId: string, action: KritzelAgenticAction, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
-    const cursors = this._core.agenticCursorManager;
-    if (!cursors.get(cursorId)) {
+  perform(cursorId: string, action: KritzelAgenticAction, options: KritzelActorActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    const actor = this.getActor(cursorId);
+    if (!actor) {
       throw new Error(`Agent "${cursorId}" not found.`);
     }
     const executor = getAgenticActionExecutor((action as { type?: unknown } | null)?.type);
@@ -106,7 +128,10 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     }
 
     this.ensureSubscribed();
-    const run = new KritzelAgenticActionRun(this, this._core, cursorId, action, options ?? {}, executor);
+    const run = new KritzelAgenticActionRun(this, this._core, cursorId, action, options ?? {}, executor, actor.kind);
+    if (actor.kind === 'user') {
+      run.selection = this.createUserSelection(run);
+    }
     this.getQueue(cursorId).push(run);
 
     if (options.signal) {
@@ -128,6 +153,43 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     queue?.splice(0).forEach(run => this.settleQueued(run, reason));
     this._running.get(cursorId)?.abort(reason);
     this.updateActivity(cursorId);
+  }
+
+  // ─── Actors ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Registers an actor that works as the local user: it has no cursor, its actions are instant, change the
+   * user's selection and land in the user's history (one step per action, or per `historyGroup`), and its
+   * changes are emitted without an agent source. Throws if the ID is taken.
+   */
+  registerUserActor(actorId: string): void {
+    if (typeof actorId !== 'string' || actorId.length === 0) {
+      throw new TypeError('An actor ID is required.');
+    }
+    if (this._userActors.has(actorId) || this._core.agenticCursorManager.get(actorId)) {
+      throw new Error(`Actor "${actorId}" already exists.`);
+    }
+    this._userActors.add(actorId);
+  }
+
+  /** Removes a user actor: its running action is rolled back and its queued actions settle with `'agent-removed'`. */
+  unregisterUserActor(actorId: string): boolean {
+    if (!this._userActors.delete(actorId)) {
+      return false;
+    }
+    this.handleCursorRemoved(actorId);
+    return true;
+  }
+
+  /** The actor behind an ID: an agent cursor or a user actor. */
+  getActor(actorId: string): KritzelActorInfo | null {
+    if (this._userActors.has(actorId)) {
+      return { id: actorId, kind: 'user' };
+    }
+    if (this._core.agenticCursorManager.get(actorId)) {
+      return { id: actorId, kind: 'agent' };
+    }
+    return null;
   }
 
   /** Subscribes to finished actions: completed, refused, aborted or failed. */
@@ -207,6 +269,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       this._unsubscribers = [];
       this._subscribed = false;
       this._core.agenticCursorManager.setHistoryProvider(null);
+      this._core.agenticCursorManager.setFrameDemand(null);
     } finally {
       this._disposing = false;
     }
@@ -261,13 +324,25 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
           map.stopAgentCapturing(run.cursorId);
           const recording = run.origin.takeRecording();
           if (map.getAgentUndoStackLength(run.cursorId) > run.undoLengthAtStart) {
-            map.tagLastAgentStackItem(run.cursorId, Array.from(recording.keys()));
+            map.tagLastAgentStackItem(run.cursorId, Array.from(recording.keys()).filter(id => !run.selectionObjectIds.has(id)));
+            if (run.actorKind === 'user') {
+              // Changes made as the user undo like the user's own.
+              map.moveActorStepToUser(run.cursorId, {
+                fromLength: run.undoLengthAtStart,
+                userIndex: run.userUndoLengthAtStart,
+                group: run.options.historyGroup,
+              });
+            }
           }
           events = this.deriveEvents(run, map, recording);
         } else {
           run.origin.takeRecording();
           if (canWrite) {
-            map.rollbackAgent(run.cursorId, run.undoLengthAtStart);
+            const rolledBack = map.rollbackAgent(run.cursorId, run.undoLengthAtStart);
+            if (rolledBack && run.selectionTouched) {
+              // The rollback restored the user's previous selection.
+              void this._core.engine.triggerSelectionChange();
+            }
           }
         }
       } else {
@@ -326,7 +401,13 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     const removed: AnyObject[] = [];
     const updated: { object: AnyObject; changedProperties: string[] }[] = [];
     recording.forEach((existedBefore, id) => {
+      if (run.selectionObjectIds.has(id)) {
+        return;
+      }
       const current = map.findById(id);
+      if (current && isSelectionObject(current)) {
+        return;
+      }
       if (!existedBefore && current) {
         added.push(current);
       } else if (existedBefore && !current) {
@@ -340,11 +421,13 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 
   private emitEvents(run: KritzelAgenticActionRun, events: { added: AnyObject[]; removed: AnyObject[]; updated: { object: AnyObject; changedProperties: string[] }[] }): void {
     const engine = this._core.engine;
-    const source: KritzelObjectChangeSource = { type: 'agent', agentId: run.cursorId, actionType: run.action.type };
+    // Changes made as the user carry no source, like the user's own.
+    const source: KritzelObjectChangeSource | undefined =
+      run.actorKind === 'user' ? undefined : { type: 'agent', agentId: run.cursorId, actionType: run.action.type };
     try {
-      if (events.added.length > 0) engine.emitObjectsAdded(events.added, source);
-      if (events.removed.length > 0) engine.emitObjectsRemoved(events.removed, source);
-      if (events.updated.length > 0) engine.emitObjectsUpdated(events.updated, source);
+      if (events.added.length > 0) source ? engine.emitObjectsAdded(events.added, source) : engine.emitObjectsAdded(events.added);
+      if (events.removed.length > 0) source ? engine.emitObjectsRemoved(events.removed, source) : engine.emitObjectsRemoved(events.removed);
+      if (events.updated.length > 0) source ? engine.emitObjectsUpdated(events.updated, source) : engine.emitObjectsUpdated(events.updated);
       engine.emitObjectsChange();
       if (events.added.length > 0 || events.removed.length > 0) {
         engine.emitObjectsInViewportChange();
@@ -362,6 +445,10 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       return;
     }
     const queue = this._queues.get(cursorId);
+    // Actors working as the user share one selection and history: one of them runs at a time.
+    if (this._userActors.has(cursorId) && this.isUserRunActive()) {
+      return;
+    }
     const run = queue?.shift();
     if (!run) {
       this.updateActivity(cursorId);
@@ -372,21 +459,37 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       return;
     }
     this._running.set(cursorId, run);
+    if (run.actorKind === 'user') {
+      this._core.agenticCursorManager.requestFrames();
+    }
     void run.done.then(() => {
       if (this._running.get(cursorId) === run) {
         this._running.delete(cursorId);
       }
       this.updateActivity(cursorId);
       this.pump(cursorId);
+      if (run.actorKind === 'user') {
+        this._userActors.forEach(id => id !== cursorId && this.pump(id));
+      }
     });
     void this.start(run);
+  }
+
+  /** Whether an action of a user actor is running. */
+  private isUserRunActive(): boolean {
+    for (const run of this._running.values()) {
+      if (run.actorKind === 'user' && !run.settled) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private async start(run: KritzelAgenticActionRun): Promise<void> {
     try {
       run.started = true;
       const cursors = this._core.agenticCursorManager;
-      if (!cursors.get(run.cursorId)) {
+      if (!this.getActor(run.cursorId)) {
         run.abort('agent-removed');
         return;
       }
@@ -417,7 +520,8 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
         return;
       }
 
-      if (run.executor.mutates) {
+      // User actors always get an origin: their selection changes are scoped and rolled back like any change.
+      if (run.executor.mutates || run.actorKind === 'user') {
         const origin = map.getAgentOrigin(run.cursorId);
         if (!origin) {
           run.abort('engine-disconnected');
@@ -426,6 +530,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
         run.origin = origin;
         map.stopAgentCapturing(run.cursorId);
         run.undoLengthAtStart = map.getAgentUndoStackLength(run.cursorId);
+        run.userUndoLengthAtStart = map.undoManager?.undoStack.length ?? 0;
         run.suspendedRedo = map.suspendAgentRedo(run.cursorId);
         origin.startRecording();
       }
@@ -559,7 +664,9 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     }
 
     for (const id of run.checkedIds()) {
-      const reason = detectObjectConflict(this._core, map, cache, id, run.knownInstances.get(id), this.isClaimedByOther(id, run.cursorId, 'target'));
+      const reason = detectObjectConflict(this._core, map, cache, id, run.knownInstances.get(id), this.isClaimedByOther(id, run.cursorId, 'target'), {
+        ownSelection: run.actorKind === 'user',
+      });
       if (reason) {
         return { reason: !run.executing && reason === 'object-removed' ? 'invalid-target' : reason, objectIds: [id] };
       }
@@ -580,7 +687,7 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
     if (run.options.signal?.aborted) {
       return 'aborted';
     }
-    if (!cursors.get(run.cursorId)) {
+    if (!this.getActor(run.cursorId)) {
       return 'agent-removed';
     }
     if (!run.map || this._core.store.objects !== run.map || !run.map.isReady) {
@@ -598,6 +705,10 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
    * collaborators count too (people never block on agents: they are checked elsewhere).
    */
   private isClaimedByOther(objectId: string, cursorId: string, kind: 'target' | 'reference'): boolean {
+    if (this._userActors.has(cursorId)) {
+      // Actors working as the user only wait for running actions of others, like the user.
+      kind = 'reference';
+    }
     if (this._core.remoteAgentManager?.isClaimed(objectId, kind)) {
       return true;
     }
@@ -685,6 +796,8 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       cursors.onBeforeFrame(now => this.handleBeforeFrame(now)),
       cursors.onRemoved(id => this.handleCursorRemoved(id)),
     );
+    // Actors without a cursor still wait for frames (e.g. to measure rendered text).
+    cursors.setFrameDemand(() => this.isUserRunActive());
     cursors.setHistoryProvider(cursorId => {
       const map = this._core.store.objects as ObjectMap | undefined;
       if (!map || !map.isReady || typeof map.getAgentUndoState !== 'function') {
@@ -708,6 +821,47 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
       // After a possibly deferred rollback of the running action (FIFO).
       this.runOrDefer(map, () => map.disposeAgent(cursorId));
     }
+  }
+
+  /**
+   * The selection of a user actor's run: the user's real selection. Changes are written under the run's origin
+   * (outside a transaction, like the user's own selection changes), so a rollback restores the previous selection
+   * and a kept action carries it into the user's history.
+   */
+  private createUserSelection(run: KritzelAgenticActionRun): KritzelActorSelection {
+    const core = this._core;
+    return {
+      get: () => {
+        const map = run.map ?? (core.store.objects as ObjectMap | undefined);
+        return map ? collectHumanSelection(core, map) : [];
+      },
+      set: objectIds => {
+        run.assertActive();
+        const map = run.map;
+        const origin = run.origin;
+        if (!map || !origin || core.store.objects !== map || !map.isReady) {
+          run.stop('workspace-changed');
+        }
+        const current = collectHumanSelection(core, map);
+        const next = Array.from(new Set(objectIds));
+        if (current.length === next.length && current.every(id => next.includes(id))) {
+          return;
+        }
+        const objects = next.map(id => map.findById(id)).filter((object): object is AnyObject => !!object && !isSelectionObject(object));
+        collectHumanSelectionGroupIds(core, map).forEach(id => run.selectionObjectIds.add(id));
+        run.hasMutated = true;
+        run.selectionTouched = true;
+        map.withOrigin(origin, () => {
+          if (objects.length > 0) {
+            core.selectObjects(objects);
+          } else {
+            core.removeSelectionGroup();
+          }
+        });
+        collectHumanSelectionGroupIds(core, map).forEach(id => run.selectionObjectIds.add(id));
+        core.rerender();
+      },
+    };
   }
 
   private bindMap(map: ObjectMap): void {

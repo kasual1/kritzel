@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatBoxChip, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
+import { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatBoxChip, KritzelChatSession, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
 import { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 import { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
 import { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
@@ -15,7 +15,7 @@ import { FontOption } from "./components/kritzel-font-family/kritzel-font-family
 import { LineEndingType } from "./components/kritzel-line-endings/kritzel-line-endings";
 import { KritzelPillTab } from "./components/kritzel-pill-tabs/kritzel-pill-tabs";
 import { ShapeFillType } from "./components/kritzel-shape-fill/kritzel-shape-fill";
-export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatBoxChip, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
+export { ActiveWorkspaceChangeEvent, ConfigurableTool, ContextMenuItem, EditorIsReadyEvent, IKritzelDialogCloseEvent, IKritzelIsPublicChangeEvent, IKritzelMasterDetailItem, IKritzelMasterDetailSelectEvent, IKritzelMenuItem, IKritzelMenuItemSelectEvent, IKritzelMenuItemToggleChildMenuEvent, IKritzelUser, KritzelAgent, KritzelAgentPresence, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatBoxChip, KritzelChatSession, KritzelDebugInfo, KritzelDialogCloseReason, KritzelFontMap, KritzelGroup, KritzelLineToolConfig, KritzelLocale, KritzelLoginConfig, KritzelLoginProvider, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelRemoteAgentPresence, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSvgIconMap, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelTitlebarMenuItem, KritzelToolbarItem, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LineArrowConfig, LocaleCode, LoginEvent, ObjectsAddedEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeAwareColor, ThemeName, ToolDisplayValues } from "@kritzel/core";
 export { BrushStyleOption } from "./components/kritzel-brush-style/kritzel-brush-style";
 export { KritzelChatBoxMode } from "./components/kritzel-chat-box/kritzel-chat-box";
 export { DropdownOption } from "./components/kritzel-dropdown/kritzel-dropdown";
@@ -315,6 +315,10 @@ export namespace Components {
           * @default "collapsed"
          */
         "chatBoxMode": KritzelChatBoxMode1;
+        /**
+          * A chat session the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs, the chat box shows its progress and the stop button stops it. Call `preventDefault()` on `chatSubmit` to send a prompt yourself.
+         */
+        "chatSession"?: KritzelChatSession | null;
         /**
           * Removes element highlights.
           * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
@@ -2396,6 +2400,10 @@ declare namespace LocalJSX {
          */
         "chatBoxMode"?: KritzelChatBoxMode1;
         /**
+          * A chat session the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs, the chat box shows its progress and the stop button stops it. Call `preventDefault()` on `chatSubmit` to send a prompt yourself.
+         */
+        "chatSession"?: KritzelChatSession | null;
+        /**
           * The element to use as the target for the cursor. Defaults to the editor container if not set.
          */
         "cursorTarget"?: HTMLElement;
@@ -2516,11 +2524,11 @@ declare namespace LocalJSX {
          */
         "onChatChipRemove"?: (event: KritzelEditorCustomEvent<KritzelChatBoxChip>) => void;
         /**
-          * Emitted when the user stops the current chat response.
+          * Emitted when the user stops the current chat response. A `chatSession` is stopped too.
          */
         "onChatStop"?: (event: KritzelEditorCustomEvent<void>) => void;
         /**
-          * Emitted with the chat box text when the user submits it.
+          * Emitted with the chat box text when the user submits it. With a `chatSession`, the prompt is sent to it unless a listener calls `preventDefault()`.
          */
         "onChatSubmit"?: (event: KritzelEditorCustomEvent<string>) => void;
         "onIsPublicChange"?: (event: KritzelEditorCustomEvent<IKritzelIsPublicChangeEvent>) => void;

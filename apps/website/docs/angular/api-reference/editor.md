@@ -55,11 +55,12 @@ endSceneBootstrap(): Promise<void>
 | Property | Type | Description |
 |----------|------|-------------|
 | chatBoxChips | KritzelChatBoxChip[] | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row, the rest show as "+N more". The editor never changes them: pass a new array, for example when `chatChipRemove` fires. |
+| chatSession | KritzelChatSession | A [chat session](./chat-session.md) the chat box sends its prompts to, with `chatBoxChips` as what they refer to. While it runs, the chat box shows its progress and its stop button stops it. |
 | chatBoxMode | 'collapsed' \| 'expanded' | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
 | cursorTarget | HTMLElement | Element used as cursor target. Defaults to editor container if omitted. |
 | customSvgIcons | string | Custom SVG icon definitions. |
 | globalContextMenuItems | ContextMenuItem[] | Context menu items shown on canvas background. |
-| isChatBoxLoading | boolean | Shows the chat box progress ring and turns its send button into a stop button. |
+| isChatBoxLoading | boolean | Shows the chat box progress ring and turns its send button into a stop button. A bound `chatSession` does this by itself while it runs. |
 | isChatBoxVisible | boolean | Shows the chat box instead of the toolbar. |
 | isMoreMenuVisible | boolean | Controls visibility of the More menu. |
 | isToolbarVisible | boolean | Controls toolbar visibility. |
@@ -75,8 +76,8 @@ endSceneBootstrap(): Promise<void>
 | Event | Payload Type | Description |
 |-------|--------------|-------------|
 | chatChipRemove | KritzelChatBoxChip | Emitted with the chat box chip whose remove button the user activated. The chip stays until `chatBoxChips` no longer contains it. |
-| chatStop | void | Emitted when the user stops the current chat response. |
-| chatSubmit | string | Emitted with the chat box text when the user submits it. |
+| chatStop | void | Emitted when the user stops the current chat response. A bound `chatSession` is stopped too. |
+| chatSubmit | string | Emitted with the chat box text when the user submits it. With a `chatSession`, the prompt is sent to it unless a listener calls `preventDefault()`. While a response runs, Enter keeps the text in the box. |
 
 `KritzelChatBoxChip` describes one chip. Its texts are shown verbatim, they are not translated:
 
@@ -87,6 +88,8 @@ endSceneBootstrap(): Promise<void>
 | detail | string (optional) | A narrower part of the label, shown after `›`, e.g. the element picked inside the object. |
 | hint | string (optional) | Muted text after the label and detail, e.g. what the user can do next. |
 | icon | KritzelIconName (optional) | Registered icon shown before the label, e.g. `'cursor'`. |
+| objectId | string (optional) | The object the chip refers to. A chat session tells the model about it. Not shown. |
+| selector | string (optional) | CSS selector of the element inside the object the chip refers to. A chat session tells the model about it. Not shown. |
 
 ### Methods
 

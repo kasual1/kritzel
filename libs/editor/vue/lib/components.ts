@@ -66,6 +66,7 @@ export const KritzelEditor: StencilVueComponent<JSX.KritzelEditor> = /*@__PURE__
   'chatBoxMode',
   'isChatBoxLoading',
   'chatBoxChips',
+  'chatSession',
   'isUtilityPanelVisible',
   'isWorkspaceManagerVisible',
   'isMoreMenuVisible',

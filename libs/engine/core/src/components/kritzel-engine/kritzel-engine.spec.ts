@@ -646,6 +646,55 @@ describe('KritzelEngine', () => {
     });
   });
 
+  describe('chatSession', () => {
+    const createSession = (agent: unknown = null) => ({
+      [Symbol.for('kritzel.chatSession')]: true,
+      agent,
+      _attach: jest.fn(),
+      _detach: jest.fn(),
+      _detachWhenIdle: jest.fn(),
+    });
+
+    it('binds once, adds its agent, and unbinds a replaced session once idle', () => {
+      const agent = { id: 'planner' };
+      const first = createSession(agent);
+      (engine as any).chatSession = first;
+      engine.onChatSessionChange();
+      engine.onChatSessionChange();
+
+      expect(core.agentManager.add).toHaveBeenCalledWith(agent);
+      expect(first._attach).toHaveBeenCalledWith(core);
+
+      const second = createSession();
+      (engine as any).chatSession = second;
+      engine.onChatSessionChange();
+      expect(first._detachWhenIdle).toHaveBeenCalledTimes(1);
+      expect(second._attach).toHaveBeenCalledWith(core);
+
+      (engine as any).chatSession = null;
+      engine.onChatSessionChange();
+      expect(second._detachWhenIdle).toHaveBeenCalledTimes(1);
+    });
+
+    it('detaches the session when the engine disconnects and binds it again on reconnect', () => {
+      const session = createSession();
+      (engine as any).chatSession = session;
+      engine.onChatSessionChange();
+      (engine as any).unbindChatSession();
+      expect(session._detach).toHaveBeenCalled();
+      (engine as any).bindChatSession();
+      expect(session._attach).toHaveBeenCalledTimes(2);
+    });
+
+    it('rejects values that are not chat sessions', () => {
+      const error = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      (engine as any).chatSession = { send: () => undefined };
+      engine.onChatSessionChange();
+      expect(error).toHaveBeenCalledWith('[Kritzel] chatSession expects a KritzelChatSession.');
+      error.mockRestore();
+    });
+  });
+
   describe('context menu item watchers', () => {
     it('updates handler global items when globalContextMenuItems changes', () => {
       const globalItems = [{ label: 'Paste' }] as any;

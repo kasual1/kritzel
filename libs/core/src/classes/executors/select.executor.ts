@@ -53,8 +53,8 @@ export const selectExecutor: KritzelAgenticActionExecutor<KritzelAgenticSelectAc
     await run.click();
     // The run may have been stopped (e.g. cursor removed) while the click finished.
     run.assertActive();
-    const next = action.additive ? uniqueIds([...run.host.getSelection(run.cursorId), ...ids]) : ids;
-    run.host.setSelection(run.cursorId, next);
+    const next = action.additive ? uniqueIds([...run.selection.get(), ...ids]) : ids;
+    run.selection.set(next);
     return next;
   },
 };
@@ -72,7 +72,7 @@ export const clearSelectionExecutor: KritzelAgenticActionExecutor<KritzelAgentic
   },
 
   async execute(run) {
-    run.host.setSelection(run.cursorId, []);
+    run.selection.set([]);
     return [];
   },
 };

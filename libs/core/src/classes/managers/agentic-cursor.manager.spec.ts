@@ -393,6 +393,62 @@ describe('KritzelAgenticCursorManager', () => {
         delete (globalThis as any).cancelAnimationFrame;
       }
     });
+
+    it('runs the frame loop without cursors while frames are demanded', () => {
+      let scheduled: FrameRequestCallback | null = null;
+      const raf = jest.fn((cb: FrameRequestCallback) => {
+        scheduled = cb;
+        return 1;
+      });
+      (globalThis as any).requestAnimationFrame = raf;
+      (globalThis as any).cancelAnimationFrame = jest.fn();
+      try {
+        let demanded = false;
+        const beforeFrame = jest.fn();
+        manager.onBeforeFrame(beforeFrame);
+        manager.setFrameDemand(() => demanded);
+        manager.requestFrames();
+        expect(raf).not.toHaveBeenCalled();
+
+        demanded = true;
+        manager.requestFrames();
+        expect(raf).toHaveBeenCalledTimes(1);
+        scheduled!(1016);
+        expect(beforeFrame).toHaveBeenCalledWith(1016);
+        expect(raf).toHaveBeenCalledTimes(2);
+
+        demanded = false;
+        scheduled!(1032);
+        expect(raf).toHaveBeenCalledTimes(2);
+      } finally {
+        manager.setFrameDemand(null);
+        manager.cleanup();
+        delete (globalThis as any).requestAnimationFrame;
+        delete (globalThis as any).cancelAnimationFrame;
+      }
+    });
+
+    it('keeps the loop after the last cursor is removed while frames are demanded', () => {
+      const raf = jest.fn(() => 1);
+      const caf = jest.fn();
+      (globalThis as any).requestAnimationFrame = raf;
+      (globalThis as any).cancelAnimationFrame = caf;
+      try {
+        manager.setFrameDemand(() => true);
+        addCursor({ id: 'a' });
+        manager.remove('a');
+        expect(caf).not.toHaveBeenCalled();
+        manager.setFrameDemand(() => false);
+        addCursor({ id: 'b' });
+        manager.remove('b');
+        expect(caf).toHaveBeenCalled();
+      } finally {
+        manager.setFrameDemand(null);
+        manager.cleanup();
+        delete (globalThis as any).requestAnimationFrame;
+        delete (globalThis as any).cancelAnimationFrame;
+      }
+    });
   });
 
   describe('element targets', () => {

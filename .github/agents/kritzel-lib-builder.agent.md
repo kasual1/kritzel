@@ -25,8 +25,8 @@ Your job is to implement features, fix engine bugs, and improve the framework-ag
 - Route state modifications strictly through `KritzelStore`.
 - Class injection: accept `KritzelCore` via constructor and locate dependencies from core.
 - Honor file suffix conventions (`*.class.ts`, `*.manager.ts`, `*.handler.ts`, etc.).
-3. Four-Place Public Export Rule
-- Any new public symbol exported in `libs/core/src/index.ts` MUST also be re-exported in all three wrapper `index/public-api` files to keep the API surface identical.
+3. Seven-Place Public Export Rule
+- Any new public symbol exported in `libs/core/src/index.ts` MUST also be re-exported in all six wrapper `index/public-api` files (editor and engine, for Angular, React and Vue) to keep the API surface identical.
 4. Reactive Prop Synchronization
 - In Stencil components, never rely on a one-time `@Prop()` snapshot at load time for long-lived collaborators.
 - Use `@Watch()` handlers to pass late-bound wrapper prop updates to underlying handlers/managers.

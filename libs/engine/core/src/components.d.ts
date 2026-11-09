@@ -5,10 +5,10 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+import { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatSession, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
 import { Element, Event } from "@stencil/core";
 import { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
-export { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
+export { ContextMenuItem, IKritzelUser, KritzelAgent, KritzelAgentsChangeEvent, KritzelAlignment, KritzelAssetStorageConfig, KritzelBaseObject, KritzelBaseTool, KritzelBrushToolConfig, KritzelChatSession, KritzelContextMenuState, KritzelCore, KritzelDebugInfo, KritzelEngineState, KritzelGroup, KritzelIconName, KritzelLineToolConfig, KritzelLocale, KritzelNotification, KritzelObjectConfig, KritzelObjectElementClickEvent, KritzelObjectElementHighlight, KritzelObjectElementHoverEvent, KritzelObjectElementInfo, KritzelObjectElementPickEvent, KritzelObjectElementPickingOptions, KritzelObjectExportFormat, KritzelObjectTitlebarActionEvent, KritzelObjectTitlebarConfig, KritzelObjectTitlebarMenuState, KritzelRemoteAgentPresence, KritzelResolvedTitlebar, KritzelSettingsConfig, KritzelShapeToolConfig, KritzelShortcut, KritzelSyncConfig, KritzelTermKey, KritzelTermVars, KritzelTextToolConfig, KritzelTheme, KritzelToolDefinition, KritzelUndoState, KritzelViewportState, KritzelWorkspace, LocaleCode, ObjectsAddedEvent, ObjectsInViewportChangeEvent, ObjectsRemovedEvent, ObjectsUpdatedEvent, ThemeName } from "@kritzel/core";
 export { Element, Event } from "@stencil/core";
 export { KritzelTitlebarElementClickHandler, KritzelTitlebarTitleEditHandlers } from "./components/kritzel-object-titlebar-layer/kritzel-object-titlebar-layer";
 export namespace Components {
@@ -125,6 +125,10 @@ export namespace Components {
           * @returns `true` if objects were provided and the viewport was adjusted, `false` otherwise.
          */
         "centerObjects": (objects: KritzelBaseObject[], animate?: boolean) => Promise<boolean>;
+        /**
+          * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends.
+         */
+        "chatSession"?: KritzelChatSession | null;
         /**
           * Removes element highlights.
           * @param objectId - The object whose highlights are removed. Removes the highlights of all objects when omitted.
@@ -861,6 +865,10 @@ declare namespace LocalJSX {
           * Configuration for binary asset storage (e.g., images).  The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as `HttpAssetProvider` or `PresignedAssetProvider`.
          */
         "assetStorageConfig"?: KritzelAssetStorageConfig;
+        /**
+          * A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends.
+         */
+        "chatSession"?: KritzelChatSession | null;
         /**
           * The HTML element to apply cursor styles to. Defaults to `document.body` if not set.
          */

@@ -12,6 +12,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | --- | --- | --- | --- |
 | activeWorkspaceId | string |  | Optional workspace ID to load. If provided, the engine will look up and load this workspace by ID. |
 | assetStorageConfig | KritzelAssetStorageConfig |  | Configuration for binary asset storage (e.g., images). The Yjs document only persists asset ids; the actual bytes are stored by the providers listed here. Defaults to IndexedDB-only storage. To support cross-device image sync alongside a networked sync provider (Hocuspocus, WebSocket), configure at least one remote asset provider such as \`HttpAssetProvider\` or \`PresignedAssetProvider\`. |
+| chatSession | KritzelChatSession |  | A chat session bound to this engine: its tools act on this canvas. With an agent, the agent is added here. A session replaced by another one is unbound once its running prompt ends. |
 | cursorTarget | HTMLElement |  | The HTML element to apply cursor styles to. Defaults to \`document.body\` if not set. |
 | debugInfo | KritzelDebugInfo |  | Debug info display options controlling which debug overlays are visible |
 | editorId | string |  | Optional unique identifier for namespacing storage keys across multiple editor instances. |
@@ -176,6 +177,7 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | assetStorageConfig | KritzelAssetStorageConfig |  |  |
 | chatBoxChips | KritzelChatBoxChip[] |  | Chips shown above the chat box, e.g. the selected object or the element the next prompt refers to. Up to three share one row as wide as the box; the rest are summarized as "+N more". Pass a new array to change them. The editor never removes chips itself: update the array when \`chatChipRemove\` fires. |
 | chatBoxMode | "collapsed" \| "expanded" |  | Initial chat box mode. A collapsed chat box expands automatically when its text overflows one row. |
+| chatSession | KritzelChatSession |  | A chat session the chat box sends its prompts to, with \`chatBoxChips\` as what they refer to. While it runs, the chat box shows its progress and the stop button stops it. Call \`preventDefault()\` on \`chatSubmit\` to send a prompt yourself. |
 | cursorTarget | HTMLElement |  | The element to use as the target for the cursor. Defaults to the editor container if not set. |
 | customFonts | { [x: string]: KritzelFontRegistration; } |  | Registers fonts for runtime usage (for example custom object rendering). Text-tool config tooltip options are controlled via toolbarItems[].config.availableFonts. |
 | customSvgIcons | Partial<Record<"info" \| "type" \| "image" \| "download" \| "command" \| "cursor" \| "square" \| "x" \| "copy" \| "arrowUp" \| "pen" \| "arrow" \| "arrowUpFromDot" \| "arrowDownFromDot" \| "highlighter" \| "eraser" \| "shapes" \| "shapeRectangle" \| "shapeEllipse" \| "shapeTriangle" \| "imageOff" \| "chevronDown" \| "chevronUp" \| "chevronLeft" \| "chevronRight" \| "chevronsLeft" \| "paste" \| "cut" \| "delete" \| "bringToFront" \| "sendToBack" \| "selectAll" \| "upload" \| "undo" \| "redo" \| "plus" \| "play" \| "minus" \| "ellipsisVertical" \| "check" \| "group" \| "ungroup" \| "moveVertical" \| "hand" \| "handGrab" \| "mousePointer" \| "pointer" \| "settings" \| "share" \| "palette" \| "ordering" \| "layoutTemplate" \| "align" \| "alignStartHorizontal" \| "alignCenterHorizontal" \| "alignEndHorizontal" \| "alignStartVertical" \| "alignCenterVertical" \| "alignEndVertical" \| "viewport" \| "logOut" \| "usersRound" \| "google" \| "facebook" \| "github" \| "braces" \| "heart", string>> & Record<string, string> |  |  |
@@ -330,8 +332,8 @@ Generated from Stencil docs JSON. For framework bindings, use the matching setup
 | agentsChange | KritzelAgentsChangeEvent | Emitted when agents are added or removed, or when what the avatar stack shows of them changes (name, color, avatar, status, visibility, activity). Never emitted for plain cursor motion. |
 | awarenessChange | Map<number, Record<string, any>> |  |
 | chatChipRemove | KritzelChatBoxChip | Emitted with the chat box chip whose remove button the user activated. The chip stays until \`chatBoxChips\` no longer contains it. |
-| chatStop | void | Emitted when the user stops the current chat response. |
-| chatSubmit | string | Emitted with the chat box text when the user submits it. |
+| chatStop | void | Emitted when the user stops the current chat response. A \`chatSession\` is stopped too. |
+| chatSubmit | string | Emitted with the chat box text when the user submits it. With a \`chatSession\`, the prompt is sent to it unless a listener calls \`preventDefault()\`. |
 | isPublicChange | IKritzelIsPublicChangeEvent |  |
 | isReady | EditorIsReadyEvent |  |
 | localeChange | "de" \| "en" \| "fr" \| string & {} |  |

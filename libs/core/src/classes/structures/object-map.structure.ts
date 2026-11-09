@@ -95,6 +95,8 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   private _localActiveDrawingObjectId: string | null = null;
   /** Stack item meta key holding the object IDs an agent step touched. */
   private static readonly AGENT_IDS_META = 'kritzel:objectIds';
+  /** Stack item meta key holding the group (e.g. a chat prompt) of steps moved to the user's history. */
+  private static readonly ACTOR_GROUP_META = 'kritzel:actorGroup';
 
   /**
    * Tracks whether we're currently executing inside a `transaction()`
@@ -1418,6 +1420,65 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     }
     undoManager.redoStack.unshift(...(steps as typeof undoManager.redoStack));
     undoManager.clear(false, true);
+  }
+
+  /**
+   * Moves the steps an actor recorded after `fromLength` into the user's undo stack, as one step, so
+   * changes made on the user's behalf undo like the user's own. The step goes to `userIndex` (the length of
+   * the user's stack when the action started), but never above pending temporary items (typing that is
+   * consolidated later). With a `group`, it merges into the step below when that one has the same group, so
+   * all actions of one prompt undo together. The user's redo stack is cleared, like after any new change.
+   * @returns `true` if a step was moved
+   */
+  moveActorStepToUser(actorId: string, options: { fromLength: number; userIndex: number; group?: string }): boolean {
+    const agent = this._agents.get(actorId);
+    const userUndo = this._undoManager;
+    if (!agent || !userUndo) {
+      return false;
+    }
+    const actorUndo = agent.undoManager;
+    actorUndo.stopCapturing();
+    const from = Math.max(0, options.fromLength);
+    if (actorUndo.undoStack.length <= from) {
+      return false;
+    }
+
+    const items = actorUndo.undoStack.splice(from);
+    const ids = new Set<string>();
+    items.forEach(item => ((item.meta.get(KritzelObjectMap.AGENT_IDS_META) as string[] | undefined) ?? []).forEach(id => ids.add(id)));
+    const step = items[0];
+    if (items.length > 1) {
+      step.insertions = Y.mergeDeleteSets(items.map(item => item.insertions));
+      step.deletions = Y.mergeDeleteSets(items.map(item => item.deletions));
+    }
+
+    // A new change invalidates what the user could redo.
+    userUndo.clear(false, true);
+    const stack = userUndo.undoStack;
+    const top = Math.max(0, stack.length - this._temporaryItemsCount);
+    const index = Math.min(Math.max(0, options.userIndex), top);
+    const below = index > 0 ? stack[index - 1] : undefined;
+
+    if (options.group !== undefined && below && below.meta.get(KritzelObjectMap.ACTOR_GROUP_META) === options.group) {
+      below.insertions = Y.mergeDeleteSets([below.insertions, step.insertions]);
+      below.deletions = Y.mergeDeleteSets([below.deletions, step.deletions]);
+      const merged = new Set<string>((below.meta.get(KritzelObjectMap.AGENT_IDS_META) as string[] | undefined) ?? []);
+      ids.forEach(id => merged.add(id));
+      below.meta.set(KritzelObjectMap.AGENT_IDS_META, Array.from(merged));
+    } else {
+      step.meta.set(KritzelObjectMap.AGENT_IDS_META, Array.from(ids));
+      if (options.group !== undefined) {
+        step.meta.set(KritzelObjectMap.ACTOR_GROUP_META, options.group);
+      } else {
+        step.meta.delete(KritzelObjectMap.ACTOR_GROUP_META);
+      }
+      stack.splice(index, 0, step);
+    }
+    if (index >= stack.length - 1 - this._temporaryItemsCount) {
+      // The moved step is the user's newest: their next change must not merge into it.
+      userUndo.stopCapturing();
+    }
+    return true;
   }
 
   /** Destroys the history of an agentic cursor. */

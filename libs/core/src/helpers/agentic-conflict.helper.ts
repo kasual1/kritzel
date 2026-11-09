@@ -141,6 +141,18 @@ export function classifySelectionGroup(map: ObjectMap, core: KritzelCore, group:
   return group.userId == null ? 'human' : 'collaborator';
 }
 
+/** Top-level IDs in the local user's selection, by the same rule as the conflict checks. */
+export function collectHumanSelection(core: KritzelCore, map: ObjectMap): string[] {
+  const groups = map.filter(o => o instanceof KritzelSelectionGroup) as unknown as KritzelSelectionGroup[];
+  return Array.from(new Set(groups.filter(group => classifySelectionGroup(map, core, group) === 'human').flatMap(group => group.objectIds)));
+}
+
+/** IDs of the selection groups that belong to the local user. */
+export function collectHumanSelectionGroupIds(core: KritzelCore, map: ObjectMap): string[] {
+  const groups = map.filter(o => o instanceof KritzelSelectionGroup) as unknown as KritzelSelectionGroup[];
+  return groups.filter(group => classifySelectionGroup(map, core, group) === 'human').map(group => group.id);
+}
+
 /** Computes the selection and interaction state of the user and collaborators. */
 export function buildFrameCache(core: KritzelCore, map: ObjectMap): KritzelAgenticFrameCache {
   const state = core.store.state;
@@ -218,6 +230,8 @@ function isLocalEdit(core: KritzelCore, map: ObjectMap, object: AnyObject): bool
  * Checks one object a running or starting action depends on. First match wins.
  * @param knownInstance - The instance the action saw before; a different instance means someone else replaced it.
  * @param isClaimedByOtherAgent - Whether another cursor claims the object.
+ * @param options.ownSelection - The action works as the local user: the user's selection is its own and only
+ *   counts while a gesture runs.
  */
 export function detectObjectConflict(
   core: KritzelCore,
@@ -226,6 +240,7 @@ export function detectObjectConflict(
   id: string,
   knownInstance: AnyObject | undefined,
   isClaimedByOtherAgent: boolean,
+  options: { ownSelection?: boolean } = {},
 ): KritzelAgenticActionFailureReason | null {
   const object = map.findById(id);
   if (!object) {
@@ -238,7 +253,12 @@ export function detectObjectConflict(
     return 'user-interaction';
   }
   if (cache.humanSelectedIds.has(id)) {
-    return cache.humanGestureActive ? 'user-interaction' : 'user-selected';
+    if (cache.humanGestureActive) {
+      return 'user-interaction';
+    }
+    if (!options.ownSelection) {
+      return 'user-selected';
+    }
   }
   const editable = object as unknown as EditableObject;
   if (cache.collaboratorIds.has(id) || (editable.isEditing && !editable.uneditedObject && cache.hasRemotePeers)) {
