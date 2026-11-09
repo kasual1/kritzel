@@ -76,8 +76,7 @@ const rectangle = (id = "temp-rectangle", x = -300, y = -90) => shape(id, x, y, 
 const ellipse = (id = "temp-ellipse", x = 60, y = -90) => shape(id, x, y, 150, 110, ShapeType.Ellipse, "#e3f2fd", "#1565c0");
 const triangle = (id = "temp-triangle", x = -120, y = 80) => shape(id, x, y, 140, 110, ShapeType.Triangle, "#e8f5e9", "#2e7d32");
 
-/** One page that runs `script` with a single agent when Run is pressed. */
-export function TempAgentDemo({ id, title, seeds, setup, script }: TempAgentDemoProps) {
+function TempAgentDemo({ id, title, seeds, setup, script }: TempAgentDemoProps) {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
   const [agent] = useState(() => new KritzelAgent({ id: "temp-agent", name: "Agent", color: "#7C3AED", position: { x: -460, y: -250 } }));
   const [state, setState] = useState("loading");
