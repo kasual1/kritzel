@@ -1,5 +1,5 @@
 import type { KritzelAgent } from '../classes/agent/agent.class';
-import type { KritzelAgentTool, KritzelAgentToolContext, KritzelAgentToolSchema, KritzelAgentToolsOptions, KritzelCanvasSnapshot, KritzelObserveOptions } from './agent.interface';
+import type { KritzelAgentTool, KritzelAgentToolCall, KritzelAgentToolContext, KritzelAgentToolSchema, KritzelAgentToolsOptions, KritzelCanvasSnapshot, KritzelObserveOptions } from './agent.interface';
 import type { KritzelAgenticAction, KritzelAgenticActionOptions, KritzelAgenticActionResult } from './agentic-action.interface';
 import type { KritzelChatBoxChip } from './chat-box.interface';
 
@@ -178,8 +178,14 @@ export interface KritzelChatToolContext extends KritzelAgentToolContext {
  * An app-defined tool of a chat session. Like `KritzelAgentTool`, but `run` gets the session's actor to act on
  * the canvas with. Return a JSON result, e.g. with `formatAgentToolResult()`.
  */
-export interface KritzelChatTool extends Omit<KritzelAgentTool, 'run'> {
+export interface KritzelChatTool extends Omit<KritzelAgentTool, 'run' | 'begin'> {
   run: (input: unknown, context: KritzelChatToolContext) => Promise<string>;
+  /**
+   * Optional: begins a call while the model is still writing its input, e.g. to show what the tool is about to
+   * do. The session then finishes the call through the returned handle instead of `run`. See
+   * `KritzelAgentTool.begin`.
+   */
+  begin?: (context: KritzelChatToolContext) => KritzelAgentToolCall;
 }
 
 /** Options of `new KritzelChatSession()`. */

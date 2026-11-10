@@ -13,6 +13,8 @@ import { KritzelClipboardManager } from './clipboard.manager';
 import { lineMidpoint, readLineGeometry } from '../executors/line-handles';
 import { drawLineExecutor } from '../executors/draw-line.executor';
 import { editLineExecutor } from '../executors/edit-line.executor';
+import { KritzelIframeObject } from '../objects/iframe.class';
+import type { KritzelAgenticFill } from '../../interfaces/agentic-action.interface';
 
 /** How the test agent's cursor looks; agents own these values in the editor. */
 const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };
@@ -1046,6 +1048,111 @@ describe('agentic create and transform actions', () => {
 
       await expect(perform({ type: 'addObject', object: shape })).resolves.toMatchObject({ completed: false, reason: 'invalid-target' });
       expect(() => actions.perform('agent', { type: 'addObject', object: { id: 'x' } } as any)).toThrow('must be a Kritzel object');
+    });
+
+    describe('with a fill', () => {
+      const deferred = <T>() => {
+        let resolve!: (value: T) => void;
+        let reject!: (reason: unknown) => void;
+        const promise = new Promise<T>((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
+        promise.catch(() => undefined);
+        return { promise, resolve, reject };
+      };
+      const widget = (html = '') => new KritzelIframeObject({ name: 'Counter', html, translateX: 100, translateY: 100, width: 200, height: 120 });
+      const copyContent = (placeholder: any, content: any) => {
+        placeholder.content = { ...content.content };
+      };
+      /** Lets the action run until it waits for its fill. */
+      const run = async (_promise: Promise<unknown>) => {
+        for (let i = 0; i < 20; i++) {
+          now += 16;
+          cursors.tick(now);
+          await flushMicrotasks();
+        }
+      };
+
+      it('places a loading placeholder, waits for the fill and fills it in as one step', async () => {
+        const fill = deferred<KritzelAgenticFill>();
+        const placeholder = widget();
+        let settled = false;
+        const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
+        placing.then(() => (settled = true));
+        await run(placing);
+
+        expect(settled).toBe(false);
+        expect(map.findById(placeholder.id)).toBe(placeholder);
+        expect(placeholder.isLoading).toBe(true);
+        expect(placeholder.userId).toBe('agent');
+
+        fill.resolve({ content: widget('<button>+</button>'), apply: copyContent });
+        const result = await settle(placing);
+        expect(result).toEqual({ completed: true, objectIds: [placeholder.id] });
+        expect(placeholder.isLoading).toBe(false);
+        expect(placeholder.html).toBe('<button>+</button>');
+        expect(map.getAgentUndoStackLength('agent')).toBe(1);
+
+        await perform({ type: 'undo' });
+        expect(map.findById(placeholder.id)).toBeUndefined();
+      });
+
+      it('rolls the placeholder back when the fill is rejected or the action is stopped', async () => {
+        const rejected = deferred<KritzelAgenticFill>();
+        const first = widget();
+        const placing = actions.perform('agent', { type: 'addObject', object: first, fill: rejected.promise }, { instant: true });
+        await run(placing);
+        expect(map.findById(first.id)).toBe(first);
+        rejected.reject(new Error('cancelled'));
+        await expect(settle(placing)).resolves.toMatchObject({ completed: false, reason: 'aborted' });
+        expect(map.findById(first.id)).toBeUndefined();
+
+        const controller = new AbortController();
+        const second = widget();
+        const stopped = actions.perform('agent', { type: 'addObject', object: second, fill: deferred<KritzelAgenticFill>().promise }, { instant: true, signal: controller.signal });
+        await run(stopped);
+        expect(map.findById(second.id)).toBe(second);
+        controller.abort();
+        await expect(settle(stopped)).resolves.toMatchObject({ completed: false, reason: 'aborted' });
+        expect(map.allObjects()).toEqual([]);
+        expect(map.getAgentUndoStackLength('agent')).toBe(0);
+      });
+
+      it('lets the user move the placeholder while it waits, and fills it in where the user put it', async () => {
+        const fill = deferred<KritzelAgenticFill>();
+        const placeholder = widget();
+        const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
+        await run(placing);
+
+        placeholder.translateX = 500;
+        map.update(placeholder);
+        await run(placing);
+        fill.resolve({ content: widget('<p>Hi</p>'), apply: copyContent });
+
+        await expect(settle(placing)).resolves.toMatchObject({ completed: true });
+        expect(map.findById(placeholder.id)).toMatchObject({ translateX: 500, isLoading: false, html: '<p>Hi</p>' });
+      });
+
+      it('answers object-removed when the user deletes the placeholder while it waits', async () => {
+        const fill = deferred<KritzelAgenticFill>();
+        const placeholder = widget();
+        const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
+        await run(placing);
+
+        map.remove((object: any) => object.id === placeholder.id);
+        fill.resolve({ content: widget('<p>Hi</p>'), apply: copyContent });
+
+        await expect(settle(placing)).resolves.toMatchObject({ completed: false, reason: 'object-removed', objectIds: [placeholder.id] });
+        expect(map.allObjects()).toEqual([]);
+      });
+
+      it('refuses a fill that is not a promise, and a group as the placeholder', () => {
+        expect(() => actions.perform('agent', { type: 'addObject', object: widget(), fill: {} as any })).toThrow('"fill" must be a promise.');
+        const group = new KritzelGroup();
+        group.addChild(widget());
+        expect(() => actions.perform('agent', { type: 'addObject', object: group, fill: deferred<KritzelAgenticFill>().promise })).toThrow("A group can't be a placeholder.");
+      });
     });
   });
 });

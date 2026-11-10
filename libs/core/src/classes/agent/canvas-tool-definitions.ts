@@ -175,6 +175,25 @@ export const createImageTool = defineCanvasTool<Partial<KritzelCreateImageToolIn
     return new KritzelImage({ name, src, translateX: x, translateY: y, width, height });
   },
   execute: (image, ctx) => ctx.perform({ type: 'addObject', object: image }),
+  // Once position and size are written (the markup comes after them); without a size, the image's own size is
+  // only known once it loads, so there is no placeholder.
+  placeholder: {
+    create: input => {
+      const box = placeholderBox(input);
+      const name = typeof input.name === 'string' ? input.name : undefined;
+      return box ? new KritzelImage({ name, ...box, isLoading: true }) : null;
+    },
+    fill: (placeholder, content) => {
+      const target = placeholder as KritzelImage;
+      const image = content as KritzelImage;
+      target.name = image.name;
+      target.src = image.src;
+      target.assetId = image.assetId;
+      target.mimeType = image.mimeType;
+      target.resolvedSrc = image.resolvedSrc;
+      target.loadState = image.loadState;
+    },
+  },
   // The source could not be fetched or read (a 404, a server without CORS, broken markup).
   onError: error =>
     JSON.stringify({
@@ -215,7 +234,35 @@ export const createIframeTool = defineCanvasTool<Partial<KritzelCreateIframeTool
     });
   },
   execute: (iframe, ctx) => ctx.perform({ type: 'addObject', object: iframe }),
+  // Once position and size are written; the code comes after them.
+  placeholder: {
+    create: input => {
+      const box = placeholderBox(input);
+      if (!box) {
+        return null;
+      }
+      const name = typeof input.name === 'string' ? input.name : undefined;
+      return createModelIframe({ ...(name ? { name, title: name } : {}), ...box, isLoading: true });
+    },
+    fill: (placeholder, content) => {
+      const target = placeholder as KritzelIframeObject;
+      const iframe = content as KritzelIframeObject;
+      target.name = iframe.name;
+      target.title = iframe.title;
+      target.content = { ...iframe.content };
+    },
+  },
 });
+
+/** The position and size of a placeholder, once the input holds all four as valid numbers. */
+function placeholderBox(input: { x?: unknown; y?: unknown; width?: unknown; height?: unknown }) {
+  const { x, y, width, height } = input;
+  const finite = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
+  if (!finite(x) || !finite(y) || !finite(width) || !finite(height) || width <= 0 || height <= 0) {
+    return null;
+  }
+  return { translateX: x, translateY: y, width, height };
+}
 
 // ─── All built-ins ───────────────────────────────────────────────────────────
 

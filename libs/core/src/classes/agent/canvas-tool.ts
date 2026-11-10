@@ -3,9 +3,11 @@ import type {
   KritzelAgenticActionFailureReason,
   KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
+  KritzelAgenticFill,
 } from '../../interfaces/agentic-action.interface';
 import type {
   KritzelAgentTool,
+  KritzelAgentToolCall,
   KritzelAgentToolContext,
   KritzelAgentToolResult,
   KritzelAgentToolSchema,
@@ -16,6 +18,8 @@ import type {
 } from '../../interfaces/agent.interface';
 import { KritzelAgentActionError } from './agent-action-error.class';
 import type { KritzelJsonSchemaNode } from './agent-tool-schemas';
+import type { KritzelBaseObject } from '../objects/base-object.class';
+import { parsePartialJson } from '../../helpers/partial-json.helper';
 
 /**
  * The machinery behind every canvas tool: one definition per tool (`KritzelCanvasToolDefinition`) and one
@@ -104,6 +108,22 @@ export interface KritzelCanvasToolDefinition<I = any, P = any> {
   execute(payload: P, ctx: KritzelCanvasToolContext): Promise<string>;
   /** Turns any other error of `execute` into an answer; `undefined` rethrows it. */
   onError?(error: unknown, ctx: KritzelCanvasToolContext): string | undefined;
+  /**
+   * A loading placeholder for the object the tool adds, placed while the model still writes the input (the tool
+   * gets `begin`). The object `execute` adds with the addObject action then fills the placeholder in instead.
+   */
+  readonly placeholder?: KritzelCanvasToolPlaceholder<I>;
+}
+
+/** How a tool that adds an object shows it while the model writes it (`KritzelCanvasToolDefinition.placeholder`). */
+export interface KritzelCanvasToolPlaceholder<I = any> {
+  /**
+   * Builds the placeholder from the input written so far, or `null` while that is not enough (e.g. its position
+   * and size are not known yet). Called as the input streams in, until it returns an object.
+   */
+  create(input: Partial<I>, ctx: KritzelCanvasToolInputContext): KritzelBaseObject<any> | null;
+  /** Copies the object `execute` adds onto the placeholder, e.g. a widget's code. Runs inside the action. */
+  fill(placeholder: KritzelBaseObject<any>, content: KritzelBaseObject<any>): void;
 }
 
 /** Freezes a definition. */
@@ -140,6 +160,8 @@ const USER_REASON_HINTS: Partial<Record<KritzelAgenticActionFailureReason, strin
 
 const DEFAULT_MAX_TEXT_LENGTH = 2000;
 const MAX_RESULT_OBJECTS = 10;
+/** Input text after which a call that has no placeholder yet stops trying to place one. */
+const MAX_PLACEHOLDER_INPUT_LENGTH = 4096;
 
 /** Formats a tool result as the JSON string a tool returns. Use it in app-defined tools to answer the same way. */
 export function formatAgentToolResult(result: KritzelAgentToolResult): string {
@@ -205,54 +227,161 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
   };
   const inputContext: KritzelCanvasToolInputContext = { kind, options, invalid };
 
-  return {
+  const performDirectly: ToolPerform = (action, performOptions, context) =>
+    performAsTool(actor, kind, action, context, instant, performOptions?.describeObjects ?? true);
+
+  /** One call: input checks, `prepare`, then `execute`; `perform` can stand in for the actor's. */
+  const runTool: ToolRun = async (input, context, perform) => {
+    let payload: unknown;
+    try {
+      const parsed = parseInput(input, schemaNode);
+      for (const field of definition.textFields ?? []) {
+        const value = parsed[field];
+        if (typeof value === 'string' && value.length > maxTextLength) {
+          invalid(`"${field}" is longer than ${maxTextLength} characters. Split it into several actions.`);
+        }
+      }
+      payload = definition.prepare ? definition.prepare(parsed, inputContext) : parsed;
+    } catch (error) {
+      if (definition.removedFirst && !actor.isAdded) {
+        return removedResult(kind);
+      }
+      return errorResult(kind, error);
+    }
+
+    const ctx: KritzelCanvasToolContext = {
+      ...inputContext,
+      signal: context?.signal,
+      instant,
+      get isAdded() {
+        return actor.isAdded;
+      },
+      perform: (action, performOptions) => (perform ?? performDirectly)(action, performOptions, context),
+      observe: observeOptions => actor.observe(observeOptions),
+      whenIdle: () => actor._whenIdle(),
+      removedResult: () => removedResult(kind),
+      errorResult: error => errorResult(kind, error),
+    };
+    try {
+      // Called before the first await, so the tool's action starts in the same tick as the call.
+      return await definition.execute(payload, ctx);
+    } catch (error) {
+      if (error instanceof KritzelToolInputError) {
+        return errorResult(kind, error);
+      }
+      const answer = definition.onError?.(error, ctx);
+      if (answer === undefined) {
+        throw error;
+      }
+      return answer;
+    }
+  };
+
+  const tool: KritzelAgentTool = {
     name: `${options.prefix ?? ''}${definition.name}`,
     description: canvasToolText(definition.description, env),
     inputSchema,
-    run: async (input: unknown, context?: KritzelAgentToolContext) => {
-      let payload: unknown;
-      try {
-        const parsed = parseInput(input, schemaNode);
-        for (const field of definition.textFields ?? []) {
-          const value = parsed[field];
-          if (typeof value === 'string' && value.length > maxTextLength) {
-            invalid(`"${field}" is longer than ${maxTextLength} characters. Split it into several actions.`);
-          }
-        }
-        payload = definition.prepare ? definition.prepare(parsed, inputContext) : parsed;
-      } catch (error) {
-        if (definition.removedFirst && !actor.isAdded) {
-          return removedResult(kind);
-        }
-        return errorResult(kind, error);
-      }
+    run: (input: unknown, context?: KritzelAgentToolContext) => runTool(input, context),
+  };
+  const placeholder = definition.placeholder;
+  if (placeholder) {
+    tool.begin = context => beginWithPlaceholder(placeholder, context, runTool, performDirectly, inputContext, () => actor.isAdded);
+  }
+  return tool;
+}
 
-      const ctx: KritzelCanvasToolContext = {
-        ...inputContext,
-        signal: context?.signal,
-        instant,
-        get isAdded() {
-          return actor.isAdded;
-        },
-        perform: (action, performOptions) => performAsTool(actor, kind, action, context, instant, performOptions?.describeObjects ?? true),
-        observe: observeOptions => actor.observe(observeOptions),
-        whenIdle: () => actor._whenIdle(),
-        removedResult: () => removedResult(kind),
-        errorResult: error => errorResult(kind, error),
-      };
-      try {
-        // Called before the first await, so the tool's action starts in the same tick as the call.
-        return await definition.execute(payload, ctx);
-      } catch (error) {
-        if (error instanceof KritzelToolInputError) {
-          return errorResult(kind, error);
-        }
-        const answer = definition.onError?.(error, ctx);
-        if (answer === undefined) {
-          throw error;
-        }
-        return answer;
+/** Performs an action for a call of a tool, with that call's context. */
+type ToolPerform = (action: KritzelAgenticAction, options: { describeObjects?: boolean } | undefined, context: KritzelAgentToolContext | undefined) => Promise<string>;
+
+/** Runs one call of a tool; `perform` can stand in for the actor's. */
+type ToolRun = (input: unknown, context: KritzelAgentToolContext | undefined, perform?: ToolPerform) => Promise<string>;
+
+/**
+ * A call that places a loading placeholder once its input is far enough along, and fills it in when it finishes:
+ * the object `execute` adds becomes the placeholder's fill, so placing and filling are one action.
+ */
+function beginWithPlaceholder(
+  placeholder: KritzelCanvasToolPlaceholder,
+  context: KritzelAgentToolContext,
+  runTool: ToolRun,
+  perform: ToolPerform,
+  inputContext: KritzelCanvasToolInputContext,
+  isAdded: () => boolean,
+): KritzelAgentToolCall {
+  let ended = false;
+  let gaveUp = false;
+  /** The addObject action of the placeholder, once placed: its answer is the call's answer. */
+  let placing: Promise<string> | null = null;
+  let resolveFill!: (fill: KritzelAgenticFill) => void;
+  let rejectFill!: (reason: unknown) => void;
+  const fill = new Promise<KritzelAgenticFill>((resolve, reject) => {
+    resolveFill = resolve;
+    rejectFill = reject;
+  });
+  // Rejected when the call ends without filling the placeholder; the action rolls back.
+  fill.catch(() => undefined);
+  const dropPlaceholder = () => rejectFill(new Error('The tool call ended without filling its placeholder.'));
+
+  return {
+    update(inputText) {
+      if (ended || placing || gaveUp || !isAdded()) {
+        return;
       }
+      if (inputText.length > MAX_PLACEHOLDER_INPUT_LENGTH) {
+        gaveUp = true;
+        return;
+      }
+      const input = parsePartialJson(inputText);
+      if (typeof input !== 'object' || input === null || Array.isArray(input)) {
+        return;
+      }
+      let object: KritzelBaseObject<any> | null;
+      try {
+        object = placeholder.create(input, inputContext);
+      } catch {
+        // Input the model got wrong so far: the call reports it when it finishes.
+        return;
+      }
+      if (object) {
+        placing = perform({ type: 'addObject', object, fill }, undefined, context);
+        placing.catch(() => undefined);
+      }
+    },
+
+    async finish(input) {
+      ended = true;
+      const placed = placing;
+      if (!placed) {
+        return runTool(input, context);
+      }
+      let filled = false;
+      try {
+        return await runTool(input, context, (action, performOptions, callContext) => {
+          if (filled || action.type !== 'addObject' || action.fill) {
+            return perform(action, performOptions, callContext);
+          }
+          // The object the tool adds fills the placeholder in; the placeholder's action answers for it.
+          filled = true;
+          resolveFill({ content: action.object, apply: placeholder.fill });
+          return placed;
+        });
+      } finally {
+        if (!filled) {
+          // Invalid input, or the tool added nothing: the placeholder goes.
+          dropPlaceholder();
+          await placed.catch(() => undefined);
+        }
+      }
+    },
+
+    async cancel() {
+      if (ended) {
+        return;
+      }
+      ended = true;
+      dropPlaceholder();
+      // Resolves once the placeholder's action has rolled back.
+      await placing?.catch(() => undefined);
     },
   };
 }

@@ -9,6 +9,8 @@ import { KritzelChatSession, isKritzelChatSession } from './chat-session.class';
 import { createScriptedTransport } from './scripted-transport';
 import { KritzelCore } from '../core/core.class';
 import { KritzelShape } from '../objects/shape.class';
+import { KritzelIframeObject } from '../objects/iframe.class';
+import { KritzelImage } from '../objects/image.class';
 import { formatAgentToolResult } from '../agent/agent-tools';
 import type {
   KritzelChatMessage,
@@ -1032,6 +1034,238 @@ describe('KritzelChatSession', () => {
       }
       expect(roles(session)).toEqual(['user']);
       expect(map.allObjects()).toHaveLength(0);
+    });
+
+    describe('placeholders', () => {
+      const widget = (x = 0) => ({ name: 'Counter', x, y: 0, width: 200, height: 120, html: '<button>+</button>', script: 'let n = 0;' });
+      const iframes = () => map.allObjects().filter((object: any) => object instanceof KritzelIframeObject) as KritzelIframeObject[];
+
+      /** The input up to and including its size, then a gate, then the rest: like a model writing its code. */
+      async function* writeWidget(id: string, input: Record<string, unknown>, rest: Promise<void>, part = true): AsyncGenerator<KritzelChatStreamEvent> {
+        const json = JSON.stringify(input);
+        const cut = json.indexOf('"html"');
+        yield { type: 'tool-call-start', id, name: 'create_iframe' };
+        yield { type: 'tool-call-delta', id, inputDelta: json.slice(0, cut) };
+        await rest;
+        yield { type: 'tool-call-delta', id, inputDelta: json.slice(cut) };
+        if (part) {
+          yield { type: 'part', part: { type: 'tool-call', id, name: 'create_iframe', input } };
+        }
+      }
+
+      it('shows a loading placeholder once position and size are written, and fills it in', async () => {
+        const rest = gate();
+        const session = new KritzelChatSession({
+          canvasTools: { iframes: true },
+          transport: streams(async function* () {
+            yield* writeWidget('w1', widget(), rest.promise);
+            yield { type: 'finish', stopReason: 'tool-calls' };
+          }),
+        });
+        session._attach(core);
+        const userSteps = map.undoManager!.undoStack.length;
+
+        const running = session.send('A counter');
+        await until(() => iframes().length === 1);
+        const [placeholder] = iframes();
+        expect(placeholder).toMatchObject({ isLoading: true, translateX: 0, width: 200, height: 120, html: '', name: 'Counter' });
+        expect(roles(session)).toEqual(['user']);
+
+        rest.open();
+        await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+        expect(iframes()).toEqual([placeholder]);
+        expect(placeholder).toMatchObject({ isLoading: false, html: '<button>+</button>', script: 'let n = 0;' });
+        const output = JSON.parse(resultsOf(session.messages[2])[0].output);
+        expect(output).toMatchObject({ completed: true, objectIds: [placeholder.id] });
+        // Placing and filling are one step of the prompt.
+        expect(map.undoManager!.undoStack.length).toBe(userSteps + 1);
+        map.undo();
+        expect(iframes()).toEqual([]);
+      });
+
+      it('takes the placeholder away when the call does not run', async () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const scenarios: { name: string; stream: (signal: AbortSignal, rest: Promise<void>) => AsyncIterable<KritzelChatStreamEvent>; stop?: boolean; status: string }[] = [
+          {
+            name: 'invalid input',
+            stream: async function* (_signal, rest) {
+              yield* writeWidget('w1', { ...widget(), html: 42 }, rest);
+              yield { type: 'finish' };
+            },
+            status: 'completed',
+          },
+          {
+            name: 'no part',
+            stream: async function* (_signal, rest) {
+              yield* writeWidget('w1', widget(), rest, false);
+              yield { type: 'finish' };
+            },
+            status: 'completed',
+          },
+          {
+            name: 'stopped',
+            stream: async function* (signal, rest) {
+              yield* writeWidget('w1', widget(), rest, false);
+              await abortion(signal);
+            },
+            stop: true,
+            status: 'stopped',
+          },
+        ];
+        for (const scenario of scenarios) {
+          const rest = gate();
+          const session = new KritzelChatSession({ canvasTools: { iframes: true }, transport: streams(signal => scenario.stream(signal, rest.promise)) });
+          session._attach(core);
+          const running = session.send('A counter');
+          await until(() => iframes().length === 1);
+          rest.open();
+          if (scenario.stop) {
+            await flushMicrotasks();
+            session.stop();
+          }
+          await expect(settle(running)).resolves.toEqual({ status: scenario.status });
+          expect({ scenario: scenario.name, iframes: iframes().length }).toEqual({ scenario: scenario.name, iframes: 0 });
+          session._detach();
+        }
+      });
+
+      it("places a call's placeholder only once the calls before it have ended", async () => {
+        const first = gate();
+        const second = gate();
+        const session = new KritzelChatSession({
+          canvasTools: { iframes: true },
+          transport: streams(async function* () {
+            yield* writeWidget('w1', widget(0), first.promise);
+            yield* writeWidget('w2', widget(400), second.promise);
+            yield { type: 'part', part: { type: 'tool-call', id: 'look', name: 'observe_canvas', input: {} } };
+            yield { type: 'finish', stopReason: 'tool-calls' };
+          }),
+        });
+        session._attach(core);
+        const updates = record(session);
+
+        const running = session.send('Two counters');
+        await until(() => iframes().length === 1);
+        first.open();
+        await until(() => lastOf(updates, 'w1')?.state === 'done' && iframes().length === 2);
+        expect(iframes().map(iframe => [iframe.translateX, iframe.isLoading])).toEqual([
+          [0, false],
+          [400, true],
+        ]);
+        second.open();
+        await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+        expect(iframes().map(iframe => iframe.isLoading)).toEqual([false, false]);
+        expect(resultsOf(session.messages[2]).map(result => result.toolCallId)).toEqual(['w1', 'w2', 'look']);
+        expect(JSON.parse(resultsOf(session.messages[2])[2].output).objects).toHaveLength(2);
+      });
+
+      it('shows images with a size as placeholders', async () => {
+        const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>';
+        const rest = gate();
+        const images = () => map.allObjects().filter((object: any) => object instanceof KritzelImage) as KritzelImage[];
+        const session = new KritzelChatSession({
+          transport: streams(
+            async function* () {
+              const input = { x: 0, y: 0, width: 50, height: 50, svg };
+              const json = JSON.stringify(input);
+              yield { type: 'tool-call-start', id: 'i1', name: 'create_image' };
+              yield { type: 'tool-call-delta', id: 'i1', inputDelta: json.slice(0, json.indexOf('"svg"')) };
+              await rest.promise;
+              yield { type: 'part', part: { type: 'tool-call', id: 'i1', name: 'create_image', input } };
+              yield { type: 'finish' };
+            },
+            async function* () {
+              // Without a size, the image's own size is only known once it loads: no placeholder.
+              yield* callEvents('i2', 'create_image', { x: 100, y: 0, svg }, 20);
+              yield { type: 'finish' };
+            },
+          ),
+        });
+        session._attach(core);
+
+        const running = session.send('Two dots');
+        await until(() => images().length === 1);
+        expect(images()[0]).toMatchObject({ isLoading: true, src: '', width: 50 });
+        rest.open();
+        await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+        expect(images().map(image => [image.isLoading, image.src.startsWith('data:image/svg+xml')])).toEqual([
+          [false, true],
+          [false, true],
+        ]);
+      });
+
+      it('lets app tools begin their calls', async () => {
+        const log: string[] = [];
+        const session = new KritzelChatSession({
+          tools: [
+            {
+              name: 'note',
+              description: 'Notes.',
+              inputSchema: { type: 'object', properties: {} },
+              run: async () => {
+                log.push('run');
+                return '{"completed":true}';
+              },
+              begin: ({ actor, toolCallId }) => {
+                log.push(`begin ${actor.kind} ${toolCallId}`);
+                return {
+                  update: text => log.push(`update ${text}`),
+                  finish: async input => {
+                    log.push(`finish ${JSON.stringify(input)}`);
+                    return '{"completed":true,"begun":true}';
+                  },
+                  cancel: () => {
+                    log.push('cancel');
+                  },
+                };
+              },
+            },
+          ],
+          transport: streams(async function* () {
+            yield* callEvents('n1', 'note', { text: 'hi' }, 6);
+            yield { type: 'tool-call-start', id: 'n2', name: 'note' };
+            yield { type: 'tool-call-delta', id: 'n2', inputDelta: '{"te' };
+            yield { type: 'finish' };
+          }),
+        });
+        session._attach(core);
+        jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+        await expect(settle(session.send('note'))).resolves.toEqual({ status: 'completed' });
+        expect(log).toEqual([
+          'begin user n1',
+          'update {"text',
+          'update {"text":"hi"',
+          'update {"text":"hi"}',
+          'finish {"text":"hi"}',
+          'begin user n2',
+          'update {"te',
+          'cancel',
+        ]);
+        expect(JSON.parse(resultsOf(session.messages[2])[0].output)).toEqual({ completed: true, begun: true });
+      });
+
+      it('places the placeholder as the agent and fills it in as one step of its history', async () => {
+        const agent = core.agentManager.add(new KritzelAgent({ id: 'claude', name: 'Claude' }));
+        const rest = gate();
+        const session = new KritzelChatSession({
+          agent,
+          canvasTools: { iframes: true },
+          transport: streams(async function* () {
+            yield* writeWidget('w1', widget(), rest.promise);
+            yield { type: 'finish' };
+          }),
+        });
+        session._attach(core);
+
+        const running = session.send('A counter');
+        await until(() => iframes().length === 1);
+        expect(iframes()[0]).toMatchObject({ isLoading: true, userId: 'claude' });
+        rest.open();
+        await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+        expect(iframes()[0]).toMatchObject({ isLoading: false, html: '<button>+</button>' });
+        expect(map.getAgentUndoStackLength('claude')).toBe(1);
+      });
     });
 
     describe('edge cases', () => {

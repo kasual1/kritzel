@@ -288,6 +288,22 @@ export interface KritzelAgenticAddObjectAction {
   type: 'addObject';
   /** A new object that is not on the canvas yet. Selections can't be added. */
   object: KritzelBaseObject<any>;
+  /**
+   * Places `object` as a loading placeholder (`isLoading`) and keeps the action open until this resolves with
+   * what fills it in, e.g. once a model has written a widget's code. While it waits, the user can move, resize or
+   * delete the placeholder. Then `content` is prepared like an added object (an image is fetched and stored),
+   * `apply` copies it onto the placeholder and loading ends, all in the same step of the history. A rejection, a
+   * stop or a deleted placeholder rolls the whole action back.
+   */
+  fill?: Promise<KritzelAgenticFill>;
+}
+
+/** What fills in an `addObject` placeholder. */
+export interface KritzelAgenticFill {
+  /** The object the placeholder stands in for. It is prepared like an added object, but never inserted. */
+  content: KritzelBaseObject<any>;
+  /** Copies `content` onto the placeholder, e.g. a widget's code. Runs synchronously inside the action. */
+  apply(placeholder: KritzelBaseObject<any>, content: KritzelBaseObject<any>): void;
 }
 
 /** Undoes this agent's last completed action. Never touches the user's or other agents' history. */

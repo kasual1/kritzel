@@ -415,14 +415,16 @@ export function createImageToolDescription(urls: boolean): string {
 
 /** The input schema of `create_image`; `urls` adds the `url` field. */
 export function createImageToolSchema(urls: boolean): KritzelAgentToolSchema {
+  // Position and size come first: models write fields in this order, so a placeholder can show while the
+  // markup is still being written.
   return object<KritzelCreateImageToolInput>({
     name: opt(str('Short title shown on the image.')),
-    svg: opt(str('A complete <svg> element with xmlns and viewBox. Scripts in it never run.')),
-    url: urls ? opt(str('An http(s) URL of a PNG, JPEG, GIF, WebP or SVG image.')) : null,
     x: req(num('Left edge.')),
     y: req(num('Top edge.')),
     width: opt(positive('Width; give it together with height.')),
     height: opt(positive('Height; give it together with width.')),
+    svg: opt(str('A complete <svg> element with xmlns and viewBox. Scripts in it never run.')),
+    url: urls ? opt(str('An http(s) URL of a PNG, JPEG, GIF, WebP or SVG image.')) : null,
   }) as KritzelAgentToolSchema;
 }
 
@@ -433,15 +435,17 @@ export const CREATE_IFRAME_TOOL_DESCRIPTION =
   'and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it ' +
   'without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.';
 
+// Position and size come first: models write fields in this order, so a placeholder can show while the code is
+// still being written.
 export const CREATE_IFRAME_TOOL_SCHEMA: KritzelAgentToolSchema = object<KritzelCreateIframeToolInput>({
   name: req(str('Short title shown on the widget.')),
-  html: req(str('Body content.')),
-  css: opt(str('Styles.')),
-  script: opt(str('JavaScript run after the body.')),
   x: req(num('Left edge.')),
   y: req(num('Top edge.')),
   width: req(positive('Width, e.g. 320.')),
   height: req(positive('Height, e.g. 240.')),
+  html: req(str('Body content.')),
+  css: opt(str('Styles.')),
+  script: opt(str('JavaScript run after the body.')),
 }) as KritzelAgentToolSchema;
 
 /** The input schema of `observe_canvas`. */

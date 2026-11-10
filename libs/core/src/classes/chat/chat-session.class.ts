@@ -1,6 +1,6 @@
 import type { KritzelCore } from '../core/core.class';
 import type { KritzelAgent } from '../agent/agent.class';
-import type { KritzelAgentTool } from '../../interfaces/agent.interface';
+import type { KritzelAgentTool, KritzelAgentToolCall } from '../../interfaces/agent.interface';
 import type { KritzelChatBoxChip } from '../../interfaces/chat-box.interface';
 import type { KritzelObjectMap } from '../structures/object-map.structure';
 import {
@@ -298,7 +298,11 @@ export class KritzelChatSession {
         stoppedOutput: STOPPED_OUTPUT,
         interruptedOutput: INTERRUPTED_OUTPUT,
         report: update => this.emit('tool-call', update),
-        run: (call, onRunning) => this.runCall(call, byName, signal, onRunning),
+        run: (call, onRunning, handle) => this.runCall(call, byName, signal, onRunning, handle),
+        begin: call => {
+          const tool = byName.get(call.name);
+          return tool?.begin ? tool.begin({ signal, toolCallId: call.id }) : null;
+        },
       });
       let assistant: KritzelChatMessage;
       try {
@@ -315,6 +319,8 @@ export class KritzelChatSession {
       const calls = assistant.parts.filter(isToolCallPart);
       // Calls of a streamed answer may have run already; the others run now, one after another.
       const results = await answer.runRest(calls);
+      // Begun calls that were dropped are undone before the prompt goes on.
+      await answer.settled();
       this.restoreThinkingStatus();
       if (calls.length === 0) {
         return { status: 'completed' };
@@ -368,6 +374,7 @@ export class KritzelChatSession {
       const results = answer.runRest(assistant.parts.filter(isToolCallPart));
       this.pushMessage(assistant);
       this.pushMessage({ role: 'tool', parts: await results });
+      await answer.settled();
     } finally {
       this.restoreThinkingStatus();
     }
@@ -379,9 +386,11 @@ export class KritzelChatSession {
     byName: Map<string, KritzelAgentTool>,
     signal: AbortSignal,
     onRunning: () => void,
+    handle: KritzelAgentToolCall | null,
   ): Promise<ChatAnswerRunOutcome> {
     const tool = byName.get(call.name);
     if (!tool) {
+      await handle?.cancel();
       return {
         result: {
           type: 'tool-result',
@@ -395,7 +404,8 @@ export class KritzelChatSession {
     }
     onRunning();
     try {
-      const output = await tool.run(call.input, { signal, toolCallId: call.id });
+      // A call its tool began while the model wrote it is finished through it.
+      const output = handle ? await handle.finish(call.input) : await tool.run(call.input, { signal, toolCallId: call.id });
       return {
         result: { type: 'tool-result', toolCallId: call.id, name: call.name, output: typeof output === 'string' ? output : JSON.stringify(output) },
         ran: true,
@@ -479,6 +489,15 @@ export class KritzelChatSession {
         const toolCallId = context?.toolCallId;
         return tool.run(input, { signal, actor: this.toolActor(signal), ...(toolCallId ? { toolCallId } : {}) });
       },
+      ...(tool.begin
+        ? {
+            begin: context => {
+              const signal = context?.signal ?? new AbortController().signal;
+              const toolCallId = context?.toolCallId;
+              return tool.begin!({ signal, actor: this.toolActor(signal), ...(toolCallId ? { toolCallId } : {}) });
+            },
+          }
+        : {}),
     };
   }
 

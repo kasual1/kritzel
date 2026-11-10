@@ -139,6 +139,26 @@ export interface KritzelAgentTool {
   description: string;
   inputSchema: KritzelAgentToolSchema;
   run: (input: unknown, context?: KritzelAgentToolContext) => Promise<string>;
+  /**
+   * Optional: begins a call while the model is still writing its input, e.g. to place a loading placeholder
+   * once its position and size are known (`create_iframe` and `create_image` do). A runner that streams tool
+   * calls, like a chat session, calls it when a call starts and then finishes the call through the returned
+   * handle instead of `run`. Runners that don't stream just call `run`.
+   */
+  begin?: (context: KritzelAgentToolContext) => KritzelAgentToolCall;
+}
+
+/** A tool call that began while the model was still writing its input (see `KritzelAgentTool.begin`). */
+export interface KritzelAgentToolCall {
+  /** More input arrived: the input's JSON text written so far. */
+  update(inputText: string): void;
+  /** The input is complete: finishes the call and resolves with its result, exactly like `run()`. */
+  finish(input: unknown): Promise<string>;
+  /**
+   * The call won't run (dropped, stopped, or the prompt ended): undoes whatever the call began. A promise makes
+   * the runner wait until that is done.
+   */
+  cancel(): void | Promise<void>;
 }
 
 /** Options of `agent.tools()`. */
