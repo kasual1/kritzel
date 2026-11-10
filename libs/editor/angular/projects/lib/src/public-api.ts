@@ -52,6 +52,7 @@ export {
     isKritzelAgent,
     formatAgentToolResult,
     AGENT_TOOL_REASON_HINTS,
+    MODEL_IFRAME_CONTENT_SECURITY_POLICY,
     KritzelChatSession,
     isKritzelChatSession,
     createScriptedTransport,

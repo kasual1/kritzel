@@ -1,5 +1,5 @@
 import type { KritzelAgent } from '../classes/agent/agent.class';
-import type { KritzelAgentTool, KritzelAgentToolContext, KritzelAgentToolSchema, KritzelCanvasSnapshot, KritzelObserveOptions } from './agent.interface';
+import type { KritzelAgentTool, KritzelAgentToolContext, KritzelAgentToolSchema, KritzelAgentToolsOptions, KritzelCanvasSnapshot, KritzelObserveOptions } from './agent.interface';
 import type { KritzelAgenticAction, KritzelAgenticActionOptions, KritzelAgenticActionResult } from './agentic-action.interface';
 import type { KritzelChatBoxChip } from './chat-box.interface';
 
@@ -165,6 +165,11 @@ export interface KritzelChatSessionOptions {
    * the user: instantly, on the user's selection, and its changes undo like the user's own (one step per prompt).
    */
   agent?: KritzelAgent;
+  /**
+   * Which optional canvas tools the model gets: `create_image` (on by default, SVG only; `{ urls: true }` also
+   * loads images from URLs) and `create_iframe` (off by default; places widgets of model-written code).
+   */
+  canvasTools?: Pick<KritzelAgentToolsOptions, 'images' | 'iframes'>;
   /** App-defined tools added to the canvas tools. Their names must not clash with them. */
   tools?: KritzelChatTool[];
   /** Instructions sent with every request. */

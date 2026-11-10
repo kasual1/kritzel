@@ -376,11 +376,13 @@ export class KritzelChatSession {
 
   private buildTools(): KritzelAgentTool[] {
     const instant = !!this._options.instant;
+    const { images, iframes } = this._options.canvasTools ?? {};
+    const optional = { ...(images !== undefined ? { images } : {}), ...(iframes !== undefined ? { iframes } : {}) };
     const canvas = this._options.agent
-      ? this._options.agent.tools({ instant })
+      ? this._options.agent.tools({ ...optional, instant })
       : this._userActor
-        ? this._userActor.tools()
-        : new KritzelUserActor('unbound').tools();
+        ? this._userActor.tools(optional)
+        : new KritzelUserActor('unbound').tools(optional);
     const names = new Set(canvas.map(tool => tool.name));
     for (const tool of this._options.tools ?? []) {
       if (names.has(tool.name)) {

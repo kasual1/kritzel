@@ -128,6 +128,32 @@ describe('KritzelIframeObject', () => {
     expect(iframe.srcdoc).not.toContain('const value = "</script>";');
   });
 
+  it('writes its content security policy first into the head and keeps it through serialize, copy and clone', () => {
+    const policy = "default-src 'none'; script-src 'unsafe-inline'";
+    const object = KritzelIframeObject.create(createCore(), { html: '<p>Hi</p>', contentSecurityPolicy: policy });
+    const iframe = document.createElement('iframe');
+
+    object.mount(iframe);
+
+    const head = iframe.srcdoc.slice(iframe.srcdoc.indexOf('<head>'), iframe.srcdoc.indexOf('<style>'));
+    expect(head).toContain(`<meta http-equiv="Content-Security-Policy" content="${policy}">`);
+    expect(new KritzelIframeObject().deserialize<KritzelIframeObject>(object.serialize()).contentSecurityPolicy).toBe(policy);
+    expect(object.copy().contentSecurityPolicy).toBe(policy);
+    expect(object.clone().contentSecurityPolicy).toBe(policy);
+  });
+
+  it('has no content security policy by default and escapes one that would break out of the attribute', () => {
+    const plain = KritzelIframeObject.create(createCore(), { html: '<p>Hi</p>' });
+    const plainFrame = document.createElement('iframe');
+    plain.mount(plainFrame);
+    expect(plainFrame.srcdoc).not.toContain('Content-Security-Policy');
+
+    const hostile = KritzelIframeObject.create(createCore(), { contentSecurityPolicy: '"><script>alert(1)</script>' });
+    const hostileFrame = document.createElement('iframe');
+    hostile.mount(hostileFrame);
+    expect(hostileFrame.srcdoc).toContain('content="&quot;>&lt;script>alert(1)&lt;/script>"');
+  });
+
   it('serializes lifecycle state and revives without transient mounting state', () => {
     class StatefulIframeObject extends KritzelIframeObject {
       protected override onSerialize(context: KritzelIframeObjectLifecycleContext): Record<string, unknown> {

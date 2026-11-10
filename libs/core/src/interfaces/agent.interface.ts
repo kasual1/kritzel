@@ -149,6 +149,16 @@ export interface KritzelAgentToolsOptions {
   maxTextLength?: number;
   /** Skips all animation in the actions of these tools: the changes appear at once. Defaults to `false`. */
   instant?: boolean;
+  /**
+   * Offers `create_image`, which places images drawn as SVG markup by the model. With `{ urls: true }` it also
+   * loads images from URLs the model chooses, fetched by the user's browser. Defaults to `true` (SVG only).
+   */
+  images?: boolean | { urls?: boolean };
+  /**
+   * Offers `create_iframe`, which places widgets of model-written HTML, CSS and JavaScript. They run in an iframe
+   * sandboxed to scripts only, with a content security policy that blocks network access. Defaults to `false`.
+   */
+  iframes?: boolean;
 }
 
 /** What a tool's `run` returns, as JSON. */

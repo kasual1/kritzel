@@ -288,6 +288,73 @@ export function agentToolInputSchema(spec: KritzelAgentToolSpec): KritzelAgentTo
   return object<Record<string, unknown>>(spec.params as Params<Record<string, unknown>>) as KritzelAgentToolSchema;
 }
 
+// ─── Tools that build an object (placed with the addObject action) ────────────
+
+/** Input of `create_image`. */
+export interface KritzelCreateImageToolInput {
+  name?: string;
+  svg?: string;
+  url?: string;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+}
+
+/** Input of `create_iframe`. */
+export interface KritzelCreateIframeToolInput {
+  name: string;
+  html: string;
+  css?: string;
+  script?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+export const CREATE_IMAGE_TOOL_NAME = 'create_image';
+export const CREATE_IFRAME_TOOL_NAME = 'create_iframe';
+
+/** The description of `create_image`; `urls` says whether images may be loaded from URLs. */
+export function createImageToolDescription(urls: boolean): string {
+  return urls
+    ? 'Places an image with its top-left corner at (x, y): from SVG markup you write (illustrations, icons, diagrams) or ' +
+        "from an image URL (the server must allow cross-origin requests). Give exactly one of svg or url. Without width and height, the image's own " +
+        'size is used, fitted into 300×300. Returns its ID.'
+    : 'Places an image drawn as SVG markup you write (illustrations, icons, diagrams) with its top-left corner at (x, y). ' +
+        "Without width and height, the image's own size is used, fitted into 300×300. Returns its ID.";
+}
+
+/** The input schema of `create_image`; `urls` adds the `url` field. */
+export function createImageToolSchema(urls: boolean): KritzelAgentToolSchema {
+  return object<KritzelCreateImageToolInput>({
+    name: opt(str('Short title shown on the image.')),
+    svg: opt(str('A complete <svg> element with xmlns and viewBox. Scripts in it never run.')),
+    url: urls ? opt(str('An http(s) URL of a PNG, JPEG, GIF, WebP or SVG image.')) : null,
+    x: req(num('Left edge.')),
+    y: req(num('Top edge.')),
+    width: opt(positive('Width; give it together with height.')),
+    height: opt(positive('Height; give it together with width.')),
+  }) as KritzelAgentToolSchema;
+}
+
+export const CREATE_IFRAME_TOOL_DESCRIPTION =
+  'Places a small interactive UI widget (a counter, a timer, a poll, a mini chart, …) with its top-left corner at (x, y): ' +
+  'your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without ' +
+  'external resources (images as data: URLs) that fills the widget. The user interacts with it once it is selected. Returns its ID.';
+
+export const CREATE_IFRAME_TOOL_SCHEMA: KritzelAgentToolSchema = object<KritzelCreateIframeToolInput>({
+  name: req(str('Short title shown on the widget.')),
+  html: req(str('Body content.')),
+  css: opt(str('Styles.')),
+  script: opt(str('JavaScript run after the body.')),
+  x: req(num('Left edge.')),
+  y: req(num('Top edge.')),
+  width: req(positive('Width, e.g. 320.')),
+  height: req(positive('Height, e.g. 240.')),
+}) as KritzelAgentToolSchema;
+
 /** The input schema of `observe_canvas`. */
 export const OBSERVE_CANVAS_SCHEMA: KritzelAgentToolSchema = object<{ scope?: string; objectIds?: string[] }>({
   scope: opt({ type: 'string', enum: ['all', 'viewport'], description: "'all' (default) or only what the user sees." }),

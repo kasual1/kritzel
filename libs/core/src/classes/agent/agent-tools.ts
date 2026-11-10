@@ -17,9 +17,33 @@ import type {
 } from '../../interfaces/agent.interface';
 import { getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
 import { KritzelAgentActionError } from './agent-action-error.class';
-import { AGENT_TOOL_SPECS, OBSERVE_CANVAS_SCHEMA, agentToolInputSchema, type KritzelAgentToolSpec, type KritzelJsonSchemaNode } from './agent-tool-schemas';
+import {
+  AGENT_TOOL_SPECS,
+  CREATE_IFRAME_TOOL_DESCRIPTION,
+  CREATE_IFRAME_TOOL_NAME,
+  CREATE_IFRAME_TOOL_SCHEMA,
+  CREATE_IMAGE_TOOL_NAME,
+  OBSERVE_CANVAS_SCHEMA,
+  agentToolInputSchema,
+  createImageToolDescription,
+  createImageToolSchema,
+  type KritzelAgentToolSpec,
+  type KritzelCreateIframeToolInput,
+  type KritzelCreateImageToolInput,
+  type KritzelJsonSchemaNode,
+} from './agent-tool-schemas';
+import { KritzelImage } from '../objects/image.class';
+import { KritzelIframeObject } from '../objects/iframe.class';
 
 const DEFAULT_MAX_TEXT_LENGTH = 2000;
+/** Longest SVG markup of `create_image`, and longest HTML, CSS and script together of `create_iframe`. */
+const MAX_MARKUP_LENGTH = 200_000;
+/**
+ * The content security policy of iframes placed by `create_iframe`: inline code and data URLs only, so the
+ * model's code can't load anything or send anything anywhere.
+ */
+export const MODEL_IFRAME_CONTENT_SECURITY_POLICY =
+  "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:";
 const MAX_RESULT_OBJECTS = 10;
 const TEXT_FIELDS = new Set(['text']);
 
@@ -105,6 +129,13 @@ export function createActorTools(actor: KritzelToolActor, options: KritzelAgentT
     if (!only || only.has(spec.name)) {
       tools.push(createActionTool(actor, type, spec, prefix, maxTextLength, instant));
     }
+  }
+  const images = options.images ?? true;
+  if (images && (!only || only.has(CREATE_IMAGE_TOOL_NAME))) {
+    tools.push(createImageTool(actor, prefix, instant, typeof images === 'object' && !!images.urls));
+  }
+  if (options.iframes && (!only || only.has(CREATE_IFRAME_TOOL_NAME))) {
+    tools.push(createIframeTool(actor, prefix, instant));
   }
   return tools;
 }
@@ -198,35 +229,174 @@ function createActionTool(
       } catch (error) {
         return toErrorResult(error);
       }
+      return performAsTool(actor, type, action, context, instant);
+    },
+  };
+}
 
-      if (!actor.isAdded) {
-        return removedResult(actor);
-      }
-      const options: KritzelAgenticActionOptions = {};
-      if (context?.signal) options.signal = context.signal;
-      if (instant) options.instant = true;
-      let result;
+/** Performs a tool's action and reports the result as the tool's JSON answer. */
+async function performAsTool(
+  actor: KritzelToolActor,
+  type: KritzelAgenticActionType,
+  action: KritzelAgenticAction,
+  context: KritzelAgentToolContext | undefined,
+  instant: boolean,
+): Promise<string> {
+  if (!actor.isAdded) {
+    return removedResult(actor);
+  }
+  const options: KritzelAgenticActionOptions = {};
+  if (context?.signal) options.signal = context.signal;
+  if (instant) options.instant = true;
+  let result;
+  try {
+    result = await actor.perform(action, options);
+  } catch (error) {
+    if (error instanceof KritzelAgentActionError) {
+      // Inside agent.task(), refusals throw; a tool reports them like everywhere else.
+      result = error.result;
+    } else {
+      throw error;
+    }
+  }
+  if (result.completed) {
+    const objects = describeResultObjects(actor, type, result.objectIds ?? []);
+    return formatAgentToolResult({ completed: true, objectIds: result.objectIds ?? [], ...(objects.length > 0 ? { objects } : {}) });
+  }
+  const reason = result.reason ?? 'conflict';
+  return formatAgentToolResult({
+    completed: false,
+    reason,
+    ...(result.objectIds && result.objectIds.length > 0 ? { objectIds: result.objectIds } : {}),
+    hint: hintFor(actor, reason),
+  });
+}
+
+function requireFinite(value: unknown, field: string): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    throw new KritzelToolInputError(`"${field}" must be a number.`);
+  }
+  return value;
+}
+
+function requirePositive(value: unknown, field: string): number {
+  const number = requireFinite(value, field);
+  if (number <= 0) {
+    throw new KritzelToolInputError(`"${field}" must be greater than 0.`);
+  }
+  return number;
+}
+
+function requireString(value: unknown, field: string): string {
+  if (typeof value !== 'string') {
+    throw new KritzelToolInputError(`"${field}" must be a string.`);
+  }
+  return value;
+}
+
+/** SVG markup: an `<svg>` root, optionally after an XML declaration, a doctype or comments. */
+const SVG_MARKUP = /^(<\?xml[^>]*>\s*)?(<!DOCTYPE[^>]*>\s*)?(<!--[\s\S]*?-->\s*)*<svg[\s>]/i;
+
+/** `create_image`: builds a `KritzelImage` from SVG markup or a URL and places it with the addObject action. */
+function createImageTool(actor: KritzelToolActor, prefix: string, instant: boolean, urls: boolean): KritzelAgentTool {
+  const inputSchema = createImageToolSchema(urls);
+  return {
+    name: `${prefix}${CREATE_IMAGE_TOOL_NAME}`,
+    description: createImageToolDescription(urls),
+    inputSchema,
+    run: async (input: unknown, context?: KritzelAgentToolContext) => {
+      let image: KritzelImage;
       try {
-        result = await actor.perform(action, options);
-      } catch (error) {
-        if (error instanceof KritzelAgentActionError) {
-          // Inside agent.task(), refusals throw; a tool reports them like everywhere else.
-          result = error.result;
-        } else {
-          throw error;
+        const parsed = parseInput(input, inputSchema as unknown as KritzelJsonSchemaNode) as Partial<KritzelCreateImageToolInput>;
+        const x = requireFinite(parsed.x, 'x');
+        const y = requireFinite(parsed.y, 'y');
+        if ((parsed.width === undefined) !== (parsed.height === undefined)) {
+          throw new KritzelToolInputError('Give width and height together, or neither.');
         }
+        const width = parsed.width === undefined ? undefined : requirePositive(parsed.width, 'width');
+        const height = parsed.height === undefined ? undefined : requirePositive(parsed.height, 'height');
+        if ((parsed.svg === undefined) === (parsed.url === undefined)) {
+          throw new KritzelToolInputError(urls ? 'Give exactly one of "svg" or "url".' : '"svg" is required.');
+        }
+        let src: string;
+        if (parsed.svg !== undefined) {
+          const svg = requireString(parsed.svg, 'svg').trim();
+          if (svg.length > MAX_MARKUP_LENGTH) {
+            throw new KritzelToolInputError(`"svg" is longer than ${MAX_MARKUP_LENGTH} characters.`);
+          }
+          if (!SVG_MARKUP.test(svg)) {
+            throw new KritzelToolInputError('"svg" must be SVG markup starting with an <svg> element.');
+          }
+          src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+        } else {
+          const url = requireString(parsed.url, 'url');
+          let protocol = '';
+          try {
+            protocol = new URL(url).protocol;
+          } catch {
+            // Not a URL.
+          }
+          if (protocol !== 'http:' && protocol !== 'https:') {
+            throw new KritzelToolInputError('"url" must be an http(s) URL.');
+          }
+          src = url;
+        }
+        const name = parsed.name === undefined ? undefined : requireString(parsed.name, 'name');
+        image = new KritzelImage({ name, src, translateX: x, translateY: y, width, height });
+      } catch (error) {
+        return toErrorResult(error);
       }
-      if (result.completed) {
-        const objects = describeResultObjects(actor, type, result.objectIds ?? []);
-        return formatAgentToolResult({ completed: true, objectIds: result.objectIds ?? [], ...(objects.length > 0 ? { objects } : {}) });
+      try {
+        return await performAsTool(actor, 'addObject', { type: 'addObject', object: image }, context, instant);
+      } catch (error) {
+        // The source could not be fetched or read (a 404, a server without CORS, broken markup).
+        return formatAgentToolResult({
+          completed: false,
+          reason: 'invalid-input',
+          message: `The image could not be loaded: ${error instanceof Error ? error.message : String(error)}`,
+          hint: 'Check the markup or use another image.',
+        });
       }
-      const reason = result.reason ?? 'conflict';
-      return formatAgentToolResult({
-        completed: false,
-        reason,
-        ...(result.objectIds && result.objectIds.length > 0 ? { objectIds: result.objectIds } : {}),
-        hint: hintFor(actor, reason),
-      });
+    },
+  };
+}
+
+/** `create_iframe`: builds a `KritzelIframeObject` from model-written code and places it with the addObject action. */
+function createIframeTool(actor: KritzelToolActor, prefix: string, instant: boolean): KritzelAgentTool {
+  const inputSchema = CREATE_IFRAME_TOOL_SCHEMA;
+  return {
+    name: `${prefix}${CREATE_IFRAME_TOOL_NAME}`,
+    description: CREATE_IFRAME_TOOL_DESCRIPTION,
+    inputSchema,
+    run: async (input: unknown, context?: KritzelAgentToolContext) => {
+      let iframe: KritzelIframeObject;
+      try {
+        const parsed = parseInput(input, inputSchema as unknown as KritzelJsonSchemaNode) as Partial<KritzelCreateIframeToolInput>;
+        const name = requireString(parsed.name, 'name');
+        const html = requireString(parsed.html, 'html');
+        const css = parsed.css === undefined ? '' : requireString(parsed.css, 'css');
+        const script = parsed.script === undefined ? '' : requireString(parsed.script, 'script');
+        if (html.length + css.length + script.length > MAX_MARKUP_LENGTH) {
+          throw new KritzelToolInputError(`html, css and script together are longer than ${MAX_MARKUP_LENGTH} characters.`);
+        }
+        iframe = new KritzelIframeObject({
+          name,
+          title: name,
+          html,
+          css,
+          script,
+          translateX: requireFinite(parsed.x, 'x'),
+          translateY: requireFinite(parsed.y, 'y'),
+          width: requirePositive(parsed.width, 'width'),
+          height: requirePositive(parsed.height, 'height'),
+          // Scripts only: never same-origin for model-written code, which would give it the page.
+          sandbox: ['allow-scripts'],
+          contentSecurityPolicy: MODEL_IFRAME_CONTENT_SECURITY_POLICY,
+        });
+      } catch (error) {
+        return toErrorResult(error);
+      }
+      return performAsTool(actor, 'addObject', { type: 'addObject', object: iframe }, context, instant);
     },
   };
 }

@@ -60,7 +60,7 @@ export * from './classes/managers/remote-agent.manager';
 
 export * from './classes/agent/agent.class';
 export * from './classes/agent/agent-action-error.class';
-export { formatAgentToolResult, AGENT_TOOL_REASON_HINTS } from './classes/agent/agent-tools';
+export { formatAgentToolResult, AGENT_TOOL_REASON_HINTS, MODEL_IFRAME_CONTENT_SECURITY_POLICY } from './classes/agent/agent-tools';
 
 export * from './classes/chat/chat-session.class';
 export * from './classes/chat/scripted-transport';

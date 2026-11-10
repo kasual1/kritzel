@@ -47,6 +47,11 @@ export interface KritzelIframeObjectConfig extends Partial<KritzelIframeContent>
   state?: Record<string, unknown>;
   title?: string;
   sandbox?: string[];
+  /**
+   * A content security policy for the iframe's document, e.g. `"default-src 'none'; script-src 'unsafe-inline'"`
+   * to keep its code off the network. None by default.
+   */
+  contentSecurityPolicy?: string;
   translateX?: number;
   translateY?: number;
   rotation?: number;
@@ -122,6 +127,8 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   state: Record<string, unknown> = {};
   title: string = 'Embedded content';
   sandbox: string[] = ['allow-scripts'];
+  /** The content security policy of the iframe's document, if any. */
+  contentSecurityPolicy?: string;
   borderRadius?: number | string;
   boxShadow?: string;
 
@@ -153,6 +160,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     this.state = structuredClone(config?.state ?? {});
     this.title = config?.title ?? 'Embedded content';
     this.sandbox = this.normalizeSandbox(config?.sandbox);
+    this.contentSecurityPolicy = config?.contentSecurityPolicy || undefined;
     this.borderRadius = config?.borderRadius;
     this.boxShadow = config?.boxShadow;
     this.translateX = config?.translateX ?? 0;
@@ -410,6 +418,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     this.state = object.state && typeof object.state === 'object' ? structuredClone(object.state as Record<string, unknown>) : {};
     this.title = typeof object.title === 'string' ? object.title : 'Embedded content';
     this.sandbox = this.normalizeSandbox(Array.isArray(object.sandbox) ? object.sandbox.filter((token): token is string => typeof token === 'string') : undefined);
+    this.contentSecurityPolicy = typeof object.contentSecurityPolicy === 'string' && object.contentSecurityPolicy ? object.contentSecurityPolicy : undefined;
     this.borderRadius = (typeof object.borderRadius === 'number' || typeof object.borderRadius === 'string') ? object.borderRadius : undefined;
     this.boxShadow = typeof object.boxShadow === 'string' ? object.boxShadow : undefined;
     this.messageListener = null;
@@ -423,6 +432,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     copiedObject.isLoading = this.isLoading;
     copiedObject.state = structuredClone(this.state);
     copiedObject.sandbox = [...this.sandbox];
+    copiedObject.contentSecurityPolicy = this.contentSecurityPolicy;
     copiedObject.borderRadius = this.borderRadius;
     copiedObject.boxShadow = this.boxShadow;
     copiedObject.messageListener = null;
@@ -437,6 +447,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     clonedObject.isLoading = this.isLoading;
     clonedObject.state = structuredClone(this.state);
     clonedObject.sandbox = [...this.sandbox];
+    clonedObject.contentSecurityPolicy = this.contentSecurityPolicy;
     clonedObject.borderRadius = this.borderRadius;
     clonedObject.boxShadow = this.boxShadow;
     clonedObject.messageListener = null;
@@ -519,12 +530,17 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     const script = activeContent.script.replace(/<\/script/gi, '<\\/script');
     const computedStyle = this.isMounted ? getComputedStyle(this.elementRef) : null;
     const defaultCursor = computedStyle?.getPropertyValue('--kritzel-global-default-cursor').trim() || 'auto';
+    // First in the head, so it covers everything after it.
+    const csp = this.contentSecurityPolicy
+      ? `<meta http-equiv="Content-Security-Policy" content="${this.contentSecurityPolicy.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}">`
+      : '';
     const pointerCursor = computedStyle?.getPropertyValue('--kritzel-global-pointer-cursor').trim() || defaultCursor;
 
     return `<!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
+    ${csp}
     <style>
       :root {
         --kritzel-iframe-default-cursor: ${defaultCursor};

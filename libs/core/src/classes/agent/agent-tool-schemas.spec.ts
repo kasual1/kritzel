@@ -1,4 +1,11 @@
-import { AGENT_TOOL_SPECS, OBSERVE_CANVAS_SCHEMA, agentToolInputSchema, type KritzelJsonSchemaNode } from './agent-tool-schemas';
+import {
+  AGENT_TOOL_SPECS,
+  CREATE_IFRAME_TOOL_SCHEMA,
+  OBSERVE_CANVAS_SCHEMA,
+  agentToolInputSchema,
+  createImageToolSchema,
+  type KritzelJsonSchemaNode,
+} from './agent-tool-schemas';
 import { AGENTIC_ACTION_EXECUTORS, getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
 import {
   AGENTIC_ANCHORS,
@@ -58,7 +65,12 @@ describe('agent tool schemas', () => {
   });
 
   it('uses only portable keywords, closes every object and keeps required fields defined', () => {
-    const schemas = [...specs.map(([type, spec]) => [type, agentToolInputSchema(spec)] as const), ['observe_canvas', OBSERVE_CANVAS_SCHEMA] as const];
+    const schemas = [
+      ...specs.map(([type, spec]) => [type, agentToolInputSchema(spec)] as const),
+      ['observe_canvas', OBSERVE_CANVAS_SCHEMA] as const,
+      ['create_image', createImageToolSchema(true)] as const,
+      ['create_iframe', CREATE_IFRAME_TOOL_SCHEMA] as const,
+    ];
     for (const [name, schema] of schemas) {
       walk(schema as unknown as KritzelJsonSchemaNode, name, (node, path) => {
         Object.keys(node).forEach(key => expect({ path, key, allowed: ALLOWED_KEYWORDS.has(key) }).toEqual({ path, key, allowed: true }));

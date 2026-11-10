@@ -384,6 +384,22 @@ describe('KritzelChatSession', () => {
       expect(map.allObjects()).toHaveLength(0);
     });
 
+    it('offers the optional canvas tools chosen with canvasTools, as the user and as an agent', () => {
+      const names = (session: KritzelChatSession) => session.tools.map(tool => tool.name);
+      const plain = new KritzelChatSession({ transport: createScriptedTransport(['x']) });
+      expect(names(plain)).toContain('create_image');
+      expect(names(plain)).not.toContain('create_iframe');
+
+      const user = new KritzelChatSession({ transport: createScriptedTransport(['x']), canvasTools: { images: false, iframes: true } });
+      user._attach(core);
+      expect(names(user)).toContain('create_iframe');
+      expect(names(user)).not.toContain('create_image');
+
+      const agent = core.agentManager.add(new KritzelAgent({ id: 'claude', name: 'Claude' }));
+      const agentSession = new KritzelChatSession({ agent, transport: createScriptedTransport(['x']), canvasTools: { iframes: true } });
+      expect(names(agentSession)).toEqual(expect.arrayContaining(['create_image', 'create_iframe']));
+    });
+
     it('fails app tools that act while the session is not bound to an editor', async () => {
       const session = new KritzelChatSession({ tools: [placeBoxTool({})], transport: createScriptedTransport(['x']) });
       const tool = session.tools.find(candidate => candidate.name === 'place_box')!;
