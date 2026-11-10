@@ -100,18 +100,33 @@ describe('KritzelIframeObject', () => {
     expect(iframe.srcdoc).toContain('globalThis.changed = true;');
   });
 
-  it('renders loading content when loading is enabled', () => {
+  it('keeps its document when loading is toggled, the engine draws the loading placeholder over it', () => {
     const object = new KritzelIframeObject({
       content: { html: '<main>Ready</main>', css: 'main { color: red; }', script: '' },
-      loadingContent: { html: '<main>Loading</main>', css: 'main { color: gray; }', script: '' },
+      isLoading: true,
     });
     const iframe = document.createElement('iframe');
 
     object.mount(iframe);
-    object.setLoading(true);
+    const initialSource = iframe.srcdoc;
+    object.setLoading(false);
 
-    expect(iframe.srcdoc).toContain('<main>Loading</main>');
-    expect(iframe.srcdoc).toContain('main { color: gray; }');
+    expect(object.isLoading).toBe(false);
+    expect(iframe.srcdoc).toBe(initialSource);
+    expect(iframe.srcdoc).toContain('<main>Ready</main>');
+  });
+
+  it('drops the legacy loadingContent of documents saved before it was removed', () => {
+    const object = new KritzelIframeObject();
+    object.deserialize({
+      content: { html: '<main>Ready</main>', css: '', script: '' },
+      loadingContent: { html: '<main>Loading</main>', css: '', script: '' },
+      isLoading: true,
+    });
+
+    expect('loadingContent' in object).toBe(false);
+    expect(object.isLoading).toBe(true);
+    expect(object.serialize()).not.toHaveProperty('loadingContent');
   });
 
   it('escapes serialized state and closing script tags', () => {

@@ -11,6 +11,8 @@ import { KritzelEmbeddedObject } from '../../interfaces/embedded-object.interfac
 export interface KritzelDynamicObjectConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
+  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  isLoading?: boolean;
   element?: HTMLElement;
   rendererKey?: string;
   rendererData?: unknown;
@@ -59,6 +61,7 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
   constructor(config?: KritzelDynamicObjectConfig) {
     super();
     this.name = config?.name;
+    this.isLoading = config?.isLoading ?? false;
 
     if (config) {
       this.translateX = config.translateX || 0;

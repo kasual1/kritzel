@@ -3918,6 +3918,22 @@ export class KritzelEngine implements KritzelEngineHost {
                     );
                   })()}
 
+                {object.isLoading && !(object instanceof KritzelSelectionGroup) && !(object instanceof KritzelSelectionBox) && (
+                  <div
+                    // Drawn over the object's content, which stays mounted underneath so it can keep loading.
+                    class="kritzel-loading-placeholder"
+                    data-testid="kritzel-loading-placeholder"
+                    style={{
+                      width: object.totalWidth + 'px',
+                      height: object.totalHeight + 'px',
+                      transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
+                      transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
+                      opacity: effectiveOpacityString,
+                      pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                    }}
+                  ></div>
+                )}
+
                 {this.core.store.state.debugInfo.showObjectInfo && (
                   <div
                     style={{

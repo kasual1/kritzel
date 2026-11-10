@@ -120,6 +120,13 @@ export const lightTheme: KritzelTheme = {
     titleColor: '#000000',
   },
 
+  loadingPlaceholder: {
+    animationDuration: '1.6s',
+    backgroundColor: '#e5e7eb',
+    borderRadius: '12px',
+    glareColor: 'rgba(255, 255, 255, 0.6)',
+  },
+
   loginDialog: {
     buttonActiveBackground: '#ebebeb',
     buttonBackground: '#ffffff',
