@@ -26,6 +26,19 @@ type AnyObject = KritzelBaseObject<any>;
 const DEFAULT_MAX_OBJECTS = 100;
 const DEFAULT_MAX_TEXT_LENGTH = 300;
 
+/** The visible area of the user's viewport in world units, with the zoom level (`scale`, 1 = 100%). */
+export function describeViewport(core: KritzelCore): KritzelCanvasSnapshot['viewport'] {
+  const state = core.store.state;
+  const scale = state.scale || 1;
+  return {
+    x: round(-(state.translateX || 0) / scale),
+    y: round(-(state.translateY || 0) / scale),
+    width: round((state.viewportWidth || 0) / scale),
+    height: round((state.viewportHeight || 0) / scale),
+    scale: Math.round(scale * 1000) / 1000,
+  };
+}
+
 /**
  * Builds what an agent sees of the canvas: the viewport, the user's selection, the agent itself and the
  * objects with their geometry, text, connections and style. Never includes image data, iframe code or
@@ -45,15 +58,7 @@ export function buildCanvasSnapshot(core: KritzelCore, actor: string | { kind: '
   if (!map) {
     throw new Error('The canvas is not ready (no workspace is loaded).');
   }
-  const state = core.store.state;
-  const scale = state.scale || 1;
-  const viewport = {
-    x: round(-(state.translateX || 0) / scale),
-    y: round(-(state.translateY || 0) / scale),
-    width: round((state.viewportWidth || 0) / scale),
-    height: round((state.viewportHeight || 0) / scale),
-    scale: Math.round(scale * 1000) / 1000,
-  };
+  const viewport = describeViewport(core);
   const theme = core.themeManager?.currentTheme ?? 'light';
   // The same rule as the agents' conflict checks: selection groups that belong to the local user.
   const userSelection = collectHumanSelection(core, map);

@@ -34,6 +34,8 @@ export class KritzelViewport {
   private static readonly EDITING_CARET_VISIBLE_PADDING = 24;
   /** Animation frame ID for cancellable viewport animations */
   private _animationFrameId: number | null = null;
+  /** Resolves the promise of the running {@link animateViewportTo} call, when it ends or is cancelled. */
+  private _animationDone: (() => void) | null = null;
 
   /** Initial distance between two touch points for pinch-to-zoom */
   initialTouchDistance: number = 0;
@@ -106,9 +108,9 @@ export class KritzelViewport {
    * @param translateY - The proposed translateY value
    * @returns Clamped translate values
    */
-  private clampTranslate(translateX: number, translateY: number): { translateX: number; translateY: number } {
+  private clampTranslate(translateX: number, translateY: number, scale: number = this._core.store.state.scale): { translateX: number; translateY: number } {
     const state = this._core.store.state;
-    const { scale, viewportWidth, viewportHeight } = state;
+    const { viewportWidth, viewportHeight } = state;
     const { viewportBoundaryLeft, viewportBoundaryRight, viewportBoundaryTop, viewportBoundaryBottom } = state;
 
     // Convert world boundaries to screen-space translate limits
@@ -539,6 +541,44 @@ export class KritzelViewport {
   }
 
   /**
+   * Clamps a scale to the allowed zoom range: the configured `scaleMax`, and the configured `scaleMin` or the
+   * scale the viewport boundaries need, whichever is larger.
+   * @param scale - The proposed scale
+   * @returns The clamped scale
+   */
+  clampScale(scale: number): number {
+    return Math.min(this._core.store.state.scaleMax, Math.max(this.getEffectiveMinScale(), scale));
+  }
+
+  /**
+   * The scale at which a world-space box fits into the viewport with 10% padding, clamped to the allowed zoom range.
+   * @param width - Width of the box in world units
+   * @param height - Height of the box in world units
+   * @returns The clamped scale
+   */
+  getFitScale(width: number, height: number): number {
+    const { viewportWidth, viewportHeight } = this._core.store.state;
+    const scaleX = width > 0 ? viewportWidth / (width * 1.1) : Infinity;
+    const scaleY = height > 0 ? viewportHeight / (height * 1.1) : Infinity;
+    return this.clampScale(Math.min(scaleX, scaleY));
+  }
+
+  /**
+   * The translation and scale that show the given world point at the center of the viewport, with the scale
+   * clamped to the allowed zoom range and the translation clamped to the viewport boundaries.
+   * @param x - X position in world coordinates to center on
+   * @param y - Y position in world coordinates to center on
+   * @param scale - Target scale level
+   * @returns The clamped target
+   */
+  resolveViewportTarget(x: number, y: number, scale: number): { translateX: number; translateY: number; scale: number } {
+    const { viewportWidth, viewportHeight } = this._core.store.state;
+    const clampedScale = this.clampScale(scale);
+    const clamped = this.clampTranslate(viewportWidth / 2 - x * clampedScale, viewportHeight / 2 - y * clampedScale, clampedScale);
+    return { ...clamped, scale: clampedScale };
+  }
+
+  /**
    * Animates the viewport to center on the given world coordinates at the specified scale.
    * Respects scale limits and viewport boundaries.
    * @param x - X position in world coordinates to center on
@@ -863,6 +903,14 @@ export class KritzelViewport {
       cancelAnimationFrame(this._animationFrameId);
       this._animationFrameId = null;
     }
+    this.settleAnimation();
+  }
+
+  /** Resolves the promise of the running {@link animateViewportTo} call. */
+  private settleAnimation(): void {
+    const done = this._animationDone;
+    this._animationDone = null;
+    done?.();
   }
 
   /**
@@ -871,8 +919,9 @@ export class KritzelViewport {
    * @param targetTranslateY - Target Y translation
    * @param targetScale - Target scale
    * @param duration - Animation duration in milliseconds (default 150)
+   * @returns Resolves when the viewport arrived, or when the animation was cancelled (e.g. by the user panning)
    */
-  animateViewportTo(targetTranslateX: number, targetTranslateY: number, targetScale: number, duration = 150): void {
+  animateViewportTo(targetTranslateX: number, targetTranslateY: number, targetScale: number, duration = 150): Promise<void> {
     // Cancel any existing animation
     this.cancelViewportAnimation();
 
@@ -886,9 +935,12 @@ export class KritzelViewport {
       this._core.store.state.hasViewportChanged = true;
       this._core.rerender();
       this._debounceUpdate();
-      return;
+      return Promise.resolve();
     }
 
+    const done = new Promise<void>(resolve => {
+      this._animationDone = resolve;
+    });
     const startTranslateX = this._core.store.state.translateX;
     const startTranslateY = this._core.store.state.translateY;
     const startScale = this._core.store.state.scale;
@@ -919,10 +971,12 @@ export class KritzelViewport {
         this._core.store.state.isScaling = false;
         this._core.rerender();
         this._debounceUpdate();
+        this.settleAnimation();
       }
     };
 
     this._animationFrameId = requestAnimationFrame(animate);
+    return done;
   }
 
   /**

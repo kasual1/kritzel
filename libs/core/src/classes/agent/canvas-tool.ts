@@ -20,6 +20,7 @@ import { KritzelAgentActionError } from './agent-action-error.class';
 import type { KritzelJsonSchemaNode } from './agent-tool-schemas';
 import type { KritzelBaseObject } from '../objects/base-object.class';
 import { parsePartialJson } from '../../helpers/partial-json.helper';
+import type { KritzelCore } from '../core/core.class';
 
 /**
  * The machinery behind every canvas tool: one definition per tool (`KritzelCanvasToolDefinition`) and one
@@ -38,6 +39,8 @@ export interface KritzelToolActor {
   observe(options?: KritzelObserveOptions): Promise<KritzelCanvasSnapshot>;
   _whenIdle(): Promise<void>;
   _describeObjects(objectIds: string[]): KritzelCanvasObject[];
+  /** The core the actor is added to, for tools that act on the editor itself (e.g. the viewport). */
+  readonly _owner?: KritzelCore | null;
 }
 
 export type KritzelToolActorKind = 'agent' | 'user';
@@ -64,6 +67,8 @@ export interface KritzelCanvasToolContext extends KritzelCanvasToolInputContext 
   readonly instant: boolean;
   /** Whether the actor is still on the canvas (read live). */
   readonly isAdded: boolean;
+  /** The core the actor is added to (read live), or `null`. */
+  readonly core: KritzelCore | null;
   /**
    * Performs an action and answers like every canvas tool: the removed check, the signal and instant option,
    * refusals thrown inside `agent.task()`, snapshots of the changed objects (unless `describeObjects` is
@@ -75,6 +80,8 @@ export interface KritzelCanvasToolContext extends KritzelCanvasToolInputContext 
   whenIdle(): Promise<void>;
   /** The answer for a removed actor. */
   removedResult(): string;
+  /** The answer for a refusal, with the hint for this kind of actor. */
+  refusalResult(reason: KritzelAgenticActionFailureReason, objectIds?: string[]): string;
   /** The answer for an error: input errors and an unavailable canvas become results, other errors are rethrown. */
   errorResult(error: unknown): string;
 }
@@ -183,6 +190,15 @@ function removedResult(kind: KritzelToolActorKind): string {
   return formatAgentToolResult({ completed: false, reason: 'agent-removed', hint: hintFor(kind, 'agent-removed') });
 }
 
+function refusalResult(kind: KritzelToolActorKind, reason: KritzelAgenticActionFailureReason, objectIds?: string[]): string {
+  return formatAgentToolResult({
+    completed: false,
+    reason,
+    ...(objectIds && objectIds.length > 0 ? { objectIds } : {}),
+    hint: hintFor(kind, reason),
+  });
+}
+
 function errorResult(kind: KritzelToolActorKind, error: unknown): string {
   if (error instanceof KritzelToolInputError) {
     return formatAgentToolResult({ completed: false, reason: 'invalid-input', message: error.message, hint: hintFor(kind, 'invalid-input') });
@@ -256,10 +272,14 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
       get isAdded() {
         return actor.isAdded;
       },
+      get core() {
+        return actor._owner ?? null;
+      },
       perform: (action, performOptions) => (perform ?? performDirectly)(action, performOptions, context),
       observe: observeOptions => actor.observe(observeOptions),
       whenIdle: () => actor._whenIdle(),
       removedResult: () => removedResult(kind),
+      refusalResult: (reason, objectIds) => refusalResult(kind, reason, objectIds),
       errorResult: error => errorResult(kind, error),
     };
     try {
@@ -415,13 +435,7 @@ async function performAsTool(
     const objects = describeObjects ? describeResultObjects(actor, result.objectIds ?? []) : [];
     return formatAgentToolResult({ completed: true, objectIds: result.objectIds ?? [], ...(objects.length > 0 ? { objects } : {}) });
   }
-  const reason = result.reason ?? 'conflict';
-  return formatAgentToolResult({
-    completed: false,
-    reason,
-    ...(result.objectIds && result.objectIds.length > 0 ? { objectIds: result.objectIds } : {}),
-    hint: hintFor(kind, reason),
-  });
+  return refusalResult(kind, result.reason ?? 'conflict', result.objectIds);
 }
 
 /** Snapshots of the objects a completed action created or changed, so the model needs no extra observe call. */

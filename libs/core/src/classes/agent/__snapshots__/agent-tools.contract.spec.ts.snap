@@ -1176,6 +1176,55 @@ exports[`agent tools contract as agent offers the same tools with default 1`] = 
     },
     "name": "create_image",
   },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "fit_viewport",
+  },
 ]
 `;
 
@@ -2405,6 +2454,55 @@ exports[`agent tools contract as agent offers the same tools with iframes 1`] = 
     },
     "name": "create_iframe",
   },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "fit_viewport",
+  },
 ]
 `;
 
@@ -3588,6 +3686,55 @@ exports[`agent tools contract as agent offers the same tools with image urls 1`]
     },
     "name": "create_image",
   },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "fit_viewport",
+  },
 ]
 `;
 
@@ -4728,6 +4875,55 @@ exports[`agent tools contract as agent offers the same tools with no images 1`] 
       "type": "object",
     },
     "name": "set_style",
+  },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "fit_viewport",
   },
 ]
 `;
@@ -6117,6 +6313,55 @@ exports[`agent tools contract as agent offers the same tools with prefix 1`] = `
     },
     "name": "k_create_iframe",
   },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "k_set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "k_fit_viewport",
+  },
 ]
 `;
 
@@ -7172,6 +7417,55 @@ exports[`agent tools contract as user offers the same tools with default 1`] = `
       "type": "object",
     },
     "name": "create_image",
+  },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "fit_viewport",
   },
 ]
 `;
@@ -8279,6 +8573,55 @@ exports[`agent tools contract as user offers the same tools with iframes 1`] = `
     },
     "name": "create_iframe",
   },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "fit_viewport",
+  },
 ]
 `;
 
@@ -9339,6 +9682,55 @@ exports[`agent tools contract as user offers the same tools with image urls 1`] 
     },
     "name": "create_image",
   },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "fit_viewport",
+  },
 ]
 `;
 
@@ -10356,6 +10748,55 @@ exports[`agent tools contract as user offers the same tools with no images 1`] =
       "type": "object",
     },
     "name": "set_style",
+  },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "fit_viewport",
   },
 ]
 `;
@@ -11612,6 +12053,55 @@ exports[`agent tools contract as user offers the same tools with prefix 1`] = `
       "type": "object",
     },
     "name": "k_create_iframe",
+  },
+  {
+    "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "description": "World x of the new center; give it together with y. Defaults to the current center.",
+          "type": "number",
+        },
+        "y": {
+          "description": "World y of the new center; give it together with x.",
+          "type": "number",
+        },
+        "zoom": {
+          "description": "Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy. Greater than 0.",
+          "type": "number",
+        },
+        "zoomBy": {
+          "description": "Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out. Greater than 0.",
+          "type": "number",
+        },
+      },
+      "type": "object",
+    },
+    "name": "k_set_viewport",
+  },
+  {
+    "description": "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "maxZoom": {
+          "description": "Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%). Greater than 0.",
+          "type": "number",
+        },
+        "objectIds": {
+          "description": "Objects to show (also inside groups). Leave out to fit all objects.",
+          "items": {
+            "description": "Object ID from observe_canvas.",
+            "type": "string",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+      },
+      "type": "object",
+    },
+    "name": "k_fit_viewport",
   },
 ]
 `;

@@ -181,6 +181,11 @@ export interface KritzelAgentToolsOptions {
    * sandboxed to scripts only, with a content security policy that blocks network access. Defaults to `false`.
    */
   iframes?: boolean;
+  /**
+   * Offers `set_viewport` and `fit_viewport`, which pan and zoom the local user's view of the canvas (never the view
+   * of collaborators). Defaults to `true`.
+   */
+  viewport?: boolean;
 }
 
 /** What a tool's `run` returns, as JSON. */
@@ -193,6 +198,8 @@ export interface KritzelAgentToolResult {
   message?: string;
   /** What to do about the failure. */
   hint?: string;
+  /** The visible area after a viewport tool (`set_viewport`, `fit_viewport`) moved the view, as `observe_canvas` reports it. */
+  viewport?: KritzelCanvasSnapshot['viewport'];
   /** Snapshots of the objects the action created or changed. */
   objects?: KritzelCanvasObject[];
 }

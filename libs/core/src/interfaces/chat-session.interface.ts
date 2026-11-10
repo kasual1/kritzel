@@ -199,9 +199,10 @@ export interface KritzelChatSessionOptions {
   agent?: KritzelAgent;
   /**
    * Which optional canvas tools the model gets: `create_image` (on by default, SVG only; `{ urls: true }` also
-   * loads images from URLs) and `create_iframe` (off by default; places widgets of model-written code).
+   * loads images from URLs), `create_iframe` (off by default; places widgets of model-written code) and
+   * `set_viewport` / `fit_viewport` (on by default; pan and zoom the local user's view).
    */
-  canvasTools?: Pick<KritzelAgentToolsOptions, 'images' | 'iframes'>;
+  canvasTools?: Pick<KritzelAgentToolsOptions, 'images' | 'iframes' | 'viewport'>;
   /** App-defined tools added to the canvas tools. Their names must not clash with them. */
   tools?: KritzelChatTool[];
   /** Instructions sent with every request. */

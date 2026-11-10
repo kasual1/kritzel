@@ -418,6 +418,12 @@ describe('KritzelChatSession', () => {
       const agent = core.agentManager.add(new KritzelAgent({ id: 'claude', name: 'Claude' }));
       const agentSession = new KritzelChatSession({ agent, transport: createScriptedTransport(['x']), canvasTools: { iframes: true } });
       expect(names(agentSession)).toEqual(expect.arrayContaining(['create_image', 'create_iframe']));
+
+      expect(names(plain)).toEqual(expect.arrayContaining(['set_viewport', 'fit_viewport']));
+      expect(names(agentSession)).toEqual(expect.arrayContaining(['set_viewport', 'fit_viewport']));
+      const noViewport = new KritzelChatSession({ agent, transport: createScriptedTransport(['x']), canvasTools: { viewport: false } });
+      expect(names(noViewport)).not.toContain('set_viewport');
+      expect(names(noViewport)).not.toContain('fit_viewport');
     });
 
     it('fails app tools that act while the session is not bound to an editor', async () => {
