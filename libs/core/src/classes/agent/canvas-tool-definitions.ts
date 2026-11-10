@@ -11,6 +11,13 @@ import {
   FIT_VIEWPORT_TOOL_NAME,
   FIT_VIEWPORT_TOOL_SCHEMA,
   OBSERVE_CANVAS_SCHEMA,
+  READ_IFRAME_TOOL_DESCRIPTION,
+  READ_IFRAME_TOOL_NAME,
+  READ_IFRAME_TOOL_SCHEMA,
+  UPDATE_IFRAME_TOOL_DESCRIPTION,
+  UPDATE_IFRAME_TOOL_NAME,
+  UPDATE_IFRAME_TOOL_SCHEMA,
+  type KritzelUpdateIframeToolInput,
   SET_VIEWPORT_TOOL_DESCRIPTION,
   SET_VIEWPORT_TOOL_NAME,
   SET_VIEWPORT_TOOL_SCHEMA,
@@ -284,6 +291,142 @@ function placeholderBox(input: { x?: unknown; y?: unknown; width?: unknown; heig
   return { translateX: x, translateY: y, width, height };
 }
 
+// ─── read_iframe and update_iframe ───────────────────────────────────────────
+
+/** Whether an iframe runs model-written code: sandboxed to scripts only, behind the model's content security policy. */
+export function isModelIframe(object: unknown): object is KritzelIframeObject {
+  return (
+    object instanceof KritzelIframeObject &&
+    object.sandbox.length === 1 &&
+    object.sandbox[0] === 'allow-scripts' &&
+    object.contentSecurityPolicy === MODEL_IFRAME_CONTENT_SECURITY_POLICY
+  );
+}
+
+/**
+ * The widget a call is about, or the answer when there is none: an unknown ID or another object is an invalid
+ * target, an iframe of the app (which may run with more rights than model-written code) is not allowed.
+ */
+function modelIframeOf(ctx: KritzelCanvasToolContext, objectId: string): KritzelIframeObject | string {
+  const core = ctx.core;
+  const map = core?.store.objects;
+  if (!core || !map?.isReady) {
+    return ctx.refusalResult('engine-disconnected');
+  }
+  const object = map.findById(objectId);
+  if (!(object instanceof KritzelIframeObject)) {
+    return ctx.refusalResult('invalid-target', [objectId]);
+  }
+  return isModelIframe(object) ? object : ctx.refusalResult('not-allowed', [objectId]);
+}
+
+/** Applies find-and-replace edits to a part of the code, or rejects them with a message the model can act on. */
+function applyCodeEdits(code: { html: string; css: string; script: string }, edits: NonNullable<KritzelUpdateIframeToolInput['edits']>, ctx: KritzelCanvasToolContext) {
+  const result = { ...code };
+  edits.forEach((edit, index) => {
+    const current = result[edit.part];
+    const count = edit.find === '' ? 0 : current.split(edit.find).length - 1;
+    if (count !== 1) {
+      ctx.invalid(
+        count === 0
+          ? `edits[${index}].find does not occur in the ${edit.part}. Call read_iframe to see the current code.`
+          : `edits[${index}].find occurs ${count} times in the ${edit.part}. Include more surrounding code so it occurs once.`,
+      );
+    }
+    const at = current.indexOf(edit.find);
+    result[edit.part] = current.slice(0, at) + edit.replace + current.slice(at + edit.find.length);
+  });
+  return result;
+}
+
+/** Reads the code of a widget placed by create_iframe. */
+export const readIframeTool = defineCanvasTool<{ objectId: string }>({
+  name: READ_IFRAME_TOOL_NAME,
+  enabled: options => !!options.iframes,
+  description: READ_IFRAME_TOOL_DESCRIPTION,
+  inputSchema: READ_IFRAME_TOOL_SCHEMA,
+  removedFirst: true,
+  example: { objectId: 'a' },
+  prepare: input => ({ objectId: toolInput.string(input.objectId, 'objectId') }),
+  execute: async ({ objectId }, ctx) => {
+    try {
+      if (!ctx.isAdded) {
+        return ctx.removedResult();
+      }
+      // Changes queued in the same reply come first.
+      await ctx.whenIdle();
+      if (!ctx.isAdded) {
+        return ctx.removedResult();
+      }
+      const iframe = modelIframeOf(ctx, objectId);
+      if (typeof iframe === 'string') {
+        return iframe;
+      }
+      return JSON.stringify({ completed: true, objectId, name: iframe.name ?? iframe.title, ...iframe.content });
+    } catch (error) {
+      return ctx.errorResult(error);
+    }
+  },
+});
+
+/** Changes the code or name of a widget placed by create_iframe, with the updateIframe action. */
+export const updateIframeTool = defineCanvasTool<KritzelUpdateIframeToolInput>({
+  name: UPDATE_IFRAME_TOOL_NAME,
+  enabled: options => !!options.iframes,
+  description: UPDATE_IFRAME_TOOL_DESCRIPTION,
+  inputSchema: UPDATE_IFRAME_TOOL_SCHEMA,
+  example: { objectId: 'a', name: 'Counter', css: 'button { color: red; }', edits: [{ part: 'html', find: '+', replace: 'Add' }] },
+  prepare: (input, ctx) => {
+    const changes: KritzelUpdateIframeToolInput = { objectId: toolInput.string(input.objectId, 'objectId') };
+    for (const field of ['name', 'html', 'css', 'script'] as const) {
+      if (input[field] !== undefined) {
+        changes[field] = toolInput.string(input[field], field);
+      }
+    }
+    if (changes.name !== undefined && changes.name.trim() === '') {
+      ctx.invalid('"name" must not be empty.');
+    }
+    if (input.edits !== undefined) {
+      changes.edits = input.edits.map((edit, index) => ({
+        part: edit.part,
+        find: toolInput.string(edit.find, `edits[${index}].find`),
+        replace: toolInput.string(edit.replace, `edits[${index}].replace`),
+      }));
+      const replaced = changes.edits.find(edit => changes[edit.part] !== undefined);
+      if (replaced) {
+        ctx.invalid(`Do not edit the ${replaced.part} and replace it in the same call.`);
+      }
+    }
+    if (changes.name === undefined && changes.html === undefined && changes.css === undefined && changes.script === undefined && !changes.edits) {
+      ctx.invalid('Give name, html, css, script or edits.');
+    }
+    return changes;
+  },
+  execute: async ({ objectId, edits, ...changes }, ctx) => {
+    if (!ctx.isAdded) {
+      return ctx.removedResult();
+    }
+    if (edits) {
+      // Edits apply to the code as it is once the changes queued before this call are done.
+      await ctx.whenIdle();
+    }
+    const iframe = modelIframeOf(ctx, objectId);
+    if (typeof iframe === 'string') {
+      return iframe;
+    }
+    const code = edits ? applyCodeEdits({ ...iframe.content, ...pickCode(changes) }, edits, ctx) : pickCode(changes);
+    if ((code.html ?? iframe.html).length + (code.css ?? iframe.css).length + (code.script ?? iframe.script).length > MAX_MARKUP_LENGTH) {
+      ctx.invalid(`html, css and script together would be longer than ${MAX_MARKUP_LENGTH} characters.`);
+    }
+    return ctx.perform({ type: 'updateIframe', objectId, ...(changes.name !== undefined ? { name: changes.name } : {}), ...code });
+  },
+});
+
+/** The code parts of the input that are set. */
+function pickCode(changes: { html?: string; css?: string; script?: string }): { html?: string; css?: string; script?: string } {
+  return Object.fromEntries((['html', 'css', 'script'] as const).filter(part => changes[part] !== undefined).map(part => [part, changes[part]]));
+}
+
 // ─── set_viewport and fit_viewport ───────────────────────────────────────────
 
 /** How long a viewport tool animates the view, unless the tools are instant. */
@@ -440,6 +583,8 @@ export const KRITZEL_CANVAS_TOOLS: readonly KritzelCanvasToolDefinition[] = Obje
   ...actionTools(),
   createImageTool,
   createIframeTool,
+  readIframeTool,
+  updateIframeTool,
   setViewportTool,
   fitViewportTool,
 ]);

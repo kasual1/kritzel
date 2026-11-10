@@ -19,6 +19,7 @@ import { drawLineExecutor } from '../executors/draw-line.executor';
 import { editLineExecutor } from '../executors/edit-line.executor';
 import { setStyleExecutor } from '../executors/set-style.executor';
 import { addObjectExecutor } from '../executors/add-object.executor';
+import { updateIframeExecutor } from '../executors/update-iframe.executor';
 
 /**
  * One executor per action type. The mapped type makes the build fail when an action type
@@ -49,6 +50,7 @@ export const AGENTIC_ACTION_EXECUTORS: {
   editLine: editLineExecutor,
   setStyle: setStyleExecutor,
   addObject: addObjectExecutor,
+  updateIframe: updateIframeExecutor,
 };
 
 /** The executor for an action type, or `null` for unknown types. */

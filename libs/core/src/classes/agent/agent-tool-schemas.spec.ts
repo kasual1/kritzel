@@ -50,8 +50,8 @@ describe('agent tool schemas', () => {
     const names = KRITZEL_CANVAS_TOOLS.map(definition => definition.name);
     names.forEach(name => expect(name).toMatch(/^[a-z][a-z0-9_]{0,63}$/));
     expect(new Set(names).size).toBe(names.length);
-    expect(names).toEqual(expect.arrayContaining(['observe_canvas', 'create_image', 'create_iframe', 'set_viewport', 'fit_viewport', ...specs.map(([, spec]) => spec.name)]));
-    expect(names).toHaveLength(specs.length + 5);
+    expect(names).toEqual(expect.arrayContaining(['observe_canvas', 'create_image', 'create_iframe', 'read_iframe', 'update_iframe', 'set_viewport', 'fit_viewport', ...specs.map(([, spec]) => spec.name)]));
+    expect(names).toHaveLength(specs.length + 7);
   });
 
   it('uses only portable keywords, closes every object and keeps required fields defined, in every environment', () => {

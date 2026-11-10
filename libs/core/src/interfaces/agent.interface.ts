@@ -177,7 +177,8 @@ export interface KritzelAgentToolsOptions {
    */
   images?: boolean | { urls?: boolean };
   /**
-   * Offers `create_iframe`, which places widgets of model-written HTML, CSS and JavaScript. They run in an iframe
+   * Offers `create_iframe`, which places widgets of model-written HTML, CSS and JavaScript, and `read_iframe` and
+   * `update_iframe`, which read and change the code of such widgets (never of other iframes). They run in an iframe
    * sandboxed to scripts only, with a content security policy that blocks network access. Defaults to `false`.
    */
   iframes?: boolean;

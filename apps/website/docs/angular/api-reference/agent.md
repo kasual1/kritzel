@@ -296,6 +296,14 @@ Restyles objects; groups style their children. `style` needs at least one field.
 setStyle(objectIds: string[], style: KritzelAgenticObjectStyle, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
+### updateIframe
+
+Replaces parts of an iframe's code and its name; parts left out stay, and the iframe reloads with the new code. Works on iframes inside groups too. Resolves with `'invalid-target'` for objects that are not iframes.
+
+```ts
+updateIframe(objectId: string, changes: { name?: string; html?: string; css?: string; script?: string }, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+```
+
 ### addObject
 
 Places an object that the app built, for example a `KritzelIframeObject`, as the agent's change: the cursor hops to the object and it appears. The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
@@ -379,6 +387,7 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | prefix | string | `''` | Put in front of every tool name, for example `'kritzel_'`, to avoid clashes with other tools. |
 | maxTextLength | number | `2000` | Longest `text` that `create_shape`, `create_text`, or `type_text` may type. Longer input is rejected with `'invalid-input'`. |
 | instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. |
+| iframes | boolean | `false` | Offers `create_iframe`, `read_iframe`, and `update_iframe`, which place, read, and change widgets of model-written code. |
 | viewport | boolean | `true` | Offers `set_viewport` and `fit_viewport`, which pan and zoom the local user's view. |
 
 | Tool | Runs | Input |
@@ -403,6 +412,8 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | delete_objects | [`deleteObjects()`](#deleteobjects) | `objectIds` |
 | undo | [`undo()`](#undo) | — |
 | redo | [`redo()`](#redo) | — |
+| read_iframe | — | `objectId` |
+| update_iframe | [`updateIframe()`](#updateiframe) | `objectId`, `name?`, `html?`, `css?`, `script?`, `edits?` |
 | set_viewport | The engine's viewport | `x?`, `y?` (together), `zoom?` or `zoomBy?` |
 | fit_viewport | The engine's viewport | `objectIds?` (all objects when left out), `maxZoom?` (default `1`) |
 
@@ -413,6 +424,7 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 - It accepts the input as an object or as a JSON string, as some providers send it. `null` counts as a missing field. Unknown fields, missing required fields, and invalid values resolve with `reason: 'invalid-input'` and a `message` that names the field.
 - An action tool runs [`perform()`](#perform) with the `signal` of the context. Calls that run in parallel queue up in call order, and `observe_canvas` waits until the queued actions of the agent are done, so its snapshot shows their result.
 - An action tool resolves with a [`KritzelAgentToolResult`](#kritzelagenttoolresult) as JSON. On success, it has the `objectIds` of the action and, except for `click`, `select`, `clear_selection`, and `delete_objects`, the `objects` that were created or changed (up to 10). On failure, it has the `reason`, the `objectIds` that caused it, and a `hint` from [`AGENT_TOOL_REASON_HINTS`](#agent_tool_reason_hints). Inside [`task()`](#task), refusals are reported the same way instead of being thrown.
+- `read_iframe` and `update_iframe` only work on widgets that `create_iframe` placed: iframes sandboxed to scripts only, with the content security policy of model-written code. Other iframes of your app resolve with `'not-allowed'`, so a model never puts code into an iframe that runs with more rights. `read_iframe` resolves with the widget's `name`, `html`, `css`, and `script`. `edits` of `update_iframe` are find-and-replace changes `{ part, find, replace }`, applied in order; each `find` must occur exactly once in its part, otherwise the call resolves with `'invalid-input'` and a `message` that says why.
 - `set_viewport` and `fit_viewport` move only the view of the local user, never objects, and never the view of collaborators. They wait until the queued actions of the agent are done, so they can show what the same reply created, and resolve with `{ completed: true, viewport }`, the visible area as `observe_canvas` reports it. The zoom is clamped to the allowed range.
 - `observe_canvas` resolves with a [`KritzelCanvasSnapshot`](#kritzelcanvassnapshot) as JSON. It uses the defaults of `observe()`; `maxTextLength` of `tools()` does not change them.
 - It never rejects for mistakes of the model, only for unexpected errors.

@@ -11,6 +11,8 @@ import { KritzelAgent, isKritzelAgent } from './agent.class';
 import { KritzelAgentActionError } from './agent-action-error.class';
 import { buildCanvasSnapshot } from './agent-snapshot';
 import { KritzelUserActor } from './user-actor.class';
+import { KritzelIframeObject } from '../objects/iframe.class';
+import { createModelIframe } from './canvas-tool-definitions';
 import type { KritzelCore } from '../core/core.class';
 
 // A KritzelAgent on a real Yjs object map with real object classes and the real agentic managers.
@@ -714,6 +716,43 @@ describe('KritzelAgent', () => {
 
       await expect(call(agent, 'undo', {})).resolves.toMatchObject({ completed: true });
       expect((await agent.observe()).totalObjects).toBe(2);
+    });
+
+    it('reads and changes the code of a model-written widget through tool calls, in one undo step', async () => {
+      const widget = createModelIframe({ name: 'Counter', html: '<button>+</button>', css: 'button { color: red; }', script: 'let n = 0;' });
+      Object.assign(widget, { _core: core, translateX: 0, translateY: 0, width: 200, height: 100, scale: 1 });
+      map.insert(widget);
+      map.stopUndoCapturing();
+      const appFrame = new KritzelIframeObject({ html: '<p>App</p>', sandbox: ['allow-scripts', 'allow-same-origin'] });
+      Object.assign(appFrame, { _core: core, translateX: 400, translateY: 0, width: 200, height: 100, scale: 1 });
+      map.insert(appFrame);
+      map.stopUndoCapturing();
+      const agent = add(new KritzelAgent({ id: 'claude', name: 'Claude', speed: 100000 }));
+      const call = async (name: string, input: unknown) =>
+        JSON.parse(await settle(agent.tools({ iframes: true }).find(candidate => candidate.name === name)!.run(input)));
+
+      await expect(call('read_iframe', { objectId: widget.id })).resolves.toEqual({
+        completed: true,
+        objectId: widget.id,
+        name: 'Counter',
+        html: '<button>+</button>',
+        css: 'button { color: red; }',
+        script: 'let n = 0;',
+      });
+      await expect(
+        call('update_iframe', { objectId: widget.id, name: 'Tally', css: 'button { color: blue; }', edits: [{ part: 'html', find: '+', replace: 'Add' }] }),
+      ).resolves.toMatchObject({ completed: true, objectIds: [widget.id] });
+      const updated = map.findById(widget.id) as KritzelIframeObject;
+      expect(updated.content).toEqual({ html: '<button>Add</button>', css: 'button { color: blue; }', script: 'let n = 0;' });
+      expect(updated).toMatchObject({ name: 'Tally', title: 'Tally' });
+
+      await expect(call('update_iframe', { objectId: appFrame.id, html: '<p>Hacked</p>' })).resolves.toMatchObject({ completed: false, reason: 'not-allowed' });
+      await expect(call('read_iframe', { objectId: appFrame.id })).resolves.toMatchObject({ completed: false, reason: 'not-allowed' });
+      expect((map.findById(appFrame.id) as KritzelIframeObject).html).toBe('<p>App</p>');
+
+      await expect(call('undo', {})).resolves.toMatchObject({ completed: true });
+      expect((map.findById(widget.id) as KritzelIframeObject).content.html).toBe('<button>+</button>');
+      expect((map.findById(widget.id) as KritzelIframeObject).name).toBe('Counter');
     });
 
     it('reports refusals as results the model can act on', async () => {
