@@ -156,9 +156,24 @@ type ActionInput<K extends KritzelAgenticActionType> = Omit<Extract<KritzelAgent
 /** How an action is offered to models. */
 export interface KritzelAgentToolSpec<K extends KritzelAgenticActionType = KritzelAgenticActionType> {
   name: string;
-  description: string;
+  /** What the model reads; `{ agent, user }` when it reads differently for an actor working as the user. */
+  description: string | { agent: string; user: string };
   params: Params<ActionInput<K>>;
+  /** The kinds of actor that get the tool. Defaults to both. */
+  actors?: readonly ('agent' | 'user')[];
+  /** Whether the answer describes the objects the action returns. Defaults to `true`. */
+  describeObjects?: boolean;
+  /** Valid input, as a model would send it; the spec runs every tool with it. */
+  example: ActionInput<K>;
 }
+
+/** Wording for actions that change the selection: working as the user, the user's selection follows. */
+function followsUserSelection(description: string): { agent: string; user: string } {
+  return { agent: description, user: `${description} Works as the user: the user's selection follows the change.` };
+}
+
+/** Only agents click, select and undo: the user does that themselves, and shares the user's history. */
+const AGENT_ONLY = ['agent'] as const;
 
 /** One entry per action type; `null` means the action is not offered as a tool. */
 export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentToolSpec<K> | null } = {
@@ -166,13 +181,19 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
     name: 'click',
     description: 'Moves your cursor to the target and clicks. Visual only: nothing is selected or changed. Returns the top-most object under the click.',
     params: { target: req(target('Where to click.')), count: opt({ type: 'integer', description: '1 (default) or 2 for a double click.' }) },
+    actors: AGENT_ONLY,
+    describeObjects: false,
+    example: { target: { objectId: 'a', anchor: 'top-left' }, count: 2 },
   },
   select: {
     name: 'select',
     description: "Makes top-level objects your selection, shown in your color. Never changes the user's selection.",
     params: { objectIds: req(ids), additive: opt(bool('Add to your selection instead of replacing it.')) },
+    actors: AGENT_ONLY,
+    describeObjects: false,
+    example: { objectIds: ['a'], additive: true },
   },
-  clearSelection: { name: 'clear_selection', description: 'Clears your selection.', params: {} },
+  clearSelection: { name: 'clear_selection', description: 'Clears your selection.', params: {}, actors: AGENT_ONLY, describeObjects: false, example: {} },
   moveObject: {
     name: 'move_object',
     description: 'Drags a top-level object so that its align point lands on `to`. Lines connected to it follow.',
@@ -181,10 +202,24 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
       to: req(target('Destination.')),
       align: opt(anchor("Point of the moved object that lands on `to`. Defaults to 'center'.")),
     },
+    example: { objectId: 'a', to: { x: 10, y: 20 }, align: 'top-left' },
   },
-  deleteObjects: { name: 'delete_objects', description: 'Deletes top-level objects; a group is deleted with its children.', params: { objectIds: req(ids) } },
-  undo: { name: 'undo', description: "Undoes your last completed action. Never touches the user's or other agents' changes.", params: {} },
-  redo: { name: 'redo', description: 'Redoes your last undone action.', params: {} },
+  deleteObjects: {
+    name: 'delete_objects',
+    description: followsUserSelection('Deletes top-level objects; a group is deleted with its children.'),
+    params: { objectIds: req(ids) },
+    describeObjects: false,
+    example: { objectIds: ['a'] },
+  },
+  // The history executor also refuses actors working as the user (history.executor.ts).
+  undo: {
+    name: 'undo',
+    description: "Undoes your last completed action. Never touches the user's or other agents' changes.",
+    params: {},
+    actors: AGENT_ONLY,
+    example: {},
+  },
+  redo: { name: 'redo', description: 'Redoes your last undone action.', params: {}, actors: AGENT_ONLY, example: {} },
   resizeObject: {
     name: 'resize_object',
     description:
@@ -196,6 +231,7 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
       keepAspectRatio: opt(bool('Defaults to true when only one of width/height is given.')),
       handle: opt({ type: 'string', enum: AGENTIC_RESIZE_HANDLES, description: "Dragged corner. Defaults to 'bottom-right'." }),
     },
+    example: { objectId: 'a', width: 100, keepAspectRatio: false, handle: 'top-left' },
   },
   rotateObject: {
     name: 'rotate_object',
@@ -205,25 +241,30 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
       angle: req(num('Degrees clockwise. Absolute (0 straightens it) unless relative is true.')),
       relative: opt(bool('Add angle to the current rotation.')),
     },
+    example: { objectId: 'a', angle: 15, relative: true },
   },
   copyObjects: {
     name: 'copy_objects',
-    description:
+    description: followsUserSelection(
       'Duplicates top-level objects by Alt-dragging them; group children and lines between them are copied too. Returns the copies\' IDs.',
+    ),
     params: {
       objectIds: req(ids),
       to: opt(target('Where the center of the copies lands. Defaults to right next to the originals.')),
     },
+    example: { objectIds: ['a'], to: { objectId: 'b', anchor: 'right', offset: { x: 20, y: 0 } } },
   },
   groupObjects: {
     name: 'group_objects',
-    description: 'Groups at least two top-level objects into one group at the position of the topmost one. Returns the group\'s ID.',
+    description: followsUserSelection('Groups at least two top-level objects into one group at the position of the topmost one. Returns the group\'s ID.'),
     params: { objectIds: req({ ...ids, minItems: 2 }) },
+    example: { objectIds: ['a', 'b'] },
   },
   ungroupObjects: {
     name: 'ungroup_objects',
-    description: "Dissolves top-level groups; their children keep their place. Returns the children's IDs.",
+    description: followsUserSelection("Dissolves top-level groups; their children keep their place. Returns the children's IDs."),
     params: { objectIds: req({ ...ids, description: 'IDs of top-level groups.' }) },
+    example: { objectIds: ['g'] },
   },
   orderObjects: {
     name: 'order_objects',
@@ -236,6 +277,7 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
         description: "'front' or 'back' moves them above or below all other objects, 'forward' or 'backward' one layer.",
       }),
     },
+    example: { objectIds: ['a'], order: 'front' },
   },
   createShape: {
     name: 'create_shape',
@@ -249,11 +291,13 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
       text: opt(str('Text inside the shape. \\n starts a new paragraph.')),
       style: opt(shapeStyle),
     },
+    example: { shapeType: 'ellipse', x: 0, y: 0, width: 10, height: 10, text: 'Hi', style: { fillColor: 'tomato', opacity: 0.5 } },
   },
   createText: {
     name: 'create_text',
     description: 'Places a new text object with its top-left corner at (x, y) and types the text. Its size follows the text. Returns its ID.',
     params: { x: req(num('Left edge.')), y: req(num('Top edge.')), text: req(str('Non-empty. \\n starts a new paragraph.')), style: opt(textStyle) },
+    example: { x: 0, y: 0, text: 'Hi', style: { fontSize: 20 } },
   },
   typeText: {
     name: 'type_text',
@@ -263,23 +307,27 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
       text: req(str('The text to type. \\n starts a new paragraph.')),
       mode: opt({ type: 'string', enum: ['append', 'replace'], description: "'append' (default) or 'replace' (clears it first)." }),
     },
+    example: { objectId: 'a', text: 'Hi', mode: 'replace' },
   },
   drawPath: {
     name: 'draw_path',
     description: 'Draws a freehand stroke through world points, in order.',
     params: { points: req({ type: 'array', items: point, minItems: 2, description: 'At least two world points.' }), style: opt(strokeStyle) },
+    example: { points: [{ x: 0, y: 0 }, { x: 1, y: 1 }], style: { strokeColor: 'red', strokeWidth: 2 } },
   },
   connect: {
     name: 'connect',
     description: 'Draws a line between the centers of two objects and anchors both ends, so it follows them. Lines cannot be connected.',
     params: { from: req(id('Start object.')), to: req(id('End object; must differ from `from`.')), style: opt(lineStyle) },
+    example: { from: 'a', to: 'b', style: { strokeColor: 'red', arrows: { end: { enabled: true, style: 'open' } } } },
   },
   setStyle: {
     name: 'set_style',
     description: 'Restyles top-level objects; a group restyles its children.',
     params: { objectIds: req(ids), style: req(objectStyle) },
+    example: { objectIds: ['a'], style: { fillColor: '#fff', arrows: { start: { enabled: true } } } },
   },
-  // Needs an object instance; apps offer their own tools (e.g. add_iframe) that call agent.addObject().
+  // Needs an object instance: tools that build one (create_image, create_iframe, app tools) perform it.
   addObject: null,
 };
 

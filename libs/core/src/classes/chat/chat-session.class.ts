@@ -383,12 +383,16 @@ export class KritzelChatSession {
       : this._userActor
         ? this._userActor.tools(optional)
         : new KritzelUserActor('unbound').tools(optional);
-    const names = new Set(canvas.map(tool => tool.name));
+    const canvasNames = new Set(canvas.map(tool => tool.name));
+    const appNames = new Set<string>();
     for (const tool of this._options.tools ?? []) {
-      if (names.has(tool.name)) {
+      if (canvasNames.has(tool.name)) {
         throw new Error(`The chat tool "${tool.name}" clashes with a canvas tool.`);
       }
-      names.add(tool.name);
+      if (appNames.has(tool.name)) {
+        throw new Error(`The chat tool "${tool.name}" is defined twice.`);
+      }
+      appNames.add(tool.name);
     }
     return [...canvas, ...(this._options.tools ?? []).map(tool => this.bindAppTool(tool))];
   }

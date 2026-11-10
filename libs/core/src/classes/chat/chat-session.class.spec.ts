@@ -356,6 +356,16 @@ describe('KritzelChatSession', () => {
       expect(result.status).toBe('error');
     });
 
+    it('names the clash: with a canvas tool, or an app tool defined twice', () => {
+      const appTool = (name: string) => ({ name, description: '', inputSchema: { type: 'object' as const, properties: {} }, run: async () => '' });
+      const clash = new KritzelChatSession({ tools: [appTool('create_shape')], transport: createScriptedTransport(['x']) });
+      expect(() => clash.tools).toThrow('The chat tool "create_shape" clashes with a canvas tool.');
+      const twice = new KritzelChatSession({ tools: [appTool('lookup'), appTool('lookup')], transport: createScriptedTransport(['x']) });
+      expect(() => twice.tools).toThrow('The chat tool "lookup" is defined twice.');
+      // A canvas tool that is off (create_iframe by default) leaves its name free.
+      expect(() => new KritzelChatSession({ tools: [appTool('create_iframe')], transport: createScriptedTransport(['x']) }).tools).not.toThrow();
+    });
+
     it('lets app tools act as the user: their objects undo with the rest of the prompt', async () => {
       const seen: { kind?: string; signal?: AbortSignal } = {};
       const session = new KritzelChatSession({
