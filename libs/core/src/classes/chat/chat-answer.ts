@@ -84,6 +84,8 @@ export class ChatAnswer {
   /** Set once the calls of the final (or kept) message run: from then on, every one of them gets a result. */
   private committed = false;
   private readonly warned = new Set<string>();
+  /** Set once the stream ended: no call begins after it. */
+  private streamEnded = false;
   /** Begun calls being cancelled: the answer waits for them. */
   private readonly cancellations: Promise<unknown>[] = [];
 
@@ -152,20 +154,27 @@ export class ChatAnswer {
   runRest(calls: KritzelChatToolCallPart[]): Promise<KritzelChatToolResultPart[]> {
     this.committed = true;
     const used = new Set<StreamedCall>();
-    const pending = calls.map(part => {
+    const tracked = calls.map(part => {
       const call = this.calls.get(part.id);
       if (call && !used.has(call) && call.state !== 'streaming' && call.state !== 'discarded') {
         used.add(call);
-        return call.pending ?? this.enqueue(call);
+        return call;
       }
-      // A whole answer's call, or a second call with the same ID: runs unreported, as before.
-      return this.schedule(() => this.execute(null, part));
+      return null;
     });
     for (const call of this.calls.values()) {
       if (!used.has(call)) {
         this.discard(call);
       }
     }
+    // Streamed calls run in the order they started (a begun call's placeholder may wait for its fill), then the
+    // calls of a whole answer and repeated IDs, unreported, as before.
+    for (const call of this.calls.values()) {
+      if (used.has(call) && !call.pending) {
+        this.enqueue(call);
+      }
+    }
+    const pending = calls.map((part, index) => tracked[index]?.pending ?? this.schedule(() => this.execute(null, part)));
     return Promise.all(pending) as Promise<KritzelChatToolResultPart[]>;
   }
 
@@ -216,7 +225,7 @@ export class ChatAnswer {
     }
     call.inputText += delta;
     this.emit(call, 'input', { inputDelta: delta });
-    call.handle?.update(call.inputText);
+    this.feed(call);
   }
 
   /** A complete tool-call part. `queue`: from a `part` event, which runs right away when eager. */
@@ -273,6 +282,10 @@ export class ChatAnswer {
         return call.part!;
       }
       if (call && (call.state === 'ready' || call.state === 'queued')) {
+        if (call.handle && nameOf(part) !== call.name) {
+          // Now another tool: the begun call is not this one.
+          this.endHandle(call);
+        }
         call.name = nameOf(part);
         call.part = part;
         this.emit(call, 'ready');
@@ -285,6 +298,7 @@ export class ChatAnswer {
 
   /** The stream ended: calls still being written never run. */
   private endStream(normal: boolean): void {
+    this.streamEnded = true;
     for (const call of this.calls.values()) {
       if (call.state !== 'streaming') {
         continue;
@@ -324,7 +338,7 @@ export class ChatAnswer {
         earlierRunning = true;
         continue;
       }
-      if (call.state === 'streaming' && !earlierRunning && !call.begun) {
+      if (call.state === 'streaming' && !earlierRunning && !call.begun && !this.streamEnded) {
         this.beginCall(call);
       }
       if (call.state === 'ready' && call.eager && this.options.eager) {
@@ -348,8 +362,18 @@ export class ChatAnswer {
       console.error(`[Kritzel] Beginning tool call "${call.id}" (${call.name}) failed:`, error);
       call.handle = null;
     }
-    if (call.handle && call.inputText) {
-      call.handle.update(call.inputText);
+    if (call.inputText) {
+      this.feed(call);
+    }
+  }
+
+  /** Passes a begun call the input written so far. A handle that fails is dropped: the call then just runs. */
+  private feed(call: StreamedCall): void {
+    try {
+      call.handle?.update(call.inputText);
+    } catch (error) {
+      console.error(`[Kritzel] Tool call "${call.id}" (${call.name}) failed to take its input:`, error);
+      this.endHandle(call);
     }
   }
 

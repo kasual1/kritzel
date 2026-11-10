@@ -327,24 +327,23 @@ function beginWithPlaceholder(
       if (ended || placing || gaveUp || !isAdded()) {
         return;
       }
-      if (inputText.length > MAX_PLACEHOLDER_INPUT_LENGTH) {
-        gaveUp = true;
-        return;
-      }
-      const input = parsePartialJson(inputText);
-      if (typeof input !== 'object' || input === null || Array.isArray(input)) {
-        return;
-      }
-      let object: KritzelBaseObject<any> | null;
+      // What a placeholder needs comes first in the input: only its beginning is read, so a call that begins late,
+      // with much of its input written, still gets its placeholder.
+      const long = inputText.length > MAX_PLACEHOLDER_INPUT_LENGTH;
+      let object: KritzelBaseObject<any> | null = null;
       try {
-        object = placeholder.create(input, inputContext);
+        const input = parsePartialJson(long ? inputText.slice(0, MAX_PLACEHOLDER_INPUT_LENGTH) : inputText);
+        if (typeof input === 'object' && input !== null && !Array.isArray(input)) {
+          object = placeholder.create(input, inputContext);
+        }
       } catch {
         // Input the model got wrong so far: the call reports it when it finishes.
-        return;
       }
       if (object) {
         placing = perform({ type: 'addObject', object, fill }, undefined, context);
         placing.catch(() => undefined);
+      } else if (long) {
+        gaveUp = true;
       }
     },
 

@@ -1245,6 +1245,138 @@ describe('KritzelChatSession', () => {
         expect(JSON.parse(resultsOf(session.messages[2])[0].output)).toEqual({ completed: true, begun: true });
       });
 
+      it('runs the calls of a message event in the order they started, so a begun call never waits for a later one', async () => {
+        const session = new KritzelChatSession({
+          canvasTools: { iframes: true },
+          transport: streams(async function* () {
+            yield* writeWidget('w1', widget(), Promise.resolve(), false);
+            yield {
+              type: 'message',
+              message: {
+                role: 'assistant',
+                parts: [
+                  { type: 'tool-call', id: 's1', name: 'create_shape', input: shape(400) },
+                  { type: 'tool-call', id: 'w1', name: 'create_iframe', input: widget() },
+                ],
+              },
+            };
+            yield { type: 'finish' };
+          }),
+        });
+        session._attach(core);
+        await expect(settle(session.send('Both'))).resolves.toEqual({ status: 'completed' });
+        expect(resultsOf(session.messages[2]).map(result => [result.toolCallId, JSON.parse(result.output).completed])).toEqual([
+          ['s1', true],
+          ['w1', true],
+        ]);
+        expect(iframes()[0]).toMatchObject({ isLoading: false, html: '<button>+</button>' });
+      });
+
+      it('runs a call plainly when its begun call fails or its part names another tool', async () => {
+        const errors = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+        const runs: string[] = [];
+        const tool = (name: string, update?: () => void): KritzelChatTool => ({
+          name,
+          description: name,
+          inputSchema: { type: 'object', properties: {} },
+          run: async () => {
+            runs.push(name);
+            return '{"completed":true}';
+          },
+          begin: () => ({
+            update: update ?? (() => undefined),
+            finish: async () => {
+              runs.push(`${name} (begun)`);
+              return '{"completed":true}';
+            },
+            cancel: () => undefined,
+          }),
+        });
+        const session = new KritzelChatSession({
+          eagerToolCalls: false,
+          tools: [
+            tool('broken', () => {
+              throw new Error('bad input');
+            }),
+            tool('first'),
+            tool('second'),
+          ],
+          transport: streams(async function* () {
+            yield* callEvents('b1', 'broken', { text: 'x' });
+            yield* callEvents('r1', 'first', { text: 'y' });
+            yield { type: 'message', message: { role: 'assistant', parts: [
+              { type: 'tool-call', id: 'b1', name: 'broken', input: { text: 'x' } },
+              { type: 'tool-call', id: 'r1', name: 'second', input: { text: 'y' } },
+            ] } };
+            yield { type: 'finish' };
+          }),
+        });
+        session._attach(core);
+        await expect(settle(session.send('go'))).resolves.toEqual({ status: 'completed' });
+        expect(runs).toEqual(['broken', 'second']);
+        expect(errors).toHaveBeenCalledTimes(1);
+      });
+
+      it('begins no call once the stream has ended', async () => {
+        jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+        const begun: string[] = [];
+        const session = new KritzelChatSession({
+          tools: [
+            {
+              name: 'note',
+              description: 'Notes.',
+              inputSchema: { type: 'object', properties: {} },
+              run: async () => '{"completed":true}',
+              begin: ({ toolCallId }) => {
+                begun.push(toolCallId!);
+                return { update: () => undefined, finish: async () => '{}', cancel: () => undefined };
+              },
+            },
+          ],
+          transport: streams(async function* () {
+            yield { type: 'tool-call-start', id: 'n1', name: 'note' };
+            yield { type: 'tool-call-start', id: 'n2', name: 'note' };
+            yield { type: 'finish' };
+          }),
+        });
+        session._attach(core);
+        await expect(settle(session.send('note'))).resolves.toEqual({ status: 'completed' });
+        expect(begun).toEqual(['n1']);
+      });
+
+      it('places the placeholder of a call that begins late, with much of its input already written', async () => {
+        const rest = gate();
+        const release = gate();
+        const done = gate();
+        const log: string[] = [];
+        const input = { ...widget(), html: `<p>${'x'.repeat(6000)}</p>` };
+        const session = new KritzelChatSession({
+          canvasTools: { iframes: true },
+          tools: [holdTool(release.promise, log)],
+          transport: streams(async function* () {
+            yield { type: 'part', part: { type: 'tool-call', id: 'h', name: 'hold', input: {} } };
+            yield* writeWidget('w1', input, rest.promise, false);
+            await done.promise;
+            yield { type: 'part', part: { type: 'tool-call', id: 'w1', name: 'create_iframe', input } };
+            yield { type: 'finish' };
+          }),
+        });
+        session._attach(core);
+        const running = session.send('Later');
+        await until(() => log.length === 1);
+        rest.open();
+        await flushMicrotasks();
+        // "w1" waits for "h" before it begins.
+        expect(iframes()).toEqual([]);
+        release.open();
+        await until(() => iframes().length === 1);
+        expect(iframes()[0].isLoading).toBe(true);
+        done.open();
+        await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+        expect(iframes()[0]).toMatchObject({ isLoading: false });
+        expect(iframes()[0].html.length).toBeGreaterThan(6000);
+      });
+
       it('places the placeholder as the agent and fills it in as one step of its history', async () => {
         const agent = core.agentManager.add(new KritzelAgent({ id: 'claude', name: 'Claude' }));
         const rest = gate();

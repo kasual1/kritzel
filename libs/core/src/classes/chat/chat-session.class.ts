@@ -390,7 +390,11 @@ export class KritzelChatSession {
   ): Promise<ChatAnswerRunOutcome> {
     const tool = byName.get(call.name);
     if (!tool) {
-      await handle?.cancel();
+      try {
+        await handle?.cancel();
+      } catch (error) {
+        console.error(`[Kritzel] Cancelling tool call "${call.id}" (${call.name}) failed:`, error);
+      }
       return {
         result: {
           type: 'tool-result',

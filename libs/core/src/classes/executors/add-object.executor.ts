@@ -82,7 +82,13 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
       all.forEach(item => run.own(item));
       core.insertPreparedObject(object, descendants);
     });
-    all.forEach(item => run.track(item));
+    if (action.fill) {
+      // A placeholder is the user's to move, resize or delete while the action waits: it is not claimed, and the
+      // user's changes to it belong to the action (so a rollback or an undo covers them too).
+      run.onSettle(map.routeLocalWrites(object.id, run.origin!));
+    } else {
+      all.forEach(item => run.track(item));
+    }
     await run.release();
 
     // Wait for an on-screen object to mount (texts measure themselves then), like engine.addObject().
@@ -113,8 +119,6 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
 
 /** Waits for the fill of a placeholder the action placed, then fills it in and ends its loading. */
 async function fillPlaceholder(run: KritzelAgenticActionRun, placeholder: KritzelBaseObject<any>, fill: Promise<KritzelAgenticFill>): Promise<void> {
-  // While it waits, the placeholder is the user's to move, resize or delete: it is no longer checked.
-  run.untrack([placeholder.id]);
   let filling: KritzelAgenticFill;
   try {
     filling = await fill;

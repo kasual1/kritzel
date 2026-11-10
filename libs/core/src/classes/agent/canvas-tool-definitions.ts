@@ -249,7 +249,8 @@ export const createIframeTool = defineCanvasTool<Partial<KritzelCreateIframeTool
       const iframe = content as KritzelIframeObject;
       target.name = iframe.name;
       target.title = iframe.title;
-      target.content = { ...iframe.content };
+      // Also loads the code into the mounted iframe, which still shows the placeholder's empty document.
+      target.setContent(iframe.content);
     },
   },
 });

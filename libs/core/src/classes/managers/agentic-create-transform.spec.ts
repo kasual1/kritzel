@@ -1147,6 +1147,51 @@ describe('agentic create and transform actions', () => {
         expect(map.allObjects()).toEqual([]);
       });
 
+      it("makes the user's changes to a waiting placeholder part of the action: a stop removes it, an undo after the fill too", async () => {
+        const controller = new AbortController();
+        const stopped = widget();
+        const stopping = actions.perform('agent', { type: 'addObject', object: stopped, fill: deferred<KritzelAgenticFill>().promise }, { instant: true, signal: controller.signal });
+        await run(stopping);
+        stopped.translateX = 500;
+        map.update(stopped);
+        // Also inside a transaction, as moving a selection does.
+        map.transaction(() => {
+          stopped.translateY = 300;
+          map.update(stopped);
+        });
+        controller.abort();
+        await expect(settle(stopping)).resolves.toMatchObject({ reason: 'aborted' });
+        expect(map.allObjects()).toEqual([]);
+
+        const fill = deferred<KritzelAgenticFill>();
+        const filled = widget();
+        const userSteps = map.undoManager!.undoStack.length;
+        const placing = actions.perform('agent', { type: 'addObject', object: filled, fill: fill.promise }, { instant: true });
+        await run(placing);
+        filled.translateX = 500;
+        map.update(filled);
+        fill.resolve({ content: widget('<p>Hi</p>'), apply: copyContent });
+        await expect(settle(placing)).resolves.toMatchObject({ completed: true });
+        // The move is not a step of the user's history, so their undo can't bring the empty placeholder back.
+        expect(map.undoManager!.undoStack.length).toBe(userSteps);
+        expect(map.findById(filled.id)).toMatchObject({ translateX: 500, isLoading: false, html: '<p>Hi</p>' });
+        await perform({ type: 'undo' });
+        expect(map.allObjects()).toEqual([]);
+      });
+
+      it('routes only while the action waits', async () => {
+        const fill = deferred<KritzelAgenticFill>();
+        const placeholder = widget();
+        const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
+        await run(placing);
+        fill.resolve({ content: widget('<p>Hi</p>'), apply: copyContent });
+        await settle(placing);
+        const userSteps = map.undoManager!.undoStack.length;
+        placeholder.translateX = 700;
+        map.update(placeholder);
+        expect(map.undoManager!.undoStack.length).toBe(userSteps + 1);
+      });
+
       it('refuses a fill that is not a promise, and a group as the placeholder', () => {
         expect(() => actions.perform('agent', { type: 'addObject', object: widget(), fill: {} as any })).toThrow('"fill" must be a promise.');
         const group = new KritzelGroup();

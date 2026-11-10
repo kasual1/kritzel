@@ -1,5 +1,7 @@
 import { bindCanvasTool, defineCanvasTool } from './canvas-tool';
 import { KritzelShape } from '../objects/shape.class';
+import { createIframeTool } from './canvas-tool-definitions';
+import { KritzelIframeObject } from '../objects/iframe.class';
 
 const actor = () => ({
   kind: 'agent' as const,
@@ -158,5 +160,23 @@ describe('bindCanvasTool with a placeholder', () => {
   it('only offers begin to tools with a placeholder', () => {
     const tool = bindCanvasTool(actor(), defineCanvasTool({ name: 'x', description: 'X.', inputSchema: schema, example: {}, execute: async () => '{}' }));
     expect(tool.begin).toBeUndefined();
+  });
+});
+
+describe('create_iframe placeholder', () => {
+  it('loads the code into the mounted iframe when it fills the placeholder', () => {
+    const placeholder = createIframeTool.placeholder!.create({ name: 'Counter', x: 0, y: 0, width: 200, height: 100 }, {} as any) as KritzelIframeObject;
+    expect(placeholder).toMatchObject({ isLoading: true, html: '', width: 200 });
+    const element = document.createElement('iframe');
+    placeholder.mount(element);
+    const content = new KritzelIframeObject({ name: 'Counter', html: '<button id="plus">+</button>' });
+    createIframeTool.placeholder!.fill(placeholder, content);
+    expect(placeholder.html).toBe('<button id="plus">+</button>');
+    expect(element.srcdoc).toContain('<button id="plus">+</button>');
+  });
+
+  it('waits for position and size', () => {
+    expect(createIframeTool.placeholder!.create({ name: 'Counter', x: 0, y: 0, width: 200 }, {} as any)).toBeNull();
+    expect(createIframeTool.placeholder!.create({ x: 0, y: 0, width: 200, height: -1 }, {} as any)).toBeNull();
   });
 });

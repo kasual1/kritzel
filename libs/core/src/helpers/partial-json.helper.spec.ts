@@ -47,4 +47,15 @@ describe('parsePartialJson', () => {
       expect({ text, value: parsePartialJson(text) }).toEqual({ text, value: undefined });
     }
   });
+
+  it('reads like JSON.parse: only JSON whitespace, "__proto__" as an own key, deep nesting as invalid', () => {
+    expect(parsePartialJson('{"a":1,\u00a0"b":2}')).toBeUndefined();
+    const value = parsePartialJson('{"__proto__":{"x":5},"y":1}') as Record<string, unknown>;
+    expect(Object.keys(value)).toEqual(['__proto__', 'y']);
+    expect((value as { x?: number }).x).toBeUndefined();
+    expect(Object.getPrototypeOf(value)).toBe(Object.prototype);
+    expect(parsePartialJson('{"a":' + '['.repeat(5000))).toBeUndefined();
+    expect(parsePartialJson(JSON.stringify(Array(1000).fill({})))).toHaveLength(1000);
+    expect(parsePartialJson('[[[[1]]]]')).toEqual([[[[1]]]]);
+  });
 });

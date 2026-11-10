@@ -1,8 +1,11 @@
 /** A scalar the text ends in the middle of (or right after: a number may go on). */
 const INCOMPLETE = Symbol('incomplete');
 
-/** The text is not the start of valid JSON. */
+/** The text is not the start of valid JSON (or nests deeper than `MAX_DEPTH`). */
 class InvalidJson extends Error {}
+
+/** Deepest nesting read; deeper text counts as invalid instead of overflowing the stack. */
+const MAX_DEPTH = 256;
 
 /**
  * Reads JSON text that may stop anywhere, as a model streams a tool call's input: open objects and arrays are
@@ -36,6 +39,7 @@ export function parsePartialJson(text: string): unknown {
 
 class PartialJsonReader {
   private index = 0;
+  private depth = 0;
 
   constructor(private readonly text: string) {}
 
@@ -44,18 +48,23 @@ class PartialJsonReader {
   }
 
   skipWhitespace(): void {
-    while (!this.done && /\s/.test(this.text[this.index])) {
+    // JSON whitespace only, as JSON.parse.
+    while (!this.done && JSON_WHITESPACE.has(this.text[this.index])) {
       this.index++;
     }
   }
 
   value(): unknown {
     const char = this.text[this.index];
-    if (char === '{') {
-      return this.object();
-    }
-    if (char === '[') {
-      return this.array();
+    if (char === '{' || char === '[') {
+      if (++this.depth > MAX_DEPTH) {
+        throw new InvalidJson();
+      }
+      try {
+        return char === '{' ? this.object() : this.array();
+      } finally {
+        this.depth--;
+      }
     }
     if (char === '"') {
       return this.string();
@@ -110,7 +119,8 @@ class PartialJsonReader {
       if (value === INCOMPLETE) {
         break;
       }
-      result[key as string] = value;
+      // An own property even for "__proto__", as JSON.parse makes it.
+      Object.defineProperty(result, key as string, { value, enumerable: true, writable: true, configurable: true });
       this.skipWhitespace();
       if (this.done) {
         break;
@@ -195,6 +205,8 @@ class PartialJsonReader {
     }
   }
 }
+
+const JSON_WHITESPACE = new Set([' ', '\t', '\n', '\r']);
 
 const LITERALS: [string, unknown][] = [
   ['true', true],
