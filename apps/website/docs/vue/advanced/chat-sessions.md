@@ -349,7 +349,7 @@ const textOf = (message: KritzelChatMessage) =>
 
 ### Showing Tool Calls as They Stream
 
-With a [streaming](#streaming) server, the `tool-call` event reports each tool call while the model writes it, before the answer is in `messages`. A long input, such as the code of a `create_iframe` widget, takes a while to write, so it helps to show what the model is doing. The event fires once per input delta, so render at most once per frame. The following component subscribes again when its `session` prop changes, and unsubscribes when it is unmounted:
+With a [streaming](#streaming) server, the `tool-call` event reports each tool call while the model writes it, before the answer is in `messages`, and then as it runs. A long input, such as the code of a `create_iframe` widget, takes a while to write, so it helps to show what the model is doing. The event fires once per input delta, so render at most once per frame. The following component subscribes again when its `session` prop changes, and unsubscribes when it is unmounted:
 
 ```html
 <!-- ToolCallStatus.vue -->

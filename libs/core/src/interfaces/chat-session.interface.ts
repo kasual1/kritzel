@@ -105,9 +105,9 @@ export interface KritzelChatResponse {
  * - `part`: a complete part, e.g. a tool call. A tool-call part with the ID of a started call completes that call;
  *   its name and input win over the start and the deltas. The call can run right away (see `eagerToolCalls`), so
  *   a part is final: don't take it back later.
- * - `message`: replaces everything streamed so far. Calls it leaves out are dropped unless they already started
- *   running; calls it adds run once the answer has ended. Give tool calls IDs when you send them both as parts
- *   and in a message.
+ * - `message`: replaces everything streamed so far. Complete calls it leaves out are dropped unless they already
+ *   started running; calls still being written wait for their part; calls it adds run once the answer has ended.
+ *   Give tool calls IDs when you send them both as parts and in a message.
  * - `finish`: ends the answer.
  *
  * Close every call you start with its part. When its input is not valid JSON (or was cut off), send the raw
@@ -247,8 +247,9 @@ export type KritzelChatToolCallState = 'started' | 'input' | 'ready' | 'running'
  * Progress of a tool call of a streamed answer. A call is reported `'started'`, `'input'` for each piece of its
  * input, and `'ready'` once its part arrived (again if a `message` event changed it). `'running'` comes right
  * before its tool runs, which can be while the answer still streams. Each call ends exactly once: `'done'` (it
- * has its result) or `'discarded'` (it is not part of the conversation and never ran: its part never arrived, or
- * a `message` event left it out). Calls of answers that are not streamed are not reported.
+ * has its result) or `'discarded'` (it is not part of the conversation and never ran: its part never arrived, a
+ * `message` event left it out, or the answer was stopped or failed before any of its calls ran). An ID that ended
+ * is not reported again. Calls of answers that are not streamed are not reported.
  */
 export interface KritzelChatToolCallUpdate {
   /** As in the tool-call part and its tool result. */
@@ -274,8 +275,9 @@ export interface KritzelChatSessionEventMap {
   /** A message was added. */
   message: KritzelChatMessage;
   /**
-   * A tool call of a streamed answer made progress: once per input delta while the model writes it, and before
-   * the answer is in `messages`. Throttle what you render from it.
+   * A tool call of a streamed answer made progress: once per input delta while the model writes it. Calls are
+   * written and ready before the answer is in `messages`; they run and end before it with eager tool calls, or
+   * after it (with `eagerToolCalls: false`, and for calls that a `message` event added). Throttle what you render.
    */
   'tool-call': KritzelChatToolCallUpdate;
   /** A prompt ended. */

@@ -354,7 +354,7 @@ export function ChatBoard() {
 
 ### Showing Tool Calls as They Stream
 
-With a [streaming](#streaming) server, the `tool-call` event reports each tool call while the model writes it, before the answer is in `messages`. A long input, such as the code of a `create_iframe` widget, takes a while to write, so it helps to show what the model is doing. The event fires once per input delta, so render at most once per frame:
+With a [streaming](#streaming) server, the `tool-call` event reports each tool call while the model writes it, before the answer is in `messages`, and then as it runs. A long input, such as the code of a `create_iframe` widget, takes a while to write, so it helps to show what the model is doing. The event fires once per input delta, so render at most once per frame:
 
 ```tsx
 import { useEffect, useState } from 'react';

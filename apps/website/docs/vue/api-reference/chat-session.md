@@ -92,7 +92,7 @@ whenIdle(): Promise<void>
 |-------|---------|-------------|
 | change | void | `messages` or `running` changed. |
 | message | KritzelChatMessage | A message was added. |
-| tool-call | KritzelChatToolCallUpdate | A tool call of a streamed answer made progress: once per input delta while the model writes it, and before the answer is in `messages`. Throttle what you render from it. See [KritzelChatToolCallUpdate](#kritzelchattoolcallupdate). |
+| tool-call | KritzelChatToolCallUpdate | A tool call of a streamed answer made progress: once per input delta while the model writes it. Calls are written and ready before the answer is in `messages`. They run and end before it with eager tool calls, or after it with `eagerToolCalls: false` and for calls that a `message` event added. Throttle what you render from it. See [KritzelChatToolCallUpdate](#kritzelchattoolcallupdate). |
 | end | KritzelChatSendResult | A prompt ended. |
 
 ## Binding
@@ -171,7 +171,7 @@ The payload of the `tool-call` event: the progress of a tool call of a streamed 
 
 ### KritzelChatToolCallState
 
-Where a tool call of a streamed answer is. Each call ends exactly once, with `'done'` or `'discarded'`.
+Where a tool call of a streamed answer is. Each call ends exactly once, with `'done'` or `'discarded'`, and an ID that ended is not reported again.
 
 | State | Meaning |
 |-------|---------|
@@ -180,7 +180,7 @@ Where a tool call of a streamed answer is. Each call ends exactly once, with `'d
 | `'ready'` | The part of the call arrived, so it is complete. Reported again when a `message` event changes it. |
 | `'running'` | Its tool runs. This can be while the answer still streams. |
 | `'done'` | The call has its result. |
-| `'discarded'` | The call is not part of the conversation and never ran: its part never arrived, or a `message` event left it out. |
+| `'discarded'` | The call is not part of the conversation and never ran: its part never arrived, a `message` event left it out, or the answer was stopped or failed before any of its calls ran. |
 
 ### KritzelChatMessage
 
@@ -228,7 +228,7 @@ Every part can have `providerData`. A `tool-call` without an `id` gets one.
 | `{ type: 'tool-call-start', id, name }` | Optional. The model began a tool call. The session reports it as a `tool-call` event; a call never runs from it alone. |
 | `{ type: 'tool-call-delta', id, inputDelta }` | Optional. More of the call's input as JSON text. The deltas joined are the input as written so far. |
 | `{ type: 'part', part }` | Adds a complete part, for example a tool call. A tool call with the ID of a started call completes that call; its `name` and `input` win over the start and the deltas. The call can run right away (see `eagerToolCalls`). |
-| `{ type: 'message', message }` | Replaces everything streamed so far. Calls it leaves out are dropped unless they already started running; calls it adds run once the answer has ended. |
+| `{ type: 'message', message }` | Replaces everything streamed so far. Complete calls it leaves out are dropped unless they already started running; calls still being written wait for their part; calls it adds run once the answer has ended. |
 | `{ type: 'finish', stopReason?, providerData? }` | Ends the answer. |
 
 Your server follows these rules:

@@ -32,10 +32,11 @@ export interface ChatAnswerOptions {
 }
 
 /**
- * Where a streamed call is: written (`streaming`), complete (`ready`), waiting for its turn (`queued`), running,
- * ended with its result (`done`) or dropped without running (`discarded`).
+ * Where a streamed call is: written (`streaming`), complete (`ready`), waiting for its turn (`queued`), handed to
+ * its tool runner (`taken`, before its tool runs or when there is no such tool), running, ended with its result
+ * (`done`) or dropped without running (`discarded`).
  */
-type CallState = 'streaming' | 'ready' | 'queued' | 'running' | 'done' | 'discarded';
+type CallState = 'streaming' | 'ready' | 'queued' | 'taken' | 'running' | 'done' | 'discarded';
 
 interface StreamedCall {
   readonly id: string;
@@ -64,6 +65,8 @@ export class ChatAnswer {
   private tail: Promise<unknown> = Promise.resolve();
   /** Set once the answer ends early: calls that have not started get it as their result. */
   private haltOutput: string | null = null;
+  /** Set once the calls of the final (or kept) message run: from then on, every one of them gets a result. */
+  private committed = false;
   private readonly warned = new Set<string>();
 
   constructor(private readonly options: ChatAnswerOptions) {}
@@ -90,6 +93,9 @@ export class ChatAnswer {
         } else if (event.type === 'tool-call-delta') {
           this.input(event.id, event.inputDelta);
         } else if (event.type === 'part') {
+          if (!isPart(event.part)) {
+            continue;
+          }
           // Tool calls get their ID on arrival: they can run (and are reported) before the answer ends.
           const part = isToolCallPart(event.part) ? (normalizePart(event.part) as KritzelChatToolCallPart) : event.part;
           this.parts.push(part);
@@ -97,7 +103,7 @@ export class ChatAnswer {
             this.complete(part, true);
           }
         } else if (event.type === 'message') {
-          const parts = [...event.message.parts].map(part => (isToolCallPart(part) ? normalizePart(part) : part));
+          const parts = [...event.message.parts].filter(isPart).map(part => (isToolCallPart(part) ? normalizePart(part) : part));
           this.parts = this.replace(parts);
           this.providerData = event.message.providerData;
         } else if (event.type === 'finish') {
@@ -126,6 +132,7 @@ export class ChatAnswer {
    * of them. Streamed calls the message does not hold are dropped, unless they already ran.
    */
   runRest(calls: KritzelChatToolCallPart[]): Promise<KritzelChatToolResultPart[]> {
+    this.committed = true;
     const used = new Set<StreamedCall>();
     const pending = calls.map(part => {
       const call = this.calls.get(part.id);
@@ -164,13 +171,12 @@ export class ChatAnswer {
 
   // ─── Streamed calls ─────────────────────────────────────────────────────────
 
-  /** `tool-call-start`: ignored without ID or name, and for an ID that is already open, complete or ended. */
+  /**
+   * `tool-call-start`: ignored without ID or name, and for a known ID: a call is reported once, and an ID that
+   * ended is never reported again.
+   */
   private start(id: unknown, name: unknown): StreamedCall | null {
-    if (typeof id !== 'string' || id === '' || typeof name !== 'string') {
-      return null;
-    }
-    const known = this.calls.get(id);
-    if (known && known.state !== 'discarded') {
+    if (typeof id !== 'string' || id === '' || typeof name !== 'string' || this.calls.has(id)) {
       return null;
     }
     const call: StreamedCall = { id, name, inputText: '', part: null, state: 'streaming', pending: null };
@@ -192,11 +198,12 @@ export class ChatAnswer {
   /** A complete tool-call part. `queue`: from a `part` event, which runs right away when eager. */
   private complete(part: KritzelChatToolCallPart, queue: boolean): void {
     const known = this.calls.get(part.id);
-    if (known && known.state !== 'streaming' && known.state !== 'discarded') {
-      // A second part with the same ID: not reported; it runs as its own call once the answer has ended.
+    if (known && known.state !== 'streaming') {
+      // A second part with the same ID, or one of a dropped call: not reported; it runs as its own call once the
+      // answer has ended (when it is in it).
       return;
     }
-    const call = known?.state === 'streaming' ? known : this.start(part.id, nameOf(part));
+    const call = known ?? this.start(part.id, nameOf(part));
     if (!call) {
       return;
     }
@@ -204,19 +211,21 @@ export class ChatAnswer {
     call.part = part;
     call.state = 'ready';
     this.emit(call, 'ready');
-    if (queue && this.options.eager && this.haltOutput === null) {
+    // A listener may have stopped the prompt: the call then waits, and is dropped with the answer.
+    if (queue && this.options.eager && this.haltOutput === null && !this.options.signal.aborted) {
       this.enqueue(call);
     }
   }
 
   /**
-   * A `message` event replaced the answer. Calls it leaves out are discarded, unless they already ran (those stay
-   * in the answer as they ran); calls it holds are complete, and run once the answer has ended unless queued.
+   * A `message` event replaced the answer. Complete calls it leaves out are discarded, unless they already ran
+   * (those stay in the answer as they ran); calls still being written wait for their part. Calls it holds are
+   * complete, and run once the answer has ended unless queued.
    */
   private replace(parts: KritzelChatPart[]): KritzelChatPart[] {
     const ids = new Set(parts.filter(isToolCallPart).map(part => part.id));
     for (const call of this.calls.values()) {
-      if (ids.has(call.id)) {
+      if (ids.has(call.id) || call.state === 'streaming') {
         continue;
       }
       if (hasStarted(call)) {
@@ -225,10 +234,13 @@ export class ChatAnswer {
         this.discard(call);
       }
     }
+    // Only the first call with an ID is the tracked one; repeats run as their own calls, as before.
+    const seen = new Set<string>();
     return parts.map(part => {
-      if (!isToolCallPart(part)) {
+      if (!isToolCallPart(part) || seen.has(part.id)) {
         return part;
       }
+      seen.add(part.id);
       const call = this.calls.get(part.id);
       if (call && hasStarted(call)) {
         // It ran with the input it had: the conversation keeps that one.
@@ -297,9 +309,19 @@ export class ChatAnswer {
     const ending = this.haltOutput ?? (this.options.signal.aborted ? this.options.stoppedOutput : null);
     let outcome: ChatAnswerRunOutcome;
     if (ending !== null) {
+      if (call && !this.executed && !this.committed) {
+        // The prompt ended before any call ran: the call waits, and is dropped with the answer.
+        call.state = 'ready';
+        call.pending = null;
+        return null;
+      }
       outcome = { result: { type: 'tool-result', toolCallId: target.id, name: target.name, output: ending, isError: true }, ran: false };
     } else {
       this.executed = true;
+      if (call) {
+        // Taken: a message event can't drop it any more.
+        call.state = 'taken';
+      }
       outcome = await this.options.run(target, () => {
         if (call) {
           call.state = 'running';
@@ -353,7 +375,11 @@ export function isToolCallPart(part: unknown): part is KritzelChatToolCallPart {
 
 /** Whether the call's turn came: it runs or ran, so it can't be taken back. */
 function hasStarted(call: StreamedCall): boolean {
-  return call.state === 'running' || call.state === 'done';
+  return call.state === 'taken' || call.state === 'running' || call.state === 'done';
+}
+
+function isPart(part: unknown): part is KritzelChatPart {
+  return typeof part === 'object' && part !== null;
 }
 
 function nameOf(part: KritzelChatToolCallPart): string {

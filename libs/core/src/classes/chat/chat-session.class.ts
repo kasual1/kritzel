@@ -70,6 +70,8 @@ export class KritzelChatSession {
   private readonly _options: KritzelChatSessionOptions;
   private readonly _maxSteps: number;
   private readonly _eagerToolCalls: boolean;
+  /** Agent mode: the agent's status from before the thinking status. */
+  private _statusBeforeThinking: string | null = null;
   private _messages: KritzelChatMessage[];
   private _core: KritzelCore | null = null;
   private _userActor: KritzelUserActor | null = null;
@@ -298,20 +300,22 @@ export class KritzelChatSession {
         report: update => this.emit('tool-call', update),
         run: (call, onRunning) => this.runCall(call, byName, signal, onRunning),
       });
-      let message: KritzelChatMessage;
+      let assistant: KritzelChatMessage;
       try {
-        message = await this.withThinkingStatus(() => this.callTransport(request, signal, answer));
+        const message = await this.withThinkingStatus(() => this.callTransport(request, signal, answer));
         this.throwIfEnded(signal);
+        assistant = { ...message, role: 'assistant', parts: (message.parts ?? []).map(normalizePart) };
       } catch (error) {
+        // Calls of a streamed answer may be running: the answer waits for them before the prompt ends.
         await this.endAnswerEarly(answer, signal);
         throw error;
       }
-      const assistant: KritzelChatMessage = { ...message, role: 'assistant', parts: (message.parts ?? []).map(normalizePart) };
       this.pushMessage(assistant);
 
       const calls = assistant.parts.filter(isToolCallPart);
       // Calls of a streamed answer may have run already; the others run now, one after another.
       const results = await answer.runRest(calls);
+      this.restoreThinkingStatus();
       if (calls.length === 0) {
         return { status: 'completed' };
       }
@@ -347,21 +351,26 @@ export class KritzelChatSession {
   }
 
   /**
-   * The answer ended early (stopped, detached, failed). Once one of its calls ran, the answer read so far and the
-   * results of its complete calls are kept, so the conversation matches the canvas; calls that did not start get
-   * a stopped or interrupted result. Otherwise the answer is dropped.
+   * The answer ended early (stopped, detached, failed). Once one of its calls was handed to its tool (an unknown
+   * tool counts: it has its result), the answer read so far and the results of its complete calls are kept, so the
+   * conversation matches the canvas; calls that did not start get a stopped or interrupted result. Otherwise the
+   * answer is dropped.
    */
   private async endAnswerEarly(answer: ChatAnswer, signal: AbortSignal): Promise<void> {
     answer.halt(signal.aborted ? STOPPED_OUTPUT : INTERRUPTED_OUTPUT);
-    if (!answer.executed) {
-      await answer.settled();
-      return;
+    try {
+      if (!answer.executed) {
+        await answer.settled();
+        return;
+      }
+      const partial = answer.partial();
+      const assistant: KritzelChatMessage = { ...partial, role: 'assistant', parts: partial.parts.map(normalizePart) };
+      const results = answer.runRest(assistant.parts.filter(isToolCallPart));
+      this.pushMessage(assistant);
+      this.pushMessage({ role: 'tool', parts: await results });
+    } finally {
+      this.restoreThinkingStatus();
     }
-    const partial = answer.partial();
-    const assistant: KritzelChatMessage = { ...partial, role: 'assistant', parts: partial.parts.map(normalizePart) };
-    const results = answer.runRest(assistant.parts.filter(isToolCallPart));
-    this.pushMessage(assistant);
-    this.pushMessage({ role: 'tool', parts: await results });
   }
 
   /** Runs one tool call. Never rejects: failures become error results the model reads. */
@@ -408,20 +417,31 @@ export class KritzelChatSession {
     }
   }
 
+  /** Agent mode: shows the thinking status while the model answers, then the status from before. */
   private async withThinkingStatus<T>(fn: () => Promise<T>): Promise<T> {
     const agent = this._options.agent;
     const status = this._options.thinkingStatus ?? DEFAULT_THINKING_STATUS;
     if (!agent || status === false || !agent.isAdded) {
       return fn();
     }
-    const previous = agent.state.status;
+    // A tool that ran while the model was still writing may have put the thinking status back (e.g. `agent.task()`
+    // started during it): the status to come back to is still the one from before.
+    const current = agent.state.status;
+    this._statusBeforeThinking = current === status ? this._statusBeforeThinking : current;
     agent.setStatus(status);
     try {
       return await fn();
     } finally {
-      if (agent.isAdded && agent.state.status === status) {
-        agent.setStatus(previous);
-      }
+      this.restoreThinkingStatus();
+    }
+  }
+
+  /** Puts back the status from before the thinking status, unless something else set the status since. */
+  private restoreThinkingStatus(): void {
+    const agent = this._options.agent;
+    const status = this._options.thinkingStatus ?? DEFAULT_THINKING_STATUS;
+    if (agent && status !== false && agent.isAdded && agent.state.status === status) {
+      agent.setStatus(this._statusBeforeThinking);
     }
   }
 
