@@ -34,6 +34,7 @@ export * from './helpers/color.helper';
 export * from './helpers/html.helper';
 export * from './helpers/tool-config.helper';
 export * from './helpers/object-titlebar.helper';
+export * from './helpers/partial-json.helper';
 export * from './classes/tools/selection-tool.class';
 
 export * from './classes/providers/sync/broadcast-sync-provider.class';
