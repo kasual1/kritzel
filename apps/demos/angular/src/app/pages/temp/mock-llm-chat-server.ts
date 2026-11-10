@@ -19,7 +19,7 @@ export const client = new Anthropic({
   dangerouslyAllowBrowser: true,
 });
 
-export const MODEL = 'claude-opus-5-5';
+export const MODEL = 'claude-sonnet-5-5';
 
 /** What a real server adds to the app's instructions. */
 export const SERVER_SYSTEM = `You work on an infinite whiteboard through the tools you are given, as the user: your changes \
