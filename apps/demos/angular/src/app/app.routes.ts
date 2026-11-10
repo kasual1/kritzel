@@ -268,6 +268,7 @@ export const routes: Routes = [
       { path: 'chat-modes', component: TempChatModesComponent },
       // Lazy, so the Anthropic SDK stays out of the initial bundle.
       { path: 'command-mode', loadComponent: () => import('./pages/temp/temp-command-mode.component').then(m => m.TempCommandModeComponent) },
+      { path: 'streaming', loadComponent: () => import('./pages/temp/temp-streaming.component').then(m => m.TempStreamingComponent) },
     ],
   },
   { path: '**', redirectTo: 'getting-started/quick-start' },

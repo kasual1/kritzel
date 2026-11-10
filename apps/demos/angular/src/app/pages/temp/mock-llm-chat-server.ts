@@ -1,11 +1,11 @@
-// TEMP: mock of a chat backend that answers with a real model, for the temp command-mode demo; delete with pages/temp/.
+// TEMP: mock of a chat backend that answers with a real model, for the temp command-mode and streaming demos; delete with pages/temp/.
+// The streaming variant (`mock-llm-stream-chat-server.ts`) reuses the client and conversion helpers exported here.
 import Anthropic from '@anthropic-ai/sdk';
 import type {
   KritzelChatMessage,
   KritzelChatPart,
   KritzelChatResponse,
   KritzelChatStopReason,
-  KritzelChatStreamEvent,
   KritzelChatTransport,
 } from '@kritzel/angular-editor';
 
@@ -13,16 +13,16 @@ import type {
  * The browser never sees the key: `proxy.conf.mjs` forwards this path to api.anthropic.com and adds
  * `ANTHROPIC_API_KEY` from the `.env` file at the repository root. Only `ng serve` has the proxy.
  */
-const client = new Anthropic({
+export const client = new Anthropic({
   baseURL: `${location.origin}/temp-anthropic`,
   apiKey: 'set-by-the-dev-server-proxy',
   dangerouslyAllowBrowser: true,
 });
 
-const MODEL = 'claude-opus-5-5';
+export const MODEL = 'claude-opus-5-5';
 
 /** What a real server adds to the app's instructions. */
-const SERVER_SYSTEM = `You work on an infinite whiteboard through the tools you are given, as the user: your changes \
+export const SERVER_SYSTEM = `You work on an infinite whiteboard through the tools you are given, as the user: your changes \
 are made with the user's own hands, on their selection, and undo like theirs. When the user's message lists objects \
 (chips), the request is about those objects. Use the object IDs returned by earlier tool calls to refer to what you \
 created. Reply in one short sentence; the canvas shows the result.`;
@@ -47,82 +47,8 @@ export const llmTransport: KritzelChatTransport = async (request, { signal }) =>
   return toChatResponse(response);
 };
 
-/**
- * Stands in for a streaming `fetch('/api/chat')`: the same model step as `llmTransport`, streamed while Claude
- * writes it. Each tool call is sent as soon as its input is complete, so the session can run it right away.
- */
-export const llmStreamTransport: KritzelChatTransport = async function* (
-  request,
-  { signal },
-): AsyncGenerator<KritzelChatStreamEvent> {
-  const stream = client.beta.messages.stream(
-    {
-      model: MODEL,
-      max_tokens: 64000,
-      output_config: { effort: 'low' },
-      betas: ['server-side-fallback-2026-07-01'],
-      fallbacks: 'default',
-      system: [request.system, SERVER_SYSTEM].filter(Boolean).join('\n\n'),
-      // Tool inputs stream as the model writes them instead of in one piece at the end; the API no longer checks
-      // them, so a call can end with invalid JSON.
-      tools: request.tools.map(tool => ({
-        name: tool.name,
-        description: tool.description,
-        input_schema: tool.inputSchema,
-        eager_input_streaming: true,
-      })),
-      messages: toAnthropicMessages(request.messages),
-    },
-    { signal },
-  );
-
-  // The tool calls being written, by content block index.
-  const open = new Map<number, { id: string; name: string; json: string }>();
-  try {
-    for await (const event of stream) {
-      if (event.type === 'content_block_start' && event.content_block.type === 'tool_use') {
-        const { id, name } = event.content_block;
-        open.set(event.index, { id, name, json: '' });
-        yield { type: 'tool-call-start', id, name };
-      } else if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-        yield { type: 'text-delta', text: event.delta.text };
-      } else if (event.type === 'content_block_delta' && event.delta.type === 'input_json_delta') {
-        const call = open.get(event.index);
-        if (call) {
-          call.json += event.delta.partial_json;
-          yield { type: 'tool-call-delta', id: call.id, inputDelta: event.delta.partial_json };
-        }
-      } else if (event.type === 'content_block_stop') {
-        const call = open.get(event.index);
-        if (call) {
-          open.delete(event.index);
-          // Invalid JSON goes on as the raw text: the tool answers that the input is invalid.
-          const input = parseJson(call.json || '{}', call.json);
-          yield { type: 'part', part: { type: 'tool-call', id: call.id, name: call.name, input } };
-        }
-      }
-    }
-    const final = await stream.finalMessage();
-    const stopReason = STOP_REASONS[final.stop_reason ?? ''] ?? 'other';
-    yield { type: 'finish', stopReason, providerData: { anthropicContent: final.content } };
-  } catch (error) {
-    // The SDK fails the stream when a tool input it reads is not JSON, which can only happen while a call is open.
-    // Everything else is a real failure.
-    if (error instanceof Anthropic.APIError || signal.aborted || !open.size) {
-      throw error;
-    }
-    // The SDK ignores the rest of the answer: stop the model writing it.
-    stream.abort();
-    for (const call of open.values()) {
-      yield { type: 'part', part: { type: 'tool-call', id: call.id, name: call.name, input: call.json } };
-    }
-    // Without the model's content, the next step sends the parts back instead.
-    yield { type: 'finish', stopReason: 'other' };
-  }
-};
-
 /** The conversation in the Messages API's shape. Tool results go back as user messages. */
-function toAnthropicMessages(messages: KritzelChatMessage[]): Anthropic.Beta.BetaMessageParam[] {
+export function toAnthropicMessages(messages: KritzelChatMessage[]): Anthropic.Beta.BetaMessageParam[] {
   const result: Anthropic.Beta.BetaMessageParam[] = [];
   // Tool calls left out of the assistant message before (see `withoutDeclined`), by ID, with their names.
   let leftOut = new Map<string, string>();
@@ -196,7 +122,7 @@ function toAnthropicBlock(part: KritzelChatPart): Anthropic.Beta.BetaContentBloc
 }
 
 /** The value of a JSON text, or `fallback` when the text is not valid JSON. */
-function parseJson(text: string, fallback: unknown): unknown {
+export function parseJson(text: string, fallback: unknown): unknown {
   try {
     return JSON.parse(text);
   } catch {
@@ -218,7 +144,7 @@ function toChatResponse(response: Anthropic.Beta.BetaMessage): KritzelChatRespon
   };
 }
 
-const STOP_REASONS: Record<string, KritzelChatStopReason> = {
+export const STOP_REASONS: Record<string, KritzelChatStopReason> = {
   end_turn: 'end',
   tool_use: 'tool-calls',
   max_tokens: 'max-tokens',
