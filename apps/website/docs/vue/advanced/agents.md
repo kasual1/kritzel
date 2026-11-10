@@ -243,6 +243,40 @@ const iframeId = result.objectIds?.[0];
 
 The object is not changed until it is inserted: it and the children of a group get their new IDs and their z-index only then, so the object lands on top of what is on the canvas at that moment. An action that stops earlier leaves the object as it was, so you can add it later. An object that is already on the canvas is refused with `'invalid-target'`, and so is a group with a child that is already on the canvas or that holds the same object twice, and a group without children: an empty one, or one whose children were inserted before.
 
+To show an object before its content is ready, for example while your server builds it, perform `addObject` with a `fill` promise. The object appears as a [loading placeholder](../api-reference/objects.md#loading-state), and the action waits until `fill` resolves with a [`KritzelAgenticFill`](../api-reference/agent.md#kritzelagenticfill): `apply` copies the `content` onto the placeholder, and loading ends. Placing and filling are one step of the agent's history. Meanwhile the user can move, resize, or delete the placeholder:
+
+```ts
+let fillIn!: (fill: KritzelAgenticFill) => void;
+let fail!: (reason: unknown) => void;
+const fill = new Promise<KritzelAgenticFill>((resolve, reject) => {
+  fillIn = resolve;
+  fail = reject;
+});
+
+const adding = planner.perform({
+  type: 'addObject',
+  object: new KritzelIframeObject({ translateX: 0, translateY: 0, width: 400, height: 300 }),
+  fill,
+});
+
+try {
+  const html = await loadSummary(); // For example from your server.
+  fillIn({
+    content: new KritzelIframeObject({ html }),
+    apply: (placeholder, content) => {
+      // setContent also loads the code into the iframe that shows the placeholder.
+      (placeholder as KritzelIframeObject).setContent({ html: (content as KritzelIframeObject).html });
+    },
+  });
+} catch (error) {
+  fail(error); // Takes the placeholder away again.
+}
+
+const result = await adding;
+```
+
+The agent's later actions wait until the fill arrives, so always resolve or reject `fill`. A rejected `fill` and a stopped action roll the whole action back with `'aborted'`, and a deleted placeholder resolves with `'object-removed'`. A [chat session](./chat-sessions.md#placeholders-while-the-model-writes) uses this to show `create_iframe` and `create_image` while the model writes them.
+
 `perform()` runs the same actions from an action object, which is useful when the steps come from data:
 
 ```ts

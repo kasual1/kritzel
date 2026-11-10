@@ -32,12 +32,12 @@ Throws a `TypeError` when `transport` is not a function or `maxSteps` is not a p
 | agent | KritzelAgent | — | The agent the model acts as. Without one, the model works as the user. The editor adds the agent when the session is bound. |
 | system | string | — | Instructions sent with every request. |
 | context | `Record<string, unknown> \| () => Record<string, unknown> \| undefined` | — | App data sent with every request. A function is called for each request. |
-| tools | KritzelAgentTool[] | `[]` | Your own tools, added to the canvas tools. A name that clashes with a canvas tool ends the prompt with `status: 'error'`. `run()` gets the `toolCallId` of the call in its context. |
+| tools | KritzelChatTool[] | `[]` | Your own tools, added to the canvas tools. A name that clashes with a canvas tool ends the prompt with `status: 'error'`. `run()` gets the `toolCallId` of the call and the session's `actor` in its context, and an optional `begin()` lets a tool act while the model still writes the call. See [KritzelChatTool](#kritzelchattool). |
 | maxSteps | number | `25` | Most model steps per prompt. |
 | messages | KritzelChatMessage[] | `[]` | A conversation to continue. Tool calls without a result get an `'aborted'` result. |
 | instant | boolean | `false` | Agent mode: skips the cursor animation. Working as the user is always instant. |
 | thinkingStatus | string \| false | `'Thinking…'` | Agent mode: the agent's status while the model thinks. `false` keeps the status. |
-| eagerToolCalls | boolean | `true` | Streamed answers: runs each tool call as soon as its part arrives, while the model still writes the rest of the answer. `false` runs the calls once the answer has ended, like those of answers that are not streamed, for example for a server whose model can take back calls it already sent. See [Streaming](../advanced/chat-sessions.md#streaming). |
+| eagerToolCalls | boolean | `true` | Streamed answers: runs each tool call as soon as its part arrives and the calls started before it have run, while the model still writes the rest of the answer. `false` runs the calls once the answer has ended, like those of answers that are not streamed, for example for a server whose model can take back calls it already sent. See [Streaming](../advanced/chat-sessions.md#streaming). |
 
 ## Properties
 
@@ -64,7 +64,7 @@ Working as the user, all changes of one prompt become one step of the user's his
 
 ### stop
 
-Stops the running prompt: the transport's `signal` aborts, the running action is rolled back, and the remaining tool calls get an `'aborted'` result. Changes of earlier actions are kept. A streamed answer that is stopped after one of its tool calls ran is kept as far as it got, with the results of its calls; otherwise it is dropped.
+Stops the running prompt: the transport's `signal` aborts, the running action is rolled back, and the remaining tool calls get an `'aborted'` result. Placeholders of calls that the model was still writing are removed. Changes of earlier actions are kept. A streamed answer that is stopped after one of its tool calls ran is kept as far as it got, with the results of its calls; otherwise it is dropped.
 
 ```ts
 stop(): void
@@ -154,9 +154,47 @@ Chips are sent as a text part after the prompt that names their labels, `objectI
 | status | 'completed' \| 'stopped' \| 'step-limit' \| 'error' \| 'busy' \| 'detached' | How the prompt ended. See [Stopping and Results](../advanced/chat-sessions.md#stopping-and-results). |
 | error | unknown | Set with `'error'`: what the transport threw. |
 
+### KritzelChatTool
+
+A tool of your app, passed in the `tools` option. Like [`KritzelAgentTool`](./agent.md#kritzelagenttool), but `run()` and `begin()` get the session's `actor` to act on the canvas with. See [Adding Your Own Tools](../advanced/chat-sessions.md#adding-your-own-tools).
+
+```ts
+interface KritzelChatTool {
+  name: string;
+  description: string;
+  inputSchema: KritzelAgentToolSchema;
+  /** Runs the tool with the model's input and resolves with a JSON result, e.g. from formatAgentToolResult(). */
+  run: (input: unknown, context: KritzelChatToolContext) => Promise<string>;
+  /** Optional: begins a call while the model is still writing its input. */
+  begin?: (context: KritzelChatToolContext) => KritzelAgentToolCall;
+}
+
+interface KritzelChatToolContext {
+  /** Aborted when the user stops the response. */
+  signal: AbortSignal;
+  /** The ID of the call, as in its tool-call part, its result, and the tool-call events. */
+  toolCallId?: string;
+  /** Acts on the canvas as the session: its agent, or the user. */
+  actor: KritzelChatActor;
+}
+
+interface KritzelChatActor {
+  /** 'agent' with an agent, otherwise 'user'. */
+  readonly kind: 'agent' | 'user';
+  /** Performs an action with the call's signal and, in agent mode, the session's instant option. */
+  perform(action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>;
+  /** What the actor sees of the canvas, as observe_canvas returns it. */
+  observe(options?: KritzelObserveOptions): Promise<KritzelCanvasSnapshot>;
+}
+```
+
+Changes made through `actor` behave like those of the canvas tools: working as the user, they are part of the prompt's undo step, the stop button rolls them back, and with an agent they are the agent's changes.
+
+With `begin()`, the session begins a call of a streamed answer when the model starts writing it, once every call started before it has ended. It passes the input written so far to the `update()` of the returned [`KritzelAgentToolCall`](./agent.md#kritzelagenttool) after each `tool-call-delta`, and then calls `finish()` instead of `run()` when the call runs, or `cancel()` when it won't run: its part never arrived, a `message` event left it out, or the prompt was stopped or ended early. The prompt goes on only once a promise that `cancel()` returns has resolved. With `eagerToolCalls: false`, the first call of an answer runs only once the answer has ended, so only that call is begun while the model writes. Calls of answers that are not streamed only get `run()`. See [Placeholders While the Model Writes](../advanced/chat-sessions.md#placeholders-while-the-model-writes) for an example.
+
 ### KritzelChatToolCallUpdate
 
-The payload of the `tool-call` event: the progress of a tool call of a streamed answer. Calls of answers that are not streamed are not reported. See [Showing Tool Calls as They Stream](../advanced/chat-sessions.md#showing-tool-calls-as-they-stream).
+The payload of the `tool-call` event: the progress of a tool call of a streamed answer. Calls of answers that are not streamed are not reported. See [Showing Tool Calls as They Stream](../advanced/chat-sessions.md#showing-tool-calls-as-they-stream). While the model writes `create_iframe`, or `create_image` with a size, the canvas already shows the object as a loading placeholder, see [Placeholders While the Model Writes](../advanced/chat-sessions.md#placeholders-while-the-model-writes).
 
 | Property | Type | Description |
 |----------|------|-------------|
@@ -225,8 +263,8 @@ Every part can have `providerData`. A `tool-call` without an `id` gets one.
 | Event | Description |
 |-------|-------------|
 | `{ type: 'text-delta', text }` | Appended to the last text part, or starts one. |
-| `{ type: 'tool-call-start', id, name }` | Optional. The model began a tool call. The session reports it as a `tool-call` event; a call never runs from it alone. |
-| `{ type: 'tool-call-delta', id, inputDelta }` | Optional. More of the call's input as JSON text. The deltas joined are the input as written so far. |
+| `{ type: 'tool-call-start', id, name }` | Optional. The model began a tool call. The session reports it as a `tool-call` event and, when its tool has `begin()`, begins it once the calls started before it have ended (see [KritzelChatTool](#kritzelchattool)). A call never runs from it alone. |
+| `{ type: 'tool-call-delta', id, inputDelta }` | Optional. More of the call's input as JSON text. The deltas joined are the input as written so far, which a begun call gets in `update()`. |
 | `{ type: 'part', part }` | Adds a complete part, for example a tool call. A tool call with the ID of a started call completes that call; its `name` and `input` win over the start and the deltas. The call can run right away (see `eagerToolCalls`). |
 | `{ type: 'message', message }` | Replaces everything streamed so far. Complete calls it leaves out are dropped unless they already started running; calls still being written wait for their part; calls it adds run once the answer has ended. |
 | `{ type: 'finish', stopReason?, providerData? }` | Ends the answer. |
@@ -249,4 +287,4 @@ type KritzelChatTransport = (
 ) => Promise<KritzelChatResponse | AsyncIterable<KritzelChatStreamEvent>> | AsyncIterable<KritzelChatStreamEvent>;
 ```
 
-Throw to end the prompt with `status: 'error'`. The tool calls of a whole answer run once it is in. Each tool call of a streamed answer runs as soon as its part arrives, while the stream goes on (see `eagerToolCalls`), one call at a time in the order of the parts. When a streamed answer fails or is stopped after one of its calls ran, the answer read so far is kept with the results of its calls, so the conversation matches the canvas. Calls that did not start get an `'aborted'` result.
+Throw to end the prompt with `status: 'error'`. The tool calls of a whole answer run once it is in. Each tool call of a streamed answer runs as soon as its part arrives, while the stream goes on (see `eagerToolCalls`), one call at a time in the order the calls started: a call whose part arrives before that of a call started earlier waits for it. A call without `tool-call-start` starts when its part arrives. When a streamed answer fails or is stopped after one of its calls ran, the answer read so far is kept with the results of its calls, so the conversation matches the canvas. Calls that did not start get an `'aborted'` result.

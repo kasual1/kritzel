@@ -306,6 +306,13 @@ The object is not changed until the insert: the object and the children of a gro
 addObject(object: KritzelBaseObject, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
+To show the object before its content is ready, perform the action with a `fill`, a promise of a [`KritzelAgenticFill`](#kritzelagenticfill): `perform({ type: 'addObject', object, fill })`. The object is placed as a [loading placeholder](./objects.md#loading-state), and the action stays open until `fill` resolves. Then `content` is prepared like an added object, so an image is fetched and stored, `apply` copies it onto the placeholder, and loading ends. Placing and filling are one step of the agent's history. See [Performing Actions](../advanced/agents.md#performing-actions) for an example.
+
+- While the action waits, the placeholder is the user's: the user can move, resize, or delete it, and it is filled in where the user left it. These changes belong to the action's step, so stopping the action or undoing it removes the placeholder with them. Changes a collaborator makes meanwhile are not part of it.
+- A rejected `fill` and a stopped action roll the whole action back and resolve with `'aborted'`. A deleted placeholder resolves with `'object-removed'`.
+- The agent's later actions wait for this one, so resolve or reject `fill` without waiting for them.
+- The action rejects with a `TypeError` when `fill` is not a promise or the object is a group.
+
 ### deleteObjects
 
 Deletes objects. Children of a group are deleted with their group.
@@ -406,6 +413,8 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 - `observe_canvas` resolves with a [`KritzelCanvasSnapshot`](#kritzelcanvassnapshot) as JSON. It uses the defaults of `observe()`; `maxTextLength` of `tools()` does not change them.
 - It never rejects for mistakes of the model, only for unexpected errors.
 
+`create_iframe` and `create_image` also have [`begin()`](#kritzelagenttool), which a runner that streams tool calls, such as a [chat session](../advanced/chat-sessions.md#placeholders-while-the-model-writes), calls while the model writes a call. They place a loading placeholder as soon as the position and size are written, `create_image` only with a `width` and `height`, and fill it in when the call finishes. Their schemas list the position and size before the content, because models write the fields in the order of the schema. Runners that don't stream tool calls only call `run()`.
+
 ### observe
 
 Returns what the agent sees of the canvas: the visible area, the user's selection, the agent's cursor and selection, and the objects, back to front, with their geometry, text, connections, style, and creator. Coordinates are world units, rounded to one decimal. Image data, iframe content, the points of strokes, and hidden objects are left out. Rejects while the agent is not added and while no workspace is loaded.
@@ -437,6 +446,21 @@ Formats a result as the JSON string that the tools return. Use it in your own to
 
 ```ts
 formatAgentToolResult(result: KritzelAgentToolResult): string
+```
+
+### parsePartialJson
+
+Reads JSON text that may stop anywhere, such as the input of a tool call while the model writes it. Open objects and arrays are closed, and values that the text has not finished are left out: a string without its closing quote, a number that may go on, a half-written literal, and a key without its value. Returns `undefined` when the text holds no value yet or is not the start of valid JSON. Use it in the `update()` of a [begun tool call](#kritzelagenttool).
+
+```ts
+parsePartialJson(text: string): unknown
+```
+
+```ts
+import { parsePartialJson } from '@kritzel/angular-editor';
+
+parsePartialJson('{"x":10,"y":2'); // { x: 10 }
+parsePartialJson('{"x":10,"y":2,'); // { x: 10, y: 2 }
 ```
 
 ### AGENT_TOOL_REASON_HINTS
@@ -740,7 +764,7 @@ type KritzelAgenticAction =
   | { type: 'drawPath'; points: KritzelPoint[]; style?: KritzelAgenticStrokeStyle }
   | { type: 'connect'; from: string; to: string; style?: KritzelAgenticLineStyle }
   | { type: 'setStyle'; objectIds: string[]; style: KritzelAgenticObjectStyle }
-  | { type: 'addObject'; object: KritzelBaseObject }
+  | { type: 'addObject'; object: KritzelBaseObject; fill?: Promise<KritzelAgenticFill> }
   | { type: 'deleteObjects'; objectIds: string[] }
   | { type: 'undo' }
   | { type: 'redo' };
@@ -753,6 +777,21 @@ type KritzelAgenticOrder = 'front' | 'back' | 'forward' | 'backward';
 ```
 
 Each member is also exported as its own interface, for example `KritzelAgenticMoveObjectAction`, `KritzelAgenticSetStyleAction`, and `KritzelAgenticAddObjectAction`.
+
+### KritzelAgenticFill
+
+What fills in the placeholder of an `addObject` action with a `fill`. See [addObject](#addobject).
+
+```ts
+interface KritzelAgenticFill {
+  /** The object the placeholder stands in for. It is prepared like an added object, but never inserted. */
+  content: KritzelBaseObject;
+  /** Copies `content` onto the placeholder, for example a widget's code. Runs synchronously inside the action. */
+  apply(placeholder: KritzelBaseObject, content: KritzelBaseObject): void;
+}
+```
+
+`placeholder` is the object on the canvas, which the user may have moved or resized while the action waited. Copy only the content onto it, so that its position and size stay.
 
 ### Style Types
 
@@ -883,6 +922,8 @@ interface KritzelAgentTool {
   inputSchema: KritzelAgentToolSchema;
   /** Runs the tool with the model's input (an object or a JSON string) and resolves with a JSON result. */
   run: (input: unknown, context?: KritzelAgentToolContext) => Promise<string>;
+  /** Optional: begins a call while the model is still writing its input. */
+  begin?: (context: KritzelAgentToolContext) => KritzelAgentToolCall;
 }
 
 interface KritzelAgentToolContext {
@@ -891,7 +932,18 @@ interface KritzelAgentToolContext {
   /** The ID of the tool call being run, when the runner has one. A chat session always passes it. */
   toolCallId?: string;
 }
+
+interface KritzelAgentToolCall {
+  /** More input arrived: the input's JSON text written so far. */
+  update(inputText: string): void;
+  /** The input is complete: finishes the call and resolves with its result, exactly like `run()`. */
+  finish(input: unknown): Promise<string>;
+  /** The call won't run: undoes whatever the call began. A promise makes the runner wait until that is done. */
+  cancel(): void | Promise<void>;
+}
 ```
+
+`begin()` is optional. A runner that streams tool calls, such as a [chat session](../advanced/chat-sessions.md#placeholders-while-the-model-writes), calls it when the model starts a call and gets a `KritzelAgentToolCall`. It passes the input written so far to `update()` as the input streams, then either calls `finish()` with the complete input instead of `run()`, or `cancel()` when the call won't run, for example because it was dropped or the prompt was stopped. A begun call is finished or cancelled exactly once. Runners that don't stream tool calls only call `run()`. `create_iframe` and `create_image` use `begin()` to show a loading placeholder while the model writes, and [`parsePartialJson()`](#parsepartialjson) reads the input written so far.
 
 ### KritzelAgentToolSchema
 

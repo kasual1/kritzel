@@ -85,7 +85,7 @@ The constructor accepts the following options. Only `transport` is required:
 | agent | KritzelAgent | The agent the model acts as. Without one, the model works as the user. See [Working as the User or as an Agent](#working-as-the-user-or-as-an-agent). |
 | system | string | Instructions sent with every request. Your server decides how to use them. |
 | context | object \| () => object | App data sent with every request, for example a document ID. A function is called for each request. |
-| tools | KritzelAgentTool[] | Your own tools, added to the canvas tools. See [Adding Your Own Tools](#adding-your-own-tools). |
+| tools | KritzelChatTool[] | Your own tools, added to the canvas tools. See [Adding Your Own Tools](#adding-your-own-tools). |
 | maxSteps | number | Most model steps per prompt. Defaults to `25`. |
 | messages | KritzelChatMessage[] | A conversation to continue. See [Saving and Restoring](#saving-and-restoring). |
 | instant | boolean | Agent mode: skips the cursor animation. Defaults to `false`. |
@@ -261,7 +261,7 @@ async function* streamChat(request: KritzelChatRequest, signal: AbortSignal): As
 
 Running the calls early has the following consequences:
 
-- The calls run one at a time, in the order of their parts. The results in the `tool` message are in the order of the calls in the answer.
+- The calls run one at a time, in the order the model started them: a call whose part arrives before that of a call started earlier waits for it. The results in the `tool` message are in the order of the calls in the answer.
 - The canvas can change before the answer is in `session.messages`. The session adds the answer when the stream ends, then runs the calls that are left, then adds the `tool` message.
 - When the user stops the response, the session is detached, or the transport throws after one of the calls ran, the answer is kept as far as it got: its text and the calls whose part arrived, followed by a `tool` message with their results. Calls that did not start get an `'aborted'` result. When no call ran yet, the answer is dropped and `messages` stays as it was before the answer.
 - A part is final. Don't take a call back after you sent its part: a call that already started running stays in the answer, even when a `message` event leaves it out.
@@ -409,6 +409,76 @@ export class ToolCallStatusComponent {
 
 Each update has the `id` of the call, its `state`, and the input written so far as `inputText`. `id` is the ID of the call's `tool-call` part and its result, and the `toolCallId` that your own tools get. Each call ends with `'done'`, which has the `result`, or with `'discarded'` when it is not part of the conversation. See [KritzelChatToolCallUpdate](../api-reference/chat-session.md#kritzelchattoolcallupdate).
 
+### Placeholders While the Model Writes
+
+With a [streaming](#streaming) server that sends `tool-call-start` and `tool-call-delta`, the canvas shows a widget or an image before the model has finished writing it. `create_iframe` and `create_image` place their object as a [loading placeholder](../api-reference/objects.md#loading-state) as soon as the model has written its position and size, and fill it in with the code or the image when the call runs. Their schemas list the position and size before the content, because models write the fields in that order. `create_image` shows a placeholder only when the model gives a `width` and `height`: without them, the size of the image is only known once it has loaded.
+
+- Placing and filling the object are one change: one step of the agent's history, or part of the prompt's undo step when working as the user.
+- While the model writes, the placeholder is the user's: the user can move, resize, or delete it, and it is filled in where the user left it. These changes belong to the call's step, so stopping or undoing it removes the placeholder with them. When the user deletes it, the call answers with `'object-removed'`.
+- The placeholder goes again when the call does not complete: when the user stops the response, the call is discarded, the input turns out to be invalid, or the image can't be loaded. The model then gets the result as usual, for example `'invalid-input'`.
+- A call begins only once the calls before it have ended. Working as an agent, a call's placeholder therefore appears once the cursor has finished the previous action. Working as the user, actions are instant, so the placeholder appears as soon as its position and size are written.
+
+Your own tools can do the same with `begin()`. The session calls it when the model starts a call, passes the input written so far to `update()`, and then calls `finish()` with the complete input instead of `run()`, or `cancel()` when the call won't run. `parsePartialJson()` reads the input written so far, and an `addObject` action with a `fill` places a placeholder that the call fills in when it finishes:
+
+```ts
+import { KritzelIframeObject, formatAgentToolResult, parsePartialJson } from '@kritzel/angular-editor';
+import type { KritzelAgenticActionResult, KritzelAgenticFill, KritzelChatTool } from '@kritzel/angular-editor';
+
+const page = (x: number, y: number, html = '') => new KritzelIframeObject({ translateX: x, translateY: y, width: 480, height: 320, html });
+
+export const addPageTool: KritzelChatTool = {
+  name: 'add_page',
+  description: 'Adds a web page with its top-left corner at (x, y). `html` is the content of <body>.',
+  // The position comes first: models write the fields in this order.
+  inputSchema: {
+    type: 'object',
+    properties: { x: { type: 'number' }, y: { type: 'number' }, html: { type: 'string' } },
+    required: ['x', 'y', 'html'],
+  },
+  run: async (input, { actor }) => {
+    const { x, y, html } = input as { x: number; y: number; html: string }; // Check the input in your app.
+    return formatAgentToolResult(await actor.perform({ type: 'addObject', object: page(x, y, html) }));
+  },
+  begin: context => {
+    let placing: Promise<KritzelAgenticActionResult> | null = null;
+    let fillIn!: (fill: KritzelAgenticFill) => void;
+    let drop!: () => void;
+    return {
+      update(inputText) {
+        // Values the model has not finished are left out, so a number is complete once it is there.
+        const { x, y } = (parsePartialJson(inputText) ?? {}) as { x?: unknown; y?: unknown };
+        if (placing || typeof x !== 'number' || typeof y !== 'number') return;
+        const fill = new Promise<KritzelAgenticFill>((resolve, reject) => {
+          fillIn = resolve;
+          drop = () => reject(new Error('The call did not run.'));
+        });
+        placing = context.actor.perform({ type: 'addObject', object: page(x, y), fill });
+      },
+      async finish(input) {
+        if (!placing) return addPageTool.run(input, context);
+        const { html } = input as { html: string }; // Check the input in your app, and call drop() if it is invalid.
+        fillIn({
+          content: page(0, 0, html),
+          apply: (placeholder, content) => {
+            // setContent also loads the code into the iframe that shows the placeholder.
+            (placeholder as KritzelIframeObject).setContent({ html: (content as KritzelIframeObject).html });
+          },
+        });
+        return formatAgentToolResult(await placing);
+      },
+      async cancel() {
+        if (placing) {
+          drop();
+          await placing;
+        }
+      },
+    };
+  },
+};
+```
+
+The placeholder's action stays open until the fill arrives, and the session's later actions wait for it. Make sure that `finish()` and `cancel()` always resolve or reject the fill.
+
 ## Saving and Restoring
 
 `messages` is plain JSON. Store it, and pass it to the `messages` option to continue the conversation later. A tool call that was interrupted, for example by closing the tab, gets an `'aborted'` result when the session is created, so the conversation stays valid:
@@ -424,7 +494,7 @@ const restored = new KritzelChatSession({
 
 ## Adding Your Own Tools
 
-Pass your own tools in the `tools` option. They have the same shape as the canvas tools: `name`, `description`, `inputSchema`, and `run(input, { signal, toolCallId })`, which resolves with a string for the model. `toolCallId` is the ID of the call, as in its result and the `tool-call` events. Their names must not clash with the canvas tools. See [Choosing Tools](./agents.md#choosing-tools) for an example tool and `formatAgentToolResult()`.
+Pass your own tools in the `tools` option. They have the same shape as the canvas tools: `name`, `description`, `inputSchema`, and `run(input, { signal, toolCallId, actor })`, which resolves with a string for the model. `toolCallId` is the ID of the call, as in its result and the `tool-call` events, and `actor` acts on the canvas as the session, so that the changes undo and stop like those of the canvas tools. An optional `begin()` lets a tool act while the model still writes the call, for example to show a placeholder (see [Placeholders While the Model Writes](#placeholders-while-the-model-writes)). Their names must not clash with the canvas tools. See [Choosing Tools](./agents.md#choosing-tools) for an example tool and `formatAgentToolResult()`.
 
 ## Testing Without a Model
 
