@@ -10,7 +10,15 @@ import { createScriptedTransport } from './scripted-transport';
 import { KritzelCore } from '../core/core.class';
 import { KritzelShape } from '../objects/shape.class';
 import { formatAgentToolResult } from '../agent/agent-tools';
-import type { KritzelChatMessage, KritzelChatTool, KritzelChatRequest, KritzelChatStreamEvent, KritzelChatToolResultPart } from '../../interfaces/chat-session.interface';
+import type {
+  KritzelChatMessage,
+  KritzelChatTool,
+  KritzelChatRequest,
+  KritzelChatSessionOptions,
+  KritzelChatStreamEvent,
+  KritzelChatToolCallUpdate,
+  KritzelChatToolResultPart,
+} from '../../interfaces/chat-session.interface';
 
 // Chat sessions on a real Yjs object map with real object classes and the real agentic managers.
 
@@ -498,6 +506,583 @@ describe('KritzelChatSession', () => {
       await expect(running).resolves.toEqual({ status: 'stopped' });
       expect(seenSignal!.aborted).toBe(true);
       expect(waiting.messages.map(message => message.role)).toEqual(['user']);
+    });
+  });
+
+  describe('streamed tool calls', () => {
+    const STOPPED = { completed: false, reason: 'aborted', hint: 'The user stopped the response. Do not retry unless asked.' };
+    const INTERRUPTED = { completed: false, reason: 'aborted', hint: 'The tool call was interrupted and did not run.' };
+
+    const gate = () => {
+      let open!: () => void;
+      const promise = new Promise<void>(resolve => (open = resolve));
+      return { promise, open };
+    };
+
+    /** Rejects once the signal aborts, like a request the user stopped. */
+    const abortion = (signal: AbortSignal) =>
+      new Promise<never>((_resolve, reject) => signal.addEventListener('abort', () => reject(new Error('aborted')), { once: true }));
+
+    /** A tool call as a model streams it: start, its input's JSON in pieces, then the complete part. */
+    function* callEvents(id: string, name: string, input: Record<string, unknown>, chunk = 10): Generator<KritzelChatStreamEvent> {
+      yield { type: 'tool-call-start', id, name };
+      const json = JSON.stringify(input);
+      for (let i = 0; i < json.length; i += chunk) {
+        yield { type: 'tool-call-delta', id, inputDelta: json.slice(i, i + chunk) };
+      }
+      yield { type: 'part', part: { type: 'tool-call', id, name, input } };
+    }
+
+    async function* textStream(text: string): AsyncGenerator<KritzelChatStreamEvent> {
+      yield { type: 'text-delta', text };
+      yield { type: 'finish', stopReason: 'end' };
+    }
+
+    /** A transport answering each model step with the next stream, then with "Done.". */
+    const streams =
+      (...answers: ((signal: AbortSignal) => AsyncIterable<KritzelChatStreamEvent>)[]): KritzelChatSessionOptions['transport'] =>
+      (_request, { signal }) => {
+        const answer = answers.shift();
+        return answer ? answer(signal) : textStream('Done.');
+      };
+
+    const record = (session: KritzelChatSession) => {
+      const updates: KritzelChatToolCallUpdate[] = [];
+      session.on('tool-call', update => updates.push(update));
+      return updates;
+    };
+    const statesOf = (updates: KritzelChatToolCallUpdate[], id: string) => updates.filter(update => update.id === id).map(update => update.state);
+    const lastOf = (updates: KritzelChatToolCallUpdate[], id: string) => updates.filter(update => update.id === id).pop()!;
+
+    /** Each reported call ends exactly once, and nothing is reported after its end. */
+    const expectEachEndsOnce = (updates: KritzelChatToolCallUpdate[]) => {
+      for (const id of new Set(updates.map(update => update.id))) {
+        const states = statesOf(updates, id);
+        const ends = states.filter(state => state === 'done' || state === 'discarded');
+        expect({ id, ends: ends.length, last: states[states.length - 1] }).toEqual({ id, ends: 1, last: ends[0] });
+      }
+    };
+
+    const until = async (condition: () => boolean, maxFrames = 600) => {
+      for (let i = 0; i < maxFrames && !condition(); i++) {
+        await step();
+      }
+      expect(condition()).toBe(true);
+    };
+
+    const roles = (session: KritzelChatSession) => session.messages.map(message => message.role);
+    const shape = (x: number) => ({ x, y: 0, width: 100, height: 50 });
+
+    /** An app tool that runs until `release` resolves or the prompt is stopped. */
+    const holdTool = (release: Promise<void>, log: string[]): KritzelChatTool => ({
+      name: 'hold',
+      description: 'Waits.',
+      inputSchema: { type: 'object', properties: {} },
+      run: async (_input, { signal }) => {
+        log.push('hold:start');
+        await Promise.race([release, new Promise<void>(resolve => signal.addEventListener('abort', () => resolve(), { once: true }))]);
+        log.push('hold:end');
+        return JSON.stringify({ completed: !signal.aborted });
+      },
+    });
+
+    it('runs a call as soon as its part arrives, while the answer still streams', async () => {
+      const rest = gate();
+      const session = new KritzelChatSession({
+        transport: streams(async function* () {
+          yield { type: 'text-delta', text: 'Drawing.' };
+          yield* callEvents('c1', 'create_shape', shape(0));
+          await rest.promise;
+          yield { type: 'text-delta', text: ' Done.' };
+          yield { type: 'finish', stopReason: 'tool-calls' };
+        }),
+      });
+      session._attach(core);
+      const updates = record(session);
+      const log: string[] = [];
+      session.on('tool-call', update => update.state !== 'input' && log.push(`${update.state}:${update.id}`));
+      session.on('message', message => log.push(`message:${message.role}`));
+      const userSteps = map.undoManager!.undoStack.length;
+
+      const running = session.send('Draw');
+      await until(() => lastOf(updates, 'c1')?.state === 'done');
+
+      expect(map.allObjects()).toHaveLength(1);
+      expect(roles(session)).toEqual(['user']);
+      const pieces = Math.ceil(JSON.stringify(shape(0)).length / 10);
+      expect(statesOf(updates, 'c1')).toEqual(['started', ...Array(pieces).fill('input'), 'ready', 'running', 'done']);
+      expect(updates.filter(update => update.state === 'input').map(update => update.inputDelta).join('')).toBe(JSON.stringify(shape(0)));
+      expect(lastOf(updates, 'c1')).toMatchObject({ ran: true, input: shape(0), result: { toolCallId: 'c1', name: 'create_shape' } });
+
+      rest.open();
+      await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+      expect(roles(session)).toEqual(['user', 'assistant', 'tool', 'assistant']);
+      expect(session.messages[1].parts).toEqual([
+        { type: 'text', text: 'Drawing.' },
+        { type: 'tool-call', id: 'c1', name: 'create_shape', input: shape(0) },
+        { type: 'text', text: ' Done.' },
+      ]);
+      expect(JSON.parse(resultsOf(session.messages[2])[0].output)).toMatchObject({ completed: true });
+      expect(log.slice(0, 6)).toEqual(['message:user', 'started:c1', 'ready:c1', 'running:c1', 'done:c1', 'message:assistant']);
+      expectEachEndsOnce(updates);
+      // The whole prompt is still one step of the user history.
+      expect(map.undoManager!.undoStack.length).toBe(userSteps + 1);
+      map.undo();
+      expect(map.allObjects()).toHaveLength(0);
+    });
+
+    it('runs the calls one at a time in the order their parts arrive', async () => {
+      const release = gate();
+      const log: string[] = [];
+      const session = new KritzelChatSession({
+        tools: [holdTool(release.promise, log)],
+        transport: streams(async function* () {
+          yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
+          yield* callEvents('b', 'create_shape', shape(0));
+          yield { type: 'finish', stopReason: 'tool-calls' };
+        }),
+      });
+      session._attach(core);
+      const updates = record(session);
+
+      const running = session.send('go');
+      await until(() => log.length === 1 && roles(session).length === 2);
+      await flushMicrotasks();
+      expect(log).toEqual(['hold:start']);
+      expect(statesOf(updates, 'b')).not.toContain('running');
+
+      release.open();
+      await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+      expect(log).toEqual(['hold:start', 'hold:end']);
+      expect(resultsOf(session.messages[2]).map(result => result.toolCallId)).toEqual(['a', 'b']);
+      expect(map.allObjects()).toHaveLength(1);
+      expectEachEndsOnce(updates);
+    });
+
+    it('runs the calls once the answer has ended with eagerToolCalls: false', async () => {
+      const rest = gate();
+      const session = new KritzelChatSession({
+        eagerToolCalls: false,
+        transport: streams(async function* () {
+          yield* callEvents('c1', 'create_shape', shape(0));
+          await rest.promise;
+          yield { type: 'finish', stopReason: 'tool-calls' };
+        }),
+      });
+      session._attach(core);
+      const updates = record(session);
+
+      const running = session.send('Draw');
+      await until(() => lastOf(updates, 'c1')?.state === 'ready');
+      for (let i = 0; i < 10; i++) {
+        await step();
+      }
+      expect(map.allObjects()).toHaveLength(0);
+
+      rest.open();
+      await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+      expect(map.allObjects()).toHaveLength(1);
+      expect(roles(session)).toEqual(['user', 'assistant', 'tool', 'assistant']);
+      expect(statesOf(updates, 'c1').filter(state => state !== 'input')).toEqual(['started', 'ready', 'running', 'done']);
+    });
+
+    it('keeps the answer read so far when stopped after a call ran', async () => {
+      const session = new KritzelChatSession({
+        transport: streams(async function* (signal) {
+          yield { type: 'text-delta', text: 'Two boxes.' };
+          yield* callEvents('c1', 'create_shape', shape(0));
+          yield { type: 'tool-call-start', id: 'c2', name: 'create_shape' };
+          yield { type: 'tool-call-delta', id: 'c2', inputDelta: '{"x":' };
+          await abortion(signal);
+        }),
+      });
+      session._attach(core);
+      const updates = record(session);
+
+      const running = session.send('Draw');
+      await until(() => lastOf(updates, 'c1')?.state === 'done' && lastOf(updates, 'c2')?.state === 'input');
+      session.stop();
+
+      await expect(settle(running)).resolves.toEqual({ status: 'stopped' });
+      expect(roles(session)).toEqual(['user', 'assistant', 'tool']);
+      expect(session.messages[1].parts).toEqual([
+        { type: 'text', text: 'Two boxes.' },
+        { type: 'tool-call', id: 'c1', name: 'create_shape', input: shape(0) },
+      ]);
+      expect(JSON.parse(resultsOf(session.messages[2])[0].output)).toMatchObject({ completed: true });
+      expect(map.allObjects()).toHaveLength(1);
+      expect(lastOf(updates, 'c2').state).toBe('discarded');
+      expectEachEndsOnce(updates);
+    });
+
+    it('stops the running call and gives the queued ones a stopped result', async () => {
+      const log: string[] = [];
+      const session = new KritzelChatSession({
+        tools: [holdTool(new Promise(() => undefined), log)],
+        transport: streams(async function* (signal) {
+          yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
+          yield* callEvents('b', 'create_shape', shape(0));
+          yield { type: 'tool-call-start', id: 'c', name: 'create_shape' };
+          await abortion(signal);
+        }),
+      });
+      session._attach(core);
+      const updates = record(session);
+
+      const running = session.send('go');
+      await until(() => log.length === 1 && lastOf(updates, 'c')?.state === 'started');
+      session.stop();
+
+      await expect(settle(running)).resolves.toEqual({ status: 'stopped' });
+      expect(log).toEqual(['hold:start', 'hold:end']);
+      expect(roles(session)).toEqual(['user', 'assistant', 'tool']);
+      expect(session.messages[1].parts.map(part => (part as any).id)).toEqual(['a', 'b']);
+      const results = resultsOf(session.messages[2]);
+      expect(results.map(result => result.toolCallId)).toEqual(['a', 'b']);
+      expect(JSON.parse(results[0].output)).toEqual({ completed: false });
+      expect(JSON.parse(results[1].output)).toEqual(STOPPED);
+      expect(map.allObjects()).toHaveLength(0);
+      expect(lastOf(updates, 'a')).toMatchObject({ state: 'done', ran: true });
+      expect(lastOf(updates, 'b')).toMatchObject({ state: 'done', ran: false });
+      expect(statesOf(updates, 'b')).not.toContain('running');
+      expect(statesOf(updates, 'c')).toEqual(['started', 'discarded']);
+      expectEachEndsOnce(updates);
+    });
+
+    it('drops the answer when it ends before any call ran', async () => {
+      const stopped = new KritzelChatSession({
+        transport: streams(async function* (signal) {
+          yield { type: 'text-delta', text: 'Thinking about it' };
+          yield { type: 'tool-call-start', id: 'c1', name: 'create_shape' };
+          yield { type: 'tool-call-delta', id: 'c1', inputDelta: '{"x":0' };
+          await abortion(signal);
+        }),
+      });
+      stopped._attach(core);
+      const stoppedUpdates = record(stopped);
+      const running = stopped.send('Draw');
+      await until(() => lastOf(stoppedUpdates, 'c1')?.state === 'input');
+      stopped.stop();
+      await expect(settle(running)).resolves.toEqual({ status: 'stopped' });
+      expect(roles(stopped)).toEqual(['user']);
+      expect(statesOf(stoppedUpdates, 'c1')).toEqual(['started', 'input', 'discarded']);
+      stopped._detach();
+
+      const failing = new KritzelChatSession({
+        eagerToolCalls: false,
+        transport: streams(async function* () {
+          yield* callEvents('c1', 'create_shape', shape(0));
+          throw new Error('lost');
+        }),
+      });
+      failing._attach(core);
+      const failingUpdates = record(failing);
+      const result = await settle(failing.send('Draw'));
+      expect(result.status).toBe('error');
+      expect((result.error as Error).message).toBe('lost');
+      expect(roles(failing)).toEqual(['user']);
+      expect(lastOf(failingUpdates, 'c1').state).toBe('discarded');
+      expect(map.allObjects()).toHaveLength(0);
+    });
+
+    it('lets the running call finish and interrupts the queued ones when the stream fails', async () => {
+      const release = gate();
+      const log: string[] = [];
+      const session = new KritzelChatSession({
+        tools: [holdTool(release.promise, log)],
+        transport: streams(async function* () {
+          yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
+          yield { type: 'part', part: { type: 'tool-call', id: 'b', name: 'create_shape', input: shape(0) } };
+          yield { type: 'text-delta', text: 'And' };
+          throw new Error('lost');
+        }),
+      });
+      session._attach(core);
+      const updates = record(session);
+
+      const running = session.send('go');
+      await until(() => log.length === 1);
+      await flushMicrotasks();
+      release.open();
+
+      const result = await settle(running);
+      expect(result.status).toBe('error');
+      expect((result.error as Error).message).toBe('lost');
+      expect(log).toEqual(['hold:start', 'hold:end']);
+      expect(roles(session)).toEqual(['user', 'assistant', 'tool']);
+      expect(session.messages[1].parts.map(part => part.type)).toEqual(['tool-call', 'tool-call', 'text']);
+      const results = resultsOf(session.messages[2]);
+      expect(JSON.parse(results[0].output)).toEqual({ completed: true });
+      expect(JSON.parse(results[1].output)).toEqual(INTERRUPTED);
+      expect(map.allObjects()).toHaveLength(0);
+      expectEachEndsOnce(updates);
+    });
+
+    it('applies message events: drops queued calls it leaves out, keeps calls that ran and runs the ones it adds', async () => {
+      const release = gate();
+      const streamed = gate();
+      const log: string[] = [];
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const session = new KritzelChatSession({
+        tools: [holdTool(release.promise, log)],
+        transport: streams(async function* () {
+          yield { type: 'part', part: { type: 'tool-call', id: 'a', name: 'hold', input: {} } };
+          yield { type: 'part', part: { type: 'tool-call', id: 'b', name: 'create_shape', input: shape(0) } };
+          // "a" runs (and holds) before the message arrives; "b" waits for its turn.
+          for (let i = 0; i < 100 && !log.includes('hold:start'); i++) {
+            await Promise.resolve();
+          }
+          yield {
+            type: 'message',
+            message: {
+              role: 'assistant',
+              parts: [
+                { type: 'text', text: 'Replaced.' },
+                { type: 'tool-call', id: 'd', name: 'create_shape', input: shape(300) },
+              ],
+              providerData: { id: 'msg-2' },
+            },
+          };
+          streamed.open();
+          yield { type: 'finish', stopReason: 'tool-calls' };
+        }),
+      });
+      session._attach(core);
+      const updates = record(session);
+
+      const running = session.send('go');
+      await streamed.promise;
+      release.open();
+      await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+
+      expect(session.messages[1]).toEqual({
+        role: 'assistant',
+        parts: [
+          { type: 'text', text: 'Replaced.' },
+          { type: 'tool-call', id: 'd', name: 'create_shape', input: shape(300) },
+          { type: 'tool-call', id: 'a', name: 'hold', input: {} },
+        ],
+        providerData: { id: 'msg-2' },
+      });
+      expect(resultsOf(session.messages[2]).map(result => result.toolCallId)).toEqual(['d', 'a']);
+      expect(map.allObjects().map(object => object.translateX)).toEqual([300]);
+      expect(statesOf(updates, 'b')).toEqual(['started', 'ready', 'discarded']);
+      expect(statesOf(updates, 'd')).toEqual(['started', 'ready', 'running', 'done']);
+      expect(lastOf(updates, 'a')).toMatchObject({ state: 'done', ran: true });
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('"a" (hold), which already ran');
+      expectEachEndsOnce(updates);
+    });
+
+    it('never runs a call twice when a message event repeats it', async () => {
+      const ran = gate();
+      const inputs: unknown[] = [];
+      const session = new KritzelChatSession({
+        tools: [
+          {
+            name: 'count',
+            description: 'Counts.',
+            inputSchema: { type: 'object', properties: {} },
+            run: async input => {
+              inputs.push(input);
+              ran.open();
+              return '{"completed":true}';
+            },
+          },
+        ],
+        transport: streams(async function* () {
+          yield { type: 'part', part: { type: 'tool-call', id: 'c1', name: 'count', input: { n: 1 } } };
+          await ran.promise;
+          yield {
+            type: 'message',
+            message: { role: 'assistant', parts: [{ type: 'tool-call', id: 'c1', name: 'count', input: { n: 2 } }, { type: 'text', text: 'Counted.' }] },
+          };
+          yield { type: 'finish' };
+        }),
+      });
+      session._attach(core);
+      await expect(settle(session.send('count'))).resolves.toEqual({ status: 'completed' });
+      expect(inputs).toEqual([{ n: 1 }]);
+      expect(session.messages[1].parts).toEqual([
+        { type: 'tool-call', id: 'c1', name: 'count', input: { n: 1 } },
+        { type: 'text', text: 'Counted.' },
+      ]);
+      expect(resultsOf(session.messages[2])).toHaveLength(1);
+    });
+
+    it('ignores events it cannot place and drops calls left open', async () => {
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+      const session = new KritzelChatSession({
+        transport: streams(async function* () {
+          yield { type: 'tool-call-start' } as any;
+          yield { type: 'tool-call-start', id: '', name: 'observe_canvas' };
+          yield { type: 'tool-call-start', id: 'nameless' } as any;
+          yield { type: 'tool-call-delta', id: 'unknown', inputDelta: '{}' };
+          yield { type: 'tool-call-start', id: 'x', name: 'observe_canvas' };
+          yield { type: 'tool-call-start', id: 'x', name: 'create_shape' };
+          yield { type: 'tool-call-delta', id: 'x', inputDelta: '' };
+          yield { type: 'reasoning-delta', text: 'hm' } as any;
+          yield null as any;
+          yield { type: 'tool-call-start', id: 'open', name: 'create_shape' };
+          yield { type: 'part', part: { type: 'tool-call', id: 'x', name: 'observe_canvas', input: {} } };
+          yield { type: 'tool-call-delta', id: 'x', inputDelta: '{"late":1}' };
+          yield { type: 'finish', stopReason: 'tool-calls' };
+        }),
+      });
+      session._attach(core);
+      const updates = record(session);
+
+      await expect(settle(session.send('look'))).resolves.toEqual({ status: 'completed' });
+      expect([...new Set(updates.map(update => update.id))]).toEqual(['x', 'open']);
+      expect(statesOf(updates, 'x')).toEqual(['started', 'ready', 'running', 'done']);
+      expect(lastOf(updates, 'x')).toMatchObject({ name: 'observe_canvas', inputText: '' });
+      expect(statesOf(updates, 'open')).toEqual(['started', 'discarded']);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn.mock.calls[0][0]).toContain('"open" (create_shape)');
+      expect(session.messages[1].parts.map(part => (part as any).id)).toEqual(['x']);
+      expectEachEndsOnce(updates);
+    });
+
+    it('reports nothing for answers that are not streamed', async () => {
+      const session = new KritzelChatSession({ transport: createScriptedTransport([{ toolCalls: [shapeCall(0)] }, 'Done.']) });
+      session._attach(core);
+      const updates = record(session);
+      await expect(settle(session.send('Draw'))).resolves.toEqual({ status: 'completed' });
+      expect(updates).toEqual([]);
+      expect(map.allObjects()).toHaveLength(1);
+    });
+
+    it('passes the tool call ID to tools', async () => {
+      const ids: (string | undefined)[] = [];
+      const idTool: KritzelChatTool = {
+        name: 'which',
+        description: 'Records its call ID.',
+        inputSchema: { type: 'object', properties: {} },
+        run: async (_input, context) => {
+          ids.push(context.toolCallId);
+          return '{"completed":true}';
+        },
+      };
+      for (const stream of [false, true]) {
+        const session = new KritzelChatSession({ tools: [idTool], transport: createScriptedTransport([{ toolCalls: [{ tool: 'which' }] }, 'ok'], { stream }) });
+        session._attach(core);
+        await expect(settle(session.send('which'))).resolves.toEqual({ status: 'completed' });
+        session._detach();
+      }
+      expect(ids).toEqual(['scripted-1', 'scripted-1']);
+    });
+
+    it('streams scripted answers into the same messages', async () => {
+      const script = () => [{ text: 'Drawing two boxes.', toolCalls: [shapeCall(0, 'A'), shapeCall(300, 'B')], parts: [{ type: 'text' as const, text: 'More.' }] }, 'Done.'];
+      const shapeOf = (session: KritzelChatSession) =>
+        session.messages.map(message => (message.role === 'tool' ? resultsOf(message).map(result => [result.toolCallId, !!result.isError]) : message.parts));
+
+      const plain = new KritzelChatSession({ transport: createScriptedTransport(script()) });
+      plain._attach(core);
+      await expect(settle(plain.send('Draw'))).resolves.toEqual({ status: 'completed' });
+      plain._detach();
+
+      const events: string[] = [];
+      const transport = createScriptedTransport(script(), { stream: { chunkSize: 8 } });
+      const streamed = new KritzelChatSession({
+        transport: async (request, options) => {
+          const answer = (await transport(request, options)) as AsyncIterable<KritzelChatStreamEvent>;
+          return (async function* () {
+            for await (const event of answer) {
+              events.push(event.type);
+              yield event;
+            }
+          })();
+        },
+      });
+      streamed._attach(core);
+      const updates = record(streamed);
+      await expect(settle(streamed.send('Draw'))).resolves.toEqual({ status: 'completed' });
+
+      expect(shapeOf(streamed)).toEqual(shapeOf(plain));
+      expect(events.slice(0, 4)).toEqual(['text-delta', 'text-delta', 'text-delta', 'tool-call-start']);
+      expect(events.filter(type => type === 'part')).toHaveLength(3);
+      // The extra part follows the calls; then the answer finishes.
+      expect(events.slice(events.indexOf('finish') - 1, events.indexOf('finish') + 1)).toEqual(['part', 'finish']);
+      expect(lastOf(updates, 'scripted-1').inputText).toBe(JSON.stringify(shapeCall(0, 'A').input));
+      expect(map.allObjects()).toHaveLength(4);
+      expectEachEndsOnce(updates);
+    });
+
+    it('stops scripted streams between chunks', async () => {
+      const session = new KritzelChatSession({
+        transport: createScriptedTransport([{ text: 'A long answer that streams slowly.', toolCalls: [shapeCall(0)] }], { stream: { chunkSize: 4, chunkDelayMs: 20 } }),
+      });
+      session._attach(core);
+      jest.useFakeTimers({ doNotFake: ['performance', 'queueMicrotask', 'nextTick'] });
+      try {
+        const running = session.send('Draw');
+        await flushMicrotasks();
+        jest.advanceTimersByTime(30);
+        await flushMicrotasks();
+        session.stop();
+        await expect(running).resolves.toEqual({ status: 'stopped' });
+      } finally {
+        jest.useRealTimers();
+      }
+      expect(roles(session)).toEqual(['user']);
+      expect(map.allObjects()).toHaveLength(0);
+    });
+
+    describe('with an agent', () => {
+      it('runs streamed calls as the agent while the model still writes', async () => {
+        const agent = core.agentManager.add(new KritzelAgent({ id: 'claude', name: 'Claude' }));
+        const rest = gate();
+        const session = new KritzelChatSession({
+          agent,
+          instant: true,
+          transport: streams(async function* () {
+            yield* callEvents('c1', 'create_shape', shape(0));
+            await rest.promise;
+            yield { type: 'finish', stopReason: 'tool-calls' };
+          }),
+        });
+        session._attach(core);
+        const updates = record(session);
+        const userSteps = map.undoManager!.undoStack.length;
+
+        const running = session.send('Draw');
+        await until(() => lastOf(updates, 'c1')?.state === 'done');
+        expect(map.allObjects()).toHaveLength(1);
+        expect(agent.state.status).toBe('Thinking…');
+
+        rest.open();
+        await expect(settle(running)).resolves.toEqual({ status: 'completed' });
+        expect(agent.state.status).toBeNull();
+        expect(map.undoManager!.undoStack.length).toBe(userSteps);
+        expect(map.getAgentUndoStackLength('claude')).toBe(1);
+        expect(JSON.parse(resultsOf(session.messages[2])[0].output)).toMatchObject({ completed: true, objects: [{ createdBy: 'claude' }] });
+      });
+
+      it('rolls back the action of a streamed call that is stopped while it animates', async () => {
+        const agent = core.agentManager.add(new KritzelAgent({ id: 'claude', name: 'Claude' }));
+        const session = new KritzelChatSession({
+          agent,
+          transport: streams(async function* (signal) {
+            yield* callEvents('c1', 'create_shape', shape(800));
+            await abortion(signal);
+          }),
+        });
+        session._attach(core);
+        const updates = record(session);
+
+        const running = session.send('Draw');
+        await until(() => lastOf(updates, 'c1')?.state === 'running');
+        await step();
+        await step();
+        session.stop();
+
+        await expect(settle(running)).resolves.toEqual({ status: 'stopped' });
+        expect(map.allObjects()).toHaveLength(0);
+        expect(roles(session)).toEqual(['user', 'assistant', 'tool']);
+        expect(JSON.parse(resultsOf(session.messages[2])[0].output)).toMatchObject({ completed: false });
+        expect(lastOf(updates, 'c1')).toMatchObject({ state: 'done', ran: true });
+      });
     });
   });
 

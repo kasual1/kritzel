@@ -21,6 +21,7 @@ import {
 } from '../../interfaces/chat-session.interface';
 import { KritzelUserActor } from '../agent/user-actor.class';
 import { KritzelEventHelper } from '../../helpers/event.helper';
+import { ChatAnswer, isToolCallPart, normalizePart, type ChatAnswerRunOutcome } from './chat-answer';
 
 /** Brand of `KritzelChatSession`, also across bundle copies. */
 export const KRITZEL_CHAT_SESSION_BRAND = Symbol.for('kritzel.chatSession');
@@ -56,6 +57,9 @@ class RunEnd {
  * With an `agent`, the model acts as that agent (its own cursor, selection and history). Without one it works as
  * the user: instantly, on the user's selection, and each prompt's changes undo as one step of the user's history.
  *
+ * With a streaming transport, each tool call runs as soon as the model has written it, while the model goes on
+ * with the rest of its answer (see `eagerToolCalls`), and `'tool-call'` events report each call as it streams.
+ *
  * Bind it to an editor with the `chatSession` property; the chat box then sends its prompts to it.
  */
 export class KritzelChatSession {
@@ -65,6 +69,7 @@ export class KritzelChatSession {
 
   private readonly _options: KritzelChatSessionOptions;
   private readonly _maxSteps: number;
+  private readonly _eagerToolCalls: boolean;
   private _messages: KritzelChatMessage[];
   private _core: KritzelCore | null = null;
   private _userActor: KritzelUserActor | null = null;
@@ -87,6 +92,7 @@ export class KritzelChatSession {
     }
     this._options = { ...options };
     this._maxSteps = maxSteps;
+    this._eagerToolCalls = options.eagerToolCalls ?? true;
     this._messages = closeOpenToolCalls(options.messages ?? []);
   }
 
@@ -284,47 +290,30 @@ export class KritzelChatSession {
         ...this.resolveContext(),
       };
 
-      const message = await this.withThinkingStatus(() => this.callTransport(request, signal));
-      this.throwIfEnded(signal);
+      const answer = new ChatAnswer({
+        eager: this._eagerToolCalls,
+        signal,
+        stoppedOutput: STOPPED_OUTPUT,
+        interruptedOutput: INTERRUPTED_OUTPUT,
+        report: update => this.emit('tool-call', update),
+        run: (call, onRunning) => this.runCall(call, byName, signal, onRunning),
+      });
+      let message: KritzelChatMessage;
+      try {
+        message = await this.withThinkingStatus(() => this.callTransport(request, signal, answer));
+        this.throwIfEnded(signal);
+      } catch (error) {
+        await this.endAnswerEarly(answer, signal);
+        throw error;
+      }
       const assistant: KritzelChatMessage = { ...message, role: 'assistant', parts: (message.parts ?? []).map(normalizePart) };
       this.pushMessage(assistant);
 
-      const calls = assistant.parts.filter((part): part is KritzelChatToolCallPart => part.type === 'tool-call');
+      const calls = assistant.parts.filter(isToolCallPart);
+      // Calls of a streamed answer may have run already; the others run now, one after another.
+      const results = await answer.runRest(calls);
       if (calls.length === 0) {
         return { status: 'completed' };
-      }
-      const results: KritzelChatToolResultPart[] = [];
-      for (const call of calls) {
-        if (signal.aborted) {
-          results.push({ type: 'tool-result', toolCallId: call.id, name: call.name, output: STOPPED_OUTPUT, isError: true });
-          continue;
-        }
-        const tool = byName.get(call.name);
-        if (!tool) {
-          results.push({
-            type: 'tool-result',
-            toolCallId: call.id,
-            name: call.name,
-            output: JSON.stringify({ completed: false, reason: 'unknown-tool', message: `There is no tool "${call.name}".` }),
-            isError: true,
-          });
-          continue;
-        }
-        try {
-          const output = await tool.run(call.input, { signal });
-          results.push({ type: 'tool-result', toolCallId: call.id, name: call.name, output: typeof output === 'string' ? output : JSON.stringify(output) });
-        } catch (error) {
-          results.push({
-            type: 'tool-result',
-            toolCallId: call.id,
-            name: call.name,
-            output: JSON.stringify({ completed: false, reason: 'error', message: error instanceof Error ? error.message : String(error) }),
-            isError: true,
-          });
-          if (!(error instanceof Error && error.name === 'AbortError')) {
-            console.error(`[Kritzel] Chat tool "${call.name}" failed:`, error);
-          }
-        }
       }
       this.pushMessage({ role: 'tool', parts: results });
       this.throwIfEnded(signal);
@@ -338,12 +327,12 @@ export class KritzelChatSession {
     }
   }
 
-  private async callTransport(request: KritzelChatRequest, signal: AbortSignal): Promise<KritzelChatMessage> {
-    let answer: KritzelChatResponse | AsyncIterable<KritzelChatStreamEvent>;
+  private async callTransport(request: KritzelChatRequest, signal: AbortSignal, answer: ChatAnswer): Promise<KritzelChatMessage> {
+    let response: KritzelChatResponse | AsyncIterable<KritzelChatStreamEvent>;
     try {
-      answer = await this._options.transport(request, { signal });
-      if (isAsyncIterable(answer)) {
-        return await collectStream(answer, signal);
+      response = await this._options.transport(request, { signal });
+      if (isAsyncIterable(response)) {
+        return await answer.read(response, signal);
       }
     } catch (error) {
       if (signal.aborted) {
@@ -351,10 +340,72 @@ export class KritzelChatSession {
       }
       throw error;
     }
-    if (!answer || typeof answer !== 'object' || !answer.message || !Array.isArray(answer.message.parts)) {
+    if (!response || typeof response !== 'object' || !response.message || !Array.isArray(response.message.parts)) {
       throw new Error('The chat transport returned no message.');
     }
-    return answer.message;
+    return response.message;
+  }
+
+  /**
+   * The answer ended early (stopped, detached, failed). Once one of its calls ran, the answer read so far and the
+   * results of its complete calls are kept, so the conversation matches the canvas; calls that did not start get
+   * a stopped or interrupted result. Otherwise the answer is dropped.
+   */
+  private async endAnswerEarly(answer: ChatAnswer, signal: AbortSignal): Promise<void> {
+    answer.halt(signal.aborted ? STOPPED_OUTPUT : INTERRUPTED_OUTPUT);
+    if (!answer.executed) {
+      await answer.settled();
+      return;
+    }
+    const partial = answer.partial();
+    const assistant: KritzelChatMessage = { ...partial, role: 'assistant', parts: partial.parts.map(normalizePart) };
+    const results = answer.runRest(assistant.parts.filter(isToolCallPart));
+    this.pushMessage(assistant);
+    this.pushMessage({ role: 'tool', parts: await results });
+  }
+
+  /** Runs one tool call. Never rejects: failures become error results the model reads. */
+  private async runCall(
+    call: KritzelChatToolCallPart,
+    byName: Map<string, KritzelAgentTool>,
+    signal: AbortSignal,
+    onRunning: () => void,
+  ): Promise<ChatAnswerRunOutcome> {
+    const tool = byName.get(call.name);
+    if (!tool) {
+      return {
+        result: {
+          type: 'tool-result',
+          toolCallId: call.id,
+          name: call.name,
+          output: JSON.stringify({ completed: false, reason: 'unknown-tool', message: `There is no tool "${call.name}".` }),
+          isError: true,
+        },
+        ran: false,
+      };
+    }
+    onRunning();
+    try {
+      const output = await tool.run(call.input, { signal, toolCallId: call.id });
+      return {
+        result: { type: 'tool-result', toolCallId: call.id, name: call.name, output: typeof output === 'string' ? output : JSON.stringify(output) },
+        ran: true,
+      };
+    } catch (error) {
+      if (!(error instanceof Error && error.name === 'AbortError')) {
+        console.error(`[Kritzel] Chat tool "${call.name}" failed:`, error);
+      }
+      return {
+        result: {
+          type: 'tool-result',
+          toolCallId: call.id,
+          name: call.name,
+          output: JSON.stringify({ completed: false, reason: 'error', message: error instanceof Error ? error.message : String(error) }),
+          isError: true,
+        },
+        ran: true,
+      };
+    }
   }
 
   private async withThinkingStatus<T>(fn: () => Promise<T>): Promise<T> {
@@ -405,7 +456,8 @@ export class KritzelChatSession {
       inputSchema: tool.inputSchema,
       run: async (input, context) => {
         const signal = context?.signal ?? new AbortController().signal;
-        return tool.run(input, { signal, actor: this.toolActor(signal) });
+        const toolCallId = context?.toolCallId;
+        return tool.run(input, { signal, actor: this.toolActor(signal), ...(toolCallId ? { toolCallId } : {}) });
       },
     };
   }
@@ -516,48 +568,6 @@ function cloneMessage(message: KritzelChatMessage): KritzelChatMessage {
   return { ...message, parts: (message.parts ?? []).map(part => ({ ...part })) };
 }
 
-let generatedCallIds = 0;
-
-function normalizePart(part: KritzelChatPart): KritzelChatPart {
-  if (part.type === 'tool-call' && (typeof part.id !== 'string' || part.id === '')) {
-    return { ...part, id: `call-${Date.now().toString(36)}-${++generatedCallIds}` };
-  }
-  return { ...part };
-}
-
 function isAsyncIterable(value: unknown): value is AsyncIterable<KritzelChatStreamEvent> {
   return typeof value === 'object' && value !== null && typeof (value as AsyncIterable<unknown>)[Symbol.asyncIterator] === 'function';
-}
-
-/** Buffers a streamed answer into one message (protocol version 1). */
-async function collectStream(stream: AsyncIterable<KritzelChatStreamEvent>, signal: AbortSignal): Promise<KritzelChatMessage> {
-  let parts: KritzelChatPart[] = [];
-  let providerData: KritzelChatMessage['providerData'];
-  for await (const event of stream) {
-    if (signal.aborted) {
-      break;
-    }
-    if (!event || typeof event !== 'object') {
-      continue;
-    }
-    if (event.type === 'text-delta') {
-      const last = parts[parts.length - 1];
-      if (last && last.type === 'text') {
-        parts[parts.length - 1] = { ...last, text: last.text + event.text };
-      } else {
-        parts.push({ type: 'text', text: event.text });
-      }
-    } else if (event.type === 'part') {
-      parts.push(event.part);
-    } else if (event.type === 'message') {
-      parts = [...event.message.parts];
-      providerData = event.message.providerData;
-    } else if (event.type === 'finish') {
-      if (event.providerData) {
-        providerData = { ...providerData, ...event.providerData };
-      }
-      break;
-    }
-  }
-  return { role: 'assistant', parts, ...(providerData ? { providerData } : {}) };
 }

@@ -98,11 +98,36 @@ export interface KritzelChatResponse {
 }
 
 /**
- * An event of a streamed answer. Text deltas are joined into text parts; `part` adds a complete part (e.g. a
- * tool call); `message` replaces everything streamed so far; `finish` ends the answer.
+ * An event of a streamed answer.
+ * - `text-delta`: joined into text parts.
+ * - `tool-call-start`, `tool-call-delta` (optional): the model began a tool call, or wrote more of its input as
+ *   JSON text. They let the app follow a call while the model writes it; a call never runs from them alone.
+ * - `part`: a complete part, e.g. a tool call. A tool-call part with the ID of a started call completes that call;
+ *   its name and input win over the start and the deltas. The call can run right away (see `eagerToolCalls`), so
+ *   a part is final: don't take it back later.
+ * - `message`: replaces everything streamed so far. Calls it leaves out are dropped unless they already started
+ *   running; calls it adds run once the answer has ended. Give tool calls IDs when you send them both as parts
+ *   and in a message.
+ * - `finish`: ends the answer.
+ *
+ * Close every call you start with its part. When its input is not valid JSON (or was cut off), send the raw
+ * text as a string `input`: the tool answers with an error the model can act on. A started call without a part
+ * when the answer ends is dropped. Events without an ID, and of other types, are ignored.
  */
 export type KritzelChatStreamEvent =
   | { type: 'text-delta'; text: string }
+  | {
+      type: 'tool-call-start';
+      /** Unique within the conversation; the call's deltas and its part repeat it. */
+      id: string;
+      name: string;
+    }
+  | {
+      type: 'tool-call-delta';
+      id: string;
+      /** More of the input's JSON text; the deltas joined are the input as written so far. */
+      inputDelta: string;
+    }
   | { type: 'part'; part: KritzelChatPart }
   | { type: 'message'; message: KritzelChatMessage }
   | { type: 'finish'; stopReason?: KritzelChatStopReason; providerData?: KritzelChatProviderData };
@@ -115,7 +140,8 @@ export interface KritzelChatTransportOptions {
 
 /**
  * Sends one model step to your server, which holds the API key and talks to the model. Returns the answer, or
- * a stream of events (version 1 waits for the whole stream before running tools).
+ * a stream of events. Each tool call of a streamed answer runs as soon as its part arrives, while the stream
+ * goes on (see `eagerToolCalls`); the calls of a whole answer run once it is in.
  */
 export type KritzelChatTransport = (
   request: KritzelChatRequest,
@@ -184,6 +210,12 @@ export interface KritzelChatSessionOptions {
   instant?: boolean;
   /** Agent mode: the agent's status while the model thinks. `false` keeps the status. Defaults to `'Thinking…'`. */
   thinkingStatus?: string | false;
+  /**
+   * Streamed answers: runs each tool call as soon as its part arrives, while the model is still writing the rest
+   * of the answer. Defaults to `true`. `false` runs the calls once the answer has ended, like those of answers
+   * that are not streamed, e.g. for a server whose model can take back calls it already sent.
+   */
+  eagerToolCalls?: boolean;
 }
 
 /** What to send: text, or text with chips and images. */
@@ -208,12 +240,44 @@ export interface KritzelChatSendResult {
   error?: unknown;
 }
 
+/** Where a tool call of a streamed answer is. */
+export type KritzelChatToolCallState = 'started' | 'input' | 'ready' | 'running' | 'done' | 'discarded';
+
+/**
+ * Progress of a tool call of a streamed answer. A call is reported `'started'`, `'input'` for each piece of its
+ * input, and `'ready'` once its part arrived (again if a `message` event changed it). `'running'` comes right
+ * before its tool runs, which can be while the answer still streams. Each call ends exactly once: `'done'` (it
+ * has its result) or `'discarded'` (it is not part of the conversation and never ran: its part never arrived, or
+ * a `message` event left it out). Calls of answers that are not streamed are not reported.
+ */
+export interface KritzelChatToolCallUpdate {
+  /** As in the tool-call part and its tool result. */
+  id: string;
+  name: string;
+  state: KritzelChatToolCallState;
+  /** The input streamed so far as JSON text (the joined deltas); usually incomplete before `'ready'`. */
+  inputText: string;
+  /** With `'input'`: the text that just arrived. */
+  inputDelta?: string;
+  /** From `'ready'` on: the input of the tool-call part (an object or a JSON string). */
+  input?: unknown;
+  /** With `'done'`: the result the model gets. */
+  result?: KritzelChatToolResultPart;
+  /** With `'done'`: whether the tool ran (`false`: the prompt ended first, or there is no such tool). */
+  ran?: boolean;
+}
+
 /** Events of a `KritzelChatSession`. */
 export interface KritzelChatSessionEventMap {
   /** Messages or `running` changed. */
   change: void;
   /** A message was added. */
   message: KritzelChatMessage;
+  /**
+   * A tool call of a streamed answer made progress: once per input delta while the model writes it, and before
+   * the answer is in `messages`. Throttle what you render from it.
+   */
+  'tool-call': KritzelChatToolCallUpdate;
   /** A prompt ended. */
   end: KritzelChatSendResult;
 }

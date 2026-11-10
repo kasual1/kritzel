@@ -125,6 +125,8 @@ export type KritzelAgentToolSchema = {
 /** Context passed by tool runners; the signal aborts the action like `options.signal`. */
 export interface KritzelAgentToolContext {
   signal?: AbortSignal | null;
+  /** The ID of the tool call being run, when the runner has one. A chat session always passes it. */
+  toolCallId?: string;
 }
 
 /**
