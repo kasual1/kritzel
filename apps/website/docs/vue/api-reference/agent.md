@@ -379,6 +379,7 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | prefix | string | `''` | Put in front of every tool name, for example `'kritzel_'`, to avoid clashes with other tools. |
 | maxTextLength | number | `2000` | Longest `text` that `create_shape`, `create_text`, or `type_text` may type. Longer input is rejected with `'invalid-input'`. |
 | instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. |
+| viewport | boolean | `true` | Offers `set_viewport` and `fit_viewport`, which pan and zoom the local user's view. |
 
 | Tool | Runs | Input |
 |------|------|-------|
@@ -402,6 +403,8 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | delete_objects | [`deleteObjects()`](#deleteobjects) | `objectIds` |
 | undo | [`undo()`](#undo) | — |
 | redo | [`redo()`](#redo) | — |
+| set_viewport | The engine's viewport | `x?`, `y?` (together), `zoom?` or `zoomBy?` |
+| fit_viewport | The engine's viewport | `objectIds?` (all objects when left out), `maxZoom?` (default `1`) |
 
 `addObject()` has no tool, because it needs an object that the app builds. A target (`target`, `to`) is one object in the schema: a point `{ x, y }` or a point on an object `{ objectId, anchor?, offset? }`, where `objectId` wins. Colors are CSS color strings.
 
@@ -410,6 +413,7 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 - It accepts the input as an object or as a JSON string, as some providers send it. `null` counts as a missing field. Unknown fields, missing required fields, and invalid values resolve with `reason: 'invalid-input'` and a `message` that names the field.
 - An action tool runs [`perform()`](#perform) with the `signal` of the context. Calls that run in parallel queue up in call order, and `observe_canvas` waits until the queued actions of the agent are done, so its snapshot shows their result.
 - An action tool resolves with a [`KritzelAgentToolResult`](#kritzelagenttoolresult) as JSON. On success, it has the `objectIds` of the action and, except for `click`, `select`, `clear_selection`, and `delete_objects`, the `objects` that were created or changed (up to 10). On failure, it has the `reason`, the `objectIds` that caused it, and a `hint` from [`AGENT_TOOL_REASON_HINTS`](#agent_tool_reason_hints). Inside [`task()`](#task), refusals are reported the same way instead of being thrown.
+- `set_viewport` and `fit_viewport` move only the view of the local user, never objects, and never the view of collaborators. They wait until the queued actions of the agent are done, so they can show what the same reply created, and resolve with `{ completed: true, viewport }`, the visible area as `observe_canvas` reports it. The zoom is clamped to the allowed range.
 - `observe_canvas` resolves with a [`KritzelCanvasSnapshot`](#kritzelcanvassnapshot) as JSON. It uses the defaults of `observe()`; `maxTextLength` of `tools()` does not change them.
 - It never rejects for mistakes of the model, only for unexpected errors.
 

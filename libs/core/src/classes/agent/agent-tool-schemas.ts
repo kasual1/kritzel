@@ -453,3 +453,50 @@ export const OBSERVE_CANVAS_SCHEMA: KritzelAgentToolSchema = object<{ scope?: st
   scope: opt({ type: 'string', enum: ['all', 'viewport'], description: "'all' (default) or only what the user sees." }),
   objectIds: opt({ ...ids, description: 'Only these objects (and their group children).' }),
 }) as KritzelAgentToolSchema;
+
+// ─── Viewport tools (pan and zoom the local user's view) ─────────────────────
+
+/** Input of `set_viewport`. */
+export interface KritzelSetViewportToolInput {
+  x?: number;
+  y?: number;
+  zoom?: number;
+  zoomBy?: number;
+}
+
+/** Input of `fit_viewport`. */
+export interface KritzelFitViewportToolInput {
+  objectIds?: string[];
+  maxZoom?: number;
+}
+
+export const SET_VIEWPORT_TOOL_NAME = 'set_viewport';
+export const FIT_VIEWPORT_TOOL_NAME = 'fit_viewport';
+
+const VIEWPORT_DESCRIPTION_TAIL =
+  'Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport ' +
+  '(visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.';
+
+/** The description of `set_viewport`. */
+export const SET_VIEWPORT_TOOL_DESCRIPTION =
+  "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. " +
+  "Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. " +
+  VIEWPORT_DESCRIPTION_TAIL;
+
+/** The description of `fit_viewport`. */
+export const FIT_VIEWPORT_TOOL_DESCRIPTION =
+  "Pans and zooms the user's view so that the given objects (or, without objectIds, all objects on the canvas) are fully " +
+  'visible and centered, with some padding. Use it to show the user something or to zoom out to the whole board. ' +
+  VIEWPORT_DESCRIPTION_TAIL;
+
+export const SET_VIEWPORT_TOOL_SCHEMA: KritzelAgentToolSchema = object<KritzelSetViewportToolInput>({
+  x: opt(num('World x of the new center; give it together with y. Defaults to the current center.')),
+  y: opt(num('World y of the new center; give it together with x.')),
+  zoom: opt(positive('Absolute zoom level: 1 is 100%, 2 is 200%, 0.5 is 50%. Not together with zoomBy.')),
+  zoomBy: opt(positive('Multiplies the current zoom: greater than 1 zooms in, less than 1 zooms out.')),
+}) as KritzelAgentToolSchema;
+
+export const FIT_VIEWPORT_TOOL_SCHEMA: KritzelAgentToolSchema = object<KritzelFitViewportToolInput>({
+  objectIds: opt({ ...ids, description: 'Objects to show (also inside groups). Leave out to fit all objects.' }),
+  maxZoom: opt(positive('Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%).')),
+}) as KritzelAgentToolSchema;

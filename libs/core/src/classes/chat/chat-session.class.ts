@@ -461,8 +461,12 @@ export class KritzelChatSession {
 
   private buildTools(): KritzelAgentTool[] {
     const instant = !!this._options.instant;
-    const { images, iframes } = this._options.canvasTools ?? {};
-    const optional = { ...(images !== undefined ? { images } : {}), ...(iframes !== undefined ? { iframes } : {}) };
+    const { images, iframes, viewport } = this._options.canvasTools ?? {};
+    const optional = {
+      ...(images !== undefined ? { images } : {}),
+      ...(iframes !== undefined ? { iframes } : {}),
+      ...(viewport !== undefined ? { viewport } : {}),
+    };
     const canvas = this._options.agent
       ? this._options.agent.tools({ ...optional, instant })
       : this._userActor

@@ -474,7 +474,8 @@ export class KritzelAgent implements IKritzelUser {
 
   /**
    * Tool definitions for any LLM framework: `observe_canvas` plus one tool per action (`create_shape`,
-   * `move_object`, `connect`, `set_style`, …). Hand `name`, `description` and `inputSchema` to the model and
+   * `move_object`, `connect`, `set_style`, …) and the viewport tools `set_viewport` and `fit_viewport`, which pan
+   * and zoom the local user's view. Hand `name`, `description` and `inputSchema` to the model and
    * call `run(input, { signal })` with its input; the result is JSON for the model. `only` limits what the
    * model may do.
    */

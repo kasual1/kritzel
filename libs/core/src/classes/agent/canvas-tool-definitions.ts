@@ -7,15 +7,34 @@ import {
   CREATE_IFRAME_TOOL_NAME,
   CREATE_IFRAME_TOOL_SCHEMA,
   CREATE_IMAGE_TOOL_NAME,
+  FIT_VIEWPORT_TOOL_DESCRIPTION,
+  FIT_VIEWPORT_TOOL_NAME,
+  FIT_VIEWPORT_TOOL_SCHEMA,
   OBSERVE_CANVAS_SCHEMA,
+  SET_VIEWPORT_TOOL_DESCRIPTION,
+  SET_VIEWPORT_TOOL_NAME,
+  SET_VIEWPORT_TOOL_SCHEMA,
   agentToolInputSchema,
   createImageToolDescription,
   createImageToolSchema,
   type KritzelAgentToolSpec,
   type KritzelCreateIframeToolInput,
   type KritzelCreateImageToolInput,
+  type KritzelFitViewportToolInput,
+  type KritzelSetViewportToolInput,
 } from './agent-tool-schemas';
-import { defineCanvasTool, toolInput, type KritzelCanvasToolDefinition, type KritzelCanvasToolEnv } from './canvas-tool';
+import {
+  defineCanvasTool,
+  formatAgentToolResult,
+  toolInput,
+  type KritzelCanvasToolContext,
+  type KritzelCanvasToolDefinition,
+  type KritzelCanvasToolEnv,
+} from './canvas-tool';
+import { describeViewport } from './agent-snapshot';
+import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
+import type { KritzelCore } from '../core/core.class';
+import type { KritzelViewport } from '../core/viewport.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelIframeObject, type KritzelIframeObjectConfig } from '../objects/iframe.class';
 
@@ -265,6 +284,154 @@ function placeholderBox(input: { x?: unknown; y?: unknown; width?: unknown; heig
   return { translateX: x, translateY: y, width, height };
 }
 
+// ─── set_viewport and fit_viewport ───────────────────────────────────────────
+
+/** How long a viewport tool animates the view, unless the tools are instant. */
+const VIEWPORT_ANIMATION_MS = 300;
+
+/** Where a viewport tool moves the view: the world point at its center and the scale. */
+interface KritzelViewportToolTarget {
+  x: number;
+  y: number;
+  scale: number;
+}
+
+function viewportToolsEnabled(options: KritzelCanvasToolEnv['options']): boolean {
+  // `null` counts as absent (the default), as in `images`.
+  return options.viewport ?? true;
+}
+
+/**
+ * Moves the local user's view to a target and answers with the new viewport. Waits for the actor's queued actions
+ * first, so the view can show (and fit) what the same reply created. `resolve` returns the target, or an answer
+ * when the view cannot move.
+ */
+async function moveViewport(
+  ctx: KritzelCanvasToolContext,
+  resolve: (core: KritzelCore, viewport: KritzelViewport) => KritzelViewportToolTarget | string,
+): Promise<string> {
+  try {
+    if (!ctx.isAdded) {
+      return ctx.removedResult();
+    }
+    await ctx.whenIdle();
+    if (!ctx.isAdded) {
+      return ctx.removedResult();
+    }
+    if (ctx.signal?.aborted) {
+      return ctx.refusalResult('aborted');
+    }
+    const core = ctx.core;
+    const viewport = core?.engine?.viewport;
+    const map = core?.store.objects;
+    if (!core || !viewport || !map?.isReady) {
+      return ctx.refusalResult('engine-disconnected');
+    }
+    const target = resolve(core, viewport);
+    if (typeof target === 'string') {
+      return target;
+    }
+    const resolved = viewport.resolveViewportTarget(target.x, target.y, target.scale);
+    await viewport.animateViewportTo(resolved.translateX, resolved.translateY, resolved.scale, ctx.instant ? 0 : VIEWPORT_ANIMATION_MS);
+    return formatAgentToolResult({ completed: true, viewport: describeViewport(core) });
+  } catch (error) {
+    if (!ctx.isAdded) {
+      return ctx.removedResult();
+    }
+    return ctx.errorResult(error);
+  }
+}
+
+/** The world point at the center of the local user's view. */
+function viewportCenter(core: KritzelCore): { x: number; y: number } {
+  const { translateX, translateY, viewportWidth, viewportHeight } = core.store.state;
+  const scale = core.store.state.scale || 1;
+  return { x: (viewportWidth / 2 - translateX) / scale, y: (viewportHeight / 2 - translateY) / scale };
+}
+
+/** Centers the local user's view on a world point and/or sets its zoom. */
+export const setViewportTool = defineCanvasTool<KritzelSetViewportToolInput, KritzelSetViewportToolInput>({
+  name: SET_VIEWPORT_TOOL_NAME,
+  enabled: viewportToolsEnabled,
+  description: SET_VIEWPORT_TOOL_DESCRIPTION,
+  inputSchema: SET_VIEWPORT_TOOL_SCHEMA,
+  removedFirst: true,
+  example: { x: 100, y: 50, zoomBy: 0.5 },
+  prepare: (input, ctx) => {
+    if ((input.x === undefined) !== (input.y === undefined)) {
+      ctx.invalid('Give x and y together, or neither.');
+    }
+    if (input.zoom !== undefined && input.zoomBy !== undefined) {
+      ctx.invalid('Give zoom or zoomBy, not both.');
+    }
+    if (input.x === undefined && input.zoom === undefined && input.zoomBy === undefined) {
+      ctx.invalid('Give a center (x and y), zoom or zoomBy.');
+    }
+    return {
+      x: input.x === undefined ? undefined : toolInput.finite(input.x, 'x'),
+      y: input.y === undefined ? undefined : toolInput.finite(input.y, 'y'),
+      zoom: input.zoom === undefined ? undefined : toolInput.positive(input.zoom, 'zoom'),
+      zoomBy: input.zoomBy === undefined ? undefined : toolInput.positive(input.zoomBy, 'zoomBy'),
+    };
+  },
+  execute: (input, ctx) =>
+    moveViewport(ctx, core => {
+      const center = input.x !== undefined && input.y !== undefined ? { x: input.x, y: input.y } : viewportCenter(core);
+      const current = core.store.state.scale || 1;
+      const scale = input.zoom ?? (input.zoomBy !== undefined ? current * input.zoomBy : current);
+      return { ...center, scale };
+    }),
+});
+
+/** Pans and zooms the local user's view to fit objects, or all objects. */
+export const fitViewportTool = defineCanvasTool<KritzelFitViewportToolInput, { objectIds?: string[]; maxZoom: number }>({
+  name: FIT_VIEWPORT_TOOL_NAME,
+  enabled: viewportToolsEnabled,
+  description: FIT_VIEWPORT_TOOL_DESCRIPTION,
+  inputSchema: FIT_VIEWPORT_TOOL_SCHEMA,
+  removedFirst: true,
+  example: { objectIds: ['a'], maxZoom: 2 },
+  prepare: input => ({
+    objectIds: input.objectIds,
+    maxZoom: input.maxZoom === undefined ? 1 : toolInput.positive(input.maxZoom, 'maxZoom'),
+  }),
+  execute: (input, ctx) =>
+    moveViewport(ctx, (core, viewport) => {
+      let objects;
+      if (input.objectIds) {
+        const missing: string[] = [];
+        objects = input.objectIds.map(id => {
+          const object = core.store.objects.findById(id);
+          if (!object || isSelectionObject(object)) {
+            missing.push(id);
+          }
+          return object;
+        });
+        if (missing.length > 0) {
+          return ctx.refusalResult('invalid-target', missing);
+        }
+      } else {
+        objects = core.store.allNonSelectionObjects;
+        if (objects.length === 0) {
+          ctx.invalid('The canvas has no objects to fit. Use set_viewport to move the view.');
+        }
+      }
+      let minX = Infinity;
+      let minY = Infinity;
+      let maxX = -Infinity;
+      let maxY = -Infinity;
+      for (const object of objects) {
+        const box = object!.rotatedBoundingBox;
+        minX = Math.min(minX, box.x);
+        minY = Math.min(minY, box.y);
+        maxX = Math.max(maxX, box.x + box.width);
+        maxY = Math.max(maxY, box.y + box.height);
+      }
+      const scale = Math.min(viewport.getFitScale(maxX - minX, maxY - minY), input.maxZoom);
+      return { x: (minX + maxX) / 2, y: (minY + maxY) / 2, scale };
+    }),
+});
+
 // ─── All built-ins ───────────────────────────────────────────────────────────
 
 /** The built-in canvas tools, in the order models get them. */
@@ -273,4 +440,6 @@ export const KRITZEL_CANVAS_TOOLS: readonly KritzelCanvasToolDefinition[] = Obje
   ...actionTools(),
   createImageTool,
   createIframeTool,
+  setViewportTool,
+  fitViewportTool,
 ]);
