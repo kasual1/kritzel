@@ -792,6 +792,234 @@ exports[`agent tools contract as agent offers the same tools with default 1`] = 
     "name": "connect",
   },
   {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "edit_line",
+  },
+  {
     "description": "Restyles top-level objects; a group restyles its children.",
     "inputSchema": {
       "additionalProperties": false,
@@ -1741,6 +1969,234 @@ exports[`agent tools contract as agent offers the same tools with iframes 1`] = 
       "type": "object",
     },
     "name": "connect",
+  },
+  {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "edit_line",
   },
   {
     "description": "Restyles top-level objects; a group restyles its children.",
@@ -2744,6 +3200,234 @@ exports[`agent tools contract as agent offers the same tools with image urls 1`]
     "name": "connect",
   },
   {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "edit_line",
+  },
+  {
     "description": "Restyles top-level objects; a group restyles its children.",
     "inputSchema": {
       "additionalProperties": false,
@@ -3697,6 +4381,234 @@ exports[`agent tools contract as agent offers the same tools with no images 1`] 
       "type": "object",
     },
     "name": "connect",
+  },
+  {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "edit_line",
   },
   {
     "description": "Restyles top-level objects; a group restyles its children.",
@@ -4771,6 +5683,234 @@ exports[`agent tools contract as agent offers the same tools with prefix 1`] = `
     "name": "k_connect",
   },
   {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "k_draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "k_edit_line",
+  },
+  {
     "description": "Restyles top-level objects; a group restyles its children.",
     "inputSchema": {
       "additionalProperties": false,
@@ -5649,6 +6789,234 @@ exports[`agent tools contract as user offers the same tools with default 1`] = `
     "name": "connect",
   },
   {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "edit_line",
+  },
+  {
     "description": "Restyles top-level objects; a group restyles its children.",
     "inputSchema": {
       "additionalProperties": false,
@@ -6475,6 +7843,234 @@ exports[`agent tools contract as user offers the same tools with iframes 1`] = `
       "type": "object",
     },
     "name": "connect",
+  },
+  {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "edit_line",
   },
   {
     "description": "Restyles top-level objects; a group restyles its children.",
@@ -7355,6 +8951,234 @@ exports[`agent tools contract as user offers the same tools with image urls 1`] 
     "name": "connect",
   },
   {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "edit_line",
+  },
+  {
     "description": "Restyles top-level objects; a group restyles its children.",
     "inputSchema": {
       "additionalProperties": false,
@@ -8185,6 +10009,234 @@ exports[`agent tools contract as user offers the same tools with no images 1`] =
       "type": "object",
     },
     "name": "connect",
+  },
+  {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "edit_line",
   },
   {
     "description": "Restyles top-level objects; a group restyles its children.",
@@ -9125,6 +11177,234 @@ exports[`agent tools contract as user offers the same tools with prefix 1`] = `
       "type": "object",
     },
     "name": "k_connect",
+  },
+  {
+    "description": "Draws a straight or curved line or arrow from \`from\` to \`to\`, like the line tool. Each end is a free point or an object; an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "Start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "style": {
+          "additionalProperties": false,
+          "properties": {
+            "arrows": {
+              "additionalProperties": false,
+              "description": "Arrow heads at the ends of the line.",
+              "properties": {
+                "end": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+                "start": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "enabled": {
+                      "description": "Whether this end has an arrow head.",
+                      "type": "boolean",
+                    },
+                    "size": {
+                      "description": "Head size. Defaults to 3 x the stroke width. Greater than 0.",
+                      "type": "number",
+                    },
+                    "style": {
+                      "description": "Defaults to 'triangle'.",
+                      "enum": [
+                        "triangle",
+                        "open",
+                        "diamond",
+                        "circle",
+                      ],
+                      "type": "string",
+                    },
+                  },
+                  "required": [
+                    "enabled",
+                  ],
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "opacity": {
+              "description": "0 (transparent) to 1 (opaque).",
+              "type": "number",
+            },
+            "strokeColor": {
+              "description": "Line color. Any CSS color, e.g. "#1e88e5" or "tomato".",
+              "type": "string",
+            },
+            "strokeWidth": {
+              "description": "Line width. Greater than 0.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it. Straight when left out.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "End; not the same object as \`from\`. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "from",
+        "to",
+      ],
+      "type": "object",
+    },
+    "name": "k_draw_line",
+  },
+  {
+    "description": "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "from": {
+          "additionalProperties": false,
+          "description": "New start. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        "lineId": {
+          "description": "ID of a top-level line.",
+          "type": "string",
+        },
+        "straight": {
+          "description": "Removes the curve. Not together with \`through\`.",
+          "type": "boolean",
+        },
+        "through": {
+          "additionalProperties": false,
+          "description": "World point the line curves through, halfway along it.",
+          "properties": {
+            "x": {
+              "description": "World x.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y.",
+              "type": "number",
+            },
+          },
+          "required": [
+            "x",
+            "y",
+          ],
+          "type": "object",
+        },
+        "to": {
+          "additionalProperties": false,
+          "description": "New end. Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.",
+          "properties": {
+            "objectId": {
+              "description": "Object the end attaches to. Lines cannot be ends.",
+              "type": "string",
+            },
+            "x": {
+              "description": "World x of a free end.",
+              "type": "number",
+            },
+            "y": {
+              "description": "World y of a free end.",
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+      },
+      "required": [
+        "lineId",
+      ],
+      "type": "object",
+    },
+    "name": "k_edit_line",
   },
   {
     "description": "Restyles top-level objects; a group restyles its children.",

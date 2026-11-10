@@ -10,6 +10,9 @@ import { KritzelGroup } from '../objects/group.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelClipboardManager } from './clipboard.manager';
+import { lineMidpoint, readLineGeometry } from '../executors/line-handles';
+import { drawLineExecutor } from '../executors/draw-line.executor';
+import { editLineExecutor } from '../executors/edit-line.executor';
 
 /** How the test agent's cursor looks; agents own these values in the editor. */
 const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };
@@ -633,6 +636,149 @@ describe('agentic create and transform actions', () => {
       expect(map.allObjects().some((o: any) => o instanceof KritzelLine)).toBe(false);
     });
   });
+  describe('drawLine and editLine', () => {
+    const geometryOf = (id: string) => readLineGeometry(core, map.findById(id) as KritzelLine);
+    const center = (shape: KritzelShape) => ({ x: shape.centerX, y: shape.centerY });
+    const expectPoint = (actual: { x: number; y: number }, expected: { x: number; y: number }) => {
+      expect(actual.x).toBeCloseTo(expected.x, 3);
+      expect(actual.y).toBeCloseTo(expected.y, 3);
+    };
+
+    it('draws a free line between two points, without anchors', async () => {
+      const result = await perform({ type: 'drawLine', from: { x: 10, y: 20 }, to: { x: 210, y: 120 } });
+
+      const line = map.findById(result.objectIds![0]) as KritzelLine;
+      expect(line).toBeInstanceOf(KritzelLine);
+      expect(line.startAnchor).toBeUndefined();
+      expect(line.endAnchor).toBeUndefined();
+      expectPoint(geometryOf(line.id).start, { x: 10, y: 20 });
+      expectPoint(geometryOf(line.id).end, { x: 210, y: 120 });
+      expect(geometryOf(line.id).control).toBeUndefined();
+    });
+
+    it('anchors only the end on an object, which then follows the object', async () => {
+      const box = addShape(300, 0, 50, 50);
+      const result = await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { objectId: box.id } }, {});
+      const id = result.objectIds![0];
+
+      const line = map.findById(id) as KritzelLine;
+      expect(line.startAnchor).toBeUndefined();
+      expect(line.endAnchor).toEqual({ objectId: box.id });
+      expectPoint(geometryOf(id).end, center(box));
+
+      await perform({ type: 'moveObject', objectId: box.id, to: { x: 500, y: 400 } });
+      expectPoint(geometryOf(id).end, center(map.findById(box.id) as KritzelShape));
+      expectPoint(geometryOf(id).start, { x: 0, y: 0 });
+    });
+
+    it('curves a new line through a point, animated or instant', async () => {
+      for (const options of [{}, { instant: true }]) {
+        const result = await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { x: 200, y: 0 }, through: { x: 100, y: 80 } }, options);
+        const geometry = geometryOf(result.objectIds![0]);
+        expect(geometry.control).toBeDefined();
+        expectPoint(lineMidpoint(geometry), { x: 100, y: 80 });
+      }
+    });
+
+    it('refuses the same object at both ends, lines as ends and unknown objects', async () => {
+      const box = addShape(0, 0, 50, 50);
+      const line = KritzelLine.create(core, { startX: 0, startY: 0, endX: 10, endY: 10 });
+      map.insert(line);
+      await expect(perform({ type: 'drawLine', from: { objectId: box.id }, to: { objectId: box.id } })).resolves.toMatchObject({ reason: 'invalid-target' });
+      await expect(perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { objectId: line.id } })).resolves.toMatchObject({ reason: 'invalid-target' });
+      await expect(perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { objectId: 'nope' } })).resolves.toMatchObject({ reason: 'invalid-target' });
+    });
+
+    it('rejects ends that are neither a point nor an object, or both', () => {
+      const validate = (action: any) => () => drawLineExecutor.validate({ type: 'drawLine', ...action });
+      expect(validate({ from: { x: 0 }, to: { x: 1, y: 1 } })).toThrow('"from" must be { x, y } or { objectId }.');
+      expect(validate({ from: { x: 0, y: 0, objectId: 'a' }, to: { x: 1, y: 1 } })).toThrow('"from" takes either x and y or objectId, not both.');
+      expect(validate({ from: { x: 0, y: 0 }, to: { x: 1, y: 1 }, through: { x: 'a' } })).toThrow('"through" must be { x, y }.');
+    });
+
+    it('moves an end to a free point, detaching it, and keeps the other end attached', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const id = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds![0];
+
+      await perform({ type: 'editLine', lineId: id, to: { x: 400, y: 300 } }, {});
+
+      const line = map.findById(id) as KritzelLine;
+      expect(line.startAnchor).toEqual({ objectId: a.id });
+      expect(line.endAnchor).toBeUndefined();
+      expect(core.anchorManager.getLinesAnchoredTo(b.id)).toEqual([]);
+      expectPoint(geometryOf(id).end, { x: 400, y: 300 });
+      expectPoint(geometryOf(id).start, center(a));
+    });
+
+    it('attaches the start of a free line to an object', async () => {
+      const box = addShape(300, 300, 50, 50);
+      const id = (await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { x: 100, y: 0 } })).objectIds![0];
+
+      await perform({ type: 'editLine', lineId: id, from: { objectId: box.id } });
+
+      expect((map.findById(id) as KritzelLine).startAnchor).toEqual({ objectId: box.id });
+      expectPoint(geometryOf(id).start, center(box));
+      expectPoint(geometryOf(id).end, { x: 100, y: 0 });
+    });
+
+    it('curves and straightens an existing line', async () => {
+      const id = (await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { x: 200, y: 0 } })).objectIds![0];
+
+      await perform({ type: 'editLine', lineId: id, through: { x: 100, y: -60 } }, {});
+      expectPoint(lineMidpoint(geometryOf(id)), { x: 100, y: -60 });
+
+      await perform({ type: 'editLine', lineId: id, straight: true }, {});
+      expect(geometryOf(id).control).toBeUndefined();
+      expectPoint(geometryOf(id).end, { x: 200, y: 0 });
+    });
+
+    it('keeps the world geometry of a rotated line when editing it', async () => {
+      const id = (await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { x: 200, y: 0 } })).objectIds![0];
+      await perform({ type: 'rotateObject', objectId: id, angle: 90 });
+      const rotated = geometryOf(id);
+
+      await perform({ type: 'editLine', lineId: id, through: lineMidpoint(rotated) });
+
+      expectPoint(geometryOf(id).start, rotated.start);
+      expectPoint(geometryOf(id).end, rotated.end);
+    });
+
+    it('refuses non-lines, both ends on one object, and missing changes', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const id = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds![0];
+
+      await expect(perform({ type: 'editLine', lineId: a.id, straight: true })).resolves.toMatchObject({ reason: 'invalid-target', objectIds: [a.id] });
+      await expect(perform({ type: 'editLine', lineId: id, to: { objectId: a.id } })).resolves.toMatchObject({ reason: 'invalid-target', objectIds: [a.id] });
+      expect(() => editLineExecutor.validate({ type: 'editLine', lineId: id })).toThrow('Give at least one of "from", "to", "through" or "straight".');
+      expect(() => editLineExecutor.validate({ type: 'editLine', lineId: id, through: { x: 0, y: 0 }, straight: true })).toThrow('Give "through" or "straight", not both.');
+    });
+
+    it('restores geometry and anchors when an edit is aborted', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const id = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds![0];
+      const before = geometryOf(id);
+
+      const controller = new AbortController();
+      const promise = actions.perform('agent', { type: 'editLine', lineId: id, to: { x: 900, y: 900 } }, { signal: controller.signal });
+      await flushMicrotasks();
+      for (let i = 0; i < 120 && (map.findById(id) as KritzelLine).endAnchor; i++) {
+        now += 16;
+        cursors.tick(now);
+        await flushMicrotasks();
+      }
+      expect((map.findById(id) as KritzelLine).endAnchor).toBeUndefined();
+      controller.abort();
+      await expect(settle(promise)).resolves.toMatchObject({ reason: 'aborted' });
+
+      expect((map.findById(id) as KritzelLine).endAnchor).toEqual({ objectId: b.id });
+      expect(core.anchorManager.getLinesAnchoredTo(b.id)).toEqual([{ lineId: id, endpoint: 'end' }]);
+      expectPoint(geometryOf(id).end, before.end);
+    });
+  });
+
   describe('style validation', () => {
     it('rejects unknown style fields, naming the allowed ones', () => {
       expect(() => actions.perform('agent', { type: 'drawPath', points: [{ x: 0, y: 0 }, { x: 1, y: 1 }], style: { color: 'red' } } as any)).toThrow(

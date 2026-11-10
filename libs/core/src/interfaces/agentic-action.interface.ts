@@ -218,6 +218,43 @@ export interface KritzelAgenticConnectAction {
 }
 
 /**
+ * One end of a line: a free world point, or an object. An end on an object sits at the object's center and
+ * follows it when it moves (the line is anchored there).
+ */
+export type KritzelAgenticLineEnd = KritzelAgenticPointTarget | { objectId: string };
+
+/**
+ * Draws a line (or arrow) like the line tool: from `from` to `to`, each a free point or an object, optionally
+ * bent through a point. Lines, selections and hidden objects can't be ends; both ends can't be the same object.
+ */
+export interface KritzelAgenticDrawLineAction {
+  type: 'drawLine';
+  from: KritzelAgenticLineEnd;
+  to: KritzelAgenticLineEnd;
+  /** A world point the line curves through, halfway along it (where the line's middle handle sits). */
+  through?: KritzelPoint;
+  style?: KritzelAgenticLineStyle;
+}
+
+/**
+ * Changes an existing top-level line like its handles do: moves an end to a free point (detaching it) or onto an
+ * object (anchoring it there), and bends the line through a point or straightens it. At least one change.
+ */
+export interface KritzelAgenticEditLineAction {
+  type: 'editLine';
+  /** ID of a top-level line. */
+  lineId: string;
+  /** New start. */
+  from?: KritzelAgenticLineEnd;
+  /** New end. */
+  to?: KritzelAgenticLineEnd;
+  /** A world point the line curves through, halfway along it. Can't be combined with `straight`. */
+  through?: KritzelPoint;
+  /** Removes the curve. */
+  straight?: boolean;
+}
+
+/**
  * Style applied by `setStyle`. Fields apply where they make sense and are ignored elsewhere:
  * `fillColor` to shapes; `strokeColor` and `strokeWidth` to shapes, pen strokes and lines;
  * `fontSize`, `fontFamily` and `fontColor` to shapes and texts; `arrows` to lines (per end: an end left out
@@ -283,6 +320,8 @@ export type KritzelAgenticAction =
   | KritzelAgenticTypeTextAction
   | KritzelAgenticDrawPathAction
   | KritzelAgenticConnectAction
+  | KritzelAgenticDrawLineAction
+  | KritzelAgenticEditLineAction
   | KritzelAgenticSetStyleAction
   | KritzelAgenticAddObjectAction;
 

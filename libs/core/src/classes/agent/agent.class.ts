@@ -17,6 +17,8 @@ import type {
   KritzelAgenticCreateShapeAction,
   KritzelAgenticOrder,
   KritzelAgenticCreateTextAction,
+  KritzelAgenticDrawLineAction,
+  KritzelAgenticEditLineAction,
   KritzelAgenticLineStyle,
   KritzelAgenticObjectStyle,
   KritzelAgenticResizeObjectAction,
@@ -388,6 +390,19 @@ export class KritzelAgent implements IKritzelUser {
   connect(from: string, to: string, options: { style?: KritzelAgenticLineStyle } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
     const { style, ...actionOptions } = options;
     return this.perform({ type: 'connect', from, to, ...(style ? { style } : {}) }, actionOptions);
+  }
+
+  /**
+   * Draws a line like the line tool: each end is a free point or an object (the end then follows it), and
+   * `through` curves the line through a point halfway along it.
+   */
+  drawLine(line: Omit<KritzelAgenticDrawLineAction, 'type'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'drawLine', ...line }, options);
+  }
+
+  /** Changes a line with its handles: moves or attaches its ends, and curves or straightens it. */
+  editLine(lineId: string, changes: Omit<KritzelAgenticEditLineAction, 'type' | 'lineId'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'editLine', lineId, ...changes }, options);
   }
 
   /** Restyles top-level objects; groups style their children. Fields that don't apply to an object are ignored. */

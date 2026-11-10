@@ -15,6 +15,8 @@ import { createTextExecutor } from '../executors/create-text.executor';
 import { typeTextExecutor } from '../executors/type-text.executor';
 import { drawPathExecutor } from '../executors/draw-path.executor';
 import { connectExecutor } from '../executors/connect.executor';
+import { drawLineExecutor } from '../executors/draw-line.executor';
+import { editLineExecutor } from '../executors/edit-line.executor';
 import { setStyleExecutor } from '../executors/set-style.executor';
 import { addObjectExecutor } from '../executors/add-object.executor';
 
@@ -43,6 +45,8 @@ export const AGENTIC_ACTION_EXECUTORS: {
   typeText: typeTextExecutor,
   drawPath: drawPathExecutor,
   connect: connectExecutor,
+  drawLine: drawLineExecutor,
+  editLine: editLineExecutor,
   setStyle: setStyleExecutor,
   addObject: addObjectExecutor,
 };

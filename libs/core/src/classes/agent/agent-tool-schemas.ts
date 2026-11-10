@@ -97,6 +97,18 @@ const target = (description: string): KritzelJsonSchemaNode => ({
   additionalProperties: false,
 });
 
+/** A line end flattened into one object (portable: no anyOf): a free point {x, y} or an object {objectId}. */
+const lineEnd = (description: string): KritzelJsonSchemaNode => ({
+  type: 'object',
+  description: `${description} Either a free world point {x, y}, or {objectId}: the end sits at the object's center and follows it when it moves.`,
+  properties: {
+    x: num('World x of a free end.'),
+    y: num('World y of a free end.'),
+    objectId: id('Object the end attaches to. Lines cannot be ends.'),
+  },
+  additionalProperties: false,
+});
+
 const opacity = num('0 (transparent) to 1 (opaque).');
 const positive = (description: string) => num(`${description} Greater than 0.`);
 
@@ -320,6 +332,33 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
     description: 'Draws a line between the centers of two objects and anchors both ends, so it follows them. Lines cannot be connected.',
     params: { from: req(id('Start object.')), to: req(id('End object; must differ from `from`.')), style: opt(lineStyle) },
     example: { from: 'a', to: 'b', style: { strokeColor: 'red', arrows: { end: { enabled: true, style: 'open' } } } },
+  },
+  drawLine: {
+    name: 'draw_line',
+    description:
+      'Draws a straight or curved line or arrow from `from` to `to`, like the line tool. Each end is a free point or an object; ' +
+      'an end on an object follows it when it moves, so one end can point at an object while the other stays put. Returns its ID.',
+    params: {
+      from: req(lineEnd('Start.')),
+      to: req(lineEnd('End; not the same object as `from`.')),
+      through: opt({ ...point, description: 'World point the line curves through, halfway along it. Straight when left out.' }),
+      style: opt(lineStyle),
+    },
+    example: { from: { x: 0, y: 0 }, to: { objectId: 'b' }, through: { x: 60, y: -40 }, style: { arrows: { end: { enabled: true } } } },
+  },
+  editLine: {
+    name: 'edit_line',
+    description:
+      "Changes a line's geometry with its handles: moves its start or end to a free point (detaching it from an object) or " +
+      'onto an object (attaching it), and curves it through a point or straightens it. Restyle lines with set_style.',
+    params: {
+      lineId: req(id('ID of a top-level line.')),
+      from: opt(lineEnd('New start.')),
+      to: opt(lineEnd('New end.')),
+      through: opt({ ...point, description: 'World point the line curves through, halfway along it.' }),
+      straight: opt(bool('Removes the curve. Not together with `through`.')),
+    },
+    example: { lineId: 'l', from: { objectId: 'a' }, through: { x: 10, y: 10 } },
   },
   setStyle: {
     name: 'set_style',
