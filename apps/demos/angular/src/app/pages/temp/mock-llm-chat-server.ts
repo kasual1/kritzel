@@ -3,7 +3,6 @@ import Anthropic from '@anthropic-ai/sdk';
 import type {
   KritzelChatMessage,
   KritzelChatPart,
-  KritzelChatRequest,
   KritzelChatResponse,
   KritzelChatStopReason,
   KritzelChatTransport,

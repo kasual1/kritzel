@@ -427,9 +427,11 @@ export function createImageToolSchema(urls: boolean): KritzelAgentToolSchema {
 }
 
 export const CREATE_IFRAME_TOOL_DESCRIPTION =
-  'Places a small interactive UI widget (a counter, a timer, a poll, a mini chart, …) with its top-left corner at (x, y): ' +
+  'Places an interactive UI widget with its top-left corner at (x, y): ' +
   'your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without ' +
-  'external resources (images as data: URLs) that fills the widget. The user interacts with it once it is selected. Returns its ID.';
+  'external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished ' +
+  'and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it ' +
+  'without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.';
 
 export const CREATE_IFRAME_TOOL_SCHEMA: KritzelAgentToolSchema = object<KritzelCreateIframeToolInput>({
   name: req(str('Short title shown on the widget.')),

@@ -5,7 +5,7 @@ import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { llmTransport } from './mock-llm-chat-server';
 
-const SYSTEM = 'You draw on a whiteboard. Look at the canvas before you change it. Keep answers short.';
+const SYSTEM = `You draw on a whiteboard. Look at the canvas before you change it.`;
 @Component({
   selector: 'app-temp-command-mode',
   imports: [KritzelEditor],
