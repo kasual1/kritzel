@@ -23,6 +23,8 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
 export interface KritzelShapeConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
+  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  isLoading?: boolean;
   x?: number;
   y?: number;
   translateX?: number;
@@ -110,6 +112,7 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
   constructor(config?: KritzelShapeConfig) {
     super();
     this.name = config?.name;
+    this.isLoading = config?.isLoading ?? false;
 
     // Always create the editor so setContent() works immediately
     this.editor = this.createEditor();

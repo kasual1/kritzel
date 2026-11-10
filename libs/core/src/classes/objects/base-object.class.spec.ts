@@ -7,10 +7,12 @@ describe('KritzelBaseObject', () => {
   let mockCore: jest.Mocked<KritzelCore>;
   let mockObjectsUpdate: jest.Mock;
   let mockAnchorManagerUpdate: jest.Mock;
+  let mockRerender: jest.Mock;
 
   beforeEach(() => {
     mockObjectsUpdate = jest.fn();
     mockAnchorManagerUpdate = jest.fn();
+    mockRerender = jest.fn();
 
     mockCore = {
       store: {
@@ -36,6 +38,7 @@ describe('KritzelBaseObject', () => {
       user: {
         id: 'user-123',
       },
+      rerender: mockRerender,
     } as unknown as jest.Mocked<KritzelCore>;
 
     baseObject = new KritzelBaseObject();
@@ -73,6 +76,7 @@ describe('KritzelBaseObject', () => {
       expect(obj.isInteractive).toBe(false);
       expect(obj.isResizable).toBe(true);
       expect(obj.isRotatable).toBe(true);
+      expect(obj.isLoading).toBe(false);
       expect(obj.markedForRemoval).toBe(false);
       expect(obj.resizing).toBe(false);
     });
@@ -416,6 +420,58 @@ describe('KritzelBaseObject', () => {
     it('should call objects.update with the object', () => {
       baseObject.update();
       expect(mockObjectsUpdate).toHaveBeenCalledWith(baseObject);
+    });
+  });
+
+  describe('setLoading', () => {
+    it('should turn loading on, persist the change and rerender', () => {
+      baseObject.setLoading(true);
+
+      expect(baseObject.isLoading).toBe(true);
+      expect(mockObjectsUpdate).toHaveBeenCalledWith(baseObject);
+      expect(mockRerender).toHaveBeenCalledTimes(1);
+    });
+
+    it('should turn loading off again', () => {
+      baseObject.setLoading(true);
+      baseObject.setLoading(false);
+
+      expect(baseObject.isLoading).toBe(false);
+      expect(mockObjectsUpdate).toHaveBeenCalledTimes(2);
+      expect(mockRerender).toHaveBeenCalledTimes(2);
+    });
+
+    it('should do nothing when the loading state does not change', () => {
+      baseObject.setLoading(false);
+
+      expect(mockObjectsUpdate).not.toHaveBeenCalled();
+      expect(mockRerender).not.toHaveBeenCalled();
+    });
+
+    it('should only set the flag on an object that is not attached to a core yet', () => {
+      const object = new KritzelBaseObject();
+
+      object.setLoading(true);
+
+      expect(object.isLoading).toBe(true);
+    });
+
+    it('should be serialized and survive deserialization', () => {
+      baseObject.setLoading(true);
+      const revived = new KritzelBaseObject();
+
+      revived.deserialize(baseObject.serialize());
+
+      expect(baseObject.serialize()).toHaveProperty('isLoading', true);
+      expect(revived.isLoading).toBe(true);
+    });
+
+    it('should treat a missing or invalid serialized value as not loading', () => {
+      const revived = new KritzelBaseObject();
+
+      revived.deserialize({ isLoading: 'yes' });
+
+      expect(revived.isLoading).toBe(false);
     });
   });
 

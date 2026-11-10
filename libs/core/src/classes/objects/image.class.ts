@@ -11,6 +11,8 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
 export interface KritzelImageConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
+  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  isLoading?: boolean;
   assetId?: string;
   mimeType?: string;
   src?: string;
@@ -136,6 +138,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   constructor(config?: KritzelImageConfig) {
     super();
     this.name = config?.name;
+    this.isLoading = config?.isLoading ?? false;
     this.assetId = config?.assetId || '';
     this.mimeType = config?.mimeType || '';
     this.src = config?.src || '';

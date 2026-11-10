@@ -61,7 +61,8 @@ const KNOWN_CATEGORIES = [
   'chat-box',
   'sync-indicator',
   'titlebar',
-  'element-highlight'
+  'element-highlight',
+  'loading-placeholder'
 ];
 
 /**

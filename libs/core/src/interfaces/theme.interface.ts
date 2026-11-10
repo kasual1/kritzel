@@ -277,6 +277,14 @@ export interface KritzelTheme {
     selectedBackgroundColor?: string;
   };
 
+  /** Loading placeholder variables, for the placeholder the engine draws over objects whose `isLoading` is set */
+  loadingPlaceholder?: {
+    animationDuration?: string;
+    backgroundColor?: string;
+    borderRadius?: string;
+    glareColor?: string;
+  };
+
   /** Login dialog variables */
   loginDialog?: {
     buttonActiveBackground?: string;

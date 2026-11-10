@@ -90,6 +90,59 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   }
 }
 
+/*
+ * Loading placeholder drawn over an object while `object.isLoading` is set: a grey surface with a glare sweeping
+ * across it. Covers the whole object; its content stays mounted underneath.
+ */
+.kritzel-loading-placeholder {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  background-color: var(--kritzel-loading-placeholder-background-color, #e5e7eb);
+  border-radius: var(--kritzel-loading-placeholder-border-radius, 12px);
+  animation: kritzel-loading-placeholder-reveal 200ms ease-out backwards;
+}
+
+.kritzel-loading-placeholder::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    var(--kritzel-loading-placeholder-glare-color, rgba(255, 255, 255, 0.6)) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: kritzel-loading-placeholder-glare var(--kritzel-loading-placeholder-animation-duration, 1.6s) ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes kritzel-loading-placeholder-glare {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes kritzel-loading-placeholder-reveal {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kritzel-loading-placeholder,
+  .kritzel-loading-placeholder::after {
+    animation: none;
+  }
+
+  .kritzel-loading-placeholder::after {
+    display: none;
+  }
+}
+
 .PlaygroundEditorTheme__quote {
   margin: 0;
   margin-left: 20px;

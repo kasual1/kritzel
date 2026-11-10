@@ -41,6 +41,11 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   userId?: string;
   /** User-facing name, shown as the title of the object's titlebar. Persisted and synced. */
   name?: string;
+  /**
+   * Whether the engine draws its loading placeholder over the object, e.g. while its content is being fetched or
+   * generated. Off by default. Persisted and synced, so collaborators see the placeholder too. See `setLoading()`.
+   */
+  isLoading: boolean = false;
 
   isVisible: boolean = true;
   isSelected: boolean = false;
@@ -341,6 +346,24 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
   }
 
   /**
+   * Turns the engine's loading placeholder for this object on or off and rerenders the canvas.
+   * The object's content stays mounted underneath the placeholder, so it can keep loading.
+   * @param isLoading - Whether the object is loading
+   */
+  setLoading(isLoading: boolean): void {
+    if (this.isLoading === isLoading) {
+      return;
+    }
+
+    this.isLoading = isLoading;
+
+    if (this._core?.store?.objects) {
+      this.update();
+      this._core.rerender();
+    }
+  }
+
+  /**
    * Moves the object based on the delta between start and end coordinates.
    * The movement is scaled according to the current viewport scale.
    * @param startX - The starting X coordinate in screen space
@@ -468,6 +491,7 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     this.resizing = false;
     this.markedForRemoval = false;
     this.isVisible = true;
+    this.isLoading = this.isLoading === true;
     // Reset known transient geometry caches if present on subclasses.
     if ('_adjustedPoints' in this) {
       (this as unknown as { _adjustedPoints: number[][] | null })._adjustedPoints = null;
