@@ -3419,6 +3419,15 @@ export class KritzelEngine implements KritzelEngineHost {
       return 'auto';
     };
 
+    // A group's children are rendered as objects of their own, so the group's loading placeholder can't hide them.
+    // A group contains its children, so it is in the viewport whenever one of them is.
+    const hiddenByLoadingGroup = new Set<string>();
+    visibleObjects.forEach(object => {
+      if (object instanceof KritzelGroup && object.isLoading) {
+        KritzelGroup.collectDescendantIds(object, hiddenByLoadingGroup);
+      }
+    });
+
     const getSelectionGroupOverlayPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
       if (object.markedForRemoval) {
         return 'none';
@@ -3535,6 +3544,8 @@ export class KritzelEngine implements KritzelEngineHost {
                   // selected line's wrapper above those layers so its handles always paint on top.
                   zIndex: this.core.displaySelectionLineUI(object) ? '10001' : object.zIndex.toString(),
                   pointerEvents: getObjectWrapperPointerEvents(object),
+                  // Kept mounted, so the content keeps loading underneath the group's placeholder.
+                  visibility: hiddenByLoadingGroup.has(object.id) ? 'hidden' : undefined,
                 }}
               >
                 {object instanceof KritzelPath && (
