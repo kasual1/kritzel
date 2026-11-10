@@ -45,6 +45,7 @@ Every object consists of properties, computed properties and methods.
 | isInteractive | boolean | Whether the object responds to interaction |
 | isResizable | boolean | Whether the object can be resized. Persisted and synced. Combines with `isResizable` of the [`objectConfig` prop](../fundamentals/objects.md#configuring-objects): either one can forbid it |
 | isRotatable | boolean | Whether the object can be rotated. Persisted and synced. Combines with `isRotatable` of the [`objectConfig` prop](../fundamentals/objects.md#configuring-objects): either one can forbid it |
+| isLoading | boolean | Whether the engine draws a [loading placeholder](./theming.md#loading-placeholder) over the object. Defaults to `false`. Persisted and synced |
 | centerX | number | Center X coordinate |
 | centerY | number | Center Y coordinate |
 | totalWidth | number | Width including padding and borders |
@@ -62,12 +63,26 @@ The constructor of every object accepts the following options in addition to its
 | Option | Type | Description |
 |--------|------|-------------|
 | name | string | User-facing name, shown as the title of its titlebar |
+| isLoading | boolean | Whether the object starts out with a loading placeholder. Defaults to `false` |
 
 ```ts
 const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
 ```
 
 See [Object Titlebar](../fundamentals/controls.md#object-titlebar) for details.
+
+### Loading State
+
+While `isLoading` is `true`, the engine draws a grey placeholder with a glare animation over the whole object. It follows the object's size and rotation, and the object can still be selected and moved, but its content can't be used until loading ends. Objects don't render loading content of their own. The look is set through the [Loading Placeholder](./theming.md#loading-placeholder) theme tokens.
+
+```ts
+const card = await this.editor.addObject(
+  new KritzelShape({ translateX: 0, translateY: 0, width: 320, height: 200, isLoading: true }),
+);
+
+// later, once the content is ready
+card?.setLoading(false);
+```
 
 ### Methods
 
@@ -109,6 +124,14 @@ Notifies the store that the object was updated.
 
 ```ts
 update()
+```
+
+#### setLoading
+
+Shows or hides the loading placeholder. Stores and syncs the change and rerenders. Does nothing if the value is unchanged.
+
+```ts
+setLoading(isLoading)
 ```
 
 #### move
@@ -529,8 +552,6 @@ hasFocusedInputElement()
 | Property | Type | Description |
 |----------|------|-------------|
 | content | KritzelIframeContent | The `html`, `css`, and `script` of the page |
-| loadingContent | KritzelIframeContent | Content shown instead of `content` while `isLoading` is true |
-| isLoading | boolean | Whether the loading content is shown |
 | state | `Record<string, unknown>` | Serializable state shared with the page as `kritzel.state` |
 | title | string | Title of the iframe element |
 | sandbox | string[] | Sandbox tokens of the iframe. Defaults to `['allow-scripts']` |
@@ -544,22 +565,6 @@ Replaces the content and reloads the page.
 
 ```ts
 setContent(content)
-```
-
-#### setLoadingContent
-
-Replaces the loading content.
-
-```ts
-setLoadingContent(content)
-```
-
-#### setLoading
-
-Shows or hides the loading content.
-
-```ts
-setLoading(isLoading)
 ```
 
 #### setState

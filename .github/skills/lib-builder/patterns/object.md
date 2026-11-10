@@ -80,6 +80,12 @@ The `KritzelReviver` uses `__class__` to reconstruct the correct instance during
 
 Objects are rendered in `kritzel-engine.tsx`. The engine iterates over `store.objects` and renders each based on its class (`object instanceof KritzelText`, …) using conditional blocks.
 
+## Loading State
+
+Loading is generic and owned by the base class: `isLoading` (default `false`, serialized and synced) and `setLoading(isLoading)` live on `KritzelBaseObject`, and every object config accepts `isLoading?: boolean`. `setLoading()` no-ops when unchanged, otherwise calls `update()` and `_core.rerender()`. The engine draws `<div class="kritzel-loading-placeholder">` inside the object's `.object` wrapper (after the type-specific content, before selection UI; not for selection groups or selection boxes), covering `totalWidth` × `totalHeight`. It keeps `pointer-events: auto` so the object can still be selected and moved while its content can't be used. Its look comes from the `loadingPlaceholder` theme tokens (`--kritzel-loading-placeholder-*`, see [theme.md](theme.md)).
+
+Objects must not render their own loading content or override `setLoading()` — keep the content mounted underneath and let the engine draw the placeholder.
+
 ## Mounting
 
 Objects receive a DOM element ref via `mount(el)` for direct DOM access when needed.
@@ -105,3 +111,4 @@ Colors are resolved at render time via `KritzelColorHelper.resolveThemeColor()`.
 - Always provide `__class__` as a string literal matching the class name
 - Use the factory pattern — no public constructors
 - Keep rendering logic in the engine component, not in the object class
+- Use the base `isLoading` / `setLoading()` for loading state instead of custom loading content

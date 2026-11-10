@@ -445,6 +445,8 @@ export class KritzelBaseObject<T extends Element = HTMLElement | SVGElement> imp
     copiedObject.resizing = false;
     copiedObject.markedForRemoval = false;
     copiedObject.isVisible = true;
+    // Whatever loads the original never finishes loading the copy.
+    copiedObject.isLoading = false;
     return copiedObject;
   }
 

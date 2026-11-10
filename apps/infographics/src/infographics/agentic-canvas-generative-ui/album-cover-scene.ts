@@ -19,7 +19,7 @@ const PROMPT = 'Please generate a new album cover';
 /** How long the empty canvas shows before the prompt is typed. */
 const OPENING_PAUSE = 1200;
 
-/** How long the cover shows the glare placeholder before its image appears. */
+/** How long the cover shows the engine's loading placeholder before its image appears. */
 const WRITING_TIME = 1400;
 
 /** How long the finished cover stays before every object is removed. */
@@ -40,7 +40,7 @@ export async function playAlbumCoverScene(
 
   await typePrompt(editor, PROMPT, signal);
   setWorking(true);
-  // The cover fades in while it rises into place, and the image fades in over the placeholder once it is done. The
+  // The cover fades in while it rises into place, and the image shows once the loading placeholder is gone. The
   // cursor is hidden, so the action runs without animation.
   const covers = await editor.addAgent(new KritzelAgent({ ...COVER_AGENT, visible: false }));
   await generatePage(

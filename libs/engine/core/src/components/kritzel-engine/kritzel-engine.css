@@ -120,6 +120,14 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   will-change: transform;
 }
 
+/*
+ * The object's content is rendered before the placeholder, its UI (selection handles, debug info) after it. Hide the
+ * content so it can't show past the placeholder's rounded corners; it stays mounted, so it keeps loading.
+ */
+.object > :has(~ .kritzel-loading-placeholder) {
+  visibility: hidden;
+}
+
 @keyframes kritzel-loading-placeholder-glare {
   to {
     transform: translateX(100%);

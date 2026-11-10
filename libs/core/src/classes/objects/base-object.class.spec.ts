@@ -606,6 +606,15 @@ describe('KritzelBaseObject', () => {
       expect(copied.isVisible).toBe(true);
     });
 
+    it('should not copy the loading state, nothing would ever finish loading the copy', () => {
+      baseObject.isLoading = true;
+
+      const copied = baseObject.copy();
+
+      expect(copied.isLoading).toBe(false);
+      expect(baseObject.isLoading).toBe(true);
+    });
+
     it('should preserve other properties', () => {
       baseObject.width = 300;
       baseObject.height = 150;

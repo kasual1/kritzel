@@ -413,6 +413,11 @@ export class KritzelShape extends KritzelBaseObject<HTMLDivElement> {
    * @returns void
    */
   edit(event?: PointerEvent): void {
+    // The loading placeholder covers the content, so editing it would mean typing blind.
+    if (this.isLoading) {
+      return;
+    }
+
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this.uneditedObject = this.clone() as KritzelShape;

@@ -519,6 +519,15 @@ describe('KritzelText', () => {
   });
 
   describe('edit', () => {
+    it('should not start editing while the object is loading', () => {
+      textObject.isLoading = true;
+
+      textObject.edit();
+
+      expect(KritzelKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
+      expect(textObject.uneditedObject).toBeNull();
+    });
+
     it('should disable interactive widget', () => {
       textObject.edit();
 

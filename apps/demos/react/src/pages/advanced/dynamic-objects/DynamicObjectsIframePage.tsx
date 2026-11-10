@@ -25,7 +25,6 @@ function createRuntimeObject(): KritzelIframeObject {
   const definition = mockComponentDefinitions[0];
   const object = new KritzelIframeObject({
     content: definition.content,
-    loadingContent: definition.loadingContent,
     state: definition.initialState,
     title: definition.name,
     translateX: -140,
@@ -58,8 +57,7 @@ export function DynamicObjectsIframePage() {
     setPromptIndex(nextIndex);
     setPromptText(mockChatPrompts[nextIndex]);
     const definition = mockComponentDefinitions[nextIndex];
-    runtimeObject.setLoadingContent(definition.loadingContent);
-    runtimeObject.setContent(definition.loadingContent);
+    // The engine draws its generic loading placeholder over the object while the mock answer is pending.
     runtimeObject.setLoading(true);
     responseTimeout.current = setTimeout(() => {
       runtimeObject.setState(definition.initialState);

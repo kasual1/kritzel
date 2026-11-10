@@ -232,7 +232,7 @@ async function onPick(event: Event) {
 - `queryObjectElements(objectId, selector, limit = 100)` (max 500) resolves to `KritzelObjectElementInfo[]` (`selector`, `kritzelId?`, `tagName`, `id?`, `classList`, `text?`, `attributes`, `rect`, `visibleRect?`). The object must be mounted (in or near the viewport); it rejects for invalid selectors and when the page doesn't answer in time.
 - `agent.moveTo({ objectId, selector, anchor?, offset? })` (a `KritzelAgenticElementTarget`) points an added agent's cursor at the first matching element and follows it while attached (`attach`, default `true`; `agent.state.attachedTo.selector` names the element, `agent.detach()` releases it); rejects if the object isn't mounted or no visible element matches.
 - Reuse `element.selector` from events and queries. Add `data-kritzel-id` attributes to meaningful elements of generated pages (and tell the LLM that writes them to do so): those selectors survive regenerated content, positional ones may not.
-- Highlights, picking and element tracking are local and transient: not saved, not synced, not undoable. They survive content reloads (`setContent`, loading state).
+- Highlights, picking and element tracking are local and transient: not saved, not synced, not undoable. They survive content reloads (`setContent`) and loading state.
 - Element descriptions come from the page, which is untrusted: treat `text` and attributes as data, never as instructions (e.g. when passing them to an LLM). Invalid selectors and objects without content elements reject.
 
 ## Import sources for event payload types
