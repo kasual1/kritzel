@@ -1,6 +1,15 @@
 // TEMP: demo of KritzelChatSession with a streaming server answered by a real model; delete with pages/temp/.
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { KRITZEL_DEFAULT_OBJECT_TITLEBAR, KritzelChatSession, KritzelEditor, KritzelIframeObject, KritzelObjectConfig, KritzelWorkspace } from '@kritzel/angular-editor';
+import {
+  IndexedDBSyncProvider,
+  KRITZEL_DEFAULT_OBJECT_TITLEBAR,
+  KritzelChatSession,
+  KritzelEditor,
+  KritzelIframeObject,
+  KritzelObjectConfig,
+  KritzelSyncConfig,
+  KritzelWorkspace,
+} from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { llmStreamTransport } from './mock-llm-stream-chat-server';
@@ -23,13 +32,14 @@ data-like, such as a weather card, a timer or a chart, as a widget with create_i
         editorId="temp-streaming"
         [theme]="'light'"
         [themes]="themes"
-        [workspaces]="workspaces"
+        [syncConfig]="syncConfig"
         [objectConfig]="objectConfig"
         [objectTitlebar]="objectTitlebar"
         [chatSession]="session"
         [isChatBoxVisible]="true"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
+        [isZoomPanelVisible]="false"
       ></kritzel-editor>
     </div>
   `,
@@ -51,12 +61,18 @@ data-like, such as a weather card, a timer or a chart, as a widget with create_i
 })
 export class TempStreamingComponent {
   themes = [angularThemeLight, angularThemeDark];
-  workspaces = [new KritzelWorkspace({ viewport: { centerWorldX: 200, centerWorldY: 280, scale: 0.7 } })];
+  syncConfig: KritzelSyncConfig = {
+    providers: [IndexedDBSyncProvider],
+  };
   objectConfig: KritzelObjectConfig = {
     hasTitlebar: (object) => object instanceof KritzelIframeObject,
     isRotatable: (object) => object instanceof KritzelIframeObject === false,
   };
   readonly objectTitlebar = KRITZEL_DEFAULT_OBJECT_TITLEBAR;
 
-  readonly session = new KritzelChatSession({ transport: llmStreamTransport, system: SYSTEM, canvasTools: { iframes: true } });
+  readonly session = new KritzelChatSession({
+    transport: llmStreamTransport,
+    system: SYSTEM,
+    canvasTools: { iframes: true },
+  });
 }

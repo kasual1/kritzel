@@ -31,6 +31,7 @@ data-like, such as a weather card, a timer or a chart, as a widget with create_i
         [isChatBoxVisible]="true"
         [isMoreMenuVisible]="false"
         [isWorkspaceManagerVisible]="false"
+        [isZoomPanelVisible]="false"
       ></kritzel-editor>
     </div>
   `,
