@@ -5,6 +5,7 @@ import type {
   KritzelChatPart,
   KritzelChatResponse,
   KritzelChatStopReason,
+  KritzelChatStreamEvent,
   KritzelChatTransport,
 } from '@kritzel/angular-editor';
 
@@ -46,16 +47,135 @@ export const llmTransport: KritzelChatTransport = async (request, { signal }) =>
   return toChatResponse(response);
 };
 
+/**
+ * Stands in for a streaming `fetch('/api/chat')`: the same model step as `llmTransport`, streamed while Claude
+ * writes it. Each tool call is sent as soon as its input is complete, so the session can run it right away.
+ */
+export const llmStreamTransport: KritzelChatTransport = async function* (
+  request,
+  { signal },
+): AsyncGenerator<KritzelChatStreamEvent> {
+  const stream = client.beta.messages.stream(
+    {
+      model: MODEL,
+      max_tokens: 64000,
+      output_config: { effort: 'low' },
+      betas: ['server-side-fallback-2026-07-01'],
+      fallbacks: 'default',
+      system: [request.system, SERVER_SYSTEM].filter(Boolean).join('\n\n'),
+      // Tool inputs stream as the model writes them instead of in one piece at the end; the API no longer checks
+      // them, so a call can end with invalid JSON.
+      tools: request.tools.map(tool => ({
+        name: tool.name,
+        description: tool.description,
+        input_schema: tool.inputSchema,
+        eager_input_streaming: true,
+      })),
+      messages: toAnthropicMessages(request.messages),
+    },
+    { signal },
+  );
+
+  // The tool calls being written, by content block index.
+  const open = new Map<number, { id: string; name: string; json: string }>();
+  try {
+    for await (const event of stream) {
+      if (event.type === 'content_block_start' && event.content_block.type === 'tool_use') {
+        const { id, name } = event.content_block;
+        open.set(event.index, { id, name, json: '' });
+        yield { type: 'tool-call-start', id, name };
+      } else if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+        yield { type: 'text-delta', text: event.delta.text };
+      } else if (event.type === 'content_block_delta' && event.delta.type === 'input_json_delta') {
+        const call = open.get(event.index);
+        if (call) {
+          call.json += event.delta.partial_json;
+          yield { type: 'tool-call-delta', id: call.id, inputDelta: event.delta.partial_json };
+        }
+      } else if (event.type === 'content_block_stop') {
+        const call = open.get(event.index);
+        if (call) {
+          open.delete(event.index);
+          // Invalid JSON goes on as the raw text: the tool answers that the input is invalid.
+          const input = parseJson(call.json || '{}', call.json);
+          yield { type: 'part', part: { type: 'tool-call', id: call.id, name: call.name, input } };
+        }
+      }
+    }
+    const final = await stream.finalMessage();
+    const stopReason = STOP_REASONS[final.stop_reason ?? ''] ?? 'other';
+    yield { type: 'finish', stopReason, providerData: { anthropicContent: final.content } };
+  } catch (error) {
+    // The SDK fails the stream when a tool input it reads is not JSON, which can only happen while a call is open.
+    // Everything else is a real failure.
+    if (error instanceof Anthropic.APIError || signal.aborted || !open.size) {
+      throw error;
+    }
+    // The SDK ignores the rest of the answer: stop the model writing it.
+    stream.abort();
+    for (const call of open.values()) {
+      yield { type: 'part', part: { type: 'tool-call', id: call.id, name: call.name, input: call.json } };
+    }
+    // Without the model's content, the next step sends the parts back instead.
+    yield { type: 'finish', stopReason: 'other' };
+  }
+};
+
 /** The conversation in the Messages API's shape. Tool results go back as user messages. */
 function toAnthropicMessages(messages: KritzelChatMessage[]): Anthropic.Beta.BetaMessageParam[] {
-  return messages.map(message => {
+  const result: Anthropic.Beta.BetaMessageParam[] = [];
+  // Tool calls left out of the assistant message before (see `withoutDeclined`), by ID, with their names.
+  let leftOut = new Map<string, string>();
+  for (const message of messages) {
     if (message.role === 'assistant') {
-      // Send the model's own content back unchanged (thinking blocks included), as the API expects.
+      // Send the model's own content back (thinking blocks included), as the API expects: unchanged, except after
+      // a fallback.
       const content = message.providerData?.['anthropicContent'] as Anthropic.Beta.BetaContentBlockParam[] | undefined;
-      return { role: 'assistant', content: content ?? message.parts.flatMap(toAnthropicBlock) };
+      const echoed = content ? withoutDeclined(content) : { content: message.parts.flatMap(toAnthropicBlock), leftOut: new Map<string, string>() };
+      leftOut = echoed.leftOut;
+      result.push({ role: 'assistant', content: echoed.content });
+      continue;
     }
-    return { role: 'user', content: message.parts.flatMap(toAnthropicBlock) };
+    const calls = leftOut;
+    // The results of left-out calls go back as text: the calls ran on the canvas, and the model should know it
+    // (and the message never ends up empty, which would leave the conversation ending with the assistant).
+    const content = message.parts.flatMap(toAnthropicBlock).map<Anthropic.Beta.BetaContentBlockParam>(block =>
+      block.type === 'tool_result' && calls.has(block.tool_use_id)
+        ? { type: 'text', text: `Before the switch to another model, the tool call ${block.tool_use_id} (${calls.get(block.tool_use_id)}) already ran with this result: ${typeof block.content === 'string' ? block.content : JSON.stringify(block.content ?? '')}` }
+        : block,
+    );
+    leftOut = new Map();
+    result.push({ role: 'user', content });
+  }
+  return result;
+}
+
+/** Blocks of a model that declined mid-answer that the API does not take back. */
+const DECLINED_BLOCK_TYPES = new Set(['thinking', 'redacted_thinking', 'tool_use']);
+
+/**
+ * After a fallback mid-answer, the API wants the thinking and tool calls before the last `fallback` block left out;
+ * the text before it, the block itself (in place) and everything after it go back unchanged. Returns the tool calls
+ * left out (ID to name). With eager tool calls, such a call may already have run on the canvas, and the fallback
+ * model, which never saw it, may make it again.
+ */
+function withoutDeclined(content: Anthropic.Beta.BetaContentBlockParam[]): {
+  content: Anthropic.Beta.BetaContentBlockParam[];
+  leftOut: Map<string, string>;
+} {
+  // -1 without a fallback: every block is after it.
+  const boundary = content.map(block => block.type).lastIndexOf('fallback');
+  const leftOut = new Map<string, string>();
+  const kept = content.filter((block, index) => {
+    if (index > boundary || !DECLINED_BLOCK_TYPES.has(block.type)) {
+      return true;
+    }
+    if (block.type === 'tool_use') {
+      leftOut.set(block.id, block.name);
+    }
+    return false;
   });
+  return { content: kept, leftOut };
 }
 
 function toAnthropicBlock(part: KritzelChatPart): Anthropic.Beta.BetaContentBlockParam[] {
@@ -65,10 +185,22 @@ function toAnthropicBlock(part: KritzelChatPart): Anthropic.Beta.BetaContentBloc
     case 'image':
       if (part.data) return [{ type: 'image', source: { type: 'base64', media_type: part.mediaType as 'image/png', data: part.data } }];
       return part.url ? [{ type: 'image', source: { type: 'url', url: part.url } }] : [];
-    case 'tool-call':
-      return [{ type: 'tool_use', id: part.id, name: part.name, input: typeof part.input === 'string' ? JSON.parse(part.input) : part.input }];
+    case 'tool-call': {
+      // A string input is JSON text, which a streamed call may have left invalid; the API wants an object.
+      const input = typeof part.input === 'string' ? parseJson(part.input, {}) : part.input;
+      return [{ type: 'tool_use', id: part.id, name: part.name, input }];
+    }
     case 'tool-result':
       return [{ type: 'tool_result', tool_use_id: part.toolCallId, content: part.output, ...(part.isError ? { is_error: true } : {}) }];
+  }
+}
+
+/** The value of a JSON text, or `fallback` when the text is not valid JSON. */
+function parseJson(text: string, fallback: unknown): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return fallback;
   }
 }
 

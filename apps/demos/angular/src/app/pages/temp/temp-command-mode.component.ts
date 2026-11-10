@@ -1,9 +1,9 @@
 // TEMP: demo of KritzelChatSession in command mode against a mocked server answered by a real model; delete with pages/temp/.
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { KRITZEL_DEFAULT_OBJECT_TITLEBAR, KritzelChatSession, KritzelEditor, KritzelIframeObject, KritzelObjectConfig, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
-import { llmTransport } from './mock-llm-chat-server';
+import { llmStreamTransport } from './mock-llm-chat-server';
 
 const SYSTEM = `You draw on a whiteboard. Look at the canvas before you change it.`;
 @Component({
@@ -51,5 +51,20 @@ export class TempCommandModeComponent {
   };
   readonly objectTitlebar = KRITZEL_DEFAULT_OBJECT_TITLEBAR;
 
-  readonly session = new KritzelChatSession({ transport: llmTransport, system: SYSTEM, canvasTools: { iframes: true } });
+  readonly session = new KritzelChatSession({ transport: llmStreamTransport, system: SYSTEM, canvasTools: { iframes: true } });
+
+  constructor() {
+    // TEMP: logs the streamed tool calls; their input at most every ~500 characters, enough to watch the html stream in.
+    const loggedLength = new Map<string, number>();
+    const off = this.session.on('tool-call', update => {
+      if (update.state === 'input') {
+        if (update.inputText.length - (loggedLength.get(update.id) ?? 0) < 500) return;
+        loggedLength.set(update.id, update.inputText.length);
+      } else if (update.state === 'done' || update.state === 'discarded') {
+        loggedLength.delete(update.id);
+      }
+      console.debug('[tool-call]', update.state, update.name, update.id, update.inputText.length);
+    });
+    inject(DestroyRef).onDestroy(off);
+  }
 }

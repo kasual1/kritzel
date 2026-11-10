@@ -56,7 +56,7 @@ After choosing a framework, open the corresponding file under `./references/<fra
 | Add, update, select, group or query objects; configure object behavior (`objectConfig`: titlebars, rotating, resizing) | `objects.md` |
 | Pan, zoom, coordinates or boundaries | `viewport.md` |
 | Tools and toolbar | `tools-and-toolbar.md` |
-| Ready, change, titlebar action and iframe element events (hover, click, pick, highlights, queries); agents (`agentsChange` with collaborators' agents, `getRemoteAgents`, `agent.on(...)`, pointing an agent at an iframe element with `agent.moveTo({ objectId, selector })`) and connecting them to an LLM (`agent.tools()`, `agent.observe()`); chat sessions (`KritzelChatSession`, `chatSession`, transports) | `events.md` |
+| Ready, change, titlebar action and iframe element events (hover, click, pick, highlights, queries); agents (`agentsChange` with collaborators' agents, `getRemoteAgents`, `agent.on(...)`, pointing an agent at an iframe element with `agent.moveTo({ objectId, selector })`) and connecting them to an LLM (`agent.tools()`, `agent.observe()`); chat sessions (`KritzelChatSession`, `chatSession`, transports, streamed tool calls and `tool-call` events) | `events.md` |
 | Workspaces, persistence and collaboration | `workspaces-and-persistence.md` |
 | Themes, context menus and object titlebar content (`objectTitlebar`) | `theming-and-context-menus.md` |
 | End-to-end examples | `recipes.md` |

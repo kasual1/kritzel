@@ -100,6 +100,8 @@ export type {
     KritzelChatResponse,
     KritzelChatStopReason,
     KritzelChatStreamEvent,
+    KritzelChatToolCallUpdate,
+    KritzelChatToolCallState,
     KritzelChatTransport,
     KritzelChatTransportOptions,
     KritzelScriptedStep,

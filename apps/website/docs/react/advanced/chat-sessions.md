@@ -90,6 +90,7 @@ The constructor accepts the following options. Only `transport` is required:
 | messages | KritzelChatMessage[] | A conversation to continue. See [Saving and Restoring](#saving-and-restoring). |
 | instant | boolean | Agent mode: skips the cursor animation. Defaults to `false`. |
 | thinkingStatus | string \| false | Agent mode: the agent's status while the model thinks. Defaults to `'Thinking…'`. |
+| eagerToolCalls | boolean | Streamed answers: runs each tool call as soon as it is complete, while the model still writes. Defaults to `true`. See [Streaming](#streaming). |
 
 ## Working as the User or as an Agent
 
@@ -241,16 +242,38 @@ Your server is an open door to your model account. Treat every request as untrus
 
 ### Streaming
 
-A transport can return the answer as a stream of events instead of one response, for example when your server forwards server-sent events. The session accepts an `AsyncIterable` of `KritzelChatStreamEvent`, or a promise of one. Version 1 of the protocol collects the stream and runs the tools once the stream ends:
+A transport can return the answer as a stream of events instead of one response, for example when your server forwards server-sent events. The session accepts an `AsyncIterable` of `KritzelChatStreamEvent`, or a promise of one.
+
+The session runs each tool call of a stream as soon as its `part` arrives, while the model still writes the rest of the answer. An answer with several calls then changes the canvas call by call instead of all at once at the end. Before the part, `tool-call-start` and `tool-call-delta` can report the call while the model writes its input, so that the app can show it (see [Showing Tool Calls as They Stream](#showing-tool-calls-as-they-stream)). They are optional, and a call never runs from them alone:
 
 ```ts
 async function* streamChat(request: KritzelChatRequest, signal: AbortSignal): AsyncIterable<KritzelChatStreamEvent> {
   yield { type: 'text-delta', text: 'Adding ' };
   yield { type: 'text-delta', text: 'a note.' };
+  yield { type: 'tool-call-start', id: 'call-1', name: 'create_shape' };
+  yield { type: 'tool-call-delta', id: 'call-1', inputDelta: '{"x":0,"y":0,' };
+  yield { type: 'tool-call-delta', id: 'call-1', inputDelta: '"width":160,"height":80}' };
   yield { type: 'part', part: { type: 'tool-call', id: 'call-1', name: 'create_shape', input: { x: 0, y: 0, width: 160, height: 80 } } };
   yield { type: 'finish', stopReason: 'tool-calls' };
 }
 ```
+
+Running the calls early has the following consequences:
+
+- The calls run one at a time, in the order of their parts. The results in the `tool` message are in the order of the calls in the answer.
+- The canvas can change before the answer is in `session.messages`. The session adds the answer when the stream ends, then runs the calls that are left, then adds the `tool` message.
+- When the user stops the response, the session is detached, or the transport throws after one of the calls ran, the answer is kept as far as it got: its text and the calls whose part arrived, followed by a `tool` message with their results. Calls that did not start get an `'aborted'` result. When no call ran yet, the answer is dropped and `messages` stays as it was before the answer.
+- A part is final. Don't take a call back after you sent its part: a call that already started running stays in the answer, even when a `message` event leaves it out.
+
+To run the calls once the answer has ended instead, set `eagerToolCalls: false`. Answers that are not streamed are not affected: their calls run once the whole answer is in, and they are not reported as `tool-call` events. The rules for each event are listed in [KritzelChatStreamEvent](../api-reference/chat-session.md#kritzelchatstreamevent).
+
+### Streaming Tool Calls from Your Server
+
+To stream tool calls, translate the stream events of your provider as follows:
+
+- **Anthropic.** Set `eager_input_streaming: true` on each tool, so that its input streams while the model writes it. On `content_block_start` with a `tool_use` block, send `tool-call-start` with the block's `id` and `name`, and remember the ID under the event's `index`. Send each `input_json_delta` as a `tool-call-delta` with its `partial_json`. On `content_block_stop`, send the `part`, with the joined text parsed by `JSON.parse()` as its `input`. When the text does not parse, for example because it was cut off, send the raw text as a string `input`: the canvas tools answer it with `'invalid-input'`, which the model can act on. Anthropic needs an object as the input of a `tool_use` block, so `toBlock()` must send such a call back with an empty object, where `JSON.parse()` would throw.
+- **OpenAI.** In the Chat Completions API, `delta.tool_calls` holds the calls by `index`. Send `tool-call-start` with the `id` and `function.name` of the first chunk of a call, and each `function.arguments` as a `tool-call-delta`. When the `finish_reason` arrives, send the part of each call, with its joined `arguments` as the `input`.
+- **Gemini.** Gemini sends whole function calls. For each, send `tool-call-start` and then the `part`, with an ID that you make up.
 
 ## Chips and Images
 
@@ -284,7 +307,7 @@ To send something else along with a prompt, such as a screenshot, call `preventD
 
 ## Stopping and Results
 
-The stop button of the chat box calls `session.stop()`. It aborts the request to your server, rolls back the action that is running, and answers the remaining tool calls with an `'aborted'` result. Changes of earlier actions are kept.
+The stop button of the chat box calls `session.stop()`. It aborts the request to your server, rolls back the action that is running, and answers the remaining tool calls with an `'aborted'` result. Changes of earlier actions are kept. A streamed answer is kept as far as it got once one of its tool calls ran, so the conversation matches the canvas (see [Streaming](#streaming)).
 
 `send()` never rejects. It resolves with how the prompt ended:
 
@@ -329,6 +352,54 @@ export function ChatBoard() {
 }
 ```
 
+### Showing Tool Calls as They Stream
+
+With a [streaming](#streaming) server, the `tool-call` event reports each tool call while the model writes it, before the answer is in `messages`. A long input, such as the code of a `create_iframe` widget, takes a while to write, so it helps to show what the model is doing. The event fires once per input delta, so render at most once per frame:
+
+```tsx
+import { useEffect, useState } from 'react';
+import type { KritzelChatSession, KritzelChatToolCallUpdate } from '@kritzel/react-editor';
+
+function describe(update: KritzelChatToolCallUpdate): string | null {
+  switch (update.state) {
+    case 'started':
+    case 'input':
+      return `Writing ${update.name}…`;
+    case 'ready':
+    case 'running':
+      return `Running ${update.name}…`;
+    default:
+      return null; // 'done' or 'discarded'
+  }
+}
+
+export function ToolCallStatus({ session }: { session: KritzelChatSession }) {
+  const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    let latest: string | null = null;
+    let frame = 0;
+    const unsubscribe = session.on('tool-call', update => {
+      latest = describe(update);
+      if (!frame) {
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          setStatus(latest);
+        });
+      }
+    });
+    return () => {
+      unsubscribe();
+      cancelAnimationFrame(frame);
+    };
+  }, [session]);
+
+  return status ? <p>{status}</p> : null;
+}
+```
+
+Each update has the `id` of the call, its `state`, and the input written so far as `inputText`. `id` is the ID of the call's `tool-call` part and its result, and the `toolCallId` that your own tools get. Each call ends with `'done'`, which has the `result`, or with `'discarded'` when it is not part of the conversation. See [KritzelChatToolCallUpdate](../api-reference/chat-session.md#kritzelchattoolcallupdate).
+
 ## Saving and Restoring
 
 `messages` is plain JSON. Store it, and pass it to the `messages` option to continue the conversation later. A tool call that was interrupted, for example by closing the tab, gets an `'aborted'` result when the session is created, so the conversation stays valid:
@@ -344,7 +415,7 @@ const restored = new KritzelChatSession({
 
 ## Adding Your Own Tools
 
-Pass your own tools in the `tools` option. They have the same shape as the canvas tools: `name`, `description`, `inputSchema`, and `run(input, { signal })`, which resolves with a string for the model. Their names must not clash with the canvas tools. See [Choosing Tools](./agents.md#choosing-tools) for an example tool and `formatAgentToolResult()`.
+Pass your own tools in the `tools` option. They have the same shape as the canvas tools: `name`, `description`, `inputSchema`, and `run(input, { signal, toolCallId })`, which resolves with a string for the model. `toolCallId` is the ID of the call, as in its result and the `tool-call` events. Their names must not clash with the canvas tools. See [Choosing Tools](./agents.md#choosing-tools) for an example tool and `formatAgentToolResult()`.
 
 ## Testing Without a Model
 
@@ -363,6 +434,8 @@ const session = new KritzelChatSession({
   ),
 });
 ```
+
+With the `stream` option, for example `{ delayMs: 400, stream: { chunkDelayMs: 20 } }`, it streams each answer like a model, with `tool-call-start` and `tool-call-delta` events before each tool call. The messages are the same as without streaming, so you can try [streaming](#streaming) and the `tool-call` event without a server.
 
 ## API Details
 

@@ -888,6 +888,8 @@ interface KritzelAgentTool {
 interface KritzelAgentToolContext {
   /** Stops the action like the `signal` of an action. */
   signal?: AbortSignal | null;
+  /** The ID of the tool call being run, when the runner has one. A chat session always passes it. */
+  toolCallId?: string;
 }
 ```
 

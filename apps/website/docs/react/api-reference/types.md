@@ -281,7 +281,7 @@ Types used by [`KritzelAgent`](./agent.md) and the [agent methods](./editor.md#a
 | [`KritzelAgenticActionOptions`](./agent.md#kritzelagenticactionoptions) | `speed`, `instant`, `signal`, and `easing` of an action. |
 | [`KritzelAgenticActionResult`](./agent.md#kritzelagenticactionresult) | Result of an action, with a `KritzelAgenticActionFailureReason` when it did not complete. |
 | [`KritzelAgentActionError`](./agent.md#kritzelagentactionerror) | Thrown when an action that belongs to a running `agent.task()` does not complete. |
-| [`KritzelAgentTool`](./agent.md#kritzelagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, and `run(input, context?)` with a `KritzelAgentToolContext` (`signal`). |
+| [`KritzelAgentTool`](./agent.md#kritzelagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, and `run(input, context?)` with a `KritzelAgentToolContext` (`signal`, `toolCallId`). |
 | [`KritzelAgentToolSchema`](./agent.md#kritzelagenttoolschema) | The JSON Schema of a tool's input. |
 | [`KritzelAgentToolsOptions`](./agent.md#kritzelagenttoolsoptions) | `only`, `prefix`, and `maxTextLength` of `agent.tools()`. |
 | [`KritzelAgentToolResult`](./agent.md#kritzelagenttoolresult) | What a tool's `run()` resolves with as JSON: `completed`, `reason`, `objectIds`, `message`, `hint`, and `objects`. |
