@@ -2356,7 +2356,7 @@ exports[`agent tools contract as agent offers the same tools with iframes 1`] = 
     "name": "create_image",
   },
   {
-    "description": "Places an interactive web UI, from a single control to a full app, with its top-left corner at (x, y): your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.",
+    "description": "Places an interactive UI widget with its top-left corner at (x, y): your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -6068,7 +6068,7 @@ exports[`agent tools contract as agent offers the same tools with prefix 1`] = `
     "name": "k_create_image",
   },
   {
-    "description": "Places an interactive web UI, from a single control to a full app, with its top-left corner at (x, y): your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.",
+    "description": "Places an interactive UI widget with its top-left corner at (x, y): your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -8230,7 +8230,7 @@ exports[`agent tools contract as user offers the same tools with iframes 1`] = `
     "name": "create_image",
   },
   {
-    "description": "Places an interactive web UI, from a single control to a full app, with its top-left corner at (x, y): your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.",
+    "description": "Places an interactive UI widget with its top-left corner at (x, y): your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -11564,7 +11564,7 @@ exports[`agent tools contract as user offers the same tools with prefix 1`] = `
     "name": "k_create_image",
   },
   {
-    "description": "Places an interactive web UI, from a single control to a full app, with its top-left corner at (x, y): your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.",
+    "description": "Places an interactive UI widget with its top-left corner at (x, y): your HTML, CSS and JavaScript run in a sandboxed iframe without network access, so write self-contained code without external resources: inline SVG for icons and illustrations, data: URLs for images, system fonts. Make it look polished and finished, with clear hierarchy, consistent spacing and real content, and pick a width and height that fit it without scrollbars or clipping. The user interacts with it once it is selected. Returns its ID.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
