@@ -368,6 +368,8 @@ export const AGENT_TOOL_SPECS: { [K in KritzelAgenticActionType]: KritzelAgentTo
   },
   // Needs an object instance: tools that build one (create_image, create_iframe, app tools) perform it.
   addObject: null,
+  // Offered with create_iframe only, and only for widgets it placed: read_iframe and update_iframe perform it.
+  updateIframe: null,
 };
 
 /** The input schema of a tool. */
@@ -499,4 +501,55 @@ export const SET_VIEWPORT_TOOL_SCHEMA: KritzelAgentToolSchema = object<KritzelSe
 export const FIT_VIEWPORT_TOOL_SCHEMA: KritzelAgentToolSchema = object<KritzelFitViewportToolInput>({
   objectIds: opt({ ...ids, description: 'Objects to show (also inside groups). Leave out to fit all objects.' }),
   maxZoom: opt(positive('Highest zoom level the fit may use, so small objects are not blown up. Defaults to 1 (100%).')),
+}) as KritzelAgentToolSchema;
+
+// ─── Widgets placed by create_iframe: read and change their code ──────────────
+
+/** One find-and-replace of `update_iframe`. */
+export interface KritzelIframeCodeEdit {
+  part: 'html' | 'css' | 'script';
+  find: string;
+  replace: string;
+}
+
+/** Input of `update_iframe`. */
+export interface KritzelUpdateIframeToolInput {
+  objectId: string;
+  name?: string;
+  html?: string;
+  css?: string;
+  script?: string;
+  edits?: KritzelIframeCodeEdit[];
+}
+
+export const READ_IFRAME_TOOL_NAME = 'read_iframe';
+export const UPDATE_IFRAME_TOOL_NAME = 'update_iframe';
+
+export const READ_IFRAME_TOOL_DESCRIPTION =
+  'Returns the name and the current HTML, CSS and JavaScript of a widget placed by create_iframe. Call it before ' +
+  'update_iframe when you do not know the current code exactly (the user may have asked someone else to change it).';
+
+export const UPDATE_IFRAME_TOOL_DESCRIPTION =
+  'Changes a widget placed by create_iframe; it reloads with the new code. Replace whole parts with html, css or ' +
+  'script, or make small changes with edits (find-and-replace; each find must match the current code exactly once). ' +
+  'Prefer edits for small changes to long code. The same rules as create_iframe apply: self-contained code without ' +
+  'network access. Move or resize it with move_object and resize_object.';
+
+export const READ_IFRAME_TOOL_SCHEMA: KritzelAgentToolSchema = object<{ objectId: string }>({
+  objectId: req(id('ID of a widget placed by create_iframe.')),
+}) as KritzelAgentToolSchema;
+
+const iframeCodeEdit = object<KritzelIframeCodeEdit>({
+  part: req({ type: 'string', enum: ['html', 'css', 'script'], description: 'Which part of the code to change.' }),
+  find: req(str('Exact, non-empty text that occurs once in that part, with enough surrounding code to be unique.')),
+  replace: req(str('Replacement text; empty deletes the match.')),
+});
+
+export const UPDATE_IFRAME_TOOL_SCHEMA: KritzelAgentToolSchema = object<KritzelUpdateIframeToolInput>({
+  objectId: req(id('ID of a widget placed by create_iframe.')),
+  name: opt(str('New short title shown on the widget.')),
+  html: opt(str('New body content, replacing the current one.')),
+  css: opt(str('New styles, replacing the current ones.')),
+  script: opt(str('New JavaScript, replacing the current script.')),
+  edits: opt({ type: 'array', items: iframeCodeEdit, minItems: 1, description: 'Find-and-replace edits, applied in order. Not on a part you also replace.' }),
 }) as KritzelAgentToolSchema;

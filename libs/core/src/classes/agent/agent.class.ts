@@ -19,6 +19,7 @@ import type {
   KritzelAgenticCreateTextAction,
   KritzelAgenticDrawLineAction,
   KritzelAgenticEditLineAction,
+  KritzelAgenticUpdateIframeAction,
   KritzelAgenticLineStyle,
   KritzelAgenticObjectStyle,
   KritzelAgenticResizeObjectAction,
@@ -403,6 +404,18 @@ export class KritzelAgent implements IKritzelUser {
   /** Changes a line with its handles: moves or attaches its ends, and curves or straightens it. */
   editLine(lineId: string, changes: Omit<KritzelAgenticEditLineAction, 'type' | 'lineId'>, options: KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
     return this.perform({ type: 'editLine', lineId, ...changes }, options);
+  }
+
+  /**
+   * Replaces parts of an iframe's code (`html`, `css`, `script`) and its name; parts left out stay. The iframe
+   * reloads with the new code.
+   */
+  updateIframe(
+    objectId: string,
+    changes: Omit<KritzelAgenticUpdateIframeAction, 'type' | 'objectId'>,
+    options: KritzelAgenticActionOptions = {},
+  ): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'updateIframe', objectId, ...changes }, options);
   }
 
   /** Restyles top-level objects; groups style their children. Fields that don't apply to an object are ignored. */

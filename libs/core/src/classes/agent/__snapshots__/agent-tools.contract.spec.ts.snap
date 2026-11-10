@@ -2455,6 +2455,89 @@ exports[`agent tools contract as agent offers the same tools with iframes 1`] = 
     "name": "create_iframe",
   },
   {
+    "description": "Returns the name and the current HTML, CSS and JavaScript of a widget placed by create_iframe. Call it before update_iframe when you do not know the current code exactly (the user may have asked someone else to change it).",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "objectId": {
+          "description": "ID of a widget placed by create_iframe.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "objectId",
+      ],
+      "type": "object",
+    },
+    "name": "read_iframe",
+  },
+  {
+    "description": "Changes a widget placed by create_iframe; it reloads with the new code. Replace whole parts with html, css or script, or make small changes with edits (find-and-replace; each find must match the current code exactly once). Prefer edits for small changes to long code. The same rules as create_iframe apply: self-contained code without network access. Move or resize it with move_object and resize_object.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "css": {
+          "description": "New styles, replacing the current ones.",
+          "type": "string",
+        },
+        "edits": {
+          "description": "Find-and-replace edits, applied in order. Not on a part you also replace.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "find": {
+                "description": "Exact, non-empty text that occurs once in that part, with enough surrounding code to be unique.",
+                "type": "string",
+              },
+              "part": {
+                "description": "Which part of the code to change.",
+                "enum": [
+                  "html",
+                  "css",
+                  "script",
+                ],
+                "type": "string",
+              },
+              "replace": {
+                "description": "Replacement text; empty deletes the match.",
+                "type": "string",
+              },
+            },
+            "required": [
+              "part",
+              "find",
+              "replace",
+            ],
+            "type": "object",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+        "html": {
+          "description": "New body content, replacing the current one.",
+          "type": "string",
+        },
+        "name": {
+          "description": "New short title shown on the widget.",
+          "type": "string",
+        },
+        "objectId": {
+          "description": "ID of a widget placed by create_iframe.",
+          "type": "string",
+        },
+        "script": {
+          "description": "New JavaScript, replacing the current script.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "objectId",
+      ],
+      "type": "object",
+    },
+    "name": "update_iframe",
+  },
+  {
     "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
     "inputSchema": {
       "additionalProperties": false,
@@ -6314,6 +6397,89 @@ exports[`agent tools contract as agent offers the same tools with prefix 1`] = `
     "name": "k_create_iframe",
   },
   {
+    "description": "Returns the name and the current HTML, CSS and JavaScript of a widget placed by create_iframe. Call it before update_iframe when you do not know the current code exactly (the user may have asked someone else to change it).",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "objectId": {
+          "description": "ID of a widget placed by create_iframe.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "objectId",
+      ],
+      "type": "object",
+    },
+    "name": "k_read_iframe",
+  },
+  {
+    "description": "Changes a widget placed by create_iframe; it reloads with the new code. Replace whole parts with html, css or script, or make small changes with edits (find-and-replace; each find must match the current code exactly once). Prefer edits for small changes to long code. The same rules as create_iframe apply: self-contained code without network access. Move or resize it with move_object and resize_object.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "css": {
+          "description": "New styles, replacing the current ones.",
+          "type": "string",
+        },
+        "edits": {
+          "description": "Find-and-replace edits, applied in order. Not on a part you also replace.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "find": {
+                "description": "Exact, non-empty text that occurs once in that part, with enough surrounding code to be unique.",
+                "type": "string",
+              },
+              "part": {
+                "description": "Which part of the code to change.",
+                "enum": [
+                  "html",
+                  "css",
+                  "script",
+                ],
+                "type": "string",
+              },
+              "replace": {
+                "description": "Replacement text; empty deletes the match.",
+                "type": "string",
+              },
+            },
+            "required": [
+              "part",
+              "find",
+              "replace",
+            ],
+            "type": "object",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+        "html": {
+          "description": "New body content, replacing the current one.",
+          "type": "string",
+        },
+        "name": {
+          "description": "New short title shown on the widget.",
+          "type": "string",
+        },
+        "objectId": {
+          "description": "ID of a widget placed by create_iframe.",
+          "type": "string",
+        },
+        "script": {
+          "description": "New JavaScript, replacing the current script.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "objectId",
+      ],
+      "type": "object",
+    },
+    "name": "k_update_iframe",
+  },
+  {
     "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
     "inputSchema": {
       "additionalProperties": false,
@@ -8572,6 +8738,89 @@ exports[`agent tools contract as user offers the same tools with iframes 1`] = `
       "type": "object",
     },
     "name": "create_iframe",
+  },
+  {
+    "description": "Returns the name and the current HTML, CSS and JavaScript of a widget placed by create_iframe. Call it before update_iframe when you do not know the current code exactly (the user may have asked someone else to change it).",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "objectId": {
+          "description": "ID of a widget placed by create_iframe.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "objectId",
+      ],
+      "type": "object",
+    },
+    "name": "read_iframe",
+  },
+  {
+    "description": "Changes a widget placed by create_iframe; it reloads with the new code. Replace whole parts with html, css or script, or make small changes with edits (find-and-replace; each find must match the current code exactly once). Prefer edits for small changes to long code. The same rules as create_iframe apply: self-contained code without network access. Move or resize it with move_object and resize_object.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "css": {
+          "description": "New styles, replacing the current ones.",
+          "type": "string",
+        },
+        "edits": {
+          "description": "Find-and-replace edits, applied in order. Not on a part you also replace.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "find": {
+                "description": "Exact, non-empty text that occurs once in that part, with enough surrounding code to be unique.",
+                "type": "string",
+              },
+              "part": {
+                "description": "Which part of the code to change.",
+                "enum": [
+                  "html",
+                  "css",
+                  "script",
+                ],
+                "type": "string",
+              },
+              "replace": {
+                "description": "Replacement text; empty deletes the match.",
+                "type": "string",
+              },
+            },
+            "required": [
+              "part",
+              "find",
+              "replace",
+            ],
+            "type": "object",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+        "html": {
+          "description": "New body content, replacing the current one.",
+          "type": "string",
+        },
+        "name": {
+          "description": "New short title shown on the widget.",
+          "type": "string",
+        },
+        "objectId": {
+          "description": "ID of a widget placed by create_iframe.",
+          "type": "string",
+        },
+        "script": {
+          "description": "New JavaScript, replacing the current script.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "objectId",
+      ],
+      "type": "object",
+    },
+    "name": "update_iframe",
   },
   {
     "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",
@@ -12053,6 +12302,89 @@ exports[`agent tools contract as user offers the same tools with prefix 1`] = `
       "type": "object",
     },
     "name": "k_create_iframe",
+  },
+  {
+    "description": "Returns the name and the current HTML, CSS and JavaScript of a widget placed by create_iframe. Call it before update_iframe when you do not know the current code exactly (the user may have asked someone else to change it).",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "objectId": {
+          "description": "ID of a widget placed by create_iframe.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "objectId",
+      ],
+      "type": "object",
+    },
+    "name": "k_read_iframe",
+  },
+  {
+    "description": "Changes a widget placed by create_iframe; it reloads with the new code. Replace whole parts with html, css or script, or make small changes with edits (find-and-replace; each find must match the current code exactly once). Prefer edits for small changes to long code. The same rules as create_iframe apply: self-contained code without network access. Move or resize it with move_object and resize_object.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "css": {
+          "description": "New styles, replacing the current ones.",
+          "type": "string",
+        },
+        "edits": {
+          "description": "Find-and-replace edits, applied in order. Not on a part you also replace.",
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "find": {
+                "description": "Exact, non-empty text that occurs once in that part, with enough surrounding code to be unique.",
+                "type": "string",
+              },
+              "part": {
+                "description": "Which part of the code to change.",
+                "enum": [
+                  "html",
+                  "css",
+                  "script",
+                ],
+                "type": "string",
+              },
+              "replace": {
+                "description": "Replacement text; empty deletes the match.",
+                "type": "string",
+              },
+            },
+            "required": [
+              "part",
+              "find",
+              "replace",
+            ],
+            "type": "object",
+          },
+          "minItems": 1,
+          "type": "array",
+        },
+        "html": {
+          "description": "New body content, replacing the current one.",
+          "type": "string",
+        },
+        "name": {
+          "description": "New short title shown on the widget.",
+          "type": "string",
+        },
+        "objectId": {
+          "description": "ID of a widget placed by create_iframe.",
+          "type": "string",
+        },
+        "script": {
+          "description": "New JavaScript, replacing the current script.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "objectId",
+      ],
+      "type": "object",
+    },
+    "name": "k_update_iframe",
   },
   {
     "description": "Pans and zooms the user's view of the canvas: centers it on the world point (x, y) and/or sets the zoom level. Use zoomBy to zoom in (e.g. 2) or out (e.g. 0.5) relative to the current zoom. To pan by an amount, add it to the center of the viewport from observe_canvas. Only the view moves, never objects, and only for the local user, not for collaborators. Returns the new viewport (visible area in world units and scale) like observe_canvas; zoom is clamped to the allowed range.",

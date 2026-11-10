@@ -306,6 +306,24 @@ export interface KritzelAgenticFill {
   apply(placeholder: KritzelBaseObject<any>, content: KritzelBaseObject<any>): void;
 }
 
+/**
+ * Changes the code or name of an iframe (`KritzelIframeObject`), also inside a group: the given parts replace the
+ * current ones, parts left out stay. The iframe reloads with the new code.
+ */
+export interface KritzelAgenticUpdateIframeAction {
+  type: 'updateIframe';
+  /** ID of an iframe. */
+  objectId: string;
+  /** New name, shown in the titlebar (also sets the title). */
+  name?: string;
+  /** New body content. */
+  html?: string;
+  /** New styles. */
+  css?: string;
+  /** New script. */
+  script?: string;
+}
+
 /** Undoes this agent's last completed action. Never touches the user's or other agents' history. */
 export interface KritzelAgenticUndoAction {
   type: 'undo';
@@ -334,6 +352,7 @@ export type KritzelAgenticAction =
   | KritzelAgenticCreateShapeAction
   | KritzelAgenticCreateTextAction
   | KritzelAgenticTypeTextAction
+  | KritzelAgenticUpdateIframeAction
   | KritzelAgenticDrawPathAction
   | KritzelAgenticConnectAction
   | KritzelAgenticDrawLineAction
