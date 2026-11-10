@@ -9,6 +9,8 @@ import { KritzelMathHelper } from '../../helpers/math.helper';
 export interface KritzelGroupConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
+  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  isLoading?: boolean;
   rotation?: number;
 }
 
@@ -38,6 +40,7 @@ export class KritzelGroup extends KritzelBaseObject<HTMLElement> {
     constructor(config?: KritzelGroupConfig) {
         super();
         this.name = config?.name;
+        this.isLoading = config?.isLoading ?? false;
         this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
     }
 

@@ -41,21 +41,6 @@ contrast.
 When you are asked to change an existing UI, you get its current document. Return the complete new document and keep \
 everything the request does not change.`
 
-/** A plain grey surface with a soft glare that sweeps across it, shown in a UI while the model writes it. */
-const UI_SKELETON: KritzelIframeContent = {
-  html: '<div class="skeleton" aria-busy="true" aria-label="Generating"></div>',
-  css: `
-    .skeleton {
-      height: 100%;
-      background: linear-gradient(100deg, #ececec 30%, #f6f6f6 50%, #ececec 70%) #ececec;
-      background-size: 300% 100%;
-      animation: glare 1.8s ease-in-out infinite;
-    }
-    @keyframes glare { from { background-position: 100% 0; } to { background-position: 0 0; } }
-    @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }`,
-  script: '',
-}
-
 /** The editor methods the generator uses. */
 export type GenerativeUiEditor = Pick<
   HTMLKritzelEditorElement,
@@ -211,7 +196,6 @@ export class GenerativeUi {
       new KritzelIframeObject({
         name,
         title: name,
-        loadingContent: UI_SKELETON,
         isLoading: true,
         sandbox: ['allow-scripts'],
         translateX: x,

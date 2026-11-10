@@ -587,6 +587,15 @@ describe('KritzelShape', () => {
   });
 
   describe('edit', () => {
+    it('should not start editing while the object is loading', () => {
+      shapeObject.isLoading = true;
+
+      shapeObject.edit();
+
+      expect(KritzelKeyboardHelper.disableInteractiveWidget).not.toHaveBeenCalled();
+      expect(shapeObject.uneditedObject).toBeNull();
+    });
+
     it('should disable interactive widget', () => {
       shapeObject.edit();
 

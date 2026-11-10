@@ -8,7 +8,7 @@ import {
   type KritzelPoint,
 } from '@kritzel/react-editor';
 import { ALBUM_COVERS } from './album-covers';
-import { addHidden, fadeIn, prepareToAppear, withReveal } from './appear';
+import { addHidden, fadeIn, prepareToAppear } from './appear';
 
 /**
  * The hero of the "What is an agentic canvas?" post. A musician asks three agents for help with the release of their
@@ -78,16 +78,6 @@ const SOCIAL_BOX = { x: 300, y: -215, width: 300, height: 430 };
 const COVERS_SHIFT_X = (STUDIO_BOX.x + STUDIO_BOX.width + SOCIAL_BOX.x) / 2;
 
 export const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
-
-/** A grey surface with a soft glare sweeping across it, shown while an agent writes a page. */
-export const SKELETON: KritzelIframeContent = {
-  html: '<div class="skeleton" aria-busy="true"></div>',
-  css: `html, body { height: 100%; margin: 0; }
-.skeleton { height: 100%; background: linear-gradient(100deg, #ececec 30%, #f7f7f7 50%, #ececec 70%) #ececec;
-  background-size: 300% 100%; animation: glare 1.4s ease-in-out infinite; }
-@keyframes glare { from { background-position: 100% 0; } to { background-position: 0 0; } }`,
-  script: '',
-};
 
 export function coverContent(image: string): KritzelIframeContent {
   return {
@@ -422,7 +412,7 @@ export async function act(action: Promise<KritzelAgenticActionResult>): Promise<
 export interface GeneratedPage {
   box: Box;
   content: KritzelIframeContent;
-  /** How long the page shows the glare placeholder before its content. */
+  /** How long the page shows the engine's loading placeholder before its content. */
   writingTime: number;
   /** Defaults to the agent's name. */
   title?: string;
@@ -431,8 +421,8 @@ export interface GeneratedPage {
 
 /**
  * The agent writes a page: it places the page with `agent.addObject()`, so the page is the agent's change, and the page
- * shows the glare placeholder until the agent is "done writing" it. The page fades in while it rises into place, and
- * its content fades in over the placeholder. The agent's cursor rests at the page's corner while it writes.
+ * is loading (`isLoading`), so the engine shows its loading placeholder over it, until the agent is "done writing" it.
+ * The page fades in while it rises into place. The agent's cursor rests at the page's corner while it writes.
  */
 export async function generatePage(
   editor: HTMLKritzelEditorElement,
@@ -443,8 +433,7 @@ export async function generatePage(
 ): Promise<KritzelIframeObject> {
   const page = new KritzelIframeObject({
     title,
-    content: withReveal(content),
-    loadingContent: SKELETON,
+    content,
     isLoading: true,
     translateX: box.x,
     translateY: box.y,

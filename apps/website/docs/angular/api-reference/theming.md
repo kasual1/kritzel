@@ -168,6 +168,17 @@ Applies to the highlights and the picking highlight drawn inside the pages of if
 | optionBackground | #ffffff | #2a2a2a |
 | selectedBackgroundColor | #ebebeb | #3a3a3a |
 
+## Loading Placeholder
+
+Applies to the placeholder the engine draws over an object while its [`isLoading`](./objects.md#loading-state) is `true`: a grey surface with rounded corners and a glare that sweeps across it. The values are applied as the CSS variables `--kritzel-loading-placeholder-background-color`, `--kritzel-loading-placeholder-border-radius`, `--kritzel-loading-placeholder-glare-color`, and `--kritzel-loading-placeholder-animation-duration`. The glare stops when the user prefers reduced motion.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| animationDuration | 1.6s | 1.6s |
+| backgroundColor | #e5e7eb | #2a2a2a |
+| borderRadius | 12px | 12px |
+| glareColor | rgba(255, 255, 255, 0.6) | rgba(255, 255, 255, 0.06) |
+
 ## Login Dialog
 
 | Property | Light default | Dark default |

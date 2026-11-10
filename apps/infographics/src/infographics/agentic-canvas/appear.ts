@@ -1,4 +1,4 @@
-import type { HTMLKritzelEditorElement, KritzelIframeContent, KritzelIframeObject } from '@kritzel/react-editor';
+import type { HTMLKritzelEditorElement, KritzelIframeObject } from '@kritzel/react-editor';
 
 /**
  * How generated pages come onto the canvas in the agentic canvas infographics: they are added invisible and a little
@@ -10,9 +10,6 @@ const DEFAULT_STAGGER = 110;
 
 /** How long an invisible page gets to render its content before it fades in. */
 export const APPEAR_LOAD = 400;
-
-/** Grey of the glare placeholder, see `SKELETON` in hero-scene.ts. */
-const PLACEHOLDER_GREY = '#ececec';
 
 const easeOut = (t: number) => 1 - (1 - t) ** 3;
 
@@ -31,17 +28,13 @@ function pause(ms: number, signal: AbortSignal): Promise<void> {
 }
 
 /**
- * Makes pages invisible and moves them a little below their place, before they are added, ready for `fadeIn`. A page
- * with a placeholder gets the placeholder's grey behind its frame, so the canvas never shows through while the frame
- * swaps to the content. Agents add the prepared pages with `agent.addObject()`.
+ * Makes pages invisible and moves them a little below their place, before they are added, ready for `fadeIn`. Agents
+ * add the prepared pages with `agent.addObject()`.
  */
 export function prepareToAppear(objects: KritzelIframeObject[]): void {
   for (const object of objects) {
     object.opacity = 0;
     object.translateY += APPEAR_RISE;
-    if (object.loadingContent) {
-      object.backgroundColor = { light: PLACEHOLDER_GREY, dark: PLACEHOLDER_GREY };
-    }
   }
 }
 
@@ -93,19 +86,4 @@ export async function appear<T extends KritzelIframeObject>(
   const added = await addHidden(editor, objects);
   await fadeIn(editor, added, signal, options);
   return added;
-}
-
-/**
- * Lets a page's content fade in over the placeholder's grey when it replaces the glare placeholder, instead of
- * snapping in.
- */
-export function withReveal(content: KritzelIframeContent): KritzelIframeContent {
-  return {
-    ...content,
-    css: `${content.css}
-html { background: ${PLACEHOLDER_GREY}; }
-body { animation: kritzel-reveal 450ms ease-out both; }
-@keyframes kritzel-reveal { from { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { body { animation: none; } }`,
-  };
 }

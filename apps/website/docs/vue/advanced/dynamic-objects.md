@@ -56,7 +56,7 @@ Dynamic object content follows Kritzel's wheel handoff rules: scrollable embedde
 
 For user-authored or LLM-authored content, `KritzelIframeObject` provides a sandboxed space for HTML, CSS, and JavaScript. The iframe keeps its own content and interaction state while Kritzel manages it as a canvas object.
 
-This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with a loading view displayed during the change.
+This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with the [loading placeholder](../api-reference/theming.md#loading-placeholder) drawn over it during the change.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/vue"
@@ -206,7 +206,7 @@ Pass `selector` back to highlight the element, query it again, or point an agent
 
 ### Local and Untrusted
 
-Highlights, picking, and the tracking of the elements that agents' cursors stick to are local to the editor. They are not saved, not synchronized to collaborators, and not part of undo and redo. They are kept when the page reloads, for example after `setContent()` or while the object shows its loading content, and when a collaborator updates the object.
+Highlights, picking, and the tracking of the elements that agents' cursors stick to are local to the editor. They are not saved, not synchronized to collaborators, and not part of undo and redo. They are kept when the page reloads, for example after `setContent()`, and when a collaborator updates the object.
 
 The page runs untrusted content, and element descriptions come from the page. Treat their text, attributes, and selectors like any other untrusted input, for example when you pass them to an LLM. The element methods reject invalid selectors, and objects that don't exist or have no content elements. The page also reports hovers, clicks, and picks itself, so untrusted content can report them without a real user action while the object is selected or picking. Don't treat a pick as the user's confirmation of something consequential.
 

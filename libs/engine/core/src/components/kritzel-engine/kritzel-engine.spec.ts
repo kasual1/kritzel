@@ -3145,4 +3145,107 @@ describe('KritzelEngine', () => {
       expect(core.agentManager.setDisposed).toHaveBeenLastCalledWith(false);
     });
   });
+
+  describe('loading placeholder', () => {
+    type VNode = { $tag$?: unknown; $attrs$?: Record<string, any> | null; $children$?: VNode[] | null };
+
+    /** Depth-first search through a rendered Stencil vnode tree. */
+    const findVNodes = (node: VNode | null | undefined, predicate: (node: VNode) => boolean): VNode[] => {
+      if (!node) {
+        return [];
+      }
+      const own = predicate(node) ? [node] : [];
+      return own.concat(...(node.$children$ ?? []).map(child => findVNodes(child, predicate)));
+    };
+
+    const hasClass = (node: VNode, className: string) =>
+      typeof node.$attrs$?.class === 'string' && node.$attrs$.class.split(/\s+/).includes(className);
+
+    /** The object's `.object` wrapper in the rendered tree. */
+    const renderObjectWrapper = (object: KritzelBaseObject): VNode => {
+      const wrappers = findVNodes(engine.render() as VNode, node => hasClass(node, 'object') && node.$attrs$?.id === object.id);
+      expect(wrappers).toHaveLength(1);
+      return wrappers[0];
+    };
+
+    const findPlaceholders = (node: VNode) => findVNodes(node, child => hasClass(child, 'kritzel-loading-placeholder'));
+
+    let object: KritzelBaseObject;
+
+    beforeEach(() => {
+      // The parts of the core that render() reads but no other test needs.
+      Object.assign(core.objectTitlebarManager, {
+        getMetrics: jest.fn().mockReturnValue({}),
+        getCullingPadding: jest.fn().mockReturnValue(0),
+        resolveTitlebars: jest.fn().mockReturnValue([]),
+        getRotationHandleDistance: jest.fn().mockReturnValue(0),
+      });
+      core.cursorManager.applyCursor = jest.fn();
+      Object.assign(core.anchorManager, {
+        getSnapIndicatorRenderData: jest.fn().mockReturnValue(null),
+        getSnapPreviewRenderData: jest.fn().mockReturnValue(null),
+        getAnchorLinesRenderData: jest.fn().mockReturnValue(null),
+      });
+      // The engine holds a shallow copy of the mock core, so top-level members go onto the engine's instance.
+      Object.assign((engine as any).core, {
+        displaySelectionGroupUI: jest.fn().mockReturnValue(false),
+        displaySelectionLineUI: jest.fn().mockReturnValue(false),
+        user: { id: 'user-1' },
+        localizationManager: { translate: jest.fn((key: string) => key) },
+      });
+      core.store.objects.update = jest.fn();
+
+      object = new KritzelBaseObject();
+      object.id = 'object-1';
+      object.width = 200;
+      object.height = 120;
+      object.padding = 4;
+      object._core = core;
+      core.store.getObjectsInViewport = jest.fn().mockReturnValue([object]);
+    });
+
+    it('is not rendered by default', () => {
+      expect(object.isLoading).toBe(false);
+      expect(findPlaceholders(renderObjectWrapper(object))).toHaveLength(0);
+    });
+
+    it('covers the whole object inside its wrapper while the object is loading', () => {
+      object.setLoading(true);
+
+      const placeholders = findPlaceholders(renderObjectWrapper(object));
+      expect(placeholders).toHaveLength(1);
+      expect(placeholders[0].$attrs$?.['data-testid']).toBe('kritzel-loading-placeholder');
+      expect(placeholders[0].$attrs$?.style).toEqual(
+        expect.objectContaining({
+          width: `${object.totalWidth}px`,
+          height: `${object.totalHeight}px`,
+          pointerEvents: 'auto',
+        }),
+      );
+      expect(core.store.objects.update).toHaveBeenCalledWith(object);
+      expect(core.rerender).toHaveBeenCalled();
+    });
+
+    it('follows the rotation of the object', () => {
+      object.rotation = Math.PI / 4;
+      object.setLoading(true);
+
+      const [placeholder] = findPlaceholders(renderObjectWrapper(object));
+      expect(placeholder.$attrs$?.style).toEqual(
+        expect.objectContaining({
+          transform: `rotate(${object.rotationDegrees}deg)`,
+          transformOrigin: `${object.totalWidth / 2}px ${object.totalHeight / 2}px`,
+        }),
+      );
+    });
+
+    it('disappears once loading is turned off', () => {
+      object.setLoading(true);
+      expect(findPlaceholders(renderObjectWrapper(object))).toHaveLength(1);
+
+      object.setLoading(false);
+
+      expect(findPlaceholders(renderObjectWrapper(object))).toHaveLength(0);
+    });
+  });
 });

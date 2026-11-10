@@ -9,7 +9,6 @@ function createRuntimeObject(): KritzelIframeObject {
   const definition = mockComponentDefinitions[0]
   const object = new KritzelIframeObject({
     content: definition.content,
-    loadingContent: definition.loadingContent,
     state: definition.initialState,
     title: definition.name,
     translateX: -140,
@@ -43,8 +42,6 @@ function showPrompt(offset: -1 | 1): void {
   promptIndex.value = nextIndex
   promptText.value = mockChatPrompts[nextIndex]
   const definition = mockComponentDefinitions[nextIndex]
-  runtimeObject.setLoadingContent(definition.loadingContent)
-  runtimeObject.setContent(definition.loadingContent)
   runtimeObject.setLoading(true)
   responseTimeout = setTimeout(() => {
     runtimeObject.setState(definition.initialState)

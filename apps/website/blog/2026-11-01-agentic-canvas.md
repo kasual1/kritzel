@@ -79,7 +79,6 @@ export function GenerativeUi() {
       width: 400,
       height: 400,
       isLoading: true,
-      loadingContent: { html: '<p>Generating…</p>' },
     });
 
     try {
@@ -129,7 +128,7 @@ export function GenerativeUi() {
 }
 ```
 
-`onChatSubmit` hands us the prompt, `isChatBoxLoading` keeps the chat box busy while Claude writes, and its stop button cancels the request through `onChatStop`. Each prompt adds a `KritzelIframeObject` that shows its `loadingContent` until `setContent` and `setLoading(false)` swap in Claude's HTML.
+`onChatSubmit` hands us the prompt, `isChatBoxLoading` keeps the chat box busy while Claude writes, and its stop button cancels the request through `onChatStop`. Each prompt adds a `KritzelIframeObject` with `isLoading: true`, so the engine draws its loading placeholder over it until `setContent` and `setLoading(false)` swap in Claude's HTML.
 
 Put your own key into `ANTHROPIC_API_KEY`, then type something like “Please create a jazz album cover” into the chat box. Generated scripts run inside the iframe's sandbox, so you can also ask for a small game or a calculator and select it to play. A key in browser code is readable by anyone who opens the page, so keep this setup to trying things out; more on that below.
 

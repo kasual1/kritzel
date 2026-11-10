@@ -404,6 +404,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    * @param event - Optional pointer event containing cursor coordinates for focus placement.
    */
   edit(event?: PointerEvent): void {
+    // The loading placeholder covers the content, so editing it would mean typing blind.
+    if (this.isLoading) {
+      return;
+    }
+
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this.uneditedObject = this.clone() as KritzelText;
