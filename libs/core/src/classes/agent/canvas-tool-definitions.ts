@@ -1,4 +1,4 @@
-import type { KritzelAgenticAction, KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
+import type { KritzelAgenticAction, KritzelAgenticActionType, KritzelAgenticUpdateIframeAction } from '../../interfaces/agentic-action.interface';
 import type { KritzelObserveOptions } from '../../interfaces/agent.interface';
 import { getAgenticActionExecutor } from '../registries/agentic-action-executor.registry';
 import {
@@ -419,6 +419,20 @@ export const updateIframeTool = defineCanvasTool<KritzelUpdateIframeToolInput>({
       ctx.invalid(`html, css and script together would be longer than ${MAX_MARKUP_LENGTH} characters.`);
     }
     return ctx.perform({ type: 'updateIframe', objectId, ...(changes.name !== undefined ? { name: changes.name } : {}), ...code });
+  },
+  // Once the input names a widget (the objectId comes first); its code shows as loading until the call finishes.
+  loading: {
+    target: (input, core) => {
+      const objectId = input.objectId;
+      // A partly written ID names no object, or not this one: only a whole, existing widget ID counts.
+      return typeof objectId === 'string' && isModelIframe(core.store.objects?.findById(objectId)) ? objectId : null;
+    },
+    action: (objectId, fill) => ({
+      type: 'updateIframe',
+      objectId,
+      fill: () => fill().then(action => action as KritzelAgenticUpdateIframeAction),
+    }),
+    fills: (action, objectId) => action.type === 'updateIframe' && !action.fill && action.objectId === objectId,
   },
 });
 

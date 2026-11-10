@@ -322,7 +322,17 @@ export interface KritzelAgenticUpdateIframeAction {
   css?: string;
   /** New script. */
   script?: string;
+  /**
+   * Shows the iframe as loading (`isLoading`) and keeps the action open until this resolves with the changes,
+   * e.g. while a model still writes the new code. Called once, when the action runs after its click. The
+   * changes resolved with (`name`, `html`, `css`, `script`; the `objectId` must match) replace the ones given
+   * here, and loading ends in the same step of the history. A rejection or a stop rolls the whole action back.
+   */
+  fill?: () => Promise<KritzelAgenticIframeChanges>;
 }
+
+/** The changes that fill in a loading `updateIframe` action. */
+export type KritzelAgenticIframeChanges = Omit<KritzelAgenticUpdateIframeAction, 'type' | 'fill'>;
 
 /** Undoes this agent's last completed action. Never touches the user's or other agents' history. */
 export interface KritzelAgenticUndoAction {

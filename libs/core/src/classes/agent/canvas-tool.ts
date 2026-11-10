@@ -120,6 +120,24 @@ export interface KritzelCanvasToolDefinition<I = any, P = any> {
    * gets `begin`). The object `execute` adds with the addObject action then fills the placeholder in instead.
    */
   readonly placeholder?: KritzelCanvasToolPlaceholder<I>;
+  /**
+   * Shows the object the tool changes as loading while the model still writes the input (the tool gets
+   * `begin`). The action `execute` performs then fills in the loading action instead.
+   */
+  readonly loading?: KritzelCanvasToolLoading<I>;
+}
+
+/** How a tool that changes an object shows it loading while the model writes the change (`KritzelCanvasToolDefinition.loading`). */
+export interface KritzelCanvasToolLoading<I = any> {
+  /**
+   * The ID of the object the call changes, from the input written so far, or `null` while the input does not
+   * name one the tool can change yet. Called as the input streams in, until it returns an ID.
+   */
+  target(input: Partial<I>, core: KritzelCore): string | null;
+  /** The action that shows the object loading until `fill` resolves with the call's own action. */
+  action(objectId: string, fill: () => Promise<KritzelAgenticAction>): KritzelAgenticAction;
+  /** Whether an action the call performs is the one that fills in the loading action. */
+  fills(action: KritzelAgenticAction, objectId: string): boolean;
 }
 
 /** How a tool that adds an object shows it while the model writes it (`KritzelCanvasToolDefinition.placeholder`). */
@@ -246,8 +264,8 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
   const performDirectly: ToolPerform = (action, performOptions, context) =>
     performAsTool(actor, kind, action, context, instant, performOptions?.describeObjects ?? true);
 
-  /** One call: input checks, `prepare`, then `execute`; `perform` can stand in for the actor's. */
-  const runTool: ToolRun = async (input, context, perform) => {
+  /** One call: input checks, `prepare`, then `execute`; `perform` and `whenIdle` can stand in for the actor's. */
+  const runTool: ToolRun = async (input, context, perform, whenIdle) => {
     let payload: unknown;
     try {
       const parsed = parseInput(input, schemaNode);
@@ -277,7 +295,7 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
       },
       perform: (action, performOptions) => (perform ?? performDirectly)(action, performOptions, context),
       observe: observeOptions => actor.observe(observeOptions),
-      whenIdle: () => actor._whenIdle(),
+      whenIdle: whenIdle ?? (() => actor._whenIdle()),
       removedResult: () => removedResult(kind),
       refusalResult: (reason, objectIds) => refusalResult(kind, reason, objectIds),
       errorResult: error => errorResult(kind, error),
@@ -307,14 +325,117 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
   if (placeholder) {
     tool.begin = context => beginWithPlaceholder(placeholder, context, runTool, performDirectly, inputContext, () => actor.isAdded);
   }
+  const loading = definition.loading;
+  if (loading) {
+    tool.begin = context => beginWithLoading(loading, context, runTool, performDirectly, () => (actor.isAdded ? (actor._owner ?? null) : null));
+  }
   return tool;
 }
 
 /** Performs an action for a call of a tool, with that call's context. */
 type ToolPerform = (action: KritzelAgenticAction, options: { describeObjects?: boolean } | undefined, context: KritzelAgentToolContext | undefined) => Promise<string>;
 
-/** Runs one call of a tool; `perform` can stand in for the actor's. */
-type ToolRun = (input: unknown, context: KritzelAgentToolContext | undefined, perform?: ToolPerform) => Promise<string>;
+/** Runs one call of a tool; `perform` and `whenIdle` can stand in for the actor's. */
+type ToolRun = (input: unknown, context: KritzelAgentToolContext | undefined, perform?: ToolPerform, whenIdle?: () => Promise<void>) => Promise<string>;
+
+/**
+ * A call that shows the object it changes as loading once its input names it, and applies the change when it
+ * finishes: the action `execute` performs fills in the loading action, so loading and changing are one action.
+ */
+function beginWithLoading(
+  loading: KritzelCanvasToolLoading,
+  context: KritzelAgentToolContext,
+  runTool: ToolRun,
+  perform: ToolPerform,
+  core: () => KritzelCore | null,
+): KritzelAgentToolCall {
+  let ended = false;
+  let gaveUp = false;
+  let objectId: string | null = null;
+  /** The loading action, once started: its answer is the call's answer. */
+  let placing: Promise<string> | null = null;
+  let resolveFill!: (action: KritzelAgenticAction) => void;
+  let rejectFill!: (reason: unknown) => void;
+  const fill = new Promise<KritzelAgenticAction>((resolve, reject) => {
+    resolveFill = resolve;
+    rejectFill = reject;
+  });
+  fill.catch(() => undefined);
+  const dropLoading = () => rejectFill(new Error('The tool call ended without a change.'));
+  /** Resolves once the loading action runs, i.e. the actions queued before it are done. */
+  let markStarted!: () => void;
+  const started = new Promise<void>(resolve => (markStarted = resolve));
+
+  return {
+    update(inputText) {
+      const owner = core();
+      if (ended || placing || gaveUp || !owner) {
+        return;
+      }
+      const long = inputText.length > MAX_PLACEHOLDER_INPUT_LENGTH;
+      try {
+        const input = parsePartialJson(long ? inputText.slice(0, MAX_PLACEHOLDER_INPUT_LENGTH) : inputText);
+        if (typeof input === 'object' && input !== null && !Array.isArray(input)) {
+          objectId = loading.target(input, owner);
+        }
+      } catch {
+        // Input the model got wrong so far: the call reports it when it finishes.
+      }
+      if (objectId) {
+        const action = loading.action(objectId, () => {
+          markStarted();
+          return fill;
+        });
+        placing = perform(action, undefined, context);
+        placing.catch(() => undefined);
+      } else if (long) {
+        gaveUp = true;
+      }
+    },
+
+    async finish(input) {
+      ended = true;
+      const placed = placing;
+      const id = objectId;
+      if (!placed || !id) {
+        return runTool(input, context);
+      }
+      let filled = false;
+      // The call's own action runs inside the loading one: waiting for the actor to be idle would wait for itself.
+      const whenStarted = () => Promise.race([started, placed.then(() => undefined, () => undefined)]);
+      try {
+        return await runTool(
+          input,
+          context,
+          (action, performOptions, callContext) => {
+            if (filled || !loading.fills(action, id)) {
+              return perform(action, performOptions, callContext);
+            }
+            filled = true;
+            resolveFill(action);
+            return placed;
+          },
+          whenStarted,
+        );
+      } finally {
+        if (!filled) {
+          // Invalid input, or the tool changed nothing: the loading action rolls back.
+          dropLoading();
+          await placed.catch(() => undefined);
+        }
+      }
+    },
+
+    async cancel() {
+      if (ended) {
+        return;
+      }
+      ended = true;
+      dropLoading();
+      await placing?.catch(() => undefined);
+    },
+  };
+}
 
 /**
  * A call that places a loading placeholder once its input is far enough along, and fills it in when it finishes:

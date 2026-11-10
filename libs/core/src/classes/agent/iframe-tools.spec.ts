@@ -66,4 +66,65 @@ describe('iframe tools', () => {
     expect(await run(actor, 'update_iframe', { objectId: 'nope', html: '' })).toMatchObject({ completed: false, reason: 'invalid-target', objectIds: ['nope'] });
     expect(await run(actor, 'read_iframe', { objectId: 'nope' })).toMatchObject({ completed: false, reason: 'invalid-target' });
   });
+
+  describe('while the model writes an update', () => {
+    /** An actor whose loading action runs like the executor: it starts at once and waits for its fill. */
+    const createLoadingActor = () => {
+      const created = createActor();
+      const fills: Promise<unknown>[] = [];
+      created.actor.perform.mockImplementation(async (action: any) => {
+        if (!action.fill) {
+          return { completed: true, objectIds: [action.objectId] };
+        }
+        const filling = action.fill();
+        fills.push(filling);
+        try {
+          await filling;
+          return { completed: true, objectIds: [action.objectId] };
+        } catch {
+          return { completed: false, reason: 'aborted' };
+        }
+      });
+      const begin = () => createActorTools(created.actor as any, { iframes: true }).find(tool => tool.name === 'update_iframe')!.begin!({});
+      return { ...created, fills, begin };
+    };
+
+    it('shows the widget as loading once its whole ID is written, and fills that action in', async () => {
+      const { actor, widget, fills, begin } = createLoadingActor();
+      const call = begin();
+      call.update(`{"objectId": "${widget.id.slice(0, 4)}`);
+      expect(actor.perform).not.toHaveBeenCalled();
+      call.update(`{"objectId": "${widget.id}", "edits": [`);
+      expect(actor.perform).toHaveBeenCalledTimes(1);
+      expect(actor.perform.mock.calls[0][0]).toMatchObject({ type: 'updateIframe', objectId: widget.id, fill: expect.any(Function) });
+
+      const input = { objectId: widget.id, edits: [{ part: 'script', find: 'go', replace: 'start' }] };
+      expect(JSON.parse(await call.finish(input))).toMatchObject({ completed: true });
+      // The edits did not wait for the actor to be idle: its loading action is still running then.
+      expect(actor._whenIdle).not.toHaveBeenCalled();
+      expect(actor.perform).toHaveBeenCalledTimes(1);
+      await expect(fills[0]).resolves.toEqual({ type: 'updateIframe', objectId: widget.id, html: '<b>a</b><b>a</b>', css: 'p {}', script: 'start();' });
+    });
+
+    it('rolls the loading back when the input is invalid or the call is cancelled', async () => {
+      const { widget, fills, begin } = createLoadingActor();
+      const invalid = begin();
+      invalid.update(`{"objectId": "${widget.id}", "name": " "`);
+      expect(JSON.parse(await invalid.finish({ objectId: widget.id, name: ' ' }))).toMatchObject({ reason: 'invalid-input' });
+      await expect(fills[0]).rejects.toThrow();
+
+      const cancelled = begin();
+      cancelled.update(`{"objectId": "${widget.id}"`);
+      await cancelled.cancel();
+      await expect(fills[1]).rejects.toThrow();
+    });
+
+    it('does not show loading for other objects', async () => {
+      const { actor, begin } = createLoadingActor();
+      const call = begin();
+      call.update('{"objectId": "nope", "html": "x"');
+      expect(JSON.parse(await call.finish({ objectId: 'nope', html: 'x' }))).toMatchObject({ reason: 'invalid-target' });
+      expect(actor.perform).not.toHaveBeenCalled();
+    });
+  });
 });

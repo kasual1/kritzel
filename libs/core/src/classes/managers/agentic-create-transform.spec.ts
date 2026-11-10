@@ -1200,4 +1200,55 @@ describe('agentic create and transform actions', () => {
       });
     });
   });
+
+  describe('updateIframe with a fill', () => {
+    const addWidget = async () => {
+      const iframe = new KritzelIframeObject({ name: 'Counter', html: '<b>old</b>', translateX: 100, translateY: 100, width: 200, height: 120 });
+      await perform({ type: 'addObject', object: iframe });
+      return map.findById(iframe.id) as KritzelIframeObject;
+    };
+    /** Starts the action and lets it run until it waits for its changes. */
+    const start = async (action: any) => {
+      let started!: () => void;
+      const waiting = new Promise<void>(resolve => (started = resolve));
+      let finish!: (changes: any) => void;
+      let fail!: (reason: unknown) => void;
+      const changes = new Promise<any>((resolve, reject) => {
+        finish = resolve;
+        fail = reject;
+      });
+      const performing = actions.perform('agent', { ...action, fill: () => (started(), changes) }, { instant: true });
+      const result = settle(performing);
+      await waiting;
+      return { result, finish, fail };
+    };
+
+    it('shows the iframe as loading until the changes arrive, then applies them as one step', async () => {
+      const iframe = await addWidget();
+      const undoSteps = map.getAgentUndoStackLength('agent');
+      const { result, finish } = await start({ type: 'updateIframe', objectId: iframe.id });
+      expect(iframe.isLoading).toBe(true);
+      expect(iframe.html).toBe('<b>old</b>');
+
+      finish({ objectId: iframe.id, name: 'Timer', html: '<b>new</b>' });
+      await expect(result).resolves.toEqual({ completed: true, objectIds: [iframe.id] });
+      const current = map.findById(iframe.id) as KritzelIframeObject;
+      expect(current.isLoading).toBe(false);
+      expect(current.html).toBe('<b>new</b>');
+      expect(current.name).toBe('Timer');
+      expect(map.getAgentUndoStackLength('agent')).toBe(undoSteps + 1);
+    });
+
+    it('rolls the loading back when the changes do not come', async () => {
+      const iframe = await addWidget();
+      const { result, fail } = await start({ type: 'updateIframe', objectId: iframe.id });
+      expect(iframe.isLoading).toBe(true);
+      fail(new Error('cancelled'));
+      await expect(result).resolves.toMatchObject({ completed: false, reason: 'aborted' });
+      const current = map.findById(iframe.id) as KritzelIframeObject;
+      expect(current.isLoading).toBe(false);
+      expect(current.html).toBe('<b>old</b>');
+    });
+  });
 });
+

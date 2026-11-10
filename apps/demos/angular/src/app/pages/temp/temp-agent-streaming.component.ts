@@ -1,6 +1,6 @@
 // TEMP: demo of KritzelChatSession in agent mode with a streaming server answered by a real model; delete with pages/temp/.
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { KRITZEL_DEFAULT_OBJECT_TITLEBAR, KritzelAgent, KritzelChatSession, KritzelEditor, KritzelIframeObject, KritzelObjectConfig, KritzelWorkspace } from '@kritzel/angular-editor';
+import { IndexedDBSyncProvider, KRITZEL_DEFAULT_OBJECT_TITLEBAR, KritzelAgent, KritzelChatSession, KritzelEditor, KritzelIframeObject, KritzelObjectConfig, KritzelSyncConfig, KritzelWorkspace } from '@kritzel/angular-editor';
 import { angularThemeLight } from '../../const/angular-theme-light';
 import { angularThemeDark } from '../../const/angular-theme-dark';
 import { llmStreamTransport } from './mock-llm-stream-chat-server';
@@ -24,6 +24,7 @@ data-like, such as a weather card, a timer or a chart, as a widget with create_i
         [theme]="'light'"
         [themes]="themes"
         [workspaces]="workspaces"
+        [syncConfig]="syncConfig"
         [objectConfig]="objectConfig"
         [objectTitlebar]="objectTitlebar"
         [chatSession]="session"
@@ -51,7 +52,10 @@ data-like, such as a weather card, a timer or a chart, as a widget with create_i
 })
 export class TempAgentStreamingComponent {
   themes = [angularThemeLight, angularThemeDark];
-  workspaces = [new KritzelWorkspace({ viewport: { centerWorldX: 200, centerWorldY: 280, scale: 0.7 } })];
+  workspaces = [new KritzelWorkspace({ id: 'temp-agent-streaming', viewport: { centerWorldX: 200, centerWorldY: 280, scale: 0.7 } })];
+  syncConfig: KritzelSyncConfig = {
+    providers: [IndexedDBSyncProvider]
+  };
   objectConfig: KritzelObjectConfig = {
     hasTitlebar: (object) => object instanceof KritzelIframeObject,
     isRotatable: (object) => object instanceof KritzelIframeObject === false,
