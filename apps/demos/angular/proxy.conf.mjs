@@ -1,4 +1,4 @@
-// TEMP: dev-server proxy for the temp command-mode and streaming demos (pages/temp/); delete with it and `proxyConfig` in angular.json.
+// TEMP: dev-server proxy for the temp command-mode, streaming and agent-streaming demos (pages/temp/); delete with it and `proxyConfig` in angular.json.
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'dotenv';
@@ -21,7 +21,7 @@ function readRootEnv(name) {
 }
 
 const apiKey = readRootEnv('ANTHROPIC_API_KEY');
-if (!apiKey) console.warn('[proxy] ANTHROPIC_API_KEY is not set in the root .env: /temp/command-mode and /temp/streaming cannot reach the model.');
+if (!apiKey) console.warn('[proxy] ANTHROPIC_API_KEY is not set in the root .env: /temp/command-mode, /temp/streaming and /temp/agent-streaming cannot reach the model.');
 
 export default {
   // The demo's mocked server calls the Claude API through here; the key is added on the way, so it never reaches the browser.
