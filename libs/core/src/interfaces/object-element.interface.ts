@@ -140,7 +140,9 @@ export type KritzelObjectElementInteractionFailureReason =
   | 'not-editable'
   /** `'check'` on an element that is not a checkbox, radio button or switch, or that did not change. */
   | 'not-checkable'
-  /** The value, option or key was not accepted. */
+  /** `'scroll'` found nothing under the element that can scroll in that direction. */
+  | 'not-scrollable'
+  /** The value, option or key was not accepted. A field that refused a value is left as it was. */
   | 'invalid-value'
   /** The content is not reachable: the object isn't mounted, its content runs without scripts, didn't respond or reloaded. */
   | 'unavailable';

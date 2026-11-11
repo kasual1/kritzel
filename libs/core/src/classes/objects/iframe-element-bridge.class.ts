@@ -71,7 +71,7 @@ export const IFRAME_ELEMENT_MAX_FILL_LENGTH = 100_000;
 const MAX_KEY_LENGTH = 100;
 /** Largest scroll distance of a `'scroll'` interaction, in CSS pixels. */
 const MAX_SCROLL_DELTA = 100_000;
-const INTERACTION_FAILURE_REASONS = new Set<unknown>(['not-found', 'not-visible', 'disabled', 'covered', 'not-editable', 'not-checkable', 'invalid-value']);
+const INTERACTION_FAILURE_REASONS = new Set<unknown>(['not-found', 'not-visible', 'disabled', 'covered', 'not-editable', 'not-checkable', 'not-scrollable', 'invalid-value']);
 
 const MAX_SELECTOR_LENGTH = 2000;
 const MAX_STRING_LENGTH = 500;

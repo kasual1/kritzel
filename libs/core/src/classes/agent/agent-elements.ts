@@ -68,7 +68,9 @@ export async function inspectObjectElements(core: KritzelCore, objectId: string,
       reason: 'element-interaction-failed',
       objectIds: [objectId],
       message: error instanceof Error ? error.message : String(error),
-      hint: 'The content of the widget cannot be read right now. Tell the user if it stays like that.',
+      hint: object.isMounted === false
+        ? 'The widget is too far outside the view to be loaded: bring it into view (fit_viewport) and try again.'
+        : 'The content of the widget cannot be read right now. Try again, or tell the user if it stays like that.',
     };
   }
   const result: KritzelAgentToolResult = { completed: true, objectIds: [objectId], elements: infos.slice(0, limit).map(toCanvasElement) };

@@ -180,7 +180,8 @@ export const AGENT_TOOL_REASON_HINTS: Record<KritzelAgenticActionFailureReason |
   'invalid-target': 'Unknown ID, a child inside a group, or the wrong kind of object. Call observe_canvas and use top-level IDs.',
   'engine-disconnected': 'The canvas is not available right now. Try again later.',
   'element-interaction-failed':
-    'The element refused the interaction; the message says why. Call inspect_elements to check the widget and its elements, then try again or tell the user.',
+    'The message says why. If the widget is not mounted, it is too far outside the view: bring it into view (fit_viewport) and try again. ' +
+    'Otherwise call inspect_elements to check the widget and its elements, then try again or tell the user.',
 };
 
 /** Hints that read differently for an actor working as the user. */

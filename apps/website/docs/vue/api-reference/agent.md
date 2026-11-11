@@ -821,8 +821,25 @@ Why an element refused an interaction: `elementReason` of an action result with 
 | `'covered'` | Another element covers the point that would be clicked. |
 | `'not-editable'` | `'fill'` on an element that is not a text field, select, or editable element, or that is read-only. |
 | `'not-checkable'` | `'check'` on an element that is not a checkbox, radio button, or switch, or that did not change. |
-| `'invalid-value'` | The value, option, or key was not accepted. |
+| `'not-scrollable'` | `'scroll'` found nothing under the element that can scroll in that direction. |
+| `'invalid-value'` | The value, option, or key was not accepted. A field that refused a value is left as it was. |
 | `'unavailable'` | The object is not mounted, its content runs without scripts, or it did not respond or reloaded meanwhile. |
+
+### KritzelObjectElementState
+
+The `state` of an element in a [`KritzelCanvasElement`](#kritzelcanvaselement) and in element descriptions: what the element's attributes don't show. Only the fields that apply are set.
+
+```ts
+interface KritzelObjectElementState {
+  disabled?: boolean;          // disabled, aria-disabled="true", or inside an inert subtree
+  checked?: boolean | 'mixed'; // checkboxes, radio buttons, and switches, also by ARIA role
+  selected?: boolean;          // <option>
+  open?: boolean;              // <details>
+  focused?: boolean;           // has the keyboard focus inside the content
+  editable?: boolean;          // text fields, selects, and editable elements: whether they can be filled
+  playing?: boolean;           // <audio> and <video>
+}
+```
 
 ### KritzelAgenticAction
 

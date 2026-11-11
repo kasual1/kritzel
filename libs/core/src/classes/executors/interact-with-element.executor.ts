@@ -12,6 +12,7 @@ import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from '../../helpers/agentic-g
 import { assertElementTarget } from '../../helpers/agentic-validation.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { readElementInteraction } from '../objects/iframe-element-bridge.class';
+import { KritzelAgenticAbortError } from '../agent/agentic-abort-error.class';
 
 /** An object whose content elements can be interacted with. */
 type KritzelInteractiveElementObject = KritzelElementAwareObject & Required<Pick<KritzelElementAwareObject, 'interactWithElement'>>;
@@ -64,16 +65,43 @@ export async function performElementInteraction(
     return object;
   };
   const hasCursor = run.actorKind !== 'user';
+  // An object that throws (an implementation that rejects the selector, for example) fails the action like a refusal.
+  const ask = async (options?: { trial: true }): Promise<KritzelObjectElementInteractionResult> => {
+    try {
+      return await currentObject().interactWithElement(selector, interaction, ...(options ? [options] : []));
+    } catch (error) {
+      if (error instanceof KritzelAgenticAbortError) {
+        throw error;
+      }
+      return { completed: false, reason: 'invalid-value', message: error instanceof Error ? error.message : String(error) };
+    }
+  };
 
   if (hasCursor) {
-    const object = currentObject();
     // Tracked for the whole action, so the element's position is known when the cursor attaches to it at the end.
-    object.trackElement(selector);
-    run.onSettle(() => object.untrackElement(selector));
+    // Tracking is only a nicety: an object that refuses it (e.g. too many tracked elements) still gets the interaction.
+    let tracking = false;
+    try {
+      currentObject().trackElement(selector);
+      tracking = true;
+    } catch (error) {
+      if (error instanceof KritzelAgenticAbortError) {
+        throw error;
+      }
+    }
+    // Through the current instance: undo, redo or a collaborator's change can replace the object meanwhile, and the
+    // replacement takes the tracking over.
+    run.onSettle(() => {
+      const current = tracking ? run.core.store.objects?.findById(objectId) : null;
+      if (ObjectHelper.isKritzelElementAwareObject(current)) {
+        current.untrackElement(selector);
+      }
+    });
     if (run.instant) {
-      await run.fly(target, true);
+      // Jumps without attaching: the cursor attaches only once the interaction succeeded.
+      await run.fly(target, false);
     } else {
-      const trial = await currentObject().interactWithElement(selector, interaction, { trial: true });
+      const trial = await ask({ trial: true });
       run.assertActive();
       if (!trial.completed) {
         failElementInteraction(run, target, trial);
@@ -84,18 +112,20 @@ export async function performElementInteraction(
 
   const presses = interaction.type === 'click' || interaction.type === 'check' || interaction.type === 'fill' || interaction.type === 'press';
   if (presses) {
+    // The first press of a double click plays before; the content performs both clicks during the second.
+    if (interaction.type === 'click' && interaction.count === 2) {
+      await run.click();
+    }
     await run.press();
   } else {
     run.assertActive();
     run.host.checkpoint(run);
   }
-  const result = await currentObject().interactWithElement(selector, interaction);
+  const result = await ask();
   run.assertActive();
-  if (presses) {
-    await run.release();
-    if (interaction.type === 'click' && interaction.count === 2) {
-      await run.click();
-    }
+  // Nothing is awaited from here on: the content has acted, so the run must not end as aborted after it.
+  if (presses && hasCursor) {
+    run.cursorManager.setPressed(run.cursorId, false);
   }
   if (!result.completed) {
     failElementInteraction(run, target, result);

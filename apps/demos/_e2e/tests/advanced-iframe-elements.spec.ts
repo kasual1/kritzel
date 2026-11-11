@@ -245,3 +245,73 @@ test.describe('Iframe Element Interaction', () => {
     expect(matches).toEqual(buttons.map(button => [button.kritzelId]));
   });
 });
+
+test.describe('Agents using iframe elements', () => {
+  /** Runs the demo's agent in the page; only serializable results come back. */
+  async function withAgent<T>(page: Page, run: string): Promise<T> {
+    return page.evaluate(async ({ agentId, source }) => {
+      const editor = document.querySelector('kritzel-editor') as any;
+      const agent = await editor.getAgent(agentId);
+      const [object] = await editor.findObjects((obj: { __class__: string }) => obj.__class__ === 'KritzelIframeObject');
+      return new Function('agent', 'objectId', `return (async () => { ${source} })();`)(agent, object.id);
+    }, { agentId: AGENT, source: run });
+  }
+
+  test.beforeEach(async ({ editorPage }) => {
+    const { page } = editorPage;
+    await editorPage.goto(ROUTE);
+    await editorPage.waitForReady();
+    await expect.poll(() => withAgent<boolean>(page, 'return !!agent && agent.state.isAdded;')).toBe(true);
+    await expect.poll(async () => (await queryCardElements(page, '[data-kritzel-id]').catch(() => [])).length).toBeGreaterThan(0);
+    await expect(cardElement(page, 'seats-count')).toHaveText('3');
+    // Deselect the card: agents use widgets whether or not they are selected.
+    await page.keyboard.press('Escape');
+    await expect.poll(async () => (await getPlanObjectState(page)).isInteractive).toBe(false);
+  });
+
+  test('clicks buttons inside the card and stays on the element', async ({ editorPage }) => {
+    const { page } = editorPage;
+
+    const result = await withAgent<any>(
+      page,
+      `const result = await agent.interactWithElement({ objectId, selector: '[data-kritzel-id="seats-increase"]' }, { type: 'click' });
+       return { completed: result.completed, element: result.element && result.element.kritzelId, attachedTo: agent.state.attachedTo };`,
+    );
+
+    expect(result).toMatchObject({ completed: true, element: 'seats-increase', attachedTo: { selector: '[data-kritzel-id="seats-increase"]' } });
+    await expect(cardElement(page, 'seats-count')).toHaveText('4');
+    await expect(cardElement(page, 'total')).toHaveText('$48 / month');
+    // The agent's pointer is not the user's: no hover is reported to the app.
+    expect((await page.getByText('Hovered').locator('..').textContent())?.replace(/\s+/g, ' ')).toContain('—');
+
+    await withAgent(page, `await agent.click({ objectId, selector: '[data-kritzel-id="seats-decrease"]' });`);
+    await expect(cardElement(page, 'seats-count')).toHaveText('3');
+  });
+
+  test('finds and uses the elements through its tools', async ({ editorPage }) => {
+    const { page } = editorPage;
+
+    const inspected = await withAgent<any>(page, `return JSON.parse(await agent.tools().find(tool => tool.name === 'inspect_elements').run({ objectId }));`);
+    expect(inspected.completed).toBe(true);
+    expect(inspected.elements.map((element: { selector: string }) => element.selector)).toContain('[data-kritzel-id="yearly"]');
+
+    const used = await withAgent<any>(
+      page,
+      `return JSON.parse(await agent.tools().find(tool => tool.name === 'interact_with_element').run({
+         target: { objectId, selector: '[data-kritzel-id="yearly"]' },
+         interaction: { type: 'click' },
+       }));`,
+    );
+    expect(used).toMatchObject({ completed: true, element: { selector: '[data-kritzel-id="yearly"]', visible: true } });
+    await expect(cardElement(page, 'total')).toHaveText('$360 / year');
+
+    const missing = await withAgent<any>(
+      page,
+      `return JSON.parse(await agent.tools().find(tool => tool.name === 'interact_with_element').run({
+         target: { objectId, selector: '#missing' },
+         interaction: { type: 'click' },
+       }));`,
+    );
+    expect(missing).toMatchObject({ completed: false, reason: 'element-interaction-failed', message: expect.stringContaining('No element matches') });
+  });
+});

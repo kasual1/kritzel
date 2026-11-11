@@ -640,6 +640,9 @@ describe('KritzelIframeElementBridge interactions', () => {
       coveredBy: expect.objectContaining({ selector: '.modal' }),
     });
     await expect(unknown).resolves.toEqual({ completed: false, reason: 'unavailable' });
+    const scroll = bridge.interact('#list', { type: 'scroll', deltaY: 10 });
+    answer({ failure: 'not-scrollable', message: 'Nothing under it can scroll in that direction.' });
+    await expect(scroll).resolves.toMatchObject({ completed: false, reason: 'not-scrollable' });
   });
 
   it('keeps reported elements inside the content', async () => {

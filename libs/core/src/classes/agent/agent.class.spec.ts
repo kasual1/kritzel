@@ -786,6 +786,76 @@ describe('KritzelAgent', () => {
         expect(agent.state.attachedTo).toMatchObject({ objectId: frame.id, selector: '#play' });
       });
 
+      it('does not attach when an instant interaction fails, and stops tracking the element', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const tracked = makeInteractive(frame, {}, () => ({ completed: false, reason: 'not-found', message: 'No element matches the selector.' }));
+        const agent = add(new KritzelAgent({ name: 'A' }));
+
+        await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#missing' }, { type: 'click' }, { instant: true }))).resolves.toMatchObject({
+          completed: false,
+          reason: 'element-interaction-failed',
+          elementReason: 'not-found',
+        });
+        expect(agent.state.attachedTo).toBeNull();
+        expect(tracked.size).toBe(0);
+      });
+
+      it('reports a performed interaction as completed even when the action is aborted right after it', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
+        let performed = 0;
+        makeInteractive(frame, rects, (selector, _interaction, options) => {
+          if (!options?.trial) performed++;
+          return { completed: true, element: info(selector, rects['#play']) };
+        });
+        const agent = add(new KritzelAgent({ name: 'A', position: { x: 0, y: 0 } }));
+        const controller = new AbortController();
+        const promise = agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'click' }, { signal: controller.signal });
+        let done = false;
+        promise.then(() => (done = true));
+        for (let i = 0; i < 600 && !done; i++) {
+          await step();
+          if (performed > 0) controller.abort();
+        }
+
+        await expect(promise).resolves.toMatchObject({ completed: true });
+        expect(performed).toBe(1);
+      });
+
+      it('fails cleanly when the object throws instead of answering', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        makeInteractive(frame, {}, () => {
+          throw new Error('Invalid element selector "button:has-text(x)".');
+        });
+        frame.trackElement.mockImplementation(() => {
+          throw new Error('At most 50 elements can be tracked per object.');
+        });
+        const agent = add(new KritzelAgent({ name: 'A' }));
+
+        await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'click' }))).resolves.toMatchObject({
+          completed: false,
+          reason: 'element-interaction-failed',
+          elementReason: 'invalid-value',
+          message: 'Element "#play": Invalid element selector "button:has-text(x)".',
+        });
+        expect(frame.untrackElement).not.toHaveBeenCalled();
+      });
+
+      it('untracks through the current instance when the object was replaced during the action', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
+        makeInteractive(frame, rects);
+        const replacement = Object.assign(Object.create(frame), { untrackElement: jest.fn() });
+        const findById = core.store.objects.findById.bind(core.store.objects);
+        const agent = add(new KritzelAgent({ name: 'A', speed: 100000 }));
+        const promise = agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'hover' });
+        await step();
+        jest.spyOn(core.store.objects, 'findById').mockImplementation((id: unknown) => (id === frame.id ? replacement : findById(id)));
+
+        await expect(settle(promise)).resolves.toMatchObject({ completed: true });
+        expect(replacement.untrackElement).toHaveBeenCalledWith('#play');
+      });
+
       it('rejects invalid targets and interactions', async () => {
         const frame: any = addShape(100, 100, 200, 100);
         makeInteractive(frame, {});
