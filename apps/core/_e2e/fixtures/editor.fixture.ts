@@ -1,4 +1,4 @@
-import { test as base, type Page, type Locator } from '@playwright/test';
+import { test as base, type BrowserContext, type Page, type Locator } from '@playwright/test';
 
 export type KritzelAlignment =
   | 'start-horizontal'
@@ -1228,7 +1228,25 @@ export class EditorPage {
   }
 }
 
+/**
+ * Turns off the appear animation of inserted objects (theme `objectAppear`), so objects are in place, fully opaque,
+ * as soon as they are added: tests measure and screenshot them right away. Set on the engine, where it wins over the
+ * theme's variables on the editor.
+ */
+async function disableObjectAppearAnimation(context: BrowserContext) {
+  await context.addInitScript(() => {
+    const style = document.createElement('style');
+    style.textContent = 'kritzel-engine { --kritzel-object-appear-animation-duration: 0s !important; }';
+    document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style), { once: true });
+  });
+}
+
 export const test = base.extend<{ editorPage: EditorPage }>({
+  // On the context, so pages a test opens itself (a second tab) get it too.
+  context: async ({ context }, use) => {
+    await disableObjectAppearAnimation(context);
+    await use(context);
+  },
   editorPage: async ({ page }, use) => {
     const editorPage = new EditorPage(page);
     await use(editorPage);

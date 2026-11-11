@@ -3352,8 +3352,17 @@ describe('KritzelEngine', () => {
         jest.restoreAllMocks();
       });
 
+      /** Shows a titlebar for the given owners. */
+      const withTitlebars = (...ownerIds: string[]) => {
+        Object.assign(core.objectTitlebarManager, {
+          isEnabled: true,
+          resolveTitlebars: jest.fn().mockReturnValue(ownerIds.map(id => ({ owner: { id } }))),
+        });
+      };
+      const renderTitlebarLayer = () => findVNodes(engine.render() as VNode, node => node.$attrs$?.appearingOwners instanceof Map)[0];
+
       it('plays on objects marked by an insert, with their stagger index, also on their titlebars', () => {
-        Object.assign(core.objectTitlebarManager, { isEnabled: true });
+        withTitlebars('image-appear');
         const image = new KritzelImage({ width: 200, height: 120 });
         image.id = 'image-appear';
         core.objectAppearManager.mark([image], 2);
@@ -3362,8 +3371,46 @@ describe('KritzelEngine', () => {
         expect(classes(container)).toContain('object--appearing');
         expect(container.$attrs$?.style).toEqual(expect.objectContaining({ '--kritzel-object-appear-index': '2' }));
 
-        const [layer] = findVNodes(engine.render() as VNode, node => node.$attrs$?.appearingOwners instanceof Map);
-        expect(layer?.$attrs$?.appearingOwners.get('image-appear')).toBe(2);
+        expect(renderTitlebarLayer()?.$attrs$?.appearingOwners.get('image-appear')).toBe(2);
+      });
+
+      it('hides the titlebar of an object waiting to appear, then lets it appear with the object', () => {
+        withTitlebars('iframe-waiting');
+        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
+        iframe.id = 'iframe-waiting';
+        core.objectAppearManager.mark([iframe]);
+        core.store.getObjectsInViewport = jest.fn().mockReturnValue([iframe]);
+
+        const waiting = renderTitlebarLayer();
+        expect(waiting?.$attrs$?.titlebars).toEqual([]);
+
+        Object.defineProperty(iframe, 'isDocumentLoaded', { get: () => true });
+        const appearing = renderTitlebarLayer();
+        expect(appearing?.$attrs$?.titlebars).toEqual([{ owner: { id: 'iframe-waiting' } }]);
+        expect(appearing?.$attrs$?.appearingOwners.get('iframe-waiting')).toBe(0);
+      });
+
+      it('shows a titlebar that comes up while its object appears at once, without the animation', () => {
+        withTitlebars();
+        const image = new KritzelImage({ width: 200, height: 120 });
+        image.id = 'image-late-titlebar';
+        core.objectAppearManager.mark([image]);
+        core.store.getObjectsInViewport = jest.fn().mockReturnValue([image]);
+        renderTitlebarLayer();
+
+        withTitlebars('image-late-titlebar');
+        const layer = renderTitlebarLayer();
+        expect(layer?.$attrs$?.titlebars).toHaveLength(1);
+        expect(layer?.$attrs$?.appearingOwners.has('image-late-titlebar')).toBe(false);
+      });
+
+      it('lets a group appear once its children can', () => {
+        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
+        const group = withPrototype(MockKritzelGroup, { isLoading: false, children: [iframe] });
+        expect((engine as any).isReadyToAppear(group)).toBe(false);
+
+        Object.defineProperty(iframe, 'isDocumentLoaded', { get: () => true });
+        expect((engine as any).isReadyToAppear(group)).toBe(true);
       });
 
       it('does not play on objects that were not marked', () => {

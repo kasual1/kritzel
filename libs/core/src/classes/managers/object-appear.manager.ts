@@ -15,6 +15,16 @@ export interface KritzelObjectAppearTiming {
   stagger: number;
 }
 
+/** The appear state of the rendered objects, resolved once per render. */
+export interface KritzelObjectAppearResolution {
+  /** The objects whose animation runs, with their stagger index, by object ID. */
+  appearing: Map<string, number>;
+  /** The objects whose animation started in this render (also in `appearing`). */
+  started: Set<string>;
+  /** The objects marked to appear that can't be shown yet, e.g. an iframe whose document is loading. */
+  pending: Set<string>;
+}
+
 interface KritzelObjectAppearEntry {
   /** Position in its batch; the animation is delayed by `index` times the theme's stagger. */
   index: number;
@@ -59,21 +69,23 @@ export class KritzelObjectAppearManager {
    * @param isReady - Whether an object can be shown yet; the animation waits until it can
    * @param timing - The theme's timing; a zero duration turns the animation off
    * @param now - The current time (`performance.now()`)
-   * @returns The stagger index of each appearing object, by object ID
+   * @returns The appearing, just started and pending objects
    */
   resolve(
     renderedObjects: KritzelBaseObject<any>[],
     isReady: (object: KritzelBaseObject<any>) => boolean,
     timing: KritzelObjectAppearTiming,
     now: number,
-  ): Map<string, number> {
+  ): KritzelObjectAppearResolution {
     const appearing = new Map<string, number>();
+    const started = new Set<string>();
+    const pending = new Set<string>();
     if (this._entries.size === 0) {
-      return appearing;
+      return { appearing, started, pending };
     }
     if (!(timing.duration > 0)) {
       this._entries.clear();
-      return appearing;
+      return { appearing, started, pending };
     }
 
     const rendered = new Map(renderedObjects.map(object => [object.id, object]));
@@ -85,9 +97,11 @@ export class KritzelObjectAppearManager {
       }
       if (entry.startedAt === undefined) {
         if (!isReady(object)) {
+          pending.add(id);
           return;
         }
         entry.startedAt = now;
+        started.add(id);
       }
       if (now - entry.startedAt >= entry.index * Math.max(0, timing.stagger) + timing.duration) {
         this._entries.delete(id);
@@ -95,7 +109,7 @@ export class KritzelObjectAppearManager {
       }
       appearing.set(id, entry.index);
     });
-    return appearing;
+    return { appearing, started, pending };
   }
 
   /** Whether an object is marked to appear (and hasn't finished). */

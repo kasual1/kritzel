@@ -90,6 +90,8 @@ import {
   KRITZEL_ROTATION_HANDLE_DISTANCE,
   KRITZEL_OBJECT_APPEAR_MAX_BATCH,
   KritzelObjectAppearTiming,
+  KritzelObjectAppearResolution,
+  KritzelResolvedTitlebar,
 } from '@kritzel/core';
 import throttle from 'lodash/throttle';
 import { toPng, toSvg } from 'html-to-image';
@@ -1677,6 +1679,9 @@ export class KritzelEngine implements KritzelEngineHost {
       },
     };
 
+    // The capture copies the computed styles, so objects still appearing would be captured faded or not at all.
+    this.finishAppearAnimations();
+
     try {
       if (format === 'svg') {
         return await toSvg(this.host, screenshotOptions);
@@ -2563,6 +2568,8 @@ export class KritzelEngine implements KritzelEngineHost {
   /** Embedded objects rendered by the previous render, by id, so they can be unmounted even after they were deleted. */
   private _previousVisibleDynamicObjects: Map<string, { unmount(): void }> = new Map();
   private _revealedImageKeys: Set<string> = new Set();
+  /** Owners whose titlebar plays the appear animation with them, see `resolveAppearingTitlebarOwners`. */
+  private _appearingTitlebarOwners: Set<string> = new Set();
   private _sceneBootstrapOpacity: number = 1;
   private _sceneBootstrapTransitionEnabled: boolean = false;
   private _sceneBootstrapTransitionTimer: ReturnType<typeof setTimeout> | null = null;
@@ -2766,6 +2773,7 @@ export class KritzelEngine implements KritzelEngineHost {
     window.visualViewport?.removeEventListener('resize', this.handleVisualViewportResize);
     this._revealedImageKeys.clear();
     this.core.objectAppearManager.clear();
+    this._appearingTitlebarOwners.clear();
 
     if (this._sceneBootstrapTransitionTimer !== null) {
       clearTimeout(this._sceneBootstrapTransitionTimer);
@@ -3338,6 +3346,17 @@ export class KritzelEngine implements KritzelEngineHost {
     return 'object';
   }
 
+  /** Jumps the running appear animations to their end. */
+  private finishAppearAnimations(): void {
+    this.host.shadowRoot?.querySelectorAll('.object--appearing').forEach(element => {
+      element.getAnimations?.().forEach(animation => {
+        if ((animation as CSSAnimation).animationName === 'kritzel-object-appear') {
+          animation.finish();
+        }
+      });
+    });
+  }
+
   /**
    * Whether an inserted object can be shown, so its appear animation can start: an iframe once its document loaded
    * (it is invisible until then) or while it shows its loading placeholder; other objects at once.
@@ -3346,7 +3365,28 @@ export class KritzelEngine implements KritzelEngineHost {
     if (object instanceof KritzelIframeObject) {
       return object.isLoading || object.isDocumentLoaded;
     }
+    if (object instanceof KritzelGroup && !object.isLoading) {
+      // A group (and its titlebar) appears with its children.
+      return object.children.every(child => this.isReadyToAppear(child));
+    }
     return true;
+  }
+
+  /**
+   * The titlebars that appear with their objects, with their stagger index, by owner ID: those shown when their object
+   * starts to appear. A titlebar shown later (e.g. once its object is selected) shows at once, rather than replaying the
+   * animation out of step with its object.
+   */
+  private resolveAppearingTitlebarOwners(titlebars: KritzelResolvedTitlebar[], appear: KritzelObjectAppearResolution): Map<string, number> {
+    const owners = new Map<string, number>();
+    titlebars.forEach(({ owner }) => {
+      const index = appear.appearing.get(owner.id);
+      if (index !== undefined && (appear.started.has(owner.id) || this._appearingTitlebarOwners.has(owner.id))) {
+        owners.set(owner.id, index);
+      }
+    });
+    this._appearingTitlebarOwners = new Set(owners.keys());
+    return owners;
   }
 
   /** The appear animation's timing from the theme (`objectAppear`), with the stylesheet's defaults. */
@@ -3453,14 +3493,17 @@ export class KritzelEngine implements KritzelEngineHost {
     const titlebarMetrics = titlebarManager.getMetrics(computedStyle);
     // Titlebars hang above their objects, so the render query is widened while titlebars are configured.
     const visibleObjects = this.core.store.getObjectsInViewport(titlebarManager.getCullingPadding(titlebarMetrics));
-    const titlebars = titlebarManager.resolveTitlebars(visibleObjects);
     // Objects that app code or agents just inserted, with their stagger index.
-    const appearingObjects = this.core.objectAppearManager.resolve(
+    const appear = this.core.objectAppearManager.resolve(
       visibleObjects,
       object => this.isReadyToAppear(object),
       this.getObjectAppearTiming(computedStyle),
       performance.now(),
     );
+    const appearingObjects = appear.appearing;
+    // The titlebar of an object waiting to appear (e.g. an iframe whose document loads) stays hidden until it appears.
+    const titlebars = titlebarManager.resolveTitlebars(visibleObjects).filter(titlebar => !appear.pending.has(titlebar.owner.id));
+    const appearingTitlebarOwners = this.resolveAppearingTitlebarOwners(titlebars, appear);
     // The same distance agents draw and grab their handles at: above a titlebar on the selection's top edge.
     const selectionGroup = this.core.store.selectionGroup;
     const rotationHandleDistance = selectionGroup
@@ -4472,7 +4515,7 @@ export class KritzelEngine implements KritzelEngineHost {
           {this.core.objectTitlebarManager.isEnabled && (
             <kritzel-object-titlebar-layer
               titlebars={titlebars}
-              appearingOwners={appearingObjects}
+              appearingOwners={appearingTitlebarOwners}
               surfacePointerEvents={this.getTitlebarSurfacePointerEvents()}
               elementClick={this.handleTitlebarElementClick}
               titleEdit={this.titlebarTitleEditHandlers}
@@ -4668,7 +4711,10 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 }
 
-/** Milliseconds of a CSS time (`'600ms'`, `'0.6s'`), or `fallback` when it is empty or not a time. */
+/**
+ * Milliseconds of a plain CSS time (`'600ms'`, `'0.6s'`), or `fallback` when it is empty or anything else (e.g. `calc()`,
+ * which custom properties keep unevaluated).
+ */
 function parseCssTime(value: string, fallback: number): number {
   const match = /^(-?\d*\.?\d+)(ms|s)$/i.exec(value.trim());
   if (!match) {

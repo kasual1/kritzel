@@ -158,14 +158,16 @@ export class KritzelImageTool extends KritzelBaseTool {
         image.updatePosition(image.translateX + offset, image.translateY + offset);
       }
       this._core.addObject(image);
-      // Picked images play the appear animation, like images that app code adds.
-      if (images.length <= KRITZEL_OBJECT_APPEAR_MAX_BATCH) {
-        this._core.objectAppearManager.mark([image], index);
-      }
     });
 
     this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
     this._core.selectObjects(images);
+    // Picked images play the appear animation, like images that app code adds: all at once, with the selection
+    // frame around them, so the frame is never shown around images that haven't appeared yet.
+    if (images.length <= KRITZEL_OBJECT_APPEAR_MAX_BATCH) {
+      const selectionGroup = this._core.store.selectionGroup;
+      this._core.objectAppearManager.mark(selectionGroup ? [...images, selectionGroup] : images, 0);
+    }
     this._core.engine.emitObjectsChange();
     this._core.engine.emitObjectsAdded(images);
   }

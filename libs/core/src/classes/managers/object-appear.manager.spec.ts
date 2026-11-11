@@ -13,6 +13,8 @@ const ready = () => true;
 describe('KritzelObjectAppearManager', () => {
   let manager: KritzelObjectAppearManager;
 
+  const appearing = (...args: Parameters<KritzelObjectAppearManager['resolve']>) => manager.resolve(...args).appearing;
+
   beforeEach(() => {
     manager = new KritzelObjectAppearManager();
   });
@@ -22,10 +24,10 @@ describe('KritzelObjectAppearManager', () => {
     manager.mark([a], 0);
     manager.mark([b], 1);
 
-    expect(manager.resolve([a, b], ready, timing, 1000)).toEqual(new Map([['a', 0], ['b', 1]]));
+    expect(appearing([a, b], ready, timing, 1000)).toEqual(new Map([['a', 0], ['b', 1]]));
     // Rerenders keep the animation while it runs (b also waits for its stagger).
-    expect(manager.resolve([a, b], ready, timing, 1650)).toEqual(new Map([['b', 1]]));
-    expect(manager.resolve([a, b], ready, timing, 1700)).toEqual(new Map());
+    expect(appearing([a, b], ready, timing, 1650)).toEqual(new Map([['b', 1]]));
+    expect(appearing([a, b], ready, timing, 1700)).toEqual(new Map());
     expect(manager.has('a')).toBe(false);
     expect(manager.has('b')).toBe(false);
   });
@@ -34,14 +36,14 @@ describe('KritzelObjectAppearManager', () => {
     const [group, child] = [objectWithId('group'), objectWithId('child')];
     manager.mark([child, group], 2);
 
-    expect(manager.resolve([group, child], ready, timing, 0)).toEqual(new Map([['child', 2], ['group', 2]]));
+    expect(appearing([group, child], ready, timing, 0)).toEqual(new Map([['child', 2], ['group', 2]]));
   });
 
   it('caps the stagger index', () => {
     const object = objectWithId('a');
     manager.mark([object], 100);
 
-    expect(manager.resolve([object], ready, timing, 0).get('a')).toBe(KRITZEL_OBJECT_APPEAR_MAX_STAGGER_INDEX);
+    expect(appearing([object], ready, timing, 0).get('a')).toBe(KRITZEL_OBJECT_APPEAR_MAX_STAGGER_INDEX);
   });
 
   it('starts the animation once the object is ready to show', () => {
@@ -49,29 +51,44 @@ describe('KritzelObjectAppearManager', () => {
     let isReady = false;
     manager.mark([object]);
 
-    expect(manager.resolve([object], () => isReady, timing, 0)).toEqual(new Map());
+    expect(appearing([object], () => isReady, timing, 0)).toEqual(new Map());
     expect(manager.has('a')).toBe(true);
 
     isReady = true;
-    expect(manager.resolve([object], () => isReady, timing, 5000)).toEqual(new Map([['a', 0]]));
-    expect(manager.resolve([object], () => isReady, timing, 5599)).toEqual(new Map([['a', 0]]));
-    expect(manager.resolve([object], () => isReady, timing, 5600)).toEqual(new Map());
+    expect(appearing([object], () => isReady, timing, 5000)).toEqual(new Map([['a', 0]]));
+    expect(appearing([object], () => isReady, timing, 5599)).toEqual(new Map([['a', 0]]));
+    expect(appearing([object], () => isReady, timing, 5600)).toEqual(new Map());
+  });
+
+  it('reports the objects that started in a render and those that wait to be ready', () => {
+    const [a, b] = [objectWithId('a'), objectWithId('b')];
+    manager.mark([a, b]);
+    const isReady = (object: KritzelBaseObject<any>) => object.id === 'a';
+
+    const first = manager.resolve([a, b], isReady, timing, 0);
+    expect(first.started).toEqual(new Set(['a']));
+    expect(first.pending).toEqual(new Set(['b']));
+
+    const second = manager.resolve([a, b], isReady, timing, 100);
+    expect(second.started).toEqual(new Set());
+    expect(second.appearing).toEqual(new Map([['a', 0]]));
+    expect(second.pending).toEqual(new Set(['b']));
   });
 
   it('forgets objects that are not rendered, so they never appear later', () => {
     const [a, b] = [objectWithId('a'), objectWithId('b')];
     manager.mark([a, b]);
 
-    expect(manager.resolve([a], ready, timing, 0)).toEqual(new Map([['a', 0]]));
+    expect(appearing([a], ready, timing, 0)).toEqual(new Map([['a', 0]]));
     expect(manager.has('b')).toBe(false);
-    expect(manager.resolve([a, b], ready, timing, 10)).toEqual(new Map([['a', 0]]));
+    expect(appearing([a, b], ready, timing, 10)).toEqual(new Map([['a', 0]]));
   });
 
   it('plays nothing and forgets everything when the theme turns the animation off', () => {
     const object = objectWithId('a');
     manager.mark([object]);
 
-    expect(manager.resolve([object], ready, { duration: 0, stagger: 100 }, 0)).toEqual(new Map());
+    expect(appearing([object], ready, { duration: 0, stagger: 100 }, 0)).toEqual(new Map());
     expect(manager.has('a')).toBe(false);
   });
 
@@ -80,6 +97,6 @@ describe('KritzelObjectAppearManager', () => {
     manager.mark([new KritzelBaseObject(), object]);
     manager.clear();
 
-    expect(manager.resolve([object], ready, timing, 0)).toEqual(new Map());
+    expect(appearing([object], ready, timing, 0)).toEqual(new Map());
   });
 });
