@@ -207,9 +207,23 @@ html.landing-page[data-hero-menu] .navbar-sidebar__backdrop {
     display: none;
   }
 
+  /* The table of contents gets a fixed, wider column, so its headings don't wrap after a word or two. The
+     container grows by the same amount, so the article keeps its width on wide screens and gives way below. */
+  .blog-post-page {
+    --blog-post-toc-width: 340px;
+    --ifm-container-width: calc(1080px + var(--blog-post-toc-width) - 180px);
+    --ifm-container-width-xl: var(--ifm-container-width);
+  }
+
   .blog-post-page main {
-    flex-basis: 83.333333%;
-    max-width: 83.333333%;
+    flex: 1 1 0;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .blog-post-page main + .col--2 {
+    flex: 0 0 var(--blog-post-toc-width);
+    max-width: var(--blog-post-toc-width);
   }
 
   .blog-wrapper aside > nav {
