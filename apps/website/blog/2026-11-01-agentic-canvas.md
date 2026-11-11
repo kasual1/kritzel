@@ -42,97 +42,96 @@ In the following section we are going to use the Kritzel library to quickly setu
 
 ### Generative UI
 
-Since Kritzel renders its objects as DOM, a model can simply write HTML and a `KritzelIframeObject` runs it in a sandboxed iframe right on the canvas. Besides `@kritzel/react-editor` we only need Anthropic's TypeScript SDK.
+Since Kritzel renders its objects as DOM, a model can write HTML, CSS and JavaScript, and a `KritzelIframeObject` runs it in a sandboxed iframe right on the canvas. We don't have to build any of that plumbing ourselves: a `KritzelChatSession` connects the editor's chat box to a model, gives the model tools to look at and change the canvas, and runs them in the browser. Our server only holds the API key and forwards each step of the conversation to the model.
 
 ```bash
-npm install @kritzel/react-editor @anthropic-ai/sdk
+npm install @kritzel/react-editor
 ```
 
-```tsx title="GenerativeUi.tsx"
-import { useRef, useState } from 'react';
-import Anthropic from '@anthropic-ai/sdk';
-import { KritzelEditor, KritzelIframeObject, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+The session talks to the server through a transport. This one posts each step to `/api/chat` and reads the answer while the server streams it, one event per line:
 
-// Put your own Anthropic API key here.
-const ANTHROPIC_API_KEY = 'sk-ant-...';
+```ts title="chat-transport.ts"
+import type { KritzelChatStreamEvent, KritzelChatTransport } from '@kritzel/react-editor';
 
-const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY, dangerouslyAllowBrowser: true });
+export const chatTransport: KritzelChatTransport = async function* (request, { signal }) {
+  const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+    signal,
+  });
+  if (!response.ok || !response.body) {
+    throw new Error(`The chat request failed with status ${response.status}.`);
+  }
 
-const SYSTEM_PROMPT =
-  'You build small web UIs. Reply with only the HTML for the <body> of a 400 × 400 px page that does not scroll: ' +
-  'a <style> tag, the markup and an optional <script>. Draw images and icons with inline SVG or CSS, no external files. ' +
-  'No <html>, <head> or <body> tags, no Markdown, no explanations.';
-
-export function GenerativeUi() {
-  const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
-  const [isWorking, setIsWorking] = useState(false);
-
-  async function generate(prompt: string) {
-    const editor = editorRef.current;
-    if (!editor || abortRef.current) return;
-    const abort = (abortRef.current = new AbortController());
-    setIsWorking(true);
-
-    // An empty UI in the middle of the viewport that shows a placeholder until Claude answers.
-    const ui = new KritzelIframeObject({
-      width: 400,
-      height: 400,
-      isLoading: true,
-    });
-
-    try {
-      const { width, height } = await editor.getViewport();
-      const center = await editor.screenToWorld(width / 2, height / 2);
-      ui.translateX = center.x - 200;
-      ui.translateY = center.y - 200;
-      await editor.addObject(ui);
-
-      const message = await client.beta.messages.create(
-        {
-          model: 'claude-opus-5-5',
-          max_tokens: 16000,
-          // If Claude declines a request, the API hands it to another Claude model.
-          betas: ['server-side-fallback-2026-07-01'],
-          fallbacks: 'default',
-          system: SYSTEM_PROMPT,
-          messages: [{ role: 'user', content: prompt }],
-        },
-        { signal: abort.signal },
-      );
-      if (message.stop_reason !== 'end_turn') throw new Error(`Claude stopped early (${message.stop_reason}).`);
-
-      ui.setContent({ html: message.content.map((block) => (block.type === 'text' ? block.text : '')).join('') });
-      ui.setLoading(false);
-    } catch (error) {
-      await editor.removeObject(ui);
-      if (!abort.signal.aborted) {
-        await editor.triggerNotification({ type: 'error', message: error instanceof Error ? error.message : String(error) });
-      }
-    } finally {
-      abortRef.current = null;
-      setIsWorking(false);
+  // Every line the server sends is one KritzelChatStreamEvent as JSON.
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  let buffer = '';
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += value;
+    const lines = buffer.split('\n');
+    buffer = lines.pop() ?? '';
+    for (const line of lines) {
+      if (line.trim()) yield JSON.parse(line) as KritzelChatStreamEvent;
     }
   }
+  if (buffer.trim()) yield JSON.parse(buffer) as KritzelChatStreamEvent;
+};
+```
+
+The editor itself only needs the session:
+
+```tsx title="GenerativeUi.tsx"
+import { useState } from 'react';
+import {
+  KRITZEL_DEFAULT_OBJECT_TITLEBAR,
+  KritzelChatSession,
+  KritzelEditor,
+  KritzelIframeObject,
+  type KritzelObjectConfig,
+} from '@kritzel/react-editor';
+import { chatTransport } from './chat-transport';
+
+const SYSTEM_PROMPT =
+  'You work on a whiteboard. Look at the canvas before you change it. Build anything interactive, ' +
+  'such as a calculator, a timer or a chart, as a widget with create_iframe.';
+
+// Widgets get a titlebar with their name, to grab and move them by.
+const objectConfig: KritzelObjectConfig = {
+  hasTitlebar: (object) => object instanceof KritzelIframeObject,
+};
+
+export function GenerativeUi() {
+  const [session] = useState(
+    () =>
+      new KritzelChatSession({
+        transport: chatTransport,
+        system: SYSTEM_PROMPT,
+        canvasTools: { iframes: true },
+      }),
+  );
 
   return (
     <KritzelEditor
-      ref={editorRef}
+      chatSession={session}
       isChatBoxVisible
-      isChatBoxLoading={isWorking}
-      onChatSubmit={(event) => void generate(event.detail)}
-      onChatStop={() => abortRef.current?.abort()}
+      objectConfig={objectConfig}
+      objectTitlebar={KRITZEL_DEFAULT_OBJECT_TITLEBAR}
       style={{ display: 'block', width: '100%', height: '100vh' }}
     />
   );
 }
 ```
 
-`onChatSubmit` hands us the prompt, `isChatBoxLoading` keeps the chat box busy while Claude writes, and its stop button cancels the request through `onChatStop`. Each prompt adds a `KritzelIframeObject` with `isLoading: true`, so the engine draws its loading placeholder over it until `setContent` and `setLoading(false)` swap in Claude's HTML.
+That is the whole client. The chat box sends its prompts to the session, shows its progress, and its stop button stops it. For each prompt, the session runs the tool loop: the model looks at the canvas with `observe_canvas`, places widgets with `create_iframe` (which `canvasTools: { iframes: true }` turns on), and can read and change them later with `read_iframe` and `update_iframe`. It works as the user, so its changes land in the user's history and one `Ctrl+Z` takes back a whole prompt.
 
-Put your own key into `ANTHROPIC_API_KEY`, then type something like “Please create a jazz album cover” into the chat box. Generated scripts run inside the iframe's sandbox, so you can also ask for a small game or a calculator and select it to play. A key in browser code is readable by anyone who opens the page, so keep this setup to trying things out; more on that below.
+Because the answer streams, a widget appears as a loading placeholder as soon as the model has written its position and size, and fills in once the model has written its code. Generated scripts run inside the iframe's sandbox without network access, so you can ask for a small game or a calculator and play with it right away. The model can use widgets too: ask it to “work out 12 × 7 on the calculator”, and it finds the buttons with `inspect_elements` and presses them with `interact_with_element`.
 
-The full [Generative UI example](/docs/react/examples/generative-ui) in the docs goes further, with titlebars, a fullscreen preview, follow-up prompts that change a selected UI and other model providers.
+On the server, `/api/chat` receives each step in Kritzel's chat protocol, calls the model of your choice, and streams its answer back as `KritzelChatStreamEvent`s, one JSON object per line. The [Chat Sessions guide](/docs/react/advanced/chat-sessions#your-server) has a ready-made handler for Claude and explains how to [stream tool calls](/docs/react/advanced/chat-sessions#streaming-tool-calls-from-your-server) for Claude, OpenAI and Gemini. The API key never leaves the server.
+
+The full [Generative UI example](/docs/react/examples/generative-ui) in the docs goes further, with a fullscreen preview and follow-up prompts that change a selected UI.
 
 <BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Generative_UI.mp4" label="An agent generating UI on the Kritzel canvas" />
 
