@@ -177,7 +177,9 @@ Events and queries describe elements as `KritzelObjectElementInfo`:
 | id | string | The element's `id` attribute. |
 | classList | string[] | The element's classes. |
 | text | string | The element's text without script and style content, with collapsed whitespace, truncated to 200 characters. |
-| attributes | `Record<string, string>` | Descriptive attributes: `role`, `aria-*`, `data-*`, `name`, `type`, `href`, `src`, `alt`, `title`, `placeholder`, and `for`. Form field values are never included. |
+| attributes | `Record<string, string>` | Descriptive attributes: `role`, `aria-*`, `data-*`, `name`, `type`, `href`, `src`, `alt`, `title`, `placeholder`, and `for`. Form field values are never included here; see `value`. |
+| state | KritzelObjectElementState | State the attributes don't show, with only the fields that apply: `disabled`, `checked` (`true`, `false`, or `'mixed'`), `selected` (options), `open` (details), `focused`, `editable` (text fields, selects, and editable elements), and `playing` (audio and video). Omitted when there is none. |
+| value | string | The current value of a form field, truncated to 500 characters. Only reported by queries with `includeValues: true` and by interactions, and never for password fields. |
 | rect | KritzelObjectElementRect | The element's bounding box in content coordinates: CSS pixels relative to the top-left corner of the iframe, before canvas zoom, object scale, and rotation. |
 | visibleRect | KritzelObjectElementRect | The visible part of `rect`, clipped by scrolling containers and the iframe. Omitted when no part of the element can be seen. |
 

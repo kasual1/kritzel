@@ -321,6 +321,19 @@ interface KritzelObjectElementInfo {
   attributes: Record<string, string>;  // role, aria-*, data-*, name, type, href, src, alt, title, placeholder, for
   rect: KritzelObjectElementRect;
   visibleRect?: KritzelObjectElementRect; // omitted when no part of the element can be seen
+  state?: KritzelObjectElementState;      // omitted when there is none
+  value?: string;                         // form field value, only with includeValues or from interactions; never for passwords
+}
+
+// Only the fields that apply to the element are set
+interface KritzelObjectElementState {
+  disabled?: boolean;
+  checked?: boolean | 'mixed'; // checkboxes, radio buttons, switches (also by ARIA role)
+  selected?: boolean;          // <option>
+  open?: boolean;              // <details>
+  focused?: boolean;
+  editable?: boolean;          // text fields, selects, and editable elements
+  playing?: boolean;           // <audio> and <video>
 }
 
 // CSS pixels relative to the top-left corner of the content, before canvas zoom, object scale and rotation

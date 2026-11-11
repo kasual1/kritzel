@@ -214,8 +214,8 @@ export class KritzelAgenticCursorManager {
     this.ensureLoop();
   }
 
-  /** Attaches a cursor to an object anchor and moves it there immediately. @internal */
-  attach(id: string, target: KritzelAgenticObjectTarget): void {
+  /** Attaches a cursor to an object anchor or an element inside an object and moves it there immediately. @internal */
+  attach(id: string, target: KritzelAgenticObjectTarget | KritzelAgenticElementTarget): void {
     const entry = this._cursors.get(id);
     if (!entry) return;
     const point = this.resolveTarget(target);

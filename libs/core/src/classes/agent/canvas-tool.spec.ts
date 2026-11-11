@@ -10,6 +10,7 @@ const actor = () => ({
   observe: jest.fn(),
   _whenIdle: jest.fn().mockResolvedValue(undefined),
   _describeObjects: jest.fn(() => []),
+  _inspectElements: jest.fn(async () => ({ completed: true, objectIds: [], elements: [] })),
 });
 
 const schema = { type: 'object' as const, properties: { value: { type: 'string' } }, additionalProperties: false as const };

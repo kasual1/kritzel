@@ -1,4 +1,4 @@
-import { createActorTools } from './agent-tools';
+import { AGENT_TOOL_REASON_HINTS, createActorTools } from './agent-tools';
 import { KritzelAgentActionError } from './agent-action-error.class';
 import type { KritzelAgentToolsOptions } from '../../interfaces/agent.interface';
 
@@ -14,6 +14,7 @@ const createFakeActor = (kind: 'agent' | 'user' = 'agent') => ({
   observe: jest.fn().mockResolvedValue({ objects: [], totalObjects: 0 }),
   _whenIdle: jest.fn().mockResolvedValue(undefined),
   _describeObjects: jest.fn((ids: string[]) => ids.map(id => ({ id, type: 'shape', x: 0, y: 0, width: 10, height: 10 }))),
+  _inspectElements: jest.fn().mockResolvedValue({ completed: true, objectIds: ['w'], elements: [] }),
 });
 
 type FakeActor = ReturnType<typeof createFakeActor>;
@@ -171,6 +172,50 @@ describe('agent tools contract', () => {
       const signal = new AbortController().signal;
       await toolOf(actor, 'create_iframe', { iframes: true, instant: true }).run({ name: 'w', html: '<p></p>', x: 0, y: 0, width: 10, height: 10 }, { signal });
       expect(actor.perform).toHaveBeenCalledWith(expect.objectContaining({ type: 'addObject' }), { signal, instant: true });
+    });
+  });
+
+  describe('elements', () => {
+    it.each(['agent', 'user'] as const)('turns interact_with_element into an interactWithElement action for %s and describes the element', async kind => {
+      const actor = createFakeActor(kind);
+      const rect = { x: 0, y: 0, width: 10, height: 10 };
+      actor.perform.mockResolvedValue({
+        completed: true,
+        objectIds: ['w'],
+        element: { selector: '#play', tagName: 'button', classList: [], attributes: {}, rect, visibleRect: rect, state: { pressed: true } },
+      });
+
+      const result = await run(actor, 'interact_with_element', { target: { objectId: 'w', selector: '#play' }, interaction: { type: 'click', count: 2 } });
+
+      expect(actor.perform).toHaveBeenCalledWith(
+        { type: 'interactWithElement', target: { objectId: 'w', selector: '#play' }, interaction: { type: 'click', count: 2 } },
+        {},
+      );
+      expect(result).toEqual({ completed: true, objectIds: ['w'], element: { selector: '#play', tagName: 'button', state: { pressed: true }, visible: true } });
+      expect(actor._describeObjects).not.toHaveBeenCalled();
+    });
+
+    it('passes the message of an element refusal on', async () => {
+      const actor = createFakeActor();
+      actor.perform.mockResolvedValue({ completed: false, reason: 'element-interaction-failed', objectIds: ['w'], elementReason: 'disabled', message: 'Element "#a": It is disabled.' });
+
+      await expect(run(actor, 'interact_with_element', { target: { objectId: 'w', selector: '#a' }, interaction: { type: 'click' } })).resolves.toEqual({
+        completed: false,
+        reason: 'element-interaction-failed',
+        objectIds: ['w'],
+        message: 'Element "#a": It is disabled.',
+        hint: AGENT_TOOL_REASON_HINTS['element-interaction-failed'],
+      });
+    });
+
+    it('lets inspect_elements wait for queued actions, then asks the actor', async () => {
+      const actor = createFakeActor();
+
+      await expect(run(actor, 'inspect_elements', { objectId: 'w', selector: 'button', limit: 5 })).resolves.toEqual({ completed: true, objectIds: ['w'], elements: [] });
+
+      expect(actor._whenIdle).toHaveBeenCalled();
+      expect(actor._inspectElements).toHaveBeenCalledWith('w', { selector: 'button', limit: 5 });
+      await expect(run(actor, 'inspect_elements', { objectId: 'w', selector: ' ' })).resolves.toMatchObject({ completed: false, reason: 'invalid-input' });
     });
   });
 

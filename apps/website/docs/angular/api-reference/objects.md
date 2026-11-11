@@ -601,11 +601,26 @@ getElementHighlights()
 
 #### queryElements
 
-Describes the elements of the page that match a CSS selector, in document order. `limit` defaults to 100 and can be at most 500.
+Describes the elements of the page that match a CSS selector, in document order, with their state (for example `disabled`, `checked`, or `focused`). The second argument is the `limit`, or options: `limit` defaults to 100 and can be at most 500, `interactiveOnly: true` keeps only elements a user can interact with (buttons, links, form fields, elements with an interactive ARIA role, and elements that show a pointer cursor), and `includeValues: true` adds the `value` of form fields, never of password fields.
 
 ```ts
-queryElements(selector, limit)
+queryElements(selector, limitOrOptions)
 ```
+
+#### interactWithElement
+
+Performs an interaction on the first element of the page that matches a CSS selector, as a user would: a click, hover, fill, check, key press, or scroll (see [`KritzelObjectElementInteraction`](./agent.md#kritzelobjectelementinteraction)). The page scrolls the element into view and checks that it is visible, enabled, and not covered, then dispatches the events of the interaction. It works whether or not the object is selected. With `{ trial: true }`, only the checks run. It resolves with `completed: false` and a `reason` when the interaction can't be performed, also when the object isn't mounted or the page doesn't respond, and rejects only for an invalid selector or interaction. Agents use it through [`interactWithElement()`](./agent.md#interactwithelement).
+
+```ts
+interactWithElement(selector, interaction, options)
+```
+
+```ts
+const result = await iframe.interactWithElement('#play', { type: 'click' });
+if (!result.completed) console.warn(result.reason, result.message);
+```
+
+The events are not trusted (`isTrusted` is `false`) and carry no user activation, so browser APIs that need a user gesture, such as audio playback, fullscreen, or the clipboard, may refuse to work from them.
 
 #### trackElement
 

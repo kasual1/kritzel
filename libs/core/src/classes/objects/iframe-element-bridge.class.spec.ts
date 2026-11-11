@@ -1,9 +1,12 @@
 import {
+  IFRAME_ELEMENT_INTERACTION_TIMEOUT,
   IFRAME_ELEMENT_LOAD_TIMEOUT,
+  IFRAME_ELEMENT_MAX_FILL_LENGTH,
   IFRAME_ELEMENT_QUERY_TIMEOUT,
   KritzelIframeElementBridge,
   KritzelIframeElementBridgeOwner,
   readElementInfo,
+  readElementInteraction,
 } from './iframe-element-bridge.class';
 import { IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
 
@@ -408,7 +411,14 @@ describe('KritzelIframeElementBridge', () => {
 
       ready();
       const request = sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query);
-      expect(request).toEqual({ type: IFRAME_ELEMENT_MESSAGES.query, requestId: expect.any(Number), selector: 'button', limit: 2 });
+      expect(request).toEqual({
+        type: IFRAME_ELEMENT_MESSAGES.query,
+        requestId: expect.any(Number),
+        selector: 'button',
+        limit: 2,
+        interactiveOnly: false,
+        includeValues: false,
+      });
 
       receive({
         type: IFRAME_ELEMENT_MESSAGES.queryResult,
@@ -527,6 +537,19 @@ describe('KritzelIframeElementBridge', () => {
       await expect(promise).rejects.toThrow('did not finish loading');
     });
 
+    it('passes query options to the page', () => {
+      ready();
+      bridge.query('*', { limit: 9999, interactiveOnly: true, includeValues: true }).catch(() => undefined);
+
+      expect(sent().find(message => message.type === IFRAME_ELEMENT_MESSAGES.query)).toMatchObject({
+        selector: '*',
+        limit: 500,
+        interactiveOnly: true,
+        includeValues: true,
+      });
+      bridge.onUnmounted();
+    });
+
     it('rejects pending queries when the iframe unmounts and ignores late answers', async () => {
       ready();
       const promise = bridge.query('button');
@@ -537,6 +560,187 @@ describe('KritzelIframeElementBridge', () => {
 
       await expect(promise).rejects.toThrow('was unmounted');
     });
+  });
+});
+
+describe('KritzelIframeElementBridge interactions', () => {
+  const element = (overrides: Record<string, unknown> = {}) => ({
+    selector: '#play',
+    tagName: 'div',
+    classList: ['play'],
+    attributes: { 'aria-label': 'Play' },
+    rect: { x: 10, y: 20, width: 40, height: 40 },
+    visibleRect: { x: 10, y: 20, width: 40, height: 40 },
+    ...overrides,
+  });
+
+  let postMessage: jest.Mock;
+  let owner: KritzelIframeElementBridgeOwner & { isMounted: boolean };
+  let bridge: KritzelIframeElementBridge;
+
+  const sent = () => postMessage.mock.calls.map(call => call[0]);
+  const requests = () => sent().filter(message => message.type === IFRAME_ELEMENT_MESSAGES.interact);
+  const receive = (message: Record<string, unknown>) => bridge.handleMessage({ doc: bridge.documentToken, version: bridge.syncVersion, ...message });
+  const ready = () => receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+  const answer = (message: Record<string, unknown>) =>
+    receive({ type: IFRAME_ELEMENT_MESSAGES.interactResult, requestId: requests()[requests().length - 1].requestId, ...message });
+
+  beforeEach(() => {
+    postMessage = jest.fn();
+    const iframe = { contentWindow: { postMessage } } as unknown as HTMLIFrameElement;
+    owner = {
+      id: 'frame-1',
+      isInteractive: false,
+      isMounted: true,
+      getIframe: () => iframe,
+      getContentSize: () => ({ width: 300, height: 200 }),
+      emitHover: jest.fn(),
+      emitClick: jest.fn(),
+      emitPick: jest.fn(),
+    };
+    bridge = new KritzelIframeElementBridge(owner);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('sends a validated copy of the interaction once the page is ready, also while the object is not interactive', async () => {
+    const promise = bridge.interact('#play', { type: 'click', extra: 'dropped' } as never);
+    expect(requests()).toHaveLength(0);
+
+    ready();
+    expect(requests()).toEqual([
+      { type: IFRAME_ELEMENT_MESSAGES.interact, requestId: expect.any(Number), selector: '#play', interaction: { type: 'click' }, trial: false },
+    ]);
+    answer({ element: element({ state: { focused: true } }) });
+
+    await expect(promise).resolves.toEqual({ completed: true, element: expect.objectContaining({ selector: '#play', state: { focused: true } }) });
+  });
+
+  it('sends trials as trials', () => {
+    ready();
+    bridge.interact('#play', { type: 'hover' }, { trial: true });
+
+    expect(requests()[0]).toMatchObject({ interaction: { type: 'hover' }, trial: true });
+  });
+
+  it('resolves refusals with a known reason, the message and the covering element', async () => {
+    ready();
+    const covered = bridge.interact('#play', { type: 'click' });
+    answer({ failure: 'covered', message: 'Another element is on top of it.', element: element(), coveredBy: element({ selector: '.modal' }) });
+    const unknown = bridge.interact('#play', { type: 'click' });
+    answer({ failure: 'exploded', message: 7, coveredBy: element({ selector: '.modal' }) });
+
+    await expect(covered).resolves.toEqual({
+      completed: false,
+      reason: 'covered',
+      message: 'Another element is on top of it.',
+      element: expect.objectContaining({ selector: '#play' }),
+      coveredBy: expect.objectContaining({ selector: '.modal' }),
+    });
+    await expect(unknown).resolves.toEqual({ completed: false, reason: 'unavailable' });
+    const scroll = bridge.interact('#list', { type: 'scroll', deltaY: 10 });
+    answer({ failure: 'not-scrollable', message: 'Nothing under it can scroll in that direction.' });
+    await expect(scroll).resolves.toMatchObject({ completed: false, reason: 'not-scrollable' });
+  });
+
+  it('keeps reported elements inside the content', async () => {
+    ready();
+    const promise = bridge.interact('#play', { type: 'click' });
+    answer({ element: element({ visibleRect: { x: 280, y: 20, width: 100, height: 40 } }) });
+
+    await expect(promise).resolves.toMatchObject({ element: { visibleRect: { x: 280, y: 20, width: 20, height: 40 } } });
+  });
+
+  it('rejects invalid selectors and interactions', async () => {
+    await expect(bridge.interact('', { type: 'click' })).rejects.toThrow('Invalid element selector');
+    await expect(bridge.interact('#a', { type: 'explode' } as never)).rejects.toThrow('Unknown interaction type');
+    await expect(bridge.interact('#a', { type: 'fill' } as never)).rejects.toThrow('"value" must be a string');
+    await expect(bridge.interact('#a', { type: 'scroll' })).rejects.toThrow('Give "deltaX", "deltaY" or both');
+    expect(requests()).toHaveLength(0);
+  });
+
+  it('resolves as unavailable while the object is not mounted', async () => {
+    owner.isMounted = false;
+
+    await expect(bridge.interact('#play', { type: 'click' })).resolves.toMatchObject({ completed: false, reason: 'unavailable', message: expect.stringContaining('not mounted') });
+  });
+
+  it('never sends an interaction twice: it fails when the page reloads after it was sent', async () => {
+    ready();
+    const sentBefore = bridge.interact('#play', { type: 'click' });
+    receive({ type: IFRAME_ELEMENT_MESSAGES.ready });
+    const sentAfter = bridge.interact('#play', { type: 'click' });
+
+    await expect(sentBefore).resolves.toMatchObject({ completed: false, reason: 'unavailable', message: expect.stringContaining('reloaded') });
+    expect(requests()).toHaveLength(2);
+    answer({});
+    await expect(sentAfter).resolves.toEqual({ completed: true });
+  });
+
+  it('fails sent interactions when the content is replaced, and sends waiting ones to the new document', async () => {
+    const waiting = bridge.interact('#play', { type: 'click' });
+    ready();
+    const first = requests()[0];
+    bridge.beginDocument();
+    // An answer of the replaced document is ignored.
+    bridge.handleMessage({ type: IFRAME_ELEMENT_MESSAGES.interactResult, doc: bridge.documentToken - 1, requestId: first.requestId });
+
+    await expect(waiting).resolves.toMatchObject({ completed: false, reason: 'unavailable', message: expect.stringContaining('replaced') });
+
+    const next = bridge.interact('#play', { type: 'hover' });
+    expect(requests()).toHaveLength(1);
+    ready();
+    expect(requests()).toHaveLength(2);
+    answer({});
+    await expect(next).resolves.toEqual({ completed: true });
+  });
+
+  it('resolves as unavailable when the page does not answer or load in time, or the iframe unmounts', async () => {
+    jest.useFakeTimers();
+    const loading = bridge.interact('#play', { type: 'click' });
+    jest.advanceTimersByTime(IFRAME_ELEMENT_LOAD_TIMEOUT);
+    await expect(loading).resolves.toMatchObject({ reason: 'unavailable', message: expect.stringContaining('did not finish loading') });
+
+    ready();
+    const silent = bridge.interact('#play', { type: 'click' });
+    jest.advanceTimersByTime(IFRAME_ELEMENT_INTERACTION_TIMEOUT);
+    await expect(silent).resolves.toMatchObject({ reason: 'unavailable', message: expect.stringContaining('did not respond') });
+
+    const unmounted = bridge.interact('#play', { type: 'click' });
+    bridge.onUnmounted();
+    await expect(unmounted).resolves.toMatchObject({ reason: 'unavailable', message: expect.stringContaining('was unmounted') });
+  });
+
+  it('ignores answers to unknown requests', () => {
+    ready();
+    expect(receive({ type: IFRAME_ELEMENT_MESSAGES.interactResult, requestId: 999 })).toBe(true);
+  });
+});
+
+describe('readElementInteraction', () => {
+  it('copies the known fields of each interaction type', () => {
+    expect(readElementInteraction({ type: 'click', count: 2, x: 1 })).toEqual({ type: 'click', count: 2 });
+    expect(readElementInteraction({ type: 'click', count: 1 })).toEqual({ type: 'click' });
+    expect(readElementInteraction({ type: 'hover', value: 'x' })).toEqual({ type: 'hover' });
+    expect(readElementInteraction({ type: 'fill', value: '' })).toEqual({ type: 'fill', value: '' });
+    expect(readElementInteraction({ type: 'check' })).toEqual({ type: 'check', checked: true });
+    expect(readElementInteraction({ type: 'check', checked: false })).toEqual({ type: 'check', checked: false });
+    expect(readElementInteraction({ type: 'press', key: 'Control+a' })).toEqual({ type: 'press', key: 'Control+a' });
+    expect(readElementInteraction({ type: 'scroll', deltaY: -40 })).toEqual({ type: 'scroll', deltaX: 0, deltaY: -40 });
+  });
+
+  it('throws for invalid interactions', () => {
+    expect(() => readElementInteraction(null)).toThrow('must be an object');
+    expect(() => readElementInteraction({ type: 'toString' })).toThrow('Unknown interaction type');
+    expect(() => readElementInteraction({ type: 'click', count: 3 })).toThrow('"count" must be 1 or 2');
+    expect(() => readElementInteraction({ type: 'fill', value: 1 })).toThrow('"value" must be a string');
+    expect(() => readElementInteraction({ type: 'fill', value: 'x'.repeat(IFRAME_ELEMENT_MAX_FILL_LENGTH + 1) })).toThrow('longer than');
+    expect(() => readElementInteraction({ type: 'check', checked: 'yes' })).toThrow('"checked" must be a boolean');
+    expect(() => readElementInteraction({ type: 'press', key: '' })).toThrow('"key"');
+    expect(() => readElementInteraction({ type: 'scroll', deltaX: Infinity })).toThrow('"deltaX"');
+    expect(() => readElementInteraction({ type: 'scroll', deltaX: 0, deltaY: 0 })).toThrow('Give "deltaX"');
   });
 });
 
@@ -559,6 +763,20 @@ describe('readElementInfo', () => {
     expect(readElementInfo({ ...valid, tagName: 3 })).toBeNull();
     expect(readElementInfo({ ...valid, rect: { x: 0, y: 0, width: -1, height: 1 } })).toBeNull();
     expect(readElementInfo({ ...valid, rect: { x: Infinity, y: 0, width: 1, height: 1 } })).toBeNull();
+  });
+
+  it('keeps valid state fields and string values, and drops the rest', () => {
+    const info = readElementInfo({
+      ...valid,
+      state: { disabled: true, checked: 'mixed', focused: 'yes', editable: false, playing: true, extra: true },
+      value: '',
+    })!;
+    expect(info.state).toEqual({ disabled: true, checked: 'mixed', editable: false, playing: true });
+    expect(info.value).toBe('');
+
+    const other = readElementInfo({ ...valid, state: { checked: 'maybe' }, value: 3 })!;
+    expect(other).not.toHaveProperty('state');
+    expect(other).not.toHaveProperty('value');
   });
 
   it('drops values of the wrong type and truncates long ones', () => {
