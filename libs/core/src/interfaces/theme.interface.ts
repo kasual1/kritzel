@@ -288,6 +288,8 @@ export interface KritzelTheme {
   };
 
   image?: {
+    /** Corner radius of images. Unset by default, so images keep square corners. */
+    borderRadius?: string;
     dropShadow?: string;
   };
 
@@ -461,6 +463,22 @@ export interface KritzelTheme {
   object?: {
     borderRadius?: string;
     boxShadow?: string;
+  };
+
+  /**
+   * Appear animation of objects that app code or agents insert (`addObject(s)`, `agent.addObject()`) and of images
+   * picked with the image tool: they fade in while they rise into place. Objects the user draws, pastes or
+   * duplicates, objects of collaborators and loaded documents don't appear. Set `animationDuration` to `0s` to turn
+   * it off. Respects `prefers-reduced-motion`. `animationDuration` and `stagger` must be plain times (`600ms`, `0.6s`):
+   * the engine reads them to know when the animation ends.
+   */
+  objectAppear?: {
+    animationDuration?: string;
+    animationEasing?: string;
+    /** How far below its place the object starts, in canvas units. */
+    distance?: string;
+    /** Delay between the objects inserted together, e.g. by one `addObjects()` call. */
+    stagger?: string;
   };
 
   /** Opacity slider variables */

@@ -57,6 +57,7 @@ describe('KritzelImageTool', () => {
         setState: jest.fn(),
       },
       addObject: jest.fn(),
+      objectAppearManager: { mark: jest.fn() },
       selectObjects: jest.fn(),
       engine: {
         emitObjectsChange: jest.fn(),
@@ -399,6 +400,16 @@ describe('KritzelImageTool', () => {
 
       expect(KritzelImage.fromBlob).toHaveBeenCalledTimes(3);
       expect(mockCore.addObject).toHaveBeenCalledTimes(3);
+    });
+
+    it('should let the picked images appear together with their selection frame', async () => {
+      const selectionGroup = { id: 'selection' };
+      mockCore.store.selectionGroup = selectionGroup;
+
+      await triggerMultiFileFlow(3);
+
+      expect(mockCore.objectAppearManager.mark).toHaveBeenCalledTimes(1);
+      expect(mockCore.objectAppearManager.mark).toHaveBeenCalledWith([...createdImages, selectionGroup], 0);
     });
 
     it('should emit a single batch emitObjectsAdded with all images', async () => {

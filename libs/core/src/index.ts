@@ -54,6 +54,7 @@ export * from './classes/managers/anchor.manager';
 export * from './classes/managers/theme.manager';
 export * from './classes/managers/localization.manager';
 export * from './classes/managers/object-titlebar.manager';
+export * from './classes/managers/object-appear.manager';
 export * from './classes/managers/object-config.manager';
 export * from './classes/managers/agent.manager';
 export * from './classes/managers/agent-broadcast.manager';

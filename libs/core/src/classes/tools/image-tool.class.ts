@@ -2,6 +2,7 @@ import { KritzelImage } from '../objects/image.class';
 import { KritzelBaseTool } from './base-tool.class';
 import imageCompression from 'browser-image-compression';
 import { KritzelCore } from '../core/core.class';
+import { KRITZEL_OBJECT_APPEAR_MAX_BATCH } from '../managers/object-appear.manager';
 import { KritzelImageFileHelper } from '../../helpers/image-file.helper';
 
 /**
@@ -161,6 +162,12 @@ export class KritzelImageTool extends KritzelBaseTool {
 
     this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));
     this._core.selectObjects(images);
+    // Picked images play the appear animation, like images that app code adds: all at once, with the selection
+    // frame around them, so the frame is never shown around images that haven't appeared yet.
+    if (images.length <= KRITZEL_OBJECT_APPEAR_MAX_BATCH) {
+      const selectionGroup = this._core.store.selectionGroup;
+      this._core.objectAppearManager.mark(selectionGroup ? [...images, selectionGroup] : images, 0);
+    }
     this._core.engine.emitObjectsChange();
     this._core.engine.emitObjectsAdded(images);
   }

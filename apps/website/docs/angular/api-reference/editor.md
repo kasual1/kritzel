@@ -164,7 +164,7 @@ triggerNotification(notification: Omit<KritzelNotification, "id"> & Partial<Pick
 
 #### addObject
 
-Adds a new object to the canvas. The object is automatically assigned an ID, core reference, and z-index.
+Adds a new object to the canvas. The object is automatically assigned an ID, core reference, and z-index. It plays the theme's appear animation, see [Object Appear](./theming.md#object-appear).
 
 ```ts
 addObject<T extends KritzelBaseObject>(object: T): Promise<T | null>
@@ -172,7 +172,7 @@ addObject<T extends KritzelBaseObject>(object: T): Promise<T | null>
 
 #### addObjects
 
-Adds multiple objects to the canvas in a single batch operation within one undo step and render cycle.
+Adds multiple objects to the canvas in a single batch operation within one undo step and render cycle. The objects appear one after another, in their order.
 
 ```ts
 addObjects<T extends KritzelBaseObject>(objects: T[]): Promise<T[]>

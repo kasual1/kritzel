@@ -40,11 +40,10 @@ export async function playAlbumCoverScene(
 
   await typePrompt(editor, PROMPT, signal);
   setWorking(true);
-  // The cover fades in while it rises into place, and the image shows once the loading placeholder is gone. The
-  // cursor is hidden, so the action runs without animation.
+  // The cover appears (Kritzel's appear animation), and the image shows once the loading placeholder is gone. The
+  // cursor is hidden, so the action runs without the cursor's animation.
   const covers = await editor.addAgent(new KritzelAgent({ ...COVER_AGENT, visible: false }));
   await generatePage(
-    editor,
     covers,
     { box: COVER_BOX, content: coverContent(NEW_COVER), writingTime: WRITING_TIME, title: 'Album cover', borderRadius: 12 },
     signal,

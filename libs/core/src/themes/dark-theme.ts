@@ -125,6 +125,13 @@ export const darkTheme: KritzelTheme = {
     boxShadow: '0 1px 2px rgba(0, 0, 0, 0.32), 0 12px 32px -12px rgba(0, 0, 0, 0.64)',
   },
 
+  objectAppear: {
+    animationDuration: '600ms',
+    animationEasing: 'cubic-bezier(0.33, 1, 0.68, 1)',
+    distance: '14px',
+    stagger: '110ms',
+  },
+
   image: {
     dropShadow: 'drop-shadow(0 1px 1px rgba(0, 0, 0, 0.32)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.44))',
   },

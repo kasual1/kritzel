@@ -306,7 +306,7 @@ updateIframe(objectId: string, changes: { name?: string; html?: string; css?: st
 
 ### addObject
 
-Places an object that the app built, for example a `KritzelIframeObject`, as the agent's change: the cursor hops to the object and it appears. The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
+Places an object that the app built, for example a `KritzelIframeObject`, as the agent's change: the cursor hops to the object and it appears, with the theme's appear animation (see [Object Appear](./theming.md#object-appear)). The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
 
 The object is not changed until the insert: the object and the children of a group get their new IDs and their z-index only then, on top of the objects on the canvas at that moment. An action that stops before the insert leaves the object as it was, so it can be added later. Resolves with `'invalid-target'` for an object that is already on the canvas, for a group with a child that is already on the canvas or that holds the same object twice, and for a group without children, either empty or with children that were inserted before.
 
@@ -386,7 +386,7 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | only | string[] | All tools | Only these tools, by name without `prefix`. |
 | prefix | string | `''` | Put in front of every tool name, for example `'kritzel_'`, to avoid clashes with other tools. |
 | maxTextLength | number | `2000` | Longest `text` that `create_shape`, `create_text`, or `type_text` may type. Longer input is rejected with `'invalid-input'`. |
-| instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. |
+| instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. Placed objects still play the theme's appear animation. |
 | iframes | boolean | `false` | Offers `create_iframe`, `read_iframe`, and `update_iframe`, which place, read, and change widgets of model-written code. |
 | viewport | boolean | `true` | Offers `set_viewport` and `fit_viewport`, which pan and zoom the local user's view. |
 
@@ -864,7 +864,7 @@ The last argument of every action.
 interface KritzelAgenticActionOptions {
   /** Screen pixels per second. Defaults to the agent's `speed`, or 1200. Also scales presses, drags, drawing, and typing. */
   speed?: number;
-  /** Skips all animation and applies the change at once. Defaults to false. */
+  /** Skips all animation and applies the change at once; a placed object still plays the theme's appear animation. Defaults to false. */
   instant?: boolean;
   /** Stops the action, also while it waits in the queue. Its changes are rolled back. */
   signal?: AbortSignal;
