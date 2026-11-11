@@ -18,7 +18,6 @@ import {
   wait,
   type Box,
 } from '../agentic-canvas/hero-scene';
-import { APPEAR_LOAD, appear } from '../agentic-canvas/appear';
 
 /**
  * Agentic cursors on a generative UI page: the canvas starts empty, then the recorder widget of the agentic canvas post
@@ -58,6 +57,8 @@ const SCENE_BOX = union([WIDGET_BOX, ...TRACK_BOXES]);
 
 /** How long the empty editor shows before the recorder appears. */
 const EMPTY_PAUSE = 1500;
+/** How long the recorder and its tracks take to appear: the theme's default duration plus the stagger of two tracks. */
+const APPEAR_TIME = 600 + 2 * 110;
 /** How long the recorder shows before the prompt is typed. */
 const OPENING_PAUSE = 1200;
 /** How long Studio stays on the star after the click before it leaves. */
@@ -105,12 +106,12 @@ export async function playAgenticCanvasCursorsScene(
   await removeAgents(editor);
   await frame(editor, SCENE_BOX, 0, signal);
   // Only the editor with its chat box shows at first; then the recorder and its tracks appear.
-  // The pages are added while the canvas is still empty, so they start to show after `EMPTY_PAUSE`.
-  await wait(EMPTY_PAUSE - APPEAR_LOAD, signal);
-  // The widget and its tracks fade in and rise into place one after another, see appear.ts.
-  const added = await appear(editor, createRecorderObjects(), signal);
+  await wait(EMPTY_PAUSE, signal);
+  // Added in one call, the widget and its tracks fade in and rise into place one after another (Kritzel's appear
+  // animation), each once its page has loaded.
+  const added = await editor.addObjects(createRecorderObjects());
   const trackIds = added.slice(1).map(object => object.id);
-  await wait(OPENING_PAUSE, signal);
+  await wait(APPEAR_TIME + OPENING_PAUSE, signal);
 
   await typePrompt(editor, PROMPT, signal);
   setWorking(true);

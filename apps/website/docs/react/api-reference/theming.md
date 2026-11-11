@@ -343,6 +343,19 @@ An iframe's document is always clipped to its rounded corners. A dynamic object 
 | borderRadius | 12px | 12px |
 | boxShadow | 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22) | 0 1px 2px rgba(0, 0, 0, 0.32), 0 12px 32px -12px rgba(0, 0, 0, 0.64) |
 
+## Object Appear
+
+The appear animation of objects that come onto the canvas from app code or agents: objects added with the editor's `addObject()` and `addObjects()`, objects agents place with `agent.addObject()` (also with `instant`), and images picked with the image tool. They fade in while they rise into place. Objects added with one `addObjects()` call appear one after another, `stagger` apart (calls with more than 50 objects don't animate). Objects the user draws, pastes or duplicates, the shapes, lines and texts agents draw, objects of collaborators, and loaded or restored documents don't appear.
+
+The animation is purely visual: the object is at its place, with its opacity, from the start, and nothing is written to the document. An iframe appears once its document has loaded, or at once while it shows its loading placeholder. Titlebars appear with their objects. The tokens are applied as the CSS variables `--kritzel-object-appear-animation-duration`, `--kritzel-object-appear-animation-easing`, `--kritzel-object-appear-distance` (in canvas units) and `--kritzel-object-appear-stagger`. Set `animationDuration` to `0s` to turn the animation off. It is also off while the user prefers reduced motion.
+
+| Property | Light default | Dark default |
+|----------|---------------|--------------|
+| animationDuration | 600ms | 600ms |
+| animationEasing | cubic-bezier(0.33, 1, 0.68, 1) | cubic-bezier(0.33, 1, 0.68, 1) |
+| distance | 14px | 14px |
+| stagger | 110ms | 110ms |
+
 ## Opacity Slider
 
 | Property | Light default | Dark default |

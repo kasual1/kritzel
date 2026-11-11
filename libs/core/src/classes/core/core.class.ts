@@ -27,6 +27,7 @@ import { KritzelAgentManager } from '../managers/agent.manager';
 import { KritzelAgentBroadcaster } from '../managers/agent-broadcast.manager';
 import { KritzelRemoteAgentManager } from '../managers/remote-agent.manager';
 import { KritzelObjectTitlebarManager } from '../managers/object-titlebar.manager';
+import { KritzelObjectAppearManager } from '../managers/object-appear.manager';
 import { KritzelObjectConfigManager } from '../managers/object-config.manager';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelZOrderHelper, KritzelZOrderItem, KritzelZOrderOperation } from '../../helpers/z-order.helper';
@@ -88,6 +89,7 @@ export class KritzelCore {
   private readonly _remoteAgentManager: KritzelRemoteAgentManager;
   /** Manager for titlebars rendered above objects */
   private readonly _objectTitlebarManager: KritzelObjectTitlebarManager;
+  private readonly _objectAppearManager = new KritzelObjectAppearManager();
   private readonly _objectConfigManager: KritzelObjectConfigManager;
   /** Per-core registry of drawing tools (one instance per editor). */
   private readonly _toolRegistry: KritzelToolRegistry;
@@ -158,6 +160,11 @@ export class KritzelCore {
    */
   get objectTitlebarManager(): KritzelObjectTitlebarManager {
     return this._objectTitlebarManager;
+  }
+
+  /** Tracks the objects that play the appear animation (see {@link insertPreparedObject}). */
+  get objectAppearManager(): KritzelObjectAppearManager {
+    return this._objectAppearManager;
   }
 
   /**
@@ -453,6 +460,8 @@ export class KritzelCore {
 
     // Save active workspace ID to localStorage
     localStorage.setItem(this.getStorageKey('kritzel-active-workspace-id'), activeWorkspace.id);
+
+    this._objectAppearManager.clear();
 
     // Destroy old ObjectMap if switching workspaces
     if (this._store.objects && this._store.objects.isReady) {
@@ -1057,10 +1066,13 @@ export class KritzelCore {
    * Inserts an object prepared by {@link prepareObjectForInsert} together with its flushed
    * descendants: descendants first, then the group is finalized and the anchor index rebuilt,
    * then the object itself.
+   *
+   * Objects inserted this way (by app code and agents) play the theme's appear animation, which is purely visual.
    * @param object - The prepared object
    * @param descendants - The descendants returned by prepareObjectForInsert
+   * @param appearIndex - Position of the object in its batch, which staggers the appear animation; `null` skips it
    */
-  insertPreparedObject(object: KritzelBaseObject<any>, descendants: KritzelBaseObject<any>[]): void {
+  insertPreparedObject(object: KritzelBaseObject<any>, descendants: KritzelBaseObject<any>[], appearIndex: number | null = 0): void {
     if (descendants.length > 0) {
       descendants.forEach(child => this.addObject(child));
       if (object instanceof KritzelGroup) {
@@ -1070,6 +1082,9 @@ export class KritzelCore {
       this.anchorManager.rebuildIndex();
     }
     this.addObject(object);
+    if (appearIndex !== null) {
+      this.objectAppearManager.mark([...descendants, object], appearIndex);
+    }
   }
 
   /**

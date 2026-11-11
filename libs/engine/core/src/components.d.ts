@@ -672,6 +672,10 @@ export namespace Components {
      */
     interface KritzelObjectTitlebarLayer {
         /**
+          * The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with them.
+         */
+        "appearingOwners"?: Map<string, number>;
+        /**
           * Called when a titlebar button or menu button is clicked.
          */
         "elementClick"?: KritzelTitlebarElementClickHandler;
@@ -1096,6 +1100,10 @@ declare namespace LocalJSX {
      * Must never use the `object` class: pointer handling treats `.object` elements as objects.
      */
     interface KritzelObjectTitlebarLayer {
+        /**
+          * The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with them.
+         */
+        "appearingOwners"?: Map<string, number>;
         /**
           * Called when a titlebar button or menu button is clicked.
          */

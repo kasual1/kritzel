@@ -10,6 +10,7 @@ import { KritzelGroup } from '../objects/group.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelClipboardManager } from './clipboard.manager';
+import { KritzelObjectAppearManager } from './object-appear.manager';
 import { lineMidpoint, readLineGeometry } from '../executors/line-handles';
 import { drawLineExecutor } from '../executors/draw-line.executor';
 import { editLineExecutor } from '../executors/edit-line.executor';
@@ -147,6 +148,7 @@ describe('agentic create and transform actions', () => {
     core._store = core.store;
     core.prepareObjectForInsert = KritzelCore.prototype.prepareObjectForInsert;
     core.insertPreparedObject = KritzelCore.prototype.insertPreparedObject;
+    core.objectAppearManager = new KritzelObjectAppearManager();
     core.anchorManager = new KritzelAnchorManager(core);
     core.clipboardManager = new KritzelClipboardManager(core);
     map = new KritzelObjectMap<any>();
@@ -867,6 +869,17 @@ describe('agentic create and transform actions', () => {
   });
 
   describe('addObject', () => {
+    it('lets the placed object appear, unlike the shapes an agent draws', async () => {
+      const shape = new KritzelShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
+
+      await perform({ type: 'addObject', object: shape }, {});
+      const drawn = await perform({ type: 'createShape', x: 0, y: 0, width: 100, height: 60 });
+
+      expect(core.objectAppearManager.has(shape.id)).toBe(true);
+      expect(drawn.objectIds.length).toBeGreaterThan(0);
+      drawn.objectIds.forEach((id: string) => expect(core.objectAppearManager.has(id)).toBe(false));
+    });
+
     it('places a pre-built object as the agent, with a fresh ID, and keeps the user selection', async () => {
       core.user = { id: 'human' };
       const held = addShape(0, 0, 50, 50);

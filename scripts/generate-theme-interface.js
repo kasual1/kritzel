@@ -62,7 +62,8 @@ const KNOWN_CATEGORIES = [
   'sync-indicator',
   'titlebar',
   'element-highlight',
-  'loading-placeholder'
+  'loading-placeholder',
+  'object-appear'
 ];
 
 /**

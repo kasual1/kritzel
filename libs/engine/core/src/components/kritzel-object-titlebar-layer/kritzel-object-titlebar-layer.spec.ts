@@ -59,6 +59,17 @@ describe('KritzelObjectTitlebarLayer', () => {
     expect(bars[0].$attrs$['aria-label']).toBe('Title a');
   });
 
+  it('lets the titlebars of appearing objects appear with them', () => {
+    component.titlebars = [createTitlebar('a'), createTitlebar('b')];
+    component.appearingOwners = new Map([['b', 3]]);
+
+    const anchors = findAll(component.render(), byClass('object-titlebar-anchor'));
+
+    expect(anchors.map(byClass('object-titlebar-anchor--appearing'))).toEqual([false, true]);
+    expect(anchors[0].$attrs$.style).not.toHaveProperty('--kritzel-object-appear-index');
+    expect(anchors[1].$attrs$.style).toEqual(expect.objectContaining({ '--kritzel-object-appear-index': '3' }));
+  });
+
   it('applies the surface pointer events to the drag surface', () => {
     component.titlebars = [createTitlebar('a')];
     component.surfacePointerEvents = 'auto';

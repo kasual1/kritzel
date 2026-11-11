@@ -2,6 +2,7 @@ import { KritzelImage } from '../objects/image.class';
 import { KritzelBaseTool } from './base-tool.class';
 import imageCompression from 'browser-image-compression';
 import { KritzelCore } from '../core/core.class';
+import { KRITZEL_OBJECT_APPEAR_MAX_BATCH } from '../managers/object-appear.manager';
 import { KritzelImageFileHelper } from '../../helpers/image-file.helper';
 
 /**
@@ -157,6 +158,10 @@ export class KritzelImageTool extends KritzelBaseTool {
         image.updatePosition(image.translateX + offset, image.translateY + offset);
       }
       this._core.addObject(image);
+      // Picked images play the appear animation, like images that app code adds.
+      if (images.length <= KRITZEL_OBJECT_APPEAR_MAX_BATCH) {
+        this._core.objectAppearManager.mark([image], index);
+      }
     });
 
     this._core.store.setState('activeTool', this._core.toolRegistry.getTool('selection'));

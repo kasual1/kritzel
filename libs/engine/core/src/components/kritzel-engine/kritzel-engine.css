@@ -54,6 +54,36 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
 }
 
 /*
+ * Appear animation of objects that app code or agents insert, from the theme (`objectAppear`): they fade in while
+ * they rise into place, objects of one batch one after another (`--kritzel-object-appear-index`, set inline). Their
+ * titlebars (rendered in their own layer) appear with them. The engine adds the classes for one play only, so objects
+ * that scroll back into view don't appear again.
+ *
+ * Animates `translate` rather than `transform`, which holds the object's position (set inline). The distance is in
+ * canvas units, like the object's size. `opacity` multiplies with the object's own, which is set on its content.
+ */
+.object--appearing,
+.object-titlebar-anchor--appearing {
+  animation: kritzel-object-appear var(--kritzel-object-appear-animation-duration, 600ms)
+    var(--kritzel-object-appear-animation-easing, cubic-bezier(0.33, 1, 0.68, 1)) backwards;
+  animation-delay: calc(var(--kritzel-object-appear-stagger, 110ms) * var(--kritzel-object-appear-index, 0));
+}
+
+@keyframes kritzel-object-appear {
+  from {
+    opacity: 0;
+    translate: 0 var(--kritzel-object-appear-distance, 14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .object--appearing,
+  .object-titlebar-anchor--appearing {
+    animation: none;
+  }
+}
+
+/*
  * Corner radius of the objects that are cards and of images, from the theme (`object`, `iframe`, `dynamicObject`,
  * `image`), as a variable on the object's container: its wrapper, its loading placeholder and its content all read
  * it. An object's own `borderRadius` sets the variable inline and wins. Content can match it with `var(--kritzel-content-border-radius)`.

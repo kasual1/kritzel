@@ -57,6 +57,7 @@ describe('KritzelImageTool', () => {
         setState: jest.fn(),
       },
       addObject: jest.fn(),
+      objectAppearManager: { mark: jest.fn() },
       selectObjects: jest.fn(),
       engine: {
         emitObjectsChange: jest.fn(),
@@ -399,6 +400,12 @@ describe('KritzelImageTool', () => {
 
       expect(KritzelImage.fromBlob).toHaveBeenCalledTimes(3);
       expect(mockCore.addObject).toHaveBeenCalledTimes(3);
+    });
+
+    it('should let the picked images appear one after another', async () => {
+      await triggerMultiFileFlow(3);
+
+      expect(mockCore.objectAppearManager.mark.mock.calls).toEqual(createdImages.map((image, index) => [[image], index]));
     });
 
     it('should emit a single batch emitObjectsAdded with all images', async () => {

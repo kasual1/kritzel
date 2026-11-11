@@ -88,6 +88,8 @@ import {
   KritzelObjectConfig,
   KritzelEngineHost,
   KRITZEL_ROTATION_HANDLE_DISTANCE,
+  KRITZEL_OBJECT_APPEAR_MAX_BATCH,
+  KritzelObjectAppearTiming,
 } from '@kritzel/core';
 import throttle from 'lodash/throttle';
 import { toPng, toSvg } from 'html-to-image';
@@ -1245,11 +1247,13 @@ export class KritzelEngine implements KritzelEngineHost {
       }
     }
 
+    // Objects of one batch appear one after another; big batches appear at once, without the animation.
+    const appears = objects.length <= KRITZEL_OBJECT_APPEAR_MAX_BATCH;
     this.core.store.objects.transaction(() => {
-      for (const object of objects) {
+      objects.forEach((object, index) => {
         const descendants = this.core.prepareObjectForInsert(object);
-        this.core.insertPreparedObject(object, descendants);
-      }
+        this.core.insertPreparedObject(object, descendants, appears ? index : null);
+      });
     });
 
     this.core.rerender();
@@ -2761,6 +2765,7 @@ export class KritzelEngine implements KritzelEngineHost {
     this.throttledPointerMoveMulti.cancel();
     window.visualViewport?.removeEventListener('resize', this.handleVisualViewportResize);
     this._revealedImageKeys.clear();
+    this.core.objectAppearManager.clear();
 
     if (this._sceneBootstrapTransitionTimer !== null) {
       clearTimeout(this._sceneBootstrapTransitionTimer);
@@ -3334,6 +3339,25 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
   /**
+   * Whether an inserted object can be shown, so its appear animation can start: an iframe once its document loaded
+   * (it is invisible until then) or while it shows its loading placeholder; other objects at once.
+   */
+  private isReadyToAppear(object: KritzelBaseObject<any>): boolean {
+    if (object instanceof KritzelIframeObject) {
+      return object.isLoading || object.isDocumentLoaded;
+    }
+    return true;
+  }
+
+  /** The appear animation's timing from the theme (`objectAppear`), with the stylesheet's defaults. */
+  private getObjectAppearTiming(computedStyle: CSSStyleDeclaration): KritzelObjectAppearTiming {
+    return {
+      duration: parseCssTime(computedStyle.getPropertyValue('--kritzel-object-appear-animation-duration'), 600),
+      stagger: parseCssTime(computedStyle.getPropertyValue('--kritzel-object-appear-stagger'), 110),
+    };
+  }
+
+  /**
    * The radius a card object or image sets itself, as the inline style that overrides the theme's; empty to use the
    * theme's.
    */
@@ -3430,6 +3454,13 @@ export class KritzelEngine implements KritzelEngineHost {
     // Titlebars hang above their objects, so the render query is widened while titlebars are configured.
     const visibleObjects = this.core.store.getObjectsInViewport(titlebarManager.getCullingPadding(titlebarMetrics));
     const titlebars = titlebarManager.resolveTitlebars(visibleObjects);
+    // Objects that app code or agents just inserted, with their stagger index.
+    const appearingObjects = this.core.objectAppearManager.resolve(
+      visibleObjects,
+      object => this.isReadyToAppear(object),
+      this.getObjectAppearTiming(computedStyle),
+      performance.now(),
+    );
     // The same distance agents draw and grab their handles at: above a titlebar on the selection's top edge.
     const selectionGroup = this.core.store.selectionGroup;
     const rotationHandleDistance = selectionGroup
@@ -3562,12 +3593,14 @@ export class KritzelEngine implements KritzelEngineHost {
               <div
                 key={object.id}
                 id={object.id}
-                class={this.getObjectContainerClass(object)}
+                class={appearingObjects.has(object.id) ? `${this.getObjectContainerClass(object)} object--appearing` : this.getObjectContainerClass(object)}
                 style={{
                   // The radius of a card object (iframe, dynamic object), for its wrapper, its content and its
                   // loading placeholder; without its own, the theme's applies (`.object--iframe`, ...).
                   // Left out when unset, so the variable is removed rather than set to an empty value.
                   ...this.getOwnBorderRadiusStyle(object),
+                  // Its place in its batch, which delays its appear animation (`.object--appearing`).
+                  ...(appearingObjects.has(object.id) ? { '--kritzel-object-appear-index': String(appearingObjects.get(object.id)) } : {}),
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   position: 'absolute',
@@ -4439,6 +4472,7 @@ export class KritzelEngine implements KritzelEngineHost {
           {this.core.objectTitlebarManager.isEnabled && (
             <kritzel-object-titlebar-layer
               titlebars={titlebars}
+              appearingOwners={appearingObjects}
               surfacePointerEvents={this.getTitlebarSurfacePointerEvents()}
               elementClick={this.handleTitlebarElementClick}
               titleEdit={this.titlebarTitleEditHandlers}
@@ -4632,4 +4666,14 @@ export class KritzelEngine implements KritzelEngineHost {
       </Host>
     );
   }
+}
+
+/** Milliseconds of a CSS time (`'600ms'`, `'0.6s'`), or `fallback` when it is empty or not a time. */
+function parseCssTime(value: string, fallback: number): number {
+  const match = /^(-?\d*\.?\d+)(ms|s)$/i.exec(value.trim());
+  if (!match) {
+    return fallback;
+  }
+  const amount = parseFloat(match[1]);
+  return match[2].toLowerCase() === 's' ? amount * 1000 : amount;
 }

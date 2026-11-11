@@ -4,6 +4,7 @@ import { KritzelAgenticActionManager } from '../managers/agentic-action.manager'
 import { KritzelAgentManager } from '../managers/agent.manager';
 import { KritzelAnchorManager } from '../managers/anchor.manager';
 import { KritzelClipboardManager } from '../managers/clipboard.manager';
+import { KritzelObjectAppearManager } from '../managers/object-appear.manager';
 import { KritzelAgent } from '../agent/agent.class';
 import { KritzelChatSession, isKritzelChatSession } from './chat-session.class';
 import { createScriptedTransport } from './scripted-transport';
@@ -120,6 +121,7 @@ describe('KritzelChatSession', () => {
     fakeCore._store = fakeCore.store;
     fakeCore.prepareObjectForInsert = KritzelCore.prototype.prepareObjectForInsert;
     fakeCore.insertPreparedObject = KritzelCore.prototype.insertPreparedObject;
+    fakeCore.objectAppearManager = new KritzelObjectAppearManager();
     fakeCore.anchorManager = new KritzelAnchorManager(fakeCore);
     fakeCore.clipboardManager = new KritzelClipboardManager(fakeCore);
     await objects.initialize(fakeCore as unknown as KritzelCore, 'ws', { providers: [] });

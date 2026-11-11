@@ -82,6 +82,8 @@ import {
   KritzelDynamicObject,
   KritzelIframeObject,
   KritzelImage,
+  KritzelObjectAppearManager,
+  KRITZEL_OBJECT_APPEAR_MAX_BATCH,
   DEFAULT_TEXT_TOOL_AVAILABLE_FONTS,
 } from '@kritzel/core';
 
@@ -100,6 +102,7 @@ describe('KritzelEngine', () => {
       isRotatable: jest.fn().mockReturnValue(true),
       resetWarnings: jest.fn(),
     },
+    objectAppearManager: new KritzelObjectAppearManager(),
     objectTitlebarManager: {
       config: undefined,
       getOwnerFromEvent: jest.fn().mockReturnValue(null),
@@ -3097,6 +3100,22 @@ describe('KritzelEngine', () => {
       expect(core.prepareObjectForInsert.mock.calls.map((call: any[]) => call[0])).toEqual([a, b]);
       expect(insertedInTransaction).toEqual([true, true]);
     });
+
+    it('addObjects staggers the appear animation of its objects in their order', async () => {
+      const objects = [makeObject('a'), makeObject('b'), makeObject('c')];
+
+      await engine.addObjects(objects);
+
+      expect(core.insertPreparedObject.mock.calls.map((call: any[]) => call[2])).toEqual([0, 1, 2]);
+    });
+
+    it('addObjects skips the appear animation for big batches', async () => {
+      const objects = Array.from({ length: KRITZEL_OBJECT_APPEAR_MAX_BATCH + 1 }, (_, index) => makeObject(`o${index}`));
+
+      await engine.addObjects(objects);
+
+      expect(core.insertPreparedObject.mock.calls.every((call: any[]) => call[2] === null)).toBe(true);
+    });
   });
 
   describe('agents', () => {
@@ -3325,6 +3344,65 @@ describe('KritzelEngine', () => {
       expect(renderParts(own, 'kritzel-image-object').container.$attrs$?.style).toEqual(
         expect.objectContaining({ '--kritzel-content-border-radius': '16px' }),
       );
+    });
+
+    describe('appear animation', () => {
+      afterEach(() => {
+        core.objectAppearManager.clear();
+        jest.restoreAllMocks();
+      });
+
+      it('plays on objects marked by an insert, with their stagger index, also on their titlebars', () => {
+        Object.assign(core.objectTitlebarManager, { isEnabled: true });
+        const image = new KritzelImage({ width: 200, height: 120 });
+        image.id = 'image-appear';
+        core.objectAppearManager.mark([image], 2);
+
+        const { container } = renderParts(image, 'kritzel-image-placeholder');
+        expect(classes(container)).toContain('object--appearing');
+        expect(container.$attrs$?.style).toEqual(expect.objectContaining({ '--kritzel-object-appear-index': '2' }));
+
+        const [layer] = findVNodes(engine.render() as VNode, node => node.$attrs$?.appearingOwners instanceof Map);
+        expect(layer?.$attrs$?.appearingOwners.get('image-appear')).toBe(2);
+      });
+
+      it('does not play on objects that were not marked', () => {
+        const image = new KritzelImage({ width: 200, height: 120 });
+        image.id = 'image-plain';
+
+        const { container } = renderParts(image, 'kritzel-image-placeholder');
+        expect(classes(container)).not.toContain('object--appearing');
+        expect(container.$attrs$?.style).not.toHaveProperty('--kritzel-object-appear-index');
+      });
+
+      it('waits for an iframe to load, unless it shows its loading placeholder', () => {
+        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
+        iframe.id = 'iframe-appear';
+        core.objectAppearManager.mark([iframe]);
+        expect(classes(renderParts(iframe, 'kritzel-iframe-object').container)).not.toContain('object--appearing');
+
+        Object.defineProperty(iframe, 'isDocumentLoaded', { get: () => true });
+        expect(classes(renderParts(iframe, 'kritzel-iframe-object').container)).toContain('object--appearing');
+
+        const placeholder = new KritzelIframeObject({ width: 200, height: 120 });
+        placeholder.id = 'iframe-placeholder';
+        placeholder.isLoading = true;
+        core.objectAppearManager.mark([placeholder]);
+        expect(classes(renderParts(placeholder, 'kritzel-iframe-object').container)).toContain('object--appearing');
+      });
+
+      it('does not play when the theme sets a zero duration', () => {
+        const computed = window.getComputedStyle(engine.host);
+        jest.spyOn(window, 'getComputedStyle').mockReturnValue({
+          getPropertyValue: (name: string) => (name === '--kritzel-object-appear-animation-duration' ? ' 0s' : computed.getPropertyValue(name)),
+        } as CSSStyleDeclaration);
+        const image = new KritzelImage({ width: 200, height: 120 });
+        image.id = 'image-off';
+        core.objectAppearManager.mark([image]);
+
+        expect(classes(renderParts(image, 'kritzel-image-placeholder').container)).not.toContain('object--appearing');
+        expect(core.objectAppearManager.has('image-off')).toBe(false);
+      });
     });
 
     it('gives other objects no card radius', () => {
