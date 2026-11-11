@@ -1,5 +1,10 @@
 import type { KritzelEasing } from './easing.interface';
-import type { KritzelAgenticAnchor, KritzelAgenticObjectTarget, KritzelAgenticPointTarget } from './agentic-cursor.interface';
+import type { KritzelAgenticAnchor, KritzelAgenticElementTarget, KritzelAgenticObjectTarget, KritzelAgenticPointTarget } from './agentic-cursor.interface';
+import type {
+  KritzelObjectElementInfo,
+  KritzelObjectElementInteraction,
+  KritzelObjectElementInteractionFailureReason,
+} from './object-element.interface';
 import type { KritzelPoint } from './point.interface';
 import type { LineArrowConfig } from './arrow-head.interface';
 import type { ThemeAwareColor } from '../constants/color-palette.constants';
@@ -43,16 +48,30 @@ export interface KritzelAgenticLineStyle extends KritzelAgenticStrokeStyle {
   arrows?: LineArrowConfig;
 }
 
-/** Presses at a world point or an anchor on an object. Visual only: nothing is selected or changed. */
+/**
+ * Presses at a world point, an anchor on an object or an element inside an object. On the canvas it is visual
+ * only: nothing is selected or changed. On an element (`{ objectId, selector }`), the element is really clicked,
+ * like `interactWithElement` with `{ type: 'click' }`.
+ */
 export interface KritzelAgenticClickAction {
   type: 'click';
-  /**
-   * World point, or an anchor on an object (the anchor rotates with the object). Elements inside objects can't be
-   * clicked; point at one with `agent.moveTo({ objectId, selector })`.
-   */
-  target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
+  /** World point, an anchor on an object (the anchor rotates with the object), or an element inside an object. */
+  target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget;
   /** `2` plays a double press. Defaults to `1`. */
   count?: 1 | 2;
+}
+
+/**
+ * Interacts with an element inside an object's content, e.g. a button in a `KritzelIframeObject`: the agent's
+ * cursor flies to the element and the interaction is performed as a user would (see
+ * `KritzelObjectElementInteraction`). Works for actors working as the user too. The content's own state changes,
+ * not the object, so the action has no undo step. The object must be mounted (in or near the viewport).
+ */
+export interface KritzelAgenticInteractWithElementAction {
+  type: 'interactWithElement';
+  /** The element: `{ objectId, selector }`; the first element that matches the selector is used. */
+  target: KritzelAgenticElementTarget;
+  interaction: KritzelObjectElementInteraction;
 }
 
 /**
@@ -347,6 +366,7 @@ export interface KritzelAgenticRedoAction {
 /** An action performed by a `KritzelAgent` (`agent.perform(action)`). */
 export type KritzelAgenticAction =
   | KritzelAgenticClickAction
+  | KritzelAgenticInteractWithElementAction
   | KritzelAgenticSelectAction
   | KritzelAgenticClearSelectionAction
   | KritzelAgenticMoveObjectAction
@@ -420,7 +440,12 @@ export type KritzelAgenticActionFailureReason =
   /** An ID is unknown, a selection, inside a group, or of the wrong type. */
   | 'invalid-target'
   /** No workspace is ready (the engine is disconnected, headless or still loading). */
-  | 'engine-disconnected';
+  | 'engine-disconnected'
+  /**
+   * An interaction with an element inside an object could not be performed: see `elementReason` and `message`.
+   * Changes the interaction made before it failed are kept.
+   */
+  | 'element-interaction-failed';
 
 /** Result of `agent.perform()` and the action shortcuts of `KritzelAgent`. */
 export interface KritzelAgenticActionResult {
@@ -434,4 +459,13 @@ export interface KritzelAgenticActionResult {
    * caused it, when known.
    */
   objectIds?: string[];
+  /**
+   * For interactions with elements: the element as it is afterwards (or the element that refused the interaction),
+   * as described by the object's content, which may be untrusted.
+   */
+  element?: KritzelObjectElementInfo;
+  /** For `'element-interaction-failed'`: why the element refused the interaction. */
+  elementReason?: KritzelObjectElementInteractionFailureReason;
+  /** For `'element-interaction-failed'`: what went wrong, in words. */
+  message?: string;
 }

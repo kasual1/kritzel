@@ -3,6 +3,7 @@ import type { IKritzelUser } from '../../interfaces/user.interface';
 import type { KritzelPoint } from '../../interfaces/point.interface';
 import type {
   KritzelAgenticAnchor,
+  KritzelAgenticElementTarget,
   KritzelAgenticMoveOptions,
   KritzelAgenticMoveResult,
   KritzelAgenticObjectTarget,
@@ -32,16 +33,19 @@ import type {
   KritzelAgentPresence,
   KritzelAgentState,
   KritzelAgentTool,
+  KritzelAgentToolResult,
   KritzelAgentToolsOptions,
   KritzelCanvasObject,
   KritzelCanvasSnapshot,
   KritzelObserveOptions,
 } from '../../interfaces/agent.interface';
+import type { KritzelObjectElementInteraction } from '../../interfaces/object-element.interface';
 import { KritzelUserColorHelper } from '../../helpers/user-color.helper';
 import { ObjectHelper } from '../../helpers/object.helper';
 import { KritzelAgentActionError } from './agent-action-error.class';
 import { createAgentTools } from './agent-tools';
 import { buildCanvasSnapshot, describeObject } from './agent-snapshot';
+import { inspectObjectElements, type KritzelInspectElementsOptions } from './agent-elements';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import { isElementTarget } from '../../helpers/agentic-geometry.helper';
 
@@ -290,12 +294,30 @@ export class KritzelAgent implements IKritzelUser {
   }
 
   /**
-   * Presses at a point or object anchor. Nothing changes; `objectIds` holds the object under the cursor.
-   * Elements inside objects can't be clicked; use `moveTo({ objectId, selector })` to point at one.
+   * Presses at a point or object anchor: nothing changes, and `objectIds` holds the object under the cursor. An
+   * element inside an object (`{ objectId, selector }`) is really clicked, like
+   * `interactWithElement(target, { type: 'click' })`.
    */
-  click(target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget, options: { count?: 1 | 2 } & KritzelAgenticActionOptions = {}): Promise<KritzelAgenticActionResult> {
+  click(
+    target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget,
+    options: { count?: 1 | 2 } & KritzelAgenticActionOptions = {},
+  ): Promise<KritzelAgenticActionResult> {
     const { count, ...actionOptions } = options;
     return this.perform({ type: 'click', target, ...(count ? { count } : {}) }, actionOptions);
+  }
+
+  /**
+   * Interacts with an element inside an object's content, e.g. clicks a button or fills a field of an iframe
+   * widget: the cursor flies to the element and the interaction is performed as a user would (see
+   * `KritzelObjectElementInteraction`). `element` holds the element afterwards; when the element refuses, the
+   * result has `reason: 'element-interaction-failed'` with `elementReason` and `message`.
+   */
+  interactWithElement(
+    target: KritzelAgenticElementTarget,
+    interaction: KritzelObjectElementInteraction,
+    options: KritzelAgenticActionOptions = {},
+  ): Promise<KritzelAgenticActionResult> {
+    return this.perform({ type: 'interactWithElement', target, interaction }, options);
   }
 
   /** Selects top-level objects for the agent. Never changes the user's selection. */
@@ -507,6 +529,14 @@ export class KritzelAgent implements IKritzelUser {
   /** Resolves when the agent has no running or queued action. @internal */
   _whenIdle(): Promise<void> {
     return this._core ? this._core.agenticActionManager.whenIdle(this.id) : Promise.resolve();
+  }
+
+  /** The elements inside an object's content, for `inspect_elements`. @internal */
+  _inspectElements(objectId: string, options: KritzelInspectElementsOptions = {}): Promise<KritzelAgentToolResult> {
+    if (!this._core) {
+      return Promise.resolve({ completed: false, reason: 'agent-removed' });
+    }
+    return inspectObjectElements(this._core, objectId, options);
   }
 
   /** Snapshot entries of objects, for tool results. @internal */

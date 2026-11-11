@@ -1,4 +1,5 @@
 import type { KritzelPoint } from './point.interface';
+import type { KritzelObjectElementState } from './object-element.interface';
 import type { KritzelAgenticAttachment, KritzelAgenticTarget } from './agentic-cursor.interface';
 import type {
   KritzelAgenticAction,
@@ -195,7 +196,7 @@ export interface KritzelAgentToolResult {
   /** Why the action did not complete; `'invalid-input'` when the input was rejected. */
   reason?: KritzelAgenticActionFailureReason | 'invalid-input';
   objectIds?: string[];
-  /** What was wrong with the input. */
+  /** What was wrong with the input, or why an element refused an interaction. */
   message?: string;
   /** What to do about the failure. */
   hint?: string;
@@ -203,6 +204,33 @@ export interface KritzelAgentToolResult {
   viewport?: KritzelCanvasSnapshot['viewport'];
   /** Snapshots of the objects the action created or changed. */
   objects?: KritzelCanvasObject[];
+  /** The element an interaction acted on, as it is afterwards (`interact_with_element`). */
+  element?: KritzelCanvasElement;
+  /** The elements inside an object (`inspect_elements`). */
+  elements?: KritzelCanvasElement[];
+  /** Whether more elements matched than were returned. */
+  truncated?: boolean;
+}
+
+/**
+ * An element inside an object's content (e.g. a button in an iframe widget) as tools describe it to models.
+ * Its strings come from the content, which may be untrusted.
+ */
+export interface KritzelCanvasElement {
+  /** CSS selector of the element; pass it to `interact_with_element`. */
+  selector: string;
+  tagName: string;
+  /** The element's text, truncated to 200 characters. */
+  text?: string;
+  classList?: string[];
+  /** Descriptive attributes such as `role`, `aria-*`, `type`, `placeholder` or `title`. */
+  attributes?: Record<string, string>;
+  /** State such as `disabled`, `checked` or `focused`. */
+  state?: KritzelObjectElementState;
+  /** The value of a form field; never of password fields. */
+  value?: string;
+  /** Whether part of the element can be seen. Always set by the built-in tools. */
+  visible?: boolean;
 }
 
 // ─── Canvas snapshot ──────────────────────────────────────────────────────────

@@ -4,6 +4,10 @@ import {
   KritzelElementAwareObject,
   KritzelObjectElementHighlight,
   KritzelObjectElementInfo,
+  KritzelObjectElementInteraction,
+  KritzelObjectElementInteractionOptions,
+  KritzelObjectElementInteractionResult,
+  KritzelObjectElementQueryOptions,
   KritzelObjectElementPickingOptions,
   KritzelObjectElementRect,
 } from '../../interfaces/object-element.interface';
@@ -297,11 +301,31 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
    * Describes the elements of the page that match a CSS selector, in document order.
    * Rejects if the selector is invalid, the object isn't mounted or the page doesn't respond.
    */
-  queryElements(selector: string, limit?: number): Promise<KritzelObjectElementInfo[]> {
+  queryElements(selector: string, limitOrOptions?: number | KritzelObjectElementQueryOptions): Promise<KritzelObjectElementInfo[]> {
     if (!this.sandbox.includes('allow-scripts')) {
       return Promise.reject(new Error(`Object "${this.id}" runs its content without scripts, so its elements can't be reached.`));
     }
-    return this.elementBridge.query(selector, limit);
+    return this.elementBridge.query(selector, limitOrOptions);
+  }
+
+  /**
+   * Performs an interaction on the first element of the page that matches a CSS selector, as a user would, e.g.
+   * clicks a button or fills a field. Works whether or not the object is selected. Resolves with
+   * `completed: false` and a reason when it can't be performed; rejects only for an invalid selector or interaction.
+   */
+  interactWithElement(
+    selector: string,
+    interaction: KritzelObjectElementInteraction,
+    options?: KritzelObjectElementInteractionOptions,
+  ): Promise<KritzelObjectElementInteractionResult> {
+    if (!this.sandbox.includes('allow-scripts')) {
+      return Promise.resolve({
+        completed: false,
+        reason: 'unavailable',
+        message: `Object "${this.id}" runs its content without scripts, so its elements can't be reached.`,
+      });
+    }
+    return this.elementBridge.interact(selector, interaction, options);
   }
 
   trackElement(selector: string): void {

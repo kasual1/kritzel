@@ -1,9 +1,15 @@
 import {
   KritzelObjectElementHighlight,
   KritzelObjectElementInfo,
+  KritzelObjectElementInteraction,
+  KritzelObjectElementInteractionFailureReason,
+  KritzelObjectElementInteractionOptions,
+  KritzelObjectElementInteractionResult,
   KritzelObjectElementModifiers,
   KritzelObjectElementPickingOptions,
+  KritzelObjectElementQueryOptions,
   KritzelObjectElementRect,
+  KritzelObjectElementState,
 } from '../../interfaces/object-element.interface';
 import { IFRAME_ELEMENT_MESSAGES } from './iframe-element-bridge.script';
 import { KritzelMathHelper } from '../../helpers/math.helper';
@@ -25,6 +31,8 @@ export interface KritzelIframeElementBridgeOwner {
 interface PendingQuery {
   selector: string;
   limit: number;
+  interactiveOnly: boolean;
+  includeValues: boolean;
   resolve: (elements: KritzelObjectElementInfo[]) => void;
   reject: (error: Error) => void;
   timer: ReturnType<typeof setTimeout> | null;
@@ -32,6 +40,16 @@ interface PendingQuery {
   isAwaitingAnswer: boolean;
   /** Time after which the query fails whatever the page does, so a page that keeps reloading can't hold it forever. */
   deadline: number;
+}
+
+interface PendingInteraction {
+  selector: string;
+  interaction: KritzelObjectElementInteraction;
+  trial: boolean;
+  resolve: (result: KritzelObjectElementInteractionResult) => void;
+  timer: ReturnType<typeof setTimeout> | null;
+  /** Whether it was sent. A sent interaction is never sent again: the page may have performed it. */
+  isSent: boolean;
 }
 
 interface SyncVersion {
@@ -46,6 +64,14 @@ export const IFRAME_ELEMENT_QUERY_TIMEOUT = 3000;
 export const IFRAME_ELEMENT_LOAD_TIMEOUT = 15000;
 export const IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT = 100;
 export const IFRAME_ELEMENT_MAX_QUERY_LIMIT = 500;
+/** How long the page has to answer an interaction once it was sent. The content's handlers run before it answers. */
+export const IFRAME_ELEMENT_INTERACTION_TIMEOUT = 5000;
+/** Longest value of a `'fill'` interaction. */
+export const IFRAME_ELEMENT_MAX_FILL_LENGTH = 100_000;
+const MAX_KEY_LENGTH = 100;
+/** Largest scroll distance of a `'scroll'` interaction, in CSS pixels. */
+const MAX_SCROLL_DELTA = 100_000;
+const INTERACTION_FAILURE_REASONS = new Set<unknown>(['not-found', 'not-visible', 'disabled', 'covered', 'not-editable', 'not-checkable', 'invalid-value']);
 
 const MAX_SELECTOR_LENGTH = 2000;
 const MAX_STRING_LENGTH = 500;
@@ -115,7 +141,83 @@ export function readElementInfo(value: unknown): KritzelObjectElementInfo | null
   if (kritzelId) info.kritzelId = kritzelId;
   if (id) info.id = id;
   if (text) info.text = text;
+  const state = readState(value.state);
+  if (state) info.state = state;
+  // An empty value is a value: an empty text field.
+  if (typeof value.value === 'string') info.value = value.value.slice(0, MAX_STRING_LENGTH);
   return info;
+}
+
+/** Validates the state of an element: only known fields, with the right types. */
+function readState(value: unknown): KritzelObjectElementState | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+  const state: KritzelObjectElementState = {};
+  for (const key of ['disabled', 'selected', 'open', 'focused', 'editable', 'playing'] as const) {
+    if (typeof value[key] === 'boolean') state[key] = value[key];
+  }
+  if (typeof value.checked === 'boolean' || value.checked === 'mixed') state.checked = value.checked;
+  return Object.keys(state).length > 0 ? state : null;
+}
+
+/**
+ * Validates an interaction and returns a copy with only its known fields, so nothing else reaches the page.
+ * Throws for invalid ones.
+ */
+export function readElementInteraction(value: unknown): KritzelObjectElementInteraction {
+  if (!isRecord(value)) {
+    throw new Error('An interaction must be an object with a "type".');
+  }
+  switch (value.type) {
+    case 'click':
+      if (value.count !== undefined && value.count !== 1 && value.count !== 2) {
+        throw new Error('"count" must be 1 or 2.');
+      }
+      return value.count === 2 ? { type: 'click', count: 2 } : { type: 'click' };
+    case 'hover':
+      return { type: 'hover' };
+    case 'fill':
+      if (typeof value.value !== 'string') {
+        throw new Error('"value" must be a string.');
+      }
+      if (value.value.length > IFRAME_ELEMENT_MAX_FILL_LENGTH) {
+        throw new Error(`"value" is longer than ${IFRAME_ELEMENT_MAX_FILL_LENGTH} characters.`);
+      }
+      return { type: 'fill', value: value.value };
+    case 'check':
+      if (value.checked !== undefined && typeof value.checked !== 'boolean') {
+        throw new Error('"checked" must be a boolean.');
+      }
+      return { type: 'check', checked: value.checked !== false };
+    case 'press':
+      if (typeof value.key !== 'string' || value.key.length === 0 || value.key.length > MAX_KEY_LENGTH) {
+        throw new Error(`"key" must be a key name such as "Enter" or "Control+a", at most ${MAX_KEY_LENGTH} characters.`);
+      }
+      return { type: 'press', key: value.key };
+    case 'scroll': {
+      const delta = (field: 'deltaX' | 'deltaY'): number => {
+        const amount = value[field];
+        if (amount === undefined) return 0;
+        if (!KritzelMathHelper.isFiniteNumber(amount) || Math.abs(amount) > MAX_SCROLL_DELTA) {
+          throw new Error(`"${field}" must be a number between -${MAX_SCROLL_DELTA} and ${MAX_SCROLL_DELTA}.`);
+        }
+        return amount;
+      };
+      const deltaX = delta('deltaX');
+      const deltaY = delta('deltaY');
+      if (deltaX === 0 && deltaY === 0) {
+        throw new Error('Give "deltaX", "deltaY" or both.');
+      }
+      return { type: 'scroll', deltaX, deltaY };
+    }
+    default:
+      throw new Error(`Unknown interaction type "${String(value.type)}". Use click, hover, fill, check, press or scroll.`);
+  }
+}
+
+function unavailable(message: string): KritzelObjectElementInteractionResult {
+  return { completed: false, reason: 'unavailable', message };
 }
 
 function readModifiers(value: Record<string, unknown>): KritzelObjectElementModifiers {
@@ -161,6 +263,7 @@ export class KritzelIframeElementBridge {
   private readonly _tracked = new Map<string, number>();
   private readonly _rects = new Map<string, KritzelObjectElementRect>();
   private readonly _queries = new Map<number, PendingQuery>();
+  private readonly _interactions = new Map<number, PendingInteraction>();
   private _hovered: KritzelObjectElementInfo | null = null;
   private _requestCounter = 0;
   /** Token of the current document. The page sends it with every message, so messages of replaced documents are ignored. */
@@ -274,23 +377,61 @@ export class KritzelIframeElementBridge {
     return rect ? { ...rect } : null;
   }
 
-  query(selector: string, limit: number = IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT): Promise<KritzelObjectElementInfo[]> {
+  query(selector: string, limitOrOptions: number | KritzelObjectElementQueryOptions = IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT): Promise<KritzelObjectElementInfo[]> {
     if (!isValidElementSelector(selector)) {
       return Promise.reject(new Error(`Invalid element selector "${selector}".`));
     }
     if (!this._owner.isMounted || !this._owner.getIframe()) {
       return Promise.reject(new Error(`Object "${this._owner.id}" is not mounted. Its content can only be queried while it is in or near the viewport.`));
     }
-    const normalizedLimit = Math.max(1, Math.min(IFRAME_ELEMENT_MAX_QUERY_LIMIT, Math.floor(Number(limit)) || IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT));
+    const options: KritzelObjectElementQueryOptions = isRecord(limitOrOptions) ? limitOrOptions : { limit: limitOrOptions as number };
+    const normalizedLimit = Math.max(1, Math.min(IFRAME_ELEMENT_MAX_QUERY_LIMIT, Math.floor(Number(options.limit)) || IFRAME_ELEMENT_DEFAULT_QUERY_LIMIT));
+    const interactiveOnly = options.interactiveOnly === true;
+    const includeValues = options.includeValues === true;
 
     return new Promise<KritzelObjectElementInfo[]>((resolve, reject) => {
       const requestId = ++this._requestCounter;
       const deadline = Date.now() + IFRAME_ELEMENT_LOAD_TIMEOUT;
-      this._queries.set(requestId, { selector, limit: normalizedLimit, resolve, reject, timer: null, isAwaitingAnswer: false, deadline });
+      this._queries.set(requestId, { selector, limit: normalizedLimit, interactiveOnly, includeValues, resolve, reject, timer: null, isAwaitingAnswer: false, deadline });
       if (this._isReady) {
         this.postQuery(requestId);
       } else {
         this.startQueryTimer(requestId, IFRAME_ELEMENT_LOAD_TIMEOUT, `The content of object "${this._owner.id}" did not finish loading.`);
+      }
+    });
+  }
+
+  /**
+   * Asks the page to perform an interaction on the first element that matches a selector. Rejects for an invalid
+   * selector or interaction; every other failure resolves with `completed: false`. An interaction waits for the
+   * page to load, but is never sent twice: if the page reloads after it was sent, it fails, because the page may
+   * have performed it.
+   */
+  interact(
+    selector: string,
+    interaction: KritzelObjectElementInteraction,
+    options: KritzelObjectElementInteractionOptions = {},
+  ): Promise<KritzelObjectElementInteractionResult> {
+    if (!isValidElementSelector(selector)) {
+      return Promise.reject(new Error(`Invalid element selector "${selector}".`));
+    }
+    let checked: KritzelObjectElementInteraction;
+    try {
+      checked = readElementInteraction(interaction);
+    } catch (error) {
+      return Promise.reject(error);
+    }
+    if (!this._owner.isMounted || !this._owner.getIframe()) {
+      return Promise.resolve(unavailable(`Object "${this._owner.id}" is not mounted. Its content can only be reached while it is in or near the viewport.`));
+    }
+
+    return new Promise<KritzelObjectElementInteractionResult>(resolve => {
+      const requestId = ++this._requestCounter;
+      this._interactions.set(requestId, { selector, interaction: checked, trial: options.trial === true, resolve, timer: null, isSent: false });
+      if (this._isReady) {
+        this.postInteraction(requestId);
+      } else {
+        this.startInteractionTimer(requestId, IFRAME_ELEMENT_LOAD_TIMEOUT, `The content of object "${this._owner.id}" did not finish loading.`);
       }
     });
   }
@@ -308,6 +449,7 @@ export class KritzelIframeElementBridge {
     this._document++;
     this._isReady = false;
     this.clearHover();
+    this.failSentInteractions(`The content of object "${this._owner.id}" was replaced while it handled the interaction.`);
     return this._document;
   }
 
@@ -321,6 +463,11 @@ export class KritzelIframeElementBridge {
       query.reject(error);
     });
     this._queries.clear();
+    this._interactions.forEach(pending => {
+      if (pending.timer) clearTimeout(pending.timer);
+      pending.resolve(unavailable(error.message));
+    });
+    this._interactions.clear();
   }
 
   onInteractivityChange(): void {
@@ -358,6 +505,9 @@ export class KritzelIframeElementBridge {
         this.sync();
         // Queries sent to a previous document are lost with it, so all pending ones are sent again.
         this._queries.forEach((_query, requestId) => this.postQuery(requestId));
+        // Interactions are not: the previous document may have performed them before it went away.
+        this.failSentInteractions(`The content of object "${this._owner.id}" reloaded while it handled the interaction.`);
+        this._interactions.forEach((_pending, requestId) => this.postInteraction(requestId));
         return true;
       case IFRAME_ELEMENT_MESSAGES.hover:
         this.handleHover(message);
@@ -373,6 +523,9 @@ export class KritzelIframeElementBridge {
         return true;
       case IFRAME_ELEMENT_MESSAGES.queryResult:
         this.handleQueryResult(message);
+        return true;
+      case IFRAME_ELEMENT_MESSAGES.interactResult:
+        this.handleInteractionResult(message);
         return true;
       default:
         return true;
@@ -477,6 +630,28 @@ export class KritzelIframeElementBridge {
     query.resolve(elements);
   }
 
+  private handleInteractionResult(message: Record<string, unknown>): void {
+    const requestId = message.requestId;
+    const pending = typeof requestId === 'number' ? this._interactions.get(requestId) : undefined;
+    if (!pending || !pending.isSent) {
+      return;
+    }
+    this._interactions.delete(requestId as number);
+    if (pending.timer) clearTimeout(pending.timer);
+
+    const element = message.element === undefined ? null : this.readContentElement(message.element);
+    const result: KritzelObjectElementInteractionResult = { completed: message.failure === undefined };
+    if (!result.completed) {
+      result.reason = INTERACTION_FAILURE_REASONS.has(message.failure) ? (message.failure as KritzelObjectElementInteractionFailureReason) : 'unavailable';
+      const text = readString(message.message);
+      if (text) result.message = text;
+      const coveredBy = message.coveredBy === undefined ? null : this.readContentElement(message.coveredBy);
+      if (coveredBy && result.reason === 'covered') result.coveredBy = coveredBy;
+    }
+    if (element) result.element = element;
+    pending.resolve(result);
+  }
+
   /** The page reports positions, so a page could claim any position: they are kept inside the content. */
   private clampToContent(rect: KritzelObjectElementRect | null): KritzelObjectElementRect | null {
     if (!rect) {
@@ -508,12 +683,55 @@ export class KritzelIframeElementBridge {
     if (!query) {
       return;
     }
-    this.post({ type: IFRAME_ELEMENT_MESSAGES.query, requestId, selector: query.selector, limit: query.limit });
+    this.post({
+      type: IFRAME_ELEMENT_MESSAGES.query,
+      requestId,
+      selector: query.selector,
+      limit: query.limit,
+      interactiveOnly: query.interactiveOnly,
+      includeValues: query.includeValues,
+    });
     // The answer timeout starts once and is never extended by later re-sends, e.g. after the page reloaded.
     if (!query.isAwaitingAnswer) {
       query.isAwaitingAnswer = true;
       this.startQueryTimer(requestId, IFRAME_ELEMENT_QUERY_TIMEOUT, `The content of object "${this._owner.id}" did not respond.`);
     }
+  }
+
+  private postInteraction(requestId: number): void {
+    const pending = this._interactions.get(requestId);
+    if (!pending || pending.isSent) {
+      return;
+    }
+    pending.isSent = true;
+    this.post({ type: IFRAME_ELEMENT_MESSAGES.interact, requestId, selector: pending.selector, interaction: pending.interaction, trial: pending.trial });
+    this.startInteractionTimer(requestId, IFRAME_ELEMENT_INTERACTION_TIMEOUT, `The content of object "${this._owner.id}" did not respond.`);
+  }
+
+  private startInteractionTimer(requestId: number, timeout: number, message: string): void {
+    const pending = this._interactions.get(requestId);
+    if (!pending) {
+      return;
+    }
+    if (pending.timer) {
+      clearTimeout(pending.timer);
+    }
+    pending.timer = setTimeout(() => {
+      this._interactions.delete(requestId);
+      pending.resolve(unavailable(message));
+    }, timeout);
+  }
+
+  /** Fails the interactions that were sent to a document that is gone. */
+  private failSentInteractions(message: string): void {
+    this._interactions.forEach((pending, requestId) => {
+      if (!pending.isSent) {
+        return;
+      }
+      if (pending.timer) clearTimeout(pending.timer);
+      this._interactions.delete(requestId);
+      pending.resolve(unavailable(message));
+    });
   }
 
   private startQueryTimer(requestId: number, timeout: number, message: string): void {

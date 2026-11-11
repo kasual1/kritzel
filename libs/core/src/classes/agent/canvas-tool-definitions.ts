@@ -10,6 +10,9 @@ import {
   FIT_VIEWPORT_TOOL_DESCRIPTION,
   FIT_VIEWPORT_TOOL_NAME,
   FIT_VIEWPORT_TOOL_SCHEMA,
+  INSPECT_ELEMENTS_TOOL_DESCRIPTION,
+  INSPECT_ELEMENTS_TOOL_NAME,
+  INSPECT_ELEMENTS_TOOL_SCHEMA,
   OBSERVE_CANVAS_SCHEMA,
   READ_IFRAME_TOOL_DESCRIPTION,
   READ_IFRAME_TOOL_NAME,
@@ -44,6 +47,8 @@ import type { KritzelCore } from '../core/core.class';
 import type { KritzelViewport } from '../core/viewport.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelIframeObject, type KritzelIframeObjectConfig } from '../objects/iframe.class';
+import { isValidElementSelector } from '../objects/iframe-element-bridge.class';
+import { INSPECT_ELEMENTS_MAX_LIMIT, type KritzelInspectElementsOptions } from './agent-elements';
 
 /** The built-in canvas tools, one definition each. */
 
@@ -108,6 +113,50 @@ export const observeCanvasTool = defineCanvasTool<{ scope?: string; objectIds?: 
       }
       return ctx.errorResult(error);
     }
+  },
+});
+
+// ─── inspect_elements ────────────────────────────────────────────────────────
+
+/** Lists the elements inside a widget, so the model can find what to use with `interact_with_element`. */
+export const inspectElementsTool = defineCanvasTool<
+  { objectId?: string; selector?: string; limit?: number },
+  { objectId: string; options: KritzelInspectElementsOptions }
+>({
+  name: INSPECT_ELEMENTS_TOOL_NAME,
+  description: INSPECT_ELEMENTS_TOOL_DESCRIPTION,
+  inputSchema: INSPECT_ELEMENTS_TOOL_SCHEMA,
+  removedFirst: true,
+  example: { objectId: 'w', selector: 'button', limit: 10 },
+  prepare: (input, ctx) => {
+    const objectId = toolInput.string(input.objectId, 'objectId');
+    const options: KritzelInspectElementsOptions = {};
+    if (input.selector !== undefined) {
+      const selector = toolInput.string(input.selector, 'selector');
+      if (!isValidElementSelector(selector)) {
+        ctx.invalid(`"selector" is not a valid CSS selector: ${selector}`);
+      }
+      options.selector = selector;
+    }
+    if (input.limit !== undefined) {
+      const limit = toolInput.positive(input.limit, 'limit');
+      if (!Number.isInteger(limit) || limit > INSPECT_ELEMENTS_MAX_LIMIT) {
+        ctx.invalid(`"limit" must be a whole number from 1 to ${INSPECT_ELEMENTS_MAX_LIMIT}.`);
+      }
+      options.limit = limit;
+    }
+    return { objectId, options };
+  },
+  execute: async ({ objectId, options }, ctx) => {
+    if (!ctx.isAdded) {
+      return ctx.removedResult();
+    }
+    // Actions of the same reply are queued, e.g. the create_iframe that placed the widget; let them finish first.
+    await ctx.whenIdle();
+    if (!ctx.isAdded) {
+      return ctx.removedResult();
+    }
+    return JSON.stringify(await ctx.inspectElements(objectId, options));
   },
 });
 
@@ -594,6 +643,7 @@ export const fitViewportTool = defineCanvasTool<KritzelFitViewportToolInput, { o
 /** The built-in canvas tools, in the order models get them. */
 export const KRITZEL_CANVAS_TOOLS: readonly KritzelCanvasToolDefinition[] = Object.freeze([
   observeCanvasTool,
+  inspectElementsTool,
   ...actionTools(),
   createImageTool,
   createIframeTool,

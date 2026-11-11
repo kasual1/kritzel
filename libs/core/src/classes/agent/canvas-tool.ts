@@ -17,6 +17,7 @@ import type {
   KritzelObserveOptions,
 } from '../../interfaces/agent.interface';
 import { KritzelAgentActionError } from './agent-action-error.class';
+import { toCanvasElement, type KritzelInspectElementsOptions } from './agent-elements';
 import type { KritzelJsonSchemaNode } from './agent-tool-schemas';
 import type { KritzelBaseObject } from '../objects/base-object.class';
 import { parsePartialJson } from '../../helpers/partial-json.helper';
@@ -41,6 +42,8 @@ export interface KritzelToolActor {
   _describeObjects(objectIds: string[]): KritzelCanvasObject[];
   /** The core the actor is added to, for tools that act on the editor itself (e.g. the viewport). */
   readonly _owner?: KritzelCore | null;
+  /** The elements inside an object's content, for `inspect_elements`. Never rejects. */
+  _inspectElements(objectId: string, options: KritzelInspectElementsOptions): Promise<KritzelAgentToolResult>;
 }
 
 export type KritzelToolActorKind = 'agent' | 'user';
@@ -76,6 +79,8 @@ export interface KritzelCanvasToolContext extends KritzelCanvasToolInputContext 
    */
   perform(action: KritzelAgenticAction, options?: { describeObjects?: boolean }): Promise<string>;
   observe(options: KritzelObserveOptions): Promise<KritzelCanvasSnapshot>;
+  /** Lists the elements inside an object's content, as `inspect_elements` answers. */
+  inspectElements(objectId: string, options: KritzelInspectElementsOptions): Promise<KritzelAgentToolResult>;
   /** Resolves when the actor's queued actions have finished. */
   whenIdle(): Promise<void>;
   /** The answer for a removed actor. */
@@ -174,6 +179,8 @@ export const AGENT_TOOL_REASON_HINTS: Record<KritzelAgenticActionFailureReason |
   conflict: 'The objects were changed elsewhere meanwhile. Call observe_canvas and try again.',
   'invalid-target': 'Unknown ID, a child inside a group, or the wrong kind of object. Call observe_canvas and use top-level IDs.',
   'engine-disconnected': 'The canvas is not available right now. Try again later.',
+  'element-interaction-failed':
+    'The element refused the interaction; the message says why. Call inspect_elements to check the widget and its elements, then try again or tell the user.',
 };
 
 /** Hints that read differently for an actor working as the user. */
@@ -208,11 +215,18 @@ function removedResult(kind: KritzelToolActorKind): string {
   return formatAgentToolResult({ completed: false, reason: 'agent-removed', hint: hintFor(kind, 'agent-removed') });
 }
 
-function refusalResult(kind: KritzelToolActorKind, reason: KritzelAgenticActionFailureReason, objectIds?: string[]): string {
+function refusalResult(
+  kind: KritzelToolActorKind,
+  reason: KritzelAgenticActionFailureReason,
+  objectIds?: string[],
+  details: Pick<KritzelAgentToolResult, 'message' | 'element'> = {},
+): string {
   return formatAgentToolResult({
     completed: false,
     reason,
     ...(objectIds && objectIds.length > 0 ? { objectIds } : {}),
+    ...(details.message ? { message: details.message } : {}),
+    ...(details.element ? { element: details.element } : {}),
     hint: hintFor(kind, reason),
   });
 }
@@ -295,6 +309,7 @@ export function bindCanvasTool(actor: KritzelToolActor, definition: KritzelCanva
       },
       perform: (action, performOptions) => (perform ?? performDirectly)(action, performOptions, context),
       observe: observeOptions => actor.observe(observeOptions),
+      inspectElements: (objectId, inspectOptions) => actor._inspectElements(objectId, inspectOptions),
       whenIdle: whenIdle ?? (() => actor._whenIdle()),
       removedResult: () => removedResult(kind),
       refusalResult: (reason, objectIds) => refusalResult(kind, reason, objectIds),
@@ -552,11 +567,18 @@ async function performAsTool(
       throw error;
     }
   }
+  // The element an interaction acted on, described for the model.
+  const element = result.element ? toCanvasElement(result.element) : undefined;
   if (result.completed) {
     const objects = describeObjects ? describeResultObjects(actor, result.objectIds ?? []) : [];
-    return formatAgentToolResult({ completed: true, objectIds: result.objectIds ?? [], ...(objects.length > 0 ? { objects } : {}) });
+    return formatAgentToolResult({
+      completed: true,
+      objectIds: result.objectIds ?? [],
+      ...(objects.length > 0 ? { objects } : {}),
+      ...(element ? { element } : {}),
+    });
   }
-  return refusalResult(kind, result.reason ?? 'conflict', result.objectIds);
+  return refusalResult(kind, result.reason ?? 'conflict', result.objectIds, { message: result.message, element });
 }
 
 /** Snapshots of the objects a completed action created or changed, so the model needs no extra observe call. */

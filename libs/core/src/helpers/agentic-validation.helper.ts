@@ -1,5 +1,6 @@
 import type {
   KritzelAgenticAnchor,
+  KritzelAgenticElementTarget,
   KritzelAgenticObjectTarget,
   KritzelAgenticPointTarget,
 } from '../interfaces/agentic-cursor.interface';
@@ -174,6 +175,25 @@ export function assertTarget(target: unknown, field: string): asserts target is 
   }
   if (!KritzelMathHelper.isFiniteNumber(candidate.x) || !KritzelMathHelper.isFiniteNumber(candidate.y)) {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
+  }
+}
+
+/**
+ * Throws a `TypeError` unless `target` is an element target `{ objectId, selector, anchor?, offset? }` with a
+ * non-empty selector. Whether the selector parses is checked by the object, which reports it as an invalid input.
+ */
+export function assertElementTarget(target: unknown, field: string): asserts target is KritzelAgenticElementTarget {
+  if (!target || typeof target !== 'object') {
+    throw new TypeError(`"${field}" must be { objectId, selector }.`);
+  }
+  const candidate = target as { objectId?: unknown; selector?: unknown; anchor?: unknown; offset?: { x?: unknown; y?: unknown } };
+  assertObjectId(candidate.objectId, `${field}.objectId`);
+  if (typeof candidate.selector !== 'string' || candidate.selector.trim() === '') {
+    throw new TypeError(`"${field}.selector" must be a non-empty CSS selector.`);
+  }
+  assertAnchor(candidate.anchor, `${field}.anchor`);
+  if (candidate.offset !== undefined && (!KritzelMathHelper.isFiniteNumber(candidate.offset?.x) || !KritzelMathHelper.isFiniteNumber(candidate.offset?.y))) {
+    throw new TypeError(`"${field}.offset" must be { x, y }.`);
   }
 }
 

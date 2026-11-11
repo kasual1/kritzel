@@ -1,6 +1,7 @@
 import type { KritzelAgenticAction, KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
 import { clickExecutor } from '../executors/click.executor';
+import { interactWithElementExecutor } from '../executors/interact-with-element.executor';
 import { clearSelectionExecutor, selectExecutor } from '../executors/select.executor';
 import { moveObjectExecutor } from '../executors/move-object.executor';
 import { deleteObjectsExecutor } from '../executors/delete-objects.executor';
@@ -29,6 +30,7 @@ export const AGENTIC_ACTION_EXECUTORS: {
   [K in KritzelAgenticActionType]: KritzelAgenticActionExecutor<Extract<KritzelAgenticAction, { type: K }>>;
 } = {
   click: clickExecutor,
+  interactWithElement: interactWithElementExecutor,
   select: selectExecutor,
   clearSelection: clearSelectionExecutor,
   moveObject: moveObjectExecutor,

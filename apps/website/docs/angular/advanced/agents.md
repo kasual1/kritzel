@@ -180,6 +180,30 @@ await this.editor()?.addAgent(reviewer);
 
 While the cursor sticks to an element, `attachedTo` in the agent's `state` includes the `selector`. Collaborators see the cursor at the element's position, but their editors don't track the element (see [Collaboration](#collaboration)).
 
+## Using Elements
+
+An agent can also use the elements of an iframe object, as a user would: press a button, fill a field, tick a checkbox, press a key, or scroll. `interactWithElement()` flies the cursor to the element and presses while the page performs the interaction. `click()` with an element target is a shortcut for clicking:
+
+```ts
+const planner = this.planner;
+
+const played = await planner.interactWithElement(
+  { objectId: iframeObject.id, selector: '[data-kritzel-id="play"]' },
+  { type: 'click' },
+);
+
+await planner.interactWithElement({ objectId: iframeObject.id, selector: '#volume' }, { type: 'fill', value: '80' });
+await planner.interactWithElement({ objectId: iframeObject.id, selector: '#shuffle' }, { type: 'check' });
+await planner.interactWithElement({ objectId: iframeObject.id, selector: '#search' }, { type: 'press', key: 'Enter' });
+await planner.click({ objectId: iframeObject.id, selector: '[data-kritzel-id="like"]' }, { count: 2 });
+```
+
+Before the cursor moves, the page scrolls the element into view and checks that it is visible, enabled, and not covered by another element. On success, `element` in the result describes the element afterwards, including its state and value, and the cursor stays on it. Otherwise the result has `reason: 'element-interaction-failed'`, an `elementReason` such as `'disabled'` or `'covered'`, and a `message`. The object doesn't need to be selected, but it must be mounted.
+
+The interaction changes the page's own state, not the object, so there is nothing to undo, and collaborators don't see it. The page receives DOM events from a script: its handlers run as for a real press, but browser APIs that need a user gesture may refuse to work from them, for example starting audio, fullscreen, or the clipboard. Chat sessions that work as the user interact the same way, without a cursor.
+
+Models find elements with the `inspect_elements` tool and use them with `interact_with_element` (see [Choosing Tools](#choosing-tools)).
+
 ## Performing Actions
 
 Actions let an agent work on the canvas itself. The cursor flies to the target, presses, and animates the change. The changes are saved and synced like the user's edits, but they are recorded in the agent's own history. Objects that an agent selects are outlined in its color and never change the user's selection.
@@ -370,6 +394,7 @@ Agents never take an object away from a person:
 | `'conflict'` | A target was changed elsewhere during the action, or the history step of the agent is outdated. |
 | `'nothing-to-undo'`, `'nothing-to-redo'` | The agent has no step to undo or redo. |
 | `'engine-disconnected'` | No workspace is ready, for example while the editor is loading or after it was removed from the page. |
+| `'element-interaction-failed'` | An element inside an object refused an interaction; `elementReason` and `message` say why, for example because it is disabled or covered. |
 
 Apart from a takeover by the user, a stopped action is rolled back.
 
@@ -620,7 +645,7 @@ const output = await tools.find(tool => tool.name === call.function.name)?.run(c
 const reviewTools = this.planner.tools({ only: ['observe_canvas', 'select', 'create_text', 'draw_path'] });
 ```
 
-The tools are `observe_canvas`, `click`, `select`, `clear_selection`, `move_object`, `resize_object`, `rotate_object`, `copy_objects`, `group_objects`, `ungroup_objects`, `order_objects`, `create_shape`, `create_text`, `type_text`, `draw_path`, `connect`, `set_style`, `delete_objects`, `undo`, and `redo`, plus `set_viewport` and `fit_viewport`, which pan and zoom the user's view, and with `tools({ iframes: true })` `create_iframe`, `read_iframe`, and `update_iframe`, which place, read, and change widgets of model-written code. Turn the viewport tools off with `tools({ viewport: false })`. `addObject()` has no tool, because the object comes from your app. Give the model your own tool for it, in the same shape as the agent's tools. `formatAgentToolResult()` and `AGENT_TOOL_REASON_HINTS` let it answer like them:
+The tools are `observe_canvas`, `inspect_elements`, `click`, `interact_with_element`, `select`, `clear_selection`, `move_object`, `resize_object`, `rotate_object`, `copy_objects`, `group_objects`, `ungroup_objects`, `order_objects`, `create_shape`, `create_text`, `type_text`, `draw_path`, `connect`, `set_style`, `delete_objects`, `undo`, and `redo`, plus `set_viewport` and `fit_viewport`, which pan and zoom the user's view, and with `tools({ iframes: true })` `create_iframe`, `read_iframe`, and `update_iframe`, which place, read, and change widgets of model-written code. Turn the viewport tools off with `tools({ viewport: false })`. `inspect_elements` lists the elements of a widget (an iframe object), with selectors, text, state, and the values of form fields, and `interact_with_element` uses one of them, as in [Using Elements](#using-elements). `addObject()` has no tool, because the object comes from your app. Give the model your own tool for it, in the same shape as the agent's tools. `formatAgentToolResult()` and `AGENT_TOOL_REASON_HINTS` let it answer like them:
 
 ```ts
 import { AGENT_TOOL_REASON_HINTS, KritzelIframeObject, formatAgentToolResult } from '@kritzel/angular-editor';
