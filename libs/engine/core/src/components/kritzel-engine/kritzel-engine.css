@@ -53,18 +53,60 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   overflow: visible;
 }
 
+/*
+ * Corner radius of the objects that are cards, from the theme (`object`, `iframe`, `dynamicObject`), as a variable
+ * on the object's container: its wrapper, its loading placeholder and its content all read it. An object's own
+ * `borderRadius` sets the variable inline and wins. Content can match it with `var(--kritzel-content-border-radius)`.
+ */
+.object--iframe {
+  --kritzel-content-border-radius: var(--kritzel-iframe-border-radius, var(--kritzel-object-border-radius, 12px));
+}
+
+.object--dynamic-object {
+  --kritzel-content-border-radius: var(--kritzel-dynamic-object-border-radius, var(--kritzel-object-border-radius, 12px));
+}
+
+.kritzel-iframe-object,
+.kritzel-dynamic-object {
+  border-radius: var(--kritzel-content-border-radius);
+}
+
+/* The iframe and the overlay that catches pointers while it is not interactive. */
+.kritzel-iframe-object > * {
+  border-radius: inherit;
+}
+
+/* Content is clipped to the rounded box; `clip` (unlike `hidden`) never scrolls, e.g. to a focused input. */
+.kritzel-dynamic-object {
+  overflow: clip;
+}
+
+/*
+ * Shadows of the objects that are cards, from the theme (`object`, `iframe`, `dynamicObject`, `image`). An object's
+ * own `boxShadow` (images: `dropShadow`) is set inline and wins. Images use a `drop-shadow()` filter, which follows
+ * transparent images (SVGs, icons) instead of their box.
+ */
+.kritzel-iframe-object {
+  box-shadow: var(--kritzel-iframe-box-shadow, var(--kritzel-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
+}
+
+.kritzel-dynamic-object {
+  box-shadow: var(--kritzel-dynamic-object-box-shadow, var(--kritzel-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
+}
+
+.kritzel-image-object {
+  filter: var(--kritzel-image-drop-shadow, drop-shadow(0 1px 1px rgba(20, 18, 31, 0.06)) drop-shadow(0 8px 12px rgba(20, 18, 31, 0.14)));
+}
+
+/* Fades `opacity` (to the object's own) rather than `filter`, which holds the image's shadow. */
 .kritzel-image-object--first-reveal {
-  animation: kritzel-image-first-reveal 180ms ease-out both;
-  will-change: filter;
+  animation: kritzel-image-first-reveal 180ms ease-out backwards;
+  will-change: opacity;
 }
 
 @keyframes kritzel-image-first-reveal {
   from {
-    filter: opacity(0);
-  }
-
-  to {
-    filter: opacity(1);
+    opacity: 0;
   }
 }
 
@@ -101,7 +143,8 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   box-sizing: border-box;
   overflow: hidden;
   background-color: var(--kritzel-loading-placeholder-background-color, #e5e7eb);
-  border-radius: var(--kritzel-loading-placeholder-border-radius, 12px);
+  border-radius: var(--kritzel-loading-placeholder-border-radius, var(--kritzel-content-border-radius, var(--kritzel-object-border-radius, 12px)));
+  box-shadow: var(--kritzel-loading-placeholder-box-shadow, var(--kritzel-object-box-shadow, 0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)));
   animation: kritzel-loading-placeholder-reveal 200ms ease-out backwards;
 }
 

@@ -217,6 +217,11 @@ export interface KritzelTheme {
     widthSmall?: string;
   };
 
+  dynamicObject?: {
+    borderRadius?: string;
+    boxShadow?: string;
+  };
+  
   /** Dropdown variables */
   dropdown?: {
     accentColor?: string;
@@ -277,11 +282,23 @@ export interface KritzelTheme {
     selectedBackgroundColor?: string;
   };
 
+  iframe?: {
+    borderRadius?: string;
+    boxShadow?: string;
+  };
+
+  image?: {
+    dropShadow?: string;
+  };
+
   /** Loading placeholder variables, for the placeholder the engine draws over objects whose `isLoading` is set */
   loadingPlaceholder?: {
     animationDuration?: string;
     backgroundColor?: string;
+    /** Defaults to the radius of the object it covers, so content keeps its corners when it replaces the placeholder. */
     borderRadius?: string;
+    /** Defaults to `object.boxShadow`, so content keeps its shadow when it replaces the placeholder. */
+    boxShadow?: string;
     glareColor?: string;
   };
 
@@ -435,6 +452,15 @@ export interface KritzelTheme {
     spinnerColor?: string;
     spinnerHoverBackground?: string;
     textColor?: string;
+  };
+
+  /**
+   * Variables shared by the canvas objects that are cards: iframes and dynamic objects (see `iframe`,
+   * `dynamicObject`). `borderRadius` and `boxShadow` are their defaults.
+   */
+  object?: {
+    borderRadius?: string;
+    boxShadow?: string;
   };
 
   /** Opacity slider variables */

@@ -59,7 +59,7 @@ function runOperation(left: number, right: number, operator: CalculatorOperator)
 export function createHtmlCalculator(initialState: CalculatorState): HtmlCalculatorInstance {
   const root = document.createElement("section");
   root.setAttribute("aria-label", "HTML calculator");
-  root.style.cssText = "display:grid;grid-template-rows:auto 42px 1fr;gap:8px;height:100%;padding:14px;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 12px 32px rgba(32,33,36,.12);box-sizing:border-box;overflow:hidden;background:#fff;font-family:Roboto,sans-serif";
+  root.style.cssText = "display:grid;grid-template-rows:auto 42px 1fr;gap:8px;height:100%;padding:14px;border:1px solid #e5e7eb;border-radius:12px;box-sizing:border-box;overflow:hidden;background:#fff;font-family:Roboto,sans-serif";
 
   const header = document.createElement("header");
   header.style.cssText = "display:flex;align-items:center;justify-content:space-between";
@@ -155,6 +155,7 @@ export function createHtmlCalculatorObject(): KritzelDynamicObject {
     translateY: -190,
     width: 260,
     height: 320,
+    borderRadius: 12,
   });
   object.isRotatable = false;
   return object;

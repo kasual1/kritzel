@@ -195,6 +195,18 @@ The page runs untrusted content, and element descriptions come from the page. Tr
 
 The element features need the page to run scripts. With a `sandbox` that leaves out `allow-scripts`, nothing is reported or highlighted and queries reject.
 
+## Corners and Shadow
+
+Dynamic objects and iframe objects are drawn as cards: with the theme's corner radius and shadow (see [Theming](../api-reference/theming.md#object)). Set `borderRadius` or `boxShadow` on an object to override them for that object, and `boxShadow: 'none'` to remove its shadow.
+
+Content is clipped to the rounded corners, so it never shows past them. An iframe's document is always clipped. For a dynamic object whose content has to overflow on purpose, such as a dropdown or a popover, set `clipContent: false`, and round the content's own corners with `var(--kritzel-content-border-radius)`, which holds the object's radius.
+
+```css
+.my-widget {
+  border-radius: var(--kritzel-content-border-radius);
+}
+```
+
 ## API Details
 
 For the full list of related APIs, see the following reference sections.

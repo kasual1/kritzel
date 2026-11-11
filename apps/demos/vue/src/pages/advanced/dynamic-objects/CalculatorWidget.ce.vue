@@ -109,7 +109,7 @@ function clear(): void {
 
 <style>
 :host { display: block; height: 100%; min-height: 0; box-sizing: border-box; overflow: visible; container-type: size; }
-.calculator-card { display: grid; grid-template-rows: auto minmax(0, 42px) minmax(0, 1fr); gap: clamp(4px, 2cqh, 10px); height: 100%; min-height: 0; padding: clamp(8px, 4cqh, 16px) clamp(6px, 3cqw, 12px); border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 12px 32px rgba(32, 33, 36, 0.12); box-sizing: border-box; overflow: hidden; font-family: Roboto, sans-serif; background: #ffffff; }
+.calculator-card { display: grid; grid-template-rows: auto minmax(0, 42px) minmax(0, 1fr); gap: clamp(4px, 2cqh, 10px); height: 100%; min-height: 0; padding: clamp(8px, 4cqh, 16px) clamp(6px, 3cqw, 12px); border: 1px solid #e5e7eb; border-radius: 12px; box-sizing: border-box; overflow: hidden; font-family: Roboto, sans-serif; background: #ffffff; }
 header { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 0; }
 h3 { margin: 0; font-size: clamp(12px, 5cqh, 16px); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 header strong { color: #42b883; font-size: 13px; }

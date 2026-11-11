@@ -80,6 +80,7 @@ import {
   KritzelWorkspace,
   KritzelBaseObject,
   KritzelDynamicObject,
+  KritzelIframeObject,
   KritzelImage,
   DEFAULT_TEXT_TOOL_AVAILABLE_FONTS,
 } from '@kritzel/core';
@@ -3246,6 +3247,79 @@ describe('KritzelEngine', () => {
       object.setLoading(false);
 
       expect(findPlaceholders(renderObjectWrapper(object))).toHaveLength(0);
+    });
+  });
+
+  describe('card objects', () => {
+    type VNode = { $attrs$?: Record<string, any> | null; $children$?: VNode[] | null };
+    const findVNodes = (node: VNode | null | undefined, predicate: (node: VNode) => boolean): VNode[] =>
+      !node ? [] : (predicate(node) ? [node] : []).concat(...(node.$children$ ?? []).map(child => findVNodes(child, predicate)));
+    const classes = (node: VNode) => (typeof node.$attrs$?.class === 'string' ? node.$attrs$.class.split(/\s+/) : []);
+
+    /** The container (`.object`) of an object, and the element with `className` inside it. */
+    const renderParts = (object: KritzelBaseObject<any>, className: string) => {
+      core.store.getObjectsInViewport = jest.fn().mockReturnValue([object]);
+      const [container] = findVNodes(engine.render() as VNode, node => classes(node).includes('object') && node.$attrs$?.id === object.id);
+      const [card] = findVNodes(container, node => classes(node).includes(className));
+      return { container, card };
+    };
+
+    beforeEach(() => {
+      Object.assign(core.objectTitlebarManager, {
+        getMetrics: jest.fn().mockReturnValue({}),
+        getCullingPadding: jest.fn().mockReturnValue(0),
+        resolveTitlebars: jest.fn().mockReturnValue([]),
+        getRotationHandleDistance: jest.fn().mockReturnValue(0),
+      });
+      core.cursorManager.applyCursor = jest.fn();
+      Object.assign(core.anchorManager, {
+        getSnapIndicatorRenderData: jest.fn().mockReturnValue(null),
+        getSnapPreviewRenderData: jest.fn().mockReturnValue(null),
+        getAnchorLinesRenderData: jest.fn().mockReturnValue(null),
+      });
+      Object.assign((engine as any).core, {
+        displaySelectionGroupUI: jest.fn().mockReturnValue(false),
+        displaySelectionLineUI: jest.fn().mockReturnValue(false),
+        user: { id: 'user-1' },
+        localizationManager: { translate: jest.fn((key: string) => key) },
+      });
+    });
+
+    it('uses the theme radius unless the object sets its own, as a variable its content can read', () => {
+      const themed = new KritzelIframeObject({ width: 200, height: 120 });
+      themed.id = 'iframe-1';
+      const themedParts = renderParts(themed, 'kritzel-iframe-object');
+      expect(classes(themedParts.container)).toContain('object--iframe');
+      expect(themedParts.container.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
+
+      const own = new KritzelIframeObject({ width: 200, height: 120, borderRadius: 20 });
+      own.id = 'iframe-2';
+      expect(renderParts(own, 'kritzel-iframe-object').container.$attrs$?.style).toEqual(
+        expect.objectContaining({ '--kritzel-content-border-radius': '20px' }),
+      );
+    });
+
+    it('clips the content of a dynamic object to its box unless clipContent is off', () => {
+      const clipped = new KritzelDynamicObject({ width: 200, height: 120, borderRadius: '1rem' });
+      clipped.id = 'dynamic-1';
+      const parts = renderParts(clipped, 'kritzel-dynamic-object');
+      expect(classes(parts.container)).toContain('object--dynamic-object');
+      expect(parts.container.$attrs$?.style).toEqual(expect.objectContaining({ '--kritzel-content-border-radius': '1rem' }));
+      // No inline overflow: the stylesheet clips.
+      expect(parts.card.$attrs$?.style?.overflow).toBeUndefined();
+
+      const overflowing = new KritzelDynamicObject({ width: 200, height: 120, clipContent: false });
+      overflowing.id = 'dynamic-2';
+      expect(renderParts(overflowing, 'kritzel-dynamic-object').card.$attrs$?.style?.overflow).toBe('visible');
+    });
+
+    it('gives other objects no card radius', () => {
+      const plain = new KritzelBaseObject();
+      plain.id = 'plain-1';
+      core.store.getObjectsInViewport = jest.fn().mockReturnValue([plain]);
+      const [container] = findVNodes(engine.render() as VNode, node => node.$attrs$?.id === plain.id);
+      expect(classes(container)).toEqual(['object']);
+      expect(container.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
     });
   });
 });

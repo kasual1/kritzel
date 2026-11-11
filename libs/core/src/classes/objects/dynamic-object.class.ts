@@ -22,6 +22,9 @@ export interface KritzelDynamicObjectConfig {
   scale?: number;
   height?: number;
   width?: number;
+  borderRadius?: number | string;
+  boxShadow?: string;
+  clipContent?: boolean;
 }
 
 /**
@@ -49,6 +52,21 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
   rendererData?: unknown;
 
   /**
+   * Corner radius: pixels, or any CSS `border-radius`, overriding the theme's. `undefined` uses the theme's.
+   * Content can match it with `var(--kritzel-content-border-radius)`.
+   */
+  borderRadius?: number | string;
+
+  /** CSS `box-shadow` of this object, overriding the theme's. `undefined` uses the theme's, `'none'` removes it. */
+  boxShadow?: string;
+
+  /**
+   * Whether content is clipped to the object's rounded box. Turn it off for content that overflows on purpose
+   * (popovers, dropdowns, its own shadow), and round its corners with `var(--kritzel-content-border-radius)`.
+   */
+  clipContent: boolean = true;
+
+  /**
    * Creates a new KritzelDynamicObject instance.
    * @param config - Optional configuration object for the dynamic object.
    * @param config.element - The HTML element to wrap.
@@ -62,6 +80,9 @@ export class KritzelDynamicObject extends KritzelBaseObject<HTMLElement> impleme
     super();
     this.name = config?.name;
     this.isLoading = config?.isLoading ?? false;
+    this.borderRadius = config?.borderRadius;
+    this.boxShadow = config?.boxShadow;
+    this.clipContent = config?.clipContent ?? true;
 
     if (config) {
       this.translateX = config.translateX || 0;

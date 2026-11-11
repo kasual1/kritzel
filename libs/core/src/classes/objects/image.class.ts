@@ -27,6 +27,7 @@ export interface KritzelImageConfig {
   maxWidth?: number;
   maxHeight?: number;
   maxLoadAttempts?: number;
+  dropShadow?: string;
 }
 
 /**
@@ -70,6 +71,12 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
   maxWidth: number = 300;
   maxHeight: number = 300;
+
+  /**
+   * CSS `filter` of this image, made of `drop-shadow()` functions so the shadow follows transparent images (SVGs,
+   * icons) instead of their box. `undefined` uses the theme's (`image.dropShadow`), `'none'` removes it.
+   */
+  dropShadow?: string;
 
   maxCompressionSize: number = 1200;
 
@@ -153,6 +160,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     this.maxWidth = config?.maxWidth ?? 300;
     this.maxHeight = config?.maxHeight ?? 300;
     this.maxLoadAttempts = config?.maxLoadAttempts ?? 3;
+    this.dropShadow = config?.dropShadow;
   }
 
   /**

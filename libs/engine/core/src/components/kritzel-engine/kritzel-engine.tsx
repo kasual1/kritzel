@@ -3318,6 +3318,29 @@ export class KritzelEngine implements KritzelEngineHost {
     this.core.rerender();
   }
 
+
+  /** Classes of an object's container: card objects get a modifier that resolves their theme radius. */
+  private getObjectContainerClass(object: KritzelBaseObject<any>): string {
+    if (object instanceof KritzelIframeObject) {
+      return 'object object--iframe';
+    }
+    if (object instanceof KritzelDynamicObject) {
+      return 'object object--dynamic-object';
+    }
+    return 'object';
+  }
+
+  /** The radius a card object sets itself, as the inline style that overrides the theme's; empty to use the theme's. */
+  private getOwnBorderRadiusStyle(object: KritzelBaseObject<any>): Record<string, string> {
+    if (!(object instanceof KritzelIframeObject) && !(object instanceof KritzelDynamicObject)) {
+      return {};
+    }
+    const radius = object.borderRadius;
+    if (radius === undefined || radius === '') {
+      return {};
+    }
+    return { '--kritzel-content-border-radius': typeof radius === 'number' ? `${radius}px` : radius };
+  }
   private getObjectEffectiveOpacity(object: KritzelBaseObject<any>): { multiplied: number; overridden: string } {
     const safeObjectOpacity = Number.isFinite(object.opacity) ? object.opacity : 1;
     const multiplied = (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity;
@@ -3533,8 +3556,12 @@ export class KritzelEngine implements KritzelEngineHost {
               <div
                 key={object.id}
                 id={object.id}
-                class="object"
+                class={this.getObjectContainerClass(object)}
                 style={{
+                  // The radius of a card object (iframe, dynamic object), for its wrapper, its content and its
+                  // loading placeholder; without its own, the theme's applies (`.object--iframe`, ...).
+                  // Left out when unset, so the variable is removed rather than set to an empty value.
+                  ...this.getOwnBorderRadiusStyle(object),
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   position: 'absolute',
@@ -3670,6 +3697,8 @@ export class KritzelEngine implements KritzelEngineHost {
                       padding: object.padding + 'px',
                       overflow: 'visible',
                       userSelect: 'none',
+                      // Overrides the theme's drop shadow (`.kritzel-image-object`).
+                      filter: object.dropShadow,
                       imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
                     }}
                     draggable={false}
@@ -3720,6 +3749,7 @@ export class KritzelEngine implements KritzelEngineHost {
                 {object instanceof KritzelDynamicObject && (
                   <div
                     ref={el => el && object.mount(el)}
+                    class="kritzel-dynamic-object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3735,7 +3765,10 @@ export class KritzelEngine implements KritzelEngineHost {
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
-                      overflow: 'visible',
+                      // Overrides the theme's shadow (`.kritzel-dynamic-object`).
+                      boxShadow: object.boxShadow,
+                      // Content is clipped to the rounded box unless the object lets it overflow.
+                      overflow: object.clipContent === false ? 'visible' : undefined,
                       display: 'block',
                     }}
                   ></div>
@@ -3759,7 +3792,7 @@ export class KritzelEngine implements KritzelEngineHost {
                       borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
-                      borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
+                      // Overrides the theme's shadow (`.kritzel-iframe-object`).
                       boxShadow: object.boxShadow,
                       overflow: 'hidden',
                       display: 'block',
@@ -3775,7 +3808,6 @@ export class KritzelEngine implements KritzelEngineHost {
                         width: '100%',
                         height: '100%',
                         border: '0',
-                        borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
                         pointerEvents: object.isInteractive ? 'auto' : 'none',
                       }}
                     ></iframe>
@@ -3783,7 +3815,6 @@ export class KritzelEngine implements KritzelEngineHost {
                       style={{
                         position: 'absolute',
                         inset: '0',
-                        borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
                         pointerEvents: object.isInteractive ? 'none' : 'auto',
                       }}
                     ></div>

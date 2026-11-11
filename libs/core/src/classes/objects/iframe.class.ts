@@ -127,7 +127,9 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   sandbox: string[] = ['allow-scripts'];
   /** The content security policy of the iframe's document, if any. */
   contentSecurityPolicy?: string;
+  /** Corner radius: pixels, or any CSS `border-radius`, overriding the theme's. `undefined` uses the theme's. */
   borderRadius?: number | string;
+  /** CSS `box-shadow` of this object, overriding the theme's. `undefined` uses the theme's, `'none'` removes it. */
   boxShadow?: string;
 
   get html(): string { return this.content.html; }

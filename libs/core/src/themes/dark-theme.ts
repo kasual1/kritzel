@@ -120,10 +120,18 @@ export const darkTheme: KritzelTheme = {
     titleColor: '#ffffff',
   },
 
+  object: {
+    borderRadius: '12px',
+    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.32), 0 12px 32px -12px rgba(0, 0, 0, 0.64)',
+  },
+
+  image: {
+    dropShadow: 'drop-shadow(0 1px 1px rgba(0, 0, 0, 0.32)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.44))',
+  },
+
   loadingPlaceholder: {
     animationDuration: '1.6s',
     backgroundColor: '#2a2a2a',
-    borderRadius: '12px',
     glareColor: 'rgba(255, 255, 255, 0.06)',
   },
 

@@ -21,7 +21,7 @@ type MountedCalculatorRenderer = {
 function createCalculatorObject(): KritzelDynamicObject {
   const placeholder = document.createElement("div");
   placeholder.textContent = "Loading Calculator...";
-  const object = new KritzelDynamicObject({ element: placeholder, rendererKey: CALCULATOR_RENDERER_KEY, rendererData: createCalculatorInitialState(), translateX: -130, translateY: -190, width: 260, height: 320 });
+  const object = new KritzelDynamicObject({ element: placeholder, rendererKey: CALCULATOR_RENDERER_KEY, rendererData: createCalculatorInitialState(), translateX: -130, translateY: -190, width: 260, height: 320, borderRadius: 12 });
   object.isRotatable = false;
   return object;
 }
