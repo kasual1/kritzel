@@ -288,6 +288,8 @@ export interface KritzelTheme {
   };
 
   image?: {
+    /** Corner radius of images. Unset by default, so images keep square corners. */
+    borderRadius?: string;
     dropShadow?: string;
   };
 

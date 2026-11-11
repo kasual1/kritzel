@@ -3319,7 +3319,7 @@ export class KritzelEngine implements KritzelEngineHost {
   }
 
 
-  /** Classes of an object's container: card objects get a modifier that resolves their theme radius. */
+  /** Classes of an object's container: card objects and images get a modifier that resolves their theme radius. */
   private getObjectContainerClass(object: KritzelBaseObject<any>): string {
     if (object instanceof KritzelIframeObject) {
       return 'object object--iframe';
@@ -3327,12 +3327,18 @@ export class KritzelEngine implements KritzelEngineHost {
     if (object instanceof KritzelDynamicObject) {
       return 'object object--dynamic-object';
     }
+    if (object instanceof KritzelImage) {
+      return 'object object--image';
+    }
     return 'object';
   }
 
-  /** The radius a card object sets itself, as the inline style that overrides the theme's; empty to use the theme's. */
+  /**
+   * The radius a card object or image sets itself, as the inline style that overrides the theme's; empty to use the
+   * theme's.
+   */
   private getOwnBorderRadiusStyle(object: KritzelBaseObject<any>): Record<string, string> {
-    if (!(object instanceof KritzelIframeObject) && !(object instanceof KritzelDynamicObject)) {
+    if (!(object instanceof KritzelIframeObject) && !(object instanceof KritzelDynamicObject) && !(object instanceof KritzelImage)) {
       return {};
     }
     const radius = object.borderRadius;
@@ -3711,6 +3717,7 @@ export class KritzelEngine implements KritzelEngineHost {
                 {object instanceof KritzelImage && object.loadState !== 'ready' && (
                   <div
                     ref={() => object.ensureLoaded()}
+                    class="kritzel-image-placeholder"
                     style={{
                       position: 'absolute',
                       left: '0',

@@ -54,9 +54,9 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
 }
 
 /*
- * Corner radius of the objects that are cards, from the theme (`object`, `iframe`, `dynamicObject`), as a variable
- * on the object's container: its wrapper, its loading placeholder and its content all read it. An object's own
- * `borderRadius` sets the variable inline and wins. Content can match it with `var(--kritzel-content-border-radius)`.
+ * Corner radius of the objects that are cards and of images, from the theme (`object`, `iframe`, `dynamicObject`,
+ * `image`), as a variable on the object's container: its wrapper, its loading placeholder and its content all read
+ * it. An object's own `borderRadius` sets the variable inline and wins. Content can match it with `var(--kritzel-content-border-radius)`.
  */
 .object--iframe {
   --kritzel-content-border-radius: var(--kritzel-iframe-border-radius, var(--kritzel-object-border-radius, 12px));
@@ -66,8 +66,15 @@ p, h1, h2, h3, h4, h5, h6, blockquote, pre {
   --kritzel-content-border-radius: var(--kritzel-dynamic-object-border-radius, var(--kritzel-object-border-radius, 12px));
 }
 
+/* Images are not cards: they keep square corners unless the theme (`image.borderRadius`) or the image rounds them. */
+.object--image {
+  --kritzel-content-border-radius: var(--kritzel-image-border-radius, 0);
+}
+
 .kritzel-iframe-object,
-.kritzel-dynamic-object {
+.kritzel-dynamic-object,
+.kritzel-image-object,
+.kritzel-image-placeholder {
   border-radius: var(--kritzel-content-border-radius);
 }
 

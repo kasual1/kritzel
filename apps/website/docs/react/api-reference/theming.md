@@ -175,10 +175,11 @@ Overrides the [Object](#object) corner radius and shadow for iframe objects, as 
 
 ## Image
 
-The shadow of images, as the CSS variable `--kritzel-image-drop-shadow`. It is a CSS `filter` made of `drop-shadow()` functions rather than a `box-shadow`, so it follows the visible shape of transparent images such as SVGs and icons. Set it to `none` to remove it. An image's own `dropShadow` overrides it.
+The corner radius and shadow of images, as the CSS variables `--kritzel-image-border-radius` and `--kritzel-image-drop-shadow`. Images are not cards, so they do not use the [Object](#object) defaults: the radius is unset by default, which keeps square corners. The shadow is a CSS `filter` made of `drop-shadow()` functions rather than a `box-shadow`, so it follows the visible shape of transparent images such as SVGs and icons, rounded corners included. Set it to `none` to remove it. An image's own `borderRadius` and `dropShadow` override both.
 
 | Property | Light default | Dark default |
 |----------|---------------|--------------|
+| borderRadius | (unset: `0`) | (unset: `0`) |
 | dropShadow | drop-shadow(0 1px 1px rgba(20, 18, 31, 0.06)) drop-shadow(0 8px 12px rgba(20, 18, 31, 0.14)) | drop-shadow(0 1px 1px rgba(0, 0, 0, 0.32)) drop-shadow(0 8px 12px rgba(0, 0, 0, 0.44)) |
 
 ## Line Endings

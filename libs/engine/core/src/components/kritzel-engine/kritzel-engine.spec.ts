@@ -3313,6 +3313,20 @@ describe('KritzelEngine', () => {
       expect(renderParts(overflowing, 'kritzel-dynamic-object').card.$attrs$?.style?.overflow).toBe('visible');
     });
 
+    it('lets an image set its own radius, falling back to the theme image radius', () => {
+      const themed = new KritzelImage({ width: 200, height: 120 });
+      themed.id = 'image-1';
+      const themedContainer = renderParts(themed, 'kritzel-image-placeholder').container;
+      expect(classes(themedContainer)).toContain('object--image');
+      expect(themedContainer.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
+
+      const own = new KritzelImage({ width: 200, height: 120, borderRadius: 16 });
+      own.id = 'image-2';
+      expect(renderParts(own, 'kritzel-image-object').container.$attrs$?.style).toEqual(
+        expect.objectContaining({ '--kritzel-content-border-radius': '16px' }),
+      );
+    });
+
     it('gives other objects no card radius', () => {
       const plain = new KritzelBaseObject();
       plain.id = 'plain-1';
