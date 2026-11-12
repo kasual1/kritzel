@@ -115,7 +115,7 @@ hide(): void
 
 ### moveTo
 
-Animates the cursor to a point in world coordinates, to an anchor on an object, or to an element inside an object's content, such as a button in an iframe object (`{ objectId, selector, anchor?, offset? }`), where it sticks by default. Resolves when the cursor arrives; `completed` is `false` when another move, the removal of the agent, or the deletion of the target interrupted it. A running action of the agent stops with `'agent-moved'`. Rejects when the agent is not added, for an invalid target, for an object that does not exist, and when an element target's object isn't mounted or has no visible element that matches the selector. See [Pointing at Elements](../advanced/agents.md#pointing-at-elements).
+Animates the cursor to a point in world coordinates, to an anchor on an object, or to an element inside an object's content, such as a button in an iframe object (`{ objectId, selector, anchor?, offset? }`), where it sticks by default. Resolves when the cursor arrives; `completed` is `false` when another move, the removal of the agent, or the deletion of the target interrupted it. A running action of the agent stops with `'agent-moved'`. Rejects when the agent is not added, for an invalid target, for an object that does not exist, and when an element target's object isn't mounted or has no visible element that matches the selector. See [Driving Agents from Code](../advanced/agents.md#driving-agents-from-code).
 
 ```ts
 moveTo(target: KritzelAgenticTarget, options?: KritzelAgenticMoveOptions): Promise<KritzelAgenticMoveResult>
@@ -338,7 +338,7 @@ The object is not changed until the insert: the object and the children of a gro
 addObject(object: KritzelBaseObject, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
-To show the object before its content is ready, perform the action with a `fill`, a promise of a [`KritzelAgenticFill`](#kritzelagenticfill): `perform({ type: 'addObject', object, fill })`. The object is placed as a [loading placeholder](./objects.md#loading-state), and the action stays open until `fill` resolves. Then `content` is prepared like an added object, so an image is fetched and stored, `apply` copies it onto the placeholder, and loading ends. Placing and filling are one step of the agent's history. See [Performing Actions](../advanced/agents.md#performing-actions) for an example.
+To show the object before its content is ready, perform the action with a `fill`, a promise of a [`KritzelAgenticFill`](#kritzelagenticfill): `perform({ type: 'addObject', object, fill })`. The object is placed as a [loading placeholder](./objects.md#loading-state), and the action stays open until `fill` resolves. Then `content` is prepared like an added object, so an image is fetched and stored, `apply` copies it onto the placeholder, and loading ends. Placing and filling are one step of the agent's history.
 
 - While the action waits, the placeholder is the user's: the user can move, resize, or delete it, and it is filled in where the user left it. These changes belong to the action's step, so stopping the action or undoing it removes the placeholder with them. Changes a collaborator makes meanwhile are not part of it.
 - A rejected `fill` and a stopped action roll the whole action back and resolve with `'aborted'`. A deleted placeholder resolves with `'object-removed'`.
@@ -395,7 +395,7 @@ task<T>(label: string, fn: () => Promise<T> | T): Promise<T>
 
 ## LLM Tools
 
-Provider-neutral tool definitions and a canvas snapshot for LLMs. See [Connecting an LLM](../advanced/agents.md#connecting-an-llm) for a complete example with Claude, and [Chat Sessions](../advanced/chat-sessions.md) to connect the chat box without writing the tool loop.
+Provider-neutral tool definitions and a canvas snapshot for LLMs. To connect the chat box to an LLM without writing the tool loop, use a [chat session](../advanced/agents.md#connecting-the-chat-box).
 
 ### tools
 
@@ -457,7 +457,7 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 - `observe_canvas` resolves with a [`KritzelCanvasSnapshot`](#kritzelcanvassnapshot) as JSON. It uses the defaults of `observe()`; `maxTextLength` of `tools()` does not change them.
 - It never rejects for mistakes of the model, only for unexpected errors.
 
-`create_iframe` and `create_image` also have [`begin()`](#kritzelagenttool), which a runner that streams tool calls, such as a [chat session](../advanced/chat-sessions.md#placeholders-while-the-model-writes), calls while the model writes a call. They place a loading placeholder as soon as the position and size are written, `create_image` only with a `width` and `height`, and fill it in when the call finishes. Their schemas list the position and size before the content, because models write the fields in the order of the schema. Runners that don't stream tool calls only call `run()`.
+`create_iframe` and `create_image` also have [`begin()`](#kritzelagenttool), which a runner that streams tool calls, such as a [chat session](../advanced/agents.md#streaming), calls while the model writes a call. They place a loading placeholder as soon as the position and size are written, `create_image` only with a `width` and `height`, and fill it in when the call finishes. Their schemas list the position and size before the content, because models write the fields in the order of the schema. Runners that don't stream tool calls only call `run()`.
 
 ### observe
 
@@ -987,7 +987,7 @@ interface KritzelAgenticActionResult {
 
 ### KritzelAgenticActionFailureReason
 
-Why an action did not complete. See [Results and Conflicts](../advanced/agents.md#results-and-conflicts) for a description of each reason. Apart from `'user-selected'` and `'user-interaction'`, the changes of a stopped action are rolled back.
+Why an action did not complete. Apart from `'user-selected'` and `'user-interaction'`, the changes of a stopped action are rolled back.
 
 ```ts
 type KritzelAgenticActionFailureReason =
@@ -1008,6 +1008,24 @@ type KritzelAgenticActionFailureReason =
   | 'engine-disconnected'
   | 'element-interaction-failed';
 ```
+
+| Reason | Description |
+|--------|-------------|
+| `'aborted'` | The `signal` was aborted or `cancel()` was called. |
+| `'agent-moved'` | `moveTo()` was called while the action was running. |
+| `'agent-removed'` | The agent was removed while the action was queued or running. |
+| `'object-removed'` | A target was deleted while the action was running. |
+| `'user-selected'` | The user has a target selected. If the user selects a target while the agent works on it, the agent stops and keeps what it has done so far as one step of its history. |
+| `'user-interaction'` | The user is dragging, resizing, rotating, drawing on, editing, or erasing a target. The agent keeps what it has done so far, as for `'user-selected'`. |
+| `'collaborator-editing'` | A collaborator has a target selected or is editing it. |
+| `'claimed-by-agent'` | Another agent's running action or selection covers a target, also an agent of a collaborator. |
+| `'workspace-changed'` | The workspace was switched, reloaded, or deleted. |
+| `'not-allowed'` | The object configuration forbids the change, for example resizing or rotating. |
+| `'invalid-target'` | An ID is unknown, belongs to an object inside a group, or has the wrong type. |
+| `'conflict'` | A target was changed elsewhere during the action, or the history step of the agent is outdated. |
+| `'nothing-to-undo'`, `'nothing-to-redo'` | The agent has no step to undo or redo. |
+| `'engine-disconnected'` | No workspace is ready, for example while the editor is loading or after it was removed from the page. |
+| `'element-interaction-failed'` | An element inside an object refused an interaction; `elementReason` and `message` say why, for example because it is disabled or covered. |
 
 ### KritzelAgentChangeSource
 
@@ -1053,11 +1071,11 @@ interface KritzelAgentToolCall {
 }
 ```
 
-`begin()` is optional. A runner that streams tool calls, such as a [chat session](../advanced/chat-sessions.md#placeholders-while-the-model-writes), calls it when the model starts a call and gets a `KritzelAgentToolCall`. It passes the input written so far to `update()` as the input streams, then either calls `finish()` with the complete input instead of `run()`, or `cancel()` when the call won't run, for example because it was dropped or the prompt was stopped. A begun call is finished or cancelled exactly once. Runners that don't stream tool calls only call `run()`. `create_iframe` and `create_image` use `begin()` to show a loading placeholder while the model writes, and [`parsePartialJson()`](#parsepartialjson) reads the input written so far.
+`begin()` is optional. A runner that streams tool calls, such as a [chat session](../advanced/agents.md#streaming), calls it when the model starts a call and gets a `KritzelAgentToolCall`. It passes the input written so far to `update()` as the input streams, then either calls `finish()` with the complete input instead of `run()`, or `cancel()` when the call won't run, for example because it was dropped or the prompt was stopped. A begun call is finished or cancelled exactly once. Runners that don't stream tool calls only call `run()`. `create_iframe` and `create_image` use `begin()` to show a loading placeholder while the model writes, and [`parsePartialJson()`](#parsepartialjson) reads the input written so far.
 
 ### KritzelAgentToolSchema
 
-The JSON Schema of a tool's input. It uses only keywords that the major LLM providers accept: no `anyOf`, `const`, `$ref`, or minimum and maximum values. It is a type alias, not an interface, so that it fits SDK types that index schemas by string. The schemas are made for standard tool use, not for strict modes, so send the tools without strict mode: leave `strict` off with Anthropic and in OpenAI's Chat Completions API, and set `strict: false` in OpenAI's Responses API and Agents SDK. See [Other Providers](../advanced/agents.md#other-providers).
+The JSON Schema of a tool's input. It uses only keywords that the major LLM providers accept: no `anyOf`, `const`, `$ref`, or minimum and maximum values. It is a type alias, not an interface, so that it fits SDK types that index schemas by string. The schemas are made for standard tool use, not for strict modes, so send the tools without strict mode: leave `strict` off with Anthropic and in OpenAI's Chat Completions API, and set `strict: false` in OpenAI's Responses API and Agents SDK.
 
 ```ts
 type KritzelAgentToolSchema = {

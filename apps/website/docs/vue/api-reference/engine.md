@@ -674,7 +674,7 @@ Agents are participants on the canvas that are driven by code, for example an AI
 
 | Property | Type | Description |
 |----------|------|-------------|
-| chatSession | KritzelChatSession | A [chat session](./chat-session.md) whose tools act on this canvas. Its agent, if any, is added here. A session that is replaced finishes its running prompt first. See [Chat Sessions](../advanced/chat-sessions.md). |
+| chatSession | KritzelChatSession | A [chat session](./chat-session.md) whose tools act on this canvas. Its agent, if any, is added here. A session that is replaced finishes its running prompt first. See [Agents](../advanced/agents.md). |
 
 ### Events
 

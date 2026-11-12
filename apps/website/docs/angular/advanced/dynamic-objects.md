@@ -161,7 +161,7 @@ const named = await editor?.queryObjectElements(this.iframeObject.id, '[data-kri
 
 `limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. The promise rejects for an invalid selector, and when the page does not answer in time: within 3 seconds, or within 15 seconds while it is still loading.
 
-To point the cursor of an agent at an element with `agent.moveTo({ objectId, selector })`, see [Agents: Pointing at Elements](./agents.md#pointing-at-elements).
+To point the cursor of an agent at an element with `agent.moveTo({ objectId, selector })`, see [Agents: Driving Agents from Code](./agents.md#driving-agents-from-code).
 
 ### Element Descriptions
 
