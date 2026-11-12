@@ -110,13 +110,11 @@ When the user asks for something interactive, build it as a widget with create_i
 ```
  You can pass those rules when creating the `KritzelChatSession` by setting `system: SYSTEM_PROMPT` in the constructors config. While those rules are obviously very general and fitted to the use case, this is a great first step to make the results more consistent and tune generated UI components more to your liking.
 
-### Agentic Cursors
+### Agentic Work
 
 In all the examples above, the LLM model has worked as the current user when interacting with the canvas. As this suits smaller workflows well, more demanding tasks or an entire workflow may require to actually see what the model is doing. For this, Kritzel uses the concept of Agents. It allows you to add agents to the board that come with their own cursors and also with their own history. Tasks performed via the LLM are handed off to an agent and you can see them perform the assigned work on the canvas.
 
-In order to unlock the so called "agent mode" you only have to configure a `KritzelAgent` and add it to the `KritzelChatSession` in the constructor. The example below adds an agent called "Assistant" with a cursor and an avatar in the color #663399.
-
-All it takes is a `KritzelAgent` for the session from the previous section:
+In order to unlock the so called "agent mode" you only have to configure a `KritzelAgent` and add it to the `KritzelChatSession` in the constructor. The example below adds an agent called "Assistant" with a cursor and an avatar in the color *#663399*.
 
 ```typescript
  const [session] = useState(
@@ -130,4 +128,9 @@ All it takes is a `KritzelAgent` for the session from the previous section:
   );
 ```
 
+We can now enter a command in the chatbox and watch the cursor perform the task. As depicted in the example below, we could prompt: "Please start recording for 2.5 seconds, then stop and give the recorded track a star". Since the LLM now controls the agents cursor, it joins together several tool calls and performs the instructed task.
+Underneath it uses tools like *read_iframe* to understand the content of the recorder widget and locate the elements to click on. The full choreography can be seen below.
+
 <BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Cursors.mp4" label="Agentic cursors working on the Kritzel canvas" />
+
+
