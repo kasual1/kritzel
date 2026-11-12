@@ -51,6 +51,8 @@ export {
     KritzelChatSession,
     isKritzelChatSession,
     createScriptedTransport,
+    createHttpTransport,
+    KritzelChatHttpError,
     KRITZEL_CHAT_PROTOCOL_VERSION,
 } from '@kritzel/engine';
 
@@ -110,6 +112,7 @@ export type {
     KritzelScriptedAnswer,
     KritzelScriptedToolCall,
     KritzelScriptedTransportOptions,
+    KritzelHttpTransportOptions,
     KritzelAgentToolResult,
     KritzelCanvasObject,
     KritzelCanvasElement,

@@ -109,6 +109,8 @@ export interface KritzelChatResponse {
  *   started running; calls still being written wait for their part; calls it adds run once the answer has ended.
  *   Give tool calls IDs when you send them both as parts and in a message.
  * - `finish`: ends the answer.
+ * - `error`: ends the prompt with an error, like a failed request, e.g. when the model fails after your server has
+ *   started to answer.
  *
  * Close every call you start with its part. When its input is not valid JSON (or was cut off), send the raw
  * text as a string `input`: the tool answers with an error the model can act on. A started call without a part
@@ -130,7 +132,8 @@ export type KritzelChatStreamEvent =
     }
   | { type: 'part'; part: KritzelChatPart }
   | { type: 'message'; message: KritzelChatMessage }
-  | { type: 'finish'; stopReason?: KritzelChatStopReason; providerData?: KritzelChatProviderData };
+  | { type: 'finish'; stopReason?: KritzelChatStopReason; providerData?: KritzelChatProviderData }
+  | { type: 'error'; message: string };
 
 /** Options passed to a transport call. */
 export interface KritzelChatTransportOptions {

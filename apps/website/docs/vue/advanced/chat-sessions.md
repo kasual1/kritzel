@@ -18,7 +18,7 @@ The work is split between the browser and your server:
 - **The browser** runs the `KritzelChatSession`. It owns the conversation and the loop, and it runs the tools, because they act on the canvas.
 - **Your server** holds the API key. For each step of the loop, it receives the conversation in Kritzel's chat protocol, translates it into the request format of your provider, calls the model, and translates the answer back.
 
-The session talks to your server through a `transport`, a function that you write, usually a `fetch()` call. Because the protocol is the same for every provider, switching from Claude to another model only changes your server.
+The session talks to your server through a `transport`. Kritzel ships `createHttpTransport()`, which posts each step to an endpoint of your server. Because the protocol is the same for every provider, switching from Claude to another model only changes your server.
 
 The model works in one of two modes:
 
@@ -35,25 +35,25 @@ The demo answers from a script instead of a model, so it works without a server.
 
 ## Creating a Session
 
-A session needs a transport. The following transport posts each request to your server and returns its answer:
+A session needs a transport. `createHttpTransport()` posts each request as JSON to the endpoint of your server and reads its answer, either one JSON response or a [stream](#streaming):
 
 ```ts
 // chat-transport.ts
-import type { KritzelChatTransport } from '@kritzel/vue-editor';
+import { createHttpTransport } from '@kritzel/vue-editor';
 
-export const chatTransport: KritzelChatTransport = async (request, { signal }) => {
-  const response = await fetch('/api/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(request),
-    signal,
-  });
-  if (!response.ok) {
-    throw new Error(`The chat request failed with status ${response.status}.`);
-  }
-  return response.json();
-};
+export const chatTransport = createHttpTransport('/api/chat');
 ```
+
+To authenticate the user, pass `headers`. A function is called for each request, so it can return a fresh token. `credentials: 'include'` sends cookies to another origin:
+
+```ts
+export const chatTransport = createHttpTransport({
+  url: 'https://api.example.com/chat',
+  headers: async () => ({ Authorization: `Bearer ${await getToken()}` }),
+});
+```
+
+To reach your server in another way, for example over a WebSocket, write the transport yourself. It is a function that takes the request and `{ signal }` and returns the answer. See [KritzelChatTransport](../api-reference/chat-session.md#kritzelchattransport).
 
 Create the session once, as a plain constant in `<script setup>`, and pass it to the editor with the `chatSession` prop. A `KritzelChatSession` opts out of Vue's reactivity, so it never needs `ref()`. Show the chat box with `isChatBoxVisible`:
 
@@ -215,9 +215,19 @@ function toBlock(part: KritzelChatPart): Anthropic.ContentBlockParam {
         ? { type: 'image', source: { type: 'base64', media_type: part.mediaType as 'image/png', data: part.data } }
         : { type: 'image', source: { type: 'url', url: part.url! } };
     case 'tool-call':
-      return { type: 'tool_use', id: part.id, name: part.name, input: typeof part.input === 'string' ? JSON.parse(part.input) : part.input };
+      return { type: 'tool_use', id: part.id, name: part.name, input: toInput(part.input) };
     case 'tool-result':
       return { type: 'tool_result', tool_use_id: part.toolCallId, content: part.output, is_error: part.isError };
+  }
+}
+
+/** Anthropic needs an object as the input of a tool call. A call whose input was cut off holds the raw text: send an empty object. */
+function toInput(input: unknown): unknown {
+  if (typeof input !== 'string') return input;
+  try {
+    return JSON.parse(input);
+  } catch {
+    return {};
   }
 }
 ```
@@ -225,6 +235,8 @@ function toBlock(part: KritzelChatPart): Anthropic.ContentBlockParam {
 For other providers, only these two translations change. With OpenAI's Chat Completions API, for example, a `tool-call` part becomes an entry of `tool_calls` with the input as a JSON string in `arguments`, and each `tool-result` part becomes its own message with `role: 'tool'`. Send the tools without strict mode, as described in [Other Providers](./agents.md#other-providers).
 
 When your provider returns data that it needs back on the next request, such as signatures of thinking blocks, put it in `providerData` of the part or message. The session stores it and sends it back unchanged.
+
+To report an error, answer with an error status and a JSON body with an `error` message, for example `{ "error": "Sign in first." }` with status `401`. The prompt ends with `status: 'error'`, and `error` is a [`KritzelChatHttpError`](../api-reference/chat-session.md#kritzelchathttperror) with the `status` and the message, so your app can react, for example by asking the user to sign in again.
 
 :::warning
 Your server is an open door to your model account. Treat every request as untrusted input:
@@ -238,12 +250,15 @@ Your server is an open door to your model account. Treat every request as untrus
 
 ### Streaming
 
-A transport can return the answer as a stream of events instead of one response, for example when your server forwards server-sent events. The session accepts an `AsyncIterable` of `KritzelChatStreamEvent`, or a promise of one.
+Instead of one JSON response, your server can stream the answer as events, for example while the model writes. The session accepts an `AsyncIterable` of `KritzelChatStreamEvent` from a transport, or a promise of one. `createHttpTransport()` reads two formats, chosen by the `Content-Type` of the answer:
+
+- `application/x-ndjson`: one `KritzelChatStreamEvent` as JSON per line.
+- `text/event-stream`: server-sent events, each with one `KritzelChatStreamEvent` as JSON in its `data`.
 
 The session runs each tool call of a stream as soon as its `part` arrives, while the model still writes the rest of the answer. An answer with several calls then changes the canvas call by call instead of all at once at the end. Before the part, `tool-call-start` and `tool-call-delta` can report the call while the model writes its input, so that the app can show it (see [Showing Tool Calls as They Stream](#showing-tool-calls-as-they-stream)). They are optional, and a call never runs from them alone:
 
 ```ts
-async function* streamChat(request: KritzelChatRequest, signal: AbortSignal): AsyncIterable<KritzelChatStreamEvent> {
+async function* exampleAnswer(): AsyncIterable<KritzelChatStreamEvent> {
   yield { type: 'text-delta', text: 'Adding ' };
   yield { type: 'text-delta', text: 'a note.' };
   yield { type: 'tool-call-start', id: 'call-1', name: 'create_shape' };
@@ -270,6 +285,105 @@ To stream tool calls, translate the stream events of your provider as follows:
 - **Anthropic.** Set `eager_input_streaming: true` on each tool, so that its input streams while the model writes it. On `content_block_start` with a `tool_use` block, send `tool-call-start` with the block's `id` and `name`, and remember the ID under the event's `index`. Send each `input_json_delta` as a `tool-call-delta` with its `partial_json`. On `content_block_stop`, send the `part`, with the joined text parsed by `JSON.parse()` as its `input`. When the text does not parse, for example because it was cut off, send the raw text as a string `input`: the canvas tools answer it with `'invalid-input'`, which the model can act on. Anthropic needs an object as the input of a `tool_use` block, so `toBlock()` must send such a call back with an empty object, where `JSON.parse()` would throw.
 - **OpenAI.** In the Chat Completions API, `delta.tool_calls` holds the calls by `index`. Send `tool-call-start` with the `id` and `function.name` of the first chunk of a call, and each `function.arguments` as a `tool-call-delta`. When the `finish_reason` arrives, send the part of each call, with its joined `arguments` as the `input`.
 - **Gemini.** Gemini sends whole function calls. For each, send `tool-call-start` and then the `part`, with an ID that you make up.
+
+For Anthropic, the following handler does this. It streams the text and each tool call while Claude writes them, so that the session can run a call as soon as Claude has written it:
+
+```ts
+import Anthropic from '@anthropic-ai/sdk';
+import type { KritzelChatRequest, KritzelChatStreamEvent } from '@kritzel/vue-editor';
+
+export async function* streamChat(request: KritzelChatRequest, signal?: AbortSignal): AsyncIterable<KritzelChatStreamEvent> {
+  const stream = client.messages.stream(
+    {
+      model: 'claude-opus-5-5',
+      max_tokens: 64000,
+      system: SYSTEM,
+      tools: request.tools.map(tool => ({
+        name: tool.name,
+        description: tool.description,
+        input_schema: tool.inputSchema as Anthropic.Tool.InputSchema,
+        eager_input_streaming: true,
+      })),
+      messages: toAnthropic(request.messages),
+    },
+    { signal },
+  );
+  // The tool calls being written, by the index of their content block.
+  const calls = new Map<number, { id: string; name: string; json: string }>();
+  for await (const event of stream) {
+    if (event.type === 'content_block_start' && event.content_block.type === 'tool_use') {
+      const { id, name } = event.content_block;
+      calls.set(event.index, { id, name, json: '' });
+      yield { type: 'tool-call-start', id, name };
+    } else if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+      yield { type: 'text-delta', text: event.delta.text };
+    } else if (event.type === 'content_block_delta' && event.delta.type === 'input_json_delta') {
+      const call = calls.get(event.index);
+      if (call) {
+        call.json += event.delta.partial_json;
+        yield { type: 'tool-call-delta', id: call.id, inputDelta: event.delta.partial_json };
+      }
+    } else if (event.type === 'content_block_stop') {
+      const call = calls.get(event.index);
+      if (call) {
+        calls.delete(event.index);
+        yield { type: 'part', part: { type: 'tool-call', id: call.id, name: call.name, input: parseInput(call.json) } };
+      }
+    }
+  }
+  const message = await stream.finalMessage();
+  yield { type: 'finish', stopReason: message.stop_reason === 'tool_use' ? 'tool-calls' : 'end' };
+}
+
+/** The input of a tool call: an object, or the raw text when it is not valid JSON, for example because it was cut off. */
+function parseInput(json: string): unknown {
+  if (!json.trim()) return {};
+  try {
+    return JSON.parse(json);
+  } catch {
+    return json;
+  }
+}
+```
+
+`client`, `SYSTEM`, and `toAnthropic()` are the ones of the handler in [Your Server](#your-server). To send the events, write one JSON line per event. Once the first line is sent, the status of the answer can no longer change, so when the model fails later, send an `error` event. It ends the prompt with `status: 'error'`, like a failed request. The following function turns the events into a `Response` of the Fetch API, which servers such as Next.js route handlers, Hono, Bun, and Deno return directly:
+
+```ts
+export function ndjsonResponse(events: AsyncIterable<KritzelChatStreamEvent>): Response {
+  const encoder = new TextEncoder();
+  const encode = (event: KritzelChatStreamEvent) => encoder.encode(JSON.stringify(event) + '\n');
+  const iterator = events[Symbol.asyncIterator]();
+  const body = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      try {
+        const { value, done } = await iterator.next();
+        if (done) {
+          controller.close();
+        } else {
+          controller.enqueue(encode(value));
+        }
+      } catch (error) {
+        console.error(error);
+        controller.enqueue(encode({ type: 'error', message: 'The model failed to answer.' }));
+        controller.close();
+      }
+    },
+    // The client went away, for example because the user stopped the prompt: stop the model too.
+    async cancel() {
+      await iterator.return?.();
+    },
+  });
+  return new Response(body, { headers: { 'Content-Type': 'application/x-ndjson' } });
+}
+
+// For example, in a Next.js route handler:
+export async function POST(req: Request) {
+  const request: KritzelChatRequest = await req.json();
+  return ndjsonResponse(streamChat(request, req.signal));
+}
+```
+
+Streaming also keeps long answers alive, for example generated HTML, where a proxy or a serverless platform would close a request that stays silent.
 
 ## Chips and Images
 

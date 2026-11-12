@@ -66,6 +66,7 @@ export { formatAgentToolResult, AGENT_TOOL_REASON_HINTS, MODEL_IFRAME_CONTENT_SE
 
 export * from './classes/chat/chat-session.class';
 export * from './classes/chat/scripted-transport';
+export * from './classes/chat/http-transport';
 
 export * from './classes/registries/dynamic-object-renderer.registry';
 export * from './classes/registries/font-registry.class';

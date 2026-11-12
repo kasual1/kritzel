@@ -126,6 +126,8 @@ export class ChatAnswer {
           const parts = [...event.message.parts].filter(isPart).map(part => (isToolCallPart(part) ? normalizePart(part) : part));
           this.parts = this.replace(parts);
           this.providerData = event.message.providerData;
+        } else if (event.type === 'error') {
+          throw new Error(typeof event.message === 'string' && event.message ? event.message : 'The chat stream failed.');
         } else if (event.type === 'finish') {
           if (event.providerData) {
             this.providerData = { ...this.providerData, ...event.providerData };
