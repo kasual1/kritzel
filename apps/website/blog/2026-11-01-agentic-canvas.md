@@ -38,7 +38,7 @@ Often the API provided by such canvases is declaratively configurable and can ea
 
 While it is feasible to start building an agentic canvas from scratch on your own, using a library that is specifically designed for this and takes out the tedious part of building a solid DOM based rendering engine, gives your development a jumpstart.
 
-In the following sections we are going to use the Kritzel library to quickly setup an agentic canvas and run through its two most common use cases. This is intended to only give a rough overview and both parts of the setup are covered in more detail in dedicated blog posts.
+In the following sections we are going to use the Kritzel library to quickly setup an agentic canvas and run through its two most common use cases. This is intended to only give you a rough overview and both parts of the setup are covered in more detail in dedicated blog posts.
 
 This guide assumes you are using React as the framework of your choice. But since Kritzel is framework agnostic, the same concepts apply to Angular and Vue as well.
 
@@ -60,80 +60,37 @@ export function Editor() {
 }
 ```
 
-This provides us with a default editor, but simply renders a tool panel at the bottom of the editor. To replace the tools with a chatbox, we simply set `isChatBoxVisible` on the editor to true.
+This provides us with a default editor, but it renders a tool panel instead of a chat interface at the bottom of the editor. To replace the tools with a chatbox, we simply set `isChatBoxVisible` on the editor to true.
 
-While the editor now already very much looks like an agentic canvas, typing any commands in the chatbox does nothing. For this to work we need to hookup a new `KritzelChatSession` as depicted below.
+While the editor now already very much looks like an agentic canvas, typing any commands in the chatbox does nothing. For this to work we need to hookup a new `KritzelChatSession` and configure a new http transport as depicted below. This guide assumes that you have a server running that can handle llm requests via an endpoint called "/api/chat".
 
 ```typescript
-const [session] = useState(
-  () =>
-    new KritzelChatSession({
-      transport: chatTransport,
-      system: SYSTEM_PROMPT,
-      canvasTools: { iframes: true },
-    }),
-);
-```
-
-### Generative UI
-
-Since Kritzel renders its objects as DOM, a model can write HTML, CSS and JavaScript, and a `KritzelIframeObject` runs it in a sandboxed iframe right on the canvas. We don't have to build any of that plumbing ourselves: a `KritzelChatSession` connects the editor's chat box to a model, gives the model tools to look at and change the canvas, and runs them in the browser. Our server only holds the API key and forwards each step of the conversation to the model.
-
-```bash
-npm install @kritzel/react-editor
-```
-
-The session talks to the server through a transport. `createHttpTransport()` posts each step to `/api/chat` and reads the answer while the server streams it, one event per line. The editor itself only needs the session:
-
-```tsx title="GenerativeUi.tsx"
-import { useState } from "react";
-import {
-  KRITZEL_DEFAULT_OBJECT_TITLEBAR,
-  createHttpTransport,
-  KritzelChatSession,
-  KritzelEditor,
-  KritzelIframeObject,
-  type KritzelObjectConfig,
-} from "@kritzel/react-editor";
-
-const SYSTEM_PROMPT =
-  "You work on a whiteboard. Look at the canvas before you change it. Build anything interactive, " +
-  "such as a calculator, a timer or a chart, as a widget with create_iframe.";
-
-// Widgets get a titlebar with their name, to grab and move them by.
-const objectConfig: KritzelObjectConfig = {
-  hasTitlebar: (object) => object instanceof KritzelIframeObject,
-};
-
 export function GenerativeUi() {
   const [session] = useState(
     () =>
       new KritzelChatSession({
         transport: createHttpTransport("/api/chat"),
-        system: SYSTEM_PROMPT,
-        canvasTools: { iframes: true },
       }),
   );
 
   return (
     <KritzelEditor
       chatSession={session}
-      isChatBoxVisible
-      objectConfig={objectConfig}
-      objectTitlebar={KRITZEL_DEFAULT_OBJECT_TITLEBAR}
+      isChatBoxVisible={true}
       style={{ display: "block", width: "100%", height: "100vh" }}
     />
   );
 }
 ```
 
-That is the whole client. The chat box sends its prompts to the session, shows its progress, and its stop button stops it. For each prompt, the session runs the tool loop: the model looks at the canvas with `observe_canvas`, places widgets with `create_iframe` (which `canvasTools: { iframes: true }` turns on), and can read and change them later with `read_iframe` and `update_iframe`. It works as the user, so its changes land in the user's history and one `Ctrl+Z` takes back a whole prompt.
+Now the chatbox is hooked up to the server and can interact with all tools on the canvas. To make sure everything works as expected, type the command "Please draw a rectangle" into the chatbox and send it off by hitting enter. The chatbox should switch into it's loading state automatically and after a brief moment a rectangle should appear at the center of the screen.
 
-Because the answer streams, a widget appears as a loading placeholder as soon as the model has written its position and size, and fills in once the model has written its code. Generated scripts run inside the iframe's sandbox without network access, so you can ask for a small game or a calculator and play with it right away. The model can use widgets too: ask it to “work out 12 × 7 on the calculator”, and it finds the buttons with `inspect_elements` and presses them with `interact_with_element`.
 
-On the server, `/api/chat` receives each step in Kritzel's chat protocol, calls the model of your choice, and streams its answer back as `KritzelChatStreamEvent`s, one JSON object per line. The [Chat Sessions guide](/docs/react/advanced/chat-sessions#your-server) has a ready-made handler for Claude and explains how to [stream tool calls](/docs/react/advanced/chat-sessions#streaming-tool-calls-from-your-server) for Claude, OpenAI and Gemini. The API key never leaves the server.
+### Generative UI
 
-The full [Generative UI example](/docs/react/examples/generative-ui) in the docs goes further, with a fullscreen preview and follow-up prompts that change a selected UI.
+While the setup above gives you a pretty cool way to interact with Kritzel already, it gets even more powerful if you enable the llm to generate arbitrary UI components on the canvas. In order to do so just set `canvasTools: { iframes: true }` when configuring the `KritzelChatSession`.
+
+As you now type: "Please generate a modern looking album cover of my new jazz album called: "Full Control", you would get a similar output to the one depicted below.
 
 <BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Generative_UI.mp4" label="An agent generating UI on the Kritzel canvas" />
 

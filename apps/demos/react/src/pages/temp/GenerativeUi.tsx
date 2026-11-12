@@ -14,7 +14,7 @@ export function GenerativeUi() {
   return (
     <KritzelEditor
       chatSession={session}
-      isChatBoxVisible
+      isChatBoxVisible={true}
       style={{ display: "block", width: "100%", height: "100vh" }}
     />
   );
