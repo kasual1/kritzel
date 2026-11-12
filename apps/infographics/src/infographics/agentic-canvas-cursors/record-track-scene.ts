@@ -1,4 +1,4 @@
-import { KritzelIframeObject, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
+import { KritzelIframeObject, type HTMLKritzelEditorElement, type KritzelPoint } from '@kritzel/react-editor';
 import {
   BUTTON_PRESS_OFFSET,
   BUTTON_REST_OFFSET,
@@ -6,6 +6,7 @@ import {
   RECORDER,
   RECORD_BUTTON_CENTER,
   SHADOW,
+  STAR_OFFSET,
   STUDIO_AGENT,
   TAKE_HEIGHT,
   TAKES_GAP,
@@ -53,6 +54,14 @@ const RECORDING_TIME = 2500;
 const AFTER_STOP = 700;
 /** How long Studio stays on the star after the click before it leaves. */
 const AFTER_STAR = 250;
+
+const distance = (a: KritzelPoint, b: KritzelPoint) => Math.hypot(b.x - a.x, b.y - a.y);
+
+/** Where Studio's cursor tip presses the track's star, see `starTarget`. */
+const STAR_POINT: KritzelPoint = {
+  x: TRACK_BOX.x + TRACK_BOX.width + STAR_OFFSET.x + BUTTON_PRESS_OFFSET.x,
+  y: TRACK_BOX.y + TRACK_BOX.height / 2 + STAR_OFFSET.y + BUTTON_PRESS_OFFSET.y,
+};
 
 /**
  * The recorder widget, part of the workspace's initial objects: it is on the canvas from the start, without the appear
@@ -136,14 +145,19 @@ export async function playRecordTrackScene(
   ]);
   await wait(AFTER_STOP, signal);
 
-  // On its way out, Studio clicks the new track's star. The star turns on through the track's state, as the track's star
-  // button would, so the page animates it in place.
+  // On its way out, Studio clicks the new track's star. It flies to the star at the speed it later leaves the view with,
+  // then clicks on the spot. The star turns on through the track's state, as the track's star button would, so the page
+  // animates it in place.
+  const exitPoint = { x: right + 80, y: bottom + 80 };
+  const exitSpeed = distance(STAR_POINT, exitPoint) / EXIT_DURATION;
+  const restPoint = studio.state.position ?? STAR_POINT;
+  await studio.moveTo(starTarget(track.id), { duration: distance(restPoint, STAR_POINT) / exitSpeed, easing: 'ease-in-out' });
   await act(studio.click(starTarget(track.id), { signal }));
   track.setState({ ...track.state, favorite: true });
   setWorking(false);
   await wait(AFTER_STAR, signal);
 
   // Studio leaves through the bottom right of the view. The widget and the track stay.
-  await studio.moveTo({ x: right + 80, y: bottom + 80 }, { duration: EXIT_DURATION, easing: 'ease-in' });
+  await studio.moveTo(exitPoint, { duration: EXIT_DURATION, easing: 'ease-in' });
   await editor.removeAgent(studio);
 }
