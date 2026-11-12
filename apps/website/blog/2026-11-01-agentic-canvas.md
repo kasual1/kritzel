@@ -11,7 +11,7 @@ import BlogVideo from '@site/src/components/BlogVideo';
 
 In this article we cover what an agentic canvas is and give you a short overview how you can build one using the Kritzel library.
 
-## From chat window to canvas.
+## From chat window to canvas
 
 Over the last couple of years the interaction with LLMs has undergone a paradigm shift from single chats to multi agent nonlinear workflows. While the chat window has proved to be the right tool for linear conversations AI companies more recently include spatial whiteboards specifically designed for visually related tasks such as brainstorming or prototyping.
 
@@ -23,18 +23,18 @@ Those canvases are the natural fit for parallel agentic work, as they allow mult
 
 Very similar to how a regular infinite canvas provides humans with the tools to view and interact with the canvas, an agentic canvas provides that same capabilities, but to agents instead. Hence, on an agentic canvas the agent can perform all the same task a human would but in order for a human to better follow the agents work usually agents different states are visually highlighted.
 
-## Who’s already building them.
+## Who’s already building them
 
 As mentioned earlier, quite a lot of companies have already integrated agentic canvas experiences into their products. Some of the most prominent players certainly are Miro, Figma and Framer, but also Anthropic's Design tool relies on an infinite canvas with agentic capabilities.
 Those companies either have extended their closed source, internally developed canvas solutions with agentic capabilities on their own or rely on external propiertary providers such as tldraw to bring in agentic behaviour.
 
-## What an agentic canvas is made of.
+## What an agentic canvas is made of
 
 An agentic canvas usually consists of a DOM based canvas at its core that renders objects as plain html elements. That DOM based nature gives it one of it's most powerful features, namely to add not only paths and shapes but rich HTML content such as forms, videos or even entire web apps.
 Those canvases usually come with agentic utility components such as cursors, a chatbox and configurable object titlebars, that makes it easy to hook up an LLM and give it full control over the canvas space.
 Often the API provided by such canvases is declaratively configurable and can easily be used to adjust the canvas state by simply manipulating JSON objects. This allows not only humans but also agents to easily interact with the canvas in a programmatic way.
 
-## Building one with Kritzel.
+## Building one with Kritzel
 
 While it is feasible to start building an agentic canvas from scratch on your own, using a library that is specifically designed for this and takes out the tedious part of building a solid DOM based rendering engine, gives your development a jumpstart.
 
@@ -88,15 +88,31 @@ Now the chatbox is hooked up to the server and can interact with all tools on th
 
 ### Generative UI
 
-While the setup above gives you a pretty cool way to interact with Kritzel already, it gets even more powerful if you enable the llm to generate arbitrary UI components on the canvas. In order to do so just set `canvasTools: { iframes: true }` when configuring the `KritzelChatSession`.
+While the setup above gives you a pretty cool way to interact with Kritzel already, it gets even more powerful if you enable the LLM to generate arbitrary UI components on the canvas. In order to do so, just set `canvasTools: { iframes: true }` when configuring the `KritzelChatSession`.
 
-As you now type: "Please generate a modern looking album cover of my new jazz album called: "Full Control", you would get a similar output to the one depicted below.
+As you now type: "Please generate a modern looking recording widget that helps me to record my new Jazz album called: 'Full Control'", you should get a similar output to the one depicted below.
 
 <BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Generative_UI.mp4" label="An agent generating UI on the Kritzel canvas" />
 
+While the output certainly depends on the capabilities of the used LLM, there are some ways to fine tune the query and send general rules to improve the results. While the best way to do this is on the server where you pass the command on to the LLM, for this guide we configure the system prompt on the client as follows.
+
+```typescript
+const SYSTEM_PROMPT = `
+When the user asks for something interactive, build it as a widget with create_iframe.
+- Keep it self-contained: inline HTML, CSS and JavaScript only. Draw icons with inline SVG or CSS.
+- Fit the content to the widget's size without scrollbars, and keep the layout responsive.
+- Use a modern, clean design: system fonts, generous spacing, rounded corners, one accent color.
+- Use accessible markup with good contrast, and give each widget a short, descriptive name.
+- To change an existing widget, read its code first and update it instead of creating a new one.
+`;
+```
+ You can pass those rules when creating the `KritzelChatSession` by setting `system: SYSTEM_PROMPT` in the constructors config. While those rules are obviously very general and fitted to the use case, this is a great first step to make the results more consistent and tune generated UI components more to your liking.
+
 ### Agentic Cursors
 
-So far the model works as the user: its changes appear at once and land in the user's own history. That suits an assistant that does what it is told right away. For longer tasks, people want to watch the agent work and keep working next to it. For that, Kritzel gives the agent a body of its own: a cursor with a name, a color and a status.
+In all the examples above, the LLM model has worked as the current user when interacting with the canvas. As this suits smaller workflows well, more demanding tasks or an entire workflow may require to actually see what the model is doing. For this, Kritzel uses the concept of Agents. It allows you to add agents to the board that come with their own cursors and also with their own history. Tasks performed via the LLM are handed off to an agent and you can see them perform the assigned work on the canvas.
+
+In order to unlock the so called "agent mode" you only have to configure a `KritzelAgent` and add it to the `KritzelChatSession`. The example below adds an agent called "Assistant" 
 
 All it takes is a `KritzelAgent` for the session from the previous section:
 
@@ -118,7 +134,7 @@ export function AgenticCursors() {
           "You work on a whiteboard next to the user. Look at the canvas before you change it.",
         canvasTools: { iframes: true },
         // highlight-next-line
-        agent: new KritzelAgent({ name: "Assistant", color: "#7C3AED" }),
+        agent: new KritzelAgent({ name: "Assistant", color: "#663399" }),
       }),
   );
 
