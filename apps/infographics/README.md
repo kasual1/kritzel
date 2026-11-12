@@ -66,7 +66,7 @@ agent places the widget with `agent.addObject()`, so the widget is its change, b
 `src/infographics/agentic-canvas-cursors/` shows an agentic cursor working on a generative UI page, with the chat box. The
 recorder widget of the agentic canvas page is on the canvas from the start, as an initial object of the workspace. After
 1.5 seconds "Please record a new track" is typed into the chat box. Studio's cursor comes in from the top right and starts
-a recording with `agent.click()` on the record button, waits beside it for five seconds, and stops the recording with a
+a recording with `agent.click()` on the record button, waits beside it for 2.5 seconds, and stops the recording with a
 second click. Stopping saves one track below the widget, and the cursor leaves the view. The widget and the track stay on
 the canvas. It is scripted in `record-track-scene.ts` and reuses the widget, the track and the helpers of the agentic
 canvas page; Studio is a `KritzelAgent` there too.

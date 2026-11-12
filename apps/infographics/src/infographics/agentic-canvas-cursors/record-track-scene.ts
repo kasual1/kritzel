@@ -22,14 +22,14 @@ import {
 /**
  * Agentic cursors on a generative UI page: the recorder widget of the agentic canvas post is already on the canvas. The
  * user asks for a new track, and Studio's cursor comes in, starts a recording with `agent.click()` on the record button,
- * stops it five seconds later with a second click, which saves one track below the widget, and leaves the view. The
+ * stops it 2.5 seconds later with a second click, which saves one track below the widget, and leaves the view. The
  * widget and the track stay. Scripted, with no model calls, so every recording is the same.
  */
 
 const PROMPT = 'Please record a new track';
 
 /** The track the recording saves below the widget. */
-const TRACK = { name: 'Track 1', duration: '0:05' };
+const TRACK = { name: 'Track 1', duration: '0:03' };
 
 const WIDGET_WIDTH = 360;
 const WIDGET_HEIGHT = 116;
@@ -46,7 +46,7 @@ const TRACK_BOX: Box = {
 /** How long the recorder shows before the prompt is typed. */
 const OPENING_PAUSE = 1500;
 /** How long Studio records before it presses stop. */
-const RECORDING_TIME = 5000;
+const RECORDING_TIME = 2500;
 /** How long Studio stays beside the button after the track is saved, before it leaves. */
 const AFTER_STOP = 400;
 
