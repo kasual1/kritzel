@@ -22,7 +22,7 @@ npm run infographics
 | `#/welcome` | The animated "Welcome" path from `apps/app`.   |
 | `#/open-source` | The animated outline of the open source logo. |
 | `#/agentic-canvas` | Hero of the agentic canvas post: three agents help release the jazz song "Full Control". |
-| `#/agentic-canvas-generative-ui` | Generative UI on the agentic canvas: one prompt adds a new album cover. |
+| `#/agentic-canvas-generative-ui` | Generative UI on the agentic canvas: one prompt adds the recorder widget. |
 | `#/agentic-canvas-cursors` | Agentic cursors: Studio stars track 2 of the recorder widget after the prompt "Please favoritize track 2". |
 | `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
@@ -53,11 +53,12 @@ The album covers are PNG images in `public/covers/`, listed in `album-covers.ts`
 ## Agentic canvas generative UI
 
 `src/infographics/agentic-canvas-generative-ui/` shows generative UI on the same canvas as the agentic canvas page, with
-the chat box and no agentic cursors. "Please generate a new album cover" is typed into the chat box, and a cover is
-added in the middle of the canvas: it shows the glare placeholder first and then the image. 1.5 seconds later every
-object is removed. The Covers agent places the cover with `agent.addObject()`, so the cover is its change, but the agent
-is hidden: it is added with `visible: false`, the action runs with `instant: true`, and `isAgentAvatarsVisible` is off. It is scripted in `album-cover-scene.ts` and reuses the helpers of the agentic canvas page. The cover is its own,
-`covers/midnight-skyline.svg`, not one of the four the agentic canvas page shows.
+the chat box and no agentic cursors. "Please generate a recorder widget" is typed into the chat box, and the recorder
+widget of the agentic canvas page (the same one the agentic canvas cursors page shows) is added in the middle of the
+canvas: it shows the glare placeholder first and then the widget. 1.5 seconds later every object is removed. The Studio
+agent places the widget with `agent.addObject()`, so the widget is its change, but the agent is hidden: it is added with
+`visible: false`, the action runs with `instant: true`, and `isAgentAvatarsVisible` is off. It is scripted in
+`recorder-scene.ts` and reuses the widget and the helpers of the agentic canvas page.
 
 ## Agentic canvas cursors
 
