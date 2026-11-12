@@ -85,6 +85,8 @@ export function GenerativeUi() {
 
 Now the chatbox is hooked up to the server and can interact with all tools on the canvas. To make sure everything works as expected, type the command "Please draw a rectangle" into the chatbox and send it off by hitting enter. The chatbox should switch into it's loading state automatically and after a brief moment a rectangle should appear at the center of the screen.
 
+<BlogVideo src="/videos/2026_11_12_Agentic_Canvas_Rectangle.mp4" label="LLM creating a rectangle on the Kritzel canvas" />
+
 
 ### Generative UI
 
@@ -112,75 +114,20 @@ When the user asks for something interactive, build it as a widget with create_i
 
 In all the examples above, the LLM model has worked as the current user when interacting with the canvas. As this suits smaller workflows well, more demanding tasks or an entire workflow may require to actually see what the model is doing. For this, Kritzel uses the concept of Agents. It allows you to add agents to the board that come with their own cursors and also with their own history. Tasks performed via the LLM are handed off to an agent and you can see them perform the assigned work on the canvas.
 
-In order to unlock the so called "agent mode" you only have to configure a `KritzelAgent` and add it to the `KritzelChatSession`. The example below adds an agent called "Assistant" 
+In order to unlock the so called "agent mode" you only have to configure a `KritzelAgent` and add it to the `KritzelChatSession` in the constructor. The example below adds an agent called "Assistant" with a cursor and an avatar in the color #663399.
 
 All it takes is a `KritzelAgent` for the session from the previous section:
 
-```tsx title="AgenticCursors.tsx"
-import { useState } from "react";
-import {
-  KritzelAgent,
-  KritzelChatSession,
-  KritzelEditor,
-} from "@kritzel/react-editor";
-import { chatTransport } from "./chat-transport";
-
-export function AgenticCursors() {
-  const [session] = useState(
+```typescript
+ const [session] = useState(
     () =>
       new KritzelChatSession({
         transport: chatTransport,
-        system:
-          "You work on a whiteboard next to the user. Look at the canvas before you change it.",
+        system: SYSTEM_PROMPT,
         canvasTools: { iframes: true },
-        // highlight-next-line
         agent: new KritzelAgent({ name: "Assistant", color: "#663399" }),
       }),
   );
-
-  return (
-    <KritzelEditor
-      chatSession={session}
-      isChatBoxVisible
-      style={{ display: "block", width: "100%", height: "100vh" }}
-    />
-  );
-}
 ```
-
-The editor adds the agent when the session is bound, and from then on the model works through its cursor. It shows “Thinking…” while the model thinks, then flies to each target and does the work the way a person would: it drags out shapes, types text, draws connectors, places widgets and presses their buttons.
-
-The agent has its own selection and its own undo history, so the user's `Ctrl+Z` never takes back the agent's work, and the other way round. It also never takes an object out of someone's hands. When the user is working on an object, the agent's action is refused with a reason the model can read, and it leaves that object alone. With multiplayer sync turned on, collaborators see the agent's cursor too.
-
-The cursor is not tied to an LLM. Any agent can be driven from code, for example to walk a user through a board or to replay what a backend job did. Add it to the editor once it is ready, and every action animates on the canvas:
-
-```ts
-const guide = new KritzelAgent({ name: "Guide", color: "#0EA5E9" });
-await editor.addAgent(guide);
-
-await guide.task("Setting up the board", async () => {
-  const { objectIds } = await guide.createShape({
-    x: 0,
-    y: 0,
-    width: 240,
-    height: 120,
-    text: "Ideas",
-  });
-  await guide.createText({
-    x: 0,
-    y: 160,
-    text: "Ask the Assistant for a widget!",
-  });
-  await guide.moveTo({ objectId: objectIds![0], anchor: "bottom-right" });
-});
-```
-
-`task()` shows its label as the agent's status while it runs, and stops at the first action that can't be completed. Several agents can work on the same canvas at once, each with its own cursor, and the user can follow every one of them.
-
-The [Agents guide](/docs/react/advanced/agents) covers the rest, including agents that point at elements inside widgets, conflicts with the user's work, and presence for collaborators.
 
 <BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Cursors.mp4" label="Agentic cursors working on the Kritzel canvas" />
-
-Before you ship. Backend API keys, sandboxing, multiplayer sync, any model provider.
-Bonus: let your coding agent help. npx skills add kasual1/kritzel, two or three sentences.
-Wrap-up. Links to /agentic, the docs and GitHub, plus what’s coming next in the series.
