@@ -110,7 +110,10 @@ describe('ThemeHelper', () => {
 
     it('should return the expected number of variables', () => {
       const variables = ThemeHelper.flattenThemeToVariables(lightTheme);
-      expect(variables.size).toBe(332);
+      expect(variables.size).toBe(342);
+      expect(variables.get('--kritzel-object-box-shadow')).toBe(lightTheme.object!.boxShadow);
+      expect(variables.get('--kritzel-image-drop-shadow')).toBe(lightTheme.image!.dropShadow);
+      expect(variables.get('--kritzel-object-appear-animation-duration')).toBe(lightTheme.objectAppear!.animationDuration);
       expect(variables.get('--kritzel-chat-box-chip-muted-text-color')).toBe('#71717a');
     });
   });
@@ -169,7 +172,7 @@ describe('ThemeHelper', () => {
     it('should apply all theme variables to the element', () => {
       ThemeHelper.applyThemeToElement(mockElement, lightTheme);
 
-      expect(setPropertyMock).toHaveBeenCalledTimes(332);
+      expect(setPropertyMock).toHaveBeenCalledTimes(342);
     });
 
     it('should apply specific theme values correctly', () => {

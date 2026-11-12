@@ -87,6 +87,12 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
 
   /** Stack of agent origins; writes use the top one instead of `'local'`. */
   private _originStack: KritzelAgentOrigin[] = [];
+  /** Objects whose local writes go to an agent's running action (see `routeLocalWrites`). */
+  private readonly _routedObjects = new Map<string, KritzelAgentOrigin>();
+  /** Routed objects a running `transaction()` changed: written once it ends. */
+  private readonly _deferredRoutedWrites = new Map<string, KritzelAgentOrigin>();
+  /** Nesting depth of `transaction()`. */
+  private _transactionDepth = 0;
   /** Per-agent histories, keyed by agentic cursor ID. */
   private _agents = new Map<string, KritzelAgentHistory>();
   private _beforeDestroyCallbacks: (() => void)[] = [];
@@ -171,6 +177,45 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   /** Origin for persisted writes. */
   private get writeOrigin(): 'local' | KritzelAgentOrigin {
     return this.activeAgentOrigin ?? 'local';
+  }
+
+  /**
+   * Routes the local user's writes to an object through an agent origin until the returned function is called:
+   * they then belong to that agent's running action, e.g. the user moving a placeholder the action waits to fill,
+   * so rolling the action back or undoing it covers them too. Inside `transaction()` they are written right after
+   * it, in a transaction of their own. @internal
+   */
+  routeLocalWrites(objectId: string, origin: KritzelAgentOrigin): () => void {
+    this._routedObjects.set(objectId, origin);
+    return () => {
+      if (this._routedObjects.get(objectId) === origin) {
+        this._routedObjects.delete(objectId);
+      }
+    };
+  }
+
+  /** The origin a local write to an object is routed through, if any (see `routeLocalWrites`). */
+  private routedOrigin(objectId: string): KritzelAgentOrigin | undefined {
+    return this.activeAgentOrigin ? undefined : this._routedObjects.get(objectId);
+  }
+
+  /** Writes the routed objects a `transaction()` changed, each in a transaction with its origin. */
+  private flushRoutedWrites(): void {
+    if (this._deferredRoutedWrites.size === 0) {
+      return;
+    }
+    const writes = Array.from(this._deferredRoutedWrites);
+    this._deferredRoutedWrites.clear();
+    for (const [id, origin] of writes) {
+      const object = this._idMap.get(id);
+      this._ydoc?.transact(() => {
+        if (object && this.isPersistable(object)) {
+          this._objectsMap?.set(id, object.serialize());
+        } else if (!object) {
+          this._objectsMap?.delete(id);
+        }
+      }, origin);
+    }
   }
 
   /**
@@ -963,10 +1008,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
   transaction(callback: () => void): void {
     if (this._ydoc) {
       this._inTransaction = true;
+      this._transactionDepth++;
       try {
         this._ydoc.transact(callback, this.writeOrigin);
       } finally {
         this._inTransaction = false;
+        if (--this._transactionDepth === 0) {
+          this.flushRoutedWrites();
+        }
       }
     }
   }
@@ -1132,8 +1181,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
     if (!localOnly && this._objectsMap && this.isPersistable(object)) {
       const serialized = object.serialize();
 
+      const routed = this.routedOrigin(object.id);
+      if (routed && this._transactionDepth > 0) {
+        // Written after the transaction, under its own origin.
+        this._deferredRoutedWrites.set(object.id, routed);
+        return true;
+      }
       // Inside an agent scope even 'temporary' writes (e.g. text input) go to the agent's history.
-      const origin = this.activeAgentOrigin ?? (options.temporary ? 'temporary' : 'local');
+      const origin = this.activeAgentOrigin ?? routed ?? (options.temporary ? 'temporary' : 'local');
 
       this._ydoc?.transact(() => {
         this._objectsMap?.set(object.id, serialized);
@@ -1160,9 +1215,14 @@ export class KritzelObjectMap<T extends KritzelBaseObject<any>> {
       this._idMap.delete(object.id);
 
       if (this._objectsMap && this.isPersistable(object)) {
+        const routed = this.routedOrigin(object.id);
+        if (routed && this._transactionDepth > 0) {
+          this._deferredRoutedWrites.set(object.id, routed);
+          continue;
+        }
         this._ydoc?.transact(() => {
           this._objectsMap?.delete(object.id);
-        }, this.writeOrigin);
+        }, routed ?? this.writeOrigin);
       }
     }
   }

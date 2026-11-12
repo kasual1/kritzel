@@ -1,4 +1,5 @@
 import type { KritzelPoint } from './point.interface';
+import type { KritzelObjectElementState } from './object-element.interface';
 import type { KritzelAgenticAttachment, KritzelAgenticTarget } from './agentic-cursor.interface';
 import type {
   KritzelAgenticAction,
@@ -125,6 +126,8 @@ export type KritzelAgentToolSchema = {
 /** Context passed by tool runners; the signal aborts the action like `options.signal`. */
 export interface KritzelAgentToolContext {
   signal?: AbortSignal | null;
+  /** The ID of the tool call being run, when the runner has one. A chat session always passes it. */
+  toolCallId?: string;
 }
 
 /**
@@ -137,6 +140,26 @@ export interface KritzelAgentTool {
   description: string;
   inputSchema: KritzelAgentToolSchema;
   run: (input: unknown, context?: KritzelAgentToolContext) => Promise<string>;
+  /**
+   * Optional: begins a call while the model is still writing its input, e.g. to place a loading placeholder
+   * once its position and size are known (`create_iframe` and `create_image` do). A runner that streams tool
+   * calls, like a chat session, calls it when a call starts and then finishes the call through the returned
+   * handle instead of `run`. Runners that don't stream just call `run`.
+   */
+  begin?: (context: KritzelAgentToolContext) => KritzelAgentToolCall;
+}
+
+/** A tool call that began while the model was still writing its input (see `KritzelAgentTool.begin`). */
+export interface KritzelAgentToolCall {
+  /** More input arrived: the input's JSON text written so far. */
+  update(inputText: string): void;
+  /** The input is complete: finishes the call and resolves with its result, exactly like `run()`. */
+  finish(input: unknown): Promise<string>;
+  /**
+   * The call won't run (dropped, stopped, or the prompt ended): undoes whatever the call began. A promise makes
+   * the runner wait until that is done.
+   */
+  cancel(): void | Promise<void>;
 }
 
 /** Options of `agent.tools()`. */
@@ -149,6 +172,22 @@ export interface KritzelAgentToolsOptions {
   maxTextLength?: number;
   /** Skips all animation in the actions of these tools: the changes appear at once. Defaults to `false`. */
   instant?: boolean;
+  /**
+   * Offers `create_image`, which places images drawn as SVG markup by the model. With `{ urls: true }` it also
+   * loads images from URLs the model chooses, fetched by the user's browser. Defaults to `true` (SVG only).
+   */
+  images?: boolean | { urls?: boolean };
+  /**
+   * Offers `create_iframe`, which places widgets of model-written HTML, CSS and JavaScript, and `read_iframe` and
+   * `update_iframe`, which read and change the code of such widgets (never of other iframes). They run in an iframe
+   * sandboxed to scripts only, with a content security policy that blocks network access. Defaults to `false`.
+   */
+  iframes?: boolean;
+  /**
+   * Offers `set_viewport` and `fit_viewport`, which pan and zoom the local user's view of the canvas (never the view
+   * of collaborators). Defaults to `true`.
+   */
+  viewport?: boolean;
 }
 
 /** What a tool's `run` returns, as JSON. */
@@ -157,12 +196,41 @@ export interface KritzelAgentToolResult {
   /** Why the action did not complete; `'invalid-input'` when the input was rejected. */
   reason?: KritzelAgenticActionFailureReason | 'invalid-input';
   objectIds?: string[];
-  /** What was wrong with the input. */
+  /** What was wrong with the input, or why an element refused an interaction. */
   message?: string;
   /** What to do about the failure. */
   hint?: string;
+  /** The visible area after a viewport tool (`set_viewport`, `fit_viewport`) moved the view, as `observe_canvas` reports it. */
+  viewport?: KritzelCanvasSnapshot['viewport'];
   /** Snapshots of the objects the action created or changed. */
   objects?: KritzelCanvasObject[];
+  /** The element an interaction acted on, as it is afterwards (`interact_with_element`). */
+  element?: KritzelCanvasElement;
+  /** The elements inside an object (`inspect_elements`). */
+  elements?: KritzelCanvasElement[];
+  /** Whether more elements matched than were returned. */
+  truncated?: boolean;
+}
+
+/**
+ * An element inside an object's content (e.g. a button in an iframe widget) as tools describe it to models.
+ * Its strings come from the content, which may be untrusted.
+ */
+export interface KritzelCanvasElement {
+  /** CSS selector of the element; pass it to `interact_with_element`. */
+  selector: string;
+  tagName: string;
+  /** The element's text, truncated to 200 characters. */
+  text?: string;
+  classList?: string[];
+  /** Descriptive attributes such as `role`, `aria-*`, `type`, `placeholder` or `title`. */
+  attributes?: Record<string, string>;
+  /** State such as `disabled`, `checked` or `focused`. */
+  state?: KritzelObjectElementState;
+  /** The value of a form field; never of password fields. */
+  value?: string;
+  /** Whether part of the element can be seen. Always set by the built-in tools. */
+  visible?: boolean;
 }
 
 // ─── Canvas snapshot ──────────────────────────────────────────────────────────

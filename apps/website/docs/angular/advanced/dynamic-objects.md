@@ -50,7 +50,7 @@ Always unregister the renderer, and detach/destroy any mounted component views, 
 
 For user-authored or LLM-authored content, `KritzelIframeObject` provides a sandboxed space for HTML, CSS, and JavaScript. The iframe keeps its own content and interaction state while Kritzel manages it as a canvas object.
 
-This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with a loading view displayed during the change.
+This example uses predefined prompts rather than a live LLM. Each prompt replaces the calculator shown in the iframe, with the [loading placeholder](../api-reference/theming.md#loading-placeholder) drawn over it during the change.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/angular"
@@ -161,7 +161,7 @@ const named = await editor?.queryObjectElements(this.iframeObject.id, '[data-kri
 
 `limit` defaults to 100 and can be at most 500. The object must be mounted, which it is while it is in or near the viewport. The promise rejects for an invalid selector, and when the page does not answer in time: within 3 seconds, or within 15 seconds while it is still loading.
 
-To point the cursor of an agent at an element with `agent.moveTo({ objectId, selector })`, see [Agents: Pointing at Elements](./agents.md#pointing-at-elements).
+To point the cursor of an agent at an element with `agent.moveTo({ objectId, selector })`, see [Agents: Driving Agents from Code](./agents.md#driving-agents-from-code).
 
 ### Element Descriptions
 
@@ -175,7 +175,9 @@ Events and queries describe elements as `KritzelObjectElementInfo`:
 | id | string | The element's `id` attribute. |
 | classList | string[] | The element's classes. |
 | text | string | The element's text without script and style content, with collapsed whitespace, truncated to 200 characters. |
-| attributes | `Record<string, string>` | Descriptive attributes: `role`, `aria-*`, `data-*`, `name`, `type`, `href`, `src`, `alt`, `title`, `placeholder`, and `for`. Form field values are never included. |
+| attributes | `Record<string, string>` | Descriptive attributes: `role`, `aria-*`, `data-*`, `name`, `type`, `href`, `src`, `alt`, `title`, `placeholder`, and `for`. Form field values are never included here; see `value`. |
+| state | KritzelObjectElementState | State the attributes don't show, with only the fields that apply: `disabled`, `checked` (`true`, `false`, or `'mixed'`), `selected` (options), `open` (details), `focused`, `editable` (text fields, selects, and editable elements), and `playing` (audio and video). Omitted when there is none. |
+| value | string | The current value of a form field, truncated to 500 characters. Only reported by queries with `includeValues: true` and by interactions, and never for password fields. |
 | rect | KritzelObjectElementRect | The element's bounding box in content coordinates: CSS pixels relative to the top-left corner of the iframe, before canvas zoom, object scale, and rotation. |
 | visibleRect | KritzelObjectElementRect | The visible part of `rect`, clipped by scrolling containers and the iframe. Omitted when no part of the element can be seen. |
 
@@ -187,11 +189,23 @@ Pass `selector` back to highlight the element, query it again, or point an agent
 
 ### Local and Untrusted
 
-Highlights, picking, and the tracking of the elements that agents' cursors stick to are local to the editor. They are not saved, not synchronized to collaborators, and not part of undo and redo. They are kept when the page reloads, for example after `setContent()` or while the object shows its loading content, and when a collaborator updates the object.
+Highlights, picking, and the tracking of the elements that agents' cursors stick to are local to the editor. They are not saved, not synchronized to collaborators, and not part of undo and redo. They are kept when the page reloads, for example after `setContent()`, and when a collaborator updates the object.
 
 The page runs untrusted content, and element descriptions come from the page. Treat their text, attributes, and selectors like any other untrusted input, for example when you pass them to an LLM. The element methods reject invalid selectors, and objects that don't exist or have no content elements. The page also reports hovers, clicks, and picks itself, so untrusted content can report them without a real user action while the object is selected or picking. Don't treat a pick as the user's confirmation of something consequential.
 
 The element features need the page to run scripts. With a `sandbox` that leaves out `allow-scripts`, nothing is reported or highlighted and queries reject.
+
+## Corners and Shadow
+
+Dynamic objects and iframe objects are drawn as cards: with the theme's corner radius and shadow (see [Theming](../api-reference/theming.md#object)). Set `borderRadius` or `boxShadow` on an object to override them for that object, and `boxShadow: 'none'` to remove its shadow.
+
+Content is clipped to the rounded corners, so it never shows past them. An iframe's document is always clipped. For a dynamic object whose content has to overflow on purpose, such as a dropdown or a popover, set `clipContent: false`, and round the content's own corners with `var(--kritzel-content-border-radius)`, which holds the object's radius.
+
+```css
+.my-widget {
+  border-radius: var(--kritzel-content-border-radius);
+}
+```
 
 ## API Details
 

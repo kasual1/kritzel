@@ -376,12 +376,15 @@ export class KritzelAgenticActionManager implements KritzelAgenticRunHost {
 
     let result: KritzelAgenticActionResult | null = null;
     if (outcome.kind === 'commit') {
-      result = { completed: true, objectIds: outcome.objectIds };
+      result = { completed: true, objectIds: outcome.objectIds, ...run.elementOutcome };
       run.settleWith(result);
     } else if (outcome.kind === 'abort') {
       result = { completed: false, reason: outcome.reason };
       if (outcome.objectIds && outcome.objectIds.length > 0) {
         result.objectIds = outcome.objectIds;
+      }
+      if (run.elementOutcome) {
+        Object.assign(result, run.elementOutcome);
       }
       run.settleWith(result);
     } else {

@@ -8,7 +8,6 @@ import {
   type KritzelPoint,
 } from '@kritzel/react-editor';
 import { ALBUM_COVERS } from './album-covers';
-import { addHidden, fadeIn, prepareToAppear, withReveal } from './appear';
 
 /**
  * The hero of the "What is an agentic canvas?" post. A musician asks three agents for help with the release of their
@@ -78,16 +77,6 @@ const SOCIAL_BOX = { x: 300, y: -215, width: 300, height: 430 };
 const COVERS_SHIFT_X = (STUDIO_BOX.x + STUDIO_BOX.width + SOCIAL_BOX.x) / 2;
 
 export const SHADOW = '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)';
-
-/** A grey surface with a soft glare sweeping across it, shown while an agent writes a page. */
-export const SKELETON: KritzelIframeContent = {
-  html: '<div class="skeleton" aria-busy="true"></div>',
-  css: `html, body { height: 100%; margin: 0; }
-.skeleton { height: 100%; background: linear-gradient(100deg, #ececec 30%, #f7f7f7 50%, #ececec 70%) #ececec;
-  background-size: 300% 100%; animation: glare 1.4s ease-in-out infinite; }
-@keyframes glare { from { background-position: 100% 0; } to { background-position: 0 0; } }`,
-  script: '',
-};
 
 export function coverContent(image: string): KritzelIframeContent {
   return {
@@ -422,7 +411,7 @@ export async function act(action: Promise<KritzelAgenticActionResult>): Promise<
 export interface GeneratedPage {
   box: Box;
   content: KritzelIframeContent;
-  /** How long the page shows the glare placeholder before its content. */
+  /** How long the page shows the engine's loading placeholder before its content. */
   writingTime: number;
   /** Defaults to the agent's name. */
   title?: string;
@@ -431,11 +420,11 @@ export interface GeneratedPage {
 
 /**
  * The agent writes a page: it places the page with `agent.addObject()`, so the page is the agent's change, and the page
- * shows the glare placeholder until the agent is "done writing" it. The page fades in while it rises into place, and
- * its content fades in over the placeholder. The agent's cursor rests at the page's corner while it writes.
+ * is loading (`isLoading`), so the engine shows its loading placeholder over it, until the agent is "done writing" it.
+ * Kritzel's appear animation fades the page in while it rises into place, because it is placed with
+ * `agent.addObject()`. The agent's cursor rests at the page's corner while it writes.
  */
 export async function generatePage(
-  editor: HTMLKritzelEditorElement,
   agent: KritzelAgent,
   { box, content, writingTime, title = agent.name, borderRadius = 14 }: GeneratedPage,
   signal: AbortSignal,
@@ -443,8 +432,7 @@ export async function generatePage(
 ): Promise<KritzelIframeObject> {
   const page = new KritzelIframeObject({
     title,
-    content: withReveal(content),
-    loadingContent: SKELETON,
+    content,
     isLoading: true,
     translateX: box.x,
     translateY: box.y,
@@ -453,10 +441,9 @@ export async function generatePage(
     borderRadius,
     boxShadow: SHADOW,
   });
-  // The placeholder renders at once, so the page starts fading in almost right away, while the agent writes.
-  prepareToAppear([page]);
+  // The placeholder renders at once, so the page appears right away, while the agent writes.
   await act(agent.addObject(page, { ...actionOptions, signal }));
-  await Promise.all([wait(writingTime, signal), fadeIn(editor, [page], signal, { load: 120 })]);
+  await wait(writingTime, signal);
   page.setLoading(false);
   await wait(150, signal);
   return page;
@@ -480,11 +467,11 @@ const TAKE_RECORDING_TIME = 2600;
 const TAKE_PAUSE = 600;
 
 /** Center of the widget's record button, measured from the widget's top-left corner. */
-const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
+export const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
 
 /** Where Studio's cursor tip sits relative to the button's center: on it while pressing, beside it while waiting. */
 export const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
-const BUTTON_REST_OFFSET = { x: 30, y: 24 };
+export const BUTTON_REST_OFFSET = { x: 30, y: 24 };
 
 
 /**
@@ -521,8 +508,8 @@ async function recordTakes(
     const box = takeBox(index);
     // Only the most recent take is marked as new.
     pages.at(-1)?.setState({ isNew: false });
-    // The take fades in below the widget while Studio carries on, so the recording keeps its pace.
-    const [page] = await addHidden(editor, [
+    // The take appears below the widget (Kritzel's appear animation, as the app adds it) while Studio carries on.
+    const [page] = await editor.addObjects([
       new KritzelIframeObject({
         title: take.name,
         content: takeContent(take),
@@ -536,7 +523,6 @@ async function recordTakes(
       }),
     ]);
     pages.push(page);
-    fadeIn(editor, [page], signal).catch(() => undefined);
     if (index < TAKES.length - 1) {
       await wait(TAKE_PAUSE, signal);
     }
@@ -573,7 +559,7 @@ async function starFavorite(
 async function createCovers(editor: HTMLKritzelEditorElement, signal: AbortSignal) {
   const covers = await addAgentAt(editor, COVER_AGENT, { x: -520, y: 420 });
   for (const [index, cover] of ALBUM_COVERS.entries()) {
-    await generatePage(editor, covers, { box: coverBox(index), content: coverContent(cover.image), writingTime: 700, borderRadius: 12 }, signal);
+    await generatePage(covers, { box: coverBox(index), content: coverContent(cover.image), writingTime: 700, borderRadius: 12 }, signal);
   }
   // Done: Covers leaves through the bottom.
   await exit(editor, covers, { x: 0, y: 1000 }, 150, signal);
@@ -597,7 +583,7 @@ async function runFollowedAgent(
   const left = -viewport.translateX / viewport.scale;
   const x = side === 'left' ? left - 40 : left + viewport.width / viewport.scale + 40;
   const agent = await addAgentAt(editor, profile, { x, y: box.y + box.height / 2 });
-  await generatePage(editor, agent, { box, content, writingTime: 1100 }, signal);
+  await generatePage(agent, { box, content, writingTime: 1100 }, signal);
   return agent;
 }
 
@@ -642,7 +628,7 @@ export async function playHeroScene(
     x: -viewport.translateX / viewport.scale - 40,
     y: -viewport.translateY / viewport.scale - 40,
   });
-  const widget = await generatePage(editor, studio, { box: STUDIO_BOX, content: RECORDER, writingTime: 1100 }, signal);
+  const widget = await generatePage(studio, { box: STUDIO_BOX, content: RECORDER, writingTime: 1100 }, signal);
   // Studio starts recording right away and keeps recording takes; the cover prompt is typed while the first take
   // records, and the camera follows Covers as soon as it sets off.
   const takes = recordTakes(editor, studio, widget, signal);

@@ -44,6 +44,7 @@ const LEGACY_DOC_PATHS: Record<string, string> = {
   "advanced/concept-dynamic-objects": "advanced/dynamic-objects",
   "advanced/concept-user-management": "advanced/user-management",
   "advanced/agentic-cursors": "advanced/agents",
+  "advanced/chat-sessions": "advanced/agents",
   "advanced/customization/concept-theming": "customization/themes",
   "advanced/customization/concept-fonts": "customization/fonts",
   "advanced/customization/concept-icons": "customization/icons",

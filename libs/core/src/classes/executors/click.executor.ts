@@ -6,8 +6,9 @@ import { KritzelZOrderHelper } from '../../helpers/z-order.helper';
 import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
 import { findParentGroup, isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { isPointInCorners } from '../../helpers/agentic-geometry.helper';
-import { assertTarget } from '../../helpers/agentic-validation.helper';
-import { isObjectTarget } from '../../helpers/agentic-geometry.helper';
+import { assertElementTarget, assertTarget } from '../../helpers/agentic-validation.helper';
+import { isElementTarget, isObjectTarget } from '../../helpers/agentic-geometry.helper';
+import { performElementInteraction, prepareElementTarget } from './interact-with-element.executor';
 
 type ObjectMap = KritzelObjectMap<KritzelBaseObject<any>>;
 
@@ -37,18 +38,29 @@ export function hitTestTopMost(map: ObjectMap, point: KritzelPoint): KritzelBase
   return hit;
 }
 
-/** `click`: flies to the target and presses. Visual only. */
+/**
+ * `click`: flies to the target and presses. Visual only on the canvas; an element target (`{ objectId, selector }`)
+ * is really clicked, see `interactWithElement`.
+ */
 export const clickExecutor: KritzelAgenticActionExecutor<KritzelAgenticClickAction> = {
   mutates: false,
 
   validate(action) {
-    assertTarget(action.target, 'target');
+    const target = action.target as { selector?: unknown } | null;
+    if (target && typeof target === 'object' && target.selector !== undefined) {
+      assertElementTarget(action.target, 'target');
+    } else {
+      assertTarget(action.target, 'target');
+    }
     if (action.count !== undefined && action.count !== 1 && action.count !== 2) {
       throw new TypeError('"count" must be 1 or 2.');
     }
   },
 
   prepare(run, action) {
+    if (isElementTarget(action.target)) {
+      return prepareElementTarget(run, action.target);
+    }
     if (isObjectTarget(action.target)) {
       const object = run.map!.findById(action.target.objectId);
       if (!object || isSelectionObject(object)) {
@@ -60,6 +72,9 @@ export const clickExecutor: KritzelAgenticActionExecutor<KritzelAgenticClickActi
   },
 
   async execute(run, action) {
+    if (isElementTarget(action.target)) {
+      return performElementInteraction(run, action.target, action.count === 2 ? { type: 'click', count: 2 } : { type: 'click' });
+    }
     const attach = isObjectTarget(action.target);
     await run.fly(action.target, attach);
     const count = action.count ?? 1;

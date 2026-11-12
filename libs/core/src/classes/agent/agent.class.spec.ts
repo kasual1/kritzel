@@ -11,6 +11,8 @@ import { KritzelAgent, isKritzelAgent } from './agent.class';
 import { KritzelAgentActionError } from './agent-action-error.class';
 import { buildCanvasSnapshot } from './agent-snapshot';
 import { KritzelUserActor } from './user-actor.class';
+import { KritzelIframeObject } from '../objects/iframe.class';
+import { createModelIframe } from './canvas-tool-definitions';
 import type { KritzelCore } from '../core/core.class';
 
 // A KritzelAgent on a real Yjs object map with real object classes and the real agentic managers.
@@ -654,13 +656,283 @@ describe('KritzelAgent', () => {
       expect(agent.state.attachedTo).toMatchObject({ objectId: frame.id, selector: '#play' });
     });
 
-    it('refuses element targets for actions', async () => {
+    it('refuses element targets for actions that need canvas points, and elements of objects that cannot interact', async () => {
       const frame = addShape(0, 0);
       makeElementAware(frame, { '#play': { x: 0, y: 0, width: 20, height: 20 } });
       const agent = add(new KritzelAgent({ name: 'A' }));
 
-      await expect(agent.click({ objectId: frame.id, selector: '#play' } as any)).rejects.toThrow('agent.moveTo');
       await expect(agent.moveObject(frame.id, { objectId: frame.id, selector: '#play' } as any)).rejects.toThrow('agent.moveTo');
+      // Element-aware, but without interactWithElement.
+      await expect(settle(agent.click({ objectId: frame.id, selector: '#play' }))).resolves.toEqual({
+        completed: false,
+        reason: 'invalid-target',
+        objectIds: [frame.id],
+      });
+    });
+
+    describe('interactions', () => {
+      type Respond = (selector: string, interaction: any, options?: { trial?: boolean }) => any;
+      const info = (selector: string, rect: { x: number; y: number; width: number; height: number }, extra: Record<string, unknown> = {}) => ({
+        selector,
+        tagName: 'button',
+        classList: [],
+        attributes: {},
+        rect,
+        visibleRect: rect,
+        ...extra,
+      });
+      /** An element-aware object whose content performs interactions; by default every interaction succeeds. */
+      const makeInteractive = (shape: any, rects: Record<string, { x: number; y: number; width: number; height: number }>, respond?: Respond) => {
+        const tracked = makeElementAware(shape, rects);
+        shape.interactWithElement = jest.fn(async (selector: string, interaction: any, options?: { trial?: boolean }) =>
+          respond ? respond(selector, interaction, options) : { completed: true, element: info(selector, rects[selector], { state: { focused: true } }) },
+        );
+        return tracked;
+      };
+
+      it('clicks an element: checks it, flies there, presses while the content clicks and stays on the element', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
+        const tracked = makeInteractive(frame, rects);
+        const agent = add(new KritzelAgent({ name: 'A', position: { x: 0, y: 0 } }));
+        const pressCount = core.agenticCursorManager.get(agent.id)!.pressCount;
+
+        const result = await settle(agent.click({ objectId: frame.id, selector: '#play' }));
+
+        expect(result).toEqual({ completed: true, objectIds: [frame.id], element: expect.objectContaining({ selector: '#play', state: { focused: true } }) });
+        expect(frame.interactWithElement.mock.calls).toEqual([
+          ['#play', { type: 'click' }, { trial: true }],
+          ['#play', { type: 'click' }],
+        ]);
+        expect(core.agenticCursorManager.get(agent.id)!.pressCount).toBe(pressCount + 1);
+        expect(agent.state.attachedTo).toEqual({ objectId: frame.id, selector: '#play', anchor: 'center', offset: { x: 0, y: 0 } });
+        expect(agent.state.position).toEqual({ x: 120, y: 125 });
+        // Only the attachment still tracks the element.
+        expect(tracked.get('#play')).toBe(1);
+        agent.detach();
+        expect(tracked.size).toBe(0);
+      });
+
+      it('double-clicks with two presses', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        makeInteractive(frame, { '#play': { x: 10, y: 20, width: 20, height: 10 } });
+        const agent = add(new KritzelAgent({ name: 'A' }));
+        const pressCount = core.agenticCursorManager.get(agent.id)!.pressCount;
+
+        await expect(settle(agent.click({ objectId: frame.id, selector: '#play' }, { count: 2 }))).resolves.toMatchObject({ completed: true });
+
+        expect(frame.interactWithElement).toHaveBeenLastCalledWith('#play', { type: 'click', count: 2 });
+        expect(core.agenticCursorManager.get(agent.id)!.pressCount).toBe(pressCount + 2);
+      });
+
+      it('fails without moving when the check refuses, with the reason and message of the element', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
+        const tracked = makeInteractive(frame, rects, () => ({
+          completed: false,
+          reason: 'covered',
+          message: 'Another element is on top of it.',
+          element: info('#play', rects['#play']),
+          coveredBy: info('.modal', rects['#play'], { text: 'Cookies?' }),
+        }));
+        const agent = add(new KritzelAgent({ name: 'A', position: { x: 0, y: 0 } }));
+
+        const result = await settle(agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'click' }));
+
+        expect(result).toEqual({
+          completed: false,
+          reason: 'element-interaction-failed',
+          objectIds: [frame.id],
+          elementReason: 'covered',
+          message: 'Element "#play": Another element is on top of it. It is covered by ".modal" ("Cookies?").',
+          element: expect.objectContaining({ selector: '#play' }),
+        });
+        expect(frame.interactWithElement).toHaveBeenCalledTimes(1);
+        expect(agent.state.position).toEqual({ x: 0, y: 0 });
+        expect(tracked.size).toBe(0);
+      });
+
+      it('fails when the content refuses the interaction itself, and does not attach', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const rects = { '#volume': { x: 10, y: 20, width: 20, height: 10 } };
+        makeInteractive(frame, rects, (selector, _interaction, options) =>
+          options?.trial ? { completed: true, element: info(selector, rects['#volume']) } : { completed: false, reason: 'invalid-value', message: 'It did not accept "loud".' },
+        );
+        const agent = add(new KritzelAgent({ name: 'A' }));
+
+        await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#volume' }, { type: 'fill', value: 'loud' }))).resolves.toEqual({
+          completed: false,
+          reason: 'element-interaction-failed',
+          objectIds: [frame.id],
+          elementReason: 'invalid-value',
+          message: 'Element "#volume": It did not accept "loud".',
+        });
+        expect(frame.interactWithElement).toHaveBeenCalledTimes(2);
+        expect(agent.state.attachedTo).toBeNull();
+      });
+
+      it('jumps without a check when instant, and hovers without pressing', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        makeInteractive(frame, { '#play': { x: 10, y: 20, width: 20, height: 10 } });
+        const agent = add(new KritzelAgent({ name: 'A' }));
+        const pressCount = core.agenticCursorManager.get(agent.id)!.pressCount;
+
+        await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'hover' }, { instant: true }))).resolves.toMatchObject({
+          completed: true,
+        });
+
+        expect(frame.interactWithElement.mock.calls).toEqual([['#play', { type: 'hover' }]]);
+        expect(core.agenticCursorManager.get(agent.id)!.pressCount).toBe(pressCount);
+        expect(agent.state.attachedTo).toMatchObject({ objectId: frame.id, selector: '#play' });
+      });
+
+      it('does not attach when an instant interaction fails, and stops tracking the element', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const tracked = makeInteractive(frame, {}, () => ({ completed: false, reason: 'not-found', message: 'No element matches the selector.' }));
+        const agent = add(new KritzelAgent({ name: 'A' }));
+
+        await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#missing' }, { type: 'click' }, { instant: true }))).resolves.toMatchObject({
+          completed: false,
+          reason: 'element-interaction-failed',
+          elementReason: 'not-found',
+        });
+        expect(agent.state.attachedTo).toBeNull();
+        expect(tracked.size).toBe(0);
+      });
+
+      it('reports a performed interaction as completed even when the action is aborted right after it', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
+        let performed = 0;
+        makeInteractive(frame, rects, (selector, _interaction, options) => {
+          if (!options?.trial) performed++;
+          return { completed: true, element: info(selector, rects['#play']) };
+        });
+        const agent = add(new KritzelAgent({ name: 'A', position: { x: 0, y: 0 } }));
+        const controller = new AbortController();
+        const promise = agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'click' }, { signal: controller.signal });
+        let done = false;
+        promise.then(() => (done = true));
+        for (let i = 0; i < 600 && !done; i++) {
+          await step();
+          if (performed > 0) controller.abort();
+        }
+
+        await expect(promise).resolves.toMatchObject({ completed: true });
+        expect(performed).toBe(1);
+      });
+
+      it('fails cleanly when the object throws instead of answering', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        makeInteractive(frame, {}, () => {
+          throw new Error('Invalid element selector "button:has-text(x)".');
+        });
+        frame.trackElement.mockImplementation(() => {
+          throw new Error('At most 50 elements can be tracked per object.');
+        });
+        const agent = add(new KritzelAgent({ name: 'A' }));
+
+        await expect(settle(agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'click' }))).resolves.toMatchObject({
+          completed: false,
+          reason: 'element-interaction-failed',
+          elementReason: 'invalid-value',
+          message: 'Element "#play": Invalid element selector "button:has-text(x)".',
+        });
+        expect(frame.untrackElement).not.toHaveBeenCalled();
+      });
+
+      it('untracks through the current instance when the object was replaced during the action', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 } };
+        makeInteractive(frame, rects);
+        const replacement = Object.assign(Object.create(frame), { untrackElement: jest.fn() });
+        const findById = core.store.objects.findById.bind(core.store.objects);
+        const agent = add(new KritzelAgent({ name: 'A', speed: 100000 }));
+        const promise = agent.interactWithElement({ objectId: frame.id, selector: '#play' }, { type: 'hover' });
+        await step();
+        jest.spyOn(core.store.objects, 'findById').mockImplementation((id: unknown) => (id === frame.id ? replacement : findById(id)));
+
+        await expect(settle(promise)).resolves.toMatchObject({ completed: true });
+        expect(replacement.untrackElement).toHaveBeenCalledWith('#play');
+      });
+
+      it('rejects invalid targets and interactions', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        makeInteractive(frame, {});
+        const agent = add(new KritzelAgent({ name: 'A' }));
+
+        await expect(agent.interactWithElement({ objectId: frame.id, selector: ' ' }, { type: 'click' })).rejects.toThrow('"target.selector"');
+        await expect(agent.interactWithElement({ objectId: frame.id, selector: '#a' }, { type: 'fill' } as any)).rejects.toThrow('"value" must be a string');
+        await expect(agent.click({ objectId: frame.id, selector: 3 } as any)).rejects.toThrow('"target.selector"');
+        expect(frame.interactWithElement).not.toHaveBeenCalled();
+      });
+
+      it('is offered as interact_with_element and inspect_elements, also to user actors, which have no cursor', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        const rects = { '#play': { x: 10, y: 20, width: 20, height: 10 }, '#name': { x: 10, y: 40, width: 80, height: 10 } };
+        makeInteractive(frame, rects);
+        frame.queryElements = jest.fn(async () => [info('#play', rects['#play'], { attributes: { 'aria-label': 'Play' } }), info('#name', rects['#name'], { tagName: 'input', value: 'Mix', visibleRect: undefined })]);
+        const actor = new KritzelUserActor('me');
+        actor._attach(core);
+        const call = async (name: string, input: unknown) => JSON.parse(await settle(actor.tools().find(candidate => candidate.name === name)!.run(input)));
+
+        await expect(call('inspect_elements', { objectId: frame.id })).resolves.toEqual({
+          completed: true,
+          objectIds: [frame.id],
+          elements: [
+            { selector: '#play', tagName: 'button', attributes: { 'aria-label': 'Play' }, visible: true },
+            { selector: '#name', tagName: 'input', value: 'Mix', visible: false },
+          ],
+        });
+        expect(frame.queryElements).toHaveBeenCalledWith('*', { limit: 51, interactiveOnly: true, includeValues: true });
+        await expect(call('inspect_elements', { objectId: frame.id, selector: 'h1', limit: 1 })).resolves.toMatchObject({ elements: [{ selector: '#play' }], truncated: true });
+        expect(frame.queryElements).toHaveBeenLastCalledWith('h1', { limit: 2, interactiveOnly: false, includeValues: true });
+
+        await expect(call('interact_with_element', { target: { objectId: frame.id, selector: '#play' }, interaction: { type: 'click' } })).resolves.toEqual({
+          completed: true,
+          objectIds: [frame.id],
+          element: { selector: '#play', tagName: 'button', state: { focused: true }, visible: true },
+        });
+        expect(frame.interactWithElement.mock.calls).toEqual([['#play', { type: 'click' }]]);
+        actor._detach();
+      });
+
+      it('answers tool mistakes and refusals with reasons, messages and hints', async () => {
+        const frame: any = addShape(100, 100, 200, 100);
+        makeInteractive(frame, { '#off': { x: 0, y: 0, width: 10, height: 10 } }, () => ({ completed: false, reason: 'disabled', message: 'It is disabled.' }));
+        const plain = addShape(400, 100);
+        const agent = add(new KritzelAgent({ name: 'A', speed: 100000 }));
+        const call = async (name: string, input: unknown) => JSON.parse(await settle(agent.tools().find(candidate => candidate.name === name)!.run(input)));
+
+        await expect(call('interact_with_element', { target: { objectId: frame.id, selector: '#off' }, interaction: { type: 'fill' } })).resolves.toMatchObject({
+          completed: false,
+          reason: 'invalid-input',
+          message: expect.stringContaining('"value" must be a string'),
+        });
+        await expect(call('interact_with_element', { target: { objectId: frame.id, selector: '#off' }, interaction: { type: 'click' } })).resolves.toEqual({
+          completed: false,
+          reason: 'element-interaction-failed',
+          objectIds: [frame.id],
+          message: 'Element "#off": It is disabled.',
+          hint: expect.stringContaining('inspect_elements'),
+        });
+        await expect(call('interact_with_element', { target: { objectId: plain.id, selector: '#off' }, interaction: { type: 'click' } })).resolves.toMatchObject({
+          completed: false,
+          reason: 'invalid-target',
+        });
+        await expect(call('inspect_elements', { objectId: plain.id })).resolves.toMatchObject({ completed: false, reason: 'invalid-target', hint: expect.stringContaining('iframe') });
+        await expect(call('inspect_elements', { objectId: 'nope' })).resolves.toMatchObject({ completed: false, reason: 'invalid-target' });
+        await expect(call('inspect_elements', { objectId: frame.id, limit: 1000 })).resolves.toMatchObject({ completed: false, reason: 'invalid-input' });
+
+        frame.queryElements = jest.fn(async () => {
+          throw new Error('Object "x" is not mounted.');
+        });
+        await expect(call('inspect_elements', { objectId: frame.id })).resolves.toMatchObject({
+          completed: false,
+          reason: 'element-interaction-failed',
+          message: 'Object "x" is not mounted.',
+        });
+      });
     });
 
     it('starts at an element, or at the viewport center when its object has no elements', () => {
@@ -714,6 +986,43 @@ describe('KritzelAgent', () => {
 
       await expect(call(agent, 'undo', {})).resolves.toMatchObject({ completed: true });
       expect((await agent.observe()).totalObjects).toBe(2);
+    });
+
+    it('reads and changes the code of a model-written widget through tool calls, in one undo step', async () => {
+      const widget = createModelIframe({ name: 'Counter', html: '<button>+</button>', css: 'button { color: red; }', script: 'let n = 0;' });
+      Object.assign(widget, { _core: core, translateX: 0, translateY: 0, width: 200, height: 100, scale: 1 });
+      map.insert(widget);
+      map.stopUndoCapturing();
+      const appFrame = new KritzelIframeObject({ html: '<p>App</p>', sandbox: ['allow-scripts', 'allow-same-origin'] });
+      Object.assign(appFrame, { _core: core, translateX: 400, translateY: 0, width: 200, height: 100, scale: 1 });
+      map.insert(appFrame);
+      map.stopUndoCapturing();
+      const agent = add(new KritzelAgent({ id: 'claude', name: 'Claude', speed: 100000 }));
+      const call = async (name: string, input: unknown) =>
+        JSON.parse(await settle(agent.tools({ iframes: true }).find(candidate => candidate.name === name)!.run(input)));
+
+      await expect(call('read_iframe', { objectId: widget.id })).resolves.toEqual({
+        completed: true,
+        objectId: widget.id,
+        name: 'Counter',
+        html: '<button>+</button>',
+        css: 'button { color: red; }',
+        script: 'let n = 0;',
+      });
+      await expect(
+        call('update_iframe', { objectId: widget.id, name: 'Tally', css: 'button { color: blue; }', edits: [{ part: 'html', find: '+', replace: 'Add' }] }),
+      ).resolves.toMatchObject({ completed: true, objectIds: [widget.id] });
+      const updated = map.findById(widget.id) as KritzelIframeObject;
+      expect(updated.content).toEqual({ html: '<button>Add</button>', css: 'button { color: blue; }', script: 'let n = 0;' });
+      expect(updated).toMatchObject({ name: 'Tally', title: 'Tally' });
+
+      await expect(call('update_iframe', { objectId: appFrame.id, html: '<p>Hacked</p>' })).resolves.toMatchObject({ completed: false, reason: 'not-allowed' });
+      await expect(call('read_iframe', { objectId: appFrame.id })).resolves.toMatchObject({ completed: false, reason: 'not-allowed' });
+      expect((map.findById(appFrame.id) as KritzelIframeObject).html).toBe('<p>App</p>');
+
+      await expect(call('undo', {})).resolves.toMatchObject({ completed: true });
+      expect((map.findById(widget.id) as KritzelIframeObject).content.html).toBe('<button>+</button>');
+      expect((map.findById(widget.id) as KritzelIframeObject).name).toBe('Counter');
     });
 
     it('reports refusals as results the model can act on', async () => {

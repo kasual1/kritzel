@@ -217,6 +217,11 @@ export interface KritzelTheme {
     widthSmall?: string;
   };
 
+  dynamicObject?: {
+    borderRadius?: string;
+    boxShadow?: string;
+  };
+  
   /** Dropdown variables */
   dropdown?: {
     accentColor?: string;
@@ -275,6 +280,28 @@ export interface KritzelTheme {
     labelColor?: string;
     optionBackground?: string;
     selectedBackgroundColor?: string;
+  };
+
+  iframe?: {
+    borderRadius?: string;
+    boxShadow?: string;
+  };
+
+  image?: {
+    /** Corner radius of images. Unset by default, so images keep square corners. */
+    borderRadius?: string;
+    dropShadow?: string;
+  };
+
+  /** Loading placeholder variables, for the placeholder the engine draws over objects whose `isLoading` is set */
+  loadingPlaceholder?: {
+    animationDuration?: string;
+    backgroundColor?: string;
+    /** Defaults to the radius of the object it covers, so content keeps its corners when it replaces the placeholder. */
+    borderRadius?: string;
+    /** Defaults to `object.boxShadow`, so content keeps its shadow when it replaces the placeholder. */
+    boxShadow?: string;
+    glareColor?: string;
   };
 
   /** Login dialog variables */
@@ -427,6 +454,31 @@ export interface KritzelTheme {
     spinnerColor?: string;
     spinnerHoverBackground?: string;
     textColor?: string;
+  };
+
+  /**
+   * Variables shared by the canvas objects that are cards: iframes and dynamic objects (see `iframe`,
+   * `dynamicObject`). `borderRadius` and `boxShadow` are their defaults.
+   */
+  object?: {
+    borderRadius?: string;
+    boxShadow?: string;
+  };
+
+  /**
+   * Appear animation of objects that app code or agents insert (`addObject(s)`, `agent.addObject()`) and of images
+   * picked with the image tool: they fade in while they rise into place. Objects the user draws, pastes or
+   * duplicates, objects of collaborators and loaded documents don't appear. Set `animationDuration` to `0s` to turn
+   * it off. Respects `prefers-reduced-motion`. `animationDuration` and `stagger` must be plain times (`600ms`, `0.6s`):
+   * the engine reads them to know when the animation ends.
+   */
+  objectAppear?: {
+    animationDuration?: string;
+    animationEasing?: string;
+    /** How far below its place the object starts, in canvas units. */
+    distance?: string;
+    /** Delay between the objects inserted together, e.g. by one `addObjects()` call. */
+    stagger?: string;
   };
 
   /** Opacity slider variables */

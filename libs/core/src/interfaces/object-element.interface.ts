@@ -38,9 +38,16 @@ export interface KritzelObjectElementInfo {
   text?: string;
   /**
    * Descriptive attributes: `role`, `aria-*`, `data-*`, `name`, `type`, `href`, `src`, `alt`, `title`,
-   * `placeholder` and `for`, each truncated to 200 characters. Form field values are never included.
+   * `placeholder` and `for`, each truncated to 200 characters. Form field values are never included here, see `value`.
    */
   attributes: Record<string, string>;
+  /** State the attributes don't show, e.g. whether a checkbox is checked. Omitted when there is none. */
+  state?: KritzelObjectElementState;
+  /**
+   * The current value of a form field (input, textarea, select), truncated to 500 characters. Only reported by
+   * `queryElements()` with `includeValues` and by `interactWithElement()`; never for password fields.
+   */
+  value?: string;
   /** The element's bounding box in content coordinates when it was reported. */
   rect: KritzelObjectElementRect;
   /**
@@ -48,6 +55,110 @@ export interface KritzelObjectElementInfo {
    * nothing of the element can be seen, e.g. with `display: none`, `visibility: hidden` or scrolled out of view.
    */
   visibleRect?: KritzelObjectElementRect;
+}
+
+/** State of an element inside an object's content that its attributes don't show. Only applicable fields are set. */
+export interface KritzelObjectElementState {
+  /** The element is disabled (`disabled`, `aria-disabled="true"` or inside an `inert` subtree). */
+  disabled?: boolean;
+  /** Whether a checkbox, radio button or switch (also by ARIA role) is checked; `'mixed'` when indeterminate. */
+  checked?: boolean | 'mixed';
+  /** Whether an `<option>` is selected. */
+  selected?: boolean;
+  /** Whether a `<details>` element is open. */
+  open?: boolean;
+  /** The element has the keyboard focus inside the content. */
+  focused?: boolean;
+  /** Whether a text field, select or editable element can be filled. Set only on such elements. */
+  editable?: boolean;
+  /** Whether an `<audio>` or `<video>` element is playing. */
+  playing?: boolean;
+}
+
+/** Options for `queryElements()`. */
+export interface KritzelObjectElementQueryOptions {
+  /** Maximum number of elements, 1 to 500. Defaults to 100. */
+  limit?: number;
+  /**
+   * Only elements a user can interact with: links, buttons, form fields, elements with an interactive ARIA role,
+   * `contenteditable`, `tabindex` or `onclick`, and elements that show a pointer cursor of their own.
+   */
+  interactiveOnly?: boolean;
+  /** Includes the `value` of form fields, except password fields. Defaults to `false`. */
+  includeValues?: boolean;
+}
+
+/**
+ * Something done to an element inside an object's content, as a user would with the mouse or keyboard. Performed by
+ * dispatching DOM events in the content: its handlers run as for a real press, but the events are not trusted
+ * (`isTrusted` is `false`) and carry no user activation, so APIs that need a user gesture may refuse to work from
+ * them. CSS `:hover` and `:active` styles don't apply.
+ */
+export type KritzelObjectElementInteraction =
+  /** Moves the pointer onto the element and clicks it at the center of its visible part. */
+  | { type: 'click'; /** `2` double-clicks. Defaults to `1`. */ count?: 1 | 2 }
+  /** Moves the pointer onto the element (pointer and mouse over, enter and move events). */
+  | { type: 'hover' }
+  /**
+   * Replaces the value of a text field, textarea or contenteditable element, sets a range, number, date or color
+   * field, or selects the option of a select whose value or label matches. Fires `input` and `change`.
+   */
+  | { type: 'fill'; value: string }
+  /** Checks or unchecks a checkbox, radio button or switch by clicking it (or its label) if needed. */
+  | { type: 'check'; /** Defaults to `true`. */ checked?: boolean }
+  /**
+   * Focuses the element and presses a key, e.g. `'Enter'`, `'Escape'`, `'ArrowUp'`, `'a'` or `'Control+a'`. Enter and
+   * Space activate buttons and links, arrow keys step range and number fields; no text is typed (use `'fill'`).
+   */
+  | { type: 'press'; key: string }
+  /** Turns the mouse wheel over the element and scrolls it, or its closest scrollable ancestor, by CSS pixels. */
+  | { type: 'scroll'; deltaX?: number; deltaY?: number };
+
+/** The `type` of an element interaction. */
+export type KritzelObjectElementInteractionType = KritzelObjectElementInteraction['type'];
+
+/** Options for `interactWithElement()`. */
+export interface KritzelObjectElementInteractionOptions {
+  /**
+   * Only checks that the interaction can be performed: scrolls the element into view and checks that it is
+   * visible, enabled and not covered, without performing it. Defaults to `false`.
+   */
+  trial?: boolean;
+}
+
+/** Why an element interaction did not complete. */
+export type KritzelObjectElementInteractionFailureReason =
+  /** No element matches the selector. */
+  | 'not-found'
+  /** The element is not rendered, hidden or outside the content, also after scrolling it into view. */
+  | 'not-visible'
+  /** The element is disabled. */
+  | 'disabled'
+  /** Another element covers the point that would be clicked; see `coveredBy`. */
+  | 'covered'
+  /** `'fill'` on an element that is not a text field, select or editable element, or that is read-only. */
+  | 'not-editable'
+  /** `'check'` on an element that is not a checkbox, radio button or switch, or that did not change. */
+  | 'not-checkable'
+  /** `'scroll'` found nothing under the element that can scroll in that direction. */
+  | 'not-scrollable'
+  /** The value, option or key was not accepted. A field that refused a value is left as it was. */
+  | 'invalid-value'
+  /** The content is not reachable: the object isn't mounted, its content runs without scripts, didn't respond or reloaded. */
+  | 'unavailable';
+
+/** Result of `interactWithElement()`. Reported by the content, which may be untrusted. */
+export interface KritzelObjectElementInteractionResult {
+  /** `true` when the interaction was performed (or, with `trial`, could be performed). */
+  completed: boolean;
+  /** Set only when `completed` is `false`. */
+  reason?: KritzelObjectElementInteractionFailureReason;
+  /** What went wrong, in words. */
+  message?: string;
+  /** The element as it is after the interaction, with its `value`, once the content had a moment to react. */
+  element?: KritzelObjectElementInfo;
+  /** The element on top, for `'covered'`. */
+  coveredBy?: KritzelObjectElementInfo;
 }
 
 /** A highlight drawn over elements inside an object's content. */
@@ -137,9 +248,22 @@ export interface KritzelElementAwareObject {
   /**
    * Describes the elements that match a CSS selector, in document order.
    * Rejects if the selector is invalid, the object isn't mounted or its content doesn't respond.
-   * @param limit - Maximum number of elements, 1 to 500. Defaults to 100.
+   * @param limitOrOptions - Maximum number of elements (1 to 500, defaults to 100), or query options.
    */
-  queryElements(selector: string, limit?: number): Promise<KritzelObjectElementInfo[]>;
+  queryElements(selector: string, limitOrOptions?: number | KritzelObjectElementQueryOptions): Promise<KritzelObjectElementInfo[]>;
+
+  /**
+   * Performs an interaction on the first element that matches a CSS selector, as a user would: scrolls it into
+   * view, checks that it is visible, enabled and not covered, then dispatches the events of the interaction.
+   * Resolves with `completed: false` and a reason when it can't be performed, also when the object isn't mounted
+   * or its content doesn't respond; rejects only for an invalid selector or interaction. Not undoable: the
+   * content's own state changes, not the object. Optional, so objects written before it existed still qualify.
+   */
+  interactWithElement?(
+    selector: string,
+    interaction: KritzelObjectElementInteraction,
+    options?: KritzelObjectElementInteractionOptions,
+  ): Promise<KritzelObjectElementInteractionResult>;
 
   /** Starts reporting the visible position of the first element that matches a selector. Calls are reference-counted. */
   trackElement(selector: string): void;

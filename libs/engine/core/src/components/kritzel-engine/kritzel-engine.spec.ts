@@ -80,7 +80,10 @@ import {
   KritzelWorkspace,
   KritzelBaseObject,
   KritzelDynamicObject,
+  KritzelIframeObject,
   KritzelImage,
+  KritzelObjectAppearManager,
+  KRITZEL_OBJECT_APPEAR_MAX_BATCH,
   DEFAULT_TEXT_TOOL_AVAILABLE_FONTS,
 } from '@kritzel/core';
 
@@ -99,6 +102,7 @@ describe('KritzelEngine', () => {
       isRotatable: jest.fn().mockReturnValue(true),
       resetWarnings: jest.fn(),
     },
+    objectAppearManager: new KritzelObjectAppearManager(),
     objectTitlebarManager: {
       config: undefined,
       getOwnerFromEvent: jest.fn().mockReturnValue(null),
@@ -3096,6 +3100,22 @@ describe('KritzelEngine', () => {
       expect(core.prepareObjectForInsert.mock.calls.map((call: any[]) => call[0])).toEqual([a, b]);
       expect(insertedInTransaction).toEqual([true, true]);
     });
+
+    it('addObjects staggers the appear animation of its objects in their order', async () => {
+      const objects = [makeObject('a'), makeObject('b'), makeObject('c')];
+
+      await engine.addObjects(objects);
+
+      expect(core.insertPreparedObject.mock.calls.map((call: any[]) => call[2])).toEqual([0, 1, 2]);
+    });
+
+    it('addObjects skips the appear animation for big batches', async () => {
+      const objects = Array.from({ length: KRITZEL_OBJECT_APPEAR_MAX_BATCH + 1 }, (_, index) => makeObject(`o${index}`));
+
+      await engine.addObjects(objects);
+
+      expect(core.insertPreparedObject.mock.calls.every((call: any[]) => call[2] === null)).toBe(true);
+    });
   });
 
   describe('agents', () => {
@@ -3143,6 +3163,302 @@ describe('KritzelEngine', () => {
 
       engine.connectedCallback();
       expect(core.agentManager.setDisposed).toHaveBeenLastCalledWith(false);
+    });
+  });
+
+  describe('loading placeholder', () => {
+    type VNode = { $tag$?: unknown; $attrs$?: Record<string, any> | null; $children$?: VNode[] | null };
+
+    /** Depth-first search through a rendered Stencil vnode tree. */
+    const findVNodes = (node: VNode | null | undefined, predicate: (node: VNode) => boolean): VNode[] => {
+      if (!node) {
+        return [];
+      }
+      const own = predicate(node) ? [node] : [];
+      return own.concat(...(node.$children$ ?? []).map(child => findVNodes(child, predicate)));
+    };
+
+    const hasClass = (node: VNode, className: string) =>
+      typeof node.$attrs$?.class === 'string' && node.$attrs$.class.split(/\s+/).includes(className);
+
+    /** The object's `.object` wrapper in the rendered tree. */
+    const renderObjectWrapper = (object: KritzelBaseObject): VNode => {
+      const wrappers = findVNodes(engine.render() as VNode, node => hasClass(node, 'object') && node.$attrs$?.id === object.id);
+      expect(wrappers).toHaveLength(1);
+      return wrappers[0];
+    };
+
+    const findPlaceholders = (node: VNode) => findVNodes(node, child => hasClass(child, 'kritzel-loading-placeholder'));
+
+    let object: KritzelBaseObject;
+
+    beforeEach(() => {
+      // The parts of the core that render() reads but no other test needs.
+      Object.assign(core.objectTitlebarManager, {
+        getMetrics: jest.fn().mockReturnValue({}),
+        getCullingPadding: jest.fn().mockReturnValue(0),
+        resolveTitlebars: jest.fn().mockReturnValue([]),
+        getRotationHandleDistance: jest.fn().mockReturnValue(0),
+      });
+      core.cursorManager.applyCursor = jest.fn();
+      Object.assign(core.anchorManager, {
+        getSnapIndicatorRenderData: jest.fn().mockReturnValue(null),
+        getSnapPreviewRenderData: jest.fn().mockReturnValue(null),
+        getAnchorLinesRenderData: jest.fn().mockReturnValue(null),
+      });
+      // The engine holds a shallow copy of the mock core, so top-level members go onto the engine's instance.
+      Object.assign((engine as any).core, {
+        displaySelectionGroupUI: jest.fn().mockReturnValue(false),
+        displaySelectionLineUI: jest.fn().mockReturnValue(false),
+        user: { id: 'user-1' },
+        localizationManager: { translate: jest.fn((key: string) => key) },
+      });
+      core.store.objects.update = jest.fn();
+
+      object = new KritzelBaseObject();
+      object.id = 'object-1';
+      object.width = 200;
+      object.height = 120;
+      object.padding = 4;
+      object._core = core;
+      core.store.getObjectsInViewport = jest.fn().mockReturnValue([object]);
+    });
+
+    it('is not rendered by default', () => {
+      expect(object.isLoading).toBe(false);
+      expect(findPlaceholders(renderObjectWrapper(object))).toHaveLength(0);
+    });
+
+    it('covers the whole object inside its wrapper while the object is loading', () => {
+      object.setLoading(true);
+
+      const placeholders = findPlaceholders(renderObjectWrapper(object));
+      expect(placeholders).toHaveLength(1);
+      expect(placeholders[0].$attrs$?.['data-testid']).toBe('kritzel-loading-placeholder');
+      expect(placeholders[0].$attrs$?.style).toEqual(
+        expect.objectContaining({
+          width: `${object.totalWidth}px`,
+          height: `${object.totalHeight}px`,
+          pointerEvents: 'auto',
+        }),
+      );
+      expect(core.store.objects.update).toHaveBeenCalledWith(object);
+      expect(core.rerender).toHaveBeenCalled();
+    });
+
+    it('follows the rotation of the object', () => {
+      object.rotation = Math.PI / 4;
+      object.setLoading(true);
+
+      const [placeholder] = findPlaceholders(renderObjectWrapper(object));
+      expect(placeholder.$attrs$?.style).toEqual(
+        expect.objectContaining({
+          transform: `rotate(${object.rotationDegrees}deg)`,
+          transformOrigin: `${object.totalWidth / 2}px ${object.totalHeight / 2}px`,
+        }),
+      );
+    });
+
+    it('disappears once loading is turned off', () => {
+      object.setLoading(true);
+      expect(findPlaceholders(renderObjectWrapper(object))).toHaveLength(1);
+
+      object.setLoading(false);
+
+      expect(findPlaceholders(renderObjectWrapper(object))).toHaveLength(0);
+    });
+  });
+
+  describe('card objects', () => {
+    type VNode = { $attrs$?: Record<string, any> | null; $children$?: VNode[] | null };
+    const findVNodes = (node: VNode | null | undefined, predicate: (node: VNode) => boolean): VNode[] =>
+      !node ? [] : (predicate(node) ? [node] : []).concat(...(node.$children$ ?? []).map(child => findVNodes(child, predicate)));
+    const classes = (node: VNode) => (typeof node.$attrs$?.class === 'string' ? node.$attrs$.class.split(/\s+/) : []);
+
+    /** The container (`.object`) of an object, and the element with `className` inside it. */
+    const renderParts = (object: KritzelBaseObject<any>, className: string) => {
+      core.store.getObjectsInViewport = jest.fn().mockReturnValue([object]);
+      const [container] = findVNodes(engine.render() as VNode, node => classes(node).includes('object') && node.$attrs$?.id === object.id);
+      const [card] = findVNodes(container, node => classes(node).includes(className));
+      return { container, card };
+    };
+
+    beforeEach(() => {
+      Object.assign(core.objectTitlebarManager, {
+        getMetrics: jest.fn().mockReturnValue({}),
+        getCullingPadding: jest.fn().mockReturnValue(0),
+        resolveTitlebars: jest.fn().mockReturnValue([]),
+        getRotationHandleDistance: jest.fn().mockReturnValue(0),
+      });
+      core.cursorManager.applyCursor = jest.fn();
+      Object.assign(core.anchorManager, {
+        getSnapIndicatorRenderData: jest.fn().mockReturnValue(null),
+        getSnapPreviewRenderData: jest.fn().mockReturnValue(null),
+        getAnchorLinesRenderData: jest.fn().mockReturnValue(null),
+      });
+      Object.assign((engine as any).core, {
+        displaySelectionGroupUI: jest.fn().mockReturnValue(false),
+        displaySelectionLineUI: jest.fn().mockReturnValue(false),
+        user: { id: 'user-1' },
+        localizationManager: { translate: jest.fn((key: string) => key) },
+      });
+    });
+
+    it('uses the theme radius unless the object sets its own, as a variable its content can read', () => {
+      const themed = new KritzelIframeObject({ width: 200, height: 120 });
+      themed.id = 'iframe-1';
+      const themedParts = renderParts(themed, 'kritzel-iframe-object');
+      expect(classes(themedParts.container)).toContain('object--iframe');
+      expect(themedParts.container.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
+
+      const own = new KritzelIframeObject({ width: 200, height: 120, borderRadius: 20 });
+      own.id = 'iframe-2';
+      expect(renderParts(own, 'kritzel-iframe-object').container.$attrs$?.style).toEqual(
+        expect.objectContaining({ '--kritzel-content-border-radius': '20px' }),
+      );
+    });
+
+    it('clips the content of a dynamic object to its box unless clipContent is off', () => {
+      const clipped = new KritzelDynamicObject({ width: 200, height: 120, borderRadius: '1rem' });
+      clipped.id = 'dynamic-1';
+      const parts = renderParts(clipped, 'kritzel-dynamic-object');
+      expect(classes(parts.container)).toContain('object--dynamic-object');
+      expect(parts.container.$attrs$?.style).toEqual(expect.objectContaining({ '--kritzel-content-border-radius': '1rem' }));
+      // No inline overflow: the stylesheet clips.
+      expect(parts.card.$attrs$?.style?.overflow).toBeUndefined();
+
+      const overflowing = new KritzelDynamicObject({ width: 200, height: 120, clipContent: false });
+      overflowing.id = 'dynamic-2';
+      expect(renderParts(overflowing, 'kritzel-dynamic-object').card.$attrs$?.style?.overflow).toBe('visible');
+    });
+
+    it('lets an image set its own radius, falling back to the theme image radius', () => {
+      const themed = new KritzelImage({ width: 200, height: 120 });
+      themed.id = 'image-1';
+      const themedContainer = renderParts(themed, 'kritzel-image-placeholder').container;
+      expect(classes(themedContainer)).toContain('object--image');
+      expect(themedContainer.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
+
+      const own = new KritzelImage({ width: 200, height: 120, borderRadius: 16 });
+      own.id = 'image-2';
+      expect(renderParts(own, 'kritzel-image-object').container.$attrs$?.style).toEqual(
+        expect.objectContaining({ '--kritzel-content-border-radius': '16px' }),
+      );
+    });
+
+    describe('appear animation', () => {
+      afterEach(() => {
+        core.objectAppearManager.clear();
+        jest.restoreAllMocks();
+      });
+
+      /** Shows a titlebar for the given owners. */
+      const withTitlebars = (...ownerIds: string[]) => {
+        Object.assign(core.objectTitlebarManager, {
+          isEnabled: true,
+          resolveTitlebars: jest.fn().mockReturnValue(ownerIds.map(id => ({ owner: { id } }))),
+        });
+      };
+      const renderTitlebarLayer = () => findVNodes(engine.render() as VNode, node => node.$attrs$?.appearingOwners instanceof Map)[0];
+
+      it('plays on objects marked by an insert, with their stagger index, also on their titlebars', () => {
+        withTitlebars('image-appear');
+        const image = new KritzelImage({ width: 200, height: 120 });
+        image.id = 'image-appear';
+        core.objectAppearManager.mark([image], 2);
+
+        const { container } = renderParts(image, 'kritzel-image-placeholder');
+        expect(classes(container)).toContain('object--appearing');
+        expect(container.$attrs$?.style).toEqual(expect.objectContaining({ '--kritzel-object-appear-index': '2' }));
+
+        expect(renderTitlebarLayer()?.$attrs$?.appearingOwners.get('image-appear')).toBe(2);
+      });
+
+      it('hides the titlebar of an object waiting to appear, then lets it appear with the object', () => {
+        withTitlebars('iframe-waiting');
+        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
+        iframe.id = 'iframe-waiting';
+        core.objectAppearManager.mark([iframe]);
+        core.store.getObjectsInViewport = jest.fn().mockReturnValue([iframe]);
+
+        const waiting = renderTitlebarLayer();
+        expect(waiting?.$attrs$?.titlebars).toEqual([]);
+
+        Object.defineProperty(iframe, 'isDocumentLoaded', { get: () => true });
+        const appearing = renderTitlebarLayer();
+        expect(appearing?.$attrs$?.titlebars).toEqual([{ owner: { id: 'iframe-waiting' } }]);
+        expect(appearing?.$attrs$?.appearingOwners.get('iframe-waiting')).toBe(0);
+      });
+
+      it('shows a titlebar that comes up while its object appears at once, without the animation', () => {
+        withTitlebars();
+        const image = new KritzelImage({ width: 200, height: 120 });
+        image.id = 'image-late-titlebar';
+        core.objectAppearManager.mark([image]);
+        core.store.getObjectsInViewport = jest.fn().mockReturnValue([image]);
+        renderTitlebarLayer();
+
+        withTitlebars('image-late-titlebar');
+        const layer = renderTitlebarLayer();
+        expect(layer?.$attrs$?.titlebars).toHaveLength(1);
+        expect(layer?.$attrs$?.appearingOwners.has('image-late-titlebar')).toBe(false);
+      });
+
+      it('lets a group appear once its children can', () => {
+        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
+        const group = withPrototype(MockKritzelGroup, { isLoading: false, children: [iframe] });
+        expect((engine as any).isReadyToAppear(group)).toBe(false);
+
+        Object.defineProperty(iframe, 'isDocumentLoaded', { get: () => true });
+        expect((engine as any).isReadyToAppear(group)).toBe(true);
+      });
+
+      it('does not play on objects that were not marked', () => {
+        const image = new KritzelImage({ width: 200, height: 120 });
+        image.id = 'image-plain';
+
+        const { container } = renderParts(image, 'kritzel-image-placeholder');
+        expect(classes(container)).not.toContain('object--appearing');
+        expect(container.$attrs$?.style).not.toHaveProperty('--kritzel-object-appear-index');
+      });
+
+      it('waits for an iframe to load, unless it shows its loading placeholder', () => {
+        const iframe = new KritzelIframeObject({ width: 200, height: 120 });
+        iframe.id = 'iframe-appear';
+        core.objectAppearManager.mark([iframe]);
+        expect(classes(renderParts(iframe, 'kritzel-iframe-object').container)).not.toContain('object--appearing');
+
+        Object.defineProperty(iframe, 'isDocumentLoaded', { get: () => true });
+        expect(classes(renderParts(iframe, 'kritzel-iframe-object').container)).toContain('object--appearing');
+
+        const placeholder = new KritzelIframeObject({ width: 200, height: 120 });
+        placeholder.id = 'iframe-placeholder';
+        placeholder.isLoading = true;
+        core.objectAppearManager.mark([placeholder]);
+        expect(classes(renderParts(placeholder, 'kritzel-iframe-object').container)).toContain('object--appearing');
+      });
+
+      it('does not play when the theme sets a zero duration', () => {
+        const computed = window.getComputedStyle(engine.host);
+        jest.spyOn(window, 'getComputedStyle').mockReturnValue({
+          getPropertyValue: (name: string) => (name === '--kritzel-object-appear-animation-duration' ? ' 0s' : computed.getPropertyValue(name)),
+        } as CSSStyleDeclaration);
+        const image = new KritzelImage({ width: 200, height: 120 });
+        image.id = 'image-off';
+        core.objectAppearManager.mark([image]);
+
+        expect(classes(renderParts(image, 'kritzel-image-placeholder').container)).not.toContain('object--appearing');
+        expect(core.objectAppearManager.has('image-off')).toBe(false);
+      });
+    });
+
+    it('gives other objects no card radius', () => {
+      const plain = new KritzelBaseObject();
+      plain.id = 'plain-1';
+      core.store.getObjectsInViewport = jest.fn().mockReturnValue([plain]);
+      const [container] = findVNodes(engine.render() as VNode, node => node.$attrs$?.id === plain.id);
+      expect(classes(container)).toEqual(['object']);
+      expect(container.$attrs$?.style).not.toHaveProperty('--kritzel-content-border-radius');
     });
   });
 });

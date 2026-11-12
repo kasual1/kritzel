@@ -20,6 +20,8 @@ import { KritzelFontRegistry } from '../registries/font-registry.class';
 export interface KritzelTextConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
+  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  isLoading?: boolean;
   text?: string;
   translateX?: number;
   translateY?: number;
@@ -113,6 +115,7 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
   constructor(config?: KritzelTextConfig) {
     super();
     this.name = config?.name;
+    this.isLoading = config?.isLoading ?? false;
 
     this.rotation = KritzelMathHelper.degreesToRadians(config?.rotation ?? 0);
 
@@ -401,6 +404,11 @@ export class KritzelText extends KritzelBaseObject<HTMLDivElement> {
    * @param event - Optional pointer event containing cursor coordinates for focus placement.
    */
   edit(event?: PointerEvent): void {
+    // The loading placeholder covers the content, so editing it would mean typing blind.
+    if (this.isLoading) {
+      return;
+    }
+
     KritzelKeyboardHelper.disableInteractiveWidget();
 
     this.uneditedObject = this.clone() as KritzelText;

@@ -1,4 +1,6 @@
-import { createActorTools, createAgentTools, formatAgentToolResult } from './agent-tools';
+import { createActorTools, createAgentTools, formatAgentToolResult, MODEL_IFRAME_CONTENT_SECURITY_POLICY } from './agent-tools';
+import { KritzelImage } from '../objects/image.class';
+import { KritzelIframeObject } from '../objects/iframe.class';
 import { KritzelAgentActionError } from './agent-action-error.class';
 
 /** The parts of a KritzelAgent the tools use. */
@@ -157,6 +159,85 @@ describe('agent tools', () => {
       actor.isAdded = false;
       const removed = JSON.parse(await createActorTools(actor as any).find(candidate => candidate.name === 'move_object')!.run({ objectId: 'a', to: { x: 1, y: 2 } }));
       expect(removed).toEqual({ completed: false, reason: 'agent-removed', hint: 'The chat session ended. Stop working.' });
+    });
+  });
+
+  describe('object tools', () => {
+    const names = (options = {}) => createAgentTools(agent as any, options).map(candidate => candidate.name);
+    const placed = () => agent.perform.mock.calls[0][0].object;
+    const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>';
+
+    it('offers create_image (SVG only) by default and create_iframe only when asked', () => {
+      expect(names()).toContain('create_image');
+      expect(names()).not.toContain('create_iframe');
+      expect((tool(agent, 'create_image').inputSchema.properties as any).url).toBeUndefined();
+      expect((tool(agent, 'create_image', { images: { urls: true } }).inputSchema.properties as any).url).toBeDefined();
+      expect(names({ images: false })).not.toContain('create_image');
+      expect(names({ iframes: true })).toContain('create_iframe');
+      expect(names({ iframes: true, only: ['create_iframe'], prefix: 'k_' })).toEqual(['k_create_iframe']);
+    });
+
+    it('places SVG markup as an image with the addObject action', async () => {
+      const signal = new AbortController().signal;
+      const result = JSON.parse(await tool(agent, 'create_image').run({ name: 'Dot', svg: SVG, x: 10, y: 20, width: 40, height: 40 }, { signal }));
+
+      expect(agent.perform).toHaveBeenCalledWith({ type: 'addObject', object: expect.any(KritzelImage) }, { signal });
+      expect(placed()).toMatchObject({ name: 'Dot', translateX: 10, translateY: 20, width: 40, height: 40 });
+      expect(placed().src).toBe(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(SVG)}`);
+      expect(result).toMatchObject({ completed: true, objectIds: ['new-1'] });
+    });
+
+    it('loads images from http(s) URLs only when allowed', async () => {
+      const withUrls = tool(agent, 'create_image', { images: { urls: true } });
+      await withUrls.run({ url: 'https://example.com/cat.png', x: 0, y: 0 });
+      expect(placed().src).toBe('https://example.com/cat.png');
+
+      expect(JSON.parse(await withUrls.run({ url: 'javascript:alert(1)', x: 0, y: 0 }))).toMatchObject({ completed: false, reason: 'invalid-input' });
+      expect(JSON.parse(await tool(agent, 'create_image').run({ url: 'https://example.com/cat.png', x: 0, y: 0 }))).toMatchObject({
+        completed: false,
+        reason: 'invalid-input',
+        message: expect.stringContaining('Unknown property "url"'),
+      });
+      expect(agent.perform).toHaveBeenCalledTimes(1);
+    });
+
+    it.each([
+      [{ x: 0, y: 0 }, '"svg" is required'],
+      [{ svg: '<div>not svg</div>', x: 0, y: 0 }, 'must be SVG markup'],
+      [{ svg: SVG, x: 'left', y: 0 }, '"x" must be a number'],
+      [{ svg: SVG, x: 0, y: 0, width: 10 }, 'width and height together'],
+      [{ svg: SVG, x: 0, y: 0, width: -1, height: 10 }, '"width" must be greater than 0'],
+    ])('rejects invalid image input %j', async (input, message) => {
+      const result = JSON.parse(await tool(agent, 'create_image').run(input));
+      expect(result).toMatchObject({ completed: false, reason: 'invalid-input', message: expect.stringContaining(message) });
+      expect(agent.perform).not.toHaveBeenCalled();
+    });
+
+    it('reports an image that could not be loaded', async () => {
+      agent.perform.mockRejectedValueOnce(new Error('Failed to load image source (HTTP 404)'));
+      const result = JSON.parse(await tool(agent, 'create_image').run({ svg: SVG, x: 0, y: 0 }));
+      expect(result).toMatchObject({ completed: false, reason: 'invalid-input', message: expect.stringContaining('HTTP 404') });
+    });
+
+    it('places model code as an iframe sandboxed to scripts with a policy that blocks the network', async () => {
+      const iframeTool = tool(agent, 'create_iframe', { iframes: true });
+      const result = JSON.parse(
+        await iframeTool.run({ name: 'Counter', html: '<button>+</button>', css: 'button{}', script: 'let n = 0;', x: 5, y: 6, width: 200, height: 100 }),
+      );
+
+      expect(agent.perform).toHaveBeenCalledWith({ type: 'addObject', object: expect.any(KritzelIframeObject) }, {});
+      const iframe = placed() as KritzelIframeObject;
+      expect(iframe).toMatchObject({ name: 'Counter', title: 'Counter', translateX: 5, translateY: 6, width: 200, height: 100 });
+      expect(iframe.content).toEqual({ html: '<button>+</button>', css: 'button{}', script: 'let n = 0;' });
+      expect(iframe.sandbox).toEqual(['allow-scripts']);
+      expect(iframe.contentSecurityPolicy).toBe(MODEL_IFRAME_CONTENT_SECURITY_POLICY);
+      expect(MODEL_IFRAME_CONTENT_SECURITY_POLICY).toContain("default-src 'none'");
+      expect(result).toMatchObject({ completed: true, objectIds: ['new-1'] });
+
+      expect(JSON.parse(await iframeTool.run({ name: 'x', x: 0, y: 0, width: 1, height: 1 }))).toMatchObject({
+        completed: false,
+        message: expect.stringContaining('"html" is required'),
+      });
     });
   });
 

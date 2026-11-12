@@ -1877,7 +1877,7 @@ describe('KritzelViewport', () => {
         configurable: true,
         value: { offsetTop: 0, height: 400, addEventListener: jest.fn(), removeEventListener: jest.fn() },
       });
-      animateSpy = jest.spyOn(viewport, 'animateViewportTo').mockImplementation(() => {});
+      animateSpy = jest.spyOn(viewport, 'animateViewportTo').mockImplementation(() => Promise.resolve());
       jest.spyOn(KritzelDevicesHelper, 'isMobile').mockReturnValue(true);
       mockState.translateX = 10;
       mockState.translateY = 50;

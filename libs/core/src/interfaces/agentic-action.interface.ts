@@ -1,5 +1,10 @@
 import type { KritzelEasing } from './easing.interface';
-import type { KritzelAgenticAnchor, KritzelAgenticObjectTarget, KritzelAgenticPointTarget } from './agentic-cursor.interface';
+import type { KritzelAgenticAnchor, KritzelAgenticElementTarget, KritzelAgenticObjectTarget, KritzelAgenticPointTarget } from './agentic-cursor.interface';
+import type {
+  KritzelObjectElementInfo,
+  KritzelObjectElementInteraction,
+  KritzelObjectElementInteractionFailureReason,
+} from './object-element.interface';
 import type { KritzelPoint } from './point.interface';
 import type { LineArrowConfig } from './arrow-head.interface';
 import type { ThemeAwareColor } from '../constants/color-palette.constants';
@@ -43,16 +48,30 @@ export interface KritzelAgenticLineStyle extends KritzelAgenticStrokeStyle {
   arrows?: LineArrowConfig;
 }
 
-/** Presses at a world point or an anchor on an object. Visual only: nothing is selected or changed. */
+/**
+ * Presses at a world point, an anchor on an object or an element inside an object. On the canvas it is visual
+ * only: nothing is selected or changed. On an element (`{ objectId, selector }`), the element is really clicked,
+ * like `interactWithElement` with `{ type: 'click' }`.
+ */
 export interface KritzelAgenticClickAction {
   type: 'click';
-  /**
-   * World point, or an anchor on an object (the anchor rotates with the object). Elements inside objects can't be
-   * clicked; point at one with `agent.moveTo({ objectId, selector })`.
-   */
-  target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget;
+  /** World point, an anchor on an object (the anchor rotates with the object), or an element inside an object. */
+  target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget;
   /** `2` plays a double press. Defaults to `1`. */
   count?: 1 | 2;
+}
+
+/**
+ * Interacts with an element inside an object's content, e.g. a button in a `KritzelIframeObject`: the agent's
+ * cursor flies to the element and the interaction is performed as a user would (see
+ * `KritzelObjectElementInteraction`). Works for actors working as the user too. The content's own state changes,
+ * not the object, so the action has no undo step. The object must be mounted (in or near the viewport).
+ */
+export interface KritzelAgenticInteractWithElementAction {
+  type: 'interactWithElement';
+  /** The element: `{ objectId, selector }`; the first element that matches the selector is used. */
+  target: KritzelAgenticElementTarget;
+  interaction: KritzelObjectElementInteraction;
 }
 
 /**
@@ -218,6 +237,43 @@ export interface KritzelAgenticConnectAction {
 }
 
 /**
+ * One end of a line: a free world point, or an object. An end on an object sits at the object's center and
+ * follows it when it moves (the line is anchored there).
+ */
+export type KritzelAgenticLineEnd = KritzelAgenticPointTarget | { objectId: string };
+
+/**
+ * Draws a line (or arrow) like the line tool: from `from` to `to`, each a free point or an object, optionally
+ * bent through a point. Lines, selections and hidden objects can't be ends; both ends can't be the same object.
+ */
+export interface KritzelAgenticDrawLineAction {
+  type: 'drawLine';
+  from: KritzelAgenticLineEnd;
+  to: KritzelAgenticLineEnd;
+  /** A world point the line curves through, halfway along it (where the line's middle handle sits). */
+  through?: KritzelPoint;
+  style?: KritzelAgenticLineStyle;
+}
+
+/**
+ * Changes an existing top-level line like its handles do: moves an end to a free point (detaching it) or onto an
+ * object (anchoring it there), and bends the line through a point or straightens it. At least one change.
+ */
+export interface KritzelAgenticEditLineAction {
+  type: 'editLine';
+  /** ID of a top-level line. */
+  lineId: string;
+  /** New start. */
+  from?: KritzelAgenticLineEnd;
+  /** New end. */
+  to?: KritzelAgenticLineEnd;
+  /** A world point the line curves through, halfway along it. Can't be combined with `straight`. */
+  through?: KritzelPoint;
+  /** Removes the curve. */
+  straight?: boolean;
+}
+
+/**
  * Style applied by `setStyle`. Fields apply where they make sense and are ignored elsewhere:
  * `fillColor` to shapes; `strokeColor` and `strokeWidth` to shapes, pen strokes and lines;
  * `fontSize`, `fontFamily` and `fontColor` to shapes and texts; `arrows` to lines (per end: an end left out
@@ -251,7 +307,51 @@ export interface KritzelAgenticAddObjectAction {
   type: 'addObject';
   /** A new object that is not on the canvas yet. Selections can't be added. */
   object: KritzelBaseObject<any>;
+  /**
+   * Places `object` as a loading placeholder (`isLoading`) and keeps the action open until this resolves with
+   * what fills it in, e.g. once a model has written a widget's code. While it waits, the user can move, resize or
+   * delete the placeholder. Then `content` is prepared like an added object (an image is fetched and stored),
+   * `apply` copies it onto the placeholder and loading ends, all in the same step of the history. A rejection, a
+   * stop or a deleted placeholder rolls the whole action back.
+   */
+  fill?: Promise<KritzelAgenticFill>;
 }
+
+/** What fills in an `addObject` placeholder. */
+export interface KritzelAgenticFill {
+  /** The object the placeholder stands in for. It is prepared like an added object, but never inserted. */
+  content: KritzelBaseObject<any>;
+  /** Copies `content` onto the placeholder, e.g. a widget's code. Runs synchronously inside the action. */
+  apply(placeholder: KritzelBaseObject<any>, content: KritzelBaseObject<any>): void;
+}
+
+/**
+ * Changes the code or name of an iframe (`KritzelIframeObject`), also inside a group: the given parts replace the
+ * current ones, parts left out stay. The iframe reloads with the new code.
+ */
+export interface KritzelAgenticUpdateIframeAction {
+  type: 'updateIframe';
+  /** ID of an iframe. */
+  objectId: string;
+  /** New name, shown in the titlebar (also sets the title). */
+  name?: string;
+  /** New body content. */
+  html?: string;
+  /** New styles. */
+  css?: string;
+  /** New script. */
+  script?: string;
+  /**
+   * Shows the iframe as loading (`isLoading`) and keeps the action open until this resolves with the changes,
+   * e.g. while a model still writes the new code. Called once, when the action runs after its click. The
+   * changes resolved with (`name`, `html`, `css`, `script`; the `objectId` must match) replace the ones given
+   * here, and loading ends in the same step of the history. A rejection or a stop rolls the whole action back.
+   */
+  fill?: () => Promise<KritzelAgenticIframeChanges>;
+}
+
+/** The changes that fill in a loading `updateIframe` action. */
+export type KritzelAgenticIframeChanges = Omit<KritzelAgenticUpdateIframeAction, 'type' | 'fill'>;
 
 /** Undoes this agent's last completed action. Never touches the user's or other agents' history. */
 export interface KritzelAgenticUndoAction {
@@ -266,6 +366,7 @@ export interface KritzelAgenticRedoAction {
 /** An action performed by a `KritzelAgent` (`agent.perform(action)`). */
 export type KritzelAgenticAction =
   | KritzelAgenticClickAction
+  | KritzelAgenticInteractWithElementAction
   | KritzelAgenticSelectAction
   | KritzelAgenticClearSelectionAction
   | KritzelAgenticMoveObjectAction
@@ -281,8 +382,11 @@ export type KritzelAgenticAction =
   | KritzelAgenticCreateShapeAction
   | KritzelAgenticCreateTextAction
   | KritzelAgenticTypeTextAction
+  | KritzelAgenticUpdateIframeAction
   | KritzelAgenticDrawPathAction
   | KritzelAgenticConnectAction
+  | KritzelAgenticDrawLineAction
+  | KritzelAgenticEditLineAction
   | KritzelAgenticSetStyleAction
   | KritzelAgenticAddObjectAction;
 
@@ -336,7 +440,12 @@ export type KritzelAgenticActionFailureReason =
   /** An ID is unknown, a selection, inside a group, or of the wrong type. */
   | 'invalid-target'
   /** No workspace is ready (the engine is disconnected, headless or still loading). */
-  | 'engine-disconnected';
+  | 'engine-disconnected'
+  /**
+   * An interaction with an element inside an object could not be performed: see `elementReason` and `message`.
+   * Changes the interaction made before it failed are kept.
+   */
+  | 'element-interaction-failed';
 
 /** Result of `agent.perform()` and the action shortcuts of `KritzelAgent`. */
 export interface KritzelAgenticActionResult {
@@ -350,4 +459,13 @@ export interface KritzelAgenticActionResult {
    * caused it, when known.
    */
   objectIds?: string[];
+  /**
+   * For interactions with elements: the element as it is afterwards (or the element that refused the interaction),
+   * as described by the object's content, which may be untrusted.
+   */
+  element?: KritzelObjectElementInfo;
+  /** For `'element-interaction-failed'`: why the element refused the interaction. */
+  elementReason?: KritzelObjectElementInteractionFailureReason;
+  /** For `'element-interaction-failed'`: what went wrong, in words. */
+  message?: string;
 }

@@ -38,7 +38,7 @@ const themes = [brandLight];
 <KritzelEditor themes={themes} theme="brand" />
 ```
 
-Theme sections include: `global`, `engine` (canvas background), `checkerboard`, `toolbar` (toolbar), `selection`, `button`, `contextMenu`, `dialog`, `menu`, `moreMenu`, `dropdown`, `settings`, `tooltip`, `utilityPanel`, and more — always spread the corresponding base section before overriding.
+Theme sections include: `global`, `engine` (canvas background), `checkerboard`, `toolbar` (toolbar), `selection`, `button`, `contextMenu`, `dialog`, `menu`, `moreMenu`, `dropdown`, `settings`, `tooltip`, `utilityPanel`, `loadingPlaceholder` (the object loading placeholder: `backgroundColor`, `borderRadius`, `glareColor`, `animationDuration`), `objectAppear` (the appear animation of objects added by app code and agents: `animationDuration` (`0s` turns it off), `animationEasing`, `distance`, `stagger`), and more — always spread the corresponding base section before overriding.
 
 Rules:
 - `themes` takes an **array** even for one theme; `theme` is the **name string**.

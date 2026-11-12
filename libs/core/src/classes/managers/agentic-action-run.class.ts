@@ -9,7 +9,7 @@ import type {
   KritzelAgenticActionOptions,
   KritzelAgenticActionResult,
 } from '../../interfaces/agentic-action.interface';
-import type { KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../interfaces/agentic-cursor.interface';
+import type { KritzelAgenticElementTarget, KritzelAgenticObjectTarget, KritzelAgenticTarget } from '../../interfaces/agentic-cursor.interface';
 import { KritzelEasingHelper } from '../../helpers/easing.helper';
 import { KritzelEventHelper } from '../../helpers/event.helper';
 import {
@@ -138,7 +138,9 @@ export class KritzelAgenticActionRun {
   /** Changed properties per object, for `objectsUpdated`. */
   readonly changedProperties = new Map<string, string[]>();
   /** Where the cursor attaches when the action completes. */
-  finalAttachment: KritzelAgenticObjectTarget | null = null;
+  finalAttachment: KritzelAgenticObjectTarget | KritzelAgenticElementTarget | null = null;
+  /** What an element reported about an interaction, added to the action's result. */
+  elementOutcome: Pick<KritzelAgenticActionResult, 'element' | 'elementReason' | 'message'> | null = null;
 
   /** The promise returned to the caller. */
   readonly promise: Promise<KritzelAgenticActionResult>;

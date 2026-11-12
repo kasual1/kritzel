@@ -278,10 +278,11 @@ Types used by [`KritzelAgent`](./agent.md) and the [agent methods](./editor.md#a
 | [`KritzelAgenticTarget`](./agent.md#kritzelagentictarget) | A point in world coordinates, an anchor (`KritzelAgenticAnchor`) on an object, or an element inside an object's content (`KritzelAgenticElementTarget`: `{ objectId, selector }`), such as a button in an iframe object. |
 | [`KritzelAgenticMoveOptions`](./agent.md#kritzelagenticmoveoptions) | Options of `agent.moveTo()`, which resolves with `KritzelAgenticMoveResult`. |
 | [`KritzelAgenticAction`](./agent.md#kritzelagenticaction) | The actions of `agent.perform()`, from `click` to `setStyle`, `addObject`, `undo`, and `redo`. |
+| [`KritzelAgenticFill`](./agent.md#kritzelagenticfill) | What fills in the loading placeholder of an `addObject` action with a `fill`: `content` and `apply(placeholder, content)`. |
 | [`KritzelAgenticActionOptions`](./agent.md#kritzelagenticactionoptions) | `speed`, `instant`, `signal`, and `easing` of an action. |
 | [`KritzelAgenticActionResult`](./agent.md#kritzelagenticactionresult) | Result of an action, with a `KritzelAgenticActionFailureReason` when it did not complete. |
 | [`KritzelAgentActionError`](./agent.md#kritzelagentactionerror) | Thrown when an action that belongs to a running `agent.task()` does not complete. |
-| [`KritzelAgentTool`](./agent.md#kritzelagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, and `run(input, context?)` with a `KritzelAgentToolContext` (`signal`). |
+| [`KritzelAgentTool`](./agent.md#kritzelagenttool) | A provider-neutral LLM tool from `agent.tools()`: `name`, `description`, `inputSchema`, `run(input, context?)` with a `KritzelAgentToolContext` (`signal`, `toolCallId`), and the optional `begin(context)`, which begins a call while the model writes it and returns a `KritzelAgentToolCall` (`update`, `finish`, and `cancel`). |
 | [`KritzelAgentToolSchema`](./agent.md#kritzelagenttoolschema) | The JSON Schema of a tool's input. |
 | [`KritzelAgentToolsOptions`](./agent.md#kritzelagenttoolsoptions) | `only`, `prefix`, and `maxTextLength` of `agent.tools()`. |
 | [`KritzelAgentToolResult`](./agent.md#kritzelagenttoolresult) | What a tool's `run()` resolves with as JSON: `completed`, `reason`, `objectIds`, `message`, `hint`, and `objects`. |
@@ -320,6 +321,19 @@ interface KritzelObjectElementInfo {
   attributes: Record<string, string>;  // role, aria-*, data-*, name, type, href, src, alt, title, placeholder, for
   rect: KritzelObjectElementRect;
   visibleRect?: KritzelObjectElementRect; // omitted when no part of the element can be seen
+  state?: KritzelObjectElementState;      // omitted when there is none
+  value?: string;                         // form field value, only with includeValues or from interactions; never for passwords
+}
+
+// Only the fields that apply to the element are set
+interface KritzelObjectElementState {
+  disabled?: boolean;
+  checked?: boolean | 'mixed'; // checkboxes, radio buttons, switches (also by ARIA role)
+  selected?: boolean;          // <option>
+  open?: boolean;              // <details>
+  focused?: boolean;
+  editable?: boolean;          // text fields, selects, and editable elements
+  playing?: boolean;           // <audio> and <video>
 }
 
 // CSS pixels relative to the top-left corner of the content, before canvas zoom, object scale and rotation

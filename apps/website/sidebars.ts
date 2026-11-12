@@ -49,13 +49,6 @@ const sidebars: SidebarsConfig = {
             badge: 'Preview',
           },
         },
-        {
-          type: 'doc',
-          id: 'advanced/chat-sessions',
-          customProps: {
-            badge: 'Preview',
-          },
-        },
       ],
     },
     {

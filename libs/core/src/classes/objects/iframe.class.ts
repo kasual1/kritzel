@@ -4,6 +4,10 @@ import {
   KritzelElementAwareObject,
   KritzelObjectElementHighlight,
   KritzelObjectElementInfo,
+  KritzelObjectElementInteraction,
+  KritzelObjectElementInteractionOptions,
+  KritzelObjectElementInteractionResult,
+  KritzelObjectElementQueryOptions,
   KritzelObjectElementPickingOptions,
   KritzelObjectElementRect,
 } from '../../interfaces/object-element.interface';
@@ -42,11 +46,16 @@ export interface KritzelIframeObjectConfig extends Partial<KritzelIframeContent>
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
   content?: Partial<KritzelIframeContent>;
-  loadingContent?: Partial<KritzelIframeContent>;
+  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
   isLoading?: boolean;
   state?: Record<string, unknown>;
   title?: string;
   sandbox?: string[];
+  /**
+   * A content security policy for the iframe's document, e.g. `"default-src 'none'; script-src 'unsafe-inline'"`
+   * to keep its code off the network. None by default.
+   */
+  contentSecurityPolicy?: string;
   translateX?: number;
   translateY?: number;
   rotation?: number;
@@ -117,12 +126,14 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   override __class__: string = 'KritzelIframeObject';
 
   content: KritzelIframeContent = { html: '', css: '', script: '' };
-  loadingContent?: KritzelIframeContent;
-  isLoading: boolean = false;
   state: Record<string, unknown> = {};
   title: string = 'Embedded content';
   sandbox: string[] = ['allow-scripts'];
+  /** The content security policy of the iframe's document, if any. */
+  contentSecurityPolicy?: string;
+  /** Corner radius: pixels, or any CSS `border-radius`, overriding the theme's. `undefined` uses the theme's. */
   borderRadius?: number | string;
+  /** CSS `box-shadow` of this object, overriding the theme's. `undefined` uses the theme's, `'none'` removes it. */
   boxShadow?: string;
 
   get html(): string { return this.content.html; }
@@ -144,15 +155,11 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
       css: config?.content?.css ?? config?.css ?? '',
       script: config?.content?.script ?? config?.script ?? '',
     };
-    this.loadingContent = config?.loadingContent ? {
-      html: config.loadingContent.html ?? '',
-      css: config.loadingContent.css ?? '',
-      script: config.loadingContent.script ?? '',
-    } : undefined;
     this.isLoading = config?.isLoading ?? false;
     this.state = structuredClone(config?.state ?? {});
     this.title = config?.title ?? 'Embedded content';
     this.sandbox = this.normalizeSandbox(config?.sandbox);
+    this.contentSecurityPolicy = config?.contentSecurityPolicy || undefined;
     this.borderRadius = config?.borderRadius;
     this.boxShadow = config?.boxShadow;
     this.translateX = config?.translateX ?? 0;
@@ -245,32 +252,6 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     this.persistUpdate();
   }
 
-  setLoadingContent(content: Partial<KritzelIframeContent>): void {
-    this.loadingContent = {
-      html: content.html ?? this.loadingContent?.html ?? '',
-      css: content.css ?? this.loadingContent?.css ?? '',
-      script: content.script ?? this.loadingContent?.script ?? '',
-    };
-
-    this.refreshDocument();
-    this.persistUpdate();
-  }
-
-  setLoading(isLoading: boolean): void {
-    this.isLoading = isLoading;
-    this.refreshDocument();
-    this.persistUpdate();
-  }
-
-  getActiveContent(): KritzelIframeContent {
-    const activeLoadingContent = this.isLoading ? this.loadingContent : undefined;
-    return {
-      html: activeLoadingContent?.html ?? this.content.html,
-      css: activeLoadingContent?.css ?? this.content.css,
-      script: activeLoadingContent?.script ?? this.content.script,
-    };
-  }
-
   setState(state: Record<string, unknown>): void {
     this.state = structuredClone(state);
     this.elementRef?.contentWindow?.postMessage({ type: IFRAME_PARENT_STATE_MESSAGE, state: this.state }, '*');
@@ -320,11 +301,31 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
    * Describes the elements of the page that match a CSS selector, in document order.
    * Rejects if the selector is invalid, the object isn't mounted or the page doesn't respond.
    */
-  queryElements(selector: string, limit?: number): Promise<KritzelObjectElementInfo[]> {
+  queryElements(selector: string, limitOrOptions?: number | KritzelObjectElementQueryOptions): Promise<KritzelObjectElementInfo[]> {
     if (!this.sandbox.includes('allow-scripts')) {
       return Promise.reject(new Error(`Object "${this.id}" runs its content without scripts, so its elements can't be reached.`));
     }
-    return this.elementBridge.query(selector, limit);
+    return this.elementBridge.query(selector, limitOrOptions);
+  }
+
+  /**
+   * Performs an interaction on the first element of the page that matches a CSS selector, as a user would, e.g.
+   * clicks a button or fills a field. Works whether or not the object is selected. Resolves with
+   * `completed: false` and a reason when it can't be performed; rejects only for an invalid selector or interaction.
+   */
+  interactWithElement(
+    selector: string,
+    interaction: KritzelObjectElementInteraction,
+    options?: KritzelObjectElementInteractionOptions,
+  ): Promise<KritzelObjectElementInteractionResult> {
+    if (!this.sandbox.includes('allow-scripts')) {
+      return Promise.resolve({
+        completed: false,
+        reason: 'unavailable',
+        message: `Object "${this.id}" runs its content without scripts, so its elements can't be reached.`,
+      });
+    }
+    return this.elementBridge.interact(selector, interaction, options);
   }
 
   trackElement(selector: string): void {
@@ -395,21 +396,17 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   override deserialize<T>(object: Record<string, unknown>): T {
     super.deserialize<KritzelIframeObject>(object);
     const nextContent = object.content && typeof object.content === 'object' ? object.content as Partial<KritzelIframeContent> : {};
-    const nextLoadingContent = object.loadingContent && typeof object.loadingContent === 'object' ? object.loadingContent as Partial<KritzelIframeContent> : undefined;
     this.content = {
       html: typeof nextContent.html === 'string' ? nextContent.html : typeof object.html === 'string' ? object.html : '',
       css: typeof nextContent.css === 'string' ? nextContent.css : typeof object.css === 'string' ? object.css : '',
       script: typeof nextContent.script === 'string' ? nextContent.script : typeof object.script === 'string' ? object.script : '',
     };
-    this.loadingContent = nextLoadingContent ? {
-      html: typeof nextLoadingContent.html === 'string' ? nextLoadingContent.html : '',
-      css: typeof nextLoadingContent.css === 'string' ? nextLoadingContent.css : '',
-      script: typeof nextLoadingContent.script === 'string' ? nextLoadingContent.script : '',
-    } : undefined;
-    this.isLoading = typeof object.isLoading === 'boolean' ? object.isLoading : false;
+    // Documents saved before the loading placeholder moved into the engine may still carry `loadingContent`.
+    delete (this as { loadingContent?: unknown }).loadingContent;
     this.state = object.state && typeof object.state === 'object' ? structuredClone(object.state as Record<string, unknown>) : {};
     this.title = typeof object.title === 'string' ? object.title : 'Embedded content';
     this.sandbox = this.normalizeSandbox(Array.isArray(object.sandbox) ? object.sandbox.filter((token): token is string => typeof token === 'string') : undefined);
+    this.contentSecurityPolicy = typeof object.contentSecurityPolicy === 'string' && object.contentSecurityPolicy ? object.contentSecurityPolicy : undefined;
     this.borderRadius = (typeof object.borderRadius === 'number' || typeof object.borderRadius === 'string') ? object.borderRadius : undefined;
     this.boxShadow = typeof object.boxShadow === 'string' ? object.boxShadow : undefined;
     this.messageListener = null;
@@ -419,10 +416,9 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   override copy(): KritzelIframeObject {
     const copiedObject = super.copy() as KritzelIframeObject;
     copiedObject.content = { ...this.content };
-    copiedObject.loadingContent = this.loadingContent ? { ...this.loadingContent } : undefined;
-    copiedObject.isLoading = this.isLoading;
     copiedObject.state = structuredClone(this.state);
     copiedObject.sandbox = [...this.sandbox];
+    copiedObject.contentSecurityPolicy = this.contentSecurityPolicy;
     copiedObject.borderRadius = this.borderRadius;
     copiedObject.boxShadow = this.boxShadow;
     copiedObject.messageListener = null;
@@ -433,10 +429,9 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   override clone(): KritzelIframeObject {
     const clonedObject = super.clone() as KritzelIframeObject;
     clonedObject.content = { ...this.content };
-    clonedObject.loadingContent = this.loadingContent ? { ...this.loadingContent } : undefined;
-    clonedObject.isLoading = this.isLoading;
     clonedObject.state = structuredClone(this.state);
     clonedObject.sandbox = [...this.sandbox];
+    clonedObject.contentSecurityPolicy = this.contentSecurityPolicy;
     clonedObject.borderRadius = this.borderRadius;
     clonedObject.boxShadow = this.boxShadow;
     clonedObject.messageListener = null;
@@ -513,18 +508,23 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
   }
 
   private createSourceDocument(): string {
-    const activeContent = this.getActiveContent();
+    const content = this.content;
     const state = JSON.stringify(this.state).replace(/</g, '\\u003c');
-    const css = activeContent.css.replace(/<\/style/gi, '<\\/style');
-    const script = activeContent.script.replace(/<\/script/gi, '<\\/script');
+    const css = content.css.replace(/<\/style/gi, '<\\/style');
+    const script = content.script.replace(/<\/script/gi, '<\\/script');
     const computedStyle = this.isMounted ? getComputedStyle(this.elementRef) : null;
     const defaultCursor = computedStyle?.getPropertyValue('--kritzel-global-default-cursor').trim() || 'auto';
+    // First in the head, so it covers everything after it.
+    const csp = this.contentSecurityPolicy
+      ? `<meta http-equiv="Content-Security-Policy" content="${this.contentSecurityPolicy.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}">`
+      : '';
     const pointerCursor = computedStyle?.getPropertyValue('--kritzel-global-pointer-cursor').trim() || defaultCursor;
 
     return `<!doctype html>
 <html>
   <head>
     <meta charset="utf-8">
+    ${csp}
     <style>
       :root {
         --kritzel-iframe-default-cursor: ${defaultCursor};
@@ -538,7 +538,7 @@ export class KritzelIframeObject extends KritzelBaseObject<HTMLIFrameElement> im
     <script>${createIframeElementBridgeScript(this.elementBridge.beginDocument())}<\/script>
   </head>
   <body>
-    ${activeContent.html}
+    ${content.html}
     <script>
       const kritzel = globalThis.kritzel = {
         state: ${state},

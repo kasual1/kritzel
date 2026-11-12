@@ -11,6 +11,8 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
 export interface KritzelImageConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
+  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  isLoading?: boolean;
   assetId?: string;
   mimeType?: string;
   src?: string;
@@ -25,6 +27,8 @@ export interface KritzelImageConfig {
   maxWidth?: number;
   maxHeight?: number;
   maxLoadAttempts?: number;
+  borderRadius?: number | string;
+  dropShadow?: string;
 }
 
 /**
@@ -68,6 +72,18 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
 
   maxWidth: number = 300;
   maxHeight: number = 300;
+
+  /**
+   * Corner radius: pixels, or any CSS `border-radius`, overriding the theme's (`image.borderRadius`). `undefined` uses
+   * the theme's.
+   */
+  borderRadius?: number | string;
+
+  /**
+   * CSS `filter` of this image, made of `drop-shadow()` functions so the shadow follows transparent images (SVGs,
+   * icons) instead of their box. `undefined` uses the theme's (`image.dropShadow`), `'none'` removes it.
+   */
+  dropShadow?: string;
 
   maxCompressionSize: number = 1200;
 
@@ -136,6 +152,7 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
   constructor(config?: KritzelImageConfig) {
     super();
     this.name = config?.name;
+    this.isLoading = config?.isLoading ?? false;
     this.assetId = config?.assetId || '';
     this.mimeType = config?.mimeType || '';
     this.src = config?.src || '';
@@ -150,6 +167,8 @@ export class KritzelImage extends KritzelBaseObject<HTMLImageElement> {
     this.maxWidth = config?.maxWidth ?? 300;
     this.maxHeight = config?.maxHeight ?? 300;
     this.maxLoadAttempts = config?.maxLoadAttempts ?? 3;
+    this.borderRadius = config?.borderRadius;
+    this.dropShadow = config?.dropShadow;
   }
 
   /**

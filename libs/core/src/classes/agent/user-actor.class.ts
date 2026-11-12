@@ -1,9 +1,17 @@
 import type { KritzelCore } from '../core/core.class';
 import type { KritzelAgenticAction, KritzelAgenticActionOptions, KritzelAgenticActionResult } from '../../interfaces/agentic-action.interface';
-import type { KritzelAgentTool, KritzelAgentToolsOptions, KritzelCanvasObject, KritzelCanvasSnapshot, KritzelObserveOptions } from '../../interfaces/agent.interface';
+import type {
+  KritzelAgentTool,
+  KritzelAgentToolResult,
+  KritzelAgentToolsOptions,
+  KritzelCanvasObject,
+  KritzelCanvasSnapshot,
+  KritzelObserveOptions,
+} from '../../interfaces/agent.interface';
 import type { KritzelToolActor } from './agent-tools';
 import { createActorTools } from './agent-tools';
 import { buildCanvasSnapshot, describeObject } from './agent-snapshot';
+import { inspectObjectElements, type KritzelInspectElementsOptions } from './agent-elements';
 import { ObjectHelper } from '../../helpers/object.helper';
 
 /**
@@ -68,6 +76,14 @@ export class KritzelUserActor implements KritzelToolActor {
 
   _whenIdle(): Promise<void> {
     return this._core ? this._core.agenticActionManager.whenIdle(this.id) : Promise.resolve();
+  }
+
+  /** The elements inside an object's content, for `inspect_elements`. @internal */
+  _inspectElements(objectId: string, options: KritzelInspectElementsOptions = {}): Promise<KritzelAgentToolResult> {
+    if (!this._core) {
+      return Promise.resolve({ completed: false, reason: 'agent-removed' });
+    }
+    return inspectObjectElements(this._core, objectId, options);
   }
 
   _describeObjects(objectIds: string[]): KritzelCanvasObject[] {

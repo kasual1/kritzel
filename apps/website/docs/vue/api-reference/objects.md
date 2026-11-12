@@ -44,6 +44,7 @@ Abstract base class for every object that can be placed on the canvas. All other
 | isInteractive | boolean | false | Whether the object responds to interaction |
 | isResizable | boolean | true | Whether the object can be resized. Persisted and synced. Combines with `isResizable` of the [`objectConfig` prop](../fundamentals/objects.md#configuring-objects): either one can forbid it |
 | isRotatable | boolean | true | Whether the object can be rotated. Persisted and synced. Combines with `isRotatable` of the [`objectConfig` prop](../fundamentals/objects.md#configuring-objects): either one can forbid it |
+| isLoading | boolean | false | Whether the engine draws a [loading placeholder](./theming.md#loading-placeholder) over the object. Persisted and synced |
 
 ### Computed Properties
 
@@ -66,12 +67,26 @@ The constructor of every object accepts the following options in addition to its
 | Option | Type | Description |
 |--------|------|-------------|
 | name | string | User-facing name, shown as the title of its titlebar |
+| isLoading | boolean | Whether the object starts out with a loading placeholder. Defaults to `false` |
 
 ```ts
 const frame = new KritzelShape({ translateX: 0, translateY: 0, width: 400, height: 240, name: 'Desktop' });
 ```
 
 See [Object Titlebar](../fundamentals/controls.md#object-titlebar) for details.
+
+### Loading State
+
+While `isLoading` is `true`, the engine draws a grey placeholder with a glare animation over the whole object. It follows the object's size and rotation, and the object can still be selected and moved, but its content can't be used until loading ends. Objects don't render loading content of their own. The look is set through the [Loading Placeholder](./theming.md#loading-placeholder) theme tokens.
+
+```ts
+const card = await editor.value?.addObject(
+  new KritzelShape({ translateX: 0, translateY: 0, width: 320, height: 200, isLoading: true }),
+);
+
+// later, once the content is ready
+card?.setLoading(false);
+```
 
 ### Methods
 
@@ -82,6 +97,7 @@ See [Object Titlebar](../fundamentals/controls.md#object-titlebar) for details.
 | isInViewport() | Tests if the object is visible in the current viewport |
 | centerInViewport() | Moves the object to the center of the current viewport |
 | update() | Notifies the store that the object was updated |
+| setLoading(isLoading) | Shows or hides the loading placeholder. Stores and syncs the change and rerenders. Does nothing if the value is unchanged |
 | move(startX, startY, endX, endY) | Moves the object by the delta between two points |
 | resize(x, y, width, height) | Resizes and repositions the object |
 | rotate(value) | Sets the rotation angle in radians |
@@ -361,8 +377,6 @@ HTML, CSS, and JavaScript in a sandboxed iframe on the canvas.
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | content | KritzelIframeContent | — | The `html`, `css`, and `script` of the page |
-| loadingContent | KritzelIframeContent | — | Content shown instead of `content` while `isLoading` is true |
-| isLoading | boolean | false | Whether the loading content is shown |
 | state | `Record<string, unknown>` | — | Serializable state shared with the page as `kritzel.state` |
 | title | string | 'Embedded content' | Title of the iframe element |
 | sandbox | string[] | ['allow-scripts'] | Sandbox tokens of the iframe |
@@ -378,13 +392,12 @@ HTML, CSS, and JavaScript in a sandboxed iframe on the canvas.
 | Method | Description |
 |--------|-------------|
 | setContent(content) | Replaces the content and reloads the page |
-| setLoadingContent(content) | Replaces the loading content |
-| setLoading(isLoading) | Shows or hides the loading content |
 | setState(state) | Replaces the state and sends it to the page |
 | setElementPicking(enabled, options) | Turns element picking on or off. While picking, a click on an element of the page picks it instead of reaching the page |
 | setElementHighlights(highlights) | Replaces the element highlights drawn inside the page. Pass an empty array to remove them |
 | getElementHighlights() | Returns the current element highlights |
-| queryElements(selector, limit) | Describes the elements of the page that match a CSS selector, in document order. `limit` defaults to 100 and can be at most 500 |
+| queryElements(selector, limitOrOptions) | Describes the elements of the page that match a CSS selector, in document order, with their state. Pass the `limit` (default 100, at most 500) or options: `limit`, `interactiveOnly: true` for elements a user can interact with, `includeValues: true` for the values of form fields (never of password fields) |
+| interactWithElement(selector, interaction, options) | Performs an interaction on the first matching element as a user would: a click, hover, fill, check, key press, or scroll (see [`KritzelObjectElementInteraction`](./agent.md#kritzelobjectelementinteraction)). Scrolls it into view and checks that it is visible, enabled, and not covered first; `{ trial: true }` only checks. Resolves with `completed: false` and a `reason` when it can't be performed, and rejects only for an invalid selector or interaction. The events are not trusted and carry no user activation, so APIs that need a user gesture (audio, fullscreen, clipboard) may refuse to work from them |
 | trackElement(selector) | Starts reporting the visible position of the first element that matches a selector. Calls are counted, so each call needs a matching `untrackElement`. An agent's cursor uses this to follow an element it points at (`agent.moveTo({ objectId, selector })`) |
 | untrackElement(selector) | Undoes one `trackElement` call for a selector |
 | getTrackedElementRect(selector) | Returns the last known visible bounding box of a tracked element in content coordinates, or `null` if it hasn't been seen yet |

@@ -3,7 +3,6 @@ import type { KritzelIframeContent } from "@kritzel/react-editor";
 export type RuntimeIframeDefinition = {
   name: string;
   content: KritzelIframeContent;
-  loadingContent: KritzelIframeContent;
   initialState: Record<string, unknown>;
 };
 
@@ -39,81 +38,6 @@ const calculatorCss = `
   .is-simple .scientific-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .has-toggle.is-simple .equals { grid-column: 4; grid-row: 3 / span 2; }
 `;
-
-const loadingContent: KritzelIframeContent = {
-  html: `
-    <main class="loading-surface" aria-busy="true" aria-label="Generating content">
-      <span class="sr-only">Generating content</span>
-      <div class="loading-header">
-        <span class="placeholder placeholder-title"></span>
-        <span class="placeholder placeholder-chip"></span>
-      </div>
-      <span class="placeholder placeholder-line placeholder-line-long"></span>
-      <span class="placeholder placeholder-line placeholder-line-short"></span>
-      <div class="placeholder placeholder-preview"></div>
-      <div class="loading-actions">
-        <span class="placeholder placeholder-action"></span>
-        <span class="placeholder placeholder-action"></span>
-        <span class="placeholder placeholder-action"></span>
-      </div>
-    </main>
-  `,
-  css: `
-  :root { background: #eef1f4; }
-  body { display: flex; margin: 0; padding: 0; box-sizing: border-box; background: #eef1f4; font-family: Roboto, sans-serif; }
-  .loading-surface {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-    height: 100%;
-    padding: 20px;
-    border: 1px solid #e1e6eb;
-    border-radius: 12px;
-    box-sizing: border-box;
-    overflow: hidden;
-    background: linear-gradient(90deg, #edf1f4 0%, #f4f6f8 25%, #ebeff3 50%, #f4f6f8 75%, #edf1f4 100%);
-    background-size: 200% 100%;
-    animation: shimmer 1.25s linear infinite;
-  }
-  .loading-surface::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
-    transform: translateX(-100%);
-    animation: sweep 1.25s ease-in-out infinite;
-  }
-  .loading-header, .loading-actions { display: flex; align-items: center; gap: 9px; }
-  .loading-header { justify-content: space-between; margin-bottom: 4px; }
-  .loading-actions { margin-top: auto; }
-  .placeholder {
-    display: block;
-    flex: none;
-    border: 1px solid rgba(148, 163, 184, 0.18);
-    border-radius: 6px;
-    background: rgba(255,255,255,0.52);
-  }
-  .placeholder-title { width: 42%; height: 20px; }
-  .placeholder-chip { width: 54px; height: 18px; border-radius: 9px; }
-  .placeholder-line { height: 10px; }
-  .placeholder-line-long { width: 76%; }
-  .placeholder-line-short { width: 54%; }
-  .placeholder-preview { flex: 1; width: 100%; min-height: 90px; margin-top: 4px; border-radius: 8px; }
-  .placeholder-action { width: 58px; height: 28px; }
-  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-  @keyframes sweep {
-    0% { transform: translateX(-120%); }
-    100% { transform: translateX(120%); }
-  }
-  `,
-  script: "",
-};
 
 const calculatorScript = `
   const root = document.querySelector('.calculator-card');
@@ -263,19 +187,16 @@ export const mockComponentDefinitions: RuntimeIframeDefinition[] = [
   {
     name: "Simple calculator",
     content: { html: simpleHtml, css: calculatorCss, script: calculatorScript },
-    loadingContent,
     initialState: { displayValue: "0", storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: "simple" },
   },
   {
     name: "Scientific calculator",
     content: { html: scientificHtml, css: calculatorCss, script: calculatorScript },
-    loadingContent,
     initialState: { displayValue: "0", storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: "scientific" },
   },
   {
     name: "Toggle calculator",
     content: { html: toggleHtml, css: calculatorCss, script: calculatorScript },
-    loadingContent,
     initialState: { displayValue: "0", storedValue: null, pendingOperator: null, shouldReplaceDisplay: true, mode: "simple" },
   },
 ];

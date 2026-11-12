@@ -45,6 +45,7 @@ function createCalculatorObject(): KritzelDynamicObject {
     translateY: -190,
     width: 260,
     height: 320,
+    borderRadius: 12,
   })
   object.isRotatable = false
   return object

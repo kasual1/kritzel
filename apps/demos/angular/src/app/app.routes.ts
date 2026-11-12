@@ -262,6 +262,15 @@ export const routes: Routes = [
     ],
   },
   // TEMP: delete with pages/temp/
-  { path: 'temp', children: [{ path: 'chat-modes', component: TempChatModesComponent }] },
+  {
+    path: 'temp',
+    children: [
+      { path: 'chat-modes', component: TempChatModesComponent },
+      // Lazy, so the Anthropic SDK stays out of the initial bundle.
+      { path: 'command-mode', loadComponent: () => import('./pages/temp/temp-command-mode.component').then(m => m.TempCommandModeComponent) },
+      { path: 'streaming', loadComponent: () => import('./pages/temp/temp-streaming.component').then(m => m.TempStreamingComponent) },
+      { path: 'agent-streaming', loadComponent: () => import('./pages/temp/temp-agent-streaming.component').then(m => m.TempAgentStreamingComponent) },
+    ],
+  },
   { path: '**', redirectTo: 'getting-started/quick-start' },
 ];

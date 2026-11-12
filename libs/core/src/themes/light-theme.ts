@@ -120,6 +120,28 @@ export const lightTheme: KritzelTheme = {
     titleColor: '#000000',
   },
 
+  object: {
+    borderRadius: '12px',
+    boxShadow: '0 1px 2px rgba(20, 18, 31, 0.06), 0 12px 32px -12px rgba(20, 18, 31, 0.22)',
+  },
+
+  objectAppear: {
+    animationDuration: '600ms',
+    animationEasing: 'cubic-bezier(0.33, 1, 0.68, 1)',
+    distance: '14px',
+    stagger: '110ms',
+  },
+
+  image: {
+    dropShadow: 'drop-shadow(0 1px 1px rgba(20, 18, 31, 0.06)) drop-shadow(0 8px 12px rgba(20, 18, 31, 0.14))',
+  },
+
+  loadingPlaceholder: {
+    animationDuration: '1.6s',
+    backgroundColor: '#e5e7eb',
+    glareColor: 'rgba(255, 255, 255, 0.6)',
+  },
+
   loginDialog: {
     buttonActiveBackground: '#ebebeb',
     buttonBackground: '#ffffff',

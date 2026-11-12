@@ -1709,7 +1709,7 @@ export class KritzelAnchorManager {
    * @param localY - Y coordinate in the line's local SVG space.
    * @returns Object with x and y coordinates in world space.
    */
-  private lineLocalToWorld(line: KritzelLine, localX: number, localY: number): { x: number; y: number } {
+  lineLocalToWorld(line: KritzelLine, localX: number, localY: number): { x: number; y: number } {
     const px = localX - line.x;
     const py = localY - line.y;
 

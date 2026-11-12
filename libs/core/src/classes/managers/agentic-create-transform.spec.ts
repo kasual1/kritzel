@@ -10,6 +10,12 @@ import { KritzelGroup } from '../objects/group.class';
 import { KritzelCore } from '../core/core.class';
 import { KritzelSelectionGroup } from '../objects/selection-group.class';
 import { KritzelClipboardManager } from './clipboard.manager';
+import { KritzelObjectAppearManager } from './object-appear.manager';
+import { lineMidpoint, readLineGeometry } from '../executors/line-handles';
+import { drawLineExecutor } from '../executors/draw-line.executor';
+import { editLineExecutor } from '../executors/edit-line.executor';
+import { KritzelIframeObject } from '../objects/iframe.class';
+import type { KritzelAgenticFill } from '../../interfaces/agentic-action.interface';
 
 /** How the test agent's cursor looks; agents own these values in the editor. */
 const AGENT_APPEARANCE = { name: 'Agent', color: '#7C3AED', status: null, visible: true };
@@ -142,6 +148,7 @@ describe('agentic create and transform actions', () => {
     core._store = core.store;
     core.prepareObjectForInsert = KritzelCore.prototype.prepareObjectForInsert;
     core.insertPreparedObject = KritzelCore.prototype.insertPreparedObject;
+    core.objectAppearManager = new KritzelObjectAppearManager();
     core.anchorManager = new KritzelAnchorManager(core);
     core.clipboardManager = new KritzelClipboardManager(core);
     map = new KritzelObjectMap<any>();
@@ -633,6 +640,149 @@ describe('agentic create and transform actions', () => {
       expect(map.allObjects().some((o: any) => o instanceof KritzelLine)).toBe(false);
     });
   });
+  describe('drawLine and editLine', () => {
+    const geometryOf = (id: string) => readLineGeometry(core, map.findById(id) as KritzelLine);
+    const center = (shape: KritzelShape) => ({ x: shape.centerX, y: shape.centerY });
+    const expectPoint = (actual: { x: number; y: number }, expected: { x: number; y: number }) => {
+      expect(actual.x).toBeCloseTo(expected.x, 3);
+      expect(actual.y).toBeCloseTo(expected.y, 3);
+    };
+
+    it('draws a free line between two points, without anchors', async () => {
+      const result = await perform({ type: 'drawLine', from: { x: 10, y: 20 }, to: { x: 210, y: 120 } });
+
+      const line = map.findById(result.objectIds![0]) as KritzelLine;
+      expect(line).toBeInstanceOf(KritzelLine);
+      expect(line.startAnchor).toBeUndefined();
+      expect(line.endAnchor).toBeUndefined();
+      expectPoint(geometryOf(line.id).start, { x: 10, y: 20 });
+      expectPoint(geometryOf(line.id).end, { x: 210, y: 120 });
+      expect(geometryOf(line.id).control).toBeUndefined();
+    });
+
+    it('anchors only the end on an object, which then follows the object', async () => {
+      const box = addShape(300, 0, 50, 50);
+      const result = await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { objectId: box.id } }, {});
+      const id = result.objectIds![0];
+
+      const line = map.findById(id) as KritzelLine;
+      expect(line.startAnchor).toBeUndefined();
+      expect(line.endAnchor).toEqual({ objectId: box.id });
+      expectPoint(geometryOf(id).end, center(box));
+
+      await perform({ type: 'moveObject', objectId: box.id, to: { x: 500, y: 400 } });
+      expectPoint(geometryOf(id).end, center(map.findById(box.id) as KritzelShape));
+      expectPoint(geometryOf(id).start, { x: 0, y: 0 });
+    });
+
+    it('curves a new line through a point, animated or instant', async () => {
+      for (const options of [{}, { instant: true }]) {
+        const result = await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { x: 200, y: 0 }, through: { x: 100, y: 80 } }, options);
+        const geometry = geometryOf(result.objectIds![0]);
+        expect(geometry.control).toBeDefined();
+        expectPoint(lineMidpoint(geometry), { x: 100, y: 80 });
+      }
+    });
+
+    it('refuses the same object at both ends, lines as ends and unknown objects', async () => {
+      const box = addShape(0, 0, 50, 50);
+      const line = KritzelLine.create(core, { startX: 0, startY: 0, endX: 10, endY: 10 });
+      map.insert(line);
+      await expect(perform({ type: 'drawLine', from: { objectId: box.id }, to: { objectId: box.id } })).resolves.toMatchObject({ reason: 'invalid-target' });
+      await expect(perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { objectId: line.id } })).resolves.toMatchObject({ reason: 'invalid-target' });
+      await expect(perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { objectId: 'nope' } })).resolves.toMatchObject({ reason: 'invalid-target' });
+    });
+
+    it('rejects ends that are neither a point nor an object, or both', () => {
+      const validate = (action: any) => () => drawLineExecutor.validate({ type: 'drawLine', ...action });
+      expect(validate({ from: { x: 0 }, to: { x: 1, y: 1 } })).toThrow('"from" must be { x, y } or { objectId }.');
+      expect(validate({ from: { x: 0, y: 0, objectId: 'a' }, to: { x: 1, y: 1 } })).toThrow('"from" takes either x and y or objectId, not both.');
+      expect(validate({ from: { x: 0, y: 0 }, to: { x: 1, y: 1 }, through: { x: 'a' } })).toThrow('"through" must be { x, y }.');
+    });
+
+    it('moves an end to a free point, detaching it, and keeps the other end attached', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const id = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds![0];
+
+      await perform({ type: 'editLine', lineId: id, to: { x: 400, y: 300 } }, {});
+
+      const line = map.findById(id) as KritzelLine;
+      expect(line.startAnchor).toEqual({ objectId: a.id });
+      expect(line.endAnchor).toBeUndefined();
+      expect(core.anchorManager.getLinesAnchoredTo(b.id)).toEqual([]);
+      expectPoint(geometryOf(id).end, { x: 400, y: 300 });
+      expectPoint(geometryOf(id).start, center(a));
+    });
+
+    it('attaches the start of a free line to an object', async () => {
+      const box = addShape(300, 300, 50, 50);
+      const id = (await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { x: 100, y: 0 } })).objectIds![0];
+
+      await perform({ type: 'editLine', lineId: id, from: { objectId: box.id } });
+
+      expect((map.findById(id) as KritzelLine).startAnchor).toEqual({ objectId: box.id });
+      expectPoint(geometryOf(id).start, center(box));
+      expectPoint(geometryOf(id).end, { x: 100, y: 0 });
+    });
+
+    it('curves and straightens an existing line', async () => {
+      const id = (await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { x: 200, y: 0 } })).objectIds![0];
+
+      await perform({ type: 'editLine', lineId: id, through: { x: 100, y: -60 } }, {});
+      expectPoint(lineMidpoint(geometryOf(id)), { x: 100, y: -60 });
+
+      await perform({ type: 'editLine', lineId: id, straight: true }, {});
+      expect(geometryOf(id).control).toBeUndefined();
+      expectPoint(geometryOf(id).end, { x: 200, y: 0 });
+    });
+
+    it('keeps the world geometry of a rotated line when editing it', async () => {
+      const id = (await perform({ type: 'drawLine', from: { x: 0, y: 0 }, to: { x: 200, y: 0 } })).objectIds![0];
+      await perform({ type: 'rotateObject', objectId: id, angle: 90 });
+      const rotated = geometryOf(id);
+
+      await perform({ type: 'editLine', lineId: id, through: lineMidpoint(rotated) });
+
+      expectPoint(geometryOf(id).start, rotated.start);
+      expectPoint(geometryOf(id).end, rotated.end);
+    });
+
+    it('refuses non-lines, both ends on one object, and missing changes', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const id = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds![0];
+
+      await expect(perform({ type: 'editLine', lineId: a.id, straight: true })).resolves.toMatchObject({ reason: 'invalid-target', objectIds: [a.id] });
+      await expect(perform({ type: 'editLine', lineId: id, to: { objectId: a.id } })).resolves.toMatchObject({ reason: 'invalid-target', objectIds: [a.id] });
+      expect(() => editLineExecutor.validate({ type: 'editLine', lineId: id })).toThrow('Give at least one of "from", "to", "through" or "straight".');
+      expect(() => editLineExecutor.validate({ type: 'editLine', lineId: id, through: { x: 0, y: 0 }, straight: true })).toThrow('Give "through" or "straight", not both.');
+    });
+
+    it('restores geometry and anchors when an edit is aborted', async () => {
+      const a = addShape(0, 0, 50, 50);
+      const b = addShape(300, 0, 50, 50);
+      const id = (await perform({ type: 'connect', from: a.id, to: b.id })).objectIds![0];
+      const before = geometryOf(id);
+
+      const controller = new AbortController();
+      const promise = actions.perform('agent', { type: 'editLine', lineId: id, to: { x: 900, y: 900 } }, { signal: controller.signal });
+      await flushMicrotasks();
+      for (let i = 0; i < 120 && (map.findById(id) as KritzelLine).endAnchor; i++) {
+        now += 16;
+        cursors.tick(now);
+        await flushMicrotasks();
+      }
+      expect((map.findById(id) as KritzelLine).endAnchor).toBeUndefined();
+      controller.abort();
+      await expect(settle(promise)).resolves.toMatchObject({ reason: 'aborted' });
+
+      expect((map.findById(id) as KritzelLine).endAnchor).toEqual({ objectId: b.id });
+      expect(core.anchorManager.getLinesAnchoredTo(b.id)).toEqual([{ lineId: id, endpoint: 'end' }]);
+      expectPoint(geometryOf(id).end, before.end);
+    });
+  });
+
   describe('style validation', () => {
     it('rejects unknown style fields, naming the allowed ones', () => {
       expect(() => actions.perform('agent', { type: 'drawPath', points: [{ x: 0, y: 0 }, { x: 1, y: 1 }], style: { color: 'red' } } as any)).toThrow(
@@ -719,6 +869,17 @@ describe('agentic create and transform actions', () => {
   });
 
   describe('addObject', () => {
+    it('lets the placed object appear, unlike the shapes an agent draws', async () => {
+      const shape = new KritzelShape({ translateX: 400, translateY: 300, width: 120, height: 80 });
+
+      await perform({ type: 'addObject', object: shape }, {});
+      const drawn = await perform({ type: 'createShape', x: 0, y: 0, width: 100, height: 60 });
+
+      expect(core.objectAppearManager.has(shape.id)).toBe(true);
+      expect(drawn.objectIds.length).toBeGreaterThan(0);
+      drawn.objectIds.forEach((id: string) => expect(core.objectAppearManager.has(id)).toBe(false));
+    });
+
     it('places a pre-built object as the agent, with a fresh ID, and keeps the user selection', async () => {
       core.user = { id: 'human' };
       const held = addShape(0, 0, 50, 50);
@@ -901,5 +1062,206 @@ describe('agentic create and transform actions', () => {
       await expect(perform({ type: 'addObject', object: shape })).resolves.toMatchObject({ completed: false, reason: 'invalid-target' });
       expect(() => actions.perform('agent', { type: 'addObject', object: { id: 'x' } } as any)).toThrow('must be a Kritzel object');
     });
+
+    describe('with a fill', () => {
+      const deferred = <T>() => {
+        let resolve!: (value: T) => void;
+        let reject!: (reason: unknown) => void;
+        const promise = new Promise<T>((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
+        promise.catch(() => undefined);
+        return { promise, resolve, reject };
+      };
+      const widget = (html = '') => new KritzelIframeObject({ name: 'Counter', html, translateX: 100, translateY: 100, width: 200, height: 120 });
+      const copyContent = (placeholder: any, content: any) => {
+        placeholder.content = { ...content.content };
+      };
+      /** Lets the action run until it waits for its fill. */
+      const run = async (_promise: Promise<unknown>) => {
+        for (let i = 0; i < 20; i++) {
+          now += 16;
+          cursors.tick(now);
+          await flushMicrotasks();
+        }
+      };
+
+      it('places a loading placeholder, waits for the fill and fills it in as one step', async () => {
+        const fill = deferred<KritzelAgenticFill>();
+        const placeholder = widget();
+        let settled = false;
+        const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
+        placing.then(() => (settled = true));
+        await run(placing);
+
+        expect(settled).toBe(false);
+        expect(map.findById(placeholder.id)).toBe(placeholder);
+        expect(placeholder.isLoading).toBe(true);
+        expect(placeholder.userId).toBe('agent');
+
+        fill.resolve({ content: widget('<button>+</button>'), apply: copyContent });
+        const result = await settle(placing);
+        expect(result).toEqual({ completed: true, objectIds: [placeholder.id] });
+        expect(placeholder.isLoading).toBe(false);
+        expect(placeholder.html).toBe('<button>+</button>');
+        expect(map.getAgentUndoStackLength('agent')).toBe(1);
+
+        await perform({ type: 'undo' });
+        expect(map.findById(placeholder.id)).toBeUndefined();
+      });
+
+      it('rolls the placeholder back when the fill is rejected or the action is stopped', async () => {
+        const rejected = deferred<KritzelAgenticFill>();
+        const first = widget();
+        const placing = actions.perform('agent', { type: 'addObject', object: first, fill: rejected.promise }, { instant: true });
+        await run(placing);
+        expect(map.findById(first.id)).toBe(first);
+        rejected.reject(new Error('cancelled'));
+        await expect(settle(placing)).resolves.toMatchObject({ completed: false, reason: 'aborted' });
+        expect(map.findById(first.id)).toBeUndefined();
+
+        const controller = new AbortController();
+        const second = widget();
+        const stopped = actions.perform('agent', { type: 'addObject', object: second, fill: deferred<KritzelAgenticFill>().promise }, { instant: true, signal: controller.signal });
+        await run(stopped);
+        expect(map.findById(second.id)).toBe(second);
+        controller.abort();
+        await expect(settle(stopped)).resolves.toMatchObject({ completed: false, reason: 'aborted' });
+        expect(map.allObjects()).toEqual([]);
+        expect(map.getAgentUndoStackLength('agent')).toBe(0);
+      });
+
+      it('lets the user move the placeholder while it waits, and fills it in where the user put it', async () => {
+        const fill = deferred<KritzelAgenticFill>();
+        const placeholder = widget();
+        const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
+        await run(placing);
+
+        placeholder.translateX = 500;
+        map.update(placeholder);
+        await run(placing);
+        fill.resolve({ content: widget('<p>Hi</p>'), apply: copyContent });
+
+        await expect(settle(placing)).resolves.toMatchObject({ completed: true });
+        expect(map.findById(placeholder.id)).toMatchObject({ translateX: 500, isLoading: false, html: '<p>Hi</p>' });
+      });
+
+      it('answers object-removed when the user deletes the placeholder while it waits', async () => {
+        const fill = deferred<KritzelAgenticFill>();
+        const placeholder = widget();
+        const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
+        await run(placing);
+
+        map.remove((object: any) => object.id === placeholder.id);
+        fill.resolve({ content: widget('<p>Hi</p>'), apply: copyContent });
+
+        await expect(settle(placing)).resolves.toMatchObject({ completed: false, reason: 'object-removed', objectIds: [placeholder.id] });
+        expect(map.allObjects()).toEqual([]);
+      });
+
+      it("makes the user's changes to a waiting placeholder part of the action: a stop removes it, an undo after the fill too", async () => {
+        const controller = new AbortController();
+        const stopped = widget();
+        const stopping = actions.perform('agent', { type: 'addObject', object: stopped, fill: deferred<KritzelAgenticFill>().promise }, { instant: true, signal: controller.signal });
+        await run(stopping);
+        stopped.translateX = 500;
+        map.update(stopped);
+        // Also inside a transaction, as moving a selection does.
+        map.transaction(() => {
+          stopped.translateY = 300;
+          map.update(stopped);
+        });
+        controller.abort();
+        await expect(settle(stopping)).resolves.toMatchObject({ reason: 'aborted' });
+        expect(map.allObjects()).toEqual([]);
+
+        const fill = deferred<KritzelAgenticFill>();
+        const filled = widget();
+        const userSteps = map.undoManager!.undoStack.length;
+        const placing = actions.perform('agent', { type: 'addObject', object: filled, fill: fill.promise }, { instant: true });
+        await run(placing);
+        filled.translateX = 500;
+        map.update(filled);
+        fill.resolve({ content: widget('<p>Hi</p>'), apply: copyContent });
+        await expect(settle(placing)).resolves.toMatchObject({ completed: true });
+        // The move is not a step of the user's history, so their undo can't bring the empty placeholder back.
+        expect(map.undoManager!.undoStack.length).toBe(userSteps);
+        expect(map.findById(filled.id)).toMatchObject({ translateX: 500, isLoading: false, html: '<p>Hi</p>' });
+        await perform({ type: 'undo' });
+        expect(map.allObjects()).toEqual([]);
+      });
+
+      it('routes only while the action waits', async () => {
+        const fill = deferred<KritzelAgenticFill>();
+        const placeholder = widget();
+        const placing = actions.perform('agent', { type: 'addObject', object: placeholder, fill: fill.promise }, { instant: true });
+        await run(placing);
+        fill.resolve({ content: widget('<p>Hi</p>'), apply: copyContent });
+        await settle(placing);
+        const userSteps = map.undoManager!.undoStack.length;
+        placeholder.translateX = 700;
+        map.update(placeholder);
+        expect(map.undoManager!.undoStack.length).toBe(userSteps + 1);
+      });
+
+      it('refuses a fill that is not a promise, and a group as the placeholder', () => {
+        expect(() => actions.perform('agent', { type: 'addObject', object: widget(), fill: {} as any })).toThrow('"fill" must be a promise.');
+        const group = new KritzelGroup();
+        group.addChild(widget());
+        expect(() => actions.perform('agent', { type: 'addObject', object: group, fill: deferred<KritzelAgenticFill>().promise })).toThrow("A group can't be a placeholder.");
+      });
+    });
+  });
+
+  describe('updateIframe with a fill', () => {
+    const addWidget = async () => {
+      const iframe = new KritzelIframeObject({ name: 'Counter', html: '<b>old</b>', translateX: 100, translateY: 100, width: 200, height: 120 });
+      await perform({ type: 'addObject', object: iframe });
+      return map.findById(iframe.id) as KritzelIframeObject;
+    };
+    /** Starts the action and lets it run until it waits for its changes. */
+    const start = async (action: any) => {
+      let started!: () => void;
+      const waiting = new Promise<void>(resolve => (started = resolve));
+      let finish!: (changes: any) => void;
+      let fail!: (reason: unknown) => void;
+      const changes = new Promise<any>((resolve, reject) => {
+        finish = resolve;
+        fail = reject;
+      });
+      const performing = actions.perform('agent', { ...action, fill: () => (started(), changes) }, { instant: true });
+      const result = settle(performing);
+      await waiting;
+      return { result, finish, fail };
+    };
+
+    it('shows the iframe as loading until the changes arrive, then applies them as one step', async () => {
+      const iframe = await addWidget();
+      const undoSteps = map.getAgentUndoStackLength('agent');
+      const { result, finish } = await start({ type: 'updateIframe', objectId: iframe.id });
+      expect(iframe.isLoading).toBe(true);
+      expect(iframe.html).toBe('<b>old</b>');
+
+      finish({ objectId: iframe.id, name: 'Timer', html: '<b>new</b>' });
+      await expect(result).resolves.toEqual({ completed: true, objectIds: [iframe.id] });
+      const current = map.findById(iframe.id) as KritzelIframeObject;
+      expect(current.isLoading).toBe(false);
+      expect(current.html).toBe('<b>new</b>');
+      expect(current.name).toBe('Timer');
+      expect(map.getAgentUndoStackLength('agent')).toBe(undoSteps + 1);
+    });
+
+    it('rolls the loading back when the changes do not come', async () => {
+      const iframe = await addWidget();
+      const { result, fail } = await start({ type: 'updateIframe', objectId: iframe.id });
+      expect(iframe.isLoading).toBe(true);
+      fail(new Error('cancelled'));
+      await expect(result).resolves.toMatchObject({ completed: false, reason: 'aborted' });
+      const current = map.findById(iframe.id) as KritzelIframeObject;
+      expect(current.isLoading).toBe(false);
+      expect(current.html).toBe('<b>old</b>');
+    });
   });
 });
+

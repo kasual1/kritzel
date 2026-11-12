@@ -38,6 +38,12 @@ export class KritzelObjectTitlebarLayer {
   /** The titlebars to render, resolved by the engine for the current frame. */
   @Prop() titlebars: KritzelResolvedTitlebar[] = [];
 
+  /**
+   * The objects playing their appear animation, with their stagger index, by object ID. Their titlebars appear with
+   * them.
+   */
+  @Prop() appearingOwners?: Map<string, number>;
+
   /** Pointer events of the drag surfaces. Controls always receive pointer input. */
   @Prop() surfacePointerEvents: 'auto' | 'none' = 'none';
 
@@ -64,8 +70,19 @@ export class KritzelObjectTitlebarLayer {
             ? [...titlebar.sections.left, ...titlebar.sections.center, ...titlebar.sections.right].find(resolved => resolved.element.id === titlebar.editingElementId)
             : undefined;
 
+          const appearIndex = this.appearingOwners?.get(titlebar.owner.id);
+          const appearing = appearIndex !== undefined;
+
           return (
-            <div key={titlebar.owner.id} class="object-titlebar-anchor" style={{ transform: titlebar.transform, width: `${titlebar.width}px` }}>
+            <div
+              key={titlebar.owner.id}
+              class={{ 'object-titlebar-anchor': true, 'object-titlebar-anchor--appearing': appearing }}
+              style={{
+                transform: titlebar.transform,
+                width: `${titlebar.width}px`,
+                ...(appearing ? { '--kritzel-object-appear-index': String(appearIndex) } : {}),
+              }}
+            >
               <div
                 class={{
                   'object-titlebar': true,

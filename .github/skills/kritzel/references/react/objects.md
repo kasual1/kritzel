@@ -23,6 +23,7 @@ In the snippets below, `editor` is the ref element (`const editor = editorRef.cu
 | `workspaceId` | Set automatically when added |
 | `name` | Optional user-facing name; the default title of the object's titlebar. Persisted and synced |
 | `isRotatable`, `isResizable` | Per-object flags (default `true`), persisted and synced. Combine with the editor's `objectConfig` (see below): either can forbid |
+| `isLoading` | Default `false`, persisted and synced, also accepted by every constructor config. While `true` the engine draws a grey placeholder with a glare animation over the whole object (it stays selectable and movable; its content can't be used). Toggle with `object.setLoading(true / false)` or `updateObject(object, { isLoading })`. Styled by the `loadingPlaceholder` theme section. Never build your own loading content |
 
 Colors everywhere are **theme-aware**: `{ light: '#hex', dark: '#hex', label?: string }`.
 

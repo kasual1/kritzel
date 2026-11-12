@@ -115,7 +115,7 @@ hide(): void
 
 ### moveTo
 
-Animates the cursor to a point in world coordinates, to an anchor on an object, or to an element inside an object's content, such as a button in an iframe object (`{ objectId, selector, anchor?, offset? }`), where it sticks by default. Resolves when the cursor arrives; `completed` is `false` when another move, the removal of the agent, or the deletion of the target interrupted it. A running action of the agent stops with `'agent-moved'`. Rejects when the agent is not added, for an invalid target, for an object that does not exist, and when an element target's object isn't mounted or has no visible element that matches the selector. See [Pointing at Elements](../advanced/agents.md#pointing-at-elements).
+Animates the cursor to a point in world coordinates, to an anchor on an object, or to an element inside an object's content, such as a button in an iframe object (`{ objectId, selector, anchor?, offset? }`), where it sticks by default. Resolves when the cursor arrives; `completed` is `false` when another move, the removal of the agent, or the deletion of the target interrupted it. A running action of the agent stops with `'agent-moved'`. Rejects when the agent is not added, for an invalid target, for an object that does not exist, and when an element target's object isn't mounted or has no visible element that matches the selector. See [Driving Agents from Code](../advanced/agents.md#driving-agents-from-code).
 
 ```ts
 moveTo(target: KritzelAgenticTarget, options?: KritzelAgenticMoveOptions): Promise<KritzelAgenticMoveResult>
@@ -157,11 +157,35 @@ perform(action: KritzelAgenticAction, options?: KritzelAgenticActionOptions): Pr
 
 ### click
 
-Presses at a point or an object anchor. Nothing changes; `objectIds` holds the object under the cursor, or is empty on a miss. `count: 2` plays a double press. Elements inside objects can't be clicked; use `moveTo({ objectId, selector })` to point at one.
+Presses at a point or an object anchor. Nothing changes; `objectIds` holds the object under the cursor, or is empty on a miss. `count: 2` plays a double press. With an element target (`{ objectId, selector }`), the element inside the object is really clicked, like [`interactWithElement(target, { type: 'click' })`](#interactwithelement).
 
 ```ts
-click(target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget, options?: { count?: 1 | 2 } & KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+click(
+  target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget,
+  options?: { count?: 1 | 2 } & KritzelAgenticActionOptions,
+): Promise<KritzelAgenticActionResult>
 ```
+
+### interactWithElement
+
+Uses an element inside an object's content as a user would, for example the play button of an iframe widget. The cursor flies to the element and presses while the content performs the [interaction](#kritzelobjectelementinteraction): a click, hover, fill, check, key press, or scroll. Before the cursor moves, the content scrolls the element into view and checks that it is visible, enabled, and not covered. On success, `objectIds` holds the object and `element` the element afterwards, with its state and value; the cursor stays on the element. When the element refuses, the result has `reason: 'element-interaction-failed'`, an [`elementReason`](#kritzelobjectelementinteractionfailurereason), and a `message`.
+
+The interaction changes the content's own state, not the object, so it has no undo step. The object must be mounted, which it is while it is in or near the viewport. The object does not need to be selected.
+
+```ts
+interactWithElement(
+  target: KritzelAgenticElementTarget,
+  interaction: KritzelObjectElementInteraction,
+  options?: KritzelAgenticActionOptions,
+): Promise<KritzelAgenticActionResult>
+```
+
+```ts
+const result = await agent.interactWithElement({ objectId: player.id, selector: '#play' }, { type: 'click' });
+await agent.interactWithElement({ objectId: player.id, selector: '#volume' }, { type: 'fill', value: '80' });
+```
+
+The interaction is performed with DOM events, so the content's handlers run as for a real press. The events are not trusted (`isTrusted` is `false`) and carry no user activation, so browser APIs that need a user gesture may refuse to work from them, for example audio playback, fullscreen, or the clipboard.
 
 ### select
 
@@ -296,15 +320,30 @@ Restyles objects; groups style their children. `style` needs at least one field.
 setStyle(objectIds: string[], style: KritzelAgenticObjectStyle, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
 
+### updateIframe
+
+Replaces parts of an iframe's code and its name; parts left out stay, and the iframe reloads with the new code. Works on iframes inside groups too. Resolves with `'invalid-target'` for objects that are not iframes.
+
+```ts
+updateIframe(objectId: string, changes: { name?: string; html?: string; css?: string; script?: string }, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
+```
+
 ### addObject
 
-Places an object that the app built, for example a `KritzelIframeObject`, as the agent's change: the cursor hops to the object and it appears. The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
+Places an object that the app built, for example a `KritzelIframeObject`, as the agent's change: the cursor hops to the object and it appears, with the theme's appear animation (see [Object Appear](./theming.md#object-appear)). The object gets a new ID, which `objectIds` reports. Unlike the editor's `addObject()`, the user's selection and undo history stay untouched. Selections can't be added.
 
 The object is not changed until the insert: the object and the children of a group get their new IDs and their z-index only then, on top of the objects on the canvas at that moment. An action that stops before the insert leaves the object as it was, so it can be added later. Resolves with `'invalid-target'` for an object that is already on the canvas, for a group with a child that is already on the canvas or that holds the same object twice, and for a group without children, either empty or with children that were inserted before.
 
 ```ts
 addObject(object: KritzelBaseObject, options?: KritzelAgenticActionOptions): Promise<KritzelAgenticActionResult>
 ```
+
+To show the object before its content is ready, perform the action with a `fill`, a promise of a [`KritzelAgenticFill`](#kritzelagenticfill): `perform({ type: 'addObject', object, fill })`. The object is placed as a [loading placeholder](./objects.md#loading-state), and the action stays open until `fill` resolves. Then `content` is prepared like an added object, so an image is fetched and stored, `apply` copies it onto the placeholder, and loading ends. Placing and filling are one step of the agent's history.
+
+- While the action waits, the placeholder is the user's: the user can move, resize, or delete it, and it is filled in where the user left it. These changes belong to the action's step, so stopping the action or undoing it removes the placeholder with them. Changes a collaborator makes meanwhile are not part of it.
+- A rejected `fill` and a stopped action roll the whole action back and resolve with `'aborted'`. A deleted placeholder resolves with `'object-removed'`.
+- The agent's later actions wait for this one, so resolve or reject `fill` without waiting for them.
+- The action rejects with a `TypeError` when `fill` is not a promise or the object is a group.
 
 ### deleteObjects
 
@@ -356,11 +395,11 @@ task<T>(label: string, fn: () => Promise<T> | T): Promise<T>
 
 ## LLM Tools
 
-Provider-neutral tool definitions and a canvas snapshot for LLMs. See [Connecting an LLM](../advanced/agents.md#connecting-an-llm) for a complete example with Claude, and [Chat Sessions](../advanced/chat-sessions.md) to connect the chat box without writing the tool loop.
+Provider-neutral tool definitions and a canvas snapshot for LLMs. To connect the chat box to an LLM without writing the tool loop, use a [chat session](../advanced/agents.md#connecting-the-chat-box).
 
 ### tools
 
-Returns tool definitions for any LLM provider: `observe_canvas` and one tool per action. Hand `name`, `description`, and `inputSchema` to the model, and call `run(input, { signal })` with the model's input. Every call returns new tool objects. A tool keeps working when it is copied, as some tool runners do, and while the agent is not added, `run()` resolves with `reason: 'agent-removed'`.
+Returns tool definitions for any LLM provider: `observe_canvas`, `inspect_elements`, and one tool per action. Hand `name`, `description`, and `inputSchema` to the model, and call `run(input, { signal })` with the model's input. Every call returns new tool objects. A tool keeps working when it is copied, as some tool runners do, and while the agent is not added, `run()` resolves with `reason: 'agent-removed'`.
 
 ```ts
 tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
@@ -371,12 +410,16 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | only | string[] | All tools | Only these tools, by name without `prefix`. |
 | prefix | string | `''` | Put in front of every tool name, for example `'kritzel_'`, to avoid clashes with other tools. |
 | maxTextLength | number | `2000` | Longest `text` that `create_shape`, `create_text`, or `type_text` may type. Longer input is rejected with `'invalid-input'`. |
-| instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. |
+| instant | boolean | `false` | Skips all animation in the actions of these tools: the changes appear at once. Placed objects still play the theme's appear animation. |
+| iframes | boolean | `false` | Offers `create_iframe`, `read_iframe`, and `update_iframe`, which place, read, and change widgets of model-written code. |
+| viewport | boolean | `true` | Offers `set_viewport` and `fit_viewport`, which pan and zoom the local user's view. |
 
 | Tool | Runs | Input |
 |------|------|-------|
 | observe_canvas | [`observe()`](#observe) | `scope?` (`'all'` or `'viewport'`), `objectIds?` |
+| inspect_elements | `queryElements()` of the object | `objectId`, `selector?`, `limit?` |
 | click | [`click()`](#click) | `target`, `count?` |
+| interact_with_element | [`interactWithElement()`](#interactwithelement) | `target` (`{ objectId, selector }`), `interaction` |
 | select | [`select()`](#select) | `objectIds`, `additive?` |
 | clear_selection | [`clearSelection()`](#clearselection) | — |
 | move_object | [`moveObject()`](#moveobject) | `objectId`, `to`, `align?` |
@@ -395,16 +438,26 @@ tools(options?: KritzelAgentToolsOptions): KritzelAgentTool[]
 | delete_objects | [`deleteObjects()`](#deleteobjects) | `objectIds` |
 | undo | [`undo()`](#undo) | — |
 | redo | [`redo()`](#redo) | — |
+| read_iframe | — | `objectId` |
+| update_iframe | [`updateIframe()`](#updateiframe) | `objectId`, `name?`, `html?`, `css?`, `script?`, `edits?` |
+| set_viewport | The engine's viewport | `x?`, `y?` (together), `zoom?` or `zoomBy?` |
+| fit_viewport | The engine's viewport | `objectIds?` (all objects when left out), `maxZoom?` (default `1`) |
 
-`addObject()` has no tool, because it needs an object that the app builds. A target (`target`, `to`) is one object in the schema: a point `{ x, y }` or a point on an object `{ objectId, anchor?, offset? }`, where `objectId` wins. Colors are CSS color strings.
+`addObject()` has no tool, because it needs an object that the app builds. A target (`target`, `to`) is one object in the schema: a point `{ x, y }` or a point on an object `{ objectId, anchor?, offset? }`, where `objectId` wins. The `click` tool clicks on the canvas only; models use widgets with `interact_with_element`, whose `interaction` is one object in the schema with a `type` and the fields of that type. Colors are CSS color strings.
+
+`inspect_elements` lists the elements inside a widget (an object whose content has elements, such as an iframe object), so the model can find the selectors to use with `interact_with_element`. Without a `selector`, it lists the elements a user can interact with: buttons, links, form fields, elements with an interactive ARIA role, and elements that show a pointer cursor. It resolves with the `elements` as [`KritzelCanvasElement`](#kritzelcanvaselement) objects, at most `limit` (default 50, at most 200), and `truncated: true` when more matched. Both tools are offered to agents and to chat sessions that work as the user.
 
 `run()` works as follows:
 
 - It accepts the input as an object or as a JSON string, as some providers send it. `null` counts as a missing field. Unknown fields, missing required fields, and invalid values resolve with `reason: 'invalid-input'` and a `message` that names the field.
 - An action tool runs [`perform()`](#perform) with the `signal` of the context. Calls that run in parallel queue up in call order, and `observe_canvas` waits until the queued actions of the agent are done, so its snapshot shows their result.
 - An action tool resolves with a [`KritzelAgentToolResult`](#kritzelagenttoolresult) as JSON. On success, it has the `objectIds` of the action and, except for `click`, `select`, `clear_selection`, and `delete_objects`, the `objects` that were created or changed (up to 10). On failure, it has the `reason`, the `objectIds` that caused it, and a `hint` from [`AGENT_TOOL_REASON_HINTS`](#agent_tool_reason_hints). Inside [`task()`](#task), refusals are reported the same way instead of being thrown.
+- `read_iframe` and `update_iframe` only work on widgets that `create_iframe` placed: iframes sandboxed to scripts only, with the content security policy of model-written code. Other iframes of your app resolve with `'not-allowed'`, so a model never puts code into an iframe that runs with more rights. `read_iframe` resolves with the widget's `name`, `html`, `css`, and `script`. `edits` of `update_iframe` are find-and-replace changes `{ part, find, replace }`, applied in order; each `find` must occur exactly once in its part, otherwise the call resolves with `'invalid-input'` and a `message` that says why.
+- `set_viewport` and `fit_viewport` move only the view of the local user, never objects, and never the view of collaborators. They wait until the queued actions of the agent are done, so they can show what the same reply created, and resolve with `{ completed: true, viewport }`, the visible area as `observe_canvas` reports it. The zoom is clamped to the allowed range.
 - `observe_canvas` resolves with a [`KritzelCanvasSnapshot`](#kritzelcanvassnapshot) as JSON. It uses the defaults of `observe()`; `maxTextLength` of `tools()` does not change them.
 - It never rejects for mistakes of the model, only for unexpected errors.
+
+`create_iframe` and `create_image` also have [`begin()`](#kritzelagenttool), which a runner that streams tool calls, such as a [chat session](../advanced/agents.md#streaming), calls while the model writes a call. They place a loading placeholder as soon as the position and size are written, `create_image` only with a `width` and `height`, and fill it in when the call finishes. Their schemas list the position and size before the content, because models write the fields in the order of the schema. Runners that don't stream tool calls only call `run()`.
 
 ### observe
 
@@ -437,6 +490,21 @@ Formats a result as the JSON string that the tools return. Use it in your own to
 
 ```ts
 formatAgentToolResult(result: KritzelAgentToolResult): string
+```
+
+### parsePartialJson
+
+Reads JSON text that may stop anywhere, such as the input of a tool call while the model writes it. Open objects and arrays are closed, and values that the text has not finished are left out: a string without its closing quote, a number that may go on, a half-written literal, and a key without its value. Returns `undefined` when the text holds no value yet or is not the start of valid JSON. Use it in the `update()` of a [begun tool call](#kritzelagenttool).
+
+```ts
+parsePartialJson(text: string): unknown
+```
+
+```ts
+import { parsePartialJson } from '@kritzel/react-editor';
+
+parsePartialJson('{"x":10,"y":2'); // { x: 10 }
+parsePartialJson('{"x":10,"y":2,'); // { x: 10, y: 2 }
 ```
 
 ### AGENT_TOOL_REASON_HINTS
@@ -533,7 +601,8 @@ try {
 | An action with an unknown `type` or invalid fields | Rejects with a `TypeError`. |
 | `moveTo()` with an invalid target or to an object that does not exist | Rejects with an `Error`. |
 | `moveTo()` to an element of an object that is not mounted or has no content elements, or when no visible element matches the selector | Rejects with an `Error`. |
-| `click()` or `moveObject()` (also through `perform()`) with an element target (`selector`) | Rejects with a `TypeError`. Use `moveTo({ objectId, selector })` to point at an element. |
+| `moveObject()` (also through `perform()`) with an element target (`selector`) | Rejects with a `TypeError`. Use `moveTo({ objectId, selector })` to point at an element. |
+| `interactWithElement()`, or `click()` with an element target, with an empty selector or an invalid interaction | Rejects with a `TypeError`. |
 | `task()` while another task of the agent is running | Rejects with an `Error`. |
 | `observe()` while the agent is not added or no workspace is loaded | Rejects with an `Error`. |
 | `addAgent()` with a value that is not a `KritzelAgent` | Rejects with a `TypeError`. |
@@ -659,7 +728,7 @@ interface KritzelAgentInterruptedEvent {
 
 ### KritzelAgenticTarget
 
-A point in world coordinates, an anchor on an object, or an element inside an object's content, such as a button in an iframe object. Used by `moveTo()` and the `position` option. `click()` and `moveObject()` take only point and object targets (`KritzelAgenticPointTarget | KritzelAgenticObjectTarget`): element targets are accepted only by `moveTo()` and `position`, which point the cursor at the element. Anchors rotate with the object, and `offset` is in world units of the object's unrotated space. For an element target, the first element that matches `selector` is used, and `anchor` and `offset` are relative to the element's box. While the cursor sticks to an element, it follows the element inside the content; if the element disappears or is scrolled out of view, the cursor stays at its last visible position and returns once it reappears.
+A point in world coordinates, an anchor on an object, or an element inside an object's content, such as a button in an iframe object. Used by `moveTo()` and the `position` option, which point the cursor at an element, and by `click()` and `interactWithElement()`, which use it. `moveObject()` and `copyObjects()` take only point and object targets (`KritzelAgenticPointTarget | KritzelAgenticObjectTarget`). Anchors rotate with the object, and `offset` is in world units of the object's unrotated space. For an element target, the first element that matches `selector` is used, and `anchor` and `offset` are relative to the element's box. While the cursor sticks to an element, it follows the element inside the content; if the element disappears or is scrolled out of view, the cursor stays at its last visible position and returns once it reappears.
 
 ```ts
 type KritzelAgenticTarget = KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget;
@@ -718,13 +787,68 @@ interface KritzelAgenticMoveResult {
 type KritzelEasing = 'linear' | 'ease-in' | 'ease-out' | 'ease-in-out' | ((t: number) => number);
 ```
 
+### KritzelObjectElementInteraction
+
+What [`interactWithElement()`](#interactwithelement) does to the element, as a user would with the mouse or keyboard. The content performs it with DOM events: its handlers run as for a real press, but CSS `:hover` and `:active` styles don't apply, and APIs that need a user gesture may refuse to work.
+
+```ts
+type KritzelObjectElementInteraction =
+  /** Clicks the center of the element's visible part; count: 2 double-clicks. */
+  | { type: 'click'; count?: 1 | 2 }
+  /** Moves the pointer onto the element. */
+  | { type: 'hover' }
+  /** Replaces the value of a text field, textarea, or contenteditable element, sets a range, number, date, or color field,
+   *  or selects the option of a select whose value or label matches. Fires input and change. */
+  | { type: 'fill'; value: string }
+  /** Checks or unchecks a checkbox, radio button, or switch by clicking it (or its label) if needed. */
+  | { type: 'check'; checked?: boolean } // defaults to true
+  /** Focuses the element and presses a key, e.g. 'Enter', 'Escape', 'ArrowUp', 'a', or 'Control+a'.
+   *  Enter and Space activate buttons and links, arrow keys step range and number fields; no text is typed. */
+  | { type: 'press'; key: string }
+  /** Turns the mouse wheel over the element and scrolls it, or its closest scrollable ancestor, by CSS pixels. */
+  | { type: 'scroll'; deltaX?: number; deltaY?: number };
+```
+
+### KritzelObjectElementInteractionFailureReason
+
+Why an element refused an interaction: `elementReason` of an action result with `reason: 'element-interaction-failed'`, and `reason` of the result of the object's `interactWithElement()`.
+
+| Reason | Meaning |
+|--------|---------|
+| `'not-found'` | No element matches the selector. |
+| `'not-visible'` | The element is not rendered, hidden, or outside the content, also after scrolling it into view. |
+| `'disabled'` | The element is disabled. |
+| `'covered'` | Another element covers the point that would be clicked. |
+| `'not-editable'` | `'fill'` on an element that is not a text field, select, or editable element, or that is read-only. |
+| `'not-checkable'` | `'check'` on an element that is not a checkbox, radio button, or switch, or that did not change. |
+| `'not-scrollable'` | `'scroll'` found nothing under the element that can scroll in that direction. |
+| `'invalid-value'` | The value, option, or key was not accepted. A field that refused a value is left as it was. |
+| `'unavailable'` | The object is not mounted, its content runs without scripts, or it did not respond or reloaded meanwhile. |
+
+### KritzelObjectElementState
+
+The `state` of an element in a [`KritzelCanvasElement`](#kritzelcanvaselement) and in element descriptions: what the element's attributes don't show. Only the fields that apply are set.
+
+```ts
+interface KritzelObjectElementState {
+  disabled?: boolean;          // disabled, aria-disabled="true", or inside an inert subtree
+  checked?: boolean | 'mixed'; // checkboxes, radio buttons, and switches, also by ARIA role
+  selected?: boolean;          // <option>
+  open?: boolean;              // <details>
+  focused?: boolean;           // has the keyboard focus inside the content
+  editable?: boolean;          // text fields, selects, and editable elements: whether they can be filled
+  playing?: boolean;           // <audio> and <video>
+}
+```
+
 ### KritzelAgenticAction
 
 Passed to `perform()`. Each action method builds one of these objects. Coordinates and sizes are in world units, angles in degrees.
 
 ```ts
 type KritzelAgenticAction =
-  | { type: 'click'; target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget; count?: 1 | 2 }
+  | { type: 'click'; target: KritzelAgenticPointTarget | KritzelAgenticObjectTarget | KritzelAgenticElementTarget; count?: 1 | 2 }
+  | { type: 'interactWithElement'; target: KritzelAgenticElementTarget; interaction: KritzelObjectElementInteraction }
   | { type: 'select'; objectIds: string[]; additive?: boolean }
   | { type: 'clearSelection' }
   | { type: 'moveObject'; objectId: string; to: KritzelAgenticPointTarget | KritzelAgenticObjectTarget; align?: KritzelAgenticAnchor }
@@ -740,7 +864,7 @@ type KritzelAgenticAction =
   | { type: 'drawPath'; points: KritzelPoint[]; style?: KritzelAgenticStrokeStyle }
   | { type: 'connect'; from: string; to: string; style?: KritzelAgenticLineStyle }
   | { type: 'setStyle'; objectIds: string[]; style: KritzelAgenticObjectStyle }
-  | { type: 'addObject'; object: KritzelBaseObject }
+  | { type: 'addObject'; object: KritzelBaseObject; fill?: Promise<KritzelAgenticFill> }
   | { type: 'deleteObjects'; objectIds: string[] }
   | { type: 'undo' }
   | { type: 'redo' };
@@ -753,6 +877,21 @@ type KritzelAgenticOrder = 'front' | 'back' | 'forward' | 'backward';
 ```
 
 Each member is also exported as its own interface, for example `KritzelAgenticMoveObjectAction`, `KritzelAgenticSetStyleAction`, and `KritzelAgenticAddObjectAction`.
+
+### KritzelAgenticFill
+
+What fills in the placeholder of an `addObject` action with a `fill`. See [addObject](#addobject).
+
+```ts
+interface KritzelAgenticFill {
+  /** The object the placeholder stands in for. It is prepared like an added object, but never inserted. */
+  content: KritzelBaseObject;
+  /** Copies `content` onto the placeholder, for example a widget's code. Runs synchronously inside the action. */
+  apply(placeholder: KritzelBaseObject, content: KritzelBaseObject): void;
+}
+```
+
+`placeholder` is the object on the canvas, which the user may have moved or resized while the action waited. Copy only the content onto it, so that its position and size stay.
 
 ### Style Types
 
@@ -809,7 +948,7 @@ The last argument of every action.
 interface KritzelAgenticActionOptions {
   /** Screen pixels per second. Defaults to the agent's `speed`, or 1200. Also scales presses, drags, drawing, and typing. */
   speed?: number;
-  /** Skips all animation and applies the change at once. Defaults to false. */
+  /** Skips all animation and applies the change at once; a placed object still plays the theme's appear animation. Defaults to false. */
   instant?: boolean;
   /** Stops the action, also while it waits in the queue. Its changes are rolled back. */
   signal?: AbortSignal;
@@ -834,12 +973,21 @@ interface KritzelAgenticActionResult {
    * On failure: the objects that caused it, when known.
    */
   objectIds?: string[];
+  /**
+   * For interactions with elements: the element afterwards, or the element that refused the interaction,
+   * as the object's content describes it (the content may be untrusted).
+   */
+  element?: KritzelObjectElementInfo;
+  /** For 'element-interaction-failed': why the element refused the interaction. */
+  elementReason?: KritzelObjectElementInteractionFailureReason;
+  /** For 'element-interaction-failed': what went wrong, in words. */
+  message?: string;
 }
 ```
 
 ### KritzelAgenticActionFailureReason
 
-Why an action did not complete. See [Results and Conflicts](../advanced/agents.md#results-and-conflicts) for a description of each reason. Apart from `'user-selected'` and `'user-interaction'`, the changes of a stopped action are rolled back.
+Why an action did not complete. Apart from `'user-selected'` and `'user-interaction'`, the changes of a stopped action are rolled back.
 
 ```ts
 type KritzelAgenticActionFailureReason =
@@ -857,8 +1005,27 @@ type KritzelAgenticActionFailureReason =
   | 'nothing-to-redo'
   | 'conflict'
   | 'invalid-target'
-  | 'engine-disconnected';
+  | 'engine-disconnected'
+  | 'element-interaction-failed';
 ```
+
+| Reason | Description |
+|--------|-------------|
+| `'aborted'` | The `signal` was aborted or `cancel()` was called. |
+| `'agent-moved'` | `moveTo()` was called while the action was running. |
+| `'agent-removed'` | The agent was removed while the action was queued or running. |
+| `'object-removed'` | A target was deleted while the action was running. |
+| `'user-selected'` | The user has a target selected. If the user selects a target while the agent works on it, the agent stops and keeps what it has done so far as one step of its history. |
+| `'user-interaction'` | The user is dragging, resizing, rotating, drawing on, editing, or erasing a target. The agent keeps what it has done so far, as for `'user-selected'`. |
+| `'collaborator-editing'` | A collaborator has a target selected or is editing it. |
+| `'claimed-by-agent'` | Another agent's running action or selection covers a target, also an agent of a collaborator. |
+| `'workspace-changed'` | The workspace was switched, reloaded, or deleted. |
+| `'not-allowed'` | The object configuration forbids the change, for example resizing or rotating. |
+| `'invalid-target'` | An ID is unknown, belongs to an object inside a group, or has the wrong type. |
+| `'conflict'` | A target was changed elsewhere during the action, or the history step of the agent is outdated. |
+| `'nothing-to-undo'`, `'nothing-to-redo'` | The agent has no step to undo or redo. |
+| `'engine-disconnected'` | No workspace is ready, for example while the editor is loading or after it was removed from the page. |
+| `'element-interaction-failed'` | An element inside an object refused an interaction; `elementReason` and `message` say why, for example because it is disabled or covered. |
 
 ### KritzelAgentChangeSource
 
@@ -883,17 +1050,32 @@ interface KritzelAgentTool {
   inputSchema: KritzelAgentToolSchema;
   /** Runs the tool with the model's input (an object or a JSON string) and resolves with a JSON result. */
   run: (input: unknown, context?: KritzelAgentToolContext) => Promise<string>;
+  /** Optional: begins a call while the model is still writing its input. */
+  begin?: (context: KritzelAgentToolContext) => KritzelAgentToolCall;
 }
 
 interface KritzelAgentToolContext {
   /** Stops the action like the `signal` of an action. */
   signal?: AbortSignal | null;
+  /** The ID of the tool call being run, when the runner has one. A chat session always passes it. */
+  toolCallId?: string;
+}
+
+interface KritzelAgentToolCall {
+  /** More input arrived: the input's JSON text written so far. */
+  update(inputText: string): void;
+  /** The input is complete: finishes the call and resolves with its result, exactly like `run()`. */
+  finish(input: unknown): Promise<string>;
+  /** The call won't run: undoes whatever the call began. A promise makes the runner wait until that is done. */
+  cancel(): void | Promise<void>;
 }
 ```
 
+`begin()` is optional. A runner that streams tool calls, such as a [chat session](../advanced/agents.md#streaming), calls it when the model starts a call and gets a `KritzelAgentToolCall`. It passes the input written so far to `update()` as the input streams, then either calls `finish()` with the complete input instead of `run()`, or `cancel()` when the call won't run, for example because it was dropped or the prompt was stopped. A begun call is finished or cancelled exactly once. Runners that don't stream tool calls only call `run()`. `create_iframe` and `create_image` use `begin()` to show a loading placeholder while the model writes, and [`parsePartialJson()`](#parsepartialjson) reads the input written so far.
+
 ### KritzelAgentToolSchema
 
-The JSON Schema of a tool's input. It uses only keywords that the major LLM providers accept: no `anyOf`, `const`, `$ref`, or minimum and maximum values. It is a type alias, not an interface, so that it fits SDK types that index schemas by string. The schemas are made for standard tool use, not for strict modes, so send the tools without strict mode: leave `strict` off with Anthropic and in OpenAI's Chat Completions API, and set `strict: false` in OpenAI's Responses API and Agents SDK. See [Other Providers](../advanced/agents.md#other-providers).
+The JSON Schema of a tool's input. It uses only keywords that the major LLM providers accept: no `anyOf`, `const`, `$ref`, or minimum and maximum values. It is a type alias, not an interface, so that it fits SDK types that index schemas by string. The schemas are made for standard tool use, not for strict modes, so send the tools without strict mode: leave `strict` off with Anthropic and in OpenAI's Chat Completions API, and set `strict: false` in OpenAI's Responses API and Agents SDK.
 
 ```ts
 type KritzelAgentToolSchema = {
@@ -930,12 +1112,41 @@ interface KritzelAgentToolResult {
   /** Why the action did not complete; 'invalid-input' when the input was rejected. */
   reason?: KritzelAgenticActionFailureReason | 'invalid-input';
   objectIds?: string[];
-  /** What was wrong with the input. */
+  /** What was wrong with the input, or why an element refused an interaction. */
   message?: string;
   /** What to do about the failure. */
   hint?: string;
   /** Snapshots of the objects the action created or changed. */
   objects?: KritzelCanvasObject[];
+  /** The element an interaction acted on, as it is afterwards (interact_with_element). */
+  element?: KritzelCanvasElement;
+  /** The elements inside an object (inspect_elements). */
+  elements?: KritzelCanvasElement[];
+  /** Whether more elements matched than were returned. */
+  truncated?: boolean;
+}
+```
+
+### KritzelCanvasElement
+
+An element inside an object's content as `inspect_elements` and `interact_with_element` describe it to models. Its strings come from the content, which may be untrusted.
+
+```ts
+interface KritzelCanvasElement {
+  /** CSS selector of the element; pass it to interact_with_element. */
+  selector: string;
+  tagName: string;
+  /** The element's text, truncated to 200 characters. */
+  text?: string;
+  classList?: string[];
+  /** Descriptive attributes such as role, aria-*, type, placeholder, or title. */
+  attributes?: Record<string, string>;
+  /** State such as disabled, checked, or focused. */
+  state?: KritzelObjectElementState;
+  /** The value of a form field; never of password fields. */
+  value?: string;
+  /** Whether part of the element can be seen. */
+  visible?: boolean;
 }
 ```
 

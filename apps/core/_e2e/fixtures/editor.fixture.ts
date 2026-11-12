@@ -1,4 +1,4 @@
-import { test as base, type Page, type Locator } from '@playwright/test';
+import { test as base, type BrowserContext, type Page, type Locator } from '@playwright/test';
 
 export type KritzelAlignment =
   | 'start-horizontal'
@@ -56,6 +56,7 @@ export interface ThemeAwareColor {
 export type ShapeType = 'rectangle' | 'ellipse' | 'triangle';
 
 export interface KritzelShapeConfig {
+  isLoading?: boolean;
   name?: string;
   shapeType?: ShapeType;
   translateX?: number;
@@ -73,6 +74,7 @@ export interface KritzelShapeConfig {
 }
 
 export interface KritzelPathConfig {
+  isLoading?: boolean;
   points: number[][];
   translateX?: number;
   translateY?: number;
@@ -84,6 +86,7 @@ export interface KritzelPathConfig {
 }
 
 export interface KritzelTextConfig {
+  isLoading?: boolean;
   name?: string;
   text?: string;
   translateX?: number;
@@ -98,6 +101,7 @@ export interface KritzelTextConfig {
 }
 
 export interface KritzelLineConfig {
+  isLoading?: boolean;
   startX: number;
   startY: number;
   endX: number;
@@ -120,6 +124,7 @@ export interface KritzelLineConfig {
 }
 
 export interface KritzelImageConfig {
+  isLoading?: boolean;
   src: string;
   x?: number;
   y?: number;
@@ -134,6 +139,7 @@ export interface KritzelImageConfig {
 }
 
 export interface KritzelDynamicObjectConfig {
+  isLoading?: boolean;
   html?: string;
   translateX?: number;
   translateY?: number;
@@ -150,6 +156,19 @@ export interface KritzelDynamicObjectConfig {
   contentText?: string;
   scrollableY?: boolean;
   scrollContentHeight?: number;
+}
+
+export interface KritzelIframeObjectConfig {
+  html?: string;
+  css?: string;
+  script?: string;
+  translateX?: number;
+  translateY?: number;
+  rotation?: number;
+  width?: number;
+  height?: number;
+  scale?: number;
+  isLoading?: boolean;
 }
 
 export type KritzelNotificationType = 'info' | 'warning' | 'error';
@@ -408,6 +427,7 @@ export class EditorPage {
         borderWidth: cfg.borderWidth,
         padding: cfg.padding,
         scale: cfg.scale,
+        isLoading: cfg.isLoading,
       });
 
       if (typeof cfg.isInteractive === 'boolean') {
@@ -416,6 +436,55 @@ export class EditorPage {
 
       return el.addObject(dynamicObject);
     }, config);
+  }
+
+  /** Create a KritzelIframeObject and add it to the editor. */
+  async addIframeObject(config: KritzelIframeObjectConfig) {
+    return this.page.evaluate((cfg) => {
+      const k = (window as any).__kritzel__;
+      if (!k) throw new Error('Kritzel classes not loaded. Call loadKritzelClasses() first.');
+      const el = document.querySelector('kritzel-editor') as any;
+      if (!el?.engineRef?.core?.store?.state?.activeWorkspace) {
+        throw new Error('kritzel-editor is not ready yet (no active workspace). Call waitForReady() first.');
+      }
+      const iframe = new k.KritzelIframeObject(cfg);
+      return el.addObject(iframe);
+    }, config);
+  }
+
+  // --- Loading state helpers ---
+
+  /**
+   * Turns the loading state of an object on or off through `setLoading()` on the real instance,
+   * then waits for the engine to paint.
+   */
+  async setObjectLoading(object: Record<string, unknown>, isLoading: boolean) {
+    await this.page.evaluate(
+      async ({ id, loading }) => {
+        const el = document.querySelector('kritzel-editor') as any;
+        if (!el) throw new Error('kritzel-editor not found');
+        const realObject = await el.getObjectById(id);
+        if (!realObject) throw new Error(`Object with id "${id}" not found`);
+        realObject.setLoading(loading);
+        await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      },
+      { id: object.id as string, loading: isLoading }
+    );
+  }
+
+  /** The wrapper the engine renders an object into. */
+  objectWrapper(object: Record<string, unknown>): Locator {
+    return this.origin.locator(`.object[id="${object.id as string}"]`);
+  }
+
+  /** The loading placeholder the engine draws over an object while it is loading. */
+  loadingPlaceholder(object: Record<string, unknown>): Locator {
+    return this.objectWrapper(object).locator('> .kritzel-loading-placeholder');
+  }
+
+  /** The element the engine renders an object's content into (the first child of its wrapper). */
+  objectContent(object: Record<string, unknown>): Locator {
+    return this.objectWrapper(object).locator('> :not(.kritzel-loading-placeholder)').first();
   }
 
   // --- Query helpers ---
@@ -1159,7 +1228,25 @@ export class EditorPage {
   }
 }
 
+/**
+ * Turns off the appear animation of inserted objects (theme `objectAppear`), so objects are in place, fully opaque,
+ * as soon as they are added: tests measure and screenshot them right away. Set on the engine, where it wins over the
+ * theme's variables on the editor.
+ */
+async function disableObjectAppearAnimation(context: BrowserContext) {
+  await context.addInitScript(() => {
+    const style = document.createElement('style');
+    style.textContent = 'kritzel-engine { --kritzel-object-appear-animation-duration: 0s !important; }';
+    document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style), { once: true });
+  });
+}
+
 export const test = base.extend<{ editorPage: EditorPage }>({
+  // On the context, so pages a test opens itself (a second tab) get it too.
+  context: async ({ context }, use) => {
+    await disableObjectAppearAnimation(context);
+    await use(context);
+  },
   editorPage: async ({ page }, use) => {
     const editorPage = new EditorPage(page);
     await use(editorPage);

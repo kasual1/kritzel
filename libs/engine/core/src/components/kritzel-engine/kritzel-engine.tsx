@@ -88,6 +88,10 @@ import {
   KritzelObjectConfig,
   KritzelEngineHost,
   KRITZEL_ROTATION_HANDLE_DISTANCE,
+  KRITZEL_OBJECT_APPEAR_MAX_BATCH,
+  KritzelObjectAppearTiming,
+  KritzelObjectAppearResolution,
+  KritzelResolvedTitlebar,
 } from '@kritzel/core';
 import throttle from 'lodash/throttle';
 import { toPng, toSvg } from 'html-to-image';
@@ -1245,11 +1249,13 @@ export class KritzelEngine implements KritzelEngineHost {
       }
     }
 
+    // Objects of one batch appear one after another; big batches appear at once, without the animation.
+    const appears = objects.length <= KRITZEL_OBJECT_APPEAR_MAX_BATCH;
     this.core.store.objects.transaction(() => {
-      for (const object of objects) {
+      objects.forEach((object, index) => {
         const descendants = this.core.prepareObjectForInsert(object);
-        this.core.insertPreparedObject(object, descendants);
-      }
+        this.core.insertPreparedObject(object, descendants, appears ? index : null);
+      });
     });
 
     this.core.rerender();
@@ -1672,6 +1678,9 @@ export class KritzelEngine implements KritzelEngineHost {
         return true;
       },
     };
+
+    // The capture copies the computed styles, so objects still appearing would be captured faded or not at all.
+    this.finishAppearAnimations();
 
     try {
       if (format === 'svg') {
@@ -2559,6 +2568,8 @@ export class KritzelEngine implements KritzelEngineHost {
   /** Embedded objects rendered by the previous render, by id, so they can be unmounted even after they were deleted. */
   private _previousVisibleDynamicObjects: Map<string, { unmount(): void }> = new Map();
   private _revealedImageKeys: Set<string> = new Set();
+  /** Owners whose titlebar plays the appear animation with them, see `resolveAppearingTitlebarOwners`. */
+  private _appearingTitlebarOwners: Set<string> = new Set();
   private _sceneBootstrapOpacity: number = 1;
   private _sceneBootstrapTransitionEnabled: boolean = false;
   private _sceneBootstrapTransitionTimer: ReturnType<typeof setTimeout> | null = null;
@@ -2761,6 +2772,8 @@ export class KritzelEngine implements KritzelEngineHost {
     this.throttledPointerMoveMulti.cancel();
     window.visualViewport?.removeEventListener('resize', this.handleVisualViewportResize);
     this._revealedImageKeys.clear();
+    this.core.objectAppearManager.clear();
+    this._appearingTitlebarOwners.clear();
 
     if (this._sceneBootstrapTransitionTimer !== null) {
       clearTimeout(this._sceneBootstrapTransitionTimer);
@@ -3318,6 +3331,86 @@ export class KritzelEngine implements KritzelEngineHost {
     this.core.rerender();
   }
 
+
+  /** Classes of an object's container: card objects and images get a modifier that resolves their theme radius. */
+  private getObjectContainerClass(object: KritzelBaseObject<any>): string {
+    if (object instanceof KritzelIframeObject) {
+      return 'object object--iframe';
+    }
+    if (object instanceof KritzelDynamicObject) {
+      return 'object object--dynamic-object';
+    }
+    if (object instanceof KritzelImage) {
+      return 'object object--image';
+    }
+    return 'object';
+  }
+
+  /** Jumps the running appear animations to their end. */
+  private finishAppearAnimations(): void {
+    this.host.shadowRoot?.querySelectorAll('.object--appearing').forEach(element => {
+      element.getAnimations?.().forEach(animation => {
+        if ((animation as CSSAnimation).animationName === 'kritzel-object-appear') {
+          animation.finish();
+        }
+      });
+    });
+  }
+
+  /**
+   * Whether an inserted object can be shown, so its appear animation can start: an iframe once its document loaded
+   * (it is invisible until then) or while it shows its loading placeholder; other objects at once.
+   */
+  private isReadyToAppear(object: KritzelBaseObject<any>): boolean {
+    if (object instanceof KritzelIframeObject) {
+      return object.isLoading || object.isDocumentLoaded;
+    }
+    if (object instanceof KritzelGroup && !object.isLoading) {
+      // A group (and its titlebar) appears with its children.
+      return object.children.every(child => this.isReadyToAppear(child));
+    }
+    return true;
+  }
+
+  /**
+   * The titlebars that appear with their objects, with their stagger index, by owner ID: those shown when their object
+   * starts to appear. A titlebar shown later (e.g. once its object is selected) shows at once, rather than replaying the
+   * animation out of step with its object.
+   */
+  private resolveAppearingTitlebarOwners(titlebars: KritzelResolvedTitlebar[], appear: KritzelObjectAppearResolution): Map<string, number> {
+    const owners = new Map<string, number>();
+    titlebars.forEach(({ owner }) => {
+      const index = appear.appearing.get(owner.id);
+      if (index !== undefined && (appear.started.has(owner.id) || this._appearingTitlebarOwners.has(owner.id))) {
+        owners.set(owner.id, index);
+      }
+    });
+    this._appearingTitlebarOwners = new Set(owners.keys());
+    return owners;
+  }
+
+  /** The appear animation's timing from the theme (`objectAppear`), with the stylesheet's defaults. */
+  private getObjectAppearTiming(computedStyle: CSSStyleDeclaration): KritzelObjectAppearTiming {
+    return {
+      duration: parseCssTime(computedStyle.getPropertyValue('--kritzel-object-appear-animation-duration'), 600),
+      stagger: parseCssTime(computedStyle.getPropertyValue('--kritzel-object-appear-stagger'), 110),
+    };
+  }
+
+  /**
+   * The radius a card object or image sets itself, as the inline style that overrides the theme's; empty to use the
+   * theme's.
+   */
+  private getOwnBorderRadiusStyle(object: KritzelBaseObject<any>): Record<string, string> {
+    if (!(object instanceof KritzelIframeObject) && !(object instanceof KritzelDynamicObject) && !(object instanceof KritzelImage)) {
+      return {};
+    }
+    const radius = object.borderRadius;
+    if (radius === undefined || radius === '') {
+      return {};
+    }
+    return { '--kritzel-content-border-radius': typeof radius === 'number' ? `${radius}px` : radius };
+  }
   private getObjectEffectiveOpacity(object: KritzelBaseObject<any>): { multiplied: number; overridden: string } {
     const safeObjectOpacity = Number.isFinite(object.opacity) ? object.opacity : 1;
     const multiplied = (object.markedForRemoval ? 0.5 : 1) * safeObjectOpacity;
@@ -3400,7 +3493,17 @@ export class KritzelEngine implements KritzelEngineHost {
     const titlebarMetrics = titlebarManager.getMetrics(computedStyle);
     // Titlebars hang above their objects, so the render query is widened while titlebars are configured.
     const visibleObjects = this.core.store.getObjectsInViewport(titlebarManager.getCullingPadding(titlebarMetrics));
-    const titlebars = titlebarManager.resolveTitlebars(visibleObjects);
+    // Objects that app code or agents just inserted, with their stagger index.
+    const appear = this.core.objectAppearManager.resolve(
+      visibleObjects,
+      object => this.isReadyToAppear(object),
+      this.getObjectAppearTiming(computedStyle),
+      performance.now(),
+    );
+    const appearingObjects = appear.appearing;
+    // The titlebar of an object waiting to appear (e.g. an iframe whose document loads) stays hidden until it appears.
+    const titlebars = titlebarManager.resolveTitlebars(visibleObjects).filter(titlebar => !appear.pending.has(titlebar.owner.id));
+    const appearingTitlebarOwners = this.resolveAppearingTitlebarOwners(titlebars, appear);
     // The same distance agents draw and grab their handles at: above a titlebar on the selection's top edge.
     const selectionGroup = this.core.store.selectionGroup;
     const rotationHandleDistance = selectionGroup
@@ -3418,6 +3521,15 @@ export class KritzelEngine implements KritzelEngineHost {
 
       return 'auto';
     };
+
+    // A group's children are rendered as objects of their own, so the group's loading placeholder can't hide them.
+    // A group contains its children, so it is in the viewport whenever one of them is.
+    const hiddenByLoadingGroup = new Set<string>();
+    visibleObjects.forEach(object => {
+      if (object instanceof KritzelGroup && object.isLoading) {
+        KritzelGroup.collectDescendantIds(object, hiddenByLoadingGroup);
+      }
+    });
 
     const getSelectionGroupOverlayPointerEvents = (object: KritzelBaseObject<any>): 'none' | 'auto' => {
       if (object.markedForRemoval) {
@@ -3524,8 +3636,14 @@ export class KritzelEngine implements KritzelEngineHost {
               <div
                 key={object.id}
                 id={object.id}
-                class="object"
+                class={appearingObjects.has(object.id) ? `${this.getObjectContainerClass(object)} object--appearing` : this.getObjectContainerClass(object)}
                 style={{
+                  // The radius of a card object (iframe, dynamic object), for its wrapper, its content and its
+                  // loading placeholder; without its own, the theme's applies (`.object--iframe`, ...).
+                  // Left out when unset, so the variable is removed rather than set to an empty value.
+                  ...this.getOwnBorderRadiusStyle(object),
+                  // Its place in its batch, which delays its appear animation (`.object--appearing`).
+                  ...(appearingObjects.has(object.id) ? { '--kritzel-object-appear-index': String(appearingObjects.get(object.id)) } : {}),
                   transform: object?.transformationMatrix,
                   transformOrigin: 'top left',
                   position: 'absolute',
@@ -3535,6 +3653,8 @@ export class KritzelEngine implements KritzelEngineHost {
                   // selected line's wrapper above those layers so its handles always paint on top.
                   zIndex: this.core.displaySelectionLineUI(object) ? '10001' : object.zIndex.toString(),
                   pointerEvents: getObjectWrapperPointerEvents(object),
+                  // Kept mounted, so the content keeps loading underneath the group's placeholder.
+                  visibility: hiddenByLoadingGroup.has(object.id) ? 'hidden' : undefined,
                 }}
               >
                 {object instanceof KritzelPath && (
@@ -3659,6 +3779,8 @@ export class KritzelEngine implements KritzelEngineHost {
                       padding: object.padding + 'px',
                       overflow: 'visible',
                       userSelect: 'none',
+                      // Overrides the theme's drop shadow (`.kritzel-image-object`).
+                      filter: object.dropShadow,
                       imageRendering: this.core.store.state.isScaling || this.core.store.state.isPanning ? 'pixelated' : 'auto',
                     }}
                     draggable={false}
@@ -3671,6 +3793,7 @@ export class KritzelEngine implements KritzelEngineHost {
                 {object instanceof KritzelImage && object.loadState !== 'ready' && (
                   <div
                     ref={() => object.ensureLoaded()}
+                    class="kritzel-image-placeholder"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3709,6 +3832,7 @@ export class KritzelEngine implements KritzelEngineHost {
                 {object instanceof KritzelDynamicObject && (
                   <div
                     ref={el => el && object.mount(el)}
+                    class="kritzel-dynamic-object"
                     style={{
                       position: 'absolute',
                       left: '0',
@@ -3724,7 +3848,10 @@ export class KritzelEngine implements KritzelEngineHost {
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
                       padding: object.padding + 'px',
-                      overflow: 'visible',
+                      // Overrides the theme's shadow (`.kritzel-dynamic-object`).
+                      boxShadow: object.boxShadow,
+                      // Content is clipped to the rounded box unless the object lets it overflow.
+                      overflow: object.clipContent === false ? 'visible' : undefined,
                       display: 'block',
                     }}
                   ></div>
@@ -3748,7 +3875,7 @@ export class KritzelEngine implements KritzelEngineHost {
                       borderColor: KritzelColorHelper.resolveThemeColor(object.borderColor, currentTheme),
                       borderWidth: object.borderWidth + 'px',
                       borderStyle: 'solid',
-                      borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
+                      // Overrides the theme's shadow (`.kritzel-iframe-object`).
                       boxShadow: object.boxShadow,
                       overflow: 'hidden',
                       display: 'block',
@@ -3764,7 +3891,6 @@ export class KritzelEngine implements KritzelEngineHost {
                         width: '100%',
                         height: '100%',
                         border: '0',
-                        borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
                         pointerEvents: object.isInteractive ? 'auto' : 'none',
                       }}
                     ></iframe>
@@ -3772,7 +3898,6 @@ export class KritzelEngine implements KritzelEngineHost {
                       style={{
                         position: 'absolute',
                         inset: '0',
-                        borderRadius: object.borderRadius !== undefined ? (typeof object.borderRadius === 'number' ? `${object.borderRadius}px` : object.borderRadius) : undefined,
                         pointerEvents: object.isInteractive ? 'none' : 'auto',
                       }}
                     ></div>
@@ -3917,6 +4042,22 @@ export class KritzelEngine implements KritzelEngineHost {
                       </div>
                     );
                   })()}
+
+                {object.isLoading && !(object instanceof KritzelSelectionGroup) && !(object instanceof KritzelSelectionBox) && (
+                  <div
+                    // Drawn over the object's content, which stays mounted underneath so it can keep loading.
+                    class="kritzel-loading-placeholder"
+                    data-testid="kritzel-loading-placeholder"
+                    style={{
+                      width: object.totalWidth + 'px',
+                      height: object.totalHeight + 'px',
+                      transform: object.rotationDegrees !== 0 ? `rotate(${object.rotationDegrees}deg)` : undefined,
+                      transformOrigin: object.rotationDegrees !== 0 ? `${object.totalWidth / 2}px ${object.totalHeight / 2}px` : undefined,
+                      opacity: effectiveOpacityString,
+                      pointerEvents: object.markedForRemoval ? 'none' : 'auto',
+                    }}
+                  ></div>
+                )}
 
                 {this.core.store.state.debugInfo.showObjectInfo && (
                   <div
@@ -4374,6 +4515,7 @@ export class KritzelEngine implements KritzelEngineHost {
           {this.core.objectTitlebarManager.isEnabled && (
             <kritzel-object-titlebar-layer
               titlebars={titlebars}
+              appearingOwners={appearingTitlebarOwners}
               surfacePointerEvents={this.getTitlebarSurfacePointerEvents()}
               elementClick={this.handleTitlebarElementClick}
               titleEdit={this.titlebarTitleEditHandlers}
@@ -4567,4 +4709,17 @@ export class KritzelEngine implements KritzelEngineHost {
       </Host>
     );
   }
+}
+
+/**
+ * Milliseconds of a plain CSS time (`'600ms'`, `'0.6s'`), or `fallback` when it is empty or anything else (e.g. `calc()`,
+ * which custom properties keep unevaluated).
+ */
+function parseCssTime(value: string, fallback: number): number {
+  const match = /^(-?\d*\.?\d+)(ms|s)$/i.exec(value.trim());
+  if (!match) {
+    return fallback;
+  }
+  const amount = parseFloat(match[1]);
+  return match[2].toLowerCase() === 's' ? amount * 1000 : amount;
 }

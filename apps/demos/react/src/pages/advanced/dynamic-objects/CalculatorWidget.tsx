@@ -49,7 +49,7 @@ export function CalculatorWidget({ initialState, onStateChange }: CalculatorWidg
   );
 }
 
-const cardStyle: CSSProperties = { display: "grid", gridTemplateRows: "auto 42px 1fr", gap: 8, height: "100%", padding: 14, border: "1px solid #e5e7eb", borderRadius: 12, boxShadow: "0 12px 32px rgba(32,33,36,.12)", boxSizing: "border-box", overflow: "hidden", background: "#fff", fontFamily: "Roboto, sans-serif" };
+const cardStyle: CSSProperties = { display: "grid", gridTemplateRows: "auto 42px 1fr", gap: 8, height: "100%", padding: 14, border: "1px solid #e5e7eb", borderRadius: 12, boxSizing: "border-box", overflow: "hidden", background: "#fff", fontFamily: "Roboto, sans-serif" };
 const headerStyle: CSSProperties = { display: "flex", alignItems: "center", justifyContent: "space-between" };
 const displayStyle: CSSProperties = { display: "flex", alignItems: "center", justifyContent: "flex-end", padding: "0 12px", border: "1px solid #e0e0e0", borderRadius: 6, background: "#fafafa", fontSize: 24, fontWeight: 700, overflow: "hidden" };
 const keypadStyle: CSSProperties = { display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gridTemplateRows: "repeat(5, minmax(0, 1fr))", gap: 6, minHeight: 0 };

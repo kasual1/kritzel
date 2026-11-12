@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { KritzelEditor, KritzelWorkspace, type HTMLKritzelEditorElement } from '@kritzel/react-editor';
-import { playAlbumCoverScene } from './album-cover-scene';
+import { playRecorderScene } from './recorder-scene';
 
 const WORKSPACE_ID = 'agentic-canvas-generative-ui';
 
@@ -10,8 +10,8 @@ const hostStyle: CSSProperties = {
 };
 
 /**
- * Generative UI on the agentic canvas: the prompt "Please generate a new album cover" adds a cover in the middle of the
- * canvas, which is cleared again shortly after. The scene plays once when the editor is ready; reload to play it again.
+ * Generative UI on the agentic canvas: the prompt "Please generate a recorder widget" adds the recorder widget in the
+ * middle of the canvas, which is cleared again shortly after. The scene plays once when the editor is ready; reload to play it again.
  */
 export function AgenticCanvasGenerativeUiInfographic() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
@@ -30,7 +30,7 @@ export function AgenticCanvasGenerativeUiInfographic() {
     }
     const abort = new AbortController();
     abortRef.current = abort;
-    playAlbumCoverScene(editor, setIsWorking, abort.signal).catch(error => {
+    playRecorderScene(editor, setIsWorking, abort.signal).catch(error => {
       if (!abort.signal.aborted) {
         console.error(error);
       }
@@ -49,7 +49,7 @@ export function AgenticCanvasGenerativeUiInfographic() {
         isWorkspaceManagerVisible={false}
         isMoreMenuVisible={false}
         isZoomPanelVisible={false}
-        // The Covers agent works with a hidden cursor and shows nowhere else either.
+        // The Studio agent works with a hidden cursor and shows nowhere else either.
         isAgentAvatarsVisible={false}
         style={{ display: 'block', height: '100%' }}
         onIsReady={onReady}

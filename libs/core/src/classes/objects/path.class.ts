@@ -14,6 +14,8 @@ import { KritzelObjectExportContext, KritzelObjectExportFormat } from '../../int
 export interface KritzelPathConfig {
   /** User-facing name, shown as the title of the object's titlebar. */
   name?: string;
+  /** Whether the engine's loading placeholder is drawn over the object, see `KritzelBaseObject.setLoading()`. */
+  isLoading?: boolean;
   points?: number[][];
   translateX?: number;
   translateY?: number;
@@ -78,6 +80,7 @@ export class KritzelPath extends KritzelBaseObject<SVGElement> {
   constructor(config?: KritzelPathConfig) {
     super();
     this.name = config?.name;
+    this.isLoading = config?.isLoading ?? false;
     this.options = config;
     this.points = config?.points ?? [];
     this.translateX = config?.translateX ?? 0;

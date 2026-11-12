@@ -1,6 +1,7 @@
 import type { KritzelAgenticAction, KritzelAgenticActionType } from '../../interfaces/agentic-action.interface';
 import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
 import { clickExecutor } from '../executors/click.executor';
+import { interactWithElementExecutor } from '../executors/interact-with-element.executor';
 import { clearSelectionExecutor, selectExecutor } from '../executors/select.executor';
 import { moveObjectExecutor } from '../executors/move-object.executor';
 import { deleteObjectsExecutor } from '../executors/delete-objects.executor';
@@ -15,8 +16,11 @@ import { createTextExecutor } from '../executors/create-text.executor';
 import { typeTextExecutor } from '../executors/type-text.executor';
 import { drawPathExecutor } from '../executors/draw-path.executor';
 import { connectExecutor } from '../executors/connect.executor';
+import { drawLineExecutor } from '../executors/draw-line.executor';
+import { editLineExecutor } from '../executors/edit-line.executor';
 import { setStyleExecutor } from '../executors/set-style.executor';
 import { addObjectExecutor } from '../executors/add-object.executor';
+import { updateIframeExecutor } from '../executors/update-iframe.executor';
 
 /**
  * One executor per action type. The mapped type makes the build fail when an action type
@@ -26,6 +30,7 @@ export const AGENTIC_ACTION_EXECUTORS: {
   [K in KritzelAgenticActionType]: KritzelAgenticActionExecutor<Extract<KritzelAgenticAction, { type: K }>>;
 } = {
   click: clickExecutor,
+  interactWithElement: interactWithElementExecutor,
   select: selectExecutor,
   clearSelection: clearSelectionExecutor,
   moveObject: moveObjectExecutor,
@@ -43,8 +48,11 @@ export const AGENTIC_ACTION_EXECUTORS: {
   typeText: typeTextExecutor,
   drawPath: drawPathExecutor,
   connect: connectExecutor,
+  drawLine: drawLineExecutor,
+  editLine: editLineExecutor,
   setStyle: setStyleExecutor,
   addObject: addObjectExecutor,
+  updateIframe: updateIframeExecutor,
 };
 
 /** The executor for an action type, or `null` for unknown types. */

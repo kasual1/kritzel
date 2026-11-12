@@ -70,14 +70,13 @@ The generator itself is plain TypeScript. `onReady()` hands it the editor from `
 
 ### Adding a UI
 
-A new UI is a `KritzelIframeObject` that starts out loading, so `loadingContent` is shown until the model answers. The `allow-scripts` sandbox lets the generated JavaScript run while keeping it away from the host page. The page is laid out at 800 × 600 CSS pixels and drawn slightly smaller through `scale`, like a frame in a design tool.
+A new UI is a `KritzelIframeObject` that starts out with `isLoading: true`, so the engine draws its [loading placeholder](../api-reference/theming.md#loading-placeholder) over the frame until the model answers. The `allow-scripts` sandbox lets the generated JavaScript run while keeping it away from the host page. The page is laid out at 800 × 600 CSS pixels and drawn slightly smaller through `scale`, like a frame in a design tool.
 
 ```typescript
 const ui = await this.editor.addObject(
   new KritzelIframeObject({
     name,
     title: name,
-    loadingContent: UI_SKELETON,
     isLoading: true,
     sandbox: ['allow-scripts'],
     translateX: x,

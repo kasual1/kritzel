@@ -54,7 +54,7 @@ When the user selects the logout action, `<KritzelEditor>` invokes `onLogout`. Y
 
 ## Setting the User
 
-Use the `user` prop for the logged-in user and `activeUsers` for workspace collaborators. The current user drives the account UI and awareness metadata, while active users appear as avatars in the editor header. Both props update at runtime, so clearing `user` signs out and replacing `activeUsers` refreshes the collaborator list. After the active users, the avatar stack shows the [agents](./agents.md#presence) of the editor and of collaborators, unless `isAgentAvatarsVisible` is `false`.
+Use the `user` prop for the logged-in user and `activeUsers` for workspace collaborators. The current user drives the account UI and awareness metadata, while active users appear as avatars in the editor header. Both props update at runtime, so clearing `user` signs out and replacing `activeUsers` refreshes the collaborator list. After the active users, the avatar stack shows the [agents](./agents.md) of the editor and of collaborators, unless `isAgentAvatarsVisible` is `false`.
 
 <LiveDemo
   repoUrl="https://github.com/kasual1/kritzel/tree/main/apps/demos/react"

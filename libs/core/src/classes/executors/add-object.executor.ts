@@ -1,10 +1,11 @@
-import type { KritzelAgenticAddObjectAction } from '../../interfaces/agentic-action.interface';
+import type { KritzelAgenticAddObjectAction, KritzelAgenticFill } from '../../interfaces/agentic-action.interface';
 import { KritzelBaseObject } from '../objects/base-object.class';
 import { KritzelGroup } from '../objects/group.class';
 import { KritzelImage } from '../objects/image.class';
 import { KritzelText } from '../objects/text.class';
 import { AGENTIC_ACTION_MOUNT_WAIT_FRAMES } from '../../constants/agentic-action.constants';
 import type { KritzelAgenticActionExecutor } from '../../types/agentic-action.types';
+import type { KritzelAgenticActionRun } from '../managers/agentic-action-run.class';
 import { isSelectionObject } from '../../helpers/agentic-conflict.helper';
 import { unionCenter } from '../../helpers/agentic-geometry.helper';
 
@@ -12,6 +13,9 @@ import { unionCenter } from '../../helpers/agentic-geometry.helper';
  * `addObject`: places an object the app built (an iframe, an image, a custom object, a group with
  * children). The cursor hops to where the object will appear and presses, then the object and its
  * group children are inserted as one step of the agent's history. The user's selection stays.
+ *
+ * With `fill`, the object is a loading placeholder: the action stays open until the fill arrives and then fills
+ * the placeholder in, so placing and filling are one step of the history, and a stop rolls both back.
  */
 export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddObjectAction> = {
   mutates: true,
@@ -22,6 +26,14 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
     }
     if (isSelectionObject(action.object)) {
       throw new TypeError('"object" can\'t be a selection.');
+    }
+    if (action.fill !== undefined) {
+      if (typeof (action.fill as Promise<unknown> | null)?.then !== 'function') {
+        throw new TypeError('"fill" must be a promise.');
+      }
+      if (action.object instanceof KritzelGroup) {
+        throw new TypeError('A group can\'t be a placeholder.');
+      }
     }
   },
 
@@ -38,7 +50,9 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
     // Nothing but the scale (which the insert would set the same way) changes before the insert: a group with a
     // core would, for example, stop collecting the children added to it later.
     object.scale = object.scale ?? core.store.state.scale;
-    if (object instanceof KritzelImage) {
+    if (action.fill) {
+      object.isLoading = true;
+    } else if (object instanceof KritzelImage) {
       // Fetches and stores the image; a failure rejects the action.
       object._core = core;
       await object.prepareForInsert();
@@ -68,7 +82,13 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
       all.forEach(item => run.own(item));
       core.insertPreparedObject(object, descendants);
     });
-    all.forEach(item => run.track(item));
+    if (action.fill) {
+      // A placeholder is the user's to move, resize or delete while the action waits: it is not claimed, and the
+      // user's changes to it belong to the action (so a rollback or an undo covers them too).
+      run.onSettle(map.routeLocalWrites(object.id, run.origin!));
+    } else {
+      all.forEach(item => run.track(item));
+    }
     await run.release();
 
     // Wait for an on-screen object to mount (texts measure themselves then), like engine.addObject().
@@ -88,10 +108,44 @@ export const addObjectExecutor: KritzelAgenticActionExecutor<KritzelAgenticAddOb
       }
     }
 
+    if (action.fill) {
+      await fillPlaceholder(run, object, action.fill);
+    }
+
     run.finalAttachment = { objectId: object.id, anchor: 'bottom-right' };
     return [object.id];
   },
 };
+
+/** Waits for the fill of a placeholder the action placed, then fills it in and ends its loading. */
+async function fillPlaceholder(run: KritzelAgenticActionRun, placeholder: KritzelBaseObject<any>, fill: Promise<KritzelAgenticFill>): Promise<void> {
+  let filling: KritzelAgenticFill;
+  try {
+    filling = await fill;
+  } catch {
+    run.assertActive();
+    run.stop('aborted');
+  }
+  run.assertActive();
+  const { content, apply } = filling;
+  if (content instanceof KritzelImage) {
+    // Fetches and stores the image; a failure rejects the action.
+    content._core = run.core;
+    await content.prepareForInsert();
+    run.assertActive();
+  }
+  const map = run.map!;
+  // The live instance: the user may have changed the placeholder meanwhile.
+  const current = map.findById(placeholder.id);
+  if (!current) {
+    run.stop('object-removed', [placeholder.id]);
+  }
+  run.mutate(() => {
+    apply(current, content);
+    current.isLoading = false;
+    map.update(current);
+  });
+}
 
 /**
  * IDs of what can't be inserted:

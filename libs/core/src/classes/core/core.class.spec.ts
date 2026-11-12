@@ -888,6 +888,22 @@ describe('KritzelCore', () => {
       expect(mockAnchorManager.rebuildIndex).toHaveBeenCalledTimes(1);
     });
 
+    it('lets the object and its descendants appear, with the given stagger index, unless it is null', () => {
+      const a = new KritzelShape({ shapeType: ShapeType.Rectangle });
+      const group = new KritzelGroup();
+      group.addChild(a);
+      jest.spyOn(group, 'finalize').mockImplementation(() => undefined);
+      const mark = jest.spyOn(core.objectAppearManager, 'mark');
+
+      core.insertPreparedObject(group, core.prepareObjectForInsert(group), 2);
+      expect(mark).toHaveBeenCalledWith([a, group], 2);
+
+      mark.mockClear();
+      const b = new KritzelShape({ shapeType: ShapeType.Rectangle });
+      core.insertPreparedObject(b, core.prepareObjectForInsert(b), null);
+      expect(mark).not.toHaveBeenCalled();
+    });
+
     describe('z-order of flushed groups', () => {
       /** zIndex of every object at the moment it was inserted. */
       let stored: Map<KritzelBaseObject<any> | string, number>;

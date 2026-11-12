@@ -1,5 +1,6 @@
 import type {
   KritzelAgenticAnchor,
+  KritzelAgenticElementTarget,
   KritzelAgenticObjectTarget,
   KritzelAgenticPointTarget,
 } from '../interfaces/agentic-cursor.interface';
@@ -8,6 +9,7 @@ import type { ArrowHeadStyle } from '../interfaces/arrow-head.interface';
 import { ShapeType } from '../enums/shape-type.enum';
 import { AGENTIC_ANCHOR_FACTORS, isAgenticAnchor } from './agentic-geometry.helper';
 import { KritzelMathHelper } from './math.helper';
+import { isValidElementSelector } from '../classes/objects/iframe-element-bridge.class';
 
 /** Every anchor on an object. */
 export const AGENTIC_ANCHORS = Object.keys(AGENTIC_ANCHOR_FACTORS) as KritzelAgenticAnchor[];
@@ -174,6 +176,28 @@ export function assertTarget(target: unknown, field: string): asserts target is 
   }
   if (!KritzelMathHelper.isFiniteNumber(candidate.x) || !KritzelMathHelper.isFiniteNumber(candidate.y)) {
     throw new TypeError(`"${field}" must be { x, y } or { objectId }.`);
+  }
+}
+
+/**
+ * Throws a `TypeError` unless `target` is an element target `{ objectId, selector, anchor?, offset? }` with a
+ * selector the browser can parse.
+ */
+export function assertElementTarget(target: unknown, field: string): asserts target is KritzelAgenticElementTarget {
+  if (!target || typeof target !== 'object') {
+    throw new TypeError(`"${field}" must be { objectId, selector }.`);
+  }
+  const candidate = target as { objectId?: unknown; selector?: unknown; anchor?: unknown; offset?: { x?: unknown; y?: unknown } };
+  assertObjectId(candidate.objectId, `${field}.objectId`);
+  if (typeof candidate.selector !== 'string' || candidate.selector.trim() === '') {
+    throw new TypeError(`"${field}.selector" must be a non-empty CSS selector.`);
+  }
+  if (!isValidElementSelector(candidate.selector)) {
+    throw new TypeError(`"${field}.selector" is not a valid CSS selector: ${candidate.selector}`);
+  }
+  assertAnchor(candidate.anchor, `${field}.anchor`);
+  if (candidate.offset !== undefined && (!KritzelMathHelper.isFiniteNumber(candidate.offset?.x) || !KritzelMathHelper.isFiniteNumber(candidate.offset?.y))) {
+    throw new TypeError(`"${field}.offset" must be { x, y }.`);
   }
 }
 
