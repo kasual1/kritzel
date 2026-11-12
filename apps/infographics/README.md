@@ -23,7 +23,7 @@ npm run infographics
 | `#/open-source` | The animated outline of the open source logo. |
 | `#/agentic-canvas` | Hero of the agentic canvas post: three agents help release the jazz song "Full Control". |
 | `#/agentic-canvas-generative-ui` | Generative UI on the agentic canvas: one prompt adds the recorder widget. |
-| `#/agentic-canvas-cursors` | Agentic cursors: Studio records a track with the recorder widget after the prompt "Please record a new track". |
+| `#/agentic-canvas-cursors` | Agentic cursors: Studio records a track with the recorder widget after the prompt "Please record a new track", and stars it. |
 | `#/agentic-canvas-rectangle` | The agentic canvas at its simplest: "Please add a rectangle" adds a rectangle in the middle of the view. |
 | `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
@@ -67,7 +67,8 @@ agent places the widget with `agent.addObject()`, so the widget is its change, b
 recorder widget of the agentic canvas page is on the canvas from the start, as an initial object of the workspace. After
 1.5 seconds "Please record a new track" is typed into the chat box. Studio's cursor comes in from the top right and starts
 a recording with `agent.click()` on the record button, waits beside it for 2.5 seconds, and stops the recording with a
-second click. Stopping saves one track below the widget, and the cursor leaves the view. The widget and the track stay on
+second click. Stopping saves one track below the widget. On its way out the cursor clicks the track's star, which turns
+amber, and then leaves the view. The widget and the track stay on
 the canvas. It is scripted in `record-track-scene.ts` and reuses the widget, the track and the helpers of the agentic
 canvas page; Studio is a `KritzelAgent` there too.
 

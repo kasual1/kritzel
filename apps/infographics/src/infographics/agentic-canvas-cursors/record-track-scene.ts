@@ -13,6 +13,7 @@ import {
   addAgentAt,
   frame,
   removeAgents,
+  starTarget,
   takeContent,
   typePrompt,
   wait,
@@ -22,8 +23,9 @@ import {
 /**
  * Agentic cursors on a generative UI page: the recorder widget of the agentic canvas post is already on the canvas. The
  * user asks for a new track, and Studio's cursor comes in, starts a recording with `agent.click()` on the record button,
- * stops it 2.5 seconds later with a second click, which saves one track below the widget, and leaves the view. The
- * widget and the track stay. Scripted, with no model calls, so every recording is the same.
+ * stops it 2.5 seconds later with a second click, which saves one track below the widget. On its way out it clicks the
+ * track's star, then leaves the view. The widget and the track stay. Scripted, with no model calls, so every recording
+ * is the same.
  */
 
 const PROMPT = 'Please record a new track';
@@ -47,8 +49,10 @@ const TRACK_BOX: Box = {
 const OPENING_PAUSE = 1500;
 /** How long Studio records before it presses stop. */
 const RECORDING_TIME = 2500;
-/** How long Studio stays beside the button after the track is saved, before it leaves. */
-const AFTER_STOP = 400;
+/** How long Studio stays beside the button after the track is saved, while the track appears, before it heads to the star. */
+const AFTER_STOP = 700;
+/** How long Studio stays on the star after the click before it leaves. */
+const AFTER_STAR = 250;
 
 /**
  * The recorder widget, part of the workspace's initial objects: it is on the canvas from the start, without the appear
@@ -69,7 +73,7 @@ export function createRecorderWidget(): KritzelIframeObject {
 
 /**
  * Plays the scene once, starting from the widget alone. `setWorking` drives the chat box's loading ring, which runs from
- * the sent prompt until the track is saved.
+ * the sent prompt until Studio has starred the track.
  */
 export async function playRecordTrackScene(
   editor: HTMLKritzelEditorElement,
@@ -117,7 +121,7 @@ export async function playRecordTrackScene(
   await press(false);
 
   // Stopping saves the track: it appears below the widget (Kritzel's appear animation), added by the page, not Studio.
-  await editor.addObjects([
+  const [track] = await editor.addObjects([
     new KritzelIframeObject({
       title: TRACK.name,
       content: takeContent(TRACK),
@@ -130,8 +134,14 @@ export async function playRecordTrackScene(
       boxShadow: SHADOW,
     }),
   ]);
-  setWorking(false);
   await wait(AFTER_STOP, signal);
+
+  // On its way out, Studio clicks the new track's star. The star turns on through the track's state, as the track's star
+  // button would, so the page animates it in place.
+  await act(studio.click(starTarget(track.id), { signal }));
+  track.setState({ ...track.state, favorite: true });
+  setWorking(false);
+  await wait(AFTER_STAR, signal);
 
   // Studio leaves through the bottom right of the view. The widget and the track stay.
   await studio.moveTo({ x: right + 80, y: bottom + 80 }, { duration: EXIT_DURATION, easing: 'ease-in' });
