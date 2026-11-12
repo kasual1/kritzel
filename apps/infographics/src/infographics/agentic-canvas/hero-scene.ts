@@ -467,11 +467,11 @@ const TAKE_RECORDING_TIME = 2600;
 const TAKE_PAUSE = 600;
 
 /** Center of the widget's record button, measured from the widget's top-left corner. */
-const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
+export const RECORD_BUTTON_CENTER = { x: 37, y: 73.5 };
 
 /** Where Studio's cursor tip sits relative to the button's center: on it while pressing, beside it while waiting. */
 export const BUTTON_PRESS_OFFSET = { x: 6, y: 6 };
-const BUTTON_REST_OFFSET = { x: 30, y: 24 };
+export const BUTTON_REST_OFFSET = { x: 30, y: 24 };
 
 
 /**

@@ -23,7 +23,7 @@ npm run infographics
 | `#/open-source` | The animated outline of the open source logo. |
 | `#/agentic-canvas` | Hero of the agentic canvas post: three agents help release the jazz song "Full Control". |
 | `#/agentic-canvas-generative-ui` | Generative UI on the agentic canvas: one prompt adds the recorder widget. |
-| `#/agentic-canvas-cursors` | Agentic cursors: Studio stars track 2 of the recorder widget after the prompt "Please favoritize track 2". |
+| `#/agentic-canvas-cursors` | Agentic cursors: Studio records a track with the recorder widget after the prompt "Please record a new track". |
 | `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
 ## Agentic canvas
@@ -63,10 +63,12 @@ agent places the widget with `agent.addObject()`, so the widget is its change, b
 ## Agentic canvas cursors
 
 `src/infographics/agentic-canvas-cursors/` shows an agentic cursor working on a generative UI page, with the chat box. The
-canvas starts empty; after 1.5 seconds the recorder widget of the agentic canvas page fades in centered in the view, with
-its two tracks below it. Then "Please favoritize track 2" is typed into the chat box, and Studio clicks the star of track 2
-with `agent.click()`: its cursor glides to the star and presses it, the star turns amber, and the cursor leaves the view. 1.5 seconds later every object is removed. It is scripted in `favorite-track-scene.ts`
-and reuses the widget, the tracks and the helpers of the agentic canvas page; Studio is a `KritzelAgent` there too.
+recorder widget of the agentic canvas page is on the canvas from the start, as an initial object of the workspace. After
+1.5 seconds "Please record a new track" is typed into the chat box. Studio's cursor comes in from the top right and starts
+a recording with `agent.click()` on the record button, waits beside it for five seconds, and stops the recording with a
+second click. Stopping saves one track below the widget, and the cursor leaves the view. The widget and the track stay on
+the canvas. It is scripted in `record-track-scene.ts` and reuses the widget, the track and the helpers of the agentic
+canvas page; Studio is a `KritzelAgent` there too.
 
 ## Generative UI API key
 
