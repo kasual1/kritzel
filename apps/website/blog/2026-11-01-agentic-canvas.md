@@ -83,57 +83,18 @@ Since Kritzel renders its objects as DOM, a model can write HTML, CSS and JavaSc
 npm install @kritzel/react-editor
 ```
 
-The session talks to the server through a transport. This one posts each step to `/api/chat` and reads the answer while the server streams it, one event per line:
-
-```ts title="chat-transport.ts"
-import type {
-  KritzelChatStreamEvent,
-  KritzelChatTransport,
-} from "@kritzel/react-editor";
-
-export const chatTransport: KritzelChatTransport = async function* (
-  request,
-  { signal },
-) {
-  const response = await fetch("/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(request),
-    signal,
-  });
-  if (!response.ok || !response.body) {
-    throw new Error(`The chat request failed with status ${response.status}.`);
-  }
-
-  // Every line the server sends is one KritzelChatStreamEvent as JSON.
-  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
-  let buffer = "";
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buffer += value;
-    const lines = buffer.split("\n");
-    buffer = lines.pop() ?? "";
-    for (const line of lines) {
-      if (line.trim()) yield JSON.parse(line) as KritzelChatStreamEvent;
-    }
-  }
-  if (buffer.trim()) yield JSON.parse(buffer) as KritzelChatStreamEvent;
-};
-```
-
-The editor itself only needs the session:
+The session talks to the server through a transport. `createHttpTransport()` posts each step to `/api/chat` and reads the answer while the server streams it, one event per line. The editor itself only needs the session:
 
 ```tsx title="GenerativeUi.tsx"
 import { useState } from "react";
 import {
   KRITZEL_DEFAULT_OBJECT_TITLEBAR,
+  createHttpTransport,
   KritzelChatSession,
   KritzelEditor,
   KritzelIframeObject,
   type KritzelObjectConfig,
 } from "@kritzel/react-editor";
-import { chatTransport } from "./chat-transport";
 
 const SYSTEM_PROMPT =
   "You work on a whiteboard. Look at the canvas before you change it. Build anything interactive, " +
@@ -148,7 +109,7 @@ export function GenerativeUi() {
   const [session] = useState(
     () =>
       new KritzelChatSession({
-        transport: chatTransport,
+        transport: createHttpTransport("/api/chat"),
         system: SYSTEM_PROMPT,
         canvasTools: { iframes: true },
       }),
