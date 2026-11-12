@@ -397,6 +397,20 @@ describe('KritzelChatSession', () => {
       expect(resultsOf(session.messages[2])[0].toolCallId).toBe(call.id);
     });
 
+    it('ends the prompt with an error event of a stream', async () => {
+      async function* stream(): AsyncIterable<KritzelChatStreamEvent> {
+        yield { type: 'text-delta', text: 'Partial' };
+        yield { type: 'error', message: 'The model is overloaded.' };
+        yield { type: 'finish', stopReason: 'end' };
+      }
+      const session = new KritzelChatSession({ transport: () => stream() });
+      session._attach(core);
+      const result = await settle(session.send('hi'));
+      expect(result.status).toBe('error');
+      expect((result.error as Error).message).toBe('The model is overloaded.');
+      expect(session.messages.map(message => message.role)).toEqual(['user']);
+    });
+
     it('reports transport errors and stops pending requests', async () => {
       const failing = new KritzelChatSession({ transport: async () => Promise.reject(new Error('offline')) });
       failing._attach(core);

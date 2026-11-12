@@ -64,6 +64,7 @@ export { formatAgentToolResult, AGENT_TOOL_REASON_HINTS } from './classes/agent/
 
 export * from './classes/chat/chat-session.class';
 export * from './classes/chat/scripted-transport';
+export * from './classes/chat/http-transport';
 
 export * from './classes/registries/dynamic-object-renderer.registry';
 export * from './classes/registries/font-registry.class';

@@ -98,13 +98,15 @@ export interface KritzelChatResponse {
 
 /**
  * An event of a streamed answer. Text deltas are joined into text parts; `part` adds a complete part (e.g. a
- * tool call); `message` replaces everything streamed so far; `finish` ends the answer.
+ * tool call); `message` replaces everything streamed so far; `finish` ends the answer; `error` ends it with an
+ * error, e.g. when the model fails after your server has started to answer.
  */
 export type KritzelChatStreamEvent =
   | { type: 'text-delta'; text: string }
   | { type: 'part'; part: KritzelChatPart }
   | { type: 'message'; message: KritzelChatMessage }
-  | { type: 'finish'; stopReason?: KritzelChatStopReason; providerData?: KritzelChatProviderData };
+  | { type: 'finish'; stopReason?: KritzelChatStopReason; providerData?: KritzelChatProviderData }
+  | { type: 'error'; message: string };
 
 /** Options passed to a transport call. */
 export interface KritzelChatTransportOptions {

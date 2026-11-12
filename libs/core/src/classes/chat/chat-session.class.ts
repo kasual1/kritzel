@@ -516,6 +516,8 @@ async function collectStream(stream: AsyncIterable<KritzelChatStreamEvent>, sign
     } else if (event.type === 'message') {
       parts = [...event.message.parts];
       providerData = event.message.providerData;
+    } else if (event.type === 'error') {
+      throw new Error(typeof event.message === 'string' && event.message ? event.message : 'The chat stream failed.');
     } else if (event.type === 'finish') {
       if (event.providerData) {
         providerData = { ...providerData, ...event.providerData };
