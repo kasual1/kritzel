@@ -177,6 +177,43 @@ await guide.task("Setting up the board", async () => {
 
 `task()` shows its label as the agent's status while it runs, and stops at the first action that can't be completed. Several agents can work on the same canvas at once, each with its own cursor, and the user can follow every one of them.
 
+#### Clicking inside widgets
+
+Creating objects is only half of what a cursor can do. Since the widgets on the canvas are real web pages, an agent can use them the same way a person would: press buttons, fill in fields or tick checkboxes. Let's take the recording widget from the Generative UI section and have the guide record a new track for the album. It moves to the record button and presses it, lets the recording run for 2.5 seconds and presses the button again to stop it. Then it stars the saved track and leaves the view.
+
+```ts
+const [recorder] = await editor.findObjects<KritzelIframeObject>(
+  (object) => object instanceof KritzelIframeObject && object.name === "Full Control Recorder",
+);
+
+const recordButton = { objectId: recorder.id, selector: '[data-kritzel-id="record"]' };
+const starButton = { objectId: recorder.id, selector: '[data-kritzel-id="star"]' };
+
+await guide.task("Recording a new track", async () => {
+  // Start the recording, let it run for 2.5 seconds, then stop it
+  await guide.click(recordButton);
+  await new Promise((resolve) => setTimeout(resolve, 2500));
+  await guide.click(recordButton);
+
+  // Star the track the widget just saved
+  await guide.click(starButton);
+});
+
+// Leave through the bottom-right corner of the view
+const viewport = await editor.getViewport();
+await guide.moveTo({
+  x: (viewport.width - viewport.translateX) / viewport.scale + 80,
+  y: (viewport.height - viewport.translateY) / viewport.scale + 80,
+});
+await editor.removeAgent(guide);
+```
+
+Instead of a point on the canvas, the click targets an element inside the widget: the ID of the iframe object plus a CSS selector. The first element that matches the selector is used. Before the cursor moves, the widget scrolls the element into view and checks that it is visible, enabled and not covered by anything else. The cursor then flies to the button, presses it, and the widget's own click handler runs, exactly as if the user had clicked it. Afterwards the cursor sticks to the element, so it follows the button when the widget moves on the canvas or its layout changes while the recording runs.
+
+If the button can't be clicked, for example because it is disabled, the result has `reason: 'element-interaction-failed'` together with an `elementReason` and a readable `message`. Inside `task()` such a result throws, so the guide never stars a track it didn't record. Selectors built from a `data-kritzel-id` are the most robust choice here, because they keep matching when the model regenerates the widget. That's why it is worth asking for them in the system prompt.
+
+Note that the click changes the widget's own state, not the canvas, so there is nothing to undo, and collaborators don't see it. When a model drives the agent, it finds these elements by itself: the `inspect_elements` tool lists a widget's buttons and fields together with their selectors, and `interact_with_element` uses them in the same way.
+
 The [Agents guide](/docs/react/advanced/agents) covers the rest, including agents that point at elements inside widgets, conflicts with the user's work, and presence for collaborators.
 
 <BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Cursors.mp4" label="Agentic cursors working on the Kritzel canvas" />
