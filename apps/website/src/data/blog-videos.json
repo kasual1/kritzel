@@ -20,20 +20,20 @@
   "/videos/2026_11_04_Agentic_Canvas_Cursors.mp4": {
     "poster": "/videos/2026_11_04_Agentic_Canvas_Cursors.jpg",
     "thumbnail": "/videos/2026_11_04_Agentic_Canvas_Cursors.thumbnail.jpg",
-    "thumbnailTime": 4,
+    "thumbnailTime": 7.71,
     "width": 1280,
     "height": 720,
-    "duration": 7.4,
-    "sha256": "421e0ababd37ed8e4e5ed49c341df951f0e4b0dcd6ff674b7f911ca886a6eada"
+    "duration": 9.8,
+    "sha256": "12559d845f7452fe0e265541f9ceb6a3c090f334b8c8fab17ce89289d3ba2e8d"
   },
   "/videos/2026_11_04_Agentic_Canvas_Generative_UI.mp4": {
     "poster": "/videos/2026_11_04_Agentic_Canvas_Generative_UI.jpg",
     "thumbnail": "/videos/2026_11_04_Agentic_Canvas_Generative_UI.thumbnail.jpg",
-    "thumbnailTime": 3.77,
+    "thumbnailTime": 3.43,
     "width": 1280,
     "height": 720,
-    "duration": 4.8,
-    "sha256": "b6738102a18c3ece6c0158f22ab00025c533d7da2a062dffcd04e55f8dfe9769"
+    "duration": 4.87,
+    "sha256": "3c02af1761612a03fede8ac273864b2b39f1f0e2cc1f5bc9efcd219982f27aa0"
   },
   "/videos/2026_11_04_Agentic_Canvas.mp4": {
     "poster": "/videos/2026_11_04_Agentic_Canvas.jpg",
@@ -43,5 +43,14 @@
     "height": 720,
     "duration": 17.63,
     "sha256": "6c141e79b462b2f7d5b76b313e906d6fb891e3d064270af612b6dec90d13315f"
+  },
+  "/videos/2026_11_12_Agentic_Canvas_Rectangle.mp4": {
+    "poster": "/videos/2026_11_12_Agentic_Canvas_Rectangle.jpg",
+    "thumbnail": "/videos/2026_11_12_Agentic_Canvas_Rectangle.thumbnail.jpg",
+    "thumbnailTime": 2.16,
+    "width": 1280,
+    "height": 720,
+    "duration": 3.47,
+    "sha256": "b29c93605660f6d47e64a408494811e8c77dd2bd65014322c40e4b0f68788c89"
   }
 }
