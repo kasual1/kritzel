@@ -133,4 +133,8 @@ Underneath it uses tools like *read_iframe* to understand the content of the rec
 
 <BlogVideo src="/videos/2026_11_04_Agentic_Canvas_Cursors.mp4" label="Agentic cursors working on the Kritzel canvas" />
 
+## Wrapping up
 
+An agentic canvas gives agents the same tools people have on an infinite canvas and makes their work visible as it happens. With Kritzel you get there in a few steps: render the `KritzelEditor`, connect a `KritzelChatSession` to your backend, enable iframes for generative UI, and add a `KritzelAgent` so the model works through its own cursor.
+
+This post only gave a rough overview. Upcoming posts will take a closer look at generative UI and agentic workflows on the canvas, so stay tuned.
