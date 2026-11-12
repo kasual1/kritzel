@@ -24,6 +24,7 @@ npm run infographics
 | `#/agentic-canvas` | Hero of the agentic canvas post: three agents help release the jazz song "Full Control". |
 | `#/agentic-canvas-generative-ui` | Generative UI on the agentic canvas: one prompt adds the recorder widget. |
 | `#/agentic-canvas-cursors` | Agentic cursors: Studio records a track with the recorder widget after the prompt "Please record a new track". |
+| `#/agentic-canvas-rectangle` | The agentic canvas at its simplest: "Please add a rectangle" adds a rectangle in the middle of the view. |
 | `#/generative-ui` | Generative UI: Claude adds pages from the chat box, and edits the element you pick in one. |
 
 ## Agentic canvas
@@ -69,6 +70,13 @@ a recording with `agent.click()` on the record button, waits beside it for five 
 second click. Stopping saves one track below the widget, and the cursor leaves the view. The widget and the track stay on
 the canvas. It is scripted in `record-track-scene.ts` and reuses the widget, the track and the helpers of the agentic
 canvas page; Studio is a `KritzelAgent` there too.
+
+## Agentic canvas rectangle
+
+`src/infographics/agentic-canvas-rectangle/` shows the editor with an empty chat box. After 1.2 seconds "Please add a
+rectangle" is typed into the chat box, the loading ring runs briefly, and a rectangle is added in the middle of the view
+with `editor.addObjects()`, so it plays Kritzel's appear animation. 1.5 seconds later it is removed again. It is scripted
+in `rectangle-scene.ts` and reuses the helpers of the agentic canvas page.
 
 ## Generative UI API key
 
