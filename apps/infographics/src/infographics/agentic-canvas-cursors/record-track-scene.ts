@@ -15,7 +15,6 @@ import {
   removeAgents,
   takeContent,
   typePrompt,
-  union,
   wait,
   type Box,
 } from '../agentic-canvas/hero-scene';
@@ -34,17 +33,15 @@ const TRACK = { name: 'Track 1', duration: '0:05' };
 
 const WIDGET_WIDTH = 360;
 const WIDGET_HEIGHT = 116;
-const TOTAL_HEIGHT = WIDGET_HEIGHT + TAKES_GAP + TAKE_HEIGHT;
 
-/** The widget is centered on the origin together with the room for its track, so the view does not move later. */
-const WIDGET_BOX: Box = { x: -WIDGET_WIDTH / 2, y: -TOTAL_HEIGHT / 2, width: WIDGET_WIDTH, height: WIDGET_HEIGHT };
+/** The widget is centered on the origin; the track is saved below it. */
+const WIDGET_BOX: Box = { x: -WIDGET_WIDTH / 2, y: -WIDGET_HEIGHT / 2, width: WIDGET_WIDTH, height: WIDGET_HEIGHT };
 const TRACK_BOX: Box = {
   x: WIDGET_BOX.x,
   y: WIDGET_BOX.y + WIDGET_BOX.height + TAKES_GAP,
   width: WIDGET_BOX.width,
   height: TAKE_HEIGHT,
 };
-const SCENE_BOX = union([WIDGET_BOX, TRACK_BOX]);
 
 /** How long the recorder shows before the prompt is typed. */
 const OPENING_PAUSE = 1500;
@@ -81,7 +78,8 @@ export async function playRecordTrackScene(
   signal: AbortSignal,
 ): Promise<void> {
   await removeAgents(editor);
-  await frame(editor, SCENE_BOX, 0, signal);
+  // The widget sits in the middle of the whole view, not of the area above the chat box; the view does not move later.
+  await frame(editor, WIDGET_BOX, 0, signal, true);
   await wait(OPENING_PAUSE, signal);
 
   await typePrompt(editor, PROMPT, signal);

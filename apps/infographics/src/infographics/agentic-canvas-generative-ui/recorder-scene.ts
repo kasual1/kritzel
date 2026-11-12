@@ -31,7 +31,8 @@ export async function playRecorderScene(
   signal: AbortSignal,
 ): Promise<void> {
   await removeAgents(editor);
-  await frame(editor, WIDGET_BOX, 0, signal);
+  // The widget sits in the middle of the whole view, not of the area above the chat box.
+  await frame(editor, WIDGET_BOX, 0, signal, true);
   await wait(OPENING_PAUSE, signal);
 
   await typePrompt(editor, PROMPT, signal);
