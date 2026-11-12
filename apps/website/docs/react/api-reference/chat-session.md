@@ -241,4 +241,4 @@ Thrown by [`createHttpTransport()`](#createhttptransport) when your server answe
 |----------|------|-------------|
 | status | number | The HTTP status, for example `401`. |
 | body | string | The body of the answer. |
-| message | string | `The chat request failed with status <status>.`, followed by the `error`, `error.message`, or `message` of a JSON body when there is one. |
+| message | string | `The chat request failed with status <status>: <detail>`, where `<detail>` is the `error`, `error.message`, or `message` of a JSON body. Without one, `The chat request failed with status <status>.` |

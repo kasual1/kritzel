@@ -2,7 +2,7 @@
 sidebar_label: Chat Session
 displayed_sidebar: tutorialSidebar
 title: "Chat Session API Reference | Kritzel for Angular"
-description: "API reference for KritzelChatSession: options, properties, methods, events, the chat protocol types, and createScriptedTransport."
+description: "API reference for KritzelChatSession: options, properties, methods, events, the chat protocol types, createHttpTransport, and createScriptedTransport."
 toc_max_heading_level: 2
 ---
 
@@ -11,9 +11,9 @@ toc_max_heading_level: 2
 `KritzelChatSession` connects the chat box to an LLM through your server. It runs the tool loop in the browser: it sends the conversation through a transport, runs the tool calls of the answer on the canvas, and sends the results back until the model is done. Bind it to the editor with the `chatSession` prop:
 
 ```ts
-import { KritzelChatSession } from '@kritzel/angular-editor';
+import { createHttpTransport, KritzelChatSession } from '@kritzel/angular-editor';
 
-const session = new KritzelChatSession({ transport: chatTransport });
+const session = new KritzelChatSession({ transport: createHttpTransport('/api/chat') });
 ```
 
 For a guided introduction, see [Chat Sessions](../advanced/chat-sessions.md). The `chatSession` prop is listed in the [Editor API Reference](./editor.md#ui-elements).
@@ -104,6 +104,33 @@ The editor binds the session given in `chatSession` and unbinds it when the edit
 
 ## Functions
 
+### createHttpTransport
+
+Returns a transport that posts each request as JSON to your server and reads its answer. Takes the URL of your endpoint, or options:
+
+```ts
+createHttpTransport(urlOrOptions: string | URL | KritzelHttpTransportOptions): KritzelChatTransport
+```
+
+Throws a `TypeError` without a URL.
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| url | string \| URL | — | Required. The endpoint of your server, for example `'/api/chat'`. |
+| headers | `HeadersInit \| (request: KritzelChatRequest) => HeadersInit \| Promise<HeadersInit>` | — | Headers sent with every request, for example `Authorization`. A function is called for each request. |
+| credentials | RequestCredentials | — | Whether cookies are sent, as in `fetch()`. |
+| fetch | typeof fetch | global `fetch` | The `fetch` to use, for example in tests. |
+
+The request has the headers `Content-Type: application/json` and `Accept: application/x-ndjson, text/event-stream, application/json`, unless `headers` sets them. The `Content-Type` of the answer decides how it is read:
+
+| Content-Type | Answer |
+|--------------|--------|
+| `application/x-ndjson` (or another type containing `ndjson` or `jsonl`) | One `KritzelChatStreamEvent` as JSON per line. Blank lines are skipped. |
+| `text/event-stream` | Server-sent events. The `data` of each event without an `event` field, or with `event: message`, is one `KritzelChatStreamEvent` as JSON. Other events, comments, and `data: [DONE]` are skipped. |
+| anything else | One `KritzelChatResponse` as JSON. |
+
+An answer with an error status throws a [`KritzelChatHttpError`](#kritzelchathttperror). Invalid JSON throws an `Error`. Both end the prompt with `status: 'error'`. Stopping the session aborts the request.
+
 ### createScriptedTransport
 
 Returns a transport that answers from a script instead of a model, for demos and tests. The steps answer the model steps in order, across prompts; once they run out, the last step answers. With a function, the script decides per request. The delay rejects with an `AbortError` when the request is aborted.
@@ -193,6 +220,7 @@ Every part can have `providerData`. A `tool-call` without an `id` gets one.
 | `{ type: 'part', part }` | Adds a complete part, for example a tool call. |
 | `{ type: 'message', message }` | Replaces everything streamed so far. |
 | `{ type: 'finish', stopReason?, providerData? }` | Ends the answer. |
+| `{ type: 'error', message }` | Ends the prompt with `status: 'error'` and an `Error` with `message`. What was streamed is dropped. |
 
 ### KritzelChatTransport
 
@@ -204,3 +232,13 @@ type KritzelChatTransport = (
 ```
 
 Throw to end the prompt with `status: 'error'`. Version 1 collects a stream before running the tools.
+
+### KritzelChatHttpError
+
+Thrown by [`createHttpTransport()`](#createhttptransport) when your server answers with an error status. Extends `Error`. A prompt that ends with it has it in the `error` of its [`KritzelChatSendResult`](#kritzelchatsendresult).
+
+| Property | Type | Description |
+|----------|------|-------------|
+| status | number | The HTTP status, for example `401`. |
+| body | string | The body of the answer. |
+| message | string | `The chat request failed with status <status>: <detail>`, where `<detail>` is the `error`, `error.message`, or `message` of a JSON body. Without one, `The chat request failed with status <status>.` |
