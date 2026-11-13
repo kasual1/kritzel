@@ -108,9 +108,9 @@ Updraw reads everything Kritzel saved, so your users don't lose any work:
 
 - **Stored documents.** Objects saved by Kritzel carry class names such as `KritzelPath` or `KritzelGroup`. Updraw loads them as `UpdrawPath` and `UpdrawGroup`, and the old dynamic object class `KritzelCustomElement` as `UpdrawDynamicObject`. Nothing is rewritten on load: an object is saved with its new class name the next time it changes. [JSON exports](../advanced/import-export.md) made with Kritzel can be imported the same way.
 - **Settings in `localStorage`.** The theme, language, active workspace and app state id that Kritzel stored under `kritzel-settings`, `kritzel-active-workspace-id` and `kritzel-app-state-instance-id` (also with an `-{editorId}` suffix) are copied to their `updraw-*` keys on the first load. The old keys are left in place.
-- **IndexedDB documents and assets.** Workspaces that `IndexedDBSyncProvider` saved in `kritzel-workspace-*` and `kritzel-app-state-*` databases, and images in the `kritzel-assets` database, are imported into the new databases the first time they are opened. The old databases are not deleted. If you pass your own `name` to the provider, the database name doesn't change and there is nothing to import.
+- **IndexedDB documents and assets.** Workspaces that `IndexedDBSyncProvider` saved in `kritzel-workspace-*` and `kritzel-app-state-*` databases, and images in the `kritzel-assets` database, are imported into the new databases the first time they are opened. The old databases are not deleted. If you pass your own database name (`name` on `IndexedDBSyncProvider`, `dbName` on `IndexedDBAssetProvider`), the name doesn't change and there is nothing to import.
 - **Clipboard.** Objects copied in a Kritzel editor can be pasted into an Updraw editor.
-- **Iframe and dynamic object content.** HTML saved in existing objects keeps working: `globalThis.kritzel`, the `kritzelstatechange` event, `[data-kritzel-id]` lookups and the CSS variables `--kritzel-iframe-default-cursor`, `--kritzel-iframe-pointer-cursor` and `--kritzel-content-border-radius` remain available as deprecated aliases. Use the Updraw names in content you create from now on.
+- **Iframe and dynamic object content.** HTML saved in existing objects keeps working: `globalThis.kritzel`, the `kritzelstatechange` event, `[data-kritzel-id]` lookups and the CSS variables `--kritzel-iframe-default-cursor`, `--kritzel-iframe-pointer-cursor` and `--kritzel-content-border-radius` remain available as deprecated aliases. Use the Updraw names in content you create from now on. Selectors you pass yourself, for example to query, highlight or pick elements, are plain CSS: to also match saved content, use `[data-updraw-id], [data-kritzel-id]`.
 
 ## Server-Side Document Names
 
@@ -139,7 +139,7 @@ WHERE (legacy.name LIKE 'kritzel-app-state-%' OR legacy.name LIKE 'kritzel-works
 
 The query skips documents that already exist under their new name, because an upgraded client saved them first. Merge those with `Y.mergeUpdates([legacyState, updrawState])` from `yjs`, store the result under the new name and delete the old row.
 
-To fall back to the old name instead, load it in the server's `onLoadDocument` hook when a document doesn't exist yet. `toLegacyDocumentName()` from `@updraw/core` turns `updraw-workspace-…` into `kritzel-workspace-…` and returns `null` for any other name:
+To fall back to the old name instead, load it in the server's `onLoadDocument` hook when a document doesn't exist yet. `toLegacyDocumentName()` from `@updraw/core` turns any `updraw-…` document name (`updraw-workspace-…`, `updraw-app-state-…`) into its `kritzel-…` name and returns `null` for names without the `updraw-` prefix:
 
 ```ts title="server.ts"
 import { Server } from '@hocuspocus/server';
@@ -173,5 +173,7 @@ Documents are then saved under their new names the next time they change.
 ## Upgrading All Collaborators Together
 
 Compatibility only works in one direction: Updraw reads what Kritzel wrote, but Kritzel can't read what Updraw writes. A Kritzel client doesn't know the `Updraw*` class names, so it can't show objects that an Updraw client created or changed, and it can't paste Updraw clipboard content or import Updraw JSON exports.
+
+The runtime brands `Symbol.for('updraw.agent')` and `Symbol.for('updraw.chatSession')` and the internal iframe message types (`updraw-iframe-*`) were renamed too, so `isUpdrawAgent()` and `isUpdrawChatSession()` don't recognize agents or chat sessions created with a `@kritzel/*` package.
 
 Upgrade every client that shares a document at the same time, and don't run Kritzel and Updraw clients against the same server side by side. Once Updraw has saved changes to a document, going back to Kritzel is not supported.

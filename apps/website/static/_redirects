@@ -1,6 +1,6 @@
 # Cloudflare Pages redirects for routes that no longer exist.
 # Each source is listed with and without a trailing slash so both forms match.
-# Targets end with a slash because the site is built with trailingSlash: true.
+# Page targets end with a slash because the site is built with trailingSlash: true.
 # Renamed doc paths that still have a client-side redirect live in LEGACY_DOC_PATHS
 # in docusaurus.config.ts; tests/redirects.spec.ts checks that every target exists.
 
@@ -36,7 +36,7 @@
 /blog/tags/spatial-ui                        /blog/ 301
 /blog/tags/spatial-ui/                       /blog/ 301
 
-# Blog posts and media renamed in the Kritzel -> Updraw rebrand
+# Blog posts and media renamed in the Updraw rebrand
 /blog/2026/08/02/introducing-kritzel                  /blog/2026/08/02/introducing-updraw/ 301
 /blog/2026/08/02/introducing-kritzel/                 /blog/2026/08/02/introducing-updraw/ 301
 /blog/2026/10/22/kritzel-is-now-open-source           /blog/2026/10/22/updraw-is-now-open-source/ 301
