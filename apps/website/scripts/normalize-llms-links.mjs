@@ -4,6 +4,7 @@ import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkStringify from 'remark-stringify';
+import { SITE_URL } from '../site-urls.mjs';
 
 const buildRoot = new URL('../build/', import.meta.url);
 const baseUrl = `/${(process.env.Docusaurus_BASE_URL || '/').split('/').filter(Boolean).join('/')}/`.replace('//', '/');
@@ -21,7 +22,7 @@ const pages = new Set();
 visit(parser.parse(index), (node) => {
   if (node.type !== 'link') return;
   const url = new URL(node.url);
-  if (url.origin !== 'https://updraw.io' || !url.pathname.endsWith('.md')) return;
+  if (url.origin !== SITE_URL || !url.pathname.endsWith('.md')) return;
   if (!url.pathname.startsWith(baseUrl)) throw new Error(`Missing base URL: ${url.href}`);
   const relativePath = url.pathname.slice(baseUrl.length);
   const output = new URL(relativePath, buildRoot);

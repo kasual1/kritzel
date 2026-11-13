@@ -51,6 +51,20 @@ jobs:
           fi
           echo "Using @updraw/*@$VERSION"
 
+      # robots.txt and sitemap.xml name the app's public origin. The repository variable APP_URL deploys the app
+      # under another domain (e.g. the previous one during the domain move, see apps/app/docs/rebrand-cutover.md).
+      - name: Set the app's public URL
+        if: ${{ vars.APP_URL != '' }}
+        working-directory: apps/app/client/public
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          set -eu
+          node -e "const u=new URL(process.env.APP_URL); if (u.origin !== process.env.APP_URL.replace(/\/$/, '')) process.exit(1)" \
+            || { echo "::error::APP_URL must be an origin such as https://app.updraw.io"; exit 1; }
+          sed -i "s#https://app.updraw.io#${APP_URL%/}#g" robots.txt sitemap.xml
+          grep -H "${APP_URL%/}" robots.txt sitemap.xml
+
       # The client is built here rather than on the Lightsail instance: the Angular production build is too
       # slow/memory-hungry for the small server. client/Dockerfile.prod only packages dist/client/browser.
       # Fails the workflow before anything is copied to the server if the published packages break the build.

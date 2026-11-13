@@ -9,6 +9,12 @@ jobs:
   build-docs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      # Public origins the site is built for (canonical URLs, sitemap, robots.txt, llms.txt, links to the app).
+      # Unset repository variables mean https://updraw.io and https://app.updraw.io; set WEBSITE_URL and APP_URL
+      # to deploy under another domain (see apps/app/docs/rebrand-cutover.md).
+      UPDRAW_WEBSITE_URL: ${{ vars.WEBSITE_URL }}
+      UPDRAW_APP_URL: ${{ vars.APP_URL }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
