@@ -56,7 +56,7 @@ async function fakeClaude(route: Route) {
         { type: 'content_block_stop', index: 1 },
         { type: 'message_delta', delta: { stop_reason: 'tool_use' } },
       ];
-  await route.fulfill({ status: 200, headers: { 'content-type': 'text/event-stream' }, body: anthropicStream(events) });
+  await route.fulfill({ status: 200, headers: { 'content-type': 'text/event-stream' }, body: anthropicStream([...events, { type: 'message_stop' }]) });
 }
 
 test.describe('Generative UI', () => {

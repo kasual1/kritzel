@@ -104,7 +104,16 @@ export function createBrowserTransport(): BrowserTransport {
 
 // ─── Anthropic ───────────────────────────────────────────────────────────────
 
-type AnthropicBlock = Record<string, unknown> & { type: string };
+interface AnthropicBlock {
+  type: string;
+  id?: string;
+  name?: string;
+  text?: string;
+  thinking?: string;
+  signature?: string;
+  input?: unknown;
+  [key: string]: unknown;
+}
 
 interface AnthropicEvent {
   type: string;
@@ -117,6 +126,7 @@ interface AnthropicEvent {
     thinking?: string;
     signature?: string;
     stop_reason?: string;
+    stop_details?: { explanation?: string | null } | null;
   };
   error?: { message?: string };
 }
@@ -140,8 +150,11 @@ async function* streamAnthropic(
       model: provider.model,
       max_tokens: 64000,
       stream: true,
+      // Every step of the tool loop sends the whole conversation again: the part that was sent before is cached.
+      cache_control: { type: 'ephemeral' },
       system: request.system,
-      // An answer that the user stopped is kept without its thinking. The thinking after it is dropped, not rejected.
+      // A safety net: tool input that was cut off goes back as {}, which can invalidate the thinking after it.
+      // That thinking is dropped instead of failing the conversation.
       thinking: { type: 'adaptive', block_binding: { prefix_mismatch_behavior: 'drop_block' } },
       output_config: { effort: 'medium' },
       // Streams each tool input while Claude writes it, so the canvas can show a placeholder early.
@@ -155,54 +168,91 @@ async function* streamAnthropic(
     },
   });
 
-  // Claude's own blocks, thinking included, are sent back unchanged with the next request.
+  // Claude's own blocks, thinking included, are sent back unchanged with the next request. Only complete blocks count.
   const blocks: AnthropicBlock[] = [];
+  const closed = new Set<number>();
   const inputs = new Map<number, string>();
+  // A call whose input is not valid JSON waits for the stop reason: a refusal can cut it off, and then it must not run.
+  let held: KritzelChatStreamEvent | undefined;
   let stopReason: string | undefined;
-  for await (const data of readServerSentEvents(response)) {
-    const event = JSON.parse(data) as AnthropicEvent;
+  let explanation: string | null | undefined;
+  let ended = false;
+  for await (const data of readServerSentEvents(provider, response)) {
+    const event = parseEvent<AnthropicEvent>(provider, data);
     const index = event.index ?? 0;
     if (event.type === 'content_block_start' && event.content_block) {
+      if (held) {
+        yield held;
+        held = undefined;
+      }
       const block = { ...event.content_block };
       blocks[index] = block;
       if (block.type === 'tool_use') {
         inputs.set(index, '');
-        yield { type: 'tool-call-start', id: String(block['id']), name: String(block['name']) };
+        yield { type: 'tool-call-start', id: String(block.id), name: String(block.name) };
       }
     } else if (event.type === 'content_block_delta' && event.delta && blocks[index]) {
       const block = blocks[index];
       const delta = event.delta;
       if (delta.type === 'text_delta' && delta.text) {
-        block['text'] = `${block['text'] ?? ''}${delta.text}`;
+        block.text = `${block.text ?? ''}${delta.text}`;
         yield { type: 'text-delta', text: delta.text };
       } else if (delta.type === 'input_json_delta' && delta.partial_json) {
         inputs.set(index, `${inputs.get(index) ?? ''}${delta.partial_json}`);
-        yield { type: 'tool-call-delta', id: String(block['id']), inputDelta: delta.partial_json };
+        yield { type: 'tool-call-delta', id: String(block.id), inputDelta: delta.partial_json };
       } else if (delta.type === 'thinking_delta') {
-        block['thinking'] = `${block['thinking'] ?? ''}${delta.thinking ?? ''}`;
+        block.thinking = `${block.thinking ?? ''}${delta.thinking ?? ''}`;
       } else if (delta.type === 'signature_delta') {
-        block['signature'] = delta.signature;
+        block.signature = delta.signature;
       }
-    } else if (event.type === 'content_block_stop' && blocks[index]?.type === 'tool_use') {
+    } else if (event.type === 'content_block_stop' && blocks[index]) {
+      closed.add(index);
       const block = blocks[index];
-      const input = parseToolInput(inputs.get(index) ?? '');
-      // Claude needs an object back; input that was cut off is answered by the tool with an error anyway.
-      block['input'] = typeof input === 'string' ? {} : input;
-      yield { type: 'part', part: { type: 'tool-call', id: String(block['id']), name: String(block['name']), input } };
+      if (block.type === 'tool_use') {
+        const input = parseToolInput(inputs.get(index) ?? '');
+        // Claude needs an object back; input that was cut off is answered by the tool with an error anyway.
+        block.input = toInputObject(input);
+        const part: KritzelChatStreamEvent = {
+          type: 'part',
+          part: { type: 'tool-call', id: String(block.id), name: String(block.name), input },
+        };
+        if (typeof input === 'string') {
+          held = part;
+        } else {
+          yield part;
+        }
+      }
     } else if (event.type === 'message_delta') {
       stopReason = event.delta?.stop_reason ?? stopReason;
+      explanation = event.delta?.stop_details?.explanation ?? explanation;
+      if (held && stopReason !== 'refusal') {
+        yield held;
+        held = undefined;
+      }
+    } else if (event.type === 'message_stop') {
+      ended = true;
     } else if (event.type === 'error') {
       throw new Error(`${provider.name}: ${event.error?.message ?? 'The answer broke off.'}`);
     }
   }
 
   if (stopReason === 'refusal') {
-    throw new Error('Claude declined to answer. Try asking for something else.');
+    throw new Error(
+      explanation
+        ? `Claude declined to answer: ${explanation}`
+        : 'Claude declined to answer. Try asking for something else.',
+    );
+  }
+  if (!ended || !stopReason) {
+    throw new Error(`${provider.name}: The answer broke off. Try again.`);
   }
   yield {
     type: 'finish',
-    stopReason: stopReason === 'tool_use' ? 'tool-calls' : toStopReason(stopReason === 'max_tokens'),
-    providerData: { anthropic: { content: blocks.filter(Boolean) } },
+    stopReason:
+      stopReason === 'tool_use'
+        ? 'tool-calls'
+        : toStopReason(stopReason === 'max_tokens' || stopReason === 'model_context_window_exceeded'),
+    providerData: { anthropic: { content: blocks.filter((block, index) => block && closed.has(index)) } },
   };
 }
 
@@ -252,6 +302,13 @@ interface OpenAiChunk {
   error?: { message?: string };
 }
 
+interface OpenAiCall {
+  id: string;
+  name: string;
+  json: string;
+  done: boolean;
+}
+
 async function* streamOpenAi(
   provider: Provider,
   apiKey: string,
@@ -263,8 +320,9 @@ async function* streamOpenAi(
     body: {
       model: provider.model,
       stream: true,
+      // Reasoning models take their instructions as developer messages.
       messages: [
-        ...(request.system ? [{ role: 'system', content: request.system }] : []),
+        ...(request.system ? [{ role: 'developer', content: request.system }] : []),
         ...toOpenAiMessages(request.messages),
       ],
       tools: request.tools.map(tool => ({
@@ -275,14 +333,14 @@ async function* streamOpenAi(
   });
 
   // The calls being written, by their index in the answer. A call is complete once the next one starts.
-  const calls: { id: string; name: string; json: string; done: boolean }[] = [];
+  const calls: OpenAiCall[] = [];
   let refusal = '';
   let finishReason: string | null | undefined;
-  for await (const data of readServerSentEvents(response)) {
+  for await (const data of readServerSentEvents(provider, response)) {
     if (data === '[DONE]') {
       break;
     }
-    const chunk = JSON.parse(data) as OpenAiChunk;
+    const chunk = parseEvent<OpenAiChunk>(provider, data);
     if (chunk.error) {
       throw new Error(`${provider.name}: ${chunk.error.message ?? 'The answer broke off.'}`);
     }
@@ -307,6 +365,8 @@ async function* streamOpenAi(
         };
         calls[toolCall.index] = call;
         yield { type: 'tool-call-start', id: call.id, name: call.name };
+      } else if (!call.name && toolCall.function?.name) {
+        call.name = toolCall.function.name;
       }
       const json = toolCall.function?.arguments;
       if (json) {
@@ -321,12 +381,18 @@ async function* streamOpenAi(
   if (refusal) {
     throw new Error(`${provider.name}: ${refusal}`);
   }
+  if (finishReason === 'content_filter') {
+    throw new Error(
+      `${provider.name} stopped the answer because its content filter flagged it. Try asking for something else.`,
+    );
+  }
+  if (!finishReason) {
+    throw new Error(`${provider.name}: The answer broke off. Try again.`);
+  }
   yield { type: 'finish', stopReason: calls.length ? 'tool-calls' : toStopReason(finishReason === 'length') };
 }
 
-function* finishOpenAiCalls(
-  calls: { id: string; name: string; json: string; done: boolean }[],
-): Generator<KritzelChatStreamEvent> {
+function* finishOpenAiCalls(calls: OpenAiCall[]): Generator<KritzelChatStreamEvent> {
   for (const call of calls) {
     if (call && !call.done) {
       call.done = true;
@@ -379,20 +445,28 @@ function toOpenAiMessages(messages: KritzelChatMessage[]): unknown[] {
 
 // ─── Gemini ──────────────────────────────────────────────────────────────────
 
-type GeminiPart = Record<string, unknown> & {
+interface GeminiPart {
   text?: string;
   thought?: boolean;
+  thoughtSignature?: string;
   functionCall?: { id?: string; name: string; args?: Record<string, unknown> };
-};
+  [key: string]: unknown;
+}
 
 interface GeminiChunk {
-  candidates?: { finishReason?: string; content?: { parts?: GeminiPart[] } }[];
+  candidates?: { finishReason?: string; finishMessage?: string; content?: { parts?: GeminiPart[] } }[];
   promptFeedback?: { blockReason?: string };
   error?: { message?: string };
 }
 
 /** Gemini doesn't always name its calls, so the transport does. The prefix tells these IDs apart from Gemini's own. */
 const GEMINI_CALL_ID_PREFIX = 'kritzel-call-';
+
+/**
+ * Gemini wants a thought signature on the first call of every model turn. A turn that Gemini didn't write in one piece,
+ * e.g. one that the user stopped or that another provider wrote, gets this placeholder, which skips the check.
+ */
+const GEMINI_SKIP_SIGNATURE = 'skip_thought_signature_validator';
 
 async function* streamGemini(
   provider: Provider,
@@ -422,8 +496,9 @@ async function* streamGemini(
   const parts: GeminiPart[] = [];
   let calls = 0;
   let finishReason: string | undefined;
-  for await (const data of readServerSentEvents(response)) {
-    const chunk = JSON.parse(data) as GeminiChunk;
+  let finishMessage: string | undefined;
+  for await (const data of readServerSentEvents(provider, response)) {
+    const chunk = parseEvent<GeminiChunk>(provider, data);
     if (chunk.error) {
       throw new Error(`${provider.name}: ${chunk.error.message ?? 'The answer broke off.'}`);
     }
@@ -434,27 +509,42 @@ async function* streamGemini(
     for (const part of candidate?.content?.parts ?? []) {
       parts.push(part);
       if (part.functionCall) {
-        // Gemini writes each call in one piece, so it runs as soon as it arrives.
+        // Gemini writes each call in one piece, so it runs as soon as it arrives. Its signature stays with it, so that
+        // the call can be sent back with it even when the rest of the answer is lost.
         const id = part.functionCall.id ?? `${GEMINI_CALL_ID_PREFIX}${crypto.randomUUID()}`;
+        const providerData = part.thoughtSignature
+          ? { gemini: { thoughtSignature: part.thoughtSignature } }
+          : undefined;
         calls++;
         yield { type: 'tool-call-start', id, name: part.functionCall.name };
         yield {
           type: 'part',
-          part: { type: 'tool-call', id, name: part.functionCall.name, input: part.functionCall.args ?? {} },
+          part: {
+            type: 'tool-call',
+            id,
+            name: part.functionCall.name,
+            input: part.functionCall.args ?? {},
+            providerData,
+          },
         };
       } else if (part.text && !part.thought) {
         yield { type: 'text-delta', text: part.text };
       }
     }
     finishReason = candidate?.finishReason ?? finishReason;
+    finishMessage = candidate?.finishMessage ?? finishMessage;
   }
 
-  if (!parts.length && finishReason && finishReason !== 'STOP') {
-    throw new Error(`${provider.name} stopped without an answer (${finishReason}).`);
+  if (!finishReason) {
+    throw new Error(`${provider.name}: The answer broke off. Try again.`);
+  }
+  const cutOff = finishReason === 'MAX_TOKENS' || finishReason === 'CONTINUATION';
+  if (!calls && finishReason !== 'STOP' && !cutOff) {
+    throw new Error(`${provider.name} stopped without an answer (${finishMessage || finishReason}).`);
   }
   yield {
     type: 'finish',
-    stopReason: calls ? 'tool-calls' : toStopReason(finishReason === 'MAX_TOKENS'),
+    stopReason: calls ? 'tool-calls' : toStopReason(cutOff),
     providerData: { gemini: { parts } },
   };
 }
@@ -465,8 +555,7 @@ function toGeminiContents(messages: KritzelChatMessage[]): { role: string; parts
   for (const message of messages) {
     const original = (message.providerData?.['gemini'] as { parts?: unknown[] } | undefined)?.parts;
     const role = message.role === 'assistant' ? 'model' : 'user';
-    const parts =
-      message.role === 'assistant' && original?.length ? original : message.parts.flatMap(part => toGeminiPart(part));
+    const parts = message.role === 'assistant' && original?.length ? original : toGeminiParts(message);
     if (!parts.length) {
       continue;
     }
@@ -481,7 +570,17 @@ function toGeminiContents(messages: KritzelChatMessage[]): { role: string; parts
   return contents;
 }
 
-function toGeminiPart(part: KritzelChatPart): unknown[] {
+/** The parts of a message that Gemini didn't send in one piece. */
+function toGeminiParts(message: KritzelChatMessage): GeminiPart[] {
+  const parts = message.parts.flatMap(part => toGeminiPart(part));
+  const firstCall = parts.find(part => part.functionCall);
+  if (message.role === 'assistant' && firstCall && !firstCall.thoughtSignature) {
+    firstCall.thoughtSignature = GEMINI_SKIP_SIGNATURE;
+  }
+  return parts;
+}
+
+function toGeminiPart(part: KritzelChatPart): GeminiPart[] {
   switch (part.type) {
     case 'text':
       return part.text ? [{ text: part.text }] : [];
@@ -489,18 +588,28 @@ function toGeminiPart(part: KritzelChatPart): unknown[] {
       return part.data
         ? [{ inlineData: { mimeType: part.mediaType, data: part.data } }]
         : [{ text: `Image: ${part.url}` }];
-    case 'tool-call':
-      return [{ functionCall: { ...geminiCallId(part.id), name: part.name, args: toInputObject(part.input) } }];
-    case 'tool-result':
+    case 'tool-call': {
+      const signature = (part.providerData?.['gemini'] as { thoughtSignature?: string } | undefined)?.thoughtSignature;
+      return [
+        {
+          functionCall: { ...geminiCallId(part.id), name: part.name, args: toInputObject(part.input) },
+          ...(signature ? { thoughtSignature: signature } : {}),
+        },
+      ];
+    }
+    case 'tool-result': {
+      // Gemini takes the details of a failed call under "error".
+      const response = toResponseObject(part.output);
       return [
         {
           functionResponse: {
             ...geminiCallId(part.toolCallId),
             name: part.name,
-            response: toResponseObject(part.output),
+            response: part.isError ? { error: response } : response,
           },
         },
       ];
+    }
   }
 }
 
@@ -528,31 +637,51 @@ interface PostOptions {
   body: unknown;
 }
 
-/** Posts JSON to a provider and turns every failure into an error with a message that can be shown to the user. */
+/** How often a request is tried when the provider is busy or can't be reached, before anything was streamed. */
+const ATTEMPTS = 3;
+
+/**
+ * Posts JSON to a provider and turns every failure into an error with a message that can be shown to the user. Rate
+ * limits, server errors and connection errors are tried again after a short wait.
+ */
 async function post(
   provider: Provider,
   url: string,
   signal: AbortSignal,
   { headers, body }: PostOptions,
 ): Promise<Response> {
-  let response: Response;
-  try {
-    response = await fetch(url, {
-      method: 'POST',
-      signal,
-      headers: { 'content-type': 'application/json', ...headers },
-      body: JSON.stringify(body),
-    });
-  } catch (error) {
-    if (signal.aborted) {
-      throw error;
+  for (let attempt = 1; ; attempt++) {
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        signal,
+        headers: { 'content-type': 'application/json', ...headers },
+        body: JSON.stringify(body),
+      });
+    } catch (error) {
+      if (signal.aborted) {
+        throw error;
+      }
+      if (attempt < ATTEMPTS) {
+        await wait(500 * 2 ** attempt, signal);
+        continue;
+      }
+      // Fetch only fails like this without a response, e.g. offline or blocked, so the cause is kept for the console.
+      throw Object.assign(new Error(`Could not reach ${provider.name}. Check your connection and try again.`), {
+        cause: error,
+      });
     }
-    // Fetch only fails like this without a response, e.g. offline or blocked, so the cause is kept for the console.
-    throw Object.assign(new Error(`Could not reach ${provider.name}. Check your connection and try again.`), {
-      cause: error,
-    });
-  }
-  if (!response.ok) {
+    if (response.ok) {
+      return response;
+    }
+    const retry =
+      (response.status === 429 || response.status >= 500) && response.headers.get('x-should-retry') !== 'false';
+    if (retry && attempt < ATTEMPTS) {
+      await response.body?.cancel().catch(() => undefined);
+      await wait(Number(response.headers.get('retry-after')) * 1000 || 500 * 2 ** attempt, signal);
+      continue;
+    }
     const json = (await response.json().catch(() => undefined)) as
       { error?: { message?: string } } | { error?: { message?: string } }[] | undefined;
     // Gemini wraps its error in an array.
@@ -560,24 +689,44 @@ async function post(
       (Array.isArray(json) ? json[0] : json)?.error?.message || response.statusText || 'The request failed.';
     throw new Error(`${provider.name}: ${message} (${response.status})`);
   }
-  return response;
 }
 
-/** Yields the data of each event of a server-sent events stream. */
-async function* readServerSentEvents(response: Response): AsyncGenerator<string> {
+/** Waits, or rejects as soon as the user stops the response. */
+function wait(ms: number, signal: AbortSignal): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(done, Math.min(ms, 10_000));
+    signal.addEventListener('abort', abort, { once: true });
+    function done() {
+      signal.removeEventListener('abort', abort);
+      resolve();
+    }
+    function abort() {
+      clearTimeout(timer);
+      reject(signal.reason);
+    }
+  });
+}
+
+/**
+ * Yields the data of each event of a server-sent events stream. An event that the stream ends in the middle of is
+ * dropped; the provider's own end of the answer is missing then, which tells that the answer broke off.
+ */
+async function* readServerSentEvents(provider: Provider, response: Response): AsyncGenerator<string> {
   if (!response.body) {
-    return;
+    throw new Error(`${provider.name}: The answer was empty.`);
   }
   const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
   let buffer = '';
   try {
     for (;;) {
       const { value, done } = await reader.read();
-      buffer = `${buffer}${value ?? ''}`.replace(/\r\n?/g, '\n');
-      let end = buffer.indexOf('\n\n');
-      while (end >= 0 || (done && buffer.trim())) {
-        const event = end >= 0 ? buffer.slice(0, end) : buffer;
-        buffer = end >= 0 ? buffer.slice(end + 2) : '';
+      // A line ends with CRLF, LF or CR. A CR at the end of a chunk can be the first half of a CRLF, so it waits.
+      const text = `${buffer}${value ?? ''}`;
+      const pendingCr = !done && text.endsWith('\r');
+      buffer = (pendingCr ? text.slice(0, -1) : text).replace(/\r\n?/g, '\n') + (pendingCr ? '\r' : '');
+      for (let end = buffer.indexOf('\n\n'); end >= 0; end = buffer.indexOf('\n\n')) {
+        const event = buffer.slice(0, end);
+        buffer = buffer.slice(end + 2);
         const data = event
           .split('\n')
           .filter(line => line.startsWith('data:'))
@@ -586,7 +735,6 @@ async function* readServerSentEvents(response: Response): AsyncGenerator<string>
         if (data) {
           yield data;
         }
-        end = buffer.indexOf('\n\n');
       }
       if (done) {
         return;
@@ -595,6 +743,15 @@ async function* readServerSentEvents(response: Response): AsyncGenerator<string>
   } finally {
     // Stops the download when the session stops reading, e.g. because the user pressed stop.
     await reader.cancel().catch(() => undefined);
+  }
+}
+
+/** Parses the JSON of an event, with an error that can be shown to the user when the stream was garbled. */
+function parseEvent<T>(provider: Provider, data: string): T {
+  try {
+    return JSON.parse(data) as T;
+  } catch {
+    throw new Error(`${provider.name}: The answer broke off. Try again.`);
   }
 }
 

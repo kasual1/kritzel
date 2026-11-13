@@ -135,7 +135,7 @@ transport: (request, { signal }) => {
 },
 ```
 
-Anthropic and Gemini need parts of their answers back on the next request, such as Claude's thinking blocks and Gemini's thought signatures. The transport puts them in the `providerData` of the `finish` event, and the session sends them back unchanged.
+Anthropic and Gemini need parts of their answers back on the next request, such as Claude's thinking blocks and Gemini's thought signatures. The transport puts them in `providerData`, on the `finish` event and on Gemini's tool calls, and the session sends them back unchanged. Rate limits and server errors are tried again, and an answer that ends abnormally, for example because the provider refused it or the stream broke off, ends the prompt with an error that the page shows as a notification.
 
 ### Trying it without a key
 
