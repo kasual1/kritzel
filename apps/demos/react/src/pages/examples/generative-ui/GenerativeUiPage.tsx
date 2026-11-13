@@ -1,21 +1,32 @@
-import { useCallback, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties } from "react";
 import {
   KritzelEditor,
   KritzelWorkspace,
   type HTMLKritzelEditorElement,
+  type KritzelChatBoxChip,
   type KritzelObjectTitlebarActionEvent,
 } from "@kritzel/react-editor";
 import { reactThemeDark } from "../../../const/react-theme-dark";
 import { reactThemeLight } from "../../../const/react-theme-light";
-import { createUiDocument, GenerativeUi, getUiTitle, isUi, objectConfig, objectTitlebar } from "./generative-ui";
-import { complete, type CompletionRequest, type Credentials } from "./llm-providers";
-import { MockChatBox } from "./MockChatBox";
-import { completeWithMock, type MockUi, type RequestMode } from "./mock-uis";
+import { createBrowserTransport, type Credentials } from "./browser-transport";
+import {
+  createGenerativeUiSession,
+  createUiDocument,
+  getErrorMessage,
+  getUiChips,
+  getUiTitle,
+  isUi,
+  objectConfig,
+  objectTitlebar,
+  withUiFrames,
+  type RequestMode,
+} from "./generative-ui";
+import { createMockTransport } from "./mock-transport";
 import { UiPreview } from "./UiPreview";
 import { WelcomePanel } from "./WelcomePanel";
 import "./generative-ui.css";
 
-const themes = [reactThemeLight, reactThemeDark];
+const themes = [withUiFrames(reactThemeLight), withUiFrames(reactThemeDark)];
 
 /** The welcome guide takes its accent from the theme, like the editor's own controls. */
 const accentStyle = {
@@ -30,62 +41,54 @@ interface Preview {
 
 export function GenerativeUiPage() {
   const editorRef = useRef<HTMLKritzelEditorElement | null>(null);
-  const generatorRef = useRef<GenerativeUi | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
-  const [mode, setMode] = useState<RequestMode | null>(null);
   // The key only lives in this component's memory: it is gone when the page reloads.
   const [credentials, setCredentials] = useState<Credentials | null>(null);
+  // One session per mode, created once: choosing a mode binds its session to the editor.
+  const [{ browser, sessions }] = useState(() => {
+    const browser = createBrowserTransport();
+    return {
+      browser,
+      sessions: { live: createGenerativeUiSession(browser.transport), mock: createGenerativeUiSession(createMockTransport()) },
+    };
+  });
+  const [mode, setMode] = useState<RequestMode | null>(null);
   const [keyError, setKeyError] = useState("");
-  const [isWorking, setIsWorking] = useState(false);
   const [hasUis, setHasUis] = useState(false);
+  const [chips, setChips] = useState<KritzelChatBoxChip[]>([]);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [workspaces] = useState(() => [new KritzelWorkspace({ name: "Generative UI", objects: [] })]);
+  const session = mode ? sessions[mode] : null;
+  const subscribe = useCallback((onChange: () => void) => session?.on("change", onChange) ?? (() => {}), [session]);
+  const isWorking = useSyncExternalStore(subscribe, () => session?.running ?? false);
 
-  function onReady() {
-    if (editorRef.current) {
-      generatorRef.current = new GenerativeUi(editorRef.current);
-    }
-  }
+  // The chat box shows the progress of a prompt, but not why it failed.
+  useEffect(
+    () =>
+      session?.on("end", (result) => {
+        if (result.status === "error") {
+          void editorRef.current?.triggerNotification({ type: "error", message: getErrorMessage(result.error) });
+        }
+      }),
+    [session],
+  );
 
-  function generate(prompt: string) {
-    if (!credentials) {
+  function sendExample(prompt: string) {
+    if (mode === "live" && !credentials) {
       setKeyError("Add an API key to start generating UIs.");
       return;
     }
-    void run(prompt, (request) => complete(credentials, request));
-  }
-
-  /** A mocked prompt always adds a new UI, because its answer is not a change of the selected one. */
-  async function generateMock(ui: MockUi) {
-    await editorRef.current?.clearSelection();
-    await run(ui.prompt, () => completeWithMock(ui));
-  }
-
-  async function run(prompt: string, completion: (request: CompletionRequest) => Promise<string>) {
-    const generator = generatorRef.current;
-    if (!generator || abortRef.current || !prompt.trim()) {
-      return;
-    }
-
-    const abort = new AbortController();
-    abortRef.current = abort;
-    setIsWorking(true);
-    try {
-      await generator.generate(prompt, completion, abort.signal);
-    } catch (error) {
-      if (!abort.signal.aborted) {
-        const message = error instanceof Error ? error.message : String(error);
-        await editorRef.current?.triggerNotification({ type: "error", message });
-      }
-    } finally {
-      abortRef.current = null;
-      setIsWorking(false);
-    }
+    void session?.send(prompt);
   }
 
   function connect(next: Credentials) {
+    browser.setCredentials(next);
     setCredentials(next);
     setKeyError("");
+  }
+
+  function disconnect() {
+    browser.setCredentials(null);
+    setCredentials(null);
   }
 
   function changeMode(next: RequestMode | null) {
@@ -113,14 +116,14 @@ export function GenerativeUiPage() {
         workspaces={workspaces}
         objectConfig={objectConfig}
         objectTitlebar={objectTitlebar}
-        isChatBoxVisible={mode === "live"}
-        isChatBoxLoading={isWorking}
+        chatSession={session}
+        chatBoxChips={chips}
+        isChatBoxVisible={mode === "mock" || credentials !== null}
         isToolbarVisible={false}
         isWorkspaceManagerVisible={false}
-        onIsReady={onReady}
-        onChatSubmit={(event) => generate(event.detail)}
-        onChatStop={() => abortRef.current?.abort()}
         onObjectsChange={(event) => setHasUis(event.detail.some(isUi))}
+        onObjectsSelectionChange={(event) => setChips(getUiChips(event.detail))}
+        onChatChipRemove={(event) => setChips((current) => current.filter((chip) => chip.id !== event.detail.id))}
         onObjectTitlebarAction={(event) => void onTitlebarAction(event.detail)}
       />
       <WelcomePanel
@@ -130,10 +133,9 @@ export function GenerativeUiPage() {
         error={keyError}
         onModeChange={changeMode}
         onConnect={connect}
-        onDisconnect={() => setCredentials(null)}
-        onExample={generate}
+        onDisconnect={disconnect}
+        onExample={sendExample}
       />
-      {mode === "mock" && <MockChatBox isWorking={isWorking} onSend={(ui) => void generateMock(ui)} />}
       {preview && <UiPreview title={preview.title} document={preview.document} onClose={closePreview} />}
     </div>
   );
